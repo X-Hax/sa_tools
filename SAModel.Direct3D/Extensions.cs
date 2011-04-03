@@ -29,6 +29,23 @@ namespace SonicRetro.SAModel.Direct3D
             attach.Radius = bound.Radius;
         }
 
+        public static void CalculateBounds(this COL col)
+        {
+            Matrix matrix = Matrix.Identity;
+            matrix *= Matrix.RotationYawPitchRoll(BAMSToRad(col.Object.Rotation.Y), BAMSToRad(col.Object.Rotation.X), BAMSToRad(col.Object.Rotation.Z));
+            matrix *= Matrix.Translation(col.Object.Position.ToVector3());
+            List<Vector3> verts = new List<Vector3>();
+            foreach (SAModel.Mesh mesh in col.Object.Attach.Mesh)
+                foreach (Poly poly in mesh.Poly)
+                    foreach (ushort index in poly.Indexes)
+                        verts.Add(Vector3.TransformCoordinate(col.Object.Attach.Vertex[index].ToVector3(), matrix));
+            BoundingSphere bound = BoundingSphere.FromPoints(verts.ToArray());
+            col.Center.X = bound.Center.X;
+            col.Center.Y = bound.Center.Y;
+            col.Center.Z = bound.Center.Z;
+            col.Radius = bound.Radius;
+        }
+
         public static SlimDX.Direct3D9.Mesh CreateD3DMesh(this Attach attach, SlimDX.Direct3D9.Device dev)
         {
             int numverts = 0;
@@ -57,6 +74,11 @@ namespace SonicRetro.SAModel.Direct3D
             functionReturnValue.UnlockIndexBuffer();
             functionReturnValue.UnlockAttributeBuffer();
             return functionReturnValue;
+        }
+
+        public static float BAMSToRad(int BAMS)
+        {
+            return (float)(BAMS / (65536 / (2 * Math.PI)));
         }
     }
 }

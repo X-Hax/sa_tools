@@ -37,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attach.cs" />
+    <Compile Include="COL.cs" />
+    <Compile Include="LandTable.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Enums.cs" />

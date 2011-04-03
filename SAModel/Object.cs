@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel
 {
@@ -12,7 +13,7 @@ namespace SonicRetro.SAModel
         public Object Child { get; set; }
         public Object Sibling { get; set; }
 
-        public int Size { get { return 0x34; } }
+        public static int Size { get { return 0x34; } }
 
         public Object(byte[] file, int address, uint imageBase, bool DX)
         {
@@ -38,6 +39,22 @@ namespace SonicRetro.SAModel
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
                 Sibling = new Object(file, tmpaddr, imageBase, DX);
             }
+        }
+
+        public Object[] GetChildren()
+        {
+            List<Object> result = new List<Object>();
+            if (Child != null)
+            {
+                Object obj = Child;
+                result.Add(obj);
+                while (obj.Sibling != null)
+                {
+                    obj = obj.Sibling;
+                    result.Add(obj);
+                }
+            }
+            return result.ToArray();
         }
     }
 }

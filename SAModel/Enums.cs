@@ -11,7 +11,7 @@ namespace SonicRetro.SAModel
     }
 
     [Flags()]
-    public enum ObjectFlags
+    public enum ObjectFlags : int
     {
         NoPosition = 0x01,
         NoRotate = 0x02,
@@ -19,6 +19,22 @@ namespace SonicRetro.SAModel
         NoDisplay = 0x08,
         NoChildren = 0x10,
         RotateZYX = 0x20,
-        NoAnimate = 0x40
+        NoAnimate = 0x40,
+        ObjectFlags_80 = 0x80
+    }
+
+    [Flags()]
+    public enum SurfaceFlags : int
+    {
+        Solid = 0x1,
+        Water = 0x2,
+        NoFriction = 0x4,
+        NoAcceleration = 0x8,
+        IncreasedAcceleration = 0x80,
+        Diggable = 0x100,
+        Unclimbable = 0x1000,
+        Hurt = 0x10000,
+        Footprints = 0x100000,
+        Visible = 0x80000000
     }
 }
