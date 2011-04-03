@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</ProjectGuid>
+    <ProjectGuid>{E81631CC-8721-425B-87A3-CB6199DECAF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SonicRetro.SAModel</RootNamespace>
-    <AssemblyName>SAModel</AssemblyName>
+    <RootNamespace>SonicRetro.SAModel.Direct3D</RootNamespace>
+    <AssemblyName>SAModel.Direct3D</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,24 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SlimDX, Version=4.0.11.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attach.cs" />
-    <Compile Include="Material.cs" />
-    <Compile Include="Mesh.cs" />
-    <Compile Include="Enums.cs" />
-    <Compile Include="Object.cs" />
-    <Compile Include="Poly.cs" />
-    <Compile Include="PolyNormal.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FVF_PositionNormalTexturedColored.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rotation.cs" />
-    <Compile Include="UV.cs" />
-    <Compile Include="VColor.cs" />
-    <Compile Include="Vertex.cs" />
-    <Compile Include="VertexData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SAModel\SAModel.csproj">
+      <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
+      <Name>SAModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

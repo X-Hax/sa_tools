@@ -16,11 +16,6 @@ namespace SonicRetro.SAModel
         }
 
         public override PolyType PolyType { get { return SAModel.PolyType.Triangles; } }
-
-        public override ushort[] ToTriangles()
-        {
-            return Indexes;
-        }
     }
 
     public sealed class Quad : Poly
@@ -37,18 +32,6 @@ namespace SonicRetro.SAModel
         }
 
         public override PolyType PolyType { get { return SAModel.PolyType.Quads; } }
-
-        public override ushort[] ToTriangles()
-        {
-            List<ushort> result = new List<ushort>();
-            result.Add(Indexes[0]);
-            result.Add(Indexes[1]);
-            result.Add(Indexes[2]);
-            result.Add(Indexes[1]);
-            result.Add(Indexes[2]);
-            result.Add(Indexes[3]);
-            return result.ToArray();
-        }
     }
 
     public sealed class Strip : Poly
@@ -80,29 +63,6 @@ namespace SonicRetro.SAModel
             result.AddRange(base.GetBytes());
             return result.ToArray();
         }
-
-        public override ushort[] ToTriangles()
-        {
-            List<ushort> result = new List<ushort>();
-            bool flip = !Reversed;
-            for (int k = 0; k < Indexes.Length - 2; k++)
-            {
-                flip = !flip;
-                if (!flip)
-                {
-                    result.Add(Indexes[k]);
-                    result.Add(Indexes[k + 1]);
-                    result.Add(Indexes[k + 2]);
-                }
-                else
-                {
-                    result.Add(Indexes[k + 1]);
-                    result.Add(Indexes[k]);
-                    result.Add(Indexes[k + 2]);
-                }
-            }
-            return result.ToArray();
-        }
     }
 
     public abstract class Poly
@@ -122,8 +82,6 @@ namespace SonicRetro.SAModel
                 result.AddRange(BitConverter.GetBytes(item));
             return result.ToArray();
         }
-
-        public abstract ushort[] ToTriangles();
 
         public static Poly CreatePoly(PolyType type)
         {
