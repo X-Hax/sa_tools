@@ -157,6 +157,7 @@ namespace SonicRetro.SAModel
                             currentstriptotal += 4;
                             break;
                         case PolyType.Strips:
+                        case PolyType.Strips2:
                             bool flip = !((Strip)poly).Reversed;
                             for (int k = 0; k < poly.Indexes.Length - 2; k++)
                             {

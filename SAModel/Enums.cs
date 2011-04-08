@@ -35,6 +35,6 @@ namespace SonicRetro.SAModel
         Unclimbable = 0x1000,
         Hurt = 0x10000,
         Footprints = 0x100000,
-        Visible = 0x80000000
+        Visible = unchecked((int)0x80000000)
     }
 }

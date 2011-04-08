@@ -37,6 +37,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FVF_PositionNormalTexturedColored.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
