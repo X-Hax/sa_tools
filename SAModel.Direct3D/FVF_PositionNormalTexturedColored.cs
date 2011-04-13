@@ -13,9 +13,7 @@ namespace SonicRetro.SAModel.Direct3D
         [FieldOffset(0x0C)]
         public Vector3 Normal;
         [FieldOffset(0x18)]
-        public float tu;
-        [FieldOffset(0x1C)]
-        public float tv;
+        public Vector2 UV;
         [FieldOffset(0x20)]
         public int Color;
 
@@ -33,22 +31,20 @@ namespace SonicRetro.SAModel.Direct3D
             }
         }
 
-        public FVF_PositionNormalTexturedColored(Vector3 Pos, Vector3 Nor, Color Col, float U, float V)
+        public FVF_PositionNormalTexturedColored(Vector3 Pos, Vector3 Nor, Vector2 UV, Color Col)
         {
             Position = Pos;
             Normal = Nor;
+            this.UV = UV;
             Color = Col.ToArgb();
-            tu = U;
-            tv = V;
         }
 
         public FVF_PositionNormalTexturedColored(VertexData data)
         {
             Position = data.Position.ToVector3();
             Normal = data.Normal.ToVector3();
+            UV = new Vector2(data.UV.U / 255f, data.UV.V / 255f);
             Color = data.Color.ToArgb();
-            tu = data.UV.U / 255f;
-            tv = data.UV.V / 255f;
         }
     }
 }
