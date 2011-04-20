@@ -1,4 +1,4 @@
-﻿using SlimDX;
+﻿using Microsoft.DirectX;
 
 namespace SonicRetro.SAModel.Direct3D
 {

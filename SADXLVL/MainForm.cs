@@ -5,8 +5,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using SlimDX.Direct3D9;
-using SlimDX;
+using Microsoft.DirectX.Direct3D;
+using Microsoft.DirectX;
 using SonicRetro.SAModel.Direct3D;
 using puyo_tools;
 using VrSharp.PvrTexture;
@@ -47,21 +47,18 @@ namespace SonicRetro.SAModel.SADXLVL
         LandTable geo;
         Dictionary<string, Bitmap[]> TextureBitmaps;
         Dictionary<string, Texture[]> Textures;
-        List<SlimDX.Direct3D9.Mesh> meshes;
+        List<Microsoft.DirectX.Direct3D.Mesh> meshes;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-            d3ddevice = new Device(new SlimDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
-            d3ddevice.SetLight(0, new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = Color.White,
-                Ambient = Color.White,
-                Specular = Color.White,
-                Range = 100000,
-                Direction = Vector3.Normalize(new Vector3(0, -1, 0))
-            });
+            d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+            d3ddevice.Lights[0].Type = LightType.Directional;
+            d3ddevice.Lights[0].Diffuse = Color.White;
+            d3ddevice.Lights[0].Ambient = Color.White;
+            d3ddevice.Lights[0].Specular = Color.White;
+            d3ddevice.Lights[0].Range = 100000;
+            d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -123,7 +120,7 @@ namespace SonicRetro.SAModel.SADXLVL
                 else
                 {
                     geo = new LandTable(file, geoaddr, 0x400000, true);
-                    meshes = new List<SlimDX.Direct3D9.Mesh>();
+                    meshes = new List<Microsoft.DirectX.Direct3D.Mesh>();
                     foreach (COL item in geo.COL)
                         meshes.Add(item.Object.Attach.CreateD3DMesh(d3ddevice));
                 }
@@ -134,10 +131,7 @@ namespace SonicRetro.SAModel.SADXLVL
                     Bitmap[] TexBmps = GetTextures(System.IO.Path.Combine(syspath, geo.TextureFileName) + ".PVM");
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length - 1; j++)
-                    {
-                        TexBmps[j].Save(tmpfile, System.Drawing.Imaging.ImageFormat.Png);
-                        texs[j] = Texture.FromFile(d3ddevice, tmpfile, Usage.SoftwareProcessing, Pool.Managed);
-                    }
+                        texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                     if (!TextureBitmaps.ContainsKey(geo.TextureFileName))
                         TextureBitmaps.Add(geo.TextureFileName, TexBmps);
                     if (!Textures.ContainsKey(geo.TextureFileName))
@@ -167,10 +161,7 @@ namespace SonicRetro.SAModel.SADXLVL
                         Bitmap[] TexBmps = GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                         Texture[] texs = new Texture[TexBmps.Length];
                         for (int j = 0; j < TexBmps.Length - 1; j++)
-                        {
-                            TexBmps[j].Save(tmpfile, System.Drawing.Imaging.ImageFormat.Png);
-                            texs[j] = Texture.FromFile(d3ddevice, tmpfile, Usage.SoftwareProcessing, Pool.Managed);
-                        }
+                            texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                         if (BitConverter.ToUInt32(file, objaddress + 4) == geo.TextureList & string.IsNullOrEmpty(geo.TextureFileName)) geo.TextureFileName = texname;
                         if (!TextureBitmaps.ContainsKey(texname))
                             TextureBitmaps.Add(texname, TexBmps);
@@ -244,33 +235,33 @@ namespace SonicRetro.SAModel.SADXLVL
         internal void DrawLevel()
         {
             if (!loaded) return;
-            d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
-            d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
+            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
+            d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
             Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
-            d3ddevice.SetRenderState(RenderState.FillMode, rendermode);
-            d3ddevice.SetRenderState(RenderState.CullMode, cullmode);
-            d3ddevice.Material = new SlimDX.Direct3D9.Material { Ambient = Color.White };
+            d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
+            d3ddevice.SetRenderState(RenderStates.CullMode, (int)cullmode);
+            d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
             d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
-            d3ddevice.SetRenderState(RenderState.ZEnable, ZBufferType.UseZBuffer);
+            d3ddevice.RenderState.ZBufferEnable = true;
             d3ddevice.BeginScene();
             //all drawings after this line
-            d3ddevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
-            d3ddevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
-            d3ddevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Anisotropic);
-            d3ddevice.SetRenderState(RenderState.Lighting, true);
-            d3ddevice.SetRenderState(RenderState.SpecularEnable, false);
-            d3ddevice.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
-            d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-            d3ddevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
-            d3ddevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-            d3ddevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-            d3ddevice.SetRenderState(RenderState.AlphaTestEnable, true);
-            d3ddevice.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
-            d3ddevice.SetRenderState(RenderState.AmbientMaterialSource, ColorSource.Material);
-            d3ddevice.SetRenderState(RenderState.DiffuseMaterialSource, ColorSource.Material);
-            d3ddevice.SetRenderState(RenderState.SpecularMaterialSource, ColorSource.Material);
-            d3ddevice.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.BlendDiffuseAlpha);
-            d3ddevice.SetRenderState(RenderState.ColorVertex, true);
+            d3ddevice.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Anisotropic);
+            d3ddevice.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Anisotropic);
+            d3ddevice.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Anisotropic);
+            d3ddevice.SetRenderState(RenderStates.Lighting, true);
+            d3ddevice.SetRenderState(RenderStates.SpecularEnable, false);
+            d3ddevice.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
+            d3ddevice.SetRenderState(RenderStates.AlphaBlendEnable, true);
+            d3ddevice.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
+            d3ddevice.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
+            d3ddevice.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
+            d3ddevice.SetRenderState(RenderStates.AlphaTestEnable, true);
+            d3ddevice.SetRenderState(RenderStates.AlphaFunction, (int)Compare.Greater);
+            d3ddevice.SetRenderState(RenderStates.AmbientMaterialSource, (int)ColorSource.Material);
+            d3ddevice.SetRenderState(RenderStates.DiffuseMaterialSource, (int)ColorSource.Material);
+            d3ddevice.SetRenderState(RenderStates.SpecularMaterialSource, (int)ColorSource.Material);
+            d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
+            d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
             if (geo != null)
             {

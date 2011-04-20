@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
-using SlimDX;
-using SlimDX.Direct3D9;
+using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -13,9 +13,9 @@ namespace SonicRetro.SAModel.Direct3D
         [FieldOffset(0x0C)]
         public Vector3 Normal;
         [FieldOffset(0x18)]
-        public Vector2 UV;
-        [FieldOffset(0x20)]
         public int Color;
+        [FieldOffset(0x1C)]
+        public Vector2 UV;
 
         public static VertexElement[] Elements
         {
@@ -24,27 +24,29 @@ namespace SonicRetro.SAModel.Direct3D
                 return new VertexElement[] {
                     new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
                     new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-                    new VertexElement(0, 0x18, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-                    new VertexElement(0, 0x20, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
+                    new VertexElement(0, 0x18, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
+                    new VertexElement(0, 0x1C, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
                     VertexElement.VertexDeclarationEnd
                 };
             }
         }
 
+        public const VertexFormats Format = VertexFormats.PositionNormal | VertexFormats.Diffuse | VertexFormats.Texture1;
+
         public FVF_PositionNormalTexturedColored(Vector3 Pos, Vector3 Nor, Vector2 UV, Color Col)
         {
             Position = Pos;
             Normal = Nor;
-            this.UV = UV;
             Color = Col.ToArgb();
+            this.UV = UV;
         }
 
         public FVF_PositionNormalTexturedColored(VertexData data)
         {
             Position = data.Position.ToVector3();
             Normal = data.Normal.ToVector3();
-            UV = new Vector2(data.UV.U / 255f, data.UV.V / 255f);
             Color = data.Color.ToArgb();
+            UV = new Vector2((float)data.UV.U / 255f, (float)data.UV.V / 255f);
         }
     }
 }
