@@ -152,7 +152,11 @@ namespace SonicRetro.SAModel
                                 Normal[poly.Indexes[1]],
                                 hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
                                 hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
-                            verts.Add(new VertexData(Vertex[poly.Indexes[2]], Normal[poly.Indexes[2]], hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White, hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+                            verts.Add(new VertexData(
+                                Vertex[poly.Indexes[2]],
+                                Normal[poly.Indexes[2]],
+                                hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
+                                hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
                             currentstriptotal += 3;
                             break;
                         case PolyType.Quads:
