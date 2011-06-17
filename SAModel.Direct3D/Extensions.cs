@@ -51,26 +51,24 @@ namespace SonicRetro.SAModel.Direct3D
             foreach (VertexData[] item in verts)
                 numverts += item.Length;
             Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts, MeshFlags.Managed, FVF_PositionNormalTexturedColored.Elements, dev);
-            GraphicsStream vb = functionReturnValue.LockVertexBuffer(LockFlags.None);
-            GraphicsStream ib = functionReturnValue.LockIndexBuffer(LockFlags.None);
-            GraphicsStream at = functionReturnValue.LockAttributeBuffer(LockFlags.None);
-            ushort vind = 0;
+            List<FVF_PositionNormalTexturedColored> vb = new List<FVF_PositionNormalTexturedColored>();
+            List<short> ib = new List<short>();
+            int[] at = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
+            int vind;
             for (int i = 0; i < verts.Length; i++)
             {
+                vind = vb.Count;
                 for (int j = 0; j < verts[i].Length; j++)
                 {
-                    vb.Write(new FVF_PositionNormalTexturedColored(verts[i][j]));
-                    ib.Write(vind);
-                    vind++;
+                    vb.Add(new FVF_PositionNormalTexturedColored(verts[i][j]));
+                    ib.Add((short)(vind + j));
                 }
                 for (int j = 0; j < verts[i].Length / 3; j++)
-                {
-                    at.Write((byte)i);
-                }
+                    at[(vind / 3) + j] = i;
             }
-            functionReturnValue.UnlockVertexBuffer();
-            functionReturnValue.UnlockIndexBuffer();
-            functionReturnValue.UnlockAttributeBuffer();
+            functionReturnValue.SetVertexBufferData(vb.ToArray(), LockFlags.None);
+            functionReturnValue.SetIndexBufferData(ib.ToArray(), LockFlags.None);
+            functionReturnValue.UnlockAttributeBuffer(at);
             return functionReturnValue;
         }
 

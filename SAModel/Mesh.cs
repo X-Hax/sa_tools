@@ -62,7 +62,7 @@ namespace SonicRetro.SAModel
                 UV = new UV[striptotal];
                 for (int i = 0; i < striptotal; i++)
                 {
-                    UV[i] = new UV(file, address);
+                    UV[i] = new UV(file, tmpaddr);
                     tmpaddr += SAModel.UV.Size;
                 }
             }
