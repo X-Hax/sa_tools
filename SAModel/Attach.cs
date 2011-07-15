@@ -6,6 +6,7 @@ namespace SonicRetro.SAModel
 {
     public class Attach
     {
+        public string Name { get; set; }
         public Vertex[] Vertex { get; private set; }
         public Vertex[] Normal { get; private set; }
         public Mesh[] Mesh { get; private set; }
@@ -17,6 +18,7 @@ namespace SonicRetro.SAModel
 
         public Attach(byte[] file, int address, uint imageBase, bool DX)
         {
+            Name = "attach_" + address.ToString("X8");
             Vertex = new Vertex[BitConverter.ToInt32(file, address + 8)];
             Normal = new Vertex[Vertex.Length];
             int tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
@@ -57,7 +59,31 @@ namespace SonicRetro.SAModel
             Radius = BitConverter.ToSingle(file, address + 0x24);
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX)
+        public Attach(Dictionary<string, Dictionary<string, string>> INI, string groupname)
+        {
+            Name = groupname;
+            Dictionary<string, string> group = INI[groupname];
+            string[] verts = group["Vertex"].Split('|');
+            Vertex = new Vertex[verts.Length];
+            Normal = new Vertex[Vertex.Length];
+            for (int i = 0; i < Vertex.Length; i++)
+                Vertex[i] = new Vertex(verts[i]);
+            verts = group["Normal"].Split('|');
+            for (int i = 0; i < Vertex.Length; i++)
+                Normal[i] = new Vertex(verts[i]);
+            string[] meshlist = group["Mesh"].Split(',');
+            Mesh = new Mesh[meshlist.Length];
+            for (int i = 0; i < Mesh.Length; i++)
+                Mesh[i] = new Mesh(INI, meshlist[i]);
+            string[] matlist = group["Material"].Split(',');
+            Material = new Material[matlist.Length];
+            for (int i = 0; i < Material.Length; i++)
+                Material[i] = new Material(INI[meshlist[i]], meshlist[i]);
+            Center = new Vertex(group["Center"]);
+            Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
             List<byte> result = new List<byte>();
             uint materialAddress = 0;
@@ -115,6 +141,7 @@ namespace SonicRetro.SAModel
             uint normalAddress = (uint)result.Count + imageBase;
             foreach (Vertex item in Normal)
                 result.AddRange(item.GetBytes());
+            address = (uint)(result.Count + imageBase);
             result.AddRange(BitConverter.GetBytes(vertexAddress));
             result.AddRange(BitConverter.GetBytes(normalAddress));
             result.AddRange(BitConverter.GetBytes(Vertex.Length));
@@ -126,6 +153,41 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(Radius));
             if (DX) result.AddRange(new byte[4]);
             return result.ToArray();
+        }
+
+        public byte[] GetBytes(uint imageBase, bool DX)
+        {
+            uint address;
+            return GetBytes(imageBase, DX, out address);
+        }
+
+        public void Save(Dictionary<string, Dictionary<string, string>> INI)
+        {
+            Dictionary<string, string> group = new Dictionary<string, string>();
+            List<string> verts = new List<string>();
+            for (int i = 0; i < Vertex.Length; i++)
+                verts.Add(Vertex[i].ToString());
+            group.Add("Vertex", string.Join("|", verts.ToArray()));
+            verts = new List<string>();
+            for (int i = 0; i < Vertex.Length; i++)
+                verts.Add(Normal[i].ToString());
+            group.Add("Normal", string.Join("|", verts.ToArray())); List<string> mlist = new List<string>();
+            for (int i = 0; i < Mesh.Length; i++)
+            {
+                mlist.Add(Mesh[i].Name);
+                Mesh[i].Save(INI);
+            }
+            group.Add("Mesh", string.Join(",", mlist.ToArray()));
+            mlist = new List<string>();
+            for (int i = 0; i < Material.Length; i++)
+            {
+                mlist.Add(Material[i].Name);
+                Material[i].Save(INI);
+            }
+            group.Add("Material", string.Join(",", mlist.ToArray()));
+            group.Add("Center", Center.ToString());
+            group.Add("Radius", Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            INI.Add(Name, group);
         }
 
         public VertexData[][] GetVertexData()

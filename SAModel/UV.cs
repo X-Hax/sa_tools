@@ -18,12 +18,24 @@ namespace SonicRetro.SAModel
             V = BitConverter.ToInt16(file, address + 2);
         }
 
+        public UV(string data)
+        {
+            string[] uv = data.Split(',');
+            U = short.Parse(uv[0], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+            V = short.Parse(uv[1], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
             result.AddRange(BitConverter.GetBytes(U));
             result.AddRange(BitConverter.GetBytes(V));
             return result.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return U.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + V.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
     }
 }

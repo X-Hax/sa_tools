@@ -14,11 +14,13 @@ namespace SonicRetro.SAModel
         public PolyNormal[] PolyNormal { get; private set; }
         public Color[] VColor { get; private set; }
         public UV[] UV { get; private set; }
+        public string Name { get; set; }
 
         public static int Size(bool DX) { return DX ? 0x1C : 0x18; }
 
         public Mesh(byte[] file, int address, uint imageBase)
         {
+            Name = "mesh_" + address.ToString("X8");
             MaterialID = BitConverter.ToUInt16(file, address);
             PolyType = (PolyType)(MaterialID >> 0xE);
             MaterialID &= 0x3FFF;
@@ -65,6 +67,44 @@ namespace SonicRetro.SAModel
                     UV[i] = new UV(file, tmpaddr);
                     tmpaddr += SAModel.UV.Size;
                 }
+            }
+        }
+
+        public Mesh(Dictionary<string, Dictionary<string, string>> INI, string groupname)
+        {
+            Name = groupname;
+            Dictionary<string, string> group = INI[groupname];
+            MaterialID = (ushort)(ushort.Parse(group["Material"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo) & 0x3FFF);
+            PolyType = (PolyType)Enum.Parse(typeof(PolyType), group["PolyType"]);
+            string[] polylist = group["Poly"].Split(',');
+            Poly[] polys = new Poly[polylist.Length];
+            int striptotal = 0;
+            for (int i = 0; i < polys.Length; i++)
+            {
+                polys[i] = SAModel.Poly.CreatePoly(PolyType, INI[polylist[i]], polylist[i]);
+                striptotal += polys[i].Indexes.Length;
+            }
+            Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
+            PAttr = int.Parse(group["PAttr"], System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo);
+            if (group.ContainsKey("PolyNormal"))
+            {
+                PolyNormal = new PolyNormal[polys.Length];
+                for (int i = 0; i < polys.Length; i++)
+                    PolyNormal[i] = new PolyNormal(INI[group["PolyNormal"]], group["PolyNormal"]);
+            }
+            if (group.ContainsKey("VColor"))
+            {
+                VColor = new Color[striptotal];
+                string[] vc = group["VColor"].Split(',');
+                for (int i = 0; i < striptotal; i++)
+                    VColor[i] = Color.FromArgb(int.Parse(vc[i], System.Globalization.NumberStyles.HexNumber));
+            }
+            if (group.ContainsKey("UV"))
+            {
+                UV = new UV[striptotal];
+                string[] uvs = group["UV"].Split('|');
+                for (int i = 0; i < striptotal; i++)
+                    UV[i] = new UV(uvs[i]);
             }
         }
 
@@ -139,6 +179,46 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(uVAddress));
             if (DX) result.AddRange(new byte[4]);
             return result.ToArray();
+        }
+
+        public void Save(Dictionary<string, Dictionary<string, string>> INI)
+        {
+            Dictionary<string, string> group = new Dictionary<string,string>();
+            group.Add("Material", MaterialID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            group.Add("PolyType", PolyType.ToString());
+            List<string> polylist = new List<string>();
+            for (int i = 0; i < Poly.Count; i++)
+            {
+                polylist.Add(Poly[i].Name);
+                Poly[i].Save(INI);
+            }
+            group.Add("Poly", string.Join(",", polylist.ToArray()));
+            group.Add("PAttr", PAttr.ToString("X8"));
+            if (PolyNormal != null)
+            {
+                polylist = new List<string>();
+                for (int i = 0; i < PolyNormal.Length; i++)
+                {
+                    polylist.Add(PolyNormal[i].Name);
+                    PolyNormal[i].Save(INI);
+                }
+                group.Add("PolyNormal", string.Join(",", polylist.ToArray()));
+            }
+            if (VColor != null)
+            {
+                polylist = new List<string>();
+                for (int i = 0; i < VColor.Length; i++)
+                    polylist.Add(VColor[i].ToArgb().ToString("X8"));
+                group.Add("VColor", string.Join(",", polylist.ToArray()));
+            }
+            if (UV != null)
+            {
+                polylist = new List<string>();
+                for (int i = 0; i < UV.Length; i++)
+                    polylist.Add(UV[i].ToString());
+                group.Add("UV", string.Join("|", polylist.ToArray()));
+            }
+            INI.Add(Name, group);
         }
     }
 }
