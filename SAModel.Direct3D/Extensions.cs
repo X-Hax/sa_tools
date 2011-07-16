@@ -79,45 +79,40 @@ namespace SonicRetro.SAModel.Direct3D
 
         public static void DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh)
         {
-            if (obj != null)
+            transform.Push();
+            transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
             {
-                transform.Push();
-                transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
-                transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
-                transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-                if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+                device.SetTransform(TransformType.World, transform.Top);
+                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
                 {
-                    device.SetTransform(TransformType.World, transform.Top);
-                    for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                    Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                    device.Material = new Microsoft.DirectX.Direct3D.Material
                     {
-                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        device.Material = new Microsoft.DirectX.Direct3D.Material
-                        {
-                            Diffuse = mat.DiffuseColor,
-                            Ambient = mat.DiffuseColor,
-                            Specular = mat.SpecularColor,
-                            SpecularSharpness = mat.Unknown1
-                        };
-                        if (textures != null && mat.TextureID < textures.Length)
-                            device.SetTexture(0, textures[mat.TextureID]);
-                        else
-                            device.SetTexture(0, null);
-                        device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
-                        if ((mat.Flags & 0x40) == 0x40)
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
-                        else
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
-                        mesh.DrawSubset(j);
-                    }
+                        Diffuse = mat.DiffuseColor,
+                        Ambient = mat.DiffuseColor,
+                        Specular = mat.SpecularColor,
+                        SpecularSharpness = mat.Unknown1
+                    };
+                    if (textures != null && mat.TextureID < textures.Length)
+                        device.SetTexture(0, textures[mat.TextureID]);
+                    else
+                        device.SetTexture(0, null);
+                    device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
+                    if ((mat.Flags & 0x40) == 0x40)
+                        device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
+                    else
+                        device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                    mesh.DrawSubset(j);
                 }
-                transform.Pop();
             }
+            transform.Pop();
         }
 
         public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
-            while (obj != null)
-            {
                 transform.Push();
                 modelindex++;
                 transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
@@ -148,11 +143,9 @@ namespace SonicRetro.SAModel.Direct3D
                         meshes[modelindex].DrawSubset(j);
                     }
                 }
-                if (obj.Child != null)
-                    DrawModelTree(obj.Child, device, transform, textures, meshes, ref modelindex);
+                foreach (Object child in obj.Children)
+                    DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
                 transform.Pop();
-                obj = obj.Sibling;
-            }
         }
     }
 }

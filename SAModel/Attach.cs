@@ -86,7 +86,7 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
             List<byte> result = new List<byte>();
-            uint materialAddress = 0;
+            uint materialAddress = imageBase;
             if (Material != null)
             {
                 materialAddress = imageBase;
@@ -141,7 +141,7 @@ namespace SonicRetro.SAModel
             uint normalAddress = (uint)result.Count + imageBase;
             foreach (Vertex item in Normal)
                 result.AddRange(item.GetBytes());
-            address = (uint)(result.Count + imageBase);
+            address = imageBase + (uint)result.Count;
             result.AddRange(BitConverter.GetBytes(vertexAddress));
             result.AddRange(BitConverter.GetBytes(normalAddress));
             result.AddRange(BitConverter.GetBytes(Vertex.Length));

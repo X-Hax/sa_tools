@@ -20,6 +20,14 @@ namespace SonicRetro.SAModel
             Z = BitConverter.ToInt32(file, address + 8);
         }
 
+        public Rotation(string data)
+        {
+            string[] a = data.Split(',');
+            X = int.Parse(a[0], System.Globalization.NumberStyles.HexNumber);
+            Y = int.Parse(a[1], System.Globalization.NumberStyles.HexNumber);
+            Z = int.Parse(a[2], System.Globalization.NumberStyles.HexNumber);
+        }
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
@@ -27,6 +35,11 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(Y));
             result.AddRange(BitConverter.GetBytes(Z));
             return result.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return X.ToString("X8") + "," + Y.ToString("X8") + "," + Z.ToString("X8");
         }
     }
 }
