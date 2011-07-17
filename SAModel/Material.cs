@@ -74,7 +74,8 @@ namespace SonicRetro.SAModel
             group.Add("Unknown3", Unknown3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             group.Add("Flags", Flags.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             group.Add("EndOfMat", EndOfMat.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 }

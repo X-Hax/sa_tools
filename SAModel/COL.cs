@@ -10,7 +10,8 @@ namespace SonicRetro.SAModel
         public ulong Unknown1 { get; private set; }
         public Object Model { get; set; }
         public int Unknown2 { get; set; }
-        public SurfaceFlags Flags { get; set; }
+        public int Flags { get; set; }
+        public SurfaceFlags SurfaceFlags { get { return (SurfaceFlags)Flags; } }
         public string Name { get; set; }
 
         public static int Size { get { return 0x24; } }
@@ -24,7 +25,7 @@ namespace SonicRetro.SAModel
             uint tmpaddr = BitConverter.ToUInt32(file, address + 0x18) - imageBase;
             Model = new Object(file, (int)tmpaddr, imageBase, DX);
             Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
-            Flags = (SurfaceFlags)BitConverter.ToInt32(file, 0x20);
+            Flags = BitConverter.ToInt32(file, address + 0x20);
         }
 
         public COL(Dictionary<string, Dictionary<string, string>> INI, string groupname)
@@ -36,7 +37,7 @@ namespace SonicRetro.SAModel
             Unknown1 = ulong.Parse(group["Unknown1"], System.Globalization.NumberStyles.HexNumber);
             Model = new Object(INI, group["Model"]);
             Unknown2 = int.Parse(group["Unknown2"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Flags = (SurfaceFlags)Enum.Parse(typeof(SurfaceFlags), group["Flags"]);
+            Flags = int.Parse(group["Flags"], System.Globalization.NumberStyles.HexNumber);
         }
 
         public byte[] GetBytes(uint imageBase, uint modelptr)
@@ -47,7 +48,7 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(Unknown1));
             result.AddRange(BitConverter.GetBytes(modelptr));
             result.AddRange(BitConverter.GetBytes(Unknown2));
-            result.AddRange(BitConverter.GetBytes((int)Flags));
+            result.AddRange(BitConverter.GetBytes(Flags));
             return result.ToArray();
         }
 
@@ -60,8 +61,9 @@ namespace SonicRetro.SAModel
             group.Add("Model", Model.Name);
             Model.Save(INI);
             group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Flags", Flags.ToString());
-            INI.Add(Name, group);
+            group.Add("Flags", Flags.ToString("X8"));
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 }

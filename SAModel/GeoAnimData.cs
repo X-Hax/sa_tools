@@ -60,7 +60,8 @@ namespace SonicRetro.SAModel
             Model.Save(INI);
             group.Add("Animation", System.IO.Path.Combine(animpath, Animation.Name + ".xml"));
             group.Add("Unknown4", Unknown4.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
             Animation.Save(group["Animation"]);
         }
     }

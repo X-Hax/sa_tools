@@ -69,7 +69,7 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+        public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> attachaddrs, out uint address)
         {
             for (int i = 1; i < Children.Count; i++)
                 Children[i - 1].Sibling = Children[i];
@@ -77,21 +77,34 @@ namespace SonicRetro.SAModel
             uint childaddr = 0;
             uint siblingaddr = 0;
             uint attachaddr = 0;
+            byte[] tmpbyte;
             if (Children.Count > 0)
             {
+                result.Align(4);
                 result.AddRange(Children[0].GetBytes(imageBase, DX, out childaddr));
                 childaddr += imageBase;
             }
             if (Sibling != null)
             {
-                result.AddRange(Sibling.GetBytes(imageBase + (uint)result.Count, DX, out siblingaddr));
-                siblingaddr += imageBase;
+                result.Align(4);
+                tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, out siblingaddr);
+                siblingaddr += imageBase + (uint)result.Count;
+                result.AddRange(tmpbyte);
             }
             if (Attach != null)
             {
-                result.AddRange(Attach.GetBytes(imageBase + (uint)result.Count, DX, out attachaddr));
-                attachaddr += imageBase;
+                if (attachaddrs.ContainsKey(Attach.Name))
+                    attachaddr = attachaddrs[Attach.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, DX, out attachaddr);
+                    attachaddr += imageBase + (uint)result.Count;
+                    result.AddRange(tmpbyte);
+                    attachaddrs.Add(Attach.Name, attachaddr);
+                }
             }
+            result.Align(4);
             address = (uint)result.Count;
             result.AddRange(BitConverter.GetBytes((int)Flags));
             result.AddRange(BitConverter.GetBytes(attachaddr));
@@ -101,6 +114,11 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(childaddr));
             result.AddRange(BitConverter.GetBytes(siblingaddr));
             return result.ToArray();
+        }
+
+        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+        {
+            return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
         }
 
         public byte[] GetBytes(uint imageBase, bool DX)
@@ -131,6 +149,8 @@ namespace SonicRetro.SAModel
                 }
                 group.Add("Children", string.Join(",", chldrn.ToArray()));
             }
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
 
         public Object[] GetObjects()

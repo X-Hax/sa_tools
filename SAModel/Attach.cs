@@ -78,7 +78,7 @@ namespace SonicRetro.SAModel
             string[] matlist = group["Material"].Split(',');
             Material = new Material[matlist.Length];
             for (int i = 0; i < Material.Length; i++)
-                Material[i] = new Material(INI[meshlist[i]], meshlist[i]);
+                Material[i] = new Material(INI[matlist[i]], matlist[i]);
             Center = new Vertex(group["Center"]);
             Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
@@ -91,9 +91,7 @@ namespace SonicRetro.SAModel
             {
                 materialAddress = imageBase;
                 foreach (Material item in Material)
-                {
                     result.AddRange(item.GetBytes());
-                }
             }
             uint[] polyAddrs = new uint[Mesh.Length];
             uint[] polyNormalAddrs = new uint[Mesh.Length];
@@ -101,6 +99,7 @@ namespace SonicRetro.SAModel
             uint[] uVAddrs = new uint[Mesh.Length];
             for (int i = 0; i < Mesh.Length; i++)
             {
+                result.Align(4);
                 polyAddrs[i] = (uint)result.Count + imageBase;
                 for (int j = 0; j < Mesh[i].Poly.Count; j++)
                     result.AddRange(Mesh[i].Poly[j].GetBytes());
@@ -109,6 +108,7 @@ namespace SonicRetro.SAModel
             {
                 if (Mesh[i].PolyNormal != null)
                 {
+                    result.Align(4);
                     polyNormalAddrs[i] = (uint)result.Count + imageBase;
                     for (int j = 0; j < Mesh[i].PolyNormal.Length; j++)
                         result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
@@ -118,6 +118,7 @@ namespace SonicRetro.SAModel
             {
                 if (Mesh[i].VColor != null)
                 {
+                    result.Align(4);
                     vColorAddrs[i] = (uint)result.Count + imageBase;
                     for (int j = 0; j < Mesh[i].VColor.Length; j++)
                         result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
@@ -127,20 +128,25 @@ namespace SonicRetro.SAModel
             {
                 if (Mesh[i].UV != null)
                 {
+                    result.Align(4);
                     uVAddrs[i] = (uint)result.Count + imageBase;
                     for (int j = 0; j < Mesh[i].UV.Length; j++)
                         result.AddRange(Mesh[i].UV[j].GetBytes());
                 }
             }
+            result.Align(4);
             uint meshAddress = (uint)result.Count + imageBase;
             for (int i = 0; i < Mesh.Length; i++)
                 result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
+            result.Align(4);
             uint vertexAddress = (uint)result.Count + imageBase;
             foreach (Vertex item in Vertex)
                 result.AddRange(item.GetBytes());
+            result.Align(4);
             uint normalAddress = (uint)result.Count + imageBase;
             foreach (Vertex item in Normal)
                 result.AddRange(item.GetBytes());
+            result.Align(4);
             address = (uint)result.Count;
             result.AddRange(BitConverter.GetBytes(vertexAddress));
             result.AddRange(BitConverter.GetBytes(normalAddress));
@@ -187,7 +193,8 @@ namespace SonicRetro.SAModel
             group.Add("Material", string.Join(",", mlist.ToArray()));
             group.Add("Center", Center.ToString());
             group.Add("Radius", Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
 
         public VertexData[][] GetVertexData()
@@ -268,13 +275,13 @@ namespace SonicRetro.SAModel
                                         hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
                                         hasUV ? mesh.UV[currentstriptotal] : new UV()));
                                     verts.Add(new VertexData(
-                                        Vertex[poly.Indexes[k+1]],
-                                        Normal[poly.Indexes[k+1]],
+                                        Vertex[poly.Indexes[k + 1]],
+                                        Normal[poly.Indexes[k + 1]],
                                         hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
                                         hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
                                     verts.Add(new VertexData(
-                                        Vertex[poly.Indexes[k+2]],
-                                        Normal[poly.Indexes[k+2]],
+                                        Vertex[poly.Indexes[k + 2]],
+                                        Normal[poly.Indexes[k + 2]],
                                         hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
                                         hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
                                 }

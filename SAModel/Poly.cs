@@ -116,7 +116,8 @@ namespace SonicRetro.SAModel
                 inds[i] = Indexes[i].ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
             group.Add("Indexes", string.Join(",", inds));
             group.Add("Reversed", Reversed.ToString());
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 
@@ -146,7 +147,8 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < inds.Length; i++)
                 inds[i] = Indexes[i].ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
             group.Add("Indexes", string.Join(",", inds));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
 
         public static Poly CreatePoly(PolyType type)

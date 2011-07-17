@@ -183,7 +183,7 @@ namespace SonicRetro.SAModel
 
         public void Save(Dictionary<string, Dictionary<string, string>> INI)
         {
-            Dictionary<string, string> group = new Dictionary<string,string>();
+            Dictionary<string, string> group = new Dictionary<string, string>();
             group.Add("Material", MaterialID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             group.Add("PolyType", PolyType.ToString());
             List<string> polylist = new List<string>();
@@ -218,7 +218,8 @@ namespace SonicRetro.SAModel
                     polylist.Add(UV[i].ToString());
                 group.Add("UV", string.Join("|", polylist.ToArray()));
             }
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 }

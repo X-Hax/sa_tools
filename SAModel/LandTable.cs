@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SonicRetro.SAModel
 {
@@ -46,7 +46,7 @@ namespace SonicRetro.SAModel
                     Anim.Add(new GeoAnimData(file, (int)tmpaddr, imageBase, DX));
                     tmpaddr += (uint)GeoAnimData.Size;
                 }
-            } 
+            }
             tmpaddr = BitConverter.ToUInt32(file, address + 0x14);
             if (tmpaddr != 0)
             {
@@ -90,29 +90,44 @@ namespace SonicRetro.SAModel
 
         public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
+            Dictionary<string, uint> attachaddrs = new Dictionary<string, uint>();
             List<byte> result = new List<byte>();
+            byte[] tmpbyte;
             uint[] colmdladdrs = new uint[COL.Count];
             uint tmpaddr = 0;
             for (int i = 0; i < COL.Count; i++)
             {
-                result.AddRange(COL[i].Model.GetBytes(imageBase + (uint)result.Count, DX, out tmpaddr));
-                colmdladdrs[i] = tmpaddr + imageBase;
+                result.Align(4);
+                tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, DX, attachaddrs, out tmpaddr);
+                colmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                result.AddRange(tmpbyte);
             }
             uint[] animmdladdrs = new uint[Anim.Count];
             uint[] animaniaddrs = new uint[Anim.Count];
             for (int i = 0; i < Anim.Count; i++)
             {
-                result.AddRange(Anim[i].Model.GetBytes(imageBase + (uint)result.Count, DX, out tmpaddr));
-                animmdladdrs[i] = tmpaddr + imageBase;
-                result.AddRange(Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], Anim[i].Model.GetObjects().Length, out tmpaddr));
-                animaniaddrs[i] = tmpaddr + imageBase;
+                result.Align(4);
+                tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, DX, out tmpaddr);
+                animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                result.AddRange(tmpbyte);
+                result.Align(4);
+                tmpbyte = Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], Anim[i].Model.GetObjects().Length, out tmpaddr);
+                animaniaddrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                result.AddRange(tmpbyte);
             }
             uint coladdr = imageBase + (uint)result.Count;
             for (int i = 0; i < COL.Count; i++)
+            {
+                result.Align(4);
                 result.AddRange(COL[i].GetBytes(imageBase + (uint)result.Count, colmdladdrs[i]));
+            }
             uint animaddr = imageBase + (uint)result.Count;
             for (int i = 0; i < Anim.Count; i++)
+            {
+                result.Align(4);
                 result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
+            }
+            result.Align(4);
             uint texnameaddr = 0;
             if (TextureFileName != null)
             {
@@ -120,6 +135,7 @@ namespace SonicRetro.SAModel
                 result.AddRange(System.Text.Encoding.ASCII.GetBytes(TextureFileName));
                 result.Add(0);
             }
+            result.Align(4);
             address = (uint)result.Count;
             result.AddRange(BitConverter.GetBytes((ushort)COL.Count));
             result.AddRange(BitConverter.GetBytes((ushort)Anim.Count));
@@ -164,7 +180,8 @@ namespace SonicRetro.SAModel
             group.Add("TextureList", TextureList.ToString("X8"));
             group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             group.Add("Unknown3", Unknown3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 }

@@ -41,6 +41,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Attach.cs" />
     <Compile Include="COL.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GeoAnimData.cs" />
     <Compile Include="LandTable.cs" />
     <Compile Include="Material.cs" />

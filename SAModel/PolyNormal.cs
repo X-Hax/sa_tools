@@ -43,7 +43,8 @@ namespace SonicRetro.SAModel
             Dictionary<string, string> group = new Dictionary<string, string>();
             group.Add("Unknown1", Unknown1.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            INI.Add(Name, group);
+            if (!INI.ContainsKey(Name))
+                INI.Add(Name, group);
         }
     }
 }

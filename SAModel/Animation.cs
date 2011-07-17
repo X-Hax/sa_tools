@@ -86,6 +86,7 @@ namespace SonicRetro.SAModel
                 if (model.Value.Position.Count > 0)
                 {
                     hasPos = true;
+                    result.Align(4);
                     posoffs[model.Key] = imageBase + (uint)result.Count;
                     posframes[model.Key] = model.Value.Position.Count;
                     foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
@@ -97,6 +98,7 @@ namespace SonicRetro.SAModel
                 if (model.Value.Rotation.Count > 0)
                 {
                     hasRot = true;
+                    result.Align(4);
                     rotoffs[model.Key] = imageBase + (uint)result.Count;
                     rotframes[model.Key] = model.Value.Rotation.Count;
                     foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
@@ -108,6 +110,7 @@ namespace SonicRetro.SAModel
                 if (model.Value.Scale.Count > 0)
                 {
                     hasScl = true;
+                    result.Align(4);
                     scloffs[model.Key] = imageBase + (uint)result.Count;
                     sclframes[model.Key] = model.Value.Scale.Count;
                     foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
@@ -117,6 +120,7 @@ namespace SonicRetro.SAModel
                     }
                 }
             }
+            result.Align(4);
             uint modeldata = imageBase + (uint)result.Count;
             for (int i = 0; i < modelparts; i++)
             {
@@ -133,6 +137,7 @@ namespace SonicRetro.SAModel
                 if (hasScl)
                     result.AddRange(BitConverter.GetBytes(sclframes[i]));
             }
+            result.Align(4);
             uint head2 = imageBase + (uint)result.Count;
             result.AddRange(BitConverter.GetBytes(modeldata));
             result.AddRange(BitConverter.GetBytes(Frames));
@@ -152,6 +157,7 @@ namespace SonicRetro.SAModel
             if (hasScl)
                 numpairs += 1;
             result.AddRange(BitConverter.GetBytes(numpairs));
+            result.Align(4);
             address = (uint)result.Count;
             result.AddRange(BitConverter.GetBytes(modeladdr));
             result.AddRange(BitConverter.GetBytes(head2));
