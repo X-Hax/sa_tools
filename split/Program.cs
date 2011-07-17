@@ -21,7 +21,7 @@ namespace split
             }
             if (args.Length > 1)
             {
-                inifilename = args[0];
+                inifilename = args[1];
                 Console.WriteLine("INI File: {0}", inifilename);
             }
             else
@@ -32,6 +32,8 @@ namespace split
             byte[] exefile = File.ReadAllBytes(exefilename);
             SetupEXE(ref exefile);
             Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inifilename);
+            Environment.CurrentDirectory = Path.GetDirectoryName(exefilename);
+            uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
             foreach (KeyValuePair<string, Dictionary<string, string>> item in inifile)
             {
                 if (string.IsNullOrWhiteSpace(item.Key)) continue;
@@ -39,16 +41,26 @@ namespace split
                 Dictionary<string, string> data = item.Value;
                 string type = string.Empty;
                 if (data.ContainsKey("type"))
-                    type=data["type"];
+                    type = data["type"];
+                Console.WriteLine(item.Key + ": " + data["address"] + " - " + data["filename"]);
+                Directory.CreateDirectory(Path.GetDirectoryName(data["filename"]));
                 switch (type)
                 {
-                    case "objlist":
+                    case "landtable":
+                        SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        Dictionary<string, Dictionary<string, string>> tblini = new Dictionary<string, Dictionary<string, string>>();
+                        tblini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", tbl.Name } });
+                        tbl.Save(tblini, Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations"));
+                        IniFile.Save(tblini, data["filename"]);
                         break;
                     default:
                         break;
                 }
+                data.Add("md5", FileHash(data["filename"]));
             }
+            IniFile.Save(inifile, Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
         }
+
         static void SetupEXE(ref byte[] exefile)
         {
             int ptr = BitConverter.ToInt32(exefile, 0x3c);
@@ -92,6 +104,17 @@ namespace split
         {
             if (address % 0x1000 == 0) return address;
             return ((address / 0x1000) + 1) * 0x1000;
+        }
+
+        static System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+        static string FileHash(string path)
+        {
+            byte[] file = File.ReadAllBytes(path);
+            file = md5.ComputeHash(file);
+            string result = string.Empty;
+            foreach (byte item in file)
+                result += item.ToString("x2");
+            return result;
         }
     }
 

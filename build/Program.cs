@@ -24,25 +24,31 @@ namespace build
             }
             byte[] exefile = File.ReadAllBytes(exefilename);
             SetupEXE(ref exefile);
+            Environment.CurrentDirectory = Path.GetDirectoryName(exefilename);
+            Dictionary<string, uint> addresses = new Dictionary<string, uint>();
             string inistartpath = Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename));
+            Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inistartpath + "_data.ini");
+            uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
+            uint startaddress = GetNewSectionAddress(exefile);
+            uint curaddr = startaddress;
             if (File.Exists(inistartpath + "_code.ini"))
             {
                 Dictionary<string, Dictionary<string, string>> codeINI = IniFile.Load(inistartpath + "_code.ini");
-                uint startaddress = GetNewSectionAddress(exefile);
                 List<byte> codesection = new List<byte>();
                 foreach (KeyValuePair<string, Dictionary<string, string>> dictitem in codeINI)
                 {
+                    if (string.IsNullOrWhiteSpace(dictitem.Key)) continue;
                     Dictionary<string, string> data = dictitem.Value;
                     if (data.ContainsKey("nop"))
                         foreach (string item in data["nop"].Split(','))
                         {
-                            int startaddr = int.Parse(item.Split('-')[0], System.Globalization.NumberStyles.HexNumber);
+                            int staddr = int.Parse(item.Split('-')[0], System.Globalization.NumberStyles.HexNumber);
                             int endaddr = int.Parse(item.Split('-')[1], System.Globalization.NumberStyles.HexNumber);
-                            for (int i = startaddr; i <= endaddr; i++)
+                            for (int i = staddr; i <= endaddr; i++)
                                 exefile[i] = 0x90;
                         }
                     string asm = File.ReadAllText(data["filename"]);
-                    asm = "bits 32" + Environment.NewLine + "org 0x" + startaddress.ToString("X8") + Environment.NewLine + asm;
+                    asm = "bits 32" + Environment.NewLine + "org 0x" + curaddr.ToString("X8") + Environment.NewLine + asm;
                     File.WriteAllText("asm.tmp", asm);
                     Process proc = Process.Start(new ProcessStartInfo("nasm.exe", "-o bin.tmp asm.tmp") { UseShellExecute = false, CreateNoWindow = true });
                     proc.WaitForExit();
@@ -55,7 +61,7 @@ namespace build
                         {
                             int i = int.Parse(item, System.Globalization.NumberStyles.HexNumber);
                             exefile[i] = 0xE8;
-                            int disp = (int)startaddress - (i + 5);
+                            int disp = (int)curaddr - (i + 5);
                             BitConverter.GetBytes(disp).CopyTo(exefile, i + 1);
                         }
                     if (data.ContainsKey("pointer"))
@@ -64,10 +70,55 @@ namespace build
                             int i = int.Parse(item, System.Globalization.NumberStyles.HexNumber);
                             BitConverter.GetBytes(startaddress).CopyTo(exefile, i);
                         }
+                    addresses.Add(dictitem.Key, curaddr + imageBase);
+                    curaddr = startaddress + (uint)codesection.Count;
                 }
                 CreateNewSection(ref exefile, ".text2", codesection.ToArray(), true);
             }
-            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename) + "_edit.exe"), exefile);
+            List<byte> datasection = new List<byte>();
+            startaddress = GetNewSectionAddress(exefile);
+            curaddr = startaddress + imageBase;
+            uint dataaddr = curaddr;
+            foreach (KeyValuePair<string, Dictionary<string, string>> dictitem in inifile)
+            {
+                if (string.IsNullOrWhiteSpace(dictitem.Key)) continue;
+                string filedesc = dictitem.Key;
+                Dictionary<string, string> data = dictitem.Value;
+                string type = string.Empty;
+                if (data.ContainsKey("type"))
+                    type = data["type"];
+                if (FileHash(data["filename"]) != data["md5"])
+                {
+                    switch (type)
+                    {
+                        case "landtable":
+                            Dictionary<string, Dictionary<string, string>> tblini = IniFile.Load(data["filename"]);
+                            SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(tblini, tblini[string.Empty]["LandTable"]);
+                            datasection.AddRange(tbl.GetBytes(curaddr, true, out dataaddr));
+                            //tbl = new SonicRetro.SAModel.LandTable(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
+                            dataaddr += curaddr;
+                            break;
+                        default:
+                            addresses.Add(filedesc, uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber));
+                            continue;
+                    }
+                    if (data.ContainsKey("pointer"))
+                        foreach (string item in data["pointer"].Split(','))
+                        {
+                            int i = int.Parse(item, System.Globalization.NumberStyles.HexNumber);
+                            BitConverter.GetBytes(dataaddr).CopyTo(exefile, i);
+                        }
+                    addresses.Add(filedesc, dataaddr);
+                    datasection.Align(4);
+                    curaddr = startaddress + imageBase + (uint)datasection.Count;
+                    dataaddr = curaddr;
+                }
+                else
+                    addresses.Add(filedesc, uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber));
+            }
+            if (datasection.Count > 0)
+                CreateNewSection(ref exefile, ".data2", datasection.ToArray(), false);
+            File.WriteAllBytes(inistartpath + "_edit.exe", exefile);
         }
 
         static void SetupEXE(ref byte[] exefile)
@@ -164,6 +215,17 @@ namespace build
         {
             while (me.Count % 0x10 > 0)
                 me.Add(0x90);
+        }
+
+        static System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+        static string FileHash(string path)
+        {
+            byte[] file = File.ReadAllBytes(path);
+            file = md5.ComputeHash(file);
+            string result = string.Empty;
+            foreach (byte item in file)
+                result += item.ToString("x2");
+            return result;
         }
     }
 
