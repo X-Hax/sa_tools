@@ -24,6 +24,14 @@ namespace SonicRetro.SAModel
     }
 
     [Flags()]
+    public enum AnimFlags : ushort
+    {
+        Translate = 0x1,
+        Rotate = 0x2,
+        Scale = 0x4
+    }
+
+    [Flags()]
     public enum SurfaceFlags : int
     {
         Solid = 0x1,

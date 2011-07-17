@@ -30,13 +30,13 @@ namespace SonicRetro.SAModel.Direct3D
         public static void CalculateBounds(this COL col)
         {
             Matrix matrix = Matrix.Identity;
-            matrix *= Matrix.RotationYawPitchRoll(BAMSToRad(col.Object.Rotation.Y), BAMSToRad(col.Object.Rotation.X), BAMSToRad(col.Object.Rotation.Z));
-            matrix *= Matrix.Translation(col.Object.Position.ToVector3());
+            matrix *= Matrix.RotationYawPitchRoll(BAMSToRad(col.Model.Rotation.Y), BAMSToRad(col.Model.Rotation.X), BAMSToRad(col.Model.Rotation.Z));
+            matrix *= Matrix.Translation(col.Model.Position.ToVector3());
             List<Vector3> verts = new List<Vector3>();
-            foreach (SAModel.Mesh mesh in col.Object.Attach.Mesh)
+            foreach (SAModel.Mesh mesh in col.Model.Attach.Mesh)
                 foreach (Poly poly in mesh.Poly)
                     foreach (ushort index in poly.Indexes)
-                        verts.Add(Vector3.TransformCoordinate(col.Object.Attach.Vertex[index].ToVector3(), matrix));
+                        verts.Add(Vector3.TransformCoordinate(col.Model.Attach.Vertex[index].ToVector3(), matrix));
             Vector3 center = new Vector3();
             col.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), FVF_PositionNormalTexturedColored.Format, out center);
             col.Center.X = center.X;

@@ -79,20 +79,20 @@ namespace SonicRetro.SAModel
             uint attachaddr = 0;
             if (Children.Count > 0)
             {
-                childaddr = imageBase;
-                result.AddRange(Children[0].GetBytes(imageBase, DX));
+                result.AddRange(Children[0].GetBytes(imageBase, DX, out childaddr));
+                childaddr += imageBase;
             }
             if (Sibling != null)
             {
-                siblingaddr = imageBase + (uint)result.Count;
-                result.AddRange(Sibling.GetBytes(imageBase + (uint)result.Count, DX));
+                result.AddRange(Sibling.GetBytes(imageBase + (uint)result.Count, DX, out siblingaddr));
+                siblingaddr += imageBase;
             }
             if (Attach != null)
             {
-                attachaddr = imageBase + (uint)result.Count;
-                result.AddRange(Attach.GetBytes(imageBase + (uint)result.Count, DX));
+                result.AddRange(Attach.GetBytes(imageBase + (uint)result.Count, DX, out attachaddr));
+                attachaddr += imageBase;
             }
-            address = imageBase + (uint)result.Count;
+            address = (uint)result.Count;
             result.AddRange(BitConverter.GetBytes((int)Flags));
             result.AddRange(BitConverter.GetBytes(attachaddr));
             result.AddRange(Position.GetBytes());
@@ -131,6 +131,14 @@ namespace SonicRetro.SAModel
                 }
                 group.Add("Children", string.Join(",", chldrn.ToArray()));
             }
+        }
+
+        public Object[] GetObjects()
+        {
+            List<Object> result = new List<Object>() { this };
+            foreach (Object item in Children)
+                result.AddRange(item.GetObjects());
+            return result.ToArray();
         }
     }
 }

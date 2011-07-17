@@ -41,5 +41,49 @@ namespace SonicRetro.SAModel
         {
             return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
+
+        public float[] ToArray()
+        {
+            float[] result = new float[3];
+            result[0] = X;
+            result[1] = Y;
+            result[2] = Z;
+            return result;
+        }
+
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        return;
+                    case 1:
+                        Y = value;
+                        return;
+                    case 2:
+                        Z = value;
+                        return;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        }
     }
 }
