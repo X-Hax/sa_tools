@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SADXLVL
+namespace SonicRetro.SAModel.SADXLVL2
 {
     static class Program
     {

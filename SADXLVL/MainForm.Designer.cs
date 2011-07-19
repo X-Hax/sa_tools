@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SADXLVL
+﻿namespace SonicRetro.SAModel.SADXLVL2
 {
     partial class MainForm
     {

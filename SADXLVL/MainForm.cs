@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
-using Microsoft.DirectX.Direct3D;
+using System.Windows.Forms;
 using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-using puyo_tools;
-using VrSharp.PvrTexture;
 
-namespace SonicRetro.SAModel.SADXLVL
+namespace SonicRetro.SAModel.SADXLVL2
 {
     public partial class MainForm : Form
     {
@@ -43,11 +40,6 @@ namespace SonicRetro.SAModel.SADXLVL
         int interval = 20;
         FillMode rendermode;
         Cull cullmode = Cull.None;
-        LandTable geo;
-        string leveltexs;
-        Dictionary<string, Bitmap[]> TextureBitmaps;
-        Dictionary<string, Texture[]> Textures;
-        List<Microsoft.DirectX.Direct3D.Mesh> meshes;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -113,42 +105,42 @@ namespace SonicRetro.SAModel.SADXLVL
                 byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
                 cam = new Camera();
                 if (!group.ContainsKey("LevelGeo"))
-                    geo = null;
+                    LevelData.geo = null;
                 else
                 {
                     Dictionary<string, Dictionary<string, string>> geoini = IniFile.Load(group["LevelGeo"]);
-                    geo = new LandTable(geoini, geoini[string.Empty]["LandTable"]);
-                    meshes = new List<Microsoft.DirectX.Direct3D.Mesh>();
-                    foreach (COL item in geo.COL)
-                        meshes.Add(item.Model.Attach.CreateD3DMesh(d3ddevice));
+                    LevelData.geo = new LandTable(geoini, geoini[string.Empty]["LandTable"]);
+                    LevelData.meshes = new List<Microsoft.DirectX.Direct3D.Mesh>();
+                    foreach (COL item in LevelData.geo.COL)
+                        LevelData.meshes.Add(item.Model.Attach.CreateD3DMesh(d3ddevice));
                 }
-                TextureBitmaps = new Dictionary<string, Bitmap[]>();
-                Textures = new Dictionary<string, Texture[]>();
-                if (geo != null && !string.IsNullOrEmpty(geo.TextureFileName))
+                LevelData.TextureBitmaps = new Dictionary<string, Bitmap[]>();
+                LevelData.Textures = new Dictionary<string, Texture[]>();
+                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
                 {
-                    Bitmap[] TexBmps = GetTextures(System.IO.Path.Combine(syspath, geo.TextureFileName) + ".PVM");
+                    Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length - 1; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
-                    if (!TextureBitmaps.ContainsKey(geo.TextureFileName))
-                        TextureBitmaps.Add(geo.TextureFileName, TexBmps);
-                    if (!Textures.ContainsKey(geo.TextureFileName))
-                        Textures.Add(geo.TextureFileName, texs);
-                    leveltexs = geo.TextureFileName;
+                    if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+                        LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+                    if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+                        LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+                    LevelData.leveltexs = LevelData.geo.TextureFileName;
                 }
                 string[] textures = group["Textures"].Split(',');
                 foreach (string tex in textures)
                 {
-                    Bitmap[] TexBmps = GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
+                    Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length - 1; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
-                    if (!TextureBitmaps.ContainsKey(tex))
-                        TextureBitmaps.Add(tex, TexBmps);
-                    if (!Textures.ContainsKey(tex))
-                        Textures.Add(tex, texs);
-                    if (string.IsNullOrEmpty(leveltexs))
-                        leveltexs = tex;
+                    if (!LevelData.TextureBitmaps.ContainsKey(tex))
+                        LevelData.TextureBitmaps.Add(tex, TexBmps);
+                    if (!LevelData.Textures.ContainsKey(tex))
+                        LevelData.Textures.Add(tex, texs);
+                    if (string.IsNullOrEmpty(LevelData.leveltexs))
+                        LevelData.leveltexs = tex;
                 }
 #if !DEBUG
             }
@@ -186,33 +178,6 @@ namespace SonicRetro.SAModel.SADXLVL
             Close();
         }
 
-        public Bitmap[] GetTextures(string filename)
-        {
-            List<Bitmap> functionReturnValue = new List<Bitmap>();
-            PVM pvmfile = new PVM();
-            Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
-            pvmdata = pvmfile.TranslateData(ref pvmdata);
-            ArchiveFileList pvmentries = pvmfile.GetFileList(ref pvmdata);
-            foreach (ArchiveFileList.Entry file in pvmentries.Entries)
-            {
-                byte[] data = new byte[file.Length];
-                pvmdata.Seek(file.Offset, SeekOrigin.Begin);
-                pvmdata.Read(data, 0, (int)file.Length);
-                PvrTexture vrfile = new PvrTexture(data);
-                functionReturnValue.Add(vrfile.GetTextureAsBitmap());
-            }
-            return functionReturnValue.ToArray();
-        }
-
-        public string GetCString(byte[] file, int address)
-        {
-            int textsize = 0;
-            while (file[address + textsize] > 0)
-                textsize += 1;
-
-            return System.Text.Encoding.ASCII.GetString(file, address, textsize);
-        }
-
         internal void DrawLevel()
         {
             if (!loaded) return;
@@ -244,13 +209,13 @@ namespace SonicRetro.SAModel.SADXLVL
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
-            if (geo != null)
+            if (LevelData.geo != null)
             {
-                for (int i = 0; i < geo.COL.Count; i++)
+                for (int i = 0; i < LevelData.geo.COL.Count; i++)
                 {
-                    if (geo.COL[i].Model.Attach == null)
+                    if (LevelData.geo.COL[i].Model.Attach == null)
                         continue;
-                    geo.COL[i].Model.DrawModel(d3ddevice, transform, Textures[leveltexs], meshes[i]);
+                    LevelData.geo.COL[i].Model.DrawModel(d3ddevice, transform, LevelData.Textures[LevelData.leveltexs], LevelData.meshes[i]);
                 }
             }
             d3ddevice.EndScene(); //all drawings before this line
