@@ -24,7 +24,7 @@ namespace build
             }
             byte[] exefile = File.ReadAllBytes(exefilename);
             SetupEXE(ref exefile);
-            Environment.CurrentDirectory = Path.GetDirectoryName(exefilename);
+            Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(exefilename));
             Dictionary<string, uint> addresses = new Dictionary<string, uint>();
             string inistartpath = Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename));
             Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inistartpath + "_data.ini");

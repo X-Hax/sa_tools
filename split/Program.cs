@@ -32,7 +32,7 @@ namespace split
             byte[] exefile = File.ReadAllBytes(exefilename);
             SetupEXE(ref exefile);
             Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inifilename);
-            Environment.CurrentDirectory = Path.GetDirectoryName(exefilename);
+            Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(exefilename));
             uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
             foreach (KeyValuePair<string, Dictionary<string, string>> item in inifile)
             {
