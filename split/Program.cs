@@ -42,19 +42,20 @@ namespace split
                 string type = string.Empty;
                 if (data.ContainsKey("type"))
                     type = data["type"];
+                int address = int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
                 Console.WriteLine(item.Key + ": " + data["address"] + " - " + data["filename"]);
                 Directory.CreateDirectory(Path.GetDirectoryName(data["filename"]));
                 switch (type)
                 {
                     case "landtable":
-                        SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(exefile, address, imageBase, true);
                         Dictionary<string, Dictionary<string, string>> tblini = new Dictionary<string, Dictionary<string, string>>();
                         tblini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", tbl.Name } });
                         tbl.Save(tblini, Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations"));
                         IniFile.Save(tblini, data["filename"]);
                         break;
                     case "model":
-                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, true);
                         Dictionary<string, Dictionary<string, string>> mdlini = new Dictionary<string, Dictionary<string, string>>();
                         mdlini.Add(string.Empty, new Dictionary<string, string>());
                         mdlini[string.Empty].Add("Root", mdl.Name);
@@ -64,8 +65,26 @@ namespace split
                         IniFile.Save(mdlini, data["filename"]);
                         break;
                     case "animation":
-                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, address, imageBase, true);
                         ani.Save(data["filename"]);
+                        break;
+                    case "objlist":
+                        int numobjs = BitConverter.ToInt32(exefile, address);
+                        address = (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase);
+                        Dictionary<string, Dictionary<string, string>> objini = new Dictionary<string, Dictionary<string, string>>();
+                        for (int i = 0; i < numobjs; i++)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("Arg1", exefile[address].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Arg2", exefile[address + 1].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Flags", BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Distance", BitConverter.ToSingle(exefile, address + 4).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Unknown", BitConverter.ToInt32(exefile, address + 8).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Code", BitConverter.ToInt32(exefile, address + 12).ToString("X8"));
+                            objgrp.Add("Name", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address + 16) - imageBase)));
+                            objini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                        }
+                        IniFile.Save(objini, data["filename"]);
                         break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
@@ -132,6 +151,14 @@ namespace split
             foreach (byte item in file)
                 result += item.ToString("x2");
             return result;
+        }
+
+        static string GetCString(byte[] file, int address)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            while (file[address] != 0)
+                sb.Append((char)file[address]);
+            return sb.ToString();
         }
     }
 
