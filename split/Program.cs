@@ -37,7 +37,7 @@ namespace split
             foreach (KeyValuePair<string, Dictionary<string, string>> item in inifile)
             {
                 if (string.IsNullOrWhiteSpace(item.Key)) continue;
-                string filename = item.Key;
+                string filedesc = item.Key;
                 Dictionary<string, string> data = item.Value;
                 string type = string.Empty;
                 if (data.ContainsKey("type"))
@@ -53,7 +53,24 @@ namespace split
                         tbl.Save(tblini, Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations"));
                         IniFile.Save(tblini, data["filename"]);
                         break;
-                    default:
+                    case "model":
+                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        Dictionary<string, Dictionary<string, string>> mdlini = new Dictionary<string, Dictionary<string, string>>();
+                        mdlini.Add(string.Empty, new Dictionary<string, string>());
+                        mdlini[string.Empty].Add("Root", mdl.Name);
+                        if (data.ContainsKey("animations"))
+                            mdlini[string.Empty].Add("Animations", data["animations"]);
+                        mdl.Save(mdlini);
+                        IniFile.Save(mdlini, data["filename"]);
+                        break;
+                    case "animation":
+                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), imageBase, true);
+                        ani.Save(data["filename"]);
+                        break;
+                    default: // raw binary
+                        byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
+                        Array.Copy(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), bin, 0, bin.Length);
+                        File.WriteAllBytes(data["filename"], bin);
                         break;
                 }
                 data.Add("md5", FileHash(data["filename"]));

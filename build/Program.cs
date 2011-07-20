@@ -98,9 +98,29 @@ namespace build
                             //tbl = new SonicRetro.SAModel.LandTable(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
                             dataaddr += curaddr;
                             break;
-                        default:
-                            addresses.Add(filedesc, uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber));
-                            continue;
+                        case "model":
+                            Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(data["filename"]);
+                            SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(mdlini, mdlini[string.Empty]["Root"]);
+                            datasection.AddRange(mdl.GetBytes(curaddr, true, out dataaddr));
+                            //mdl = new SonicRetro.SAModel.Object(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
+                            dataaddr += curaddr;
+                            break;
+                        case "animation":
+                            Dictionary<string, Dictionary<string, string>> mdlini2 = IniFile.Load(inifile[data["model]"]]["filename"]);
+                            SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(data["filename"]);
+                            datasection.AddRange(ani.GetBytes(curaddr, addresses[data["model"]], new SonicRetro.SAModel.Object(mdlini2, mdlini2[string.Empty]["Root"]).GetObjects().Length, out dataaddr));
+                            dataaddr += curaddr;
+                            break;
+                        default: // raw binary
+                            bool reloc = true;
+                            if (data.ContainsKey("dontrelocate"))
+                                reloc = !bool.Parse(data["dontrelocate"]);
+                            byte[] file = File.ReadAllBytes(data["filename"]);
+                            if (reloc)
+                                datasection.AddRange(file);
+                            else
+                                Array.Copy(file, 0, exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), file.Length);
+                            break;
                     }
                     if (data.ContainsKey("pointer"))
                         foreach (string item in data["pointer"].Split(','))
