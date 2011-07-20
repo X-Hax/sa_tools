@@ -43,7 +43,7 @@ namespace split
                 if (data.ContainsKey("type"))
                     type = data["type"];
                 int address = int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
-                Console.WriteLine(item.Key + ": " + data["address"] + " - " + data["filename"]);
+                Console.WriteLine(item.Key + ": " + data["address"] + " → " + data["filename"]);
                 Directory.CreateDirectory(Path.GetDirectoryName(data["filename"]));
                 switch (type)
                 {
@@ -80,11 +80,26 @@ namespace split
                             objgrp.Add("Flags", BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                             objgrp.Add("Distance", BitConverter.ToSingle(exefile, address + 4).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                             objgrp.Add("Unknown", BitConverter.ToInt32(exefile, address + 8).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-                            objgrp.Add("Code", BitConverter.ToInt32(exefile, address + 12).ToString("X8"));
+                            objgrp.Add("Code", BitConverter.ToUInt32(exefile, address + 12).ToString("X8"));
                             objgrp.Add("Name", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address + 16) - imageBase)));
                             objini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            address += 0x14;
                         }
                         IniFile.Save(objini, data["filename"]);
+                        break;
+                    case "startpos":
+                        int numpos = 0;
+                        Dictionary<string, Dictionary<string, string>> posini = new Dictionary<string, Dictionary<string, string>>();
+                        while (BitConverter.ToUInt16(exefile, address) != 0x2B)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("Position", new SonicRetro.SAModel.Vertex(exefile, address + 4).ToString());
+                            objgrp.Add("YRotation", BitConverter.ToInt32(exefile, address + 0x10).ToString("X8"));
+                            posini.Add(BitConverter.ToUInt16(exefile, address).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0') + BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0'), objgrp);
+                            numpos++;
+                            address += 0x14;
+                        }
+                        IniFile.Save(posini, data["filename"]);
                         break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
@@ -95,6 +110,9 @@ namespace split
                 data.Add("md5", FileHash(data["filename"]));
             }
             IniFile.Save(inifile, Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
+            Console.Write("Press a key to continue...");
+            Console.ReadKey(true);
+            Console.WriteLine();
         }
 
         static void SetupEXE(ref byte[] exefile)
@@ -153,12 +171,20 @@ namespace split
             return result;
         }
 
+        static System.Text.Encoding jpenc = System.Text.Encoding.GetEncoding(932);
+        static System.Text.Encoding euenc = System.Text.Encoding.GetEncoding(1252);
+
+        static string GetCString(byte[] file, int address, System.Text.Encoding encoding)
+        {
+            int count = 0;
+            while (file[address + count] != 0)
+                count++;
+            return encoding.GetString(file, address, count);
+        }
+
         static string GetCString(byte[] file, int address)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            while (file[address] != 0)
-                sb.Append((char)file[address]);
-            return sb.ToString();
+            return GetCString(file, address, jpenc);
         }
     }
 

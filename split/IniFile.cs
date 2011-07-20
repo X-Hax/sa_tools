@@ -26,7 +26,7 @@ namespace split
                     }
                     catch (ArgumentException ex)
                     {
-                        throw new Exception("INI File error: Group \"" + line.Substring(1, line.Length - 2) + "\" already exists.\n" + filename + ":line " + i, ex);
+                        throw new Exception("INI File error: Group \"" + line.Substring(1, line.Length - 2) + "\" already exists.\n" + filename + ":line " + (i + 1), ex);
                     }
                 }
                 else if (!string.IsNullOrEmpty(line))
@@ -40,7 +40,7 @@ namespace split
                     }
                     catch (ArgumentException ex)
                     {
-                        throw new Exception("INI File error: Value \"" + line.Split('=')[0] + "\" already exists in group \"" + curgroup + "\".\n" + filename + ":line " + i, ex);
+                        throw new Exception("INI File error: Value \"" + line.Split('=')[0] + "\" already exists in group \"" + curgroup + "\".\n" + filename + ":line " + (i + 1), ex);
                     }
                 }
             }

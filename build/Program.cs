@@ -111,6 +111,48 @@ namespace build
                             datasection.AddRange(ani.GetBytes(curaddr, addresses[data["model"]], new SonicRetro.SAModel.Object(mdlini2, mdlini2[string.Empty]["Root"]).GetObjects().Length, out dataaddr));
                             dataaddr += curaddr;
                             break;
+                        case "objlist":
+                            Dictionary<string, Dictionary<string, string>> objini = IniFile.Load(data["filename"]);
+                            List<byte> objents = new List<byte>();
+                            int objcnt = 0;
+                            while (objini.ContainsKey(objcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = objini[objcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                objents.Add(byte.Parse(group["Arg1"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo));
+                                objents.Add(byte.Parse(group["Arg2"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo));
+                                objents.AddRange(BitConverter.GetBytes(ushort.Parse(group["Flags"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                objents.AddRange(BitConverter.GetBytes(float.Parse(group["Distance"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                objents.AddRange(BitConverter.GetBytes(int.Parse(group["Unknown"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                uint code = 0;
+                                if (!uint.TryParse(group["Code"], System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out code))
+                                    code = addresses[group["Code"]];
+                                objents.AddRange(BitConverter.GetBytes(code));
+                                objents.AddRange(BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count));
+                                datasection.AddRange(jpenc.GetBytes(group["Name"]));
+                                datasection.Add(0);
+                                datasection.Align(4);
+                                objcnt++;
+                            }
+                            uint objentaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(objents.ToArray());
+                            datasection.Align(4);
+                            dataaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(BitConverter.GetBytes(objcnt));
+                            datasection.AddRange(BitConverter.GetBytes(objentaddr));
+                            break;
+                        case "startpos":
+                            Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(data["filename"]);
+                            foreach (KeyValuePair<string, Dictionary<string,string>> item in posini)
+                            {
+                                if (string.IsNullOrEmpty(item.Key)) continue;
+                                datasection.AddRange(BitConverter.GetBytes(ushort.Parse(item.Key.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                datasection.AddRange(BitConverter.GetBytes(ushort.Parse(item.Key.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                datasection.AddRange(new SonicRetro.SAModel.Vertex(item.Value["Position"]).GetBytes());
+                                datasection.AddRange(BitConverter.GetBytes(int.Parse(item.Value["YRotation"], System.Globalization.NumberStyles.HexNumber)));
+                            }
+                            datasection.AddRange(BitConverter.GetBytes((ushort)0x2B));
+                            datasection.AddRange(new byte[0x12]);
+                            break;
                         default: // raw binary
                             bool reloc = true;
                             if (data.ContainsKey("dontrelocate"))
@@ -247,6 +289,9 @@ namespace build
                 result += item.ToString("x2");
             return result;
         }
+
+        static System.Text.Encoding jpenc = System.Text.Encoding.GetEncoding(932);
+        static System.Text.Encoding euenc = System.Text.Encoding.GetEncoding(1252);
     }
 
     enum SectOffs
