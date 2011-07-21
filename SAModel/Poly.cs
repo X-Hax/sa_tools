@@ -7,7 +7,7 @@ namespace SonicRetro.SAModel
     {
         public Triangle()
         {
-            Name = "tri_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "tri_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[3];
         }
 
@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel
     {
         public Quad()
         {
-            Name = "quad_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "quad_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[4];
         }
 
@@ -68,8 +68,15 @@ namespace SonicRetro.SAModel
 
         public Strip(int NumVerts, bool Reverse)
         {
-            Name = "strip_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "strip_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[NumVerts];
+            Reversed = Reverse;
+        }
+
+        public Strip(ushort[] Verts, bool Reverse)
+        {
+            Name = "strip_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Indexes = Verts;
             Reversed = Reverse;
         }
 
@@ -123,7 +130,7 @@ namespace SonicRetro.SAModel
 
     public abstract class Poly
     {
-        public ushort[] Indexes { get; protected set; }
+        public virtual ushort[] Indexes { get; protected set; }
         public string Name { get; set; }
 
         internal Poly() { }

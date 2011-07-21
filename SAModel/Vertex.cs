@@ -28,6 +28,13 @@ namespace SonicRetro.SAModel
             Z = float.Parse(a[2], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
+        public Vertex(float x, float y, float z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();

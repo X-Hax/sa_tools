@@ -63,11 +63,18 @@ namespace SonicRetro.SAModel.SADXLVL2
                 COL.Model.DrawModelInvert(dev, transform, textures, Mesh);
         }
 
-        //[Browsable(true)]
+        [Browsable(true)]
         [DisplayName("Import Model")]
         public void ImportModel()
         {
-
+            System.Windows.Forms.OpenFileDialog dlg = new System.Windows.Forms.OpenFileDialog() { DefaultExt = "obj", Filter = "OBJ Files|*.obj;*.objf", RestoreDirectory = true };
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(dlg.FileName);
+                COL.Model.Attach.CalculateBounds();
+                COL.CalculateBounds();
+                Mesh = COL.Model.Attach.CreateD3DMesh(LevelData.MainForm.d3ddevice);
+            }
         }
 
         //[Browsable(true)]

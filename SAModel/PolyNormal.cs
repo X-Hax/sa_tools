@@ -13,7 +13,7 @@ namespace SonicRetro.SAModel
 
         public PolyNormal()
         {
-            Name = "pnorm_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "pnorm_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
         }
 
         public PolyNormal(byte[] file, int address)

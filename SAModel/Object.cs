@@ -16,6 +16,14 @@ namespace SonicRetro.SAModel
 
         public static int Size { get { return 0x34; } }
 
+        public Object()
+        {
+            Name = "object_" + DateTime.Now.Ticks.ToString("X") + rand.Next(0, 256).ToString("X2");
+            Position = new Vertex();
+            Rotation = new Rotation();
+            Scale = new Vertex(1, 1, 1);
+        }
+
         public Object(byte[] file, int address, uint imageBase, bool DX)
         {
             Name = "object_" + address.ToString("X8");
@@ -160,5 +168,7 @@ namespace SonicRetro.SAModel
                 result.AddRange(item.GetObjects());
             return result.ToArray();
         }
+
+        internal static Random rand = new Random();
     }
 }

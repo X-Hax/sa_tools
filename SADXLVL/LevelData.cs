@@ -10,6 +10,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
     internal static class LevelData
     {
+        public static MainForm MainForm;
         public static LandTable geo;
         public static string leveltexs;
         public static Dictionary<string, Bitmap[]> TextureBitmaps;

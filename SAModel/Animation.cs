@@ -12,7 +12,7 @@ namespace SonicRetro.SAModel
         public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
         public Animation()
         {
-            Name = "animation_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "animation_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
         }
 
         public Animation(byte[] file, int address, uint imageBase, bool DX)

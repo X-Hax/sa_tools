@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.Drawing;
 
 
 namespace SonicRetro.SAModel.Direct3D
@@ -219,6 +220,256 @@ namespace SonicRetro.SAModel.Direct3D
                 DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
             transform.Pop();
             device.RenderState.FillMode = mode;
+        }
+
+        public static Attach obj2nj(string objfile)
+        {
+            string[] obj = System.IO.File.ReadAllLines(objfile);
+            Attach model = new Attach();
+            List<UV> uvs = new List<UV>();
+            List<Color> vcolors = new List<Color>();
+            List<Vertex> verts = new List<Vertex>();
+            List<Vertex> norms = new List<Vertex>();
+            List<Material> mtls = new List<Material>();
+            List<Vertex> model_Vertex = new List<Vertex>();
+            List<Vertex> model_Normal = new List<Vertex>();
+            List<Material> model_Material = new List<Material>();
+            List<Mesh> model_Mesh = new List<Mesh>();
+            List<ushort> model_Mesh_MaterialID = new List<ushort>();
+            List<List<Poly>> model_Mesh_Poly = new List<List<Poly>>();
+            List<List<UV>> model_Mesh_UV = new List<List<UV>>();
+            List<List<Color>> model_Mesh_VColor = new List<List<Color>>();
+            foreach (string ln in obj)
+            {
+                string[] lin = ln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                if (lin.Length == 0)
+                    continue;
+                switch (lin[0].ToLowerInvariant())
+                {
+                    case "mtllib":
+                        string[] mtlfile = System.IO.File.ReadAllLines(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(objfile), lin[1]));
+                        foreach (string mln in mtlfile)
+                        {
+                            string[] mlin = mln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                            if (mlin.Length == 0)
+                                continue;
+                            switch (mlin[0].ToLowerInvariant())
+                            {
+                                case "newmtl":
+                                    mtls.Add(new Material { Name = mlin[1] });
+                                    break;
+                                case "kd":
+                                    mtls[mtls.Count - 1].DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+                                    break;
+                                case "d":
+                                case "tr":
+                                    mtls[mtls.Count - 1].DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), mtls[mtls.Count - 1].DiffuseColor);
+                                    break;
+                                case "ks":
+                                    mtls[mtls.Count - 1].SpecularColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+                                    break;
+                                case "texid":
+                                    mtls[mtls.Count - 1].TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+                                    break;
+                            }
+                        }
+
+                        break;
+                    case "v":
+                        verts.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+                        break;
+                    case "vn":
+                        norms.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+                        break;
+                    case "vt":
+                        uvs.Add(new UV() { U = unchecked((short)(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * 255)), V = unchecked((short)(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * 255)) });
+                        break;
+                    case "vc":
+                        vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[4], System.Globalization.CultureInfo.InvariantCulture))));
+                        break;
+                    case "usemtl":
+                        model_Mesh_Poly.Add(new List<Poly>());
+                        model_Mesh_UV.Add(new List<UV>());
+                        model_Mesh_VColor.Add(new List<Color>());
+                        bool found = false;
+                        for (int i = 0; i <= model_Material.Count - 1; i++)
+                        {
+                            if (model_Material[i].Name == lin[1])
+                            {
+                                model_Mesh_MaterialID.Add((ushort)i);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) break;
+                        for (int i = 0; i <= mtls.Count - 1; i++)
+                        {
+                            if (mtls[i].Name == lin[1])
+                            {
+                                model_Mesh_MaterialID.Add((ushort)model_Material.Count);
+                                model_Material.Add(mtls[i]);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) break;
+                        model_Mesh_MaterialID.Add(0);
+                        break;
+                    case "f":
+                        if (model_Mesh_MaterialID.Count == 0)
+                        {
+                            model_Mesh_MaterialID.Add(0);
+                            model_Mesh_Poly.Add(new List<Poly>());
+                            model_Mesh_UV.Add(new List<UV>());
+                            model_Mesh_VColor.Add(new List<Color>());
+                        }
+                        Vertex ver = default(Vertex);
+                        Vertex nor = default(Vertex);
+                        ushort[] pol = new ushort[3];
+                        for (int i = 1; i <= 3; i++)
+                        {
+                            string[] lne = lin[i].Split('/');
+                            ver = verts.GetItemNeg(int.Parse(lne[0]));
+                            nor = norms.GetItemNeg(int.Parse(lne[2]));
+                            if (uvs.Count > 0)
+                            {
+                                if (!string.IsNullOrEmpty(lne[1]))
+                                {
+                                    model_Mesh_UV[model_Mesh_UV.Count - 1].Add(uvs.GetItemNeg(int.Parse(lne[1])));
+                                }
+                            }
+                            if (vcolors.Count > 0)
+                            {
+                                if (lne.Length == 4)
+                                {
+                                    model_Mesh_VColor[model_Mesh_VColor.Count - 1].Add(vcolors.GetItemNeg(int.Parse(lne[3])));
+                                }
+                                else if (!string.IsNullOrEmpty(lne[1]))
+                                {
+                                    model_Mesh_VColor[model_Mesh_VColor.Count - 1].Add(vcolors.GetItemNeg(int.Parse(lne[1])));
+                                }
+                            }
+                            int verind = model_Vertex.IndexOf(ver);
+                            while (verind > -1)
+                            {
+                                if (model_Normal[verind] == nor)
+                                    break; // TODO: might not be correct. Was : Exit While
+                                verind = model_Vertex.IndexOf(ver, verind + 1);
+                            }
+                            if (verind > -1)
+                            {
+                                pol[i - 1] = (ushort)verind;
+                            }
+                            else
+                            {
+                                model_Vertex.Add(ver);
+                                model_Normal.Add(nor);
+                                pol[i - 1] = (ushort)(model_Vertex.Count - 1);
+                            }
+                        }
+                        Poly tri = Poly.CreatePoly(PolyType.Triangles);
+                        for (int i = 0; i < 3; i++)
+                            tri.Indexes[i] = pol[i];
+                        model_Mesh_Poly[model_Mesh_Poly.Count - 1].Add(tri);
+                        break;
+                    case "t":
+                        if (model_Mesh_MaterialID.Count == 0)
+                        {
+                            model_Mesh_MaterialID.Add(0);
+                            model_Mesh_Poly.Add(new List<Poly>());
+                            model_Mesh_UV.Add(new List<UV>());
+                            model_Mesh_VColor.Add(new List<Color>());
+                        }
+                        Vertex ver2 = default(Vertex);
+                        Vertex nor2 = default(Vertex);
+                        List<ushort> str = new List<ushort>();
+                        for (int i = 1; i <= lin.Length - 1; i++)
+                        {
+                            ver2 = verts.GetItemNeg(int.Parse(lin[i]));
+                            nor2 = norms.GetItemNeg(int.Parse(lin[i]));
+                            if (uvs.Count > 0)
+                                model_Mesh_UV[model_Mesh_UV.Count - 1].Add(uvs.GetItemNeg(int.Parse(lin[i])));
+                            if (vcolors.Count > 0)
+                                model_Mesh_VColor[model_Mesh_VColor.Count - 1].Add(vcolors.GetItemNeg(int.Parse(lin[i])));
+                            int verind = model_Vertex.IndexOf(ver2);
+                            while (verind > -1)
+                            {
+                                if (model_Normal[verind] == nor2)
+                                    break; // TODO: might not be correct. Was : Exit While
+                                verind = model_Vertex.IndexOf(ver2, verind + 1);
+                            }
+                            if (verind > -1)
+                            {
+                                str.Add((ushort)verind);
+                            }
+                            else
+                            {
+                                model_Vertex.Add(ver2);
+                                model_Normal.Add(nor2);
+                                str.Add((ushort)(model_Vertex.Count - 1));
+                            }
+                        }
+                        model_Mesh_Poly[model_Mesh_Poly.Count - 1].Add(new Strip(str.ToArray(), false));
+                        break;
+                    case "q":
+                        Vertex ver3 = default(Vertex);
+                        Vertex nor3 = default(Vertex);
+                        List<ushort> str2 = new List<ushort>(model_Mesh_Poly[model_Mesh_Poly.Count - 1][model_Mesh_Poly[model_Mesh_Poly.Count - 1].Count - 1].Indexes);
+                        for (int i = 1; i <= lin.Length - 1; i++)
+                        {
+                            ver3 = verts.GetItemNeg(int.Parse(lin[i]));
+                            nor3 = norms.GetItemNeg(int.Parse(lin[i]));
+                            if (uvs.Count > 0)
+                                model_Mesh_UV[model_Mesh_UV.Count - 1].Add(uvs.GetItemNeg(int.Parse(lin[i])));
+                            if (vcolors.Count > 0)
+                                model_Mesh_VColor[model_Mesh_VColor.Count - 1].Add(vcolors.GetItemNeg(int.Parse(lin[i])));
+                            int verind = model_Vertex.IndexOf(ver3);
+                            while (verind > -1)
+                            {
+                                if (model_Normal[verind] == nor3)
+                                    break; // TODO: might not be correct. Was : Exit While
+                                verind = model_Vertex.IndexOf(ver3, verind + 1);
+                            }
+                            if (verind > -1)
+                            {
+                                str2.Add((ushort)verind);
+                            }
+                            else
+                            {
+                                model_Vertex.Add(ver3);
+                                model_Normal.Add(nor3);
+                                str2.Add((ushort)(model_Vertex.Count - 1));
+                            }
+                        }
+                        model_Mesh_Poly[model_Mesh_Poly.Count - 1][model_Mesh_Poly[model_Mesh_Poly.Count - 1].Count - 1] = new Strip(str2.ToArray(), false);
+                        break;
+                }
+            }
+            if (model_Material.Count == 0)
+                model_Material.Add(new Material());
+            for (int i = 0; i < model_Mesh_MaterialID.Count; i++)
+            {
+                model_Mesh.Add(new Mesh(model_Mesh_Poly[i].ToArray(), false, model_Mesh_UV[i].Count > 0, model_Mesh_VColor[i].Count > 0));
+                model_Mesh[i].MaterialID = model_Mesh_MaterialID[i];
+                if (model_Mesh[i].UV != null)
+                {
+                    for (int j = 0; j < model_Mesh[i].UV.Length; j++)
+                        model_Mesh[i].UV[j] = model_Mesh_UV[i][j];
+                }
+                if (model_Mesh[i].VColor != null)
+                {
+                    for (int j = 0; j < model_Mesh[i].VColor.Length; j++)
+                        model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
+                }
+            }
+            return new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh.ToArray(), model_Material.ToArray()) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+        }
+
+        private static T GetItemNeg<T>(this List<T> list, int index)
+        {
+            if (index < 0)
+                return list[list.Count + index];
+            return list[index - 1];
         }
     }
 }

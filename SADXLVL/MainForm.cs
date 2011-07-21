@@ -17,6 +17,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             InitializeComponent();
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            LevelData.MainForm = this;
         }
 
         void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -32,7 +33,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        Device d3ddevice;
+        internal Device d3ddevice;
         Dictionary<string, Dictionary<string, string>> ini;
         Camera cam = new Camera();
         string level;

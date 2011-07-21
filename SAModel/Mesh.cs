@@ -111,6 +111,7 @@ namespace SonicRetro.SAModel
         public Mesh(PolyType polyType, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
         {
             if (polyType == SAModel.PolyType.Strips | polyType == SAModel.PolyType.Strips2) throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", "polyType");
+            Name = "mesh_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             PolyType = polyType;
             Poly[] polys = new Poly[polyCount];
             int striptotal = 0;
@@ -136,20 +137,13 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public Mesh(int[] stripCount, bool[] stripDir, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
+        public Mesh(Poly[] polys, bool hasPolyNormal, bool hasUV, bool hasVColor)
         {
-            if (stripCount.Length != polyCount)
-                throw new ArgumentException("stripCount length does not match polyCount!", "stripCount");
-            if (stripDir.Length != polyCount)
-                throw new ArgumentException("stripDir length does not match polyCount!", "stripDir");
-            PolyType = SAModel.PolyType.Strips;
-            Poly[] polys = new Poly[polyCount];
+            Name = "mesh_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            PolyType = polys[0].PolyType;
             int striptotal = 0;
             for (int i = 0; i < polys.Length; i++)
-            {
-                polys[i] = new Strip(stripCount[i], stripDir[i]);
-                striptotal += stripCount[i];
-            }
+                striptotal += polys[i].Indexes.Length;
             Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
             if (hasPolyNormal)
             {

@@ -20,7 +20,7 @@ namespace SonicRetro.SAModel
 
         public Material()
         {
-            Name = "material_" + DateTime.Now.ToBinary().ToString("X16");
+            Name = "material_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
         }
 
         public Material(byte[] file, int address)

@@ -26,6 +26,12 @@ namespace SonicRetro.SAModel
 
         public static int Size { get { return 0x24; } }
 
+        public COL()
+        {
+            Name = "col_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Center = new Vertex();
+        }
+
         public COL(byte[] file, int address, uint imageBase, bool DX)
         {
             Name = "col_" + address.ToString("X8");

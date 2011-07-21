@@ -223,7 +223,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [TypeConverter(typeof(EditableVertexConverter))]
     public class EditableVertex : Vertex
     {
         public EditableVertex(Vertex item)
@@ -239,7 +239,38 @@ namespace SonicRetro.SAModel.SADXLVL2
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class EditableVertexConverter : TypeConverter
+    {
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType == typeof(EditableVertex))
+                return true;
+            return base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType == typeof(string) && value is EditableVertex)
+                return ((EditableVertex)value).ToString();
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            if (sourceType == typeof(string))
+                return true;
+            return base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        {
+            if (value is string)
+                return new EditableVertex(new Vertex((string)value));
+            return base.ConvertFrom(context, culture, value);
+        }
+    }
+
+    [TypeConverter(typeof(EditableRotationConverter))]
     public class EditableRotation : Rotation
     {
         public EditableRotation(Rotation item)
@@ -252,6 +283,37 @@ namespace SonicRetro.SAModel.SADXLVL2
         public Rotation ToRotation()
         {
             return new Rotation() { X = this.X, Y = this.Y, Z = this.Z };
+        }
+    }
+
+    public class EditableRotationConverter : TypeConverter
+    {
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType == typeof(EditableRotation))
+                return true;
+            return base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType == typeof(string) && value is EditableRotation)
+                return ((EditableRotation)value).ToString();
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            if (sourceType == typeof(string))
+                return true;
+            return base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        {
+            if (value is string)
+                return new EditableRotation(new Rotation((string)value));
+            return base.ConvertFrom(context, culture, value);
         }
     }
 }

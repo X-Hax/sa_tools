@@ -16,6 +16,12 @@ namespace SonicRetro.SAModel
 
         public static int Size(bool DX) { return DX ? 0x2C : 0x28; }
 
+        public Attach()
+        {
+            Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Center = new Vertex();
+        }
+
         public Attach(byte[] file, int address, uint imageBase, bool DX)
         {
             Name = "attach_" + address.ToString("X8");
@@ -81,6 +87,16 @@ namespace SonicRetro.SAModel
                 Material[i] = new Material(INI[matlist[i]], matlist[i]);
             Center = new Vertex(group["Center"]);
             Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        public Attach(Vertex[] vertex, Vertex[] normal, Mesh[] mesh, Material[] material)
+        {
+            Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Vertex = vertex;
+            Normal = normal;
+            Mesh = mesh;
+            Material = material;
+            Center = new Vertex();
         }
 
         public byte[] GetBytes(uint imageBase, bool DX, out uint address)
