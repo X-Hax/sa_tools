@@ -21,15 +21,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-            File.WriteAllText("SADXLVL.log", e.Exception.ToString());
-            if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SADXLVL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
+            File.WriteAllText("SADXLVL2.log", e.Exception.ToString());
+            if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SADXLVL2 Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
                 Close();
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            File.WriteAllText("SADXLVL.log", e.ExceptionObject.ToString());
-            MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXLVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            File.WriteAllText("SADXLVL2.log", e.ExceptionObject.ToString());
+            MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         Device d3ddevice;
@@ -40,6 +40,8 @@ namespace SonicRetro.SAModel.SADXLVL2
         int interval = 20;
         FillMode rendermode;
         Cull cullmode = Cull.None;
+        List<Item> SelectedItems;
+        PropertyWindow PropertyWindow;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -82,7 +84,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             level = e.ClickedItem.Text;
             UseWaitCursor = true;
             Enabled = false;
-            Text = "SADXLVL - Loading " + level + "...";
+            Text = "SADXLVL2 - Loading " + level + "...";
 #if !DEBUG
             backgroundWorker1.RunWorkerAsync();
 #else
@@ -110,9 +112,9 @@ namespace SonicRetro.SAModel.SADXLVL2
                 {
                     Dictionary<string, Dictionary<string, string>> geoini = IniFile.Load(group["LevelGeo"]);
                     LevelData.geo = new LandTable(geoini, geoini[string.Empty]["LandTable"]);
-                    LevelData.meshes = new List<Microsoft.DirectX.Direct3D.Mesh>();
+                    LevelData.LevelItems = new List<LevelItem>();
                     foreach (COL item in LevelData.geo.COL)
-                        LevelData.meshes.Add(item.Model.Attach.CreateD3DMesh(d3ddevice));
+                        LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
                 }
                 LevelData.TextureBitmaps = new Dictionary<string, Bitmap[]>();
                 LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -162,15 +164,29 @@ namespace SonicRetro.SAModel.SADXLVL2
                 Close();
                 return;
             }
+            if (PropertyWindow == null)
+            {
+                PropertyWindow = new PropertyWindow();
+                PropertyWindow.Show(this);
+                Activate();
+            }
             loaded = true;
+            SelectedItems = new List<Item>();
             UseWaitCursor = false;
             Enabled = true;
-            Invalidate();
+            DrawLevel();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(this, "Not implemented.");
+            Dictionary<string, string> group = ini[level];
+            if (LevelData.geo !=null)
+            {
+                Dictionary<string, Dictionary<string, string>> geoini = new Dictionary<string,Dictionary<string,string>>();
+                geoini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", LevelData.geo.Name } });
+                LevelData.geo.Save(geoini, Path.Combine(Path.GetDirectoryName(group["LevelGeo"]), "Animations"));
+                IniFile.Save(geoini, group["LevelGeo"]);
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -209,14 +225,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
-            if (LevelData.geo != null)
+            if (LevelData.LevelItems != null)
             {
-                for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                {
-                    if (LevelData.geo.COL[i].Model.Attach == null)
-                        continue;
-                    LevelData.geo.COL[i].Model.DrawModel(d3ddevice, transform, LevelData.Textures[LevelData.leveltexs], LevelData.meshes[i]);
-                }
+                for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                    LevelData.LevelItems[i].Render(d3ddevice, transform, LevelData.Textures[LevelData.leveltexs], SelectedItems.Contains(LevelData.LevelItems[i]));
             }
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
@@ -315,6 +327,142 @@ namespace SonicRetro.SAModel.SADXLVL2
                 else
                     rendermode += 1;
             DrawLevel();
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!loaded) return;
+            float mindist = float.PositiveInfinity;
+            Item item = null;
+            Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+            Viewport viewport = d3ddevice.Viewport;
+            Matrix proj = d3ddevice.Transform.Projection;
+            Matrix view = d3ddevice.Transform.View;
+            Vector3 Near, Far;
+            Near = mousepos;
+            Near.Z = 0;
+            Far = Near;
+            Far.Z = -1;
+            if (LevelData.LevelItems != null)
+            {
+                for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                {
+                    float dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+                    if (dist > 0 & dist < mindist)
+                    {
+                        mindist = dist;
+                        item = LevelData.LevelItems[i];
+                    }
+                }
+            }
+            if (item != null)
+            {
+                if (ModifierKeys == Keys.Control)
+                {
+                    if (SelectedItems.Contains(item))
+                        SelectedItems.Remove(item);
+                    else
+                        SelectedItems.Add(item);
+                }
+                else if (!SelectedItems.Contains(item))
+                {
+                    SelectedItems.Clear();
+                    SelectedItems.Add(item);
+                }
+            }
+            else if ((ModifierKeys & Keys.Control) == 0)
+            {
+                SelectedItems.Clear();
+            }
+            SelectedItemChanged();
+            DrawLevel();
+        }
+
+        Point lastmouse;
+        private void Panel1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (!loaded) return;
+            Point evloc = e.Location;
+            if (lastmouse == Point.Empty)
+            {
+                lastmouse = evloc;
+                return;
+            }
+            Point chg = evloc - (Size)lastmouse;
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+                cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+            }
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                Vector3 horivect = cam.Right;
+                Vector3 vertvect = cam.Up;
+                if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
+                    horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
+                else if (Math.Abs(horivect.Y) > Math.Abs(horivect.X) & Math.Abs(horivect.Y) > Math.Abs(horivect.Z))
+                    horivect = new Vector3(0, Math.Sign(horivect.Y), 0);
+                else if (Math.Abs(horivect.Z) > Math.Abs(horivect.X) & Math.Abs(horivect.Z) > Math.Abs(horivect.Y))
+                    horivect = new Vector3(0, 0, Math.Sign(horivect.Z));
+                if (Math.Abs(vertvect.X) > Math.Abs(vertvect.Y) & Math.Abs(vertvect.X) > Math.Abs(vertvect.Z))
+                    vertvect = new Vector3(Math.Sign(vertvect.X), 0, 0);
+                else if (Math.Abs(vertvect.Y) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Y) > Math.Abs(vertvect.Z))
+                    vertvect = new Vector3(0, Math.Sign(vertvect.Y), 0);
+                else if (Math.Abs(vertvect.Z) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Z) > Math.Abs(vertvect.Y))
+                    vertvect = new Vector3(0, 0, Math.Sign(vertvect.Z));
+                Vector3 horiz = horivect * (chg.X / 2);
+                Vector3 verti = vertvect * (-chg.Y / 2);
+                foreach (Item item in SelectedItems)
+                {
+                    item.Position.X += horiz.X + verti.X;
+                    item.Position.Y += horiz.Y + verti.Y;
+                    item.Position.Z += horiz.Z + verti.Z;
+                }
+                DrawLevel();
+                Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
+                if (Cursor.Position.X == scrbnds.Left)
+                {
+                    Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
+                    evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
+                }
+                else if (Cursor.Position.X == scrbnds.Right - 1)
+                {
+                    Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
+                    evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
+                }
+                if (Cursor.Position.Y == scrbnds.Top)
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
+                    evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
+                }
+                else if (Cursor.Position.Y == scrbnds.Bottom - 1)
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
+                    evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
+                }
+            }
+            lastmouse = evloc;
+        }
+
+        private void SelectedItemChanged()
+        {
+            PropertyWindow.propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (loaded)
+            {
+                switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        saveToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
         }
     }
 }

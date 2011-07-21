@@ -11,7 +11,17 @@ namespace SonicRetro.SAModel
         public Object Model { get; set; }
         public int Unknown2 { get; set; }
         public int Flags { get; set; }
-        public SurfaceFlags SurfaceFlags { get { return (SurfaceFlags)Flags; } }
+        public SurfaceFlags SurfaceFlags
+        {
+            get
+            {
+                return (SurfaceFlags)Flags;
+            }
+            set
+            {
+                Flags = (int)value;
+            }
+        }
         public string Name { get; set; }
 
         public static int Size { get { return 0x24; } }

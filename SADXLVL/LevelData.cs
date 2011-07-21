@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static string leveltexs;
         public static Dictionary<string, Bitmap[]> TextureBitmaps;
         public static Dictionary<string, Texture[]> Textures;
-        public static List<Microsoft.DirectX.Direct3D.Mesh> meshes;
+        public static List<LevelItem> LevelItems;
 
         public static Bitmap[] GetTextures(string filename)
         {
@@ -37,6 +37,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static float BAMSToRad(int BAMS)
         {
             return (float)(BAMS / (65536 / (2 * Math.PI)));        
+        }
+
+        public static int RadToBAMS(float rad)
+        {
+            return (int)(rad * (65536 / (2 * Math.PI)));
         }
     }
 }

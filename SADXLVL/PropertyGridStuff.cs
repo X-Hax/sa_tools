@@ -9,10 +9,43 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
     public abstract class Item : IComponent
     {
+        [ReadOnly(true)]
+        [ParenthesizePropertyName(true)]
+        public string Type { get { return GetType().Name; } }
+
+        [Browsable(false)]
         public abstract Vertex Position { get; set; }
+        [Browsable(false)]
         public abstract Rotation Rotation { get; set; }
 
+        [DisplayName("Position")]
+        public EditableVertex _Position
+        {
+            get
+            {
+                return new EditableVertex(Position);
+            }
+            set
+            {
+                Position = value.ToVertex();
+            }
+        }
+
+        [DisplayName("Rotation")]
+        public EditableRotation _Rotation
+        {
+            get
+            {
+                return new EditableRotation(Rotation);
+            }
+            set
+            {
+                Rotation = value.ToRotation();
+            }
+        }
+
         public abstract float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
+        public abstract void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected);
 
         #region IComponent Members
         // IComponent required by PropertyGrid control to discover IMenuCommandService supporting DesignerVerbs
@@ -110,7 +143,11 @@ namespace SonicRetro.SAModel.SADXLVL2
                         continue;
                     // Add a DesignerVerb with our VerbEventHandler
                     // The method name will appear in the command pane
-                    Verbs.Add(new DesignerVerb(mi.Name, new EventHandler(VerbEventHandler)));
+                    string name = mi.Name;
+                    attrs = mi.GetCustomAttributes(typeof(DisplayNameAttribute), true);
+                    if (attrs != null & attrs.Length > 0)
+                        name = ((DisplayNameAttribute)attrs[0]).DisplayName;
+                    Verbs.Add(new CustomDesignerVerb(name, new EventHandler(VerbEventHandler), mi));
                 }
                 return Verbs;
             }
@@ -120,23 +157,8 @@ namespace SonicRetro.SAModel.SADXLVL2
         private void VerbEventHandler(object sender, EventArgs e)
         {
             // The verb is the sender
-            DesignerVerb verb = sender as DesignerVerb;
-            // Enumerate the methods again to find the one named by the verb
-            MethodInfo[] mia = _Component.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            foreach (MethodInfo mi in mia)
-            {
-                object[] attrs = mi.GetCustomAttributes(typeof(BrowsableAttribute), true);
-                if (attrs == null || attrs.Length == 0)
-                    continue;
-                if (!((BrowsableAttribute)attrs[0]).Browsable)
-                    continue;
-                if (verb.Text == mi.Name)
-                {
-                    // Invoke the method on our object (no parameters)
-                    mi.Invoke(_Component, null);
-                    return;
-                }
-            }
+            CustomDesignerVerb verb = sender as CustomDesignerVerb;
+            verb.Method.Invoke(_Component, null);
         }
 
         #endregion
@@ -167,7 +189,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                throw new NotImplementedException();
+                return string.Empty;
             }
             set
             {
@@ -189,5 +211,47 @@ namespace SonicRetro.SAModel.SADXLVL2
         }
 
         #endregion
+    }
+
+    public class CustomDesignerVerb : DesignerVerb
+    {
+        public MethodInfo Method { get; set; }
+
+        public CustomDesignerVerb(string text, EventHandler handler, MethodInfo method) : base(text, handler)
+        {
+            Method = method;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class EditableVertex : Vertex
+    {
+        public EditableVertex(Vertex item)
+        {
+            X = item.X;
+            Y = item.Y;
+            Z = item.Z;
+        }
+
+        public Vertex ToVertex()
+        {
+            return new Vertex() { X = this.X, Y = this.Y, Z = this.Z };
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class EditableRotation : Rotation
+    {
+        public EditableRotation(Rotation item)
+        {
+            X = item.X;
+            Y = item.Y;
+            Z = item.Z;
+        }
+
+        public Rotation ToRotation()
+        {
+            return new Rotation() { X = this.X, Y = this.Y, Z = this.Z };
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel
 
         public override string ToString()
         {
-            return X.ToString("X8") + "," + Y.ToString("X8") + "," + Z.ToString("X8");
+            return X.ToString("X8") + ", " + Y.ToString("X8") + ", " + Z.ToString("X8");
         }
 
         public int[] ToArray()

@@ -12,6 +12,12 @@ namespace SonicRetro.SAModel.SADXLVL2
         [Browsable(false)]
         private Microsoft.DirectX.Direct3D.Mesh Mesh { get; set; }
 
+        public LevelItem(COL col, Device dev)
+        {
+            COL = col;
+            Mesh = col.Model.Attach.CreateD3DMesh(dev);
+        }
+
         public override Vertex Position
         {
             get
@@ -50,16 +56,73 @@ namespace SonicRetro.SAModel.SADXLVL2
             return info.Dist;
         }
 
-        [Browsable(true)]
+        public override void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected)
+        {
+            COL.Model.DrawModel(dev, transform, textures, Mesh);
+            if (selected)
+                COL.Model.DrawModelInvert(dev, transform, textures, Mesh);
+        }
+
+        //[Browsable(true)]
+        [DisplayName("Import Model")]
         public void ImportModel()
         {
 
         }
 
-        [Browsable(true)]
+        //[Browsable(true)]
+        [DisplayName("Export Model")]
         public void ExportModel()
         {
 
+        }
+
+        public string Flags
+        {
+            get
+            {
+                return COL.Flags.ToString("X8");
+            }
+            set
+            {
+                COL.Flags = int.Parse(value, System.Globalization.NumberStyles.HexNumber);
+            }
+        }
+
+        public bool Visible
+        {
+            get
+            {
+                return (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible;
+            }
+            set
+            {
+                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0);
+            }
+        }
+
+        public bool Solid
+        {
+            get
+            {
+                return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid;
+            }
+            set
+            {
+                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0);
+            }
+        }
+
+        public bool Water
+        {
+            get
+            {
+                return (COL.SurfaceFlags & SurfaceFlags.Water) == SurfaceFlags.Water;
+            }
+            set
+            {
+                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Water) | (value ? SurfaceFlags.Water : 0);
+            }
         }
     }
 }

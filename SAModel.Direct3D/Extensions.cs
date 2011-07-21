@@ -111,6 +111,41 @@ namespace SonicRetro.SAModel.Direct3D
             transform.Pop();
         }
 
+        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh)
+        {
+            FillMode mode = device.RenderState.FillMode;
+            device.RenderState.FillMode = FillMode.WireFrame;
+            transform.Push();
+            transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+            {
+                device.SetTransform(TransformType.World, transform.Top);
+                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                {
+                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+                    device.Material = new Microsoft.DirectX.Direct3D.Material
+                    {
+                        Diffuse = col,
+                        Ambient = col
+                    };
+                    device.SetTexture(0, null);
+                    device.SetRenderState(RenderStates.AlphaBlendEnable, false);
+                    mesh.DrawSubset(j);
+                }
+            }
+            transform.Pop();
+            device.RenderState.FillMode = mode;
+        }
+
+        public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+        {
+            int modelindex = 0;
+            obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
+        }
+
         public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
                 transform.Push();
@@ -146,6 +181,44 @@ namespace SonicRetro.SAModel.Direct3D
                 foreach (Object child in obj.Children)
                     DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
                 transform.Pop();
+        }
+
+        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+        {
+            int modelindex = 0;
+            obj.DrawModelTreeInvert(device, transform, textures, meshes, ref modelindex);
+        }
+
+        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        {
+            FillMode mode = device.RenderState.FillMode;
+            device.RenderState.FillMode = FillMode.WireFrame;
+            transform.Push();
+            modelindex++;
+            transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+            {
+                device.SetTransform(TransformType.World, transform.Top);
+                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                {
+                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+                    device.Material = new Microsoft.DirectX.Direct3D.Material
+                    {
+                        Diffuse = col,
+                        Ambient = col
+                    };
+                    device.SetTexture(0, null);
+                    device.SetRenderState(RenderStates.AlphaBlendEnable, false);
+                    meshes[modelindex].DrawSubset(j);
+                }
+            }
+            foreach (Object child in obj.Children)
+                DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
+            transform.Pop();
+            device.RenderState.FillMode = mode;
         }
     }
 }

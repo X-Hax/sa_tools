@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel
 
         public override string ToString()
         {
-            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
         public float[] ToArray()
