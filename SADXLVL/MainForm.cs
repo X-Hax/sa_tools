@@ -327,6 +327,14 @@ namespace SonicRetro.SAModel.SADXLVL2
                     rendermode = FillMode.Point;
                 else
                     rendermode += 1;
+            if (e.KeyCode == Keys.Delete)
+            {
+                foreach (Item item in SelectedItems)
+                    item.Delete();
+                SelectedItems.Clear();
+                SelectedItemChanged();
+                DrawLevel();
+            }
             DrawLevel();
         }
 
@@ -356,24 +364,57 @@ namespace SonicRetro.SAModel.SADXLVL2
                     }
                 }
             }
-            if (item != null)
+            switch (e.Button)
             {
-                if (ModifierKeys == Keys.Control)
-                {
-                    if (SelectedItems.Contains(item))
-                        SelectedItems.Remove(item);
+                case MouseButtons.Left:
+                    if (item != null)
+                    {
+                        if (ModifierKeys == Keys.Control)
+                        {
+                            if (SelectedItems.Contains(item))
+                                SelectedItems.Remove(item);
+                            else
+                                SelectedItems.Add(item);
+                        }
+                        else if (!SelectedItems.Contains(item))
+                        {
+                            SelectedItems.Clear();
+                            SelectedItems.Add(item);
+                        }
+                    }
+                    else if ((ModifierKeys & Keys.Control) == 0)
+                    {
+                        SelectedItems.Clear();
+                    }
+                    break;
+                case MouseButtons.Right:
+                    if (item != null)
+                    {
+                        if (!SelectedItems.Contains(item))
+                        {
+                            SelectedItems.Clear();
+                            SelectedItems.Add(item);
+                        }
+                    }
                     else
-                        SelectedItems.Add(item);
-                }
-                else if (!SelectedItems.Contains(item))
-                {
-                    SelectedItems.Clear();
-                    SelectedItems.Add(item);
-                }
-            }
-            else if ((ModifierKeys & Keys.Control) == 0)
-            {
-                SelectedItems.Clear();
+                    {
+                        SelectedItems.Clear();
+                    }
+                    if (SelectedItems.Count > 0)
+                    {
+                        cutToolStripMenuItem.Enabled = true;
+                        copyToolStripMenuItem.Enabled = true;
+                        deleteToolStripMenuItem.Enabled = true;
+                    }
+                    else
+                    {
+                        cutToolStripMenuItem.Enabled = false;
+                        copyToolStripMenuItem.Enabled = false;
+                        deleteToolStripMenuItem.Enabled = false;
+                    }
+                    //pasteToolStripMenuItem.Enabled = Clipboard.GetDataObject().GetDataPresent("SADXLVLObjectList");
+                    contextMenuStrip1.Show(panel1, e.Location);
+                    break;
             }
             SelectedItemChanged();
             DrawLevel();
@@ -464,6 +505,56 @@ namespace SonicRetro.SAModel.SADXLVL2
                         break;
                 }
             }
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<Item> selitems = new List<Item>();
+            foreach (Item item in SelectedItems)
+            {
+                item.Delete();
+                selitems.Add(item);
+            }
+            SelectedItems.Clear();
+            SelectedItemChanged();
+            DrawLevel();
+            if (selitems.Count == 0) return;
+            Clipboard.SetData("SADXLVLObjectList", selitems);
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<Item> selitems = new List<Item>();
+            foreach (Item item in SelectedItems)
+                selitems.Add(item);
+            if (selitems.Count == 0) return;
+            Clipboard.SetData("SADXLVLObjectList", selitems);
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<Item> objs = Clipboard.GetData("SADXLVLObjectList") as List<Item>;
+            Vector3 center = new Vector3();
+            foreach (Item item in objs)
+                center.Add(item.Position.ToVector3());
+            center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
+            foreach (Item item in objs)
+            {
+                item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
+                item.Paste();
+            }
+            SelectedItems = new List<Item>(objs);
+            SelectedItemChanged();
+            DrawLevel();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Item item in SelectedItems)
+                item.Delete();
+            SelectedItems.Clear();
+            SelectedItemChanged();
+            DrawLevel();
         }
     }
 }

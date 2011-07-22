@@ -44,6 +44,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
 
+        public abstract void Paste();
+        public abstract void Delete();
         public abstract float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
         public abstract void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected);
 
@@ -224,10 +226,52 @@ namespace SonicRetro.SAModel.SADXLVL2
     }
 
     [TypeConverter(typeof(EditableVertexConverter))]
-    public class EditableVertex : Vertex
+    public class EditableVertex
     {
+        private Vertex vertex;
+
+        public float X
+        {
+            get
+            {
+                return vertex.X;
+            }
+            set
+            {
+                vertex.X = value;
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+
+        public float Y
+        {
+            get
+            {
+                return vertex.Y;
+            }
+            set
+            {
+                vertex.Y = value;
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+        
+        public float Z
+        {
+            get
+            {
+                return vertex.Z;
+            }
+            set
+            {
+                vertex.Z = value;
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+
         public EditableVertex(Vertex item)
         {
+            vertex = item;
             X = item.X;
             Y = item.Y;
             Z = item.Z;
@@ -235,11 +279,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public Vertex ToVertex()
         {
-            return new Vertex() { X = this.X, Y = this.Y, Z = this.Z };
+            return vertex;
+        }
+
+        public override string ToString()
+        {
+            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
     }
 
-    public class EditableVertexConverter : TypeConverter
+    public class EditableVertexConverter : ExpandableObjectConverter
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
@@ -271,22 +320,69 @@ namespace SonicRetro.SAModel.SADXLVL2
     }
 
     [TypeConverter(typeof(EditableRotationConverter))]
-    public class EditableRotation : Rotation
+    public class EditableRotation
     {
+        private Rotation rotation;
+
+        public float X
+        {
+            get
+            {
+                return LevelData.BAMSToDeg(rotation.X);
+            }
+            set
+            {
+                rotation.X = LevelData.DegToBAMS(value);
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+
+        public float Y
+        {
+            get
+            {
+                return LevelData.BAMSToDeg(rotation.Y);
+            }
+            set
+            {
+                rotation.Y = LevelData.DegToBAMS(value);
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+        
+        public float Z
+        {
+            get
+            {
+                return LevelData.BAMSToDeg(rotation.Z);
+            }
+            set
+            {
+                rotation.Z = LevelData.DegToBAMS(value);
+                LevelData.MainForm.DrawLevel();
+            }
+        }
+
         public EditableRotation(Rotation item)
         {
-            X = item.X;
-            Y = item.Y;
-            Z = item.Z;
+            rotation = item;
+            X = LevelData.BAMSToDeg(item.X);
+            Y = LevelData.BAMSToDeg(item.Y);
+            Z = LevelData.BAMSToDeg(item.Z);
         }
 
         public Rotation ToRotation()
         {
-            return new Rotation() { X = this.X, Y = this.Y, Z = this.Z };
+            return rotation;
+        }
+
+        public override string ToString()
+        {
+            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
     }
 
-    public class EditableRotationConverter : TypeConverter
+    public class EditableRotationConverter : ExpandableObjectConverter
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {

@@ -37,12 +37,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public static float BAMSToRad(int BAMS)
         {
-            return (float)(BAMS / (65536 / (2 * Math.PI)));        
+            return (float)(BAMS / (65536 / (2 * Math.PI)));
         }
 
         public static int RadToBAMS(float rad)
         {
             return (int)(rad * (65536 / (2 * Math.PI)));
+        }
+
+        public static float BAMSToDeg(int BAMS)
+        {
+            return (float)(BAMS / (65536 / 360.0));
+        }
+
+        public static int DegToBAMS(float deg)
+        {
+            return (int)(deg * (65536 / 360.0));
         }
     }
 }

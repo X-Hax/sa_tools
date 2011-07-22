@@ -225,7 +225,7 @@ namespace SonicRetro.SAModel.Direct3D
         public static Attach obj2nj(string objfile)
         {
             string[] obj = System.IO.File.ReadAllLines(objfile);
-            Attach model = new Attach();
+            Attach model;
             List<UV> uvs = new List<UV>();
             List<Color> vcolors = new List<Color>();
             List<Vertex> verts = new List<Vertex>();
@@ -462,7 +462,9 @@ namespace SonicRetro.SAModel.Direct3D
                         model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
                 }
             }
-            return new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh.ToArray(), model_Material.ToArray()) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            model = new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh.ToArray(), model_Material.ToArray()) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            model.CalculateBounds();
+            return model;
         }
 
         private static T GetItemNeg<T>(this List<T> list, int index)

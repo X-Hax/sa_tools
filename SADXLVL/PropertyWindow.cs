@@ -8,5 +8,10 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             InitializeComponent();
         }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            LevelData.MainForm.DrawLevel();
+        }
     }
 }

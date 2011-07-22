@@ -63,6 +63,18 @@ namespace SonicRetro.SAModel.SADXLVL2
                 COL.Model.DrawModelInvert(dev, transform, textures, Mesh);
         }
 
+        public override void Paste()
+        {
+            LevelData.LevelItems.Add(this);
+            LevelData.geo.COL.Add(COL);
+        }
+
+        public override void Delete()
+        {
+            LevelData.geo.COL.Remove(COL);
+            LevelData.LevelItems.Remove(this);
+        }
+
         [Browsable(true)]
         [DisplayName("Import Model")]
         public void ImportModel()
@@ -71,7 +83,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(dlg.FileName);
-                COL.Model.Attach.CalculateBounds();
                 COL.CalculateBounds();
                 Mesh = COL.Model.Attach.CreateD3DMesh(LevelData.MainForm.d3ddevice);
             }
@@ -82,6 +93,16 @@ namespace SonicRetro.SAModel.SADXLVL2
         public void ExportModel()
         {
 
+        }
+
+        [Browsable(true)]
+        [DisplayName("Edit Materials")]
+        public void EditMaterials()
+        {
+            using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
+            {
+                pw.ShowDialog();
+            }
         }
 
         public string Flags
