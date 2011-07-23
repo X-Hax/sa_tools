@@ -101,6 +101,26 @@ namespace split
                         }
                         IniFile.Save(posini, data["filename"]);
                         break;
+                    case "texlist":
+                        break;
+                    case "leveltexlist":
+                        Dictionary<string, Dictionary<string, string>> lvltxini = new Dictionary<string, Dictionary<string, string>>() { { string.Empty, new Dictionary<string, string>() } };
+                        lvltxini[string.Empty].Add("Level", BitConverter.ToUInt16(exefile, address).ToString("X4"));
+                        ushort lvltxnum = BitConverter.ToUInt16(exefile, address + 2);
+                        address = (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase);
+                        for (int i = 0; i < lvltxnum; i++)
+                        {
+                            Dictionary<string, string> group = new Dictionary<string, string>();
+                            if (BitConverter.ToUInt32(exefile, address) == 0)
+                                group.Add("Name", string.Empty);
+                            else
+                                group.Add("Name", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address) - imageBase)));
+                            group.Add("Textures", BitConverter.ToUInt32(exefile, address + 4).ToString("X8"));
+                            lvltxini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), group);
+                            address += 8;
+                        }
+                        IniFile.Save(lvltxini, data["filename"]);
+                        break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
                         Array.Copy(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), bin, 0, bin.Length);

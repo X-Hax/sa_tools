@@ -153,6 +153,33 @@ namespace build
                             datasection.AddRange(BitConverter.GetBytes((ushort)0x2B));
                             datasection.AddRange(new byte[0x12]);
                             break;
+                        case "leveltexlist":
+                            Dictionary<string, Dictionary<string, string>> lvltxini = IniFile.Load(data["filename"]);
+                            List<byte> lvltxents = new List<byte>();
+                            int lvltxcnt = 0;
+                            while (lvltxini.ContainsKey(lvltxcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = lvltxini[lvltxcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                if (string.IsNullOrWhiteSpace(group["Name"]))
+                                    lvltxents.AddRange(new byte[4]);
+                                else
+                                {
+                                    lvltxents.AddRange(BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count));
+                                    datasection.AddRange(jpenc.GetBytes(group["Name"]));
+                                    datasection.Add(0);
+                                    datasection.Align(4);
+                                }
+                                lvltxents.AddRange(BitConverter.GetBytes(uint.Parse(group["Textures"], System.Globalization.NumberStyles.HexNumber)));
+                                lvltxcnt++;
+                            }
+                            uint lvltxaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(lvltxents.ToArray());
+                            datasection.Align(4);
+                            dataaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(BitConverter.GetBytes(ushort.Parse(data["Level"], System.Globalization.NumberStyles.HexNumber)));
+                            datasection.AddRange(BitConverter.GetBytes((ushort)lvltxcnt));
+                            datasection.AddRange(BitConverter.GetBytes(lvltxaddr));
+                            break;
                         default: // raw binary
                             bool reloc = true;
                             if (data.ContainsKey("dontrelocate"))
