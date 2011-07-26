@@ -153,6 +153,29 @@ namespace build
                             datasection.AddRange(BitConverter.GetBytes((ushort)0x2B));
                             datasection.AddRange(new byte[0x12]);
                             break;
+                        case "texlist":
+                            Dictionary<string, Dictionary<string, string>> texini = IniFile.Load(data["filename"]);
+                            List<byte> texents = new List<byte>();
+                            int texcnt = 0;
+                            while (texini.ContainsKey(texcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = texini[texcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                if (string.IsNullOrWhiteSpace(group["Name"]))
+                                    texents.AddRange(new byte[4]);
+                                else
+                                {
+                                    texents.AddRange(BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count));
+                                    datasection.AddRange(jpenc.GetBytes(group["Name"]));
+                                    datasection.Add(0);
+                                    datasection.Align(4);
+                                }
+                                texents.AddRange(BitConverter.GetBytes(uint.Parse(group["Textures"], System.Globalization.NumberStyles.HexNumber)));
+                                texcnt++;
+                            }
+                            dataaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(texents.ToArray());
+                            datasection.Align(4);
+                            break;
                         case "leveltexlist":
                             Dictionary<string, Dictionary<string, string>> lvltxini = IniFile.Load(data["filename"]);
                             List<byte> lvltxents = new List<byte>();

@@ -102,6 +102,19 @@ namespace split
                         IniFile.Save(posini, data["filename"]);
                         break;
                     case "texlist":
+                        Dictionary<string, Dictionary<string, string>> texini = new Dictionary<string, Dictionary<string, string>>();
+                        int txi = 0;
+                        while (BitConverter.ToUInt64(exefile, address) != 0)
+                        {
+                            Dictionary<string, string> group = new Dictionary<string, string>();
+                            if (BitConverter.ToUInt32(exefile, address) == 0)
+                                group.Add("Name", string.Empty);
+                            else
+                                group.Add("Name", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address) - imageBase)));
+                            group.Add("Textures", BitConverter.ToUInt32(exefile, address + 4).ToString("X8"));
+                            texini.Add(txi.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), group);
+                            address += 8;
+                        }
                         break;
                     case "leveltexlist":
                         Dictionary<string, Dictionary<string, string>> lvltxini = new Dictionary<string, Dictionary<string, string>>() { { string.Empty, new Dictionary<string, string>() } };
