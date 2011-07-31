@@ -46,14 +46,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
-            Matrix transform = Matrix.Identity;
-            transform.Multiply(Matrix.RotationYawPitchRoll(LevelData.BAMSToRad(Rotation.Y), LevelData.BAMSToRad(Rotation.X), LevelData.BAMSToRad(Rotation.Z)));
-            transform.Multiply(Matrix.Translation(Position.ToVector3()));
-            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform);
-            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform));
-            IntersectInformation info;
-            if (!Mesh.Intersect(pos, dir, out info)) return -1;
-            return info.Dist;
+            return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
         public override void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected)
@@ -153,4 +146,52 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
     }
+
+    public class SETItem : Item
+    {
+        public override Vertex Position
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public override Rotation Rotation
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+            set
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public override void Paste()
+        {
+            LevelData.SETItems[LevelData.Character].Add(this);
+        }
+
+        public override void Delete()
+        {
+            LevelData.SETItems[LevelData.Character].Remove(this);
+        }
+
+        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
 }

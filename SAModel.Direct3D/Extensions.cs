@@ -143,7 +143,7 @@ namespace SonicRetro.SAModel.Direct3D
 
         public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
         {
-            int modelindex = 0;
+            int modelindex = -1;
             obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
         }
 
@@ -186,7 +186,7 @@ namespace SonicRetro.SAModel.Direct3D
 
         public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
         {
-            int modelindex = 0;
+            int modelindex = -1;
             obj.DrawModelTreeInvert(device, transform, textures, meshes, ref modelindex);
         }
 
@@ -220,6 +220,56 @@ namespace SonicRetro.SAModel.Direct3D
                 DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
             transform.Pop();
             device.RenderState.FillMode = mode;
+        }
+
+        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
+        {
+            Matrix transform = Matrix.Identity;
+            transform.Multiply(Matrix.RotationYawPitchRoll(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z)));
+            transform.Multiply(Matrix.Translation(obj.Position.ToVector3()));
+            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform);
+            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform));
+            IntersectInformation info;
+            if (!mesh.Intersect(pos, dir, out info)) return -1;
+            return info.Dist;
+        }
+
+        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
+        {
+            int modelindex = -1;
+            return CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
+        }
+
+        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
+        {
+            transform.Push();
+            modelindex++;
+            transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            float dist = -1;
+            if (obj.Attach != null)
+            {
+                Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+                Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
+                IntersectInformation info;
+                if (mesh[modelindex].Intersect(pos, dir, out info))
+                {
+                    if (dist == -1)
+                        dist = info.Dist;
+                    else if (dist > info.Dist)
+                        dist = info.Dist;
+                }
+            }
+            foreach (Object child in obj.Children)
+            {
+                float r = CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
+                if (dist == -1)
+                    dist = r;
+                else if (dist > r & r != -1)
+                    dist = r;
+            }
+            return dist;
         }
 
         public static Attach obj2nj(string objfile)
