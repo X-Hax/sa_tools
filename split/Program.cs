@@ -114,7 +114,9 @@ namespace split
                             group.Add("Textures", BitConverter.ToUInt32(exefile, address + 4).ToString("X8"));
                             texini.Add(txi.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), group);
                             address += 8;
+                            txi++;
                         }
+                        IniFile.Save(texini, data["filename"]);
                         break;
                     case "leveltexlist":
                         Dictionary<string, Dictionary<string, string>> lvltxini = new Dictionary<string, Dictionary<string, string>>() { { string.Empty, new Dictionary<string, string>() } };
