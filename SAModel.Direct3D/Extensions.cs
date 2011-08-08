@@ -84,7 +84,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+            if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
@@ -120,7 +120,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+            if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
@@ -154,7 +154,7 @@ namespace SonicRetro.SAModel.Direct3D
                 transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
                 transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
                 transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-                if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+                if (obj.Attach != null)
                 {
                     device.SetTransform(TransformType.World, transform.Top);
                     for (int j = 0; j < obj.Attach.Mesh.Length; j++)
@@ -199,7 +199,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null & (obj.Flags & ObjectFlags.NoDisplay) == 0)
+            if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
@@ -224,6 +224,7 @@ namespace SonicRetro.SAModel.Direct3D
 
         public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
         {
+            if (mesh == null) return -1;
             Matrix transform = Matrix.Identity;
             transform.Multiply(Matrix.RotationYawPitchRoll(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z)));
             transform.Multiply(Matrix.Translation(obj.Position.ToVector3()));

@@ -44,6 +44,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
 
+        [Browsable(false)]
         public virtual bool CanCopy { get { return true; } }
         public abstract void Paste();
         public abstract void Delete();
@@ -329,11 +330,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return LevelData.BAMSToDeg(rotation.X);
+                return ObjectHelper.BAMSToDeg(rotation.X);
             }
             set
             {
-                rotation.X = LevelData.DegToBAMS(value);
+                rotation.X = ObjectHelper.DegToBAMS(value);
                 LevelData.MainForm.DrawLevel();
             }
         }
@@ -342,11 +343,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return LevelData.BAMSToDeg(rotation.Y);
+                return ObjectHelper.BAMSToDeg(rotation.Y);
             }
             set
             {
-                rotation.Y = LevelData.DegToBAMS(value);
+                rotation.Y = ObjectHelper.DegToBAMS(value);
                 LevelData.MainForm.DrawLevel();
             }
         }
@@ -355,11 +356,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return LevelData.BAMSToDeg(rotation.Z);
+                return ObjectHelper.BAMSToDeg(rotation.Z);
             }
             set
             {
-                rotation.Z = LevelData.DegToBAMS(value);
+                rotation.Z = ObjectHelper.DegToBAMS(value);
                 LevelData.MainForm.DrawLevel();
             }
         }
@@ -367,9 +368,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         public EditableRotation(Rotation item)
         {
             rotation = item;
-            X = LevelData.BAMSToDeg(item.X);
-            Y = LevelData.BAMSToDeg(item.Y);
-            Z = LevelData.BAMSToDeg(item.Z);
+            X = ObjectHelper.BAMSToDeg(item.X);
+            Y = ObjectHelper.BAMSToDeg(item.Y);
+            Z = ObjectHelper.BAMSToDeg(item.Z);
         }
 
         public Rotation ToRotation()

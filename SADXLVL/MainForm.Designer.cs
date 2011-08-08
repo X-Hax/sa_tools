@@ -44,6 +44,14 @@
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sonicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.knucklesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.amyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gammaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -51,7 +59,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(584, 24);
@@ -165,6 +174,66 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(153, 114);
             // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.characterToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // characterToolStripMenuItem
+            // 
+            this.characterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sonicToolStripMenuItem,
+            this.tailsToolStripMenuItem,
+            this.knucklesToolStripMenuItem,
+            this.amyToolStripMenuItem,
+            this.gammaToolStripMenuItem,
+            this.bigToolStripMenuItem});
+            this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
+            this.characterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.characterToolStripMenuItem.Text = "&Character";
+            this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
+            // 
+            // sonicToolStripMenuItem
+            // 
+            this.sonicToolStripMenuItem.Checked = true;
+            this.sonicToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sonicToolStripMenuItem.Name = "sonicToolStripMenuItem";
+            this.sonicToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sonicToolStripMenuItem.Text = "&Sonic";
+            // 
+            // tailsToolStripMenuItem
+            // 
+            this.tailsToolStripMenuItem.Name = "tailsToolStripMenuItem";
+            this.tailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tailsToolStripMenuItem.Text = "&Tails";
+            // 
+            // knucklesToolStripMenuItem
+            // 
+            this.knucklesToolStripMenuItem.Name = "knucklesToolStripMenuItem";
+            this.knucklesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.knucklesToolStripMenuItem.Text = "&Knuckles";
+            // 
+            // amyToolStripMenuItem
+            // 
+            this.amyToolStripMenuItem.Name = "amyToolStripMenuItem";
+            this.amyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.amyToolStripMenuItem.Text = "&Amy";
+            // 
+            // gammaToolStripMenuItem
+            // 
+            this.gammaToolStripMenuItem.Name = "gammaToolStripMenuItem";
+            this.gammaToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gammaToolStripMenuItem.Text = "&Gamma";
+            // 
+            // bigToolStripMenuItem
+            // 
+            this.bigToolStripMenuItem.Name = "bigToolStripMenuItem";
+            this.bigToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bigToolStripMenuItem.Text = "&Big";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -205,6 +274,14 @@
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem characterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sonicToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tailsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem knucklesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem amyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gammaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bigToolStripMenuItem;
     }
 }
 

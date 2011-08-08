@@ -47,7 +47,7 @@ namespace SonicRetro.SAModel
             Indexes[0] = BitConverter.ToUInt16(file, address);
             Indexes[1] = BitConverter.ToUInt16(file, address + 2);
             Indexes[2] = BitConverter.ToUInt16(file, address + 4);
-            Indexes[3] = BitConverter.ToUInt16(file, address + 8);
+            Indexes[3] = BitConverter.ToUInt16(file, address + 6);
         }
 
         public Quad(Dictionary<string, string> group, string name)

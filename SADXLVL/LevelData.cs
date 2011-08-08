@@ -5,6 +5,7 @@ using puyo_tools;
 using VrSharp.PvrTexture;
 using Microsoft.DirectX.Direct3D;
 using System;
+using System.CodeDom.Compiler;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -17,8 +18,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static Dictionary<string, Texture[]> Textures;
         public static List<LevelItem> LevelItems;
         public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
+        public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
         public static int Character;
         public static StartPosItem[] StartPositions;
+        public static string SETName;
+        public static List<ObjectDefinition> ObjDefs;
         public static List<SETItem>[] SETItems;
 
         public static Bitmap[] GetTextures(string filename)
@@ -39,24 +43,31 @@ namespace SonicRetro.SAModel.SADXLVL2
             return functionReturnValue.ToArray();
         }
 
-        public static float BAMSToRad(int BAMS)
+        internal static void ChangeObjectType(SETItem entry)
         {
-            return (float)(BAMS / (65536 / (2 * Math.PI)));
+            Type t = ObjDefs[entry.ID].ObjectType;
+            if (entry.GetType() == t) return;
+            byte[] entb = entry.GetBytes();
+            SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { entb, 0 });
+            int i = SETItems[Character].IndexOf(entry);
+            SETItems[Character][i] = oe;
+            if (MainForm.SelectedItems != null)
+            {
+                i = MainForm.SelectedItems.IndexOf(entry);
+                if (i > -1)
+                {
+                    MainForm.SelectedItems[i] = oe;
+                    MainForm.SelectedItemChanged();
+                }
+            }
         }
 
-        public static int RadToBAMS(float rad)
+        internal static SETItem CreateObject(ushort ID)
         {
-            return (int)(rad * (65536 / (2 * Math.PI)));
-        }
-
-        public static float BAMSToDeg(int BAMS)
-        {
-            return (float)(BAMS / (65536 / 360.0));
-        }
-
-        public static int DegToBAMS(float deg)
-        {
-            return (int)(deg * (65536 / 360.0));
+            Type t = ObjDefs[ID].ObjectType;
+            SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { });
+            oe.ID = ID;
+            return oe;
         }
     }
 }
