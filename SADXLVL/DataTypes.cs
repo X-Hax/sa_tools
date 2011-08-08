@@ -49,11 +49,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
-        public override void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected)
+        public override void Render(Device dev, MatrixStack transform, bool selected)
         {
-            COL.Model.DrawModel(dev, transform, textures, Mesh);
+            COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh);
             if (selected)
-                COL.Model.DrawModelInvert(dev, transform, textures, Mesh);
+                COL.Model.DrawModelInvert(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh);
         }
 
         public override void Paste()
@@ -188,10 +188,79 @@ namespace SonicRetro.SAModel.SADXLVL2
             throw new System.NotImplementedException();
         }
 
-        public override void Render(Device dev, MatrixStack transform, Texture[] textures, bool selected)
+        public override void Render(Device dev, MatrixStack transform, bool selected)
         {
             throw new System.NotImplementedException();
         }
     }
 
+    public class StartPosItem : Item
+    {
+        private Object Model;
+        private Microsoft.DirectX.Direct3D.Mesh[] Meshes;
+        private string texture;
+        private float offset;
+
+        public StartPosItem(Object model, string textures, float offset, Vertex position, int yrot, Device dev)
+        {
+            Model = model;
+            Object[] models = model.GetObjects();
+            Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
+            for (int i = 0; i < models.Length; i++)
+                if (models[i].Attach != null)
+                    Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
+            texture = textures;
+            this.offset = offset;
+            Position = position;
+            YRot = yrot;
+        }
+
+        public override Vertex Position { get; set; }
+
+        private int YRot;
+        public override Rotation Rotation
+        {
+            get
+            {
+                return new Rotation(0, YRot, 0);
+            }
+            set
+            {
+                YRot = value.Y;
+            }
+        }
+
+        public override bool CanCopy { get { return false; } }
+
+        public override void Paste()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Delete()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        {
+            MatrixStack transform = new MatrixStack();
+            transform.TranslateLocal(0, offset, 0);
+            transform.TranslateLocal(Position.ToVector3());
+            transform.RotateYawPitchRollLocal(LevelData.BAMSToRad(YRot), 0, 0);
+            return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
+        }
+
+        public override void Render(Device dev, MatrixStack transform, bool selected)
+        {
+            transform.Push();
+            transform.TranslateLocal(0, offset, 0);
+            transform.TranslateLocal(Position.ToVector3());
+            transform.RotateYawPitchRollLocal(LevelData.BAMSToRad(YRot), 0, 0);
+            Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes);
+            if (selected)
+                Model.DrawModelTreeInvert(dev, transform, LevelData.Textures[texture], Meshes);
+            transform.Pop();
+        }
+    }
 }

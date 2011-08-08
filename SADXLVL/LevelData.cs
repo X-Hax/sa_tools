@@ -16,7 +16,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static Dictionary<string, Bitmap[]> TextureBitmaps;
         public static Dictionary<string, Texture[]> Textures;
         public static List<LevelItem> LevelItems;
+        public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
         public static int Character;
+        public static StartPosItem[] StartPositions;
         public static List<SETItem>[] SETItems;
 
         public static Bitmap[] GetTextures(string filename)

@@ -54,6 +54,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.Lights[0].Specular = Color.White;
             d3ddevice.Lights[0].Range = 100000;
             d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
+            d3ddevice.Lights[0].Enabled = true;
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -101,6 +102,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             try
             {
 #endif
+                LevelData.Character = 0;
                 Dictionary<string, string> group = ini[level];
                 string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
                 string levelact = group.GetValueOrDefault("LevelID", "0000");
@@ -131,17 +133,73 @@ namespace SonicRetro.SAModel.SADXLVL2
                         LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
                     LevelData.leveltexs = LevelData.geo.TextureFileName;
                 }
+                LevelData.StartPositions = new StartPosItem[1];
+                for (int i = 0; i < LevelData.StartPositions.Length; i++)
+                {
+                    Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+                    Vertex pos = new Vertex();
+                    int rot = 0;
+                    if (posini.ContainsKey(levelact))
+                    {
+                        pos = new Vertex(posini[levelact]["Position"]);
+                        rot = int.Parse(posini[levelact]["YRotation"], System.Globalization.NumberStyles.HexNumber);
+                    }
+                    Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "mdl"]);
+                    LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty][LevelData.Characters[i] + "tex"], float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+                    Dictionary<string, Dictionary<string, string>> texini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "texlist"]);
+                    int ti = 0;
+                    while (texini.ContainsKey(ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                    {
+                        string texname = texini[ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
+                        if (!LevelData.TextureBitmaps.ContainsKey(texname))
+                        {
+                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                            Texture[] texs = new Texture[TexBmps.Length];
+                            for (int j = 0; j < TexBmps.Length - 1; j++)
+                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                            LevelData.TextureBitmaps.Add(texname, TexBmps);
+                            LevelData.Textures.Add(texname, texs);
+                        }
+                        ti++;
+                    }
+                    if (i == 0 & levelnum == 19)
+                    {
+                        mdlini = IniFile.Load(ini[string.Empty]["supermdl"]);
+                        LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty]["supertex"], float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+                    }
+                }
+                foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
+                {
+                    Dictionary<string, Dictionary<string, string>> texini = IniFile.Load(file);
+                    if (texini[string.Empty]["Level"] != levelact) continue;
+                    int ti = 0;
+                    while (texini.ContainsKey(ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                    {
+                        string texname = texini[ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
+                        if (!LevelData.TextureBitmaps.ContainsKey(texname))
+                        {
+                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                            Texture[] texs = new Texture[TexBmps.Length];
+                            for (int j = 0; j < TexBmps.Length - 1; j++)
+                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                            LevelData.TextureBitmaps.Add(texname, TexBmps);
+                            LevelData.Textures.Add(texname, texs);
+                        }
+                        ti++;
+                    }
+                }
                 string[] textures = group["Textures"].Split(',');
                 foreach (string tex in textures)
                 {
-                    Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
-                    Texture[] texs = new Texture[TexBmps.Length];
-                    for (int j = 0; j < TexBmps.Length - 1; j++)
-                        texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                     if (!LevelData.TextureBitmaps.ContainsKey(tex))
+                    {
+                        Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
+                        Texture[] texs = new Texture[TexBmps.Length];
+                        for (int j = 0; j < TexBmps.Length - 1; j++)
+                            texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                         LevelData.TextureBitmaps.Add(tex, TexBmps);
-                    if (!LevelData.Textures.ContainsKey(tex))
                         LevelData.Textures.Add(tex, texs);
+                    }
                     if (string.IsNullOrEmpty(LevelData.leveltexs))
                         LevelData.leveltexs = tex;
                 }
@@ -181,12 +239,29 @@ namespace SonicRetro.SAModel.SADXLVL2
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> group = ini[level];
-            if (LevelData.geo !=null)
+            string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
+            string levelact = group.GetValueOrDefault("LevelID", "0000");
+            byte levelnum = byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
+            byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
+            if (LevelData.geo != null)
             {
-                Dictionary<string, Dictionary<string, string>> geoini = new Dictionary<string,Dictionary<string,string>>();
+                Dictionary<string, Dictionary<string, string>> geoini = new Dictionary<string, Dictionary<string, string>>();
                 geoini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", LevelData.geo.Name } });
                 LevelData.geo.Save(geoini, Path.Combine(Path.GetDirectoryName(group["LevelGeo"]), "Animations"));
                 IniFile.Save(geoini, group["LevelGeo"]);
+            }
+            for (int i = 0; i < LevelData.StartPositions.Length; i++)
+            {
+                Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+                if (posini.ContainsKey(levelact))
+                    posini.Remove(levelact);
+                if (LevelData.StartPositions[i].Position.X != 0 & LevelData.StartPositions[i].Position.Y != 0 & LevelData.StartPositions[i].Position.Z != 0 & LevelData.StartPositions[i].Rotation.Y != 0)
+                {
+                    posini.Add(levelact, new Dictionary<string, string>()
+                    { { "Position", LevelData.StartPositions[i].Position.ToString() },
+                    { "YRotation", LevelData.StartPositions[i].Rotation.Y.ToString("X8") } });
+                }
+                IniFile.Save(posini, ini[string.Empty][LevelData.Characters[i] + "start"]);
             }
         }
 
@@ -229,8 +304,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             if (LevelData.LevelItems != null)
             {
                 for (int i = 0; i < LevelData.LevelItems.Count; i++)
-                    LevelData.LevelItems[i].Render(d3ddevice, transform, LevelData.Textures[LevelData.leveltexs], SelectedItems.Contains(LevelData.LevelItems[i]));
+                    LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i]));
             }
+            LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character]));
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -400,7 +476,11 @@ namespace SonicRetro.SAModel.SADXLVL2
                     {
                         SelectedItems.Clear();
                     }
-                    if (SelectedItems.Count > 0)
+                    bool cancopy = false;
+                    foreach (Item obj in SelectedItems)
+                        if (obj.CanCopy)
+                            cancopy = true;
+                    if (cancopy)
                     {
                         cutToolStripMenuItem.Enabled = true;
                         copyToolStripMenuItem.Enabled = true;
@@ -412,7 +492,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                         copyToolStripMenuItem.Enabled = false;
                         deleteToolStripMenuItem.Enabled = false;
                     }
-                    //pasteToolStripMenuItem.Enabled = Clipboard.GetDataObject().GetDataPresent("SADXLVLObjectList");
+                    pasteToolStripMenuItem.Enabled = Clipboard.GetDataObject().GetDataPresent("SADXLVLObjectList");
                     contextMenuStrip1.Show(panel1, e.Location);
                     break;
             }
@@ -511,10 +591,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             List<Item> selitems = new List<Item>();
             foreach (Item item in SelectedItems)
-            {
-                item.Delete();
-                selitems.Add(item);
-            }
+                if (item.CanCopy)
+                {
+                    item.Delete();
+                    selitems.Add(item);
+                }
             SelectedItems.Clear();
             SelectedItemChanged();
             DrawLevel();
@@ -526,7 +607,8 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             List<Item> selitems = new List<Item>();
             foreach (Item item in SelectedItems)
-                selitems.Add(item);
+                if (item.CanCopy)
+                    selitems.Add(item);
             if (selitems.Count == 0) return;
             Clipboard.SetData("SADXLVLObjectList", selitems);
         }
@@ -551,7 +633,8 @@ namespace SonicRetro.SAModel.SADXLVL2
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (Item item in SelectedItems)
-                item.Delete();
+                if (item.CanCopy)
+                    item.Delete();
             SelectedItems.Clear();
             SelectedItemChanged();
             DrawLevel();

@@ -28,6 +28,13 @@ namespace SonicRetro.SAModel
             Z = int.Parse(a[2], System.Globalization.NumberStyles.HexNumber);
         }
 
+        public Rotation(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
