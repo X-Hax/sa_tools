@@ -53,7 +53,7 @@ namespace SonicRetro.SAModel
                 tmpaddr -= imageBase;
                 StringBuilder sb = new StringBuilder();
                 while (file[tmpaddr] != 0)
-                    sb.Append((char)file[tmpaddr]);
+                    sb.Append((char)file[tmpaddr++]);
                 TextureFileName = sb.ToString();
             }
             TextureList = BitConverter.ToUInt32(file, address + 0x18);

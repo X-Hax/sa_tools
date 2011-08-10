@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -10,24 +11,36 @@ namespace SonicRetro.SAModel.SADXLVL2
             Dictionary<string, Dictionary<string, string>> result = new Dictionary<string, Dictionary<string, string>>();
             Dictionary<string, string> curent = new Dictionary<string, string>();
             result.Add(string.Empty, curent);
+            string curgroup = string.Empty;
             string[] fc = File.ReadAllLines(filename);
             for (int i = 0; i <= fc.Length - 1; i++)
             {
                 string line = fc[i].Split(';')[0].Trim();
                 if (line.StartsWith("[") & line.EndsWith("]"))
                 {
+                    curgroup = line.Substring(1, line.Length - 2);
                     curent = new Dictionary<string, string>();
-                    result.Add(line.Substring(1, line.Length - 2), curent);
-                }
-                else
-                {
-                    if (line.IndexOf('=') > -1)
+                    try
                     {
-                        curent.Add(line.Substring(0, line.IndexOf('=')), line.Substring(line.IndexOf('=') + 1));
+                        result.Add(curgroup, curent);
                     }
-                    else
+                    catch (ArgumentException ex)
                     {
-                        curent.Add(line, "");
+                        throw new Exception("INI File error: Group \"" + line.Substring(1, line.Length - 2) + "\" already exists.\n" + filename + ":line " + i, ex);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(line))
+                {
+                    try
+                    {
+                        if (line.IndexOf('=') > -1)
+                            curent.Add(line.Substring(0, line.IndexOf('=')), line.Substring(line.IndexOf('=') + 1));
+                        else
+                            curent.Add(line, "");
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        throw new Exception("INI File error: Value \"" + line.Split('=')[0] + "\" already exists in group \"" + curgroup + "\".\n" + filename + ":line " + i, ex);
                     }
                 }
             }

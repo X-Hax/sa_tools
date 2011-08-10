@@ -206,101 +206,114 @@ namespace SonicRetro.SAModel.SADXLVL2
                         ti++;
                     }
                 }
-                string[] textures = group["Textures"].Split(',');
-                foreach (string tex in textures)
+                if (group.ContainsKey("Textures"))
                 {
-                    if (!LevelData.TextureBitmaps.ContainsKey(tex))
+                    string[] textures = group["Textures"].Split(',');
+                    foreach (string tex in textures)
                     {
-                        Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
-                        Texture[] texs = new Texture[TexBmps.Length];
-                        for (int j = 0; j < TexBmps.Length - 1; j++)
-                            texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
-                        LevelData.TextureBitmaps.Add(tex, TexBmps);
-                        LevelData.Textures.Add(tex, texs);
+                        if (!LevelData.TextureBitmaps.ContainsKey(tex))
+                        {
+                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
+                            Texture[] texs = new Texture[TexBmps.Length];
+                            for (int j = 0; j < TexBmps.Length - 1; j++)
+                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                            LevelData.TextureBitmaps.Add(tex, TexBmps);
+                            LevelData.Textures.Add(tex, texs);
+                        }
+                        if (string.IsNullOrEmpty(LevelData.leveltexs))
+                            LevelData.leveltexs = tex;
                     }
-                    if (string.IsNullOrEmpty(LevelData.leveltexs))
-                        LevelData.leveltexs = tex;
                 }
                 LevelData.ObjDefs = new List<ObjectDefinition>();
                 Dictionary<string, Dictionary<string, string>> objdefini = IniFile.Load(ini[string.Empty]["objdefs"]);
-                Dictionary<string, Dictionary<string, string>> objlstini = IniFile.Load(group["ObjList"]);
-                if (!Directory.Exists("dllcache"))
-                    Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
-                int ID = 0;
-                while (objlstini.ContainsKey(ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                if (File.Exists(group.GetValueOrDefault("ObjList", string.Empty)))
                 {
-                    string codeaddr = objlstini[ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Code"];
-                    if (!objdefini.ContainsKey(codeaddr))
-                        codeaddr = "0";
-                    Dictionary<string, string> defgroup = objdefini[codeaddr];
-                    ObjectDefinition def = null;
-                    if (defgroup.ContainsKey("codefile"))
+                    Dictionary<string, Dictionary<string, string>> objlstini = IniFile.Load(group["ObjList"]);
+                    if (!Directory.Exists("dllcache"))
+                        Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+                    int ID = 0;
+                    while (objlstini.ContainsKey(ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
                     {
-                        string ty = defgroup["codetype"];
-                        string dllfile = System.IO.Path.Combine("dllcache", ty + ".dll");
-                        DateTime modDate = DateTime.MinValue;
-                        if (System.IO.File.Exists(dllfile))
-                            modDate = System.IO.File.GetLastWriteTime(dllfile);
-                        string fp = defgroup["codefile"].Replace('/', System.IO.Path.DirectorySeparatorChar);
-                        if (modDate >= System.IO.File.GetLastWriteTime(fp))
-                            def = (ObjectDefinition)Activator.CreateInstance(System.Reflection.Assembly.LoadFile(System.IO.Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
-                        else
+                        string codeaddr = objlstini[ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Code"];
+                        if (!objdefini.ContainsKey(codeaddr))
+                            codeaddr = "0";
+                        Dictionary<string, string> defgroup = objdefini[codeaddr];
+                        ObjectDefinition def = null;
+                        if (defgroup.ContainsKey("codefile"))
                         {
-                            string ext = System.IO.Path.GetExtension(fp);
-                            CodeDomProvider pr = null;
-                            switch (ext.ToLowerInvariant())
-                            {
-                                case ".cs":
-                                    pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-                                    break;
-                                case ".vb":
-                                    pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-                                    break;
-                            }
-                            if (pr != null)
-                            {
-                                CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", "Microsoft.DirectX.dll", "Microsoft.DirectX.Direct3D.dll", "Microsoft.DirectX.Direct3DX.dll", System.Reflection.Assembly.GetExecutingAssembly().Location, System.Reflection.Assembly.GetAssembly(typeof(LandTable)).Location, System.Reflection.Assembly.GetAssembly(typeof(SonicRetro.SAModel.Direct3D.Camera)).Location });
-                                para.GenerateExecutable = false;
-                                para.GenerateInMemory = false;
-                                para.IncludeDebugInformation = true;
-                                para.OutputAssembly = System.IO.Path.Combine(Environment.CurrentDirectory, dllfile);
-                                CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-                                if (res.Errors.HasErrors)
-                                    def = new DefaultObjectDefinition();
-                                else
-                                    def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-                            }
+                            string ty = defgroup["codetype"];
+                            string dllfile = System.IO.Path.Combine("dllcache", ty + ".dll");
+                            DateTime modDate = DateTime.MinValue;
+                            if (System.IO.File.Exists(dllfile))
+                                modDate = System.IO.File.GetLastWriteTime(dllfile);
+                            string fp = defgroup["codefile"].Replace('/', System.IO.Path.DirectorySeparatorChar);
+                            if (modDate >= System.IO.File.GetLastWriteTime(fp))
+                                def = (ObjectDefinition)Activator.CreateInstance(System.Reflection.Assembly.LoadFile(System.IO.Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
                             else
-                                def = new DefaultObjectDefinition();
+                            {
+                                string ext = System.IO.Path.GetExtension(fp);
+                                CodeDomProvider pr = null;
+                                switch (ext.ToLowerInvariant())
+                                {
+                                    case ".cs":
+                                        pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                                        break;
+                                    case ".vb":
+                                        pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                                        break;
+                                }
+                                if (pr != null)
+                                {
+                                    CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", "Microsoft.DirectX.dll", "Microsoft.DirectX.Direct3D.dll", "Microsoft.DirectX.Direct3DX.dll", System.Reflection.Assembly.GetExecutingAssembly().Location, System.Reflection.Assembly.GetAssembly(typeof(LandTable)).Location, System.Reflection.Assembly.GetAssembly(typeof(SonicRetro.SAModel.Direct3D.Camera)).Location });
+                                    para.GenerateExecutable = false;
+                                    para.GenerateInMemory = false;
+                                    para.IncludeDebugInformation = true;
+                                    para.OutputAssembly = System.IO.Path.Combine(Environment.CurrentDirectory, dllfile);
+                                    CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+                                    if (res.Errors.HasErrors)
+                                        def = new DefaultObjectDefinition();
+                                    else
+                                        def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+                                }
+                                else
+                                    def = new DefaultObjectDefinition();
+                            }
+                        }
+                        else
+                            def = new DefaultObjectDefinition();
+                        LevelData.ObjDefs.Add(def);
+                        def.Init(defgroup, objlstini[ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"], d3ddevice);
+                        ID++;
+                    }
+                    if (LevelData.ObjDefs.Count > 0)
+                    {
+                        LevelData.SETName = group.GetValueOrDefault("SETName", levelact);
+                        string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+                        LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
+                        for (int i = 0; i < LevelData.SETChars.Length; i++)
+                        {
+                            List<SETItem> list = new List<SETItem>();
+                            if (File.Exists(string.Format(setstr, LevelData.SETChars[i])))
+                            {
+                                byte[] setfile = File.ReadAllBytes(string.Format(setstr, LevelData.SETChars[i]));
+                                int count = BitConverter.ToInt32(setfile, 0);
+                                for (int j = 0; j < count; j++)
+                                {
+                                    SETItem ent = new SETItem(setfile, (j * 0x20) + 0x20);
+                                    Type t = LevelData.ObjDefs[ent.ID].ObjectType;
+                                    if (ent.GetType() != t)
+                                        ent = (SETItem)Activator.CreateInstance(t, new object[] { ent.GetBytes(), 0 });
+                                    list.Add(ent);
+                                }
+                            }
+                            LevelData.SETItems[i] = list;
                         }
                     }
                     else
-                        def = new DefaultObjectDefinition();
-                    LevelData.ObjDefs.Add(def);
-                    def.Init(defgroup, objlstini[ID.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"], d3ddevice);
-                    ID++;
+                        LevelData.SETItems = null;
                 }
-                LevelData.SETName = group.GetValueOrDefault("SETName", levelact);
-                string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-                LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
-                for (int i = 0; i < LevelData.SETChars.Length; i++)
-                {
-                    List<SETItem> list = new List<SETItem>();
-                    if (File.Exists(string.Format(setstr, LevelData.SETChars[i])))
-                    {
-                        byte[] setfile = File.ReadAllBytes(string.Format(setstr, LevelData.SETChars[i]));
-                        int count = BitConverter.ToInt32(setfile, 0);
-                        for (int j = 0; j < count; j++)
-                        {
-                            SETItem ent = new SETItem(setfile, (j * 0x20) + 0x20);
-                            Type t = LevelData.ObjDefs[ent.ID].ObjectType;
-                            if (ent.GetType() != t)
-                                ent = (SETItem)Activator.CreateInstance(t, new object[] { ent.GetBytes(), 0 });
-                            list.Add(ent);
-                        }
-                    }
-                    LevelData.SETItems[i] = list;
-                }
+                else
+                    LevelData.SETItems = null;
 #if !DEBUG
             }
             catch (Exception ex)
@@ -361,19 +374,22 @@ namespace SonicRetro.SAModel.SADXLVL2
                 }
                 IniFile.Save(posini, ini[string.Empty][LevelData.Characters[i] + "start"]);
             }
-            for (int i = 0; i < LevelData.SETItems.Length; i++)
+            if (LevelData.SETItems != null)
             {
-                string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-                if (File.Exists(setstr))
-                    File.Delete(setstr);
-                if (LevelData.SETItems[i].Count == 0)
-                    continue;
-                List<byte> file = new List<byte>(LevelData.SETItems[i].Count * 0x20 + 0x20);
-                file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
-                file.Align(0x20);
-                foreach (SETItem item in LevelData.SETItems[i])
-                    file.AddRange(item.GetBytes());
-                File.WriteAllBytes(setstr, file.ToArray());
+                for (int i = 0; i < LevelData.SETItems.Length; i++)
+                {
+                    string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
+                    if (File.Exists(setstr))
+                        File.Delete(setstr);
+                    if (LevelData.SETItems[i].Count == 0)
+                        continue;
+                    List<byte> file = new List<byte>(LevelData.SETItems[i].Count * 0x20 + 0x20);
+                    file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
+                    file.Align(0x20);
+                    foreach (SETItem item in LevelData.SETItems[i])
+                        file.AddRange(item.GetBytes());
+                    File.WriteAllBytes(setstr, file.ToArray());
+                }
             }
         }
 
@@ -420,8 +436,9 @@ namespace SonicRetro.SAModel.SADXLVL2
                         LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i]));
             }
             LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character]));
-            foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-                item.Render(d3ddevice, transform, SelectedItems.Contains(item));
+            if (LevelData.SETItems != null)
+                foreach (SETItem item in LevelData.SETItems[LevelData.Character])
+                    item.Render(d3ddevice, transform, SelectedItems.Contains(item));
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -565,15 +582,16 @@ namespace SonicRetro.SAModel.SADXLVL2
                 mindist = dist;
                 item = LevelData.StartPositions[LevelData.Character];
             }
-            foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
-            {
-                dist = setitem.CheckHit(Near, Far, viewport, proj, view);
-                if (dist > 0 & dist < mindist)
+            if (LevelData.SETItems != null)
+                foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
                 {
-                    mindist = dist;
-                    item = setitem;
+                    dist = setitem.CheckHit(Near, Far, viewport, proj, view);
+                    if (dist > 0 & dist < mindist)
+                    {
+                        mindist = dist;
+                        item = setitem;
+                    }
                 }
-            }
             switch (e.Button)
             {
                 case MouseButtons.Left:

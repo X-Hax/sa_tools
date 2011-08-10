@@ -81,10 +81,15 @@ namespace SonicRetro.SAModel
             Mesh = new Mesh[meshlist.Length];
             for (int i = 0; i < Mesh.Length; i++)
                 Mesh[i] = new Mesh(INI, meshlist[i]);
-            string[] matlist = group["Material"].Split(',');
-            Material = new Material[matlist.Length];
-            for (int i = 0; i < Material.Length; i++)
-                Material[i] = new Material(INI[matlist[i]], matlist[i]);
+            if (!string.IsNullOrEmpty(group["Material"]))
+            {
+                string[] matlist = group["Material"].Split(',');
+                Material = new Material[matlist.Length];
+                for (int i = 0; i < Material.Length; i++)
+                    Material[i] = new Material(INI[matlist[i]], matlist[i]);
+            }
+            else
+                Material = new Material[0];
             Center = new Vertex(group["Center"]);
             Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
         }

@@ -164,6 +164,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             isLoaded = true;
         }
 
+        [ParenthesizePropertyName(true)]
+        public string Name { get { return LevelData.ObjDefs[id].Name; } }
+
         protected bool isLoaded = false;
         private ushort id;
         [Editor(typeof(IDEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -289,6 +292,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             MatrixStack transform = new MatrixStack();
+            transform.Push();
             transform.TranslateLocal(0, offset, 0);
             transform.TranslateLocal(Position.ToVector3());
             transform.RotateYawPitchRollLocal(ObjectHelper.BAMSToRad(YRot), 0, 0);
