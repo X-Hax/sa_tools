@@ -51,7 +51,10 @@ namespace split
                         SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(exefile, address, imageBase, true);
                         Dictionary<string, Dictionary<string, string>> tblini = new Dictionary<string, Dictionary<string, string>>();
                         tblini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", tbl.Name } });
-                        tbl.Save(tblini, Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations"));
+                        string anipath = Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations");
+                        if (tbl.Anim.Count > 0)
+                            Directory.CreateDirectory(anipath);
+                        tbl.Save(tblini, anipath);
                         IniFile.Save(tblini, data["filename"]);
                         break;
                     case "model":
@@ -120,7 +123,8 @@ namespace split
                         break;
                     case "leveltexlist":
                         Dictionary<string, Dictionary<string, string>> lvltxini = new Dictionary<string, Dictionary<string, string>>() { { string.Empty, new Dictionary<string, string>() } };
-                        lvltxini[string.Empty].Add("Level", BitConverter.ToUInt16(exefile, address).ToString("X4"));
+                        ushort levelnum = BitConverter.ToUInt16(exefile, address);
+                        lvltxini[string.Empty].Add("Level", ((levelnum >> 8) & 0xFF).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0') + (levelnum & 0xFF).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0'));
                         ushort lvltxnum = BitConverter.ToUInt16(exefile, address + 2);
                         address = (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase);
                         for (int i = 0; i < lvltxnum; i++)

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.CodeDom.Compiler;
 
 namespace build
 {
@@ -199,7 +198,7 @@ namespace build
                             datasection.AddRange(lvltxents.ToArray());
                             datasection.Align(4);
                             dataaddr = startaddress + imageBase + (uint)datasection.Count;
-                            datasection.AddRange(BitConverter.GetBytes(ushort.Parse(data["Level"], System.Globalization.NumberStyles.HexNumber)));
+                            datasection.AddRange(BitConverter.GetBytes((ushort)((byte.Parse(data["level"].Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo) << 8) | byte.Parse(data["level"].Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo))));
                             datasection.AddRange(BitConverter.GetBytes((ushort)lvltxcnt));
                             datasection.AddRange(BitConverter.GetBytes(lvltxaddr));
                             break;
@@ -230,6 +229,28 @@ namespace build
             }
             if (datasection.Count > 0)
                 CreateNewSection(ref exefile, ".data2", datasection.ToArray(), false);
+            if (File.Exists("postbuild.cs"))
+            {
+                CodeDomProvider pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", System.Reflection.Assembly.GetAssembly(typeof(SonicRetro.SAModel.LandTable)).Location });
+                para.GenerateExecutable = false;
+                para.GenerateInMemory = false;
+                para.IncludeDebugInformation = true;
+                para.OutputAssembly = Path.Combine(Environment.CurrentDirectory, "postbuild.dll");
+                CompilerResults res = pr.CompileAssemblyFromFile(para, Path.Combine(Environment.CurrentDirectory, "postbuild.cs"));
+                if (res.Errors.HasErrors)
+                {
+                    foreach (CompilerError item in res.Errors)
+                        if (!item.IsWarning)
+                            Console.WriteLine(item.ToString());
+                }
+                else
+                {
+                    res.CompiledAssembly.GetType("PostBuild")
+                        .GetMethod("PostBuild", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.InvokeMethod, null, System.Reflection.CallingConventions.Standard, new Type[] { typeof(uint), typeof(byte[]), typeof(Dictionary<string, uint>) }, null)
+                        .Invoke(null, new object[] { imageBase, exefile, addresses });
+                }
+            }
             File.WriteAllBytes(inistartpath + "_edit.exe", exefile);
         }
 
