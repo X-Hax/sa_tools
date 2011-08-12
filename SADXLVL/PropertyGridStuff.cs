@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -13,36 +14,8 @@ namespace SonicRetro.SAModel.SADXLVL2
         [ParenthesizePropertyName(true)]
         public string Type { get { return GetType().Name; } }
 
-        [Browsable(false)]
-        public abstract Vertex Position { get; set; }
-        [Browsable(false)]
-        public abstract Rotation Rotation { get; set; }
-
-        [DisplayName("Position")]
-        public EditableVertex _Position
-        {
-            get
-            {
-                return new EditableVertex(Position);
-            }
-            set
-            {
-                Position = value.ToVertex();
-            }
-        }
-
-        [DisplayName("Rotation")]
-        public EditableRotation _Rotation
-        {
-            get
-            {
-                return new EditableRotation(Rotation);
-            }
-            set
-            {
-                Rotation = value.ToRotation();
-            }
-        }
+        public abstract EditableVertex Position { get; set; }
+        public abstract EditableRotation Rotation { get; set; }
 
         [Browsable(false)]
         public virtual bool CanCopy { get { return true; } }
@@ -230,63 +203,107 @@ namespace SonicRetro.SAModel.SADXLVL2
     [TypeConverter(typeof(EditableVertexConverter))]
     public class EditableVertex
     {
-        private Vertex vertex;
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
 
-        public float X
+        public EditableVertex() { }
+
+        public EditableVertex(byte[] file, int address)
         {
-            get
-            {
-                return vertex.X;
-            }
-            set
-            {
-                vertex.X = value;
-                LevelData.MainForm.DrawLevel();
-            }
+            X = BitConverter.ToSingle(file, address);
+            Y = BitConverter.ToSingle(file, address + 4);
+            Z = BitConverter.ToSingle(file, address + 8);
         }
 
-        public float Y
+        public EditableVertex(string data)
         {
-            get
-            {
-                return vertex.Y;
-            }
-            set
-            {
-                vertex.Y = value;
-                LevelData.MainForm.DrawLevel();
-            }
-        }
-        
-        public float Z
-        {
-            get
-            {
-                return vertex.Z;
-            }
-            set
-            {
-                vertex.Z = value;
-                LevelData.MainForm.DrawLevel();
-            }
+            string[] a = data.Split(',');
+            X = float.Parse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            Y = float.Parse(a[1], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            Z = float.Parse(a[2], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
-        public EditableVertex(Vertex item)
+        public EditableVertex(Vertex data)
         {
-            vertex = item;
-            X = item.X;
-            Y = item.Y;
-            Z = item.Z;
+            X = data.X;
+            Y = data.Y;
+            Z = data.Z;
         }
 
-        public Vertex ToVertex()
+        public EditableVertex(float x, float y, float z)
         {
-            return vertex;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(BitConverter.GetBytes(X));
+            result.AddRange(BitConverter.GetBytes(Y));
+            result.AddRange(BitConverter.GetBytes(Z));
+            return result.ToArray();
         }
 
         public override string ToString()
         {
             return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        public float[] ToArray()
+        {
+            float[] result = new float[3];
+            result[0] = X;
+            result[1] = Y;
+            result[2] = Z;
+            return result;
+        }
+
+        public Vertex ToVertex()
+        {
+            return new Vertex(X, Y, Z);
+        }
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(X, Y, Z);
+        }
+
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        return;
+                    case 1:
+                        Y = value;
+                        return;
+                    case 2:
+                        Z = value;
+                        return;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
         }
     }
 
@@ -324,63 +341,112 @@ namespace SonicRetro.SAModel.SADXLVL2
     [TypeConverter(typeof(EditableRotationConverter))]
     public class EditableRotation
     {
-        private Rotation rotation;
+        [Browsable(false)]
+        public int X { get; set; }
+        [Browsable(false)]
+        public int Y { get; set; }
+        [Browsable(false)]
+        public int Z { get; set; }
 
-        public float X
+        [DisplayName("X")]
+        public float XDeg { get { return ObjectHelper.BAMSToDeg(X); } set { X = ObjectHelper.DegToBAMS(value); } }
+        [DisplayName("Y")]
+        public float YDeg { get { return ObjectHelper.BAMSToDeg(Y); } set { Y = ObjectHelper.DegToBAMS(value); } }
+        [DisplayName("Z")]
+        public float ZDeg { get { return ObjectHelper.BAMSToDeg(Z); } set { Z = ObjectHelper.DegToBAMS(value); } }
+
+        public EditableRotation() { }
+
+        public EditableRotation(byte[] file, int address)
         {
-            get
-            {
-                return ObjectHelper.BAMSToDeg(rotation.X);
-            }
-            set
-            {
-                rotation.X = ObjectHelper.DegToBAMS(value);
-                LevelData.MainForm.DrawLevel();
-            }
+            X = BitConverter.ToInt32(file, address);
+            Y = BitConverter.ToInt32(file, address + 4);
+            Z = BitConverter.ToInt32(file, address + 8);
         }
 
-        public float Y
+        public EditableRotation(Rotation data)
         {
-            get
-            {
-                return ObjectHelper.BAMSToDeg(rotation.Y);
-            }
-            set
-            {
-                rotation.Y = ObjectHelper.DegToBAMS(value);
-                LevelData.MainForm.DrawLevel();
-            }
-        }
-        
-        public float Z
-        {
-            get
-            {
-                return ObjectHelper.BAMSToDeg(rotation.Z);
-            }
-            set
-            {
-                rotation.Z = ObjectHelper.DegToBAMS(value);
-                LevelData.MainForm.DrawLevel();
-            }
+            X = data.X;
+            Y = data.Y;
+            Z = data.Z;
         }
 
-        public EditableRotation(Rotation item)
+        public EditableRotation(string data)
         {
-            rotation = item;
-            X = ObjectHelper.BAMSToDeg(item.X);
-            Y = ObjectHelper.BAMSToDeg(item.Y);
-            Z = ObjectHelper.BAMSToDeg(item.Z);
+            string[] a = data.Split(',');
+            X = int.Parse(a[0], System.Globalization.NumberStyles.HexNumber);
+            Y = int.Parse(a[1], System.Globalization.NumberStyles.HexNumber);
+            Z = int.Parse(a[2], System.Globalization.NumberStyles.HexNumber);
         }
 
-        public Rotation ToRotation()
+        public EditableRotation(int x, int y, int z)
         {
-            return rotation;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(BitConverter.GetBytes(X));
+            result.AddRange(BitConverter.GetBytes(Y));
+            result.AddRange(BitConverter.GetBytes(Z));
+            return result.ToArray();
         }
 
         public override string ToString()
         {
-            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return X.ToString("X8") + ", " + Y.ToString("X8") + ", " + Z.ToString("X8");
+        }
+
+        public int[] ToArray()
+        {
+            int[] result = new int[3];
+            result[0] = X;
+            result[1] = Y;
+            result[2] = Z;
+            return result;
+        }
+
+        public Rotation ToRotation()
+        {
+            return new Rotation(X, Y, Z);
+        }
+
+        public int this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        return;
+                    case 1:
+                        Y = value;
+                        return;
+                    case 2:
+                        Z = value;
+                        return;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
         }
     }
 

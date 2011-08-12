@@ -14,37 +14,31 @@ namespace SonicRetro.SAModel.SADXLVL2
         [Browsable(false)]
         private Microsoft.DirectX.Direct3D.Mesh Mesh { get; set; }
 
+        private Device dev;
+
+        public LevelItem(Device dev)
+        {
+            this.dev = dev;
+            COL = new COL();
+            COL.Model = new Object();
+            Position = new EditableVertex();
+            Rotation = new EditableRotation();
+            ImportModel();
+            Paste();
+        }
+
         public LevelItem(COL col, Device dev)
         {
             COL = col;
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
+            Position = new EditableVertex(COL.Model.Position);
+            Rotation = new EditableRotation(COL.Model.Rotation);
+            this.dev = dev;
         }
 
-        public override Vertex Position
-        {
-            get
-            {
-                return COL.Model.Position;
-            }
-            set
-            {
-                COL.Model.Position = value;
-                COL.CalculateBounds();
-            }
-        }
+        public override EditableVertex Position { get; set; }
 
-        public override Rotation Rotation
-        {
-            get
-            {
-                return COL.Model.Rotation;
-            }
-            set
-            {
-                COL.Model.Rotation = value;
-                COL.CalculateBounds();
-            }
-        }
+        public override EditableRotation Rotation { get; set; }
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
@@ -55,7 +49,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh);
             if (selected)
-                COL.Model.DrawModelInvert(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh);
+                COL.Model.DrawModelInvert(dev, transform, Mesh);
         }
 
         public override void Paste()
@@ -79,7 +73,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(dlg.FileName);
                 COL.CalculateBounds();
-                Mesh = COL.Model.Attach.CreateD3DMesh(LevelData.MainForm.d3ddevice);
+                Mesh = COL.Model.Attach.CreateD3DMesh(dev);
             }
         }
 
@@ -95,9 +89,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public void EditMaterials()
         {
             using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
-            {
                 pw.ShowDialog();
-            }
         }
 
         public string Flags
@@ -121,6 +113,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             set
             {
                 COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0);
+                COL.Model.Flags = (COL.Model.Flags & ~ObjectFlags.NoDisplay) | (value ? 0 : ObjectFlags.NoDisplay);
             }
         }
 
@@ -147,20 +140,32 @@ namespace SonicRetro.SAModel.SADXLVL2
                 COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Water) | (value ? SurfaceFlags.Water : 0);
             }
         }
+
+        public void Save()
+        {
+            COL.Model.Position = Position.ToVertex();
+            COL.Model.Rotation = Rotation.ToRotation();
+            COL.CalculateBounds();
+        }
     }
 
     public class SETItem : Item
     {
-        public SETItem() { }
+        public SETItem()
+        {
+            Position = new EditableVertex();
+            Scale = new EditableVertex();
+        }
 
         public SETItem(byte[] file, int address)
         {
             ID = BitConverter.ToUInt16(file, address);
-            xrot = BitConverter.ToUInt16(file, address + 2);
-            yrot = BitConverter.ToUInt16(file, address + 4);
-            zrot = BitConverter.ToUInt16(file, address + 6);
-            Position = new Vertex(file, address + 8);
-            Scale = new Vertex(file, address + 0x14);
+            ushort xrot = BitConverter.ToUInt16(file, address + 2);
+            ushort yrot = BitConverter.ToUInt16(file, address + 4);
+            ushort zrot = BitConverter.ToUInt16(file, address + 6);
+            Rotation = new EditableRotation(xrot, yrot, zrot);
+            Position = new EditableVertex(file, address + 8);
+            Scale = new EditableVertex(file, address + 0x14);
             isLoaded = true;
         }
 
@@ -183,30 +188,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
 
-        public override Vertex Position { get; set; }
+        public override EditableVertex Position { get; set; }
 
-        protected ushort xrot, yrot, zrot;
-        public override Rotation Rotation
-        {
-            get { return new Rotation(xrot, yrot, zrot); }
-            set { unchecked { xrot = (ushort)value.X; yrot = (ushort)value.Y; zrot = (ushort)value.Z; } }
-        }
+        public override EditableRotation Rotation { get; set; }
 
-        [Browsable(false)]
-        public Vertex Scale { get; set; }
-
-        [DisplayName("Scale")]
-        public EditableVertex _Scale
-        {
-            get
-            {
-                return new EditableVertex(Scale);
-            }
-            set
-            {
-                Scale = value.ToVertex();
-            }
-        }
+        public EditableVertex Scale { get; set; }
 
         public override void Paste()
         {
@@ -232,9 +218,12 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             List<byte> bytes = new List<byte>(0x20);
             bytes.AddRange(BitConverter.GetBytes(ID));
-            bytes.AddRange(BitConverter.GetBytes(xrot));
-            bytes.AddRange(BitConverter.GetBytes(yrot));
-            bytes.AddRange(BitConverter.GetBytes(zrot));
+            unchecked
+            {
+                bytes.AddRange(BitConverter.GetBytes(Rotation.X));
+                bytes.AddRange(BitConverter.GetBytes(Rotation.Y));
+                bytes.AddRange(BitConverter.GetBytes(Rotation.Z));
+            }
             bytes.AddRange(Position.GetBytes());
             bytes.AddRange(Scale.GetBytes());
             return bytes.ToArray();
@@ -258,24 +247,24 @@ namespace SonicRetro.SAModel.SADXLVL2
                     Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
             texture = textures;
             this.offset = offset;
-            Position = position;
-            YRot = yrot;
+            Position = new EditableVertex(position);
+            YRotation = yrot;
         }
 
-        public override Vertex Position { get; set; }
+        public override EditableVertex Position { get; set; }
 
-        private int YRot;
-        public override Rotation Rotation
+        [Browsable(false)]
+        public int YRotation { get; set; }
+
+        [DisplayName("Y Rotation")]
+        public float YRotDeg
         {
-            get
-            {
-                return new Rotation(0, YRot, 0);
-            }
-            set
-            {
-                YRot = value.Y;
-            }
+            get { return ObjectHelper.BAMSToDeg(YRotation); }
+            set { YRotation = ObjectHelper.DegToBAMS(value); }
         }
+
+        [Browsable(false)]
+        public override EditableRotation Rotation { get { return new EditableRotation(0, YRotation, 0); } set { YRotation = value.Y; } }
 
         public override bool CanCopy { get { return false; } }
 
@@ -295,7 +284,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             transform.Push();
             transform.TranslateLocal(0, offset, 0);
             transform.TranslateLocal(Position.ToVector3());
-            transform.RotateYawPitchRollLocal(ObjectHelper.BAMSToRad(YRot), 0, 0);
+            transform.RotateXYZLocal(0, YRotation, 0);
             return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
         }
 
@@ -304,10 +293,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             transform.Push();
             transform.TranslateLocal(0, offset, 0);
             transform.TranslateLocal(Position.ToVector3());
-            transform.RotateYawPitchRollLocal(ObjectHelper.BAMSToRad(YRot), 0, 0);
+            transform.RotateXYZLocal(0, YRotation, 0);
             Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes);
             if (selected)
-                Model.DrawModelTreeInvert(dev, transform, LevelData.Textures[texture], Meshes);
+                Model.DrawModelTreeInvert(dev, transform, Meshes);
             transform.Pop();
         }
     }

@@ -41,7 +41,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateYawPitchRollLocal(ObjectHelper.BAMSToRad(item.Rotation.Y), ObjectHelper.BAMSToRad(item.Rotation.X), ObjectHelper.BAMSToRad(item.Rotation.Z));
+            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             float dist = -1;
             if (model == null)
                 dist = ObjectHelper.CheckSpriteHit(Near, Far, Viewport, Projection, View, transform);
@@ -55,14 +55,14 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateYawPitchRollLocal(ObjectHelper.BAMSToRad(item.Rotation.Y), ObjectHelper.BAMSToRad(item.Rotation.X), ObjectHelper.BAMSToRad(item.Rotation.Z));
+            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             if (model == null)
                 ObjectHelper.RenderSprite(dev, transform, null, selected);
             else
             {
                 model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes);
                 if (selected)
-                    model.DrawModelTreeInvert(dev, transform, ObjectHelper.GetTextures(texture), meshes);
+                    model.DrawModelTreeInvert(dev, transform, meshes);
             }
             transform.Pop();
         }

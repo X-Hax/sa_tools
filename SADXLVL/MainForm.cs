@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
+using System.Reflection;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -61,6 +62,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (loaded)
+                switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        saveToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                }
             OpenFileDialog a = new OpenFileDialog()
             {
                 DefaultExt = "ini",
@@ -80,6 +90,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void changeLevelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
+            if (loaded)
+                switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        saveToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                }
             loaded = false;
             foreach (ToolStripMenuItem item in changeLevelToolStripMenuItem.DropDownItems)
                 item.Checked = false;
@@ -264,7 +283,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 }
                                 if (pr != null)
                                 {
-                                    CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", "Microsoft.DirectX.dll", "Microsoft.DirectX.Direct3D.dll", "Microsoft.DirectX.Direct3DX.dll", System.Reflection.Assembly.GetExecutingAssembly().Location, System.Reflection.Assembly.GetAssembly(typeof(LandTable)).Location, System.Reflection.Assembly.GetAssembly(typeof(SonicRetro.SAModel.Direct3D.Camera)).Location });
+                                    CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location });
                                     para.GenerateExecutable = false;
                                     para.GenerateInMemory = false;
                                     para.IncludeDebugInformation = true;
@@ -340,11 +359,27 @@ namespace SonicRetro.SAModel.SADXLVL2
                 PropertyWindow.Show(this);
                 Activate();
             }
+            levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
+            objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
             loaded = true;
             SelectedItems = new List<Item>();
             UseWaitCursor = false;
             Enabled = true;
             DrawLevel();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (loaded)
+                switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                {
+                    case DialogResult.Yes:
+                        saveToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -430,11 +465,18 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
             if (LevelData.LevelItems != null)
-            {
                 for (int i = 0; i < LevelData.LevelItems.Count; i++)
-                    if (LevelData.LevelItems[i].Visible)
+                {
+                    bool display = false;
+                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                        display = true;
+                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                        display = true;
+                    else if (allToolStripMenuItem.Checked)
+                        display = true;
+                    if (display)
                         LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i]));
-            }
+                }
             LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character]));
             if (LevelData.SETItems != null)
                 foreach (SETItem item in LevelData.SETItems[LevelData.Character])
@@ -565,7 +607,14 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 for (int i = 0; i < LevelData.LevelItems.Count; i++)
                 {
-                    if (LevelData.LevelItems[i].Visible)
+                    bool display = false;
+                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                        display = true;
+                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                        display = true;
+                    else if (allToolStripMenuItem.Checked)
+                        display = true;
+                    if (display)
                     {
                         dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
                         if (dist > 0 & dist < mindist)
@@ -723,22 +772,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             PropertyWindow.propertyGrid1.SelectedObjects = SelectedItems.ToArray();
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (loaded)
-            {
-                switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-                {
-                    case DialogResult.Yes:
-                        saveToolStripMenuItem_Click(this, EventArgs.Empty);
-                        break;
-                    case DialogResult.Cancel:
-                        e.Cancel = true;
-                        break;
-                }
-            }
-        }
-
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Item> selitems = new List<Item>();
@@ -774,7 +807,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
             foreach (Item item in objs)
             {
-                item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
+                item.Position = new EditableVertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
                 item.Paste();
             }
             SelectedItems = new List<Item>(objs);
@@ -799,6 +832,29 @@ namespace SonicRetro.SAModel.SADXLVL2
                 item.Checked = false;
             ((ToolStripMenuItem)e.ClickedItem).Checked = true;
             DrawLevel();
+        }
+
+        private void levelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            foreach (ToolStripMenuItem item in levelToolStripMenuItem.DropDownItems)
+                item.Checked = false;
+            ((ToolStripMenuItem)e.ClickedItem).Checked = true;
+            DrawLevel();
+        }
+
+        private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LevelItem item = new LevelItem(d3ddevice);
+            Vector3 pos = cam.Position + (-20 * cam.Look);
+            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+        }
+
+        private void objectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SETItem item = new SETItem();
+            Vector3 pos = cam.Position + (-20 * cam.Look);
+            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+            LevelData.SETItems[LevelData.Character].Add(item);
         }
     }
 }

@@ -89,30 +89,44 @@ namespace SonicRetro.SAModel.Direct3D
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
                 {
-                    Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                    device.Material = new Microsoft.DirectX.Direct3D.Material
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
-                        Diffuse = mat.DiffuseColor,
-                        Ambient = mat.DiffuseColor,
-                        Specular = mat.SpecularColor,
-                        SpecularSharpness = mat.Unknown1
-                    };
-                    if (textures != null && mat.TextureID < textures.Length)
-                        device.SetTexture(0, textures[mat.TextureID]);
+                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        device.Material = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = mat.DiffuseColor,
+                            Ambient = mat.DiffuseColor,
+                            Specular = mat.SpecularColor,
+                            SpecularSharpness = mat.Unknown1
+                        };
+                        if (textures != null && mat.TextureID < textures.Length)
+                            device.SetTexture(0, textures[mat.TextureID]);
+                        else
+                            device.SetTexture(0, null);
+                        device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
+                        if ((mat.Flags & 0x40) == 0x40)
+                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
+                        else
+                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                    }
                     else
+                    {
+                        device.Material = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = Color.White,
+                            Ambient = Color.White,
+                        };
                         device.SetTexture(0, null);
-                    device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
-                    if ((mat.Flags & 0x40) == 0x40)
-                        device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
-                    else
+                        device.SetRenderState(RenderStates.AlphaBlendEnable, false);
                         device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                    }
                     mesh.DrawSubset(j);
                 }
             }
             transform.Pop();
         }
 
-        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh)
+        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh)
         {
             FillMode mode = device.RenderState.FillMode;
             device.RenderState.FillMode = FillMode.WireFrame;
@@ -126,6 +140,7 @@ namespace SonicRetro.SAModel.Direct3D
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     device.Material = new Microsoft.DirectX.Direct3D.Material
                     {
@@ -159,6 +174,8 @@ namespace SonicRetro.SAModel.Direct3D
                     device.SetTransform(TransformType.World, transform.Top);
                     for (int j = 0; j < obj.Attach.Mesh.Length; j++)
                     {
+                        if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
+                        {
                         Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
                         device.Material = new Microsoft.DirectX.Direct3D.Material
                         {
@@ -176,6 +193,18 @@ namespace SonicRetro.SAModel.Direct3D
                             device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
                         else
                             device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                        }
+                        else
+                        {
+                            device.Material = new Microsoft.DirectX.Direct3D.Material
+                            {
+                                Diffuse = Color.White,
+                                Ambient = Color.White,
+                            };
+                            device.SetTexture(0, null);
+                            device.SetRenderState(RenderStates.AlphaBlendEnable, false);
+                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                        }
                         meshes[modelindex].DrawSubset(j);
                     }
                 }
@@ -184,13 +213,13 @@ namespace SonicRetro.SAModel.Direct3D
                 transform.Pop();
         }
 
-        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
         {
             int modelindex = -1;
-            obj.DrawModelTreeInvert(device, transform, textures, meshes, ref modelindex);
+            obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
         }
 
-        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
             FillMode mode = device.RenderState.FillMode;
             device.RenderState.FillMode = FillMode.WireFrame;
@@ -205,6 +234,7 @@ namespace SonicRetro.SAModel.Direct3D
                 for (int j = 0; j < obj.Attach.Mesh.Length; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     device.Material = new Microsoft.DirectX.Direct3D.Material
                     {
@@ -217,7 +247,7 @@ namespace SonicRetro.SAModel.Direct3D
                 }
             }
             foreach (Object child in obj.Children)
-                DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
+                DrawModelTreeInvert(child, device, transform, meshes, ref modelindex);
             transform.Pop();
             device.RenderState.FillMode = mode;
         }
@@ -523,6 +553,17 @@ namespace SonicRetro.SAModel.Direct3D
             if (index < 0)
                 return list[list.Count + index];
             return list[index - 1];
+        }
+
+        private static readonly Vector3 XAxis = new Vector3(1, 0, 0);
+        private static readonly Vector3 YAxis = new Vector3(0, 1, 0);
+        private static readonly Vector3 ZAxis = new Vector3(0, 0, 1);
+
+        public static void RotateXYZLocal(this MatrixStack transform, int x, int y, int z)
+        {
+            transform.RotateAxisLocal(ZAxis, BAMSToRad(z));
+            transform.RotateAxisLocal(XAxis, BAMSToRad(x));
+            transform.RotateAxisLocal(YAxis, BAMSToRad(y));
         }
     }
 }
