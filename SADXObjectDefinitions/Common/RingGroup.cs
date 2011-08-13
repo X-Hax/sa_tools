@@ -26,11 +26,15 @@ namespace SADXObjectDefinitions.Common
                 transform.Push();
                 if (item.Scale.Z == 1) // circle
                 {
+                    double v4 = i * 360.0;
+                    Vector3 v7 = new Vector3(
+                        ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+                        0,
+                        ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
                     transform.Push();
                     transform.TranslateLocal(item.Position.ToVector3());
                     transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-                    float cir = (float)(i * 360 / item.Scale.X * 65536.0 * 0.002777777777777778 / 63356.0);
-                    Vector3 pos = Vector3.TransformCoordinate(new Vector3((float)(cir * item.Scale.Y), 0, (float)((1 - cir) * item.Scale.Y)), transform.Top);
+                    Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
                     float dist = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
@@ -66,11 +70,15 @@ namespace SADXObjectDefinitions.Common
                 transform.Push();
                 if (item.Scale.Z == 1) // circle
                 {
+                    double v4 = i * 360.0;
+                    Vector3 v7 = new Vector3(
+                        ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+                        0,
+                        ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
                     transform.Push();
                     transform.TranslateLocal(item.Position.ToVector3());
                     transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-                    float dist = (float)(i * 360 / item.Scale.X * 65536.0 * 0.002777777777777778 / 63356.0);
-                    Vector3 pos = Vector3.TransformCoordinate(new Vector3((float)(dist * item.Scale.Y), 0, (float)((1 - dist) * item.Scale.Y)), transform.Top);
+                    Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
                     model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes);
