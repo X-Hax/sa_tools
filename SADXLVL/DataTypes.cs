@@ -220,9 +220,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             bytes.AddRange(BitConverter.GetBytes(ID));
             unchecked
             {
-                bytes.AddRange(BitConverter.GetBytes(Rotation.X));
-                bytes.AddRange(BitConverter.GetBytes(Rotation.Y));
-                bytes.AddRange(BitConverter.GetBytes(Rotation.Z));
+                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.X));
+                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Y));
+                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Z));
             }
             bytes.AddRange(Position.GetBytes());
             bytes.AddRange(Scale.GetBytes());

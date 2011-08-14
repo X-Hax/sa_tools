@@ -39,7 +39,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Cube.cs" />
+    <Compile Include="Common\DashPanel.cs" />
     <Compile Include="Common\RingGroup.cs" />
+    <Compile Include="Common\Spring.cs" />
+    <Compile Include="Common\SpringB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -107,5 +107,52 @@ namespace SADXObjectDefinitions.Common
         }
 
         public override string Name { get { return "Ring Group"; } }
+
+        public override Type ObjectType
+        {
+            get
+            {
+                return typeof(RingGroupSETItem);
+            }
+        }
+    }
+
+    public class RingGroupSETItem : SETItem
+    {
+        public RingGroupSETItem() : base() { }
+        public RingGroupSETItem(byte[] file, int address) : base(file, address) { }
+
+        [System.ComponentModel.Description("The number of Rings in the group")]
+        public uint NumberRings
+        {
+            get
+            {
+                return (uint)Math.Min(Scale.X + 1, 8);
+            }
+            set
+            {
+                Scale.X = Math.Max(Math.Min(value - 1, 8), 0);
+            }
+        }
+
+        public float Size { get { return Scale.Y; } set { Scale.Y = value; } }
+
+        public RingGroupType GroupType
+        {
+            get
+            {
+                return Scale.Z == 1 ? RingGroupType.Circle : RingGroupType.Line;
+            }
+            set
+            {
+                Scale.Z = value == RingGroupType.Circle ? 1 : 0;
+            }
+        }
+
+        public enum RingGroupType
+        {
+            Line,
+            Circle
+        }
     }
 }
