@@ -36,9 +36,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             this.dev = dev;
         }
 
-        public override EditableVertex Position { get; set; }
+        private EditableVertex position;
+        public override EditableVertex Position { get { return position; } set { position = value; COL.Model.Position = value.ToVertex(); } }
 
-        public override EditableRotation Rotation { get; set; }
+        private EditableRotation rotation;
+        public override EditableRotation Rotation { get { return rotation; } set { rotation = value; COL.Model.Rotation = value.ToRotation(); } }
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {

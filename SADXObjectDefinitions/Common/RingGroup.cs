@@ -20,7 +20,7 @@ namespace SADXObjectDefinitions.Common
 
         public override float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
-            float mindist = -1;
+            float mindist = float.PositiveInfinity;
             for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
             {
                 transform.Push();
@@ -60,6 +60,7 @@ namespace SADXObjectDefinitions.Common
                 }
                 transform.Pop();
             }
+            if (float.IsPositiveInfinity(mindist)) return -1;
             return mindist;
         }
 

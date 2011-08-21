@@ -129,6 +129,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 string levelact = group.GetValueOrDefault("LevelID", "0000");
                 byte levelnum = byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
                 byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
+                LevelData.leveltexs = null;
                 cam = new Camera();
                 if (!group.ContainsKey("LevelGeo"))
                     LevelData.geo = null;
@@ -737,9 +738,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                 Vector3 verti = vertvect * (-chg.Y / 2);
                 foreach (Item item in SelectedItems)
                 {
-                    item.Position.X += horiz.X + verti.X;
-                    item.Position.Y += horiz.Y + verti.Y;
-                    item.Position.Z += horiz.Z + verti.Z;
+                    item.Position = new EditableVertex(
+                        item.Position.X + horiz.X + verti.X,
+                        item.Position.Y + horiz.Y + verti.Y,
+                        item.Position.Z + horiz.Z + verti.Z);
                 }
                 DrawLevel();
                 Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
