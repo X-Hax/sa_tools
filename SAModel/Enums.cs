@@ -45,4 +45,11 @@ namespace SonicRetro.SAModel
         Footprints = 0x100000,
         Visible = unchecked((int)0x80000000)
     }
+
+    public enum ModelFormat
+    {
+        SA1,
+        SADX,
+        SA2
+    }
 }

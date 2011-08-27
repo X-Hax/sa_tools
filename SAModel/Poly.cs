@@ -130,7 +130,7 @@ namespace SonicRetro.SAModel
 
     public abstract class Poly
     {
-        public virtual ushort[] Indexes { get; protected set; }
+        public ushort[] Indexes { get; protected set; }
         public string Name { get; set; }
 
         internal Poly() { }

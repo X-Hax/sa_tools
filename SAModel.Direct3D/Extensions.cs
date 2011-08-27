@@ -87,7 +87,7 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
-                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
@@ -137,7 +137,7 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
-                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
@@ -172,7 +172,7 @@ namespace SonicRetro.SAModel.Direct3D
                 if (obj.Attach != null)
                 {
                     device.SetTransform(TransformType.World, transform.Top);
-                    for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                    for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                     {
                         if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                         {
@@ -231,7 +231,7 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null)
             {
                 device.SetTransform(TransformType.World, transform.Top);
-                for (int j = 0; j < obj.Attach.Mesh.Length; j++)
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
@@ -543,7 +543,7 @@ namespace SonicRetro.SAModel.Direct3D
                         model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
                 }
             }
-            model = new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh.ToArray(), model_Material.ToArray()) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            model = new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
             model.CalculateBounds();
             return model;
         }

@@ -21,6 +21,8 @@ namespace SonicRetro.SAModel
         public Material()
         {
             Name = "material_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+            SpecularColor = Color.Transparent;
         }
 
         public Material(byte[] file, int address)

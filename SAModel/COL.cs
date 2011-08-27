@@ -32,14 +32,14 @@ namespace SonicRetro.SAModel
             Center = new Vertex();
         }
 
-        public COL(byte[] file, int address, uint imageBase, bool DX)
+        public COL(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "col_" + address.ToString("X8");
             Center = new Vertex(file, address);
             Radius = BitConverter.ToSingle(file, address + 0xC);
             Unknown1 = BitConverter.ToUInt64(file, 0x10);
             uint tmpaddr = BitConverter.ToUInt32(file, address + 0x18) - imageBase;
-            Model = new Object(file, (int)tmpaddr, imageBase, DX);
+            Model = new Object(file, (int)tmpaddr, imageBase, format);
             Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
             Flags = BitConverter.ToInt32(file, address + 0x20);
         }

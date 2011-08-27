@@ -9,60 +9,351 @@ namespace SonicRetro.SAModel
         public string Name { get; set; }
         public Vertex[] Vertex { get; private set; }
         public Vertex[] Normal { get; private set; }
-        public Mesh[] Mesh { get; private set; }
-        public Material[] Material { get; private set; }
+        public List<Mesh> Mesh { get; set; }
+        public List<Material> Material { get; set; }
         public Vertex Center { get; set; }
         public float Radius { get; set; }
 
-        public static int Size(bool DX) { return DX ? 0x2C : 0x28; }
+        public static int Size(ModelFormat format)
+        {
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                    return 0x28;
+                case ModelFormat.SADX:
+                    return 0x2C;
+                case ModelFormat.SA2:
+                    return 0x18;
+            }
+            return -1;
+        }
 
         public Attach()
         {
             Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Center = new Vertex();
+            Material = new List<Material>();
+            Mesh = new List<Mesh>();
+            Vertex = new Vertex[0];
+            Normal = new Vertex[0];
         }
 
-        public Attach(byte[] file, int address, uint imageBase, bool DX)
+        public Attach(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "attach_" + address.ToString("X8");
-            Vertex = new Vertex[BitConverter.ToInt32(file, address + 8)];
-            Normal = new Vertex[Vertex.Length];
-            int tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
-            for (int i = 0; i < Vertex.Length; i++)
+            switch (format)
             {
-                Vertex[i] = new Vertex(file, tmpaddr);
-                tmpaddr += SAModel.Vertex.Size;
+                case ModelFormat.SA1:
+                case ModelFormat.SADX:
+                    Vertex = new Vertex[BitConverter.ToInt32(file, address + 8)];
+                    Normal = new Vertex[Vertex.Length];
+                    int tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
+                    for (int i = 0; i < Vertex.Length; i++)
+                    {
+                        Vertex[i] = new Vertex(file, tmpaddr);
+                        tmpaddr += SAModel.Vertex.Size;
+                    }
+                    tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
+                    for (int i = 0; i < Vertex.Length; i++)
+                    {
+                        Normal[i] = new Vertex(file, tmpaddr);
+                        tmpaddr += SAModel.Vertex.Size;
+                    }
+                    Mesh = new List<Mesh>();
+                    int meshcnt = BitConverter.ToInt16(file, address + 0x14);
+                    tmpaddr = BitConverter.ToInt32(file, address + 0xC);
+                    if (tmpaddr != 0)
+                    {
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        for (int i = 0; i < meshcnt; i++)
+                        {
+                            Mesh.Add(new Mesh(file, tmpaddr, imageBase));
+                            tmpaddr += SAModel.Mesh.Size(format == ModelFormat.SADX);
+                        }
+                    }
+                    Material = new List<Material>();
+                    int matcnt = BitConverter.ToInt16(file, address + 0x16);
+                    tmpaddr = BitConverter.ToInt32(file, address + 0x10);
+                    if (tmpaddr != 0)
+                    {
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        for (int i = 0; i < matcnt; i++)
+                        {
+                            Material.Add(new Material(file, tmpaddr));
+                            tmpaddr += SAModel.Material.Size;
+                        }
+                    }
+                    Center = new Vertex(file, address + 0x18);
+                    Radius = BitConverter.ToSingle(file, address + 0x24);
+                    break;
+                case ModelFormat.SA2:
+                    tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
+                    byte ctype = file[tmpaddr];
+                    while (ctype != 0xFF)
+                    {
+                        int curvert = BitConverter.ToInt16(file, tmpaddr + 4);
+                        int vcnt = BitConverter.ToInt16(file, tmpaddr + 6);
+                        ResizeVertexes(Math.Max(Vertex.Length, curvert + vcnt));
+                        tmpaddr += 8;
+                        for (int i = curvert; i < Vertex.Length; i++)
+                        {
+                            switch (ctype)
+                            {
+                                case 0x20:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x21:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0x10);
+                                    tmpaddr += 0x20;
+                                    break;
+                                case 0x22:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0xC;
+                                    break;
+                                case 0x23:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x24:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x25:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x26:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x27:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x28:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x29:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x18;
+                                    break;
+                                case 0x2A:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x2B:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x2C:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x2D:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x2E:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x2F:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(file, tmpaddr + 0xC);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x30:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x10;
+                                    break;
+                                case 0x31:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x18;
+                                    break;
+                                case 0x32:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x33:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x34:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x35:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x1C;
+                                    break;
+                                case 0x36:
+                                    Vertex[i] = new Vertex(file, tmpaddr);
+                                    Normal[i] = new Vertex(0, 1, 0);
+                                    tmpaddr += 0x1C;
+                                    break;
+                            }
+                        }
+                    }
+                    Material = new List<Material>();
+                    Mesh = new List<Mesh>();
+                    tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
+                    ctype = file[tmpaddr];
+                    while (ctype != 0xFF)
+                    {
+                        Material mat = new Material();
+                        switch (ctype)
+                        {
+                            case 0x08:
+                            case 0x09:
+                                mat.TextureID = BitConverter.ToUInt16(file, address + 2) & 0x1FFF;
+                                tmpaddr += 4;
+                                break;
+                            case 0x10:
+                            case 0x11:
+                            case 0x12:
+                            case 0x13:
+                            case 0x14:
+                            case 0x15:
+                            case 0x16:
+                            case 0x17:
+                                bool hasDiffuse = (file[tmpaddr] & 1) != 0;
+                                int curaddr = tmpaddr;
+                                if (hasDiffuse)
+                                {
+                                    mat.DiffuseColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
+                                    curaddr += 4;
+                                }
+                                else
+                                    mat.DiffuseColor = Color.FromArgb(0xFF, 0xCC, 0xCC, 0xCC);
+                                bool hasAmbient = (file[address] & 2) != 0;
+                                if (hasAmbient)
+                                    curaddr += 4;
+                                bool hasSpecular = (file[address] & 4) != 0;
+                                if (hasSpecular)
+                                {
+                                    mat.SpecularColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
+                                    curaddr += 4;
+                                }
+                                else
+                                    mat.SpecularColor = Color.Transparent;
+                                break;
+                            case 0x38:
+                                tmpaddr += BitConverter.ToInt16(file, tmpaddr + 2) + 4;
+                                break;
+                            case 0x40:
+                            case 0x41:
+                            case 0x42:
+                            case 0x43:
+                            case 0x44:
+                            case 0x45:
+                            case 0x46:
+                            case 0x47:
+                            case 0x48:
+                                int matnum = Material.Count;
+                                Material.Add(mat);
+                                mat = new Material() { TextureID = mat.TextureID, DiffuseColor = mat.DiffuseColor, SpecularColor = mat.SpecularColor };
+                                int striptype = file[tmpaddr] & 0xF;
+                                int numflags = file[tmpaddr + 1] & 3;
+                                Poly[] polys = new Poly[BitConverter.ToUInt16(file, tmpaddr + 4) & 0x3FFF];
+                                List<UV> uvs = new List<UV>();
+                                List<Color> vcs = new List<Color>();
+                                tmpaddr += 6;
+                                for (int i = 0; i < polys.Length; i++)
+                                {
+                                    int stripcnt = BitConverter.ToInt16(file, tmpaddr);
+                                    tmpaddr += 2;
+                                    polys[i] = new Strip(Math.Abs(stripcnt), stripcnt < 0);
+                                    for (int j = 0; j < polys[i].Indexes.Length; j++)
+                                    {
+                                        polys[i].Indexes[j] = BitConverter.ToUInt16(file, tmpaddr);
+                                        tmpaddr += 2;
+                                        switch (striptype)
+                                        {
+                                            case 0x41:
+                                                uvs.Add(new UV(file, tmpaddr));
+                                                tmpaddr += UV.Size;
+                                                break;
+                                            case 0x42:
+                                                uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                tmpaddr += UV.Size;
+                                                break;
+                                            case 0x43:
+                                                tmpaddr += 6;
+                                                break;
+                                            case 0x44:
+                                                uvs.Add(new UV(file, tmpaddr));
+                                                tmpaddr += UV.Size;
+                                                tmpaddr += 6;
+                                                break;
+                                            case 0x45:
+                                                uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                tmpaddr += UV.Size;
+                                                tmpaddr += 6;
+                                                break;
+                                            case 0x46:
+                                                vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                tmpaddr += 4;
+                                                break;
+                                            case 0x47:
+                                                uvs.Add(new UV(file, tmpaddr));
+                                                tmpaddr += UV.Size;
+                                                vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                tmpaddr += 4;
+                                                break;
+                                            case 0x48:
+                                                uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                tmpaddr += UV.Size;
+                                                vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                tmpaddr += 4;
+                                                break;
+                                        }
+                                        if (j > 1)
+                                            tmpaddr += numflags * 2;
+                                    }
+                                }
+                                bool hasUVs = uvs.Count > 0;
+                                bool hasVCs = vcs.Count > 0;
+                                Mesh mesh = new Mesh(polys, false, hasUVs, hasVCs) { MaterialID = (ushort)matnum };
+                                if (hasUVs)
+                                    for (int i = 0; i < uvs.Count; i++)
+                                        mesh.UV[i] = uvs[i];
+                                if (hasVCs)
+                                    for (int i = 0; i < vcs.Count; i++)
+                                        mesh.VColor[i] = vcs[i];
+                                Mesh.Add(mesh);
+                                break;
+                            default:
+                                tmpaddr += 2;
+                                break;
+                        }
+                    }
+                    Center = new Vertex(file, address + 8);
+                    Radius = BitConverter.ToSingle(file, address + 0x14);
+                    break;
             }
-            tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
-            for (int i = 0; i < Vertex.Length; i++)
-            {
-                Normal[i] = new Vertex(file, tmpaddr);
-                tmpaddr += SAModel.Vertex.Size;
-            }
-            Mesh = new Mesh[BitConverter.ToInt16(file, address + 0x14)];
-            tmpaddr = BitConverter.ToInt32(file, address + 0xC);
-            if (tmpaddr != 0)
-            {
-                tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                for (int i = 0; i < Mesh.Length; i++)
-                {
-                    Mesh[i] = new Mesh(file, tmpaddr, imageBase);
-                    tmpaddr += SAModel.Mesh.Size(DX);
-                }
-            }
-            Material = new Material[BitConverter.ToInt16(file, address + 0x16)];
-            tmpaddr = BitConverter.ToInt32(file, address + 0x10);
-            if (tmpaddr != 0)
-            {
-                tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                for (int i = 0; i < Material.Length; i++)
-                {
-                    Material[i] = new Material(file, tmpaddr);
-                    tmpaddr += SAModel.Material.Size;
-                }
-            }
-            Center = new Vertex(file, address + 0x18);
-            Radius = BitConverter.ToSingle(file, address + 0x24);
         }
 
         public Attach(Dictionary<string, Dictionary<string, string>> INI, string groupname)
@@ -78,33 +369,31 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < Vertex.Length; i++)
                 Normal[i] = new Vertex(verts[i]);
             string[] meshlist = group["Mesh"].Split(',');
-            Mesh = new Mesh[meshlist.Length];
-            for (int i = 0; i < Mesh.Length; i++)
-                Mesh[i] = new Mesh(INI, meshlist[i]);
+            Mesh = new List<Mesh>();
+            for (int i = 0; i < meshlist.Length; i++)
+                Mesh.Add(new Mesh(INI, meshlist[i]));
+            Material = new List<Material>();
             if (!string.IsNullOrEmpty(group["Material"]))
             {
                 string[] matlist = group["Material"].Split(',');
-                Material = new Material[matlist.Length];
-                for (int i = 0; i < Material.Length; i++)
+                for (int i = 0; i < matlist.Length; i++)
                     Material[i] = new Material(INI[matlist[i]], matlist[i]);
             }
-            else
-                Material = new Material[0];
             Center = new Vertex(group["Center"]);
             Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
-        public Attach(Vertex[] vertex, Vertex[] normal, Mesh[] mesh, Material[] material)
+        public Attach(Vertex[] vertex, Vertex[] normal, IEnumerable<Mesh> mesh, IEnumerable<Material> material)
         {
             Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Vertex = vertex;
             Normal = normal;
-            Mesh = mesh;
-            Material = material;
+            Mesh = new List<Mesh>(mesh);
+            Material = new List<Material>(material);
             Center = new Vertex();
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
             List<byte> result = new List<byte>();
             uint materialAddress = imageBase;
@@ -114,18 +403,18 @@ namespace SonicRetro.SAModel
                 foreach (Material item in Material)
                     result.AddRange(item.GetBytes());
             }
-            uint[] polyAddrs = new uint[Mesh.Length];
-            uint[] polyNormalAddrs = new uint[Mesh.Length];
-            uint[] vColorAddrs = new uint[Mesh.Length];
-            uint[] uVAddrs = new uint[Mesh.Length];
-            for (int i = 0; i < Mesh.Length; i++)
+            uint[] polyAddrs = new uint[Mesh.Count];
+            uint[] polyNormalAddrs = new uint[Mesh.Count];
+            uint[] vColorAddrs = new uint[Mesh.Count];
+            uint[] uVAddrs = new uint[Mesh.Count];
+            for (int i = 0; i < Mesh.Count; i++)
             {
                 result.Align(4);
                 polyAddrs[i] = (uint)result.Count + imageBase;
                 for (int j = 0; j < Mesh[i].Poly.Count; j++)
                     result.AddRange(Mesh[i].Poly[j].GetBytes());
             }
-            for (int i = 0; i < Mesh.Length; i++)
+            for (int i = 0; i < Mesh.Count; i++)
             {
                 if (Mesh[i].PolyNormal != null)
                 {
@@ -135,7 +424,7 @@ namespace SonicRetro.SAModel
                         result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
                 }
             }
-            for (int i = 0; i < Mesh.Length; i++)
+            for (int i = 0; i < Mesh.Count; i++)
             {
                 if (Mesh[i].VColor != null)
                 {
@@ -145,7 +434,7 @@ namespace SonicRetro.SAModel
                         result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
                 }
             }
-            for (int i = 0; i < Mesh.Length; i++)
+            for (int i = 0; i < Mesh.Count; i++)
             {
                 if (Mesh[i].UV != null)
                 {
@@ -157,8 +446,8 @@ namespace SonicRetro.SAModel
             }
             result.Align(4);
             uint meshAddress = (uint)result.Count + imageBase;
-            for (int i = 0; i < Mesh.Length; i++)
-                result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
+            for (int i = 0; i < Mesh.Count; i++)
+                result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], format == ModelFormat.SADX));
             result.Align(4);
             uint vertexAddress = (uint)result.Count + imageBase;
             foreach (Vertex item in Vertex)
@@ -174,18 +463,18 @@ namespace SonicRetro.SAModel
             result.AddRange(BitConverter.GetBytes(Vertex.Length));
             result.AddRange(BitConverter.GetBytes(meshAddress));
             result.AddRange(BitConverter.GetBytes(materialAddress));
-            result.AddRange(BitConverter.GetBytes((short)Mesh.Length));
-            result.AddRange(BitConverter.GetBytes((short)Material.Length));
+            result.AddRange(BitConverter.GetBytes((short)Mesh.Count));
+            result.AddRange(BitConverter.GetBytes((short)Material.Count));
             result.AddRange(Center.GetBytes());
             result.AddRange(BitConverter.GetBytes(Radius));
-            if (DX) result.AddRange(new byte[4]);
+            if (format == ModelFormat.SADX) result.AddRange(new byte[4]);
             return result.ToArray();
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX)
+        public byte[] GetBytes(uint imageBase, ModelFormat format)
         {
             uint address;
-            return GetBytes(imageBase, DX, out address);
+            return GetBytes(imageBase, format, out address);
         }
 
         public void Save(Dictionary<string, Dictionary<string, string>> INI)
@@ -199,14 +488,14 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < Vertex.Length; i++)
                 verts.Add(Normal[i].ToString());
             group.Add("Normal", string.Join("|", verts.ToArray())); List<string> mlist = new List<string>();
-            for (int i = 0; i < Mesh.Length; i++)
+            for (int i = 0; i < Mesh.Count; i++)
             {
                 mlist.Add(Mesh[i].Name);
                 Mesh[i].Save(INI);
             }
             group.Add("Mesh", string.Join(",", mlist.ToArray()));
             mlist = new List<string>();
-            for (int i = 0; i < Material.Length; i++)
+            for (int i = 0; i < Material.Count; i++)
             {
                 mlist.Add(Material[i].Name);
                 Material[i].Save(INI);
@@ -333,6 +622,16 @@ namespace SonicRetro.SAModel
                 result.Add(verts.ToArray());
             }
             return result.ToArray();
+        }
+
+        public void ResizeVertexes(int newSize)
+        {
+            Vertex[] vert = Vertex;
+            Array.Resize(ref vert, newSize);
+            Vertex = vert;
+            vert = Normal;
+            Array.Resize(ref vert, newSize);
+            Normal = vert;
         }
     }
 }

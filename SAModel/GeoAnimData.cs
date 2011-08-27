@@ -15,14 +15,14 @@ namespace SonicRetro.SAModel
 
         public static int Size { get { return 0x18; } }
 
-        public GeoAnimData(byte[] file, int address, uint imageBase, bool DX)
+        public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "anim_" + address.ToString("X8");
             Unknown1 = BitConverter.ToInt32(file, address);
             Unknown2 = BitConverter.ToSingle(file, address + 4);
             Unknown3 = BitConverter.ToSingle(file, address + 8);
-            Model = new Object(file, (int)(BitConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, DX);
-            Animation = new Animation(file, (int)(BitConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, DX);
+            Model = new Object(file, (int)(BitConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, format);
+            Animation = new Animation(file, (int)(BitConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format);
             Unknown4 = BitConverter.ToInt32(file, address + 0x14);
         }
 

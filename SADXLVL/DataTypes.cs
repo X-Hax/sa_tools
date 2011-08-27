@@ -90,7 +90,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         [DisplayName("Edit Materials")]
         public void EditMaterials()
         {
-            using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
+            using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
                 pw.ShowDialog();
         }
 

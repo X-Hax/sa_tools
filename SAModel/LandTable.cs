@@ -18,7 +18,7 @@ namespace SonicRetro.SAModel
 
         public static int Size { get { return 0x24; } }
 
-        public LandTable(byte[] file, int address, uint imageBase, bool DX)
+        public LandTable(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "landtable_" + address.ToString("X8");
             short colcnt = BitConverter.ToInt16(file, address);
@@ -32,7 +32,7 @@ namespace SonicRetro.SAModel
                 tmpaddr -= imageBase;
                 for (int i = 0; i < colcnt; i++)
                 {
-                    COL.Add(new COL(file, (int)tmpaddr, imageBase, DX));
+                    COL.Add(new COL(file, (int)tmpaddr, imageBase, format));
                     tmpaddr += (uint)SAModel.COL.Size;
                 }
             }
@@ -43,7 +43,7 @@ namespace SonicRetro.SAModel
                 tmpaddr -= imageBase;
                 for (int i = 0; i < anicnt; i++)
                 {
-                    Anim.Add(new GeoAnimData(file, (int)tmpaddr, imageBase, DX));
+                    Anim.Add(new GeoAnimData(file, (int)tmpaddr, imageBase, format));
                     tmpaddr += (uint)GeoAnimData.Size;
                 }
             }
@@ -88,7 +88,7 @@ namespace SonicRetro.SAModel
             Unknown3 = int.Parse(group["Unknown3"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
             Dictionary<string, uint> attachaddrs = new Dictionary<string, uint>();
             List<byte> result = new List<byte>();
@@ -98,7 +98,7 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < COL.Count; i++)
             {
                 result.Align(4);
-                tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, DX, attachaddrs, out tmpaddr);
+                tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, format, attachaddrs, out tmpaddr);
                 colmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
                 result.AddRange(tmpbyte);
             }
@@ -107,7 +107,7 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < Anim.Count; i++)
             {
                 result.Align(4);
-                tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, DX, out tmpaddr);
+                tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, format, out tmpaddr);
                 animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
                 result.AddRange(tmpbyte);
                 result.Align(4);

@@ -15,10 +15,10 @@ namespace SonicRetro.SAModel
             Name = "animation_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
         }
 
-        public Animation(byte[] file, int address, uint imageBase, bool DX)
+        public Animation(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "animation_" + address.ToString("X8");
-            Object Model = new Object(file, (int)(BitConverter.ToUInt32(file, address) - imageBase), imageBase, DX);
+            Object Model = new Object(file, (int)(BitConverter.ToUInt32(file, address) - imageBase), imageBase, format);
             int nummodels = 0;
             foreach (Object modl in Model.GetObjects())
                 if ((modl.Flags & ObjectFlags.NoAnimate) != ObjectFlags.NoAnimate)

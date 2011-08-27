@@ -24,7 +24,7 @@ namespace SonicRetro.SAModel
             Scale = new Vertex(1, 1, 1);
         }
 
-        public Object(byte[] file, int address, uint imageBase, bool DX)
+        public Object(byte[] file, int address, uint imageBase, ModelFormat format)
         {
             Name = "object_" + address.ToString("X8");
             Flags = (ObjectFlags)BitConverter.ToInt32(file, address);
@@ -32,7 +32,7 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                Attach = new Attach(file, tmpaddr, imageBase, DX);
+                Attach = new Attach(file, tmpaddr, imageBase, format);
             }
             Position = new Vertex(file, address + 8);
             Rotation = new Rotation(file, address + 0x14);
@@ -43,7 +43,7 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                child = new Object(file, tmpaddr, imageBase, DX);
+                child = new Object(file, tmpaddr, imageBase, format);
             }
             while (child != null)
             {
@@ -54,7 +54,7 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                Sibling = new Object(file, tmpaddr, imageBase, DX);
+                Sibling = new Object(file, tmpaddr, imageBase, format);
             }
         }
 
@@ -77,7 +77,7 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> attachaddrs, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> attachaddrs, out uint address)
         {
             for (int i = 1; i < Children.Count; i++)
                 Children[i - 1].Sibling = Children[i];
@@ -89,13 +89,13 @@ namespace SonicRetro.SAModel
             if (Children.Count > 0)
             {
                 result.Align(4);
-                result.AddRange(Children[0].GetBytes(imageBase, DX, out childaddr));
+                result.AddRange(Children[0].GetBytes(imageBase, format, out childaddr));
                 childaddr += imageBase;
             }
             if (Sibling != null)
             {
                 result.Align(4);
-                tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, out siblingaddr);
+                tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, format, out siblingaddr);
                 siblingaddr += imageBase + (uint)result.Count;
                 result.AddRange(tmpbyte);
             }
@@ -106,7 +106,7 @@ namespace SonicRetro.SAModel
                 else
                 {
                     result.Align(4);
-                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, DX, out attachaddr);
+                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, format, out attachaddr);
                     attachaddr += imageBase + (uint)result.Count;
                     result.AddRange(tmpbyte);
                     attachaddrs.Add(Attach.Name, attachaddr);
@@ -124,15 +124,15 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
-            return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
+            return GetBytes(imageBase, format, new Dictionary<string, uint>(), out address);
         }
 
-        public byte[] GetBytes(uint imageBase, bool DX)
+        public byte[] GetBytes(uint imageBase, ModelFormat format)
         {
             uint address;
-            return GetBytes(imageBase, DX, out address);
+            return GetBytes(imageBase, format, out address);
         }
 
         public void Save(Dictionary<string, Dictionary<string, string>> INI)
