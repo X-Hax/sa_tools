@@ -147,7 +147,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 {
                     Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
                     Texture[] texs = new Texture[TexBmps.Length];
-                    for (int j = 0; j < TexBmps.Length - 1; j++)
+                    for (int j = 0; j < TexBmps.Length; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                     if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
                         LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
@@ -199,7 +199,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                     {
                         Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                         Texture[] texs = new Texture[TexBmps.Length];
-                        for (int j = 0; j < TexBmps.Length - 1; j++)
+                        for (int j = 0; j < TexBmps.Length; j++)
                             texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                         LevelData.TextureBitmaps.Add(texname, TexBmps);
                         LevelData.Textures.Add(texname, texs);
@@ -218,7 +218,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                         {
                             Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                             Texture[] texs = new Texture[TexBmps.Length];
-                            for (int j = 0; j < TexBmps.Length - 1; j++)
+                            for (int j = 0; j < TexBmps.Length; j++)
                                 texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                             LevelData.TextureBitmaps.Add(texname, TexBmps);
                             LevelData.Textures.Add(texname, texs);
@@ -235,7 +235,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                         {
                             Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
                             Texture[] texs = new Texture[TexBmps.Length];
-                            for (int j = 0; j < TexBmps.Length - 1; j++)
+                            for (int j = 0; j < TexBmps.Length; j++)
                                 texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
                             LevelData.TextureBitmaps.Add(tex, TexBmps);
                             LevelData.Textures.Add(tex, texs);

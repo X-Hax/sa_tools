@@ -87,6 +87,8 @@ namespace SonicRetro.SAModel
                     Radius = BitConverter.ToSingle(file, address + 0x24);
                     break;
                 case ModelFormat.SA2:
+                    Vertex = new Vertex[0];
+                    Normal = new Vertex[0];
                     tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
                     byte ctype = file[tmpaddr];
                     while (ctype != 0xFF)
@@ -95,7 +97,7 @@ namespace SonicRetro.SAModel
                         int vcnt = BitConverter.ToInt16(file, tmpaddr + 6);
                         ResizeVertexes(Math.Max(Vertex.Length, curvert + vcnt));
                         tmpaddr += 8;
-                        for (int i = curvert; i < Vertex.Length; i++)
+                        for (int i = curvert; i < curvert + vcnt; i++)
                         {
                             switch (ctype)
                             {
@@ -216,19 +218,20 @@ namespace SonicRetro.SAModel
                                     break;
                             }
                         }
+                        ctype = file[tmpaddr];
                     }
                     Material = new List<Material>();
                     Mesh = new List<Mesh>();
+                    Material mat = new Material();
                     tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
                     ctype = file[tmpaddr];
                     while (ctype != 0xFF)
                     {
-                        Material mat = new Material();
                         switch (ctype)
                         {
                             case 0x08:
                             case 0x09:
-                                mat.TextureID = BitConverter.ToUInt16(file, address + 2) & 0x1FFF;
+                                mat.TextureID = BitConverter.ToUInt16(file, tmpaddr + 2) & 0x1FFF;
                                 tmpaddr += 4;
                                 break;
                             case 0x10:
@@ -240,7 +243,7 @@ namespace SonicRetro.SAModel
                             case 0x16:
                             case 0x17:
                                 bool hasDiffuse = (file[tmpaddr] & 1) != 0;
-                                int curaddr = tmpaddr;
+                                int curaddr = tmpaddr + 4;
                                 if (hasDiffuse)
                                 {
                                     mat.DiffuseColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
@@ -248,10 +251,10 @@ namespace SonicRetro.SAModel
                                 }
                                 else
                                     mat.DiffuseColor = Color.FromArgb(0xFF, 0xCC, 0xCC, 0xCC);
-                                bool hasAmbient = (file[address] & 2) != 0;
+                                bool hasAmbient = (file[tmpaddr] & 2) != 0;
                                 if (hasAmbient)
                                     curaddr += 4;
-                                bool hasSpecular = (file[address] & 4) != 0;
+                                bool hasSpecular = (file[tmpaddr] & 4) != 0;
                                 if (hasSpecular)
                                 {
                                     mat.SpecularColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
@@ -259,6 +262,7 @@ namespace SonicRetro.SAModel
                                 }
                                 else
                                     mat.SpecularColor = Color.Transparent;
+                                tmpaddr = curaddr;
                                 break;
                             case 0x38:
                                 tmpaddr += BitConverter.ToInt16(file, tmpaddr + 2) + 4;
@@ -292,46 +296,44 @@ namespace SonicRetro.SAModel
                                         tmpaddr += 2;
                                         switch (striptype)
                                         {
-                                            case 0x41:
+                                            case 1:
                                                 uvs.Add(new UV(file, tmpaddr));
                                                 tmpaddr += UV.Size;
                                                 break;
-                                            case 0x42:
+                                            case 2:
                                                 uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                 tmpaddr += UV.Size;
                                                 break;
-                                            case 0x43:
+                                            case 3:
                                                 tmpaddr += 6;
                                                 break;
-                                            case 0x44:
+                                            case 4:
                                                 uvs.Add(new UV(file, tmpaddr));
                                                 tmpaddr += UV.Size;
                                                 tmpaddr += 6;
                                                 break;
-                                            case 0x45:
+                                            case 5:
                                                 uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                 tmpaddr += UV.Size;
                                                 tmpaddr += 6;
                                                 break;
-                                            case 0x46:
+                                            case 6:
                                                 vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
                                                 tmpaddr += 4;
                                                 break;
-                                            case 0x47:
+                                            case 7:
                                                 uvs.Add(new UV(file, tmpaddr));
                                                 tmpaddr += UV.Size;
                                                 vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
                                                 tmpaddr += 4;
                                                 break;
-                                            case 0x48:
+                                            case 8:
                                                 uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                 tmpaddr += UV.Size;
                                                 vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
                                                 tmpaddr += 4;
                                                 break;
                                         }
-                                        if (j > 1)
-                                            tmpaddr += numflags * 2;
                                     }
                                 }
                                 bool hasUVs = uvs.Count > 0;
@@ -349,6 +351,7 @@ namespace SonicRetro.SAModel
                                 tmpaddr += 2;
                                 break;
                         }
+                        ctype = file[tmpaddr];
                     }
                     Center = new Vertex(file, address + 8);
                     Radius = BitConverter.ToSingle(file, address + 0x14);
