@@ -73,8 +73,8 @@ namespace SonicRetro.SAModel.SADXMDL2
                 }
             OpenFileDialog a = new OpenFileDialog()
             {
-                DefaultExt = "ini",
-                Filter = "Model Files|*.ini;*.samdl;*.sa2mdl;*.exe;*.dll;*.bin|All Files|*.*"
+                DefaultExt = "sa1mdl",
+                Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.ini;*.exe;*.dll;*.bin|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
@@ -84,6 +84,10 @@ namespace SonicRetro.SAModel.SADXMDL2
                 {
                     Dictionary<string, Dictionary<string, string>> ini = IniFile.Load(a.FileName);
                     model = new Object(ini, ini[string.Empty]["Root"]);
+                }
+                else if (Object.CheckModelFile(a.FileName))
+                {
+                    model = Object.LoadFromFile(a.FileName);
                 }
                 else
                 {
@@ -98,7 +102,8 @@ namespace SonicRetro.SAModel.SADXMDL2
                 meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
                 for (int i = 0; i < models.Length; i++)
                     if (models[i].Attach != null)
-                        meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice);
+                        try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
+                        catch { }
                 loaded = true;
                 DrawLevel();
             }
@@ -120,7 +125,22 @@ namespace SonicRetro.SAModel.SADXMDL2
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(this, "Sorry, not implemented...", "SADXMDL2");
+            SaveFileDialog a = new SaveFileDialog()
+            {
+                DefaultExt = "sa1mdl",
+                Filter = "Model Files|*.sa1mdl;*.ini|All Files|*.*"
+            };
+            if (a.ShowDialog(this) == DialogResult.OK)
+            {
+                if (Path.GetExtension(a.FileName).Equals(".ini", StringComparison.OrdinalIgnoreCase))
+                {
+                    Dictionary<string, Dictionary<string, string>> ini = new Dictionary<string, Dictionary<string, string>>();
+                    ini.Add(string.Empty, new Dictionary<string, string>() { { "Root", model.Name } });
+                    model.Save(ini);
+                }
+                else
+                    model.SaveToFile(a.FileName, ModelFormat.SA1);
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

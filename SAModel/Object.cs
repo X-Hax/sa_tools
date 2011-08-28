@@ -77,6 +77,30 @@ namespace SonicRetro.SAModel
             }
         }
 
+        public static Object LoadFromFile(string filename)
+        {
+            byte[] file = System.IO.File.ReadAllBytes(filename);
+            ulong magic = BitConverter.ToUInt64(file, 0);
+            if (magic == 0x00004C444D314153u)
+                return new Object(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
+            else if (magic == 0x00004C444D324153u)
+                return new Object(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
+            else
+                throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
+        }
+
+        public static bool CheckModelFile(string filename)
+        {
+            byte[] file = System.IO.File.ReadAllBytes(filename);
+            ulong magic = BitConverter.ToUInt64(file, 0);
+            if (magic == 0x00004C444D314153u)
+                return true;
+            else if (magic == 0x00004C444D324153u)
+                return true;
+            else
+                return false;
+        }
+
         public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> attachaddrs, out uint address)
         {
             for (int i = 1; i < Children.Count; i++)
@@ -159,6 +183,33 @@ namespace SonicRetro.SAModel
             }
             if (!INI.ContainsKey(Name))
                 INI.Add(Name, group);
+        }
+
+        public void SaveToFile(string filename, ModelFormat format)
+        {
+            List<byte> file = new List<byte>();
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                    file.AddRange(BitConverter.GetBytes(0x00004C444D314153u));
+                    uint addr = 0;
+                    byte[] mdl = GetBytes(10, ModelFormat.SA1, out addr);
+                    file.AddRange(BitConverter.GetBytes(addr));
+                    file.Align(0x10);
+                    file.AddRange(mdl);
+                    break;
+                case ModelFormat.SADX:
+                    throw new ArgumentException("Cannot save SADX format models to file!", "format");
+                case ModelFormat.SA2:
+                    file.AddRange(BitConverter.GetBytes(0x00004C444D314153u));
+                    addr = 0;
+                    mdl = GetBytes(10, ModelFormat.SA2, out addr);
+                    file.AddRange(BitConverter.GetBytes(addr));
+                    file.Align(0x10);
+                    file.AddRange(mdl);
+                    break;
+            }
+            System.IO.File.WriteAllBytes(filename, file.ToArray());
         }
 
         public Object[] GetObjects()
