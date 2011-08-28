@@ -88,6 +88,26 @@ namespace SonicRetro.SAModel
             Unknown3 = int.Parse(group["Unknown3"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
+        public static LandTable LoadFromFile(string filename)
+        {
+            byte[] file = System.IO.File.ReadAllBytes(filename);
+            ulong magic = BitConverter.ToUInt64(file, 0);
+            if (magic == 0x00004C564C314153u)
+                return new LandTable(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
+            else
+                throw new FormatException("Not a valid SA1LVL file.");
+        }
+
+        public static bool CheckLevelFile(string filename)
+        {
+            byte[] file = System.IO.File.ReadAllBytes(filename);
+            ulong magic = BitConverter.ToUInt64(file, 0);
+            if (magic == 0x00004C564C314153u)
+                return true;
+            else
+                return false;
+        }
+
         public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
             Dictionary<string, uint> attachaddrs = new Dictionary<string, uint>();
@@ -182,6 +202,27 @@ namespace SonicRetro.SAModel
             group.Add("Unknown3", Unknown3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             if (!INI.ContainsKey(Name))
                 INI.Add(Name, group);
+        }
+
+        public void SaveToFile(string filename, ModelFormat format)
+        {
+            List<byte> file = new List<byte>();
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                    file.AddRange(BitConverter.GetBytes(0x00004C564C314153u));
+                    uint addr = 0;
+                    byte[] lvl = GetBytes(10, ModelFormat.SA1, out addr);
+                    file.AddRange(BitConverter.GetBytes(addr));
+                    file.Align(0x10);
+                    file.AddRange(lvl);
+                    break;
+                case ModelFormat.SADX:
+                    throw new ArgumentException("Cannot save SADX format levels to file!", "format");
+                case ModelFormat.SA2:
+                    throw new ArgumentException("Cannot save SA2 format levels to file!", "format");
+            }
+            System.IO.File.WriteAllBytes(filename, file.ToArray());
         }
     }
 }
