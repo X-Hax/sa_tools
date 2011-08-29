@@ -73,8 +73,8 @@ namespace SonicRetro.SAModel.SADXMDL2
                 }
             OpenFileDialog a = new OpenFileDialog()
             {
-                DefaultExt = "sa1mdl",
-                Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.ini;*.exe;*.dll;*.bin|All Files|*.*"
+                DefaultExt = "ini",
+                Filter = "Model Files|*.ini;*.exe;*.dll;*.bin|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
@@ -127,8 +127,8 @@ namespace SonicRetro.SAModel.SADXMDL2
         {
             SaveFileDialog a = new SaveFileDialog()
             {
-                DefaultExt = "sa1mdl",
-                Filter = "Model Files|*.sa1mdl;*.ini|All Files|*.*"
+                DefaultExt = "ini",
+                Filter = "Model Files|*.ini|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
