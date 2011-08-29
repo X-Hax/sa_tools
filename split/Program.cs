@@ -48,17 +48,10 @@ namespace split
                 switch (type)
                 {
                     case "landtable":
-                        SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(exefile, address, imageBase, true);
-                        Dictionary<string, Dictionary<string, string>> tblini = new Dictionary<string, Dictionary<string, string>>();
-                        tblini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", tbl.Name } });
-                        string anipath = Path.Combine(Path.GetDirectoryName(data["filename"]), "Animations");
-                        if (tbl.Anim.Count > 0)
-                            Directory.CreateDirectory(anipath);
-                        tbl.Save(tblini, anipath);
-                        IniFile.Save(tblini, data["filename"]);
+                        new SonicRetro.SAModel.LandTable(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX).SaveToFile(data["filename"], SonicRetro.SAModel.ModelFormat.SA1);
                         break;
                     case "model":
-                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, true);
+                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX);
                         Dictionary<string, Dictionary<string, string>> mdlini = new Dictionary<string, Dictionary<string, string>>();
                         mdlini.Add(string.Empty, new Dictionary<string, string>());
                         mdlini[string.Empty].Add("Root", mdl.Name);
@@ -68,7 +61,7 @@ namespace split
                         IniFile.Save(mdlini, data["filename"]);
                         break;
                     case "animation":
-                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, address, imageBase, true);
+                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX);
                         ani.Save(data["filename"]);
                         break;
                     case "objlist":

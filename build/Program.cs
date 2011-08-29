@@ -91,16 +91,15 @@ namespace build
                     switch (type)
                     {
                         case "landtable":
-                            Dictionary<string, Dictionary<string, string>> tblini = IniFile.Load(data["filename"]);
-                            SonicRetro.SAModel.LandTable tbl = new SonicRetro.SAModel.LandTable(tblini, tblini[string.Empty]["LandTable"]);
-                            datasection.AddRange(tbl.GetBytes(curaddr, true, out dataaddr));
+                            SonicRetro.SAModel.LandTable tbl = SonicRetro.SAModel.LandTable.LoadFromFile(data["filename"]);
+                            datasection.AddRange(tbl.GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out dataaddr));
                             //tbl = new SonicRetro.SAModel.LandTable(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
                             dataaddr += curaddr;
                             break;
                         case "model":
                             Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(data["filename"]);
                             SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(mdlini, mdlini[string.Empty]["Root"]);
-                            datasection.AddRange(mdl.GetBytes(curaddr, true, out dataaddr));
+                            datasection.AddRange(mdl.GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out dataaddr));
                             //mdl = new SonicRetro.SAModel.Object(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
                             dataaddr += curaddr;
                             break;
