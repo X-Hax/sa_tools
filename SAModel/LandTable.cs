@@ -147,6 +147,8 @@ namespace SonicRetro.SAModel
                 result.Align(4);
                 result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
             }
+            if (Anim.Count == 0)
+                animaddr = 0;
             result.Align(4);
             uint texnameaddr = 0;
             if (TextureFileName != null)
@@ -212,8 +214,8 @@ namespace SonicRetro.SAModel
                 case ModelFormat.SA1:
                     file.AddRange(BitConverter.GetBytes(0x00004C564C314153u));
                     uint addr = 0;
-                    byte[] lvl = GetBytes(10, ModelFormat.SA1, out addr);
-                    file.AddRange(BitConverter.GetBytes(addr));
+                    byte[] lvl = GetBytes(0x10, ModelFormat.SA1, out addr);
+                    file.AddRange(BitConverter.GetBytes(addr + 0x10));
                     file.Align(0x10);
                     file.AddRange(lvl);
                     break;

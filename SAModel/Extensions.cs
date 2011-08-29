@@ -9,7 +9,9 @@ namespace SonicRetro.SAModel
     {
         public static void Align(this List<byte> me, int alignment)
         {
-            me.AddRange(new byte[me.Count % alignment]);
+            int off = me.Count % alignment;
+            if (off == 0) return;
+            me.AddRange(new byte[alignment - off]);
         }
     }
 }

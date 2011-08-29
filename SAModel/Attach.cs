@@ -389,7 +389,7 @@ namespace SonicRetro.SAModel
             {
                 string[] matlist = group["Material"].Split(',');
                 for (int i = 0; i < matlist.Length; i++)
-                    Material[i] = new Material(INI[matlist[i]], matlist[i]);
+                    Material.Add(new Material(INI[matlist[i]], matlist[i]));
             }
             Center = new Vertex(group["Center"]);
             Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-using System.Reflection;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -135,8 +135,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                     LevelData.geo = null;
                 else
                 {
-                    Dictionary<string, Dictionary<string, string>> geoini = IniFile.Load(group["LevelGeo"]);
-                    LevelData.geo = new LandTable(geoini, geoini[string.Empty]["LandTable"]);
+                    LevelData.geo = LandTable.LoadFromFile(group["LevelGeo"]);
                     LevelData.LevelItems = new List<LevelItem>();
                     foreach (COL item in LevelData.geo.COL)
                         LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
@@ -391,12 +390,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             byte levelnum = byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
             byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
             if (LevelData.geo != null)
-            {
-                Dictionary<string, Dictionary<string, string>> geoini = new Dictionary<string, Dictionary<string, string>>();
-                geoini.Add(string.Empty, new Dictionary<string, string>() { { "LandTable", LevelData.geo.Name } });
-                LevelData.geo.Save(geoini, Path.Combine(Path.GetDirectoryName(group["LevelGeo"]), "Animations"));
-                IniFile.Save(geoini, group["LevelGeo"]);
-            }
+                LevelData.geo.SaveToFile(group["LevelGeo"], ModelFormat.SA1);
             for (int i = 0; i < LevelData.StartPositions.Length; i++)
             {
                 Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
