@@ -95,10 +95,20 @@ namespace SonicRetro.SAModel
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
                         ctype = file[tmpaddr];
+                        while (ctype == 0x00)
+                        {
+                            tmpaddr += 2;
+                            ctype = file[tmpaddr];
+                        }
+                        if (ctype < 0x20 | ctype > 0x36)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Unrecognized chunk 0x" + ctype.ToString("X2") + " at 0x" + tmpaddr.ToString("X8") + ".");
+                            goto poly;
+                        }
                         while (ctype != 0xFF)
                         {
-                            int curvert = BitConverter.ToInt16(file, tmpaddr + 4);
-                            int vcnt = BitConverter.ToInt16(file, tmpaddr + 6);
+                            int curvert = BitConverter.ToUInt16(file, tmpaddr + 4);
+                            int vcnt = BitConverter.ToUInt16(file, tmpaddr + 6);
                             ResizeVertexes(Math.Max(Vertex.Length, curvert + vcnt));
                             tmpaddr += 8;
                             for (int i = curvert; i < curvert + vcnt; i++)
@@ -223,9 +233,19 @@ namespace SonicRetro.SAModel
                                 }
                             }
                             ctype = file[tmpaddr];
+                            while (ctype == 0x00)
+                            {
+                                tmpaddr += 2;
+                                ctype = file[tmpaddr];
+                            }
+                            if (ctype < 0x20 | ctype > 0x36)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Unrecognized chunk 0x" + ctype.ToString("X2") + " at 0x" + tmpaddr.ToString("X8") + ".");
+                                goto poly;
+                            }
                         }
                     }
-                    Material = new List<Material>();
+                poly: Material = new List<Material>();
                     Mesh = new List<Mesh>();
                     Material mat = new Material();
                     tmpaddr = BitConverter.ToInt32(file, address + 4);
@@ -468,11 +488,17 @@ namespace SonicRetro.SAModel
                     result.Align(4);
                     uint vertexAddress = (uint)result.Count + imageBase;
                     foreach (Vertex item in Vertex)
-                        result.AddRange(item.GetBytes());
+                        if (item == null)
+                            result.AddRange(new byte[SAModel.Vertex.Size]);
+                        else
+                            result.AddRange(item.GetBytes());
                     result.Align(4);
                     uint normalAddress = (uint)result.Count + imageBase;
                     foreach (Vertex item in Normal)
-                        result.AddRange(item.GetBytes());
+                        if (item == null)
+                            result.AddRange(new byte[SAModel.Vertex.Size]);
+                        else
+                            result.AddRange(item.GetBytes());
                     result.Align(4);
                     address = (uint)result.Count;
                     result.AddRange(BitConverter.GetBytes(vertexAddress));

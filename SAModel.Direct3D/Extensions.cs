@@ -51,6 +51,7 @@ namespace SonicRetro.SAModel.Direct3D
             VertexData[][] verts = attach.GetVertexData();
             foreach (VertexData[] item in verts)
                 numverts += item.Length;
+            if (numverts == 0) return null;
             Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts, MeshFlags.Managed, FVF_PositionNormalTexturedColored.Elements, dev);
             List<FVF_PositionNormalTexturedColored> vb = new List<FVF_PositionNormalTexturedColored>();
             List<short> ib = new List<short>();

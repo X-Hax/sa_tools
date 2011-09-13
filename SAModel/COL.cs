@@ -24,7 +24,18 @@ namespace SonicRetro.SAModel
         }
         public string Name { get; set; }
 
-        public static int Size { get { return 0x24; } }
+        public static int Size(ModelFormat format)
+        {
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                case ModelFormat.SADX:
+                    return 0x24;
+                case ModelFormat.SA2:
+                    return 0x20;
+            }
+            return -1;
+        }
 
         public COL()
         {
@@ -37,11 +48,23 @@ namespace SonicRetro.SAModel
             Name = "col_" + address.ToString("X8");
             Center = new Vertex(file, address);
             Radius = BitConverter.ToSingle(file, address + 0xC);
-            Unknown1 = BitConverter.ToUInt64(file, 0x10);
-            uint tmpaddr = BitConverter.ToUInt32(file, address + 0x18) - imageBase;
-            Model = new Object(file, (int)tmpaddr, imageBase, format);
-            Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
-            Flags = BitConverter.ToInt32(file, address + 0x20);
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                case ModelFormat.SADX:
+                    Unknown1 = BitConverter.ToUInt64(file, 0x10);
+                    uint tmpaddr = BitConverter.ToUInt32(file, address + 0x18) - imageBase;
+                    Model = new Object(file, (int)tmpaddr, imageBase, format);
+                    Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
+                    Flags = BitConverter.ToInt32(file, address + 0x20);
+                    break;
+                case ModelFormat.SA2:
+                    tmpaddr = BitConverter.ToUInt32(file, address + 0x10) - imageBase;
+                    Model = new Object(file, (int)tmpaddr, imageBase, format);
+                    Unknown1 = BitConverter.ToUInt64(file, 0x14);
+                    Flags = BitConverter.ToInt32(file, address + 0x1C);
+                    break;
+            }
         }
 
         public COL(Dictionary<string, Dictionary<string, string>> INI, string groupname)
@@ -56,14 +79,24 @@ namespace SonicRetro.SAModel
             Flags = int.Parse(group["Flags"], System.Globalization.NumberStyles.HexNumber);
         }
 
-        public byte[] GetBytes(uint imageBase, uint modelptr)
+        public byte[] GetBytes(uint imageBase, uint modelptr, ModelFormat format)
         {
             List<byte> result = new List<byte>();
             result.AddRange(Center.GetBytes());
             result.AddRange(BitConverter.GetBytes(Radius));
-            result.AddRange(BitConverter.GetBytes(Unknown1));
-            result.AddRange(BitConverter.GetBytes(modelptr));
-            result.AddRange(BitConverter.GetBytes(Unknown2));
+            switch (format)
+            {
+                case ModelFormat.SA1:
+                case ModelFormat.SADX:
+                    result.AddRange(BitConverter.GetBytes(Unknown1));
+                    result.AddRange(BitConverter.GetBytes(modelptr));
+                    result.AddRange(BitConverter.GetBytes(Unknown2));
+                    break;
+                case ModelFormat.SA2:
+                    result.AddRange(BitConverter.GetBytes(modelptr));
+                    result.AddRange(BitConverter.GetBytes(Unknown1));
+                    break;
+            }
             result.AddRange(BitConverter.GetBytes(Flags));
             return result.ToArray();
         }
