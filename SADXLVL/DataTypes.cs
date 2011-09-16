@@ -49,9 +49,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public override void Render(Device dev, MatrixStack transform, bool selected)
         {
-            COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh);
+            COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
             if (selected)
-                COL.Model.DrawModelInvert(dev, transform, Mesh);
+                COL.Model.DrawModelInvert(dev, transform, Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
         }
 
         public override void Paste()

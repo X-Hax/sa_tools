@@ -79,7 +79,7 @@ namespace SonicRetro.SAModel.Direct3D
             return (float)(BAMS / (65536 / (2 * Math.PI)));
         }
 
-        public static void DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh)
+        public static void DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
         {
             if (mesh == null) return;
             transform.Push();
@@ -91,7 +91,7 @@ namespace SonicRetro.SAModel.Direct3D
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
-                    if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
+                    if (useMat)
                     {
                         Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
                         device.Material = new Microsoft.DirectX.Direct3D.Material
@@ -128,7 +128,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.Pop();
         }
 
-        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh)
+        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
         {
             if (mesh == null) return;
             FillMode mode = device.RenderState.FillMode;
@@ -143,7 +143,7 @@ namespace SonicRetro.SAModel.Direct3D
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
-                    if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
+                    if (!useMat) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     device.Material = new Microsoft.DirectX.Direct3D.Material
                     {
