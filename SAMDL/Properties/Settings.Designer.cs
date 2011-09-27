@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SonicRetro.SAModel.SADXMDL2.Properties {
+namespace SonicRetro.SAModel.SAMDL.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

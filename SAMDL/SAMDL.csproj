@@ -8,8 +8,8 @@
     <ProjectGuid>{64CD7AA3-BD30-4F90-9C62-09871B0E8B2B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SonicRetro.SAModel.SADXMDL2</RootNamespace>
-    <AssemblyName>SADXMDL2</AssemblyName>
+    <RootNamespace>SonicRetro.SAModel.SAMDL</RootNamespace>
+    <AssemblyName>SAMDL</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

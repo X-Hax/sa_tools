@@ -865,7 +865,6 @@ namespace SonicRetro.SAModel.SADXLVL2
                         mtlstream.WriteLine("Ka 1 1 1");
                         mtlstream.WriteLine("Kd " + obj.Attach.Material[j].DiffuseColor.R / 255f + " " + obj.Attach.Material[j].DiffuseColor.G / 255f + " " + obj.Attach.Material[j].DiffuseColor.B / 255f);
                         mtlstream.WriteLine("d " + obj.Attach.Material[j].DiffuseColor.A / 255f);
-                        mtlstream.WriteLine("Tr " + obj.Attach.Material[j].DiffuseColor.A / 255f);
                         mtlstream.WriteLine("Ks " + obj.Attach.Material[j].SpecularColor.R / 255f + " " + obj.Attach.Material[j].SpecularColor.G / 255f + " " + obj.Attach.Material[j].SpecularColor.B / 255f);
                         mtlstream.WriteLine("illum 1");
                         mtlstream.WriteLine("texid " + obj.Attach.Material[j].TextureID);

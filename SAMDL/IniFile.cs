@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SonicRetro.SAModel.SADXMDL2
+namespace SonicRetro.SAModel.SAMDL
 {
     public static class IniFile
     {

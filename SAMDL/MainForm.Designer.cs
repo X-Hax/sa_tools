@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SADXMDL2
+﻿namespace SonicRetro.SAModel.SAMDL
 {
     partial class MainForm
     {
@@ -177,7 +177,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
-            this.Text = "SADXMDL2";
+            this.Text = "SAMDL";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);

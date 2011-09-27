@@ -12,7 +12,7 @@ using System.Reflection;
 using puyo_tools;
 using VrSharp.PvrTexture;
 
-namespace SonicRetro.SAModel.SADXMDL2
+namespace SonicRetro.SAModel.SAMDL
 {
     public partial class MainForm : Form
     {
@@ -25,15 +25,15 @@ namespace SonicRetro.SAModel.SADXMDL2
 
         void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-            File.WriteAllText("SADXMDL2.log", e.Exception.ToString());
-            if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SADXMDL2 Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
+            File.WriteAllText("SAMDL.log", e.Exception.ToString());
+            if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SAMDL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
                 Close();
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            File.WriteAllText("SADXMDL2.log", e.ExceptionObject.ToString());
-            MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXMDL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            File.WriteAllText("SAMDL.log", e.ExceptionObject.ToString());
+            MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SAMDL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         internal Device d3ddevice;
@@ -63,7 +63,7 @@ namespace SonicRetro.SAModel.SADXMDL2
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (loaded)
-                switch (MessageBox.Show(this, "Do you want to save?", "SADXMDL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
                         saveToolStripMenuItem_Click(this, EventArgs.Empty);
@@ -112,7 +112,7 @@ namespace SonicRetro.SAModel.SADXMDL2
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (loaded)
-                switch (MessageBox.Show(this, "Do you want to save?", "SADXMDL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
                         saveToolStripMenuItem_Click(this, EventArgs.Empty);

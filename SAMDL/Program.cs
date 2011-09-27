@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SADXMDL2
+namespace SonicRetro.SAModel.SAMDL
 {
     static class Program
     {

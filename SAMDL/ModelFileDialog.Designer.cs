@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
-namespace SonicRetro.SAModel.SADXMDL2
+namespace SonicRetro.SAModel.SAMDL
 {
     partial class ModelFileDialog : Form
     {

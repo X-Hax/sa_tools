@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SADXMDL2
+namespace SonicRetro.SAModel.SAMDL
 {
     public partial class ModelFileDialog : Form
     {
