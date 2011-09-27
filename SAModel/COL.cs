@@ -32,6 +32,7 @@ namespace SonicRetro.SAModel
                 case ModelFormat.SADX:
                     return 0x24;
                 case ModelFormat.SA2:
+                case ModelFormat.SA2B:
                     return 0x20;
             }
             return -1;
@@ -45,24 +46,27 @@ namespace SonicRetro.SAModel
 
         public COL(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "col_" + address.ToString("X8");
             Center = new Vertex(file, address);
-            Radius = BitConverter.ToSingle(file, address + 0xC);
+            Radius = ByteConverter.ToSingle(file, address + 0xC);
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    Unknown1 = BitConverter.ToUInt64(file, 0x10);
-                    uint tmpaddr = BitConverter.ToUInt32(file, address + 0x18) - imageBase;
+                    Unknown1 = ByteConverter.ToUInt64(file, 0x10);
+                    uint tmpaddr = ByteConverter.ToUInt32(file, address + 0x18) - imageBase;
                     Model = new Object(file, (int)tmpaddr, imageBase, format);
-                    Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
-                    Flags = BitConverter.ToInt32(file, address + 0x20);
+                    Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
+                    Flags = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case ModelFormat.SA2:
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x10) - imageBase;
+                case ModelFormat.SA2B:
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
                     Model = new Object(file, (int)tmpaddr, imageBase, format);
-                    Unknown1 = BitConverter.ToUInt64(file, 0x14);
-                    Flags = BitConverter.ToInt32(file, address + 0x1C);
+                    Unknown1 = ByteConverter.ToUInt64(file, 0x14);
+                    Flags = ByteConverter.ToInt32(file, address + 0x1C);
                     break;
             }
         }
@@ -81,23 +85,26 @@ namespace SonicRetro.SAModel
 
         public byte[] GetBytes(uint imageBase, uint modelptr, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             List<byte> result = new List<byte>();
             result.AddRange(Center.GetBytes());
-            result.AddRange(BitConverter.GetBytes(Radius));
+            result.AddRange(ByteConverter.GetBytes(Radius));
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    result.AddRange(BitConverter.GetBytes(Unknown1));
-                    result.AddRange(BitConverter.GetBytes(modelptr));
-                    result.AddRange(BitConverter.GetBytes(Unknown2));
+                    result.AddRange(ByteConverter.GetBytes(Unknown1));
+                    result.AddRange(ByteConverter.GetBytes(modelptr));
+                    result.AddRange(ByteConverter.GetBytes(Unknown2));
                     break;
                 case ModelFormat.SA2:
-                    result.AddRange(BitConverter.GetBytes(modelptr));
-                    result.AddRange(BitConverter.GetBytes(Unknown1));
+                case ModelFormat.SA2B:
+                    result.AddRange(ByteConverter.GetBytes(modelptr));
+                    result.AddRange(ByteConverter.GetBytes(Unknown1));
                     break;
             }
-            result.AddRange(BitConverter.GetBytes(Flags));
+            result.AddRange(ByteConverter.GetBytes(Flags));
             return result.ToArray();
         }
 

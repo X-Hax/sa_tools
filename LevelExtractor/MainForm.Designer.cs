@@ -60,7 +60,8 @@
             this.comboBox2.Items.AddRange(new object[] {
             "SA1",
             "SADX",
-            "SA2"});
+            "SA2",
+            "SA2B"});
             this.comboBox2.Location = new System.Drawing.Point(60, 95);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);

@@ -15,9 +15,9 @@ namespace SonicRetro.SAModel
         {
             Name = "tri_" + address.ToString("X8");
             Indexes = new ushort[3];
-            Indexes[0] = BitConverter.ToUInt16(file, address);
-            Indexes[1] = BitConverter.ToUInt16(file, address + 2);
-            Indexes[2] = BitConverter.ToUInt16(file, address + 4);
+            Indexes[0] = ByteConverter.ToUInt16(file, address);
+            Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
+            Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
         }
 
         public Triangle(Dictionary<string, string> group, string name)
@@ -44,10 +44,10 @@ namespace SonicRetro.SAModel
         {
             Name = "quad_" + address.ToString("X8");
             Indexes = new ushort[4];
-            Indexes[0] = BitConverter.ToUInt16(file, address);
-            Indexes[1] = BitConverter.ToUInt16(file, address + 2);
-            Indexes[2] = BitConverter.ToUInt16(file, address + 4);
-            Indexes[3] = BitConverter.ToUInt16(file, address + 6);
+            Indexes[0] = ByteConverter.ToUInt16(file, address);
+            Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
+            Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
+            Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
         }
 
         public Quad(Dictionary<string, string> group, string name)
@@ -83,12 +83,12 @@ namespace SonicRetro.SAModel
         public Strip(byte[] file, int address)
         {
             Name = "strip_" + address.ToString("X8");
-            Indexes = new ushort[BitConverter.ToUInt16(file, address) & 0x7FFF];
-            Reversed = (BitConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
+            Indexes = new ushort[ByteConverter.ToUInt16(file, address) & 0x7FFF];
+            Reversed = (ByteConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
             address += 2;
             for (int i = 0; i < Indexes.Length; i++)
             {
-                Indexes[i] = BitConverter.ToUInt16(file, address);
+                Indexes[i] = ByteConverter.ToUInt16(file, address);
                 address += 2;
             }
         }
@@ -110,7 +110,7 @@ namespace SonicRetro.SAModel
         public override byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes((ushort)(Indexes.Length | (Reversed ? 0x8000 : 0))));
+            result.AddRange(ByteConverter.GetBytes((ushort)(Indexes.Length | (Reversed ? 0x8000 : 0))));
             result.AddRange(base.GetBytes());
             return result.ToArray();
         }
@@ -143,7 +143,7 @@ namespace SonicRetro.SAModel
         {
             List<byte> result = new List<byte>();
             foreach (ushort item in Indexes)
-                result.AddRange(BitConverter.GetBytes(item));
+                result.AddRange(ByteConverter.GetBytes(item));
             return result.ToArray();
         }
 

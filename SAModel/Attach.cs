@@ -23,6 +23,7 @@ namespace SonicRetro.SAModel
                 case ModelFormat.SADX:
                     return 0x2C;
                 case ModelFormat.SA2:
+                case ModelFormat.SA2B:
                     return 0x18;
             }
             return -1;
@@ -40,28 +41,30 @@ namespace SonicRetro.SAModel
 
         public Attach(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "attach_" + address.ToString("X8");
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    Vertex = new Vertex[BitConverter.ToInt32(file, address + 8)];
+                    Vertex = new Vertex[ByteConverter.ToInt32(file, address + 8)];
                     Normal = new Vertex[Vertex.Length];
-                    int tmpaddr = (int)(BitConverter.ToUInt32(file, address) - imageBase);
+                    int tmpaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
                     for (int i = 0; i < Vertex.Length; i++)
                     {
                         Vertex[i] = new Vertex(file, tmpaddr);
                         tmpaddr += SAModel.Vertex.Size;
                     }
-                    tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
+                    tmpaddr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
                     for (int i = 0; i < Vertex.Length; i++)
                     {
                         Normal[i] = new Vertex(file, tmpaddr);
                         tmpaddr += SAModel.Vertex.Size;
                     }
                     Mesh = new List<Mesh>();
-                    int meshcnt = BitConverter.ToInt16(file, address + 0x14);
-                    tmpaddr = BitConverter.ToInt32(file, address + 0xC);
+                    int meshcnt = ByteConverter.ToInt16(file, address + 0x14);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -72,8 +75,8 @@ namespace SonicRetro.SAModel
                         }
                     }
                     Material = new List<Material>();
-                    int matcnt = BitConverter.ToInt16(file, address + 0x16);
-                    tmpaddr = BitConverter.ToInt32(file, address + 0x10);
+                    int matcnt = ByteConverter.ToInt16(file, address + 0x16);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -84,13 +87,14 @@ namespace SonicRetro.SAModel
                         }
                     }
                     Center = new Vertex(file, address + 0x18);
-                    Radius = BitConverter.ToSingle(file, address + 0x24);
+                    Radius = ByteConverter.ToSingle(file, address + 0x24);
                     break;
                 case ModelFormat.SA2:
+                case ModelFormat.SA2B:
                     Vertex = new Vertex[0];
                     Normal = new Vertex[0];
                     byte ctype;
-                    tmpaddr = BitConverter.ToInt32(file, address);
+                    tmpaddr = ByteConverter.ToInt32(file, address);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -107,8 +111,8 @@ namespace SonicRetro.SAModel
                         }
                         while (ctype != 0xFF)
                         {
-                            int curvert = BitConverter.ToUInt16(file, tmpaddr + 4);
-                            int vcnt = BitConverter.ToUInt16(file, tmpaddr + 6);
+                            int curvert = ByteConverter.ToUInt16(file, tmpaddr + 4);
+                            int vcnt = ByteConverter.ToUInt16(file, tmpaddr + 6);
                             ResizeVertexes(Math.Max(Vertex.Length, curvert + vcnt));
                             tmpaddr += 8;
                             for (int i = curvert; i < curvert + vcnt; i++)
@@ -248,7 +252,7 @@ namespace SonicRetro.SAModel
                 poly: Material = new List<Material>();
                     Mesh = new List<Mesh>();
                     Material mat = new Material();
-                    tmpaddr = BitConverter.ToInt32(file, address + 4);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 4);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -259,7 +263,7 @@ namespace SonicRetro.SAModel
                             {
                                 case 0x08:
                                 case 0x09:
-                                    mat.TextureID = BitConverter.ToUInt16(file, tmpaddr + 2) & 0x1FFF;
+                                    mat.TextureID = ByteConverter.ToUInt16(file, tmpaddr + 2) & 0x1FFF;
                                     tmpaddr += 4;
                                     break;
                                 case 0x10:
@@ -274,7 +278,7 @@ namespace SonicRetro.SAModel
                                     int curaddr = tmpaddr + 4;
                                     if (hasDiffuse)
                                     {
-                                        mat.DiffuseColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
+                                        mat.DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, curaddr));
                                         curaddr += 4;
                                     }
                                     else
@@ -285,7 +289,7 @@ namespace SonicRetro.SAModel
                                     bool hasSpecular = (file[tmpaddr] & 4) != 0;
                                     if (hasSpecular)
                                     {
-                                        mat.SpecularColor = Color.FromArgb(BitConverter.ToInt32(file, curaddr));
+                                        mat.SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, curaddr));
                                         curaddr += 4;
                                     }
                                     else
@@ -293,7 +297,7 @@ namespace SonicRetro.SAModel
                                     tmpaddr = curaddr;
                                     break;
                                 case 0x38:
-                                    tmpaddr += BitConverter.ToInt16(file, tmpaddr + 2) + 4;
+                                    tmpaddr += ByteConverter.ToInt16(file, tmpaddr + 2) + 4;
                                     break;
                                 case 0x40:
                                 case 0x41:
@@ -309,18 +313,18 @@ namespace SonicRetro.SAModel
                                     mat = new Material() { TextureID = mat.TextureID, DiffuseColor = mat.DiffuseColor, SpecularColor = mat.SpecularColor };
                                     int striptype = file[tmpaddr] & 0xF;
                                     int numflags = file[tmpaddr + 1] & 3;
-                                    Poly[] polys = new Poly[BitConverter.ToUInt16(file, tmpaddr + 4) & 0x3FFF];
+                                    Poly[] polys = new Poly[ByteConverter.ToUInt16(file, tmpaddr + 4) & 0x3FFF];
                                     List<UV> uvs = new List<UV>();
                                     List<Color> vcs = new List<Color>();
                                     tmpaddr += 6;
                                     for (int i = 0; i < polys.Length; i++)
                                     {
-                                        int stripcnt = BitConverter.ToInt16(file, tmpaddr);
+                                        int stripcnt = ByteConverter.ToInt16(file, tmpaddr);
                                         tmpaddr += 2;
                                         polys[i] = new Strip(Math.Abs(stripcnt), stripcnt < 0);
                                         for (int j = 0; j < polys[i].Indexes.Length; j++)
                                         {
-                                            polys[i].Indexes[j] = BitConverter.ToUInt16(file, tmpaddr);
+                                            polys[i].Indexes[j] = ByteConverter.ToUInt16(file, tmpaddr);
                                             tmpaddr += 2;
                                             switch (striptype)
                                             {
@@ -329,7 +333,7 @@ namespace SonicRetro.SAModel
                                                     tmpaddr += UV.Size;
                                                     break;
                                                 case 2:
-                                                    uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                    uvs.Add(new UV() { U = (short)(ByteConverter.ToInt16(file, tmpaddr) / 4), V = (short)(ByteConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                     tmpaddr += UV.Size;
                                                     break;
                                                 case 3:
@@ -341,24 +345,24 @@ namespace SonicRetro.SAModel
                                                     tmpaddr += 6;
                                                     break;
                                                 case 5:
-                                                    uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                    uvs.Add(new UV() { U = (short)(ByteConverter.ToInt16(file, tmpaddr) / 4), V = (short)(ByteConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                     tmpaddr += UV.Size;
                                                     tmpaddr += 6;
                                                     break;
                                                 case 6:
-                                                    vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                    vcs.Add(Color.FromArgb(ByteConverter.ToInt32(file, tmpaddr)));
                                                     tmpaddr += 4;
                                                     break;
                                                 case 7:
                                                     uvs.Add(new UV(file, tmpaddr));
                                                     tmpaddr += UV.Size;
-                                                    vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                    vcs.Add(Color.FromArgb(ByteConverter.ToInt32(file, tmpaddr)));
                                                     tmpaddr += 4;
                                                     break;
                                                 case 8:
-                                                    uvs.Add(new UV() { U = (short)(BitConverter.ToInt16(file, tmpaddr) / 4), V = (short)(BitConverter.ToInt16(file, tmpaddr + 2) / 4) });
+                                                    uvs.Add(new UV() { U = (short)(ByteConverter.ToInt16(file, tmpaddr) / 4), V = (short)(ByteConverter.ToInt16(file, tmpaddr + 2) / 4) });
                                                     tmpaddr += UV.Size;
-                                                    vcs.Add(Color.FromArgb(BitConverter.ToInt32(file, tmpaddr)));
+                                                    vcs.Add(Color.FromArgb(ByteConverter.ToInt32(file, tmpaddr)));
                                                     tmpaddr += 4;
                                                     break;
                                             }
@@ -383,7 +387,7 @@ namespace SonicRetro.SAModel
                         }
                     }
                     Center = new Vertex(file, address + 8);
-                    Radius = BitConverter.ToSingle(file, address + 0x14);
+                    Radius = ByteConverter.ToSingle(file, address + 0x14);
                     break;
             }
         }
@@ -427,6 +431,8 @@ namespace SonicRetro.SAModel
 
         public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             List<byte> result = new List<byte>();
             address = 0;
             switch (format)
@@ -501,18 +507,19 @@ namespace SonicRetro.SAModel
                             result.AddRange(item.GetBytes());
                     result.Align(4);
                     address = (uint)result.Count;
-                    result.AddRange(BitConverter.GetBytes(vertexAddress));
-                    result.AddRange(BitConverter.GetBytes(normalAddress));
-                    result.AddRange(BitConverter.GetBytes(Vertex.Length));
-                    result.AddRange(BitConverter.GetBytes(meshAddress));
-                    result.AddRange(BitConverter.GetBytes(materialAddress));
-                    result.AddRange(BitConverter.GetBytes((short)Mesh.Count));
-                    result.AddRange(BitConverter.GetBytes((short)Material.Count));
+                    result.AddRange(ByteConverter.GetBytes(vertexAddress));
+                    result.AddRange(ByteConverter.GetBytes(normalAddress));
+                    result.AddRange(ByteConverter.GetBytes(Vertex.Length));
+                    result.AddRange(ByteConverter.GetBytes(meshAddress));
+                    result.AddRange(ByteConverter.GetBytes(materialAddress));
+                    result.AddRange(ByteConverter.GetBytes((short)Mesh.Count));
+                    result.AddRange(ByteConverter.GetBytes((short)Material.Count));
                     result.AddRange(Center.GetBytes());
-                    result.AddRange(BitConverter.GetBytes(Radius));
+                    result.AddRange(ByteConverter.GetBytes(Radius));
                     if (format == ModelFormat.SADX) result.AddRange(new byte[4]);
                     break;
                 case ModelFormat.SA2:
+                case ModelFormat.SA2B:
                     throw new Exception(); // implement this later
             }
             return result.ToArray();

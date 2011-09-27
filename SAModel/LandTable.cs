@@ -20,17 +20,19 @@ namespace SonicRetro.SAModel
 
         public LandTable(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "landtable_" + address.ToString("X8");
-            short colcnt = BitConverter.ToInt16(file, address);
-            short anicnt = BitConverter.ToInt16(file, address + 2);
+            short colcnt = ByteConverter.ToInt16(file, address);
+            short anicnt = ByteConverter.ToInt16(file, address + 2);
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    Flags = BitConverter.ToInt32(file, address + 4);
-                    Unknown1 = BitConverter.ToSingle(file, address + 8);
+                    Flags = ByteConverter.ToInt32(file, address + 4);
+                    Unknown1 = ByteConverter.ToSingle(file, address + 8);
                     COL = new List<COL>();
-                    uint tmpaddr = BitConverter.ToUInt32(file, address + 0xC);
+                    uint tmpaddr = ByteConverter.ToUInt32(file, address + 0xC);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -41,7 +43,7 @@ namespace SonicRetro.SAModel
                         }
                     }
                     Anim = new List<GeoAnimData>();
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x10);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -51,7 +53,7 @@ namespace SonicRetro.SAModel
                             tmpaddr += (uint)GeoAnimData.Size;
                         }
                     }
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x14);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x14);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -60,14 +62,15 @@ namespace SonicRetro.SAModel
                             sb.Append((char)file[tmpaddr++]);
                         TextureFileName = sb.ToString();
                     }
-                    TextureList = BitConverter.ToUInt32(file, address + 0x18);
-                    Unknown2 = BitConverter.ToInt32(file, address + 0x1C);
-                    Unknown3 = BitConverter.ToInt32(file, address + 0x20);
+                    TextureList = ByteConverter.ToUInt32(file, address + 0x18);
+                    Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
+                    Unknown3 = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case ModelFormat.SA2:
-                    Unknown1 = BitConverter.ToSingle(file, address + 0xC);
+                case ModelFormat.SA2B:
+                    Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
                     COL = new List<COL>();
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x10);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -78,7 +81,7 @@ namespace SonicRetro.SAModel
                         }
                     }
                     Anim = new List<GeoAnimData>();
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x14);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x14);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -88,7 +91,7 @@ namespace SonicRetro.SAModel
                             tmpaddr += (uint)GeoAnimData.Size;
                         }
                     }
-                    tmpaddr = BitConverter.ToUInt32(file, address + 0x18);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x18);
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
@@ -97,7 +100,7 @@ namespace SonicRetro.SAModel
                             sb.Append((char)file[tmpaddr++]);
                         TextureFileName = sb.ToString();
                     }
-                    TextureList = BitConverter.ToUInt32(file, address + 0x1C);
+                    TextureList = ByteConverter.ToUInt32(file, address + 0x1C);
                     break;
             }
         }
@@ -131,20 +134,22 @@ namespace SonicRetro.SAModel
 
         public static LandTable LoadFromFile(string filename)
         {
+            ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = BitConverter.ToUInt64(file, 0);
+            ulong magic = ByteConverter.ToUInt64(file, 0);
             if (magic == 0x00004C564C314153u)
-                return new LandTable(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
+                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
             else if (magic == 0x00004C564C324153u)
-                return new LandTable(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
+                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
             else
                 throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
         }
 
         public static bool CheckLevelFile(string filename)
         {
+            ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = BitConverter.ToUInt64(file, 0);
+            ulong magic = ByteConverter.ToUInt64(file, 0);
             if (magic == 0x00004C564C314153u)
                 return true;
             else if (magic == 0x00004C564C324153u)
@@ -155,6 +160,8 @@ namespace SonicRetro.SAModel
 
         public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Dictionary<string, uint> attachaddrs = new Dictionary<string, uint>();
             List<byte> result = new List<byte>();
             byte[] tmpbyte;
@@ -204,28 +211,29 @@ namespace SonicRetro.SAModel
             }
             result.Align(4);
             address = (uint)result.Count;
-            result.AddRange(BitConverter.GetBytes((ushort)COL.Count));
-            result.AddRange(BitConverter.GetBytes((ushort)Anim.Count));
+            result.AddRange(ByteConverter.GetBytes((ushort)COL.Count));
+            result.AddRange(ByteConverter.GetBytes((ushort)Anim.Count));
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    result.AddRange(BitConverter.GetBytes(Flags));
-                    result.AddRange(BitConverter.GetBytes(Unknown1));
-                    result.AddRange(BitConverter.GetBytes(coladdr));
-                    result.AddRange(BitConverter.GetBytes(animaddr));
-                    result.AddRange(BitConverter.GetBytes(texnameaddr));
-                    result.AddRange(BitConverter.GetBytes(TextureList));
-                    result.AddRange(BitConverter.GetBytes(Unknown2));
-                    result.AddRange(BitConverter.GetBytes(Unknown3));
+                    result.AddRange(ByteConverter.GetBytes(Flags));
+                    result.AddRange(ByteConverter.GetBytes(Unknown1));
+                    result.AddRange(ByteConverter.GetBytes(coladdr));
+                    result.AddRange(ByteConverter.GetBytes(animaddr));
+                    result.AddRange(ByteConverter.GetBytes(texnameaddr));
+                    result.AddRange(ByteConverter.GetBytes(TextureList));
+                    result.AddRange(ByteConverter.GetBytes(Unknown2));
+                    result.AddRange(ByteConverter.GetBytes(Unknown3));
                     break;
                 case ModelFormat.SA2:
+                case ModelFormat.SA2B:
                     result.AddRange(new byte[8]); // TODO: figure out what these do
-                    result.AddRange(BitConverter.GetBytes(Unknown1));
-                    result.AddRange(BitConverter.GetBytes(coladdr));
-                    result.AddRange(BitConverter.GetBytes(animaddr));
-                    result.AddRange(BitConverter.GetBytes(texnameaddr));
-                    result.AddRange(BitConverter.GetBytes(TextureList));
+                    result.AddRange(ByteConverter.GetBytes(Unknown1));
+                    result.AddRange(ByteConverter.GetBytes(coladdr));
+                    result.AddRange(ByteConverter.GetBytes(animaddr));
+                    result.AddRange(ByteConverter.GetBytes(texnameaddr));
+                    result.AddRange(ByteConverter.GetBytes(TextureList));
                     break;
             }
             return result.ToArray();
@@ -267,27 +275,30 @@ namespace SonicRetro.SAModel
 
         public void SaveToFile(string filename, ModelFormat format)
         {
+            ByteConverter.BigEndian = false;
             List<byte> file = new List<byte>();
             switch (format)
             {
                 case ModelFormat.SA1:
-                    file.AddRange(BitConverter.GetBytes(0x00004C564C314153u));
+                    file.AddRange(ByteConverter.GetBytes(0x00004C564C314153u));
                     uint addr = 0;
                     byte[] lvl = GetBytes(0x10, ModelFormat.SA1, out addr);
-                    file.AddRange(BitConverter.GetBytes(addr + 0x10));
+                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
                     file.Align(0x10);
                     file.AddRange(lvl);
                     break;
                 case ModelFormat.SADX:
                     throw new ArgumentException("Cannot save SADX format levels to file!", "format");
                 case ModelFormat.SA2:
-                    file.AddRange(BitConverter.GetBytes(0x00004C564C324153u));
+                    file.AddRange(ByteConverter.GetBytes(0x00004C564C324153u));
                     addr = 0;
                     lvl = GetBytes(0x10, ModelFormat.SA2, out addr);
-                    file.AddRange(BitConverter.GetBytes(addr + 0x10));
+                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
                     file.Align(0x10);
                     file.AddRange(lvl);
                     break;
+                case ModelFormat.SA2B:
+                    throw new ArgumentException("Cannot save SA2B format levels to file!", "format");
             }
             System.IO.File.WriteAllBytes(filename, file.ToArray());
         }

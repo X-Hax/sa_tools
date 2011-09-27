@@ -17,13 +17,15 @@ namespace SonicRetro.SAModel
 
         public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "anim_" + address.ToString("X8");
-            Unknown1 = BitConverter.ToInt32(file, address);
-            Unknown2 = BitConverter.ToSingle(file, address + 4);
-            Unknown3 = BitConverter.ToSingle(file, address + 8);
-            Model = new Object(file, (int)(BitConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, format);
-            Animation = new Animation(file, (int)(BitConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format);
-            Unknown4 = BitConverter.ToInt32(file, address + 0x14);
+            Unknown1 = ByteConverter.ToInt32(file, address);
+            Unknown2 = ByteConverter.ToSingle(file, address + 4);
+            Unknown3 = ByteConverter.ToSingle(file, address + 8);
+            Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, format);
+            Animation = new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format);
+            Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
         }
 
         public GeoAnimData(Dictionary<string, Dictionary<string, string>> INI, string groupname)
@@ -41,12 +43,12 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes(uint imageBase, uint modelptr, uint animptr)
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(Unknown1));
-            result.AddRange(BitConverter.GetBytes(Unknown2));
-            result.AddRange(BitConverter.GetBytes(Unknown3));
-            result.AddRange(BitConverter.GetBytes(modelptr));
-            result.AddRange(BitConverter.GetBytes(animptr));
-            result.AddRange(BitConverter.GetBytes(Unknown4));
+            result.AddRange(ByteConverter.GetBytes(Unknown1));
+            result.AddRange(ByteConverter.GetBytes(Unknown2));
+            result.AddRange(ByteConverter.GetBytes(Unknown3));
+            result.AddRange(ByteConverter.GetBytes(modelptr));
+            result.AddRange(ByteConverter.GetBytes(animptr));
+            result.AddRange(ByteConverter.GetBytes(Unknown4));
             return result.ToArray();
         }
 

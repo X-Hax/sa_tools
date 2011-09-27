@@ -14,8 +14,8 @@ namespace SonicRetro.SAModel
 
         public UV(byte[] file, int address)
         {
-            U = BitConverter.ToInt16(file, address);
-            V = BitConverter.ToInt16(file, address + 2);
+            U = ByteConverter.ToInt16(file, address);
+            V = ByteConverter.ToInt16(file, address + 2);
         }
 
         public UV(string data)
@@ -28,8 +28,8 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(U));
-            result.AddRange(BitConverter.GetBytes(V));
+            result.AddRange(ByteConverter.GetBytes(U));
+            result.AddRange(ByteConverter.GetBytes(V));
             return result.ToArray();
         }
 

@@ -15,9 +15,9 @@ namespace SonicRetro.SAModel
 
         public Vertex(byte[] file, int address)
         {
-            X = BitConverter.ToSingle(file, address);
-            Y = BitConverter.ToSingle(file, address + 4);
-            Z = BitConverter.ToSingle(file, address + 8);
+            X = ByteConverter.ToSingle(file, address);
+            Y = ByteConverter.ToSingle(file, address + 4);
+            Z = ByteConverter.ToSingle(file, address + 8);
         }
 
         public Vertex(string data)
@@ -38,9 +38,9 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(X));
-            result.AddRange(BitConverter.GetBytes(Y));
-            result.AddRange(BitConverter.GetBytes(Z));
+            result.AddRange(ByteConverter.GetBytes(X));
+            result.AddRange(ByteConverter.GetBytes(Y));
+            result.AddRange(ByteConverter.GetBytes(Z));
             return result.ToArray();
         }
 

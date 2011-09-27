@@ -26,9 +26,11 @@ namespace SonicRetro.SAModel
 
         public Object(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "object_" + address.ToString("X8");
-            Flags = (ObjectFlags)BitConverter.ToInt32(file, address);
-            int tmpaddr = BitConverter.ToInt32(file, address + 4);
+            Flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
+            int tmpaddr = ByteConverter.ToInt32(file, address + 4);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -39,7 +41,7 @@ namespace SonicRetro.SAModel
             Scale = new Vertex(file, address + 0x20);
             Children = new List<Object>();
             Object child = null;
-            tmpaddr = BitConverter.ToInt32(file, address + 0x2C);
+            tmpaddr = ByteConverter.ToInt32(file, address + 0x2C);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -50,7 +52,7 @@ namespace SonicRetro.SAModel
                 Children.Add(child);
                 child = child.Sibling;
             }
-            tmpaddr = BitConverter.ToInt32(file, address + 0x30);
+            tmpaddr = ByteConverter.ToInt32(file, address + 0x30);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -79,20 +81,22 @@ namespace SonicRetro.SAModel
 
         public static Object LoadFromFile(string filename)
         {
+            ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = BitConverter.ToUInt64(file, 0);
+            ulong magic = ByteConverter.ToUInt64(file, 0);
             if (magic == 0x00004C444D314153u)
-                return new Object(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
+                return new Object(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
             else if (magic == 0x00004C444D324153u)
-                return new Object(file, BitConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
+                return new Object(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
             else
                 throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
         }
 
         public static bool CheckModelFile(string filename)
         {
+            ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = BitConverter.ToUInt64(file, 0);
+            ulong magic = ByteConverter.ToUInt64(file, 0);
             if (magic == 0x00004C444D314153u)
                 return true;
             else if (magic == 0x00004C444D324153u)
@@ -103,6 +107,8 @@ namespace SonicRetro.SAModel
 
         public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> attachaddrs, out uint address)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             for (int i = 1; i < Children.Count; i++)
                 Children[i - 1].Sibling = Children[i];
             List<byte> result = new List<byte>();
@@ -138,13 +144,13 @@ namespace SonicRetro.SAModel
             }
             result.Align(4);
             address = (uint)result.Count;
-            result.AddRange(BitConverter.GetBytes((int)Flags));
-            result.AddRange(BitConverter.GetBytes(attachaddr));
+            result.AddRange(ByteConverter.GetBytes((int)Flags));
+            result.AddRange(ByteConverter.GetBytes(attachaddr));
             result.AddRange(Position.GetBytes());
             result.AddRange(Rotation.GetBytes());
             result.AddRange(Scale.GetBytes());
-            result.AddRange(BitConverter.GetBytes(childaddr));
-            result.AddRange(BitConverter.GetBytes(siblingaddr));
+            result.AddRange(ByteConverter.GetBytes(childaddr));
+            result.AddRange(ByteConverter.GetBytes(siblingaddr));
             return result.ToArray();
         }
 
@@ -187,27 +193,30 @@ namespace SonicRetro.SAModel
 
         public void SaveToFile(string filename, ModelFormat format)
         {
+            ByteConverter.BigEndian = false;
             List<byte> file = new List<byte>();
             switch (format)
             {
                 case ModelFormat.SA1:
-                    file.AddRange(BitConverter.GetBytes(0x00004C444D314153u));
+                    file.AddRange(ByteConverter.GetBytes(0x00004C444D314153u));
                     uint addr = 0;
                     byte[] mdl = GetBytes(0x10, ModelFormat.SA1, out addr);
-                    file.AddRange(BitConverter.GetBytes(addr + 0x10));
+                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
                     file.Align(0x10);
                     file.AddRange(mdl);
                     break;
                 case ModelFormat.SADX:
                     throw new ArgumentException("Cannot save SADX format models to file!", "format");
                 case ModelFormat.SA2:
-                    file.AddRange(BitConverter.GetBytes(0x00004C444D314153u));
+                    file.AddRange(ByteConverter.GetBytes(0x00004C444D314153u));
                     addr = 0;
                     mdl = GetBytes(0x10, ModelFormat.SA2, out addr);
-                    file.AddRange(BitConverter.GetBytes(addr + 0x10));
+                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
                     file.Align(0x10);
                     file.AddRange(mdl);
                     break;
+                case ModelFormat.SA2B:
+                    throw new ArgumentException("Cannot save SA2B format levels to file!", "format");
             }
             System.IO.File.WriteAllBytes(filename, file.ToArray());
         }

@@ -17,16 +17,18 @@ namespace SonicRetro.SAModel
 
         public Animation(byte[] file, int address, uint imageBase, ModelFormat format)
         {
+            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
+            else ByteConverter.BigEndian = false;
             Name = "animation_" + address.ToString("X8");
-            Object Model = new Object(file, (int)(BitConverter.ToUInt32(file, address) - imageBase), imageBase, format);
+            Object Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
             int nummodels = 0;
             foreach (Object modl in Model.GetObjects())
                 if ((modl.Flags & ObjectFlags.NoAnimate) != ObjectFlags.NoAnimate)
                     nummodels += 1;
-            Int32 ptr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
-            Frames = BitConverter.ToInt32(file, ptr + 4);
-            AnimFlags animtype = (AnimFlags)BitConverter.ToUInt16(file, ptr + 8);
-            ptr = (int)(BitConverter.ToUInt32(file, ptr) - imageBase);
+            Int32 ptr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
+            Frames = ByteConverter.ToInt32(file, ptr + 4);
+            AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, ptr + 8);
+            ptr = (int)(ByteConverter.ToUInt32(file, ptr) - imageBase);
             int framesize = 0;
             if ((animtype & AnimFlags.Translate) == AnimFlags.Translate)
                 framesize += 8;
@@ -91,7 +93,7 @@ namespace SonicRetro.SAModel
                     posframes[model.Key] = model.Value.Position.Count;
                     foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
                     {
-                        result.AddRange(BitConverter.GetBytes(item.Key));
+                        result.AddRange(ByteConverter.GetBytes(item.Key));
                         result.AddRange(item.Value.GetBytes());
                     }
                 }
@@ -103,7 +105,7 @@ namespace SonicRetro.SAModel
                     rotframes[model.Key] = model.Value.Rotation.Count;
                     foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
                     {
-                        result.AddRange(BitConverter.GetBytes(item.Key));
+                        result.AddRange(ByteConverter.GetBytes(item.Key));
                         result.AddRange(item.Value.GetBytes());
                     }
                 }
@@ -115,7 +117,7 @@ namespace SonicRetro.SAModel
                     sclframes[model.Key] = model.Value.Scale.Count;
                     foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
                     {
-                        result.AddRange(BitConverter.GetBytes(item.Key));
+                        result.AddRange(ByteConverter.GetBytes(item.Key));
                         result.AddRange(item.Value.GetBytes());
                     }
                 }
@@ -125,22 +127,22 @@ namespace SonicRetro.SAModel
             for (int i = 0; i < modelparts; i++)
             {
                 if (hasPos)
-                    result.AddRange(BitConverter.GetBytes(posoffs[i]));
+                    result.AddRange(ByteConverter.GetBytes(posoffs[i]));
                 if (hasRot)
-                    result.AddRange(BitConverter.GetBytes(rotoffs[i]));
+                    result.AddRange(ByteConverter.GetBytes(rotoffs[i]));
                 if (hasScl)
-                    result.AddRange(BitConverter.GetBytes(scloffs[i]));
+                    result.AddRange(ByteConverter.GetBytes(scloffs[i]));
                 if (hasPos)
-                    result.AddRange(BitConverter.GetBytes(posframes[i]));
+                    result.AddRange(ByteConverter.GetBytes(posframes[i]));
                 if (hasRot)
-                    result.AddRange(BitConverter.GetBytes(rotframes[i]));
+                    result.AddRange(ByteConverter.GetBytes(rotframes[i]));
                 if (hasScl)
-                    result.AddRange(BitConverter.GetBytes(sclframes[i]));
+                    result.AddRange(ByteConverter.GetBytes(sclframes[i]));
             }
             result.Align(4);
             uint head2 = imageBase + (uint)result.Count;
-            result.AddRange(BitConverter.GetBytes(modeldata));
-            result.AddRange(BitConverter.GetBytes(Frames));
+            result.AddRange(ByteConverter.GetBytes(modeldata));
+            result.AddRange(ByteConverter.GetBytes(Frames));
             AnimFlags flags = 0;
             if (hasPos)
                 flags |= AnimFlags.Translate;
@@ -148,7 +150,7 @@ namespace SonicRetro.SAModel
                 flags |= AnimFlags.Rotate;
             if (hasScl)
                 flags |= AnimFlags.Scale;
-            result.AddRange(BitConverter.GetBytes((ushort)flags));
+            result.AddRange(ByteConverter.GetBytes((ushort)flags));
             ushort numpairs = 0;
             if (hasPos)
                 numpairs += 1;
@@ -156,11 +158,11 @@ namespace SonicRetro.SAModel
                 numpairs += 1;
             if (hasScl)
                 numpairs += 1;
-            result.AddRange(BitConverter.GetBytes(numpairs));
+            result.AddRange(ByteConverter.GetBytes(numpairs));
             result.Align(4);
             address = (uint)result.Count;
-            result.AddRange(BitConverter.GetBytes(modeladdr));
-            result.AddRange(BitConverter.GetBytes(head2));
+            result.AddRange(ByteConverter.GetBytes(modeladdr));
+            result.AddRange(ByteConverter.GetBytes(head2));
             return result.ToArray();
         }
 
@@ -246,30 +248,30 @@ namespace SonicRetro.SAModel
                 try
                 {
                     int tmpaddr;
-                    if ((animtype & AnimFlags.Translate) == AnimFlags.Translate && BitConverter.ToUInt32(file, address + posoff) > 0)
+                    if ((animtype & AnimFlags.Translate) == AnimFlags.Translate && ByteConverter.ToUInt32(file, address + posoff) > 0)
                     {
-                        tmpaddr = (int)(BitConverter.ToUInt32(file, address + posoff) - imageBase);
-                        for (int i = 0; i < BitConverter.ToUInt32(file, address + posframeoff); i++)
+                        tmpaddr = (int)(ByteConverter.ToUInt32(file, address + posoff) - imageBase);
+                        for (int i = 0; i < ByteConverter.ToUInt32(file, address + posframeoff); i++)
                         {
-                            Position.Add(BitConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
+                            Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
                             tmpaddr += 16;
                         }
                     }
-                    if ((animtype & AnimFlags.Rotate) == AnimFlags.Rotate && BitConverter.ToUInt32(file, address + rotoff) > 0)
+                    if ((animtype & AnimFlags.Rotate) == AnimFlags.Rotate && ByteConverter.ToUInt32(file, address + rotoff) > 0)
                     {
-                        tmpaddr = (int)(BitConverter.ToUInt32(file, address + rotoff) - imageBase);
-                        for (int i = 0; i < BitConverter.ToUInt32(file, address + rotframeoff); i++)
+                        tmpaddr = (int)(ByteConverter.ToUInt32(file, address + rotoff) - imageBase);
+                        for (int i = 0; i < ByteConverter.ToUInt32(file, address + rotframeoff); i++)
                         {
-                            Rotation.Add(BitConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
+                            Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
                             tmpaddr += 16;
                         }
                     }
-                    if ((animtype & AnimFlags.Scale) == AnimFlags.Scale && BitConverter.ToUInt32(file, address + scaoff) > 0)
+                    if ((animtype & AnimFlags.Scale) == AnimFlags.Scale && ByteConverter.ToUInt32(file, address + scaoff) > 0)
                     {
-                        tmpaddr = (int)(BitConverter.ToUInt32(file, address + scaoff) - imageBase);
-                        for (int i = 0; i < BitConverter.ToUInt32(file, address + scaframeoff); i++)
+                        tmpaddr = (int)(ByteConverter.ToUInt32(file, address + scaoff) - imageBase);
+                        for (int i = 0; i < ByteConverter.ToUInt32(file, address + scaframeoff); i++)
                         {
-                            Scale.Add(BitConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
+                            Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
                             tmpaddr += 16;
                         }
                     }

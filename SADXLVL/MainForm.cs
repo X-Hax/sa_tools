@@ -140,14 +140,14 @@ namespace SonicRetro.SAModel.SADXLVL2
                     foreach (COL item in LevelData.geo.COL)
                         LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
                 }
-                LevelData.TextureBitmaps = new Dictionary<string, Bitmap[]>();
+                LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
                 LevelData.Textures = new Dictionary<string, Texture[]>();
                 if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
                 {
-                    Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
+                    BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length; j++)
-                        texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                        texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
                     if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
                         LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
                     if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
@@ -174,10 +174,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                         string texname = texini[ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
                         if (!LevelData.TextureBitmaps.ContainsKey(texname))
                         {
-                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                            BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                             Texture[] texs = new Texture[TexBmps.Length];
                             for (int j = 0; j < TexBmps.Length; j++)
-                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                                texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
                             LevelData.TextureBitmaps.Add(texname, TexBmps);
                             LevelData.Textures.Add(texname, texs);
                         }
@@ -196,10 +196,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     string texname = objtexini[oti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
                     if (!string.IsNullOrEmpty(texname) & !LevelData.TextureBitmaps.ContainsKey(texname))
                     {
-                        Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                        BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                         Texture[] texs = new Texture[TexBmps.Length];
                         for (int j = 0; j < TexBmps.Length; j++)
-                            texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                            texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
                         LevelData.TextureBitmaps.Add(texname, TexBmps);
                         LevelData.Textures.Add(texname, texs);
                     }
@@ -215,10 +215,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                         string texname = texini[ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
                         if (!LevelData.TextureBitmaps.ContainsKey(texname))
                         {
-                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                            BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
                             Texture[] texs = new Texture[TexBmps.Length];
                             for (int j = 0; j < TexBmps.Length; j++)
-                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                                texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
                             LevelData.TextureBitmaps.Add(texname, TexBmps);
                             LevelData.Textures.Add(texname, texs);
                         }
@@ -232,10 +232,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     {
                         if (!LevelData.TextureBitmaps.ContainsKey(tex))
                         {
-                            Bitmap[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
+                            BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
                             Texture[] texs = new Texture[TexBmps.Length];
                             for (int j = 0; j < TexBmps.Length; j++)
-                                texs[j] = new Texture(d3ddevice, TexBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                                texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
                             LevelData.TextureBitmaps.Add(tex, TexBmps);
                             LevelData.Textures.Add(tex, texs);
                         }
@@ -851,6 +851,198 @@ namespace SonicRetro.SAModel.SADXLVL2
             Vector3 pos = cam.Position + (-20 * cam.Look);
             item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
             LevelData.SETItems[LevelData.Character].Add(item);
+        }
+
+        public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<string> usedmtls, MatrixStack transform, ref int totverts, ref int totuvs)
+        {
+            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
+            {
+                for (int j = 0; j < obj.Attach.Material.Count; j++)
+                {
+                    if (!usedmtls.Contains(obj.Attach.Material[j].Name))
+                    {
+                        mtlstream.WriteLine("newmtl " + obj.Attach.Material[j].Name);
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine("Kd " + obj.Attach.Material[j].DiffuseColor.R / 255f + " " + obj.Attach.Material[j].DiffuseColor.G / 255f + " " + obj.Attach.Material[j].DiffuseColor.B / 255f);
+                        mtlstream.WriteLine("d " + obj.Attach.Material[j].DiffuseColor.A / 255f);
+                        mtlstream.WriteLine("Tr " + obj.Attach.Material[j].DiffuseColor.A / 255f);
+                        mtlstream.WriteLine("Ks " + obj.Attach.Material[j].SpecularColor.R / 255f + " " + obj.Attach.Material[j].SpecularColor.G / 255f + " " + obj.Attach.Material[j].SpecularColor.B / 255f);
+                        mtlstream.WriteLine("illum 1");
+                        mtlstream.WriteLine("texid " + obj.Attach.Material[j].TextureID);
+                        mtlstream.WriteLine("Map_Ka " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.Material[j].TextureID].Name + ".png");
+                        mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.Material[j].TextureID].Name + ".png");
+                        usedmtls.Add(obj.Attach.Material[j].Name);
+                    }
+                }
+                objstream.WriteLine("g " + obj.Name);
+            }
+            transform.Push();
+            transform.TranslateLocal(obj.Position.ToVector3());
+            transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.ToVector3());
+            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
+            {
+                objstream.WriteLine("# " + obj.Attach.Name);
+                objstream.WriteLine("# vertex_" + obj.Attach.Name);
+                for (int j = 0; j < obj.Attach.Vertex.Length; j++)
+                {
+                    Vector3 x = Vector3.TransformCoordinate(obj.Attach.Vertex[j].ToVector3(), transform.Top);
+                    objstream.WriteLine("v " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
+                }
+                objstream.WriteLine("# normal_" + obj.Attach.Name);
+                for (int j = 0; j < obj.Attach.Vertex.Length; j++)
+                {
+                    Vector3 vect = Vector3.TransformNormal(obj.Attach.Normal[j].ToVector3(), Matrix.Invert(transform.Top));
+                    objstream.WriteLine("vn " + vect.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vect.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vect.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
+                }
+                int c = 0;
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                    if (obj.Attach.Mesh[j].VColor != null)
+                    {
+                        objstream.WriteLine("# vcolor_" + obj.Attach.Mesh[j].Name);
+                        for (int k = 0; k < obj.Attach.Mesh[j].VColor.Length; k++)
+                            objstream.WriteLine("vc " + obj.Attach.Mesh[j].VColor[k].A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].B.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + c + k + totuvs + 1);
+                        c += obj.Attach.Mesh[j].VColor.Length;
+                    }
+                c = 0;
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                    if (obj.Attach.Mesh[j].UV != null)
+                    {
+                        objstream.WriteLine("# uv_" + obj.Attach.Mesh[j].Name);
+                        for (int k = 0; k < obj.Attach.Mesh[j].UV.Length; k++)
+                            objstream.WriteLine("vt " + (obj.Attach.Mesh[j].UV[k].U / 255f).ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-obj.Attach.Mesh[j].UV[k].V / 255f).ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + c + k + totuvs + 1);
+                        c += obj.Attach.Mesh[j].UV.Length;
+                    }
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                {
+                    objstream.WriteLine("# mesh_" + obj.Attach.Mesh[j].Name);
+                    objstream.WriteLine("usemtl material_" + obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].Name);
+                    int currentstriptotal = 0;
+                    for (int k = 0; k < obj.Attach.Mesh[j].Poly.Count; k++)
+                    {
+                        objstream.WriteLine("# poly " + k);
+                        if (obj.Attach.Mesh[j].UV != null)
+                        {
+                            switch (obj.Attach.Mesh[j].PolyType)
+                            {
+                                case PolyType.Triangles:
+                                case PolyType.Quads:
+                                    objstream.Write("f");
+                                    for (int l = 0; l < obj.Attach.Mesh[j].Poly[k].Indexes.Length; l++)
+                                        objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "/" + (currentstriptotal + l + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
+                                    objstream.WriteLine();
+                                    currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
+                                    break;
+                                case PolyType.Strips:
+                                case PolyType.Strips2:
+                                    for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
+                                    {
+                                        bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;
+                                        if (l % 2 == 0)
+                                            flip = !flip;
+                                        if (flip)
+                                        {
+                                            objstream.Write("f");
+                                            for (int m = 0; m <= 2; m++)
+                                                objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1) + "/" + (currentstriptotal + m + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1));
+                                        }
+                                        else
+                                        {
+                                            objstream.Write("f");
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1) + "/" + (currentstriptotal + 1 + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1));
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "/" + (currentstriptotal + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1) + "/" + (currentstriptotal + 2 + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1));
+                                        }
+                                        objstream.WriteLine();
+                                        currentstriptotal += 1;
+                                    }
+                                    currentstriptotal += 2;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (obj.Attach.Mesh[j].PolyType)
+                            {
+                                case PolyType.Triangles:
+                                case PolyType.Quads:
+                                    objstream.Write("f");
+                                    for (int l = 0; l < obj.Attach.Mesh[j].Poly[k].Indexes.Length; l++)
+                                        objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
+                                    objstream.WriteLine();
+                                    currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
+                                    break;
+                                case PolyType.Strips:
+                                case PolyType.Strips2:
+                                    for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
+                                    {
+                                        bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;
+                                        if (l % 2 == 0)
+                                            flip = !flip;
+                                        if (flip)
+                                        {
+                                            objstream.Write("f");
+                                            for (int m = 0; m <= 2; m++)
+                                                objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1));
+                                        }
+                                        else
+                                        {
+                                            objstream.Write("f");
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1));
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
+                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1));
+                                        }
+                                        objstream.WriteLine();
+                                        currentstriptotal += 1;
+                                    }
+                                    currentstriptotal += 2;
+                                    break;
+                            }
+                        }
+                    }
+                    if (obj.Attach.Mesh[j].UV != null)
+                        totuvs += obj.Attach.Mesh[j].UV.Length;
+                }
+                totverts += obj.Attach.Vertex.Length;
+            }
+            foreach (Object item in obj.Children)
+                Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts, ref totuvs);
+            transform.Pop();
+        }
+
+        private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj"
+            };
+            if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                System.IO.StreamWriter objstream = new System.IO.StreamWriter(a.FileName, false);
+                System.IO.StreamWriter mtlstream = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(a.FileName, "mtl"), false);
+                objstream.WriteLine("mtllib " + System.IO.Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+                mtlstream.WriteLine("newmtl material_0");
+                mtlstream.WriteLine("Ka 1 1 1");
+                mtlstream.WriteLine("Kd 1 1 1");
+                mtlstream.WriteLine("Ks 0 0 0");
+                mtlstream.WriteLine("illum 1");
+                string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+                foreach (BMPInfo Item in LevelData.TextureBitmaps[LevelData.leveltexs])
+                    Item.Image.Save(System.IO.Path.Combine(mypath, Item.Name + ".png"));
+                int totverts = 0;
+                int totuvs = 0;
+                List<string> usedmtls = new List<string>();
+                objstream.WriteLine("# geo_" + LevelData.geo.Name);
+                for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                    Writeobj(objstream, mtlstream, LevelData.geo.COL[i].Model, usedmtls, new MatrixStack(), ref totverts, ref totuvs);
+                for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+                    Writeobj(objstream, mtlstream, LevelData.geo.Anim[i].Model, usedmtls, new MatrixStack(), ref totverts, ref totuvs);
+                mtlstream.Write("#EOF");
+                mtlstream.Close();
+                objstream.Write("#EOF");
+                objstream.Close();
+            }
         }
     }
 }

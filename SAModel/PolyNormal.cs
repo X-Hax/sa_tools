@@ -19,8 +19,8 @@ namespace SonicRetro.SAModel
         public PolyNormal(byte[] file, int address)
         {
             Name = "pnorm_" + address.ToString("X8");
-            Unknown1 = BitConverter.ToSingle(file, address);
-            Unknown2 = BitConverter.ToSingle(file, address + 4);
+            Unknown1 = ByteConverter.ToSingle(file, address);
+            Unknown2 = ByteConverter.ToSingle(file, address + 4);
         }
 
         public PolyNormal(Dictionary<string, string> group, string name)
@@ -33,8 +33,8 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(Unknown1));
-            result.AddRange(BitConverter.GetBytes(Unknown2));
+            result.AddRange(ByteConverter.GetBytes(Unknown1));
+            result.AddRange(ByteConverter.GetBytes(Unknown2));
             return result.ToArray();
         }
 

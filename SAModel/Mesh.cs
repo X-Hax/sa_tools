@@ -21,11 +21,11 @@ namespace SonicRetro.SAModel
         public Mesh(byte[] file, int address, uint imageBase)
         {
             Name = "mesh_" + address.ToString("X8");
-            MaterialID = BitConverter.ToUInt16(file, address);
+            MaterialID = ByteConverter.ToUInt16(file, address);
             PolyType = (PolyType)(MaterialID >> 0xE);
             MaterialID &= 0x3FFF;
-            Poly[] polys = new Poly[BitConverter.ToInt16(file, address + 2)];
-            int tmpaddr = (int)(BitConverter.ToUInt32(file, address + 4) - imageBase);
+            Poly[] polys = new Poly[ByteConverter.ToInt16(file, address + 2)];
+            int tmpaddr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
             int striptotal = 0;
             for (int i = 0; i < polys.Length; i++)
             {
@@ -34,8 +34,8 @@ namespace SonicRetro.SAModel
                 tmpaddr += polys[i].Size;
             }
             Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
-            PAttr = BitConverter.ToInt32(file, address + 8);
-            tmpaddr = BitConverter.ToInt32(file, address + 0xC);
+            PAttr = ByteConverter.ToInt32(file, address + 8);
+            tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -46,7 +46,7 @@ namespace SonicRetro.SAModel
                     tmpaddr += SAModel.PolyNormal.Size;
                 }
             }
-            tmpaddr = BitConverter.ToInt32(file, address + 0x10);
+            tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -57,7 +57,7 @@ namespace SonicRetro.SAModel
                     tmpaddr += SAModel.VColor.Size;
                 }
             }
-            tmpaddr = BitConverter.ToInt32(file, address + 0x14);
+            tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -164,13 +164,13 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes(uint polyAddress, uint polyNormalAddress, uint vColorAddress, uint uVAddress, bool DX)
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes((ushort)((MaterialID & 0x3FFF) | ((int)PolyType << 0xE))));
-            result.AddRange(BitConverter.GetBytes((ushort)Poly.Count));
-            result.AddRange(BitConverter.GetBytes(polyAddress));
-            result.AddRange(BitConverter.GetBytes(PAttr));
-            result.AddRange(BitConverter.GetBytes(polyNormalAddress));
-            result.AddRange(BitConverter.GetBytes(vColorAddress));
-            result.AddRange(BitConverter.GetBytes(uVAddress));
+            result.AddRange(ByteConverter.GetBytes((ushort)((MaterialID & 0x3FFF) | ((int)PolyType << 0xE))));
+            result.AddRange(ByteConverter.GetBytes((ushort)Poly.Count));
+            result.AddRange(ByteConverter.GetBytes(polyAddress));
+            result.AddRange(ByteConverter.GetBytes(PAttr));
+            result.AddRange(ByteConverter.GetBytes(polyNormalAddress));
+            result.AddRange(ByteConverter.GetBytes(vColorAddress));
+            result.AddRange(ByteConverter.GetBytes(uVAddress));
             if (DX) result.AddRange(new byte[4]);
             return result.ToArray();
         }

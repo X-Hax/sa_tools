@@ -15,9 +15,9 @@ namespace SonicRetro.SAModel
 
         public Rotation(byte[] file, int address)
         {
-            X = BitConverter.ToInt32(file, address);
-            Y = BitConverter.ToInt32(file, address + 4);
-            Z = BitConverter.ToInt32(file, address + 8);
+            X = ByteConverter.ToInt32(file, address);
+            Y = ByteConverter.ToInt32(file, address + 4);
+            Z = ByteConverter.ToInt32(file, address + 8);
         }
 
         public Rotation(string data)
@@ -38,9 +38,9 @@ namespace SonicRetro.SAModel
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(X));
-            result.AddRange(BitConverter.GetBytes(Y));
-            result.AddRange(BitConverter.GetBytes(Z));
+            result.AddRange(ByteConverter.GetBytes(X));
+            result.AddRange(ByteConverter.GetBytes(Y));
+            result.AddRange(ByteConverter.GetBytes(Z));
             return result.ToArray();
         }
 

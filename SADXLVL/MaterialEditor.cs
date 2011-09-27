@@ -4,12 +4,12 @@ using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
-    public partial class MaterialEditor : Form
+    internal partial class MaterialEditor : Form
     {
         private Material[] materials;
-        private Bitmap[] textures;
+        private BMPInfo[] textures;
 
-        public MaterialEditor(Material[] mats, Bitmap[] textures)
+        public MaterialEditor(Material[] mats, BMPInfo[] textures)
         {
             materials = mats;
             this.textures = textures;

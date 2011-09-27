@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static MainForm MainForm;
         public static LandTable geo;
         public static string leveltexs;
-        public static Dictionary<string, Bitmap[]> TextureBitmaps;
+        public static Dictionary<string, BMPInfo[]> TextureBitmaps;
         public static Dictionary<string, Texture[]> Textures;
         public static List<LevelItem> LevelItems;
         public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
@@ -25,9 +25,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static List<ObjectDefinition> ObjDefs;
         public static List<SETItem>[] SETItems;
 
-        public static Bitmap[] GetTextures(string filename)
+        public static BMPInfo[] GetTextures(string filename)
         {
-            List<Bitmap> functionReturnValue = new List<Bitmap>();
+            List<BMPInfo> functionReturnValue = new List<BMPInfo>();
             PVM pvmfile = new PVM();
             Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
             pvmdata = pvmfile.TranslateData(ref pvmdata);
@@ -38,7 +38,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 pvmdata.Seek(file.Offset, SeekOrigin.Begin);
                 pvmdata.Read(data, 0, (int)file.Length);
                 PvrTexture vrfile = new PvrTexture(data);
-                functionReturnValue.Add(vrfile.GetTextureAsBitmap());
+                functionReturnValue.Add(new BMPInfo(Path.GetFileNameWithoutExtension(file.Filename), vrfile.GetTextureAsBitmap()));
             }
             return functionReturnValue.ToArray();
         }
@@ -68,6 +68,18 @@ namespace SonicRetro.SAModel.SADXLVL2
             SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { });
             oe.ID = ID;
             return oe;
+        }
+    }
+
+    internal class BMPInfo
+    {
+        public string Name { get; set; }
+        public Bitmap Image { get; set; }
+
+        public BMPInfo(string name, Bitmap image)
+        {
+            Name = name;
+            Image = image;
         }
     }
 }

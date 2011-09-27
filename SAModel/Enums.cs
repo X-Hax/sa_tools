@@ -50,6 +50,7 @@ namespace SonicRetro.SAModel
     {
         SA1,
         SADX,
-        SA2
+        SA2,
+        SA2B
     }
 }

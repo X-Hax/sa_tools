@@ -55,11 +55,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dialog1.cs">
+    <Compile Include="ModelFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialog1.Designer.cs">
-      <DependentUpon>Dialog1.cs</DependentUpon>
+    <Compile Include="ModelFileDialog.Designer.cs">
+      <DependentUpon>ModelFileDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="IniFile.cs" />
     <Compile Include="MainForm.cs">
@@ -70,8 +70,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Dialog1.resx">
-      <DependentUpon>Dialog1.cs</DependentUpon>
+    <EmbeddedResource Include="ModelFileDialog.resx">
+      <DependentUpon>ModelFileDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

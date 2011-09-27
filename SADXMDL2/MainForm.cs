@@ -92,7 +92,7 @@ namespace SonicRetro.SAModel.SADXMDL2
                 else
                 {
                     byte[] file = File.ReadAllBytes(a.FileName);
-                    using (Dialog1 dlg = new Dialog1())
+                    using (ModelFileDialog dlg = new ModelFileDialog())
                     {
                         dlg.ShowDialog(this);
                         model = new Object(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
