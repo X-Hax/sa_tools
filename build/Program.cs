@@ -36,7 +36,7 @@ namespace build
                 List<byte> codesection = new List<byte>();
                 foreach (KeyValuePair<string, Dictionary<string, string>> dictitem in codeINI)
                 {
-                    if (string.IsNullOrWhiteSpace(dictitem.Key)) continue;
+                    if (string.IsNullOrEmpty(dictitem.Key)) continue;
                     Dictionary<string, string> data = dictitem.Value;
                     if (data.ContainsKey("nop"))
                         foreach (string item in data["nop"].Split(','))
@@ -80,7 +80,7 @@ namespace build
             uint dataaddr = curaddr;
             foreach (KeyValuePair<string, Dictionary<string, string>> dictitem in inifile)
             {
-                if (string.IsNullOrWhiteSpace(dictitem.Key)) continue;
+                if (string.IsNullOrEmpty(dictitem.Key)) continue;
                 string filedesc = dictitem.Key;
                 Dictionary<string, string> data = dictitem.Value;
                 string type = string.Empty;
@@ -158,7 +158,7 @@ namespace build
                             while (texini.ContainsKey(texcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
                             {
                                 Dictionary<string, string> group = texini[texcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
-                                if (string.IsNullOrWhiteSpace(group["Name"]))
+                                if (string.IsNullOrEmpty(group["Name"]))
                                     texents.AddRange(new byte[4]);
                                 else
                                 {
@@ -181,7 +181,7 @@ namespace build
                             while (lvltxini.ContainsKey(lvltxcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
                             {
                                 Dictionary<string, string> group = lvltxini[lvltxcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
-                                if (string.IsNullOrWhiteSpace(group["Name"]))
+                                if (string.IsNullOrEmpty(group["Name"]))
                                     lvltxents.AddRange(new byte[4]);
                                 else
                                 {

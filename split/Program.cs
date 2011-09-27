@@ -36,7 +36,7 @@ namespace split
             uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
             foreach (KeyValuePair<string, Dictionary<string, string>> item in inifile)
             {
-                if (string.IsNullOrWhiteSpace(item.Key)) continue;
+                if (string.IsNullOrEmpty(item.Key)) continue;
                 string filedesc = item.Key;
                 Dictionary<string, string> data = item.Value;
                 string type = string.Empty;
