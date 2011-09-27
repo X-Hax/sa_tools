@@ -916,7 +916,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     objstream.WriteLine("# mesh_" + obj.Attach.Mesh[j].Name);
-                    objstream.WriteLine("usemtl material_" + obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].Name);
+                    objstream.WriteLine("usemtl " + obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].Name);
                     int currentstriptotal = 0;
                     for (int k = 0; k < obj.Attach.Mesh[j].Poly.Count; k++)
                     {

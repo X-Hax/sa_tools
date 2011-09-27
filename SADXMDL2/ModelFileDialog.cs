@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SADXMDL2
 {
-    public partial class Dialog1 : Form
+    public partial class ModelFileDialog : Form
     {
-        public Dialog1()
+        public ModelFileDialog()
         {
             InitializeComponent();
         }

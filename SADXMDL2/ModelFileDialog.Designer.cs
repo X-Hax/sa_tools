@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 namespace SonicRetro.SAModel.SADXMDL2
 {
-    partial class Dialog1 : Form
+    partial class ModelFileDialog : Form
     {
 
         //Form overrides dispose to clean up the component list.
@@ -138,7 +138,8 @@ namespace SonicRetro.SAModel.SADXMDL2
             this.comboBox2.Items.AddRange(new object[] {
             "SA1",
             "SADX",
-            "SA2"});
+            "SA2",
+            "SA2B"});
             this.comboBox2.Location = new System.Drawing.Point(60, 65);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
@@ -153,7 +154,7 @@ namespace SonicRetro.SAModel.SADXMDL2
             this.label3.TabIndex = 16;
             this.label3.Text = "Format:";
             // 
-            // Dialog1
+            // ModelFileDialog
             // 
             this.AcceptButton = this.OK_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,7 +172,7 @@ namespace SonicRetro.SAModel.SADXMDL2
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Dialog1";
+            this.Name = "ModelFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SADX Model Editor";
