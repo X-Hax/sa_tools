@@ -231,13 +231,60 @@ namespace split
                         }
                         File.WriteAllLines(data["filename"], strs);
                         break;
+                    case "nextlevellist":
+                        numpos = 0;
+                        posini = new Dictionary<string, Dictionary<string, string>>();
+                        while (exefile[address + 1] != (byte)LevelIDs.Maximum)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("CGMovie", exefile[address].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("Level", ((LevelIDs)exefile[address + 1]).ToString());
+                            objgrp.Add("NextLevel", ((LevelIDs)exefile[address + 2]).ToString());
+                            objgrp.Add("NextAct", exefile[address + 3].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("StartPos", exefile[address + 4].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("AltNextLevel", ((LevelIDs)exefile[address + 5]).ToString());
+                            objgrp.Add("AltNextAct", exefile[address + 6].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            objgrp.Add("AltStartPos", exefile[address + 7].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            posini.Add(numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            numpos++;
+                            address += 8;
+                        }
+                        IniFile.Save(posini, data["filename"]);
+                        break;
+                    case "cutscenetext":
+                        Directory.CreateDirectory(data["filename"]);
+                        cnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                        string[] hashes = new string[5];
+                        for (int i = 0; i < 5; i++)
+                        {
+                            int ptr = (int)(BitConverter.ToUInt32(exefile, address) - imageBase);
+                            strs = new string[cnt];
+                            for (int j = 0; j < cnt; j++)
+                            {
+                                if (BitConverter.ToUInt32(exefile, ptr) == 0)
+                                    strs[j] = string.Empty;
+                                else
+                                    strs[j] = GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, ptr) - imageBase), i < 2 ? jpenc : euenc).Replace("\n", "\\n");
+                                ptr += 4;
+                            }
+                            string textname = Path.Combine(data["filename"], ((Languages)i).ToString() + ".txt");
+                            File.WriteAllLines(textname, strs);
+                            hashes[i] = FileHash(textname);
+                            address += 4;
+                        }
+                        data.Add("md5", string.Join(",", hashes));
+                        break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
                         Array.Copy(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), bin, 0, bin.Length);
                         File.WriteAllBytes(data["filename"], bin);
                         break;
                 }
-                data.Add("md5", FileHash(data["filename"]));
+                bool nohash = false;
+                if (data.ContainsKey("nohash"))
+                    nohash = bool.Parse(data["nohash"]);
+                if (!nohash)
+                    data.Add("md5", FileHash(data["filename"]));
             }
             IniFile.Save(inifile, Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
             Console.Write("Press a key to continue...");
@@ -381,5 +428,14 @@ namespace split
         Gamma = 6,
         Big = 7,
         MetalSonic = 8
+    }
+
+    enum Languages
+    {
+        Japanese = 0,
+        English = 1,
+        French = 2,
+        Spanish = 3,
+        German = 4
     }
 }

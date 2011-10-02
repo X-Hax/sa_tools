@@ -87,7 +87,10 @@ namespace build
                 string type = string.Empty;
                 if (data.ContainsKey("type"))
                     type = data["type"];
-                if (FileHash(data["filename"]) != data["md5"])
+                bool nohash = false;
+                if (data.ContainsKey("nohash"))
+                    nohash = bool.Parse(data["nohash"]);
+                if (nohash || FileHash(data["filename"]) != data["md5"])
                 {
                     switch (type)
                     {
@@ -204,6 +207,7 @@ namespace build
                             break;
                         case "triallevellist":
                             uint headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
                             BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
                             string[] levels = File.ReadAllLines(data["filename"]);
                             int cnt = 0;
@@ -245,6 +249,7 @@ namespace build
                         case "soundtestlist":
                             Dictionary<string, Dictionary<string, string>> soundini = new Dictionary<string, Dictionary<string, string>>();
                             headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
                             int soundcnt = 0;
                             List<byte> soundents = new List<byte>();
                             while (soundini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
@@ -269,6 +274,7 @@ namespace build
                         case "musiclist":
                             Dictionary<string, Dictionary<string, string>> musini = new Dictionary<string, Dictionary<string, string>>();
                             headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
                             int muscnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                             for (int i = 0; i < muscnt; i++)
                             {
@@ -294,6 +300,7 @@ namespace build
                         case "soundlist":
                             soundini = new Dictionary<string, Dictionary<string, string>>();
                             headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
                             soundcnt = 0;
                             soundents = new List<byte>();
                             while (soundini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
@@ -318,6 +325,7 @@ namespace build
                         case "stringarray":
                             string[] strs = File.ReadAllLines(data["filename"]);
                             headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
                             cnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
                             for (int i = 0; i < cnt; i++)
                             {
@@ -331,6 +339,53 @@ namespace build
                                 else
                                     Array.Clear(exefile, (int)headaddr, 4);
                                 headaddr += 4;
+                            }
+                            break;
+                        case "nextlevellist":
+                            posini = IniFile.Load(data["filename"]);
+                            soundcnt = 0;
+                            while (posini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = posini[soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                datasection.Add(byte.Parse(group["CGMovie"]));
+                                datasection.Add((byte)Enum.Parse(typeof(LevelIDs), group["Level"]));
+                                datasection.Add((byte)Enum.Parse(typeof(LevelIDs), group["NextLevel"]));
+                                datasection.Add(byte.Parse(group["NextAct"]));
+                                datasection.Add(byte.Parse(group["StartPos"]));
+                                datasection.Add((byte)Enum.Parse(typeof(LevelIDs), group["AltNextLevel"]));
+                                datasection.Add(byte.Parse(group["AltNextAct"]));
+                                datasection.Add(byte.Parse(group["AltStartPos"]));
+                                soundcnt++;
+                            }
+                            datasection.Add(0);
+                            datasection.Add((byte)LevelIDs.Maximum);
+                            datasection.AddRange(new byte[6]);
+                            break;
+                        case "cutscenetext":
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
+                            cnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                            string[] hashes = data["md5"].Split(',');
+                            for (int i = 0; i < 5; i++)
+                            {
+                                string textname = Path.Combine(data["filename"], ((Languages)i).ToString() + ".txt");
+                                if (FileHash(textname) != hashes[i])
+                                {
+                                    strs = File.ReadAllLines(textname);
+                                    for (int j = 0; j < cnt; j++)
+                                    {
+                                        if (j < strs.Length && !string.IsNullOrEmpty(strs[j]))
+                                        {
+                                            BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                                            datasection.AddRange(jpenc.GetBytes(strs[j].Replace("\\n", "\n")));
+                                            datasection.Add(0);
+                                            datasection.Align(4);
+                                        }
+                                        else
+                                            Array.Clear(exefile, (int)headaddr, 4);
+                                        headaddr += 4;
+                                    }
+                                }
                             }
                             break;
                         default: // raw binary
@@ -575,5 +630,14 @@ namespace build
         Gamma = 6,
         Big = 7,
         MetalSonic = 8
+    }
+
+    enum Languages
+    {
+        Japanese = 0,
+        English = 1,
+        French = 2,
+        Spanish = 3,
+        German = 4
     }
 }
