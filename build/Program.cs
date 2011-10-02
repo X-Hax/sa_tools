@@ -71,6 +71,7 @@ namespace build
                         }
                     addresses.Add(dictitem.Key, curaddr + imageBase);
                     curaddr = startaddress + (uint)codesection.Count;
+                    Console.WriteLine(dictitem.Key + ": " + curaddr.ToString("X"));
                 }
                 CreateNewSection(ref exefile, ".text2", codesection.ToArray(), true);
             }
@@ -143,12 +144,13 @@ namespace build
                             foreach (KeyValuePair<string, Dictionary<string,string>> item in posini)
                             {
                                 if (string.IsNullOrEmpty(item.Key)) continue;
-                                datasection.AddRange(BitConverter.GetBytes(ushort.Parse(item.Key.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
-                                datasection.AddRange(BitConverter.GetBytes(ushort.Parse(item.Key.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo)));
+                                ushort levelact = ParseLevelAct(item.Key);
+                                datasection.AddRange(BitConverter.GetBytes((ushort)(levelact >> 8)));
+                                datasection.AddRange(BitConverter.GetBytes((ushort)(levelact & 0xFF)));
                                 datasection.AddRange(new SonicRetro.SAModel.Vertex(item.Value["Position"]).GetBytes());
                                 datasection.AddRange(BitConverter.GetBytes(int.Parse(item.Value["YRotation"], System.Globalization.NumberStyles.HexNumber)));
                             }
-                            datasection.AddRange(BitConverter.GetBytes((ushort)0x2B));
+                            datasection.AddRange(BitConverter.GetBytes((ushort)LevelIDs.Invalid));
                             datasection.AddRange(new byte[0x12]);
                             break;
                         case "texlist":
@@ -172,7 +174,6 @@ namespace build
                             }
                             dataaddr = startaddress + imageBase + (uint)datasection.Count;
                             datasection.AddRange(texents.ToArray());
-                            datasection.Align(4);
                             break;
                         case "leveltexlist":
                             Dictionary<string, Dictionary<string, string>> lvltxini = IniFile.Load(data["filename"]);
@@ -197,9 +198,140 @@ namespace build
                             datasection.AddRange(lvltxents.ToArray());
                             datasection.Align(4);
                             dataaddr = startaddress + imageBase + (uint)datasection.Count;
-                            datasection.AddRange(BitConverter.GetBytes((ushort)((byte.Parse(data["level"].Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo) << 8) | byte.Parse(data["level"].Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo))));
+                            datasection.AddRange(BitConverter.GetBytes(ParseLevelAct(data["level"])));
                             datasection.AddRange(BitConverter.GetBytes((ushort)lvltxcnt));
                             datasection.AddRange(BitConverter.GetBytes(lvltxaddr));
+                            break;
+                        case "triallevellist":
+                            uint headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                            string[] levels = File.ReadAllLines(data["filename"]);
+                            int cnt = 0;
+                            foreach (string line in levels)
+                            {
+                                if (string.IsNullOrEmpty(line)) continue;
+                                ushort levelact = ParseLevelAct(line);
+                                datasection.Add((byte)(levelact >> 8));
+                                datasection.Add((byte)(levelact & 0xFF));
+                                cnt++;
+                            }
+                            BitConverter.GetBytes(cnt).CopyTo(exefile, headaddr + 4);
+                            break;
+                        case "bosslevellist":
+                            levels = File.ReadAllLines(data["filename"]);
+                            foreach (string line in levels)
+                            {
+                                if (string.IsNullOrEmpty(line)) continue;
+                                ushort levelact = ParseLevelAct(line);
+                                datasection.AddRange(BitConverter.GetBytes((ushort)(levelact >> 8)));
+                                datasection.AddRange(BitConverter.GetBytes((ushort)(levelact & 0xFF)));
+                            }
+                            datasection.AddRange(BitConverter.GetBytes((ushort)LevelIDs.Invalid));
+                            datasection.AddRange(new byte[2]);
+                            break;
+                        case "fieldstartpos":
+                            posini = IniFile.Load(data["filename"]);
+                            foreach (KeyValuePair<string, Dictionary<string, string>> item in posini)
+                            {
+                                if (string.IsNullOrEmpty(item.Key)) continue;
+                                datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), item.Key)));
+                                datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), data["Field"])));
+                                datasection.AddRange(new SonicRetro.SAModel.Vertex(data["Position"]).GetBytes());
+                                datasection.AddRange(BitConverter.GetBytes(int.Parse(data["YRotation"], System.Globalization.NumberStyles.HexNumber)));
+                            }
+                            datasection.AddRange(BitConverter.GetBytes((ushort)LevelIDs.Invalid));
+                            datasection.AddRange(new byte[0x12]);
+                            break;
+                        case "soundtestlist":
+                            Dictionary<string, Dictionary<string, string>> soundini = new Dictionary<string, Dictionary<string, string>>();
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            int soundcnt = 0;
+                            List<byte> soundents = new List<byte>();
+                            while (soundini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = soundini[soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                if (string.IsNullOrEmpty(group["Name"]))
+                                    soundents.AddRange(new byte[4]);
+                                else
+                                {
+                                    soundents.AddRange(BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count));
+                                    datasection.AddRange(jpenc.GetBytes(group["Name"]));
+                                    datasection.Add(0);
+                                    datasection.Align(4);
+                                }
+                                soundents.AddRange(BitConverter.GetBytes(uint.Parse(group["Track"], System.Globalization.NumberStyles.HexNumber)));
+                                soundcnt++;
+                            }
+                            BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                            BitConverter.GetBytes(soundcnt).CopyTo(exefile, headaddr + 4);
+                            datasection.AddRange(soundents.ToArray());
+                            break;
+                        case "musiclist":
+                            Dictionary<string, Dictionary<string, string>> musini = new Dictionary<string, Dictionary<string, string>>();
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            int muscnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                            for (int i = 0; i < muscnt; i++)
+                            {
+                                if (musini.ContainsKey(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                                {
+                                    Dictionary<string, string> group = musini[i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                    if (string.IsNullOrEmpty(group["Name"]))
+                                        Array.Clear(exefile, (int)headaddr, 4);
+                                    else
+                                    {
+                                        BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                                        datasection.AddRange(jpenc.GetBytes(group["Name"]));
+                                        datasection.Add(0);
+                                        datasection.Align(4);
+                                    }
+                                    BitConverter.GetBytes(bool.Parse(group["Loop"]) ? 1 : 0).CopyTo(exefile, headaddr + 4);
+                                }
+                                else
+                                    Array.Clear(exefile, (int)headaddr, 8);
+                                headaddr += 8;
+                            }
+                            break;
+                        case "soundlist":
+                            soundini = new Dictionary<string, Dictionary<string, string>>();
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            soundcnt = 0;
+                            soundents = new List<byte>();
+                            while (soundini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = soundini[soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                soundents.AddRange(BitConverter.GetBytes(uint.Parse(group["Bank"], System.Globalization.NumberStyles.HexNumber)));
+                                if (string.IsNullOrEmpty(group["Filename"]))
+                                    soundents.AddRange(new byte[4]);
+                                else
+                                {
+                                    soundents.AddRange(BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count));
+                                    datasection.AddRange(jpenc.GetBytes(group["Filename"]));
+                                    datasection.Add(0);
+                                    datasection.Align(4);
+                                }
+                                soundcnt++;
+                            }
+                            BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                            BitConverter.GetBytes(soundcnt).CopyTo(exefile, headaddr + 4);
+                            datasection.AddRange(soundents.ToArray());
+                            break;
+                        case "stringarray":
+                            string[] strs = File.ReadAllLines(data["filename"]);
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            cnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                            for (int i = 0; i < cnt; i++)
+                            {
+                                if (i < strs.Length && !string.IsNullOrEmpty(strs[i]))
+                                {
+                                    BitConverter.GetBytes(startaddress + imageBase + (uint)datasection.Count).CopyTo(exefile, headaddr);
+                                    datasection.AddRange(jpenc.GetBytes(strs[i].Replace("\\n", "\n")));
+                                    datasection.Add(0);
+                                    datasection.Align(4);
+                                }
+                                else
+                                    Array.Clear(exefile, (int)headaddr, 4);
+                                headaddr += 4;
+                            }
                             break;
                         default: // raw binary
                             bool reloc = true;
@@ -219,6 +351,7 @@ namespace build
                             BitConverter.GetBytes(dataaddr).CopyTo(exefile, i);
                         }
                     addresses.Add(filedesc, dataaddr);
+                    Console.WriteLine(filedesc + ": " + (dataaddr - imageBase).ToString("X"));
                     datasection.Align(4);
                     curaddr = startaddress + imageBase + (uint)datasection.Count;
                     dataaddr = curaddr;
@@ -251,6 +384,9 @@ namespace build
                 }
             }
             File.WriteAllBytes(inistartpath + "_edit.exe", exefile);
+            Console.Write("Press a key to continue...");
+            Console.ReadKey(true);
+            Console.WriteLine();
         }
 
         static void SetupEXE(ref byte[] exefile)
@@ -340,7 +476,9 @@ namespace build
 
         static void Align(this List<byte> me, int bytes)
         {
-            me.AddRange(new byte[me.Count % bytes]);
+            int off = me.Count % bytes;
+            if (off == 0) return;
+            me.AddRange(new byte[bytes - off]);
         }
 
         static void AlignCode(this List<byte> me)
@@ -360,6 +498,16 @@ namespace build
             return result;
         }
 
+        static ushort ParseLevelAct(string levelact)
+        {
+            if (levelact.Contains(" "))
+            {
+                return (ushort)(((byte)Enum.Parse(typeof(LevelIDs), levelact.Split(' ')[0]) << 8) + byte.Parse(levelact.Split(' ')[1], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo));
+            }
+            else
+                return (ushort)((byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo) << 8) | byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo));
+        }
+
         static System.Text.Encoding jpenc = System.Text.Encoding.GetEncoding(932);
         static System.Text.Encoding euenc = System.Text.Encoding.GetEncoding(1252);
     }
@@ -372,5 +520,60 @@ namespace build
         FAddr = 0x14,
         Flags = 0x24,
         Size = 0x28
+    }
+
+    enum LevelIDs : byte
+    {
+        HedgehogHammer = 0,
+        EmeraldCoast = 1,
+        WindyValley = 2,
+        TwinklePark = 3,
+        SpeedHighway = 4,
+        RedMountain = 5,
+        SkyDeck = 6,
+        LostWorld = 7,
+        IceCap = 8,
+        Casinopolis = 9,
+        FinalEgg = 0xA,
+        HotShelter = 0xC,
+        Chaos0 = 0xF,
+        Chaos2 = 0x10,
+        Chaos4 = 0x11,
+        Chaos6 = 0x12,
+        Chaos7 = 0x13,
+        EggHornet = 0x14,
+        EggWalker = 0x15,
+        EggViper = 0x16,
+        Zero = 0x17,
+        E101 = 0x18,
+        E101R = 0x19,
+        StationSquare = 0x1A,
+        EggCarrierOutside = 0x1D,
+        EggCarrierInside = 0x20,
+        MysticRuins = 0x21,
+        Past = 0x22,
+        TwinkleCircuit = 0x23,
+        SkyChase1 = 0x24,
+        SkyChase2 = 0x25,
+        SandHill = 0x26,
+        SSGarden = 0x27,
+        ECGarden = 0x28,
+        MRGarden = 0x29,
+        ChaoRace = 0x2A,
+        Invalid = 0x2B,
+        Maximum = 0xFF
+    }
+
+    enum Characters : byte
+    {
+        Sonic = 0,
+        Eggman = 1,
+        Tails = 2,
+        Knuckles = 3,
+        Tikal = 4,
+        Amy = 5,
+        Gamma = 6,
+        Big = 7,
+        MetalSonic = 8
     }
 }

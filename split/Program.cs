@@ -86,12 +86,12 @@ namespace split
                     case "startpos":
                         int numpos = 0;
                         Dictionary<string, Dictionary<string, string>> posini = new Dictionary<string, Dictionary<string, string>>();
-                        while (BitConverter.ToUInt16(exefile, address) != 0x2B)
+                        while (BitConverter.ToUInt16(exefile, address) != (ushort)LevelIDs.Invalid)
                         {
                             Dictionary<string, string> objgrp = new Dictionary<string, string>();
                             objgrp.Add("Position", new SonicRetro.SAModel.Vertex(exefile, address + 4).ToString());
                             objgrp.Add("YRotation", BitConverter.ToInt32(exefile, address + 0x10).ToString("X8"));
-                            posini.Add(BitConverter.ToUInt16(exefile, address).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0') + BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0'), objgrp);
+                            posini.Add(((LevelIDs)BitConverter.ToUInt16(exefile, address)).ToString() + " " + BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
                             numpos++;
                             address += 0x14;
                         }
@@ -117,7 +117,7 @@ namespace split
                     case "leveltexlist":
                         Dictionary<string, Dictionary<string, string>> lvltxini = new Dictionary<string, Dictionary<string, string>>() { { string.Empty, new Dictionary<string, string>() } };
                         ushort levelnum = BitConverter.ToUInt16(exefile, address);
-                        lvltxini[string.Empty].Add("Level", ((levelnum >> 8) & 0xFF).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0') + (levelnum & 0xFF).ToString(System.Globalization.NumberFormatInfo.InvariantInfo).PadLeft(2, '0'));
+                        lvltxini[string.Empty].Add("Level", ((LevelIDs)((levelnum >> 8) & 0xFF)).ToString() + " " + (levelnum & 0xFF).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                         ushort lvltxnum = BitConverter.ToUInt16(exefile, address + 2);
                         address = (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase);
                         for (int i = 0; i < lvltxnum; i++)
@@ -132,6 +132,104 @@ namespace split
                             address += 8;
                         }
                         IniFile.Save(lvltxini, data["filename"]);
+                        break;
+                    case "triallevellist":
+                        List<string> lvllist = new List<string>();
+                        uint lvlcnt = BitConverter.ToUInt32(exefile, address + 4);
+                        address = (int)(BitConverter.ToUInt32(exefile, address) - imageBase);
+                        for (int i = 0; i < lvlcnt; i++)
+                        {
+                            lvllist.Add(((LevelIDs)exefile[address]).ToString() + " " + exefile[address + 1].ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            address += 2;
+                        }
+                        File.WriteAllLines(data["filename"], lvllist.ToArray());
+                        break;
+                    case "bosslevellist":
+                        lvllist = new List<string>();
+                        while (BitConverter.ToUInt16(exefile, address) != (ushort)LevelIDs.Invalid)
+                        {
+                            lvllist.Add(((LevelIDs)BitConverter.ToUInt16(exefile, address)).ToString() + " " + BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            address += 4;
+                        }
+                        File.WriteAllLines(data["filename"], lvllist.ToArray());
+                        break;
+                    case "fieldstartpos":
+                        numpos = 0;
+                        posini = new Dictionary<string, Dictionary<string, string>>();
+                        while (exefile[address] != (byte)LevelIDs.Invalid)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("Field", ((LevelIDs)exefile[address + 2]).ToString());
+                            objgrp.Add("Position", new SonicRetro.SAModel.Vertex(exefile, address + 4).ToString());
+                            objgrp.Add("YRotation", BitConverter.ToInt32(exefile, address + 0x10).ToString("X8"));
+                            posini.Add(((LevelIDs)exefile[address]).ToString(), objgrp);
+                            numpos++;
+                            address += 0x14;
+                        }
+                        IniFile.Save(posini, data["filename"]);
+                        break;
+                    case "soundtestlist":
+                        Dictionary<string, Dictionary<string,string>> soundini = new Dictionary<string, Dictionary<string, string>>();
+                        uint soundcnt = BitConverter.ToUInt32(exefile, address + 4);
+                        address = (int)(BitConverter.ToUInt32(exefile, address) - imageBase);
+                        for (int i = 0; i < soundcnt; i++)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            if (BitConverter.ToUInt32(exefile, address) == 0)
+                                objgrp.Add("Title", string.Empty);
+                            else
+                                objgrp.Add("Title", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address) - imageBase)));
+                            objgrp.Add("Track", BitConverter.ToInt32(exefile, address + 4).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            soundini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            address += 8;
+                        }
+                        IniFile.Save(soundini, data["filename"]);
+                        break;
+                    case "musiclist":
+                        Dictionary<string, Dictionary<string, string>> musini = new Dictionary<string, Dictionary<string, string>>();
+                        int muscnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                        for (int i = 0; i < muscnt; i++)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            if (BitConverter.ToUInt32(exefile, address) == 0)
+                                objgrp.Add("Filename", string.Empty);
+                            else
+                                objgrp.Add("Filename", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address) - imageBase)));
+                            objgrp.Add("Loop", (BitConverter.ToInt32(exefile, address + 4) != 0).ToString());
+                            musini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            address += 8;
+                        }
+                        IniFile.Save(musini, data["filename"]);
+                        break;
+                    case "soundlist":
+                        soundini = new Dictionary<string, Dictionary<string, string>>();
+                        soundcnt = BitConverter.ToUInt32(exefile, address);
+                        address = (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase);
+                        for (int i = 0; i < soundcnt; i++)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("Bank", BitConverter.ToInt32(exefile, address).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                            if (BitConverter.ToUInt32(exefile, address + 4) == 0)
+                                objgrp.Add("Filename", string.Empty);
+                            else
+                                objgrp.Add("Filename", GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase)));
+                            soundini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            address += 8;
+                        }
+                        IniFile.Save(soundini, data["filename"]);
+                        break;
+                    case "stringarray":
+                        int cnt = int.Parse(data["length"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                        string[] strs = new string[cnt];
+                        for (int i = 0; i < cnt; i++)
+                        {
+                            if (BitConverter.ToUInt32(exefile, address) == 0)
+                                strs[i] = string.Empty;
+                            else
+                                strs[i] = GetCString(exefile, (int)(BitConverter.ToUInt32(exefile, address) - imageBase)).Replace("\n", "\\n");
+                            address += 4;
+                        }
+                        File.WriteAllLines(data["filename"], strs);
                         break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
@@ -179,8 +277,8 @@ namespace split
                         mystream.Write(exefile, (int)splitaddr, exefile.Length - (int)splitaddr);
                         exefile = newfile;
                     }
-                else
-                    Console.WriteLine("Are you sure this is an SADX EXE?");
+                    else
+                        Console.WriteLine("Are you sure this is an SADX EXE?");
             }
             else
                 Console.WriteLine("This doesn't seem to be a valid EXE file...");
@@ -228,5 +326,60 @@ namespace split
         FAddr = 0x14,
         Flags = 0x24,
         Size = 0x28
+    }
+
+    enum LevelIDs : byte
+    {
+        HedgehogHammer = 0,
+        EmeraldCoast = 1,
+        WindyValley = 2,
+        TwinklePark = 3,
+        SpeedHighway = 4,
+        RedMountain = 5,
+        SkyDeck = 6,
+        LostWorld = 7,
+        IceCap = 8,
+        Casinopolis = 9,
+        FinalEgg = 0xA,
+        HotShelter = 0xC,
+        Chaos0 = 0xF,
+        Chaos2 = 0x10,
+        Chaos4 = 0x11,
+        Chaos6 = 0x12,
+        Chaos7 = 0x13,
+        EggHornet = 0x14,
+        EggWalker = 0x15,
+        EggViper = 0x16,
+        Zero = 0x17,
+        E101 = 0x18,
+        E101R = 0x19,
+        StationSquare = 0x1A,
+        EggCarrierOutside = 0x1D,
+        EggCarrierInside = 0x20,
+        MysticRuins = 0x21,
+        Past = 0x22,
+        TwinkleCircuit = 0x23,
+        SkyChase1 = 0x24,
+        SkyChase2 = 0x25,
+        SandHill = 0x26,
+        SSGarden = 0x27,
+        ECGarden = 0x28,
+        MRGarden = 0x29,
+        ChaoRace = 0x2A,
+        Invalid = 0x2B,
+        Maximum = 0xFF
+    }
+
+    enum Characters : byte
+    {
+        Sonic = 0,
+        Eggman = 1,
+        Tails = 2,
+        Knuckles = 3,
+        Tikal = 4,
+        Amy = 5,
+        Gamma = 6,
+        Big = 7,
+        MetalSonic = 8
     }
 }
