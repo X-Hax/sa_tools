@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
-namespace SonicRetro.SAModel.SAMDL
+namespace SonicRetro.SAModel.SALVL
 {
-    partial class ModelFileDialog : Form
+    partial class LevelFileDialog : Form
     {
 
         //Form overrides dispose to clean up the component list.
@@ -176,7 +175,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.Name = "ModelFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SA1/SA2 Model Editor";
+            this.Text = "SA1/SA2 Level Editor";
             this.Load += new System.EventHandler(this.Dialog1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
