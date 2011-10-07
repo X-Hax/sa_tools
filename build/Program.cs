@@ -30,6 +30,9 @@ namespace build
             uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
             uint startaddress = GetNewSectionAddress(exefile);
             uint curaddr = startaddress;
+            int itemcount = 0;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             if (File.Exists(inistartpath + "_code.ini"))
             {
                 Dictionary<string, Dictionary<string, string>> codeINI = IniFile.Load(inistartpath + "_code.ini");
@@ -71,6 +74,7 @@ namespace build
                         }
                     addresses.Add(dictitem.Key, curaddr + imageBase);
                     curaddr = startaddress + (uint)codesection.Count;
+                    itemcount++;
                     Console.WriteLine(dictitem.Key + ": " + curaddr.ToString("X"));
                 }
                 CreateNewSection(ref exefile, ".text2", codesection.ToArray(), true);
@@ -388,6 +392,36 @@ namespace build
                                 }
                             }
                             break;
+                        case "levelclearflags":
+                            levels = File.ReadAllLines(data["filename"]);
+                            foreach (string line in levels)
+                            {
+                                if (string.IsNullOrEmpty(line)) continue;
+                                datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), line.Split(' ')[0])));
+                                datasection.AddRange(BitConverter.GetBytes(ushort.Parse(line.Split(' ')[1], System.Globalization.NumberStyles.HexNumber)));
+                            }
+                            datasection.AddRange(BitConverter.GetBytes(uint.MaxValue));
+                            break;
+                        case "deathzone":
+                            posini = IniFile.Load(data["filename"]);
+                            string path = Path.GetDirectoryName(data["filename"]);
+                            soundcnt = 0;
+                            soundents = new List<byte>();
+                            while (posini.ContainsKey(soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                            {
+                                Dictionary<string, string> group = posini[soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                curaddr = startaddress + imageBase + (uint)datasection.Count;
+                                uint mdladdr;
+                                datasection.AddRange(SonicRetro.SAModel.Object.LoadFromFile(Path.Combine(path, soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl")).GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out mdladdr));
+                                datasection.Align(4);
+                                soundents.AddRange(BitConverter.GetBytes((int)Enum.Parse(typeof(CharacterFlags), group["Level"])));
+                                soundents.AddRange(BitConverter.GetBytes(curaddr + mdladdr));
+                                soundcnt++;
+                            }
+                            dataaddr = startaddress + imageBase + (uint)datasection.Count;
+                            datasection.AddRange(soundents.ToArray());
+                            datasection.AddRange(new byte[8]);
+                            break;
                         default: // raw binary
                             bool reloc = true;
                             if (data.ContainsKey("dontrelocate"))
@@ -410,6 +444,7 @@ namespace build
                     datasection.Align(4);
                     curaddr = startaddress + imageBase + (uint)datasection.Count;
                     dataaddr = curaddr;
+                    itemcount++;
                 }
                 else
                     addresses.Add(filedesc, uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber));
@@ -439,6 +474,8 @@ namespace build
                 }
             }
             File.WriteAllBytes(inistartpath + "_edit.exe", exefile);
+            timer.Stop();
+            Console.WriteLine("Built " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
             Console.Write("Press a key to continue...");
             Console.ReadKey(true);
             Console.WriteLine();
@@ -630,6 +667,19 @@ namespace build
         Gamma = 6,
         Big = 7,
         MetalSonic = 8
+    }
+
+    [Flags()]
+    enum CharacterFlags
+    {
+        Sonic = 1 << Characters.Sonic,
+        Eggman = 1 << Characters.Eggman,
+        Tails = 1 << Characters.Tails,
+        Knuckles = 1 << Characters.Knuckles,
+        Tikal = 1 << Characters.Tikal,
+        Amy = 1 << Characters.Amy,
+        Gamma = 1 << Characters.Gamma,
+        Big = 1 << Characters.Big
     }
 
     enum Languages

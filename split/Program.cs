@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 
 namespace split
 {
@@ -34,6 +35,9 @@ namespace split
             Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inifilename);
             Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(exefilename));
             uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
+            int itemcount = 0;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             foreach (KeyValuePair<string, Dictionary<string, string>> item in inifile)
             {
                 if (string.IsNullOrEmpty(item.Key)) continue;
@@ -274,6 +278,30 @@ namespace split
                         }
                         data.Add("md5", string.Join(",", hashes));
                         break;
+                    case "levelclearflags":
+                        lvllist = new List<string>();
+                        while (BitConverter.ToUInt16(exefile, address) != ushort.MaxValue)
+                        {
+                            lvllist.Add(((LevelIDs)BitConverter.ToUInt16(exefile, address)).ToString() + " " + BitConverter.ToUInt16(exefile, address + 2).ToString("X4"));
+                            address += 4;
+                        }
+                        File.WriteAllLines(data["filename"], lvllist.ToArray());
+                        break;
+                    case "deathzone":
+                        numpos = 0;
+                        posini = new Dictionary<string, Dictionary<string, string>>();
+                        string path = Path.GetDirectoryName(data["filename"]);
+                        while (BitConverter.ToUInt32(exefile, address + 4) != 0)
+                        {
+                            Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                            objgrp.Add("Flags", ((CharacterFlags)BitConverter.ToInt32(exefile, address)).ToString());
+                            posini.Add(numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            new SonicRetro.SAModel.Object(exefile, (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase), imageBase, SonicRetro.SAModel.ModelFormat.SADX).SaveToFile(Path.Combine(path, numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), SonicRetro.SAModel.ModelFormat.SA1);
+                            numpos++;
+                            address += 8;
+                        }
+                        IniFile.Save(posini, data["filename"]);
+                        break;
                     default: // raw binary
                         byte[] bin = new byte[int.Parse(data["size"], System.Globalization.NumberStyles.HexNumber)];
                         Array.Copy(exefile, int.Parse(data["address"], System.Globalization.NumberStyles.HexNumber), bin, 0, bin.Length);
@@ -285,8 +313,11 @@ namespace split
                     nohash = bool.Parse(data["nohash"]);
                 if (!nohash)
                     data.Add("md5", FileHash(data["filename"]));
+                itemcount++;
             }
             IniFile.Save(inifile, Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
+            timer.Stop();
+            Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
             Console.Write("Press a key to continue...");
             Console.ReadKey(true);
             Console.WriteLine();
@@ -428,6 +459,19 @@ namespace split
         Gamma = 6,
         Big = 7,
         MetalSonic = 8
+    }
+
+    [Flags()]
+    enum CharacterFlags
+    {
+        Sonic = 1 << Characters.Sonic,
+        Eggman = 1 << Characters.Eggman,
+        Tails = 1 << Characters.Tails,
+        Knuckles = 1 << Characters.Knuckles,
+        Tikal = 1 << Characters.Tikal,
+        Amy = 1 << Characters.Amy,
+        Gamma = 1 << Characters.Gamma,
+        Big = 1 << Characters.Big
     }
 
     enum Languages
