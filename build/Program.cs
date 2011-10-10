@@ -414,7 +414,7 @@ namespace build
                                 uint mdladdr;
                                 datasection.AddRange(SonicRetro.SAModel.Object.LoadFromFile(Path.Combine(path, soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl")).GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out mdladdr));
                                 datasection.Align(4);
-                                soundents.AddRange(BitConverter.GetBytes((int)Enum.Parse(typeof(CharacterFlags), group["Level"])));
+                                soundents.AddRange(BitConverter.GetBytes((int)Enum.Parse(typeof(CharacterFlags), group["Flags"])));
                                 soundents.AddRange(BitConverter.GetBytes(curaddr + mdladdr));
                                 soundcnt++;
                             }
