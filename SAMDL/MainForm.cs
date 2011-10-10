@@ -330,7 +330,14 @@ namespace SonicRetro.SAModel.SAMDL
                     }
                     vrfile.SetClut(pvp);
                 }
-                functionReturnValue.Add(vrfile.GetTextureAsBitmap());
+                try
+                {
+                    functionReturnValue.Add(vrfile.GetTextureAsBitmap());
+                }
+                catch
+                {
+                    functionReturnValue.Add(new Bitmap(1, 1));
+                }
             }
             return functionReturnValue.ToArray();
         }

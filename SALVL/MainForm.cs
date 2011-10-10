@@ -98,7 +98,10 @@ namespace SonicRetro.SAModel.SALVL
                 LevelData.Textures = new Dictionary<string, Texture[]>();
                 a.DefaultExt = "pvm";
                 a.Filter = "PVM Files|*.pvm|All Files|*.*";
-                a.FileName = LevelData.geo.TextureFileName;
+                if (!string.IsNullOrEmpty(LevelData.geo.TextureFileName))
+                    a.FileName = LevelData.geo.TextureFileName + ".pvm";
+                else
+                    a.FileName = string.Empty;
                 if (a.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                 {
                     BMPInfo[] TexBmps = LevelData.GetTextures(a.FileName);

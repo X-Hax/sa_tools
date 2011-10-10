@@ -374,9 +374,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         public EditableRotation(string data)
         {
             string[] a = data.Split(',');
-            X = int.Parse(a[0], System.Globalization.NumberStyles.HexNumber);
-            Y = int.Parse(a[1], System.Globalization.NumberStyles.HexNumber);
-            Z = int.Parse(a[2], System.Globalization.NumberStyles.HexNumber);
+            X = ObjectHelper.DegToBAMS(float.Parse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
+            Y = ObjectHelper.DegToBAMS(float.Parse(a[1], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
+            Z = ObjectHelper.DegToBAMS(float.Parse(a[2], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
         }
 
         public EditableRotation(int x, int y, int z)
@@ -397,7 +397,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public override string ToString()
         {
-            return X.ToString("X8") + ", " + Y.ToString("X8") + ", " + Z.ToString("X8");
+            return ObjectHelper.BAMSToDeg(X).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + ObjectHelper.BAMSToDeg(Y).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + ObjectHelper.BAMSToDeg(Z).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
         public int[] ToArray()

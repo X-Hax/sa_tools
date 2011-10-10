@@ -126,7 +126,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 LevelData.Character = 0;
                 Dictionary<string, string> group = ini[level];
                 string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
-                string levelact = group.GetValueOrDefault("LevelID", "0000");
+                string levelact = LevelData.ParseLevelAct(group.GetValueOrDefault("LevelID", "0000"));
                 byte levelnum = byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
                 byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
                 LevelData.leveltexs = null;
@@ -160,10 +160,14 @@ namespace SonicRetro.SAModel.SADXLVL2
                     Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
                     Vertex pos = new Vertex();
                     int rot = 0;
-                    if (posini.ContainsKey(levelact))
+                    foreach (KeyValuePair<string, Dictionary<string, string>> item in posini)
                     {
-                        pos = new Vertex(posini[levelact]["Position"]);
-                        rot = int.Parse(posini[levelact]["YRotation"], System.Globalization.NumberStyles.HexNumber);
+                        if (LevelData.ParseLevelAct(item.Key) == levelact)
+                        {
+                            pos = new Vertex(item.Value["Position"]);
+                            rot = int.Parse(item.Value["YRotation"], System.Globalization.NumberStyles.HexNumber);
+                            break;
+                        }
                     }
                     Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "mdl"]);
                     LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty][LevelData.Characters[i] + "tex"], float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
@@ -189,6 +193,23 @@ namespace SonicRetro.SAModel.SADXLVL2
                         LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty]["supertex"], float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
                     }
                 }
+                if (!group.ContainsKey("DeathZones"))
+                    LevelData.DeathZones = null;
+                else
+                {
+                    LevelData.DeathZones = new List<DeathZoneItem>();
+                    Dictionary<string, Dictionary<string, string>> dzini = IniFile.Load(group["DeathZones"]);
+                    string path = Path.GetDirectoryName(group["DeathZones"]);
+                    int cnt = 0;
+                    while (dzini.ContainsKey(cnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                    {
+                        LevelData.DeathZones.Add(new DeathZoneItem(
+                            Object.LoadFromFile(Path.Combine(path, cnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl")),
+                            (CharacterFlags)Enum.Parse(typeof(CharacterFlags), dzini[cnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Flags"]),
+                            d3ddevice));
+                        cnt++;
+                    }
+                }
                 Dictionary<string, Dictionary<string, string>> objtexini = IniFile.Load(ini[string.Empty]["objtexlist"]);
                 int oti = 0;
                 while (objtexini.ContainsKey(oti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
@@ -208,7 +229,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
                 {
                     Dictionary<string, Dictionary<string, string>> texini = IniFile.Load(file);
-                    if (texini[string.Empty]["Level"] != levelact) continue;
+                    if (LevelData.ParseLevelAct(texini[string.Empty]["Level"]) != levelact) continue;
                     int ti = 0;
                     while (texini.ContainsKey(ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
                     {
@@ -361,6 +382,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
             levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
             objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
+            deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
+            if (LevelData.DeathZones == null)
+                deathZonesToolStripMenuItem.Checked = false;
             loaded = true;
             SelectedItems = new List<Item>();
             UseWaitCursor = false;
@@ -386,7 +410,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             Dictionary<string, string> group = ini[level];
             string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
-            string levelact = group.GetValueOrDefault("LevelID", "0000");
+            string levelact = LevelData.ParseLevelAct(group.GetValueOrDefault("LevelID", "0000"));
             byte levelnum = byte.Parse(levelact.Substring(0, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
             byte actnum = byte.Parse(levelact.Substring(2, 2), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture);
             if (LevelData.geo != null)
@@ -394,15 +418,28 @@ namespace SonicRetro.SAModel.SADXLVL2
             for (int i = 0; i < LevelData.StartPositions.Length; i++)
             {
                 Dictionary<string, Dictionary<string, string>> posini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
-                if (posini.ContainsKey(levelact))
-                    posini.Remove(levelact);
+                foreach (KeyValuePair<string, Dictionary<string, string>> item in posini)
+                    if (LevelData.ParseLevelAct(item.Key) == levelact)
+                    {
+                        posini.Remove(item.Key);
+                        break;
+                    }
                 if (LevelData.StartPositions[i].Position.X != 0 & LevelData.StartPositions[i].Position.Y != 0 & LevelData.StartPositions[i].Position.Z != 0 & LevelData.StartPositions[i].Rotation.Y != 0)
                 {
-                    posini.Add(levelact, new Dictionary<string, string>()
-                    { { "Position", LevelData.StartPositions[i].Position.ToString() },
-                    { "YRotation", LevelData.StartPositions[i].Rotation.Y.ToString("X8") } });
+                    posini.Add(((LevelIDs)levelnum).ToString() + " " + actnum.ToString(System.Globalization.NumberFormatInfo.InvariantInfo),
+                        new Dictionary<string, string>()
+                        { { "Position", LevelData.StartPositions[i].Position.ToString() },
+                        { "YRotation", LevelData.StartPositions[i].Rotation.Y.ToString("X8") } });
                 }
                 IniFile.Save(posini, ini[string.Empty][LevelData.Characters[i] + "start"]);
+            }
+            if (LevelData.DeathZones != null)
+            {
+                Dictionary<string, Dictionary<string, string>> dzini = new Dictionary<string, Dictionary<string, string>>();
+                string path = Path.GetDirectoryName(group["DeathZones"]);
+                for (int i = 0; i < LevelData.DeathZones.Count; i++)
+                    dzini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), LevelData.DeathZones[i].Save(path, i));
+                IniFile.Save(dzini, group["DeathZones"]);
             }
             if (LevelData.SETItems != null)
             {
@@ -476,6 +513,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             if (LevelData.SETItems != null)
                 foreach (SETItem item in LevelData.SETItems[LevelData.Character])
                     item.Render(d3ddevice, transform, SelectedItems.Contains(item));
+            if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
+                foreach (DeathZoneItem item in LevelData.DeathZones)
+                    if (item.Visible)
+                        item.Render(d3ddevice, transform, SelectedItems.Contains(item));
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -634,6 +675,19 @@ namespace SonicRetro.SAModel.SADXLVL2
                     {
                         mindist = dist;
                         item = setitem;
+                    }
+                }
+            if (LevelData.DeathZones != null)
+                foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+                {
+                    if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
+                    {
+                        dist = dzitem.CheckHit(Near, Far, viewport, proj, view);
+                        if (dist > 0 & dist < mindist)
+                        {
+                            mindist = dist;
+                            item = dzitem;
+                        }
                     }
                 }
             switch (e.Button)
@@ -1042,6 +1096,18 @@ namespace SonicRetro.SAModel.SADXLVL2
                 objstream.Write("#EOF");
                 objstream.Close();
             }
+        }
+
+        private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DrawLevel();
+        }
+
+        private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeathZoneItem item = new DeathZoneItem(d3ddevice);
+            Vector3 pos = cam.Position + (-20 * cam.Look);
+            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
         }
     }
 }

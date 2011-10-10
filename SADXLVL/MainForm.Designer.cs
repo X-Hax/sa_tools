@@ -36,6 +36,7 @@
             this.changeLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +60,8 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelPieceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deathZoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -117,6 +119,13 @@
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // exportOBJToolStripMenuItem
+            // 
+            this.exportOBJToolStripMenuItem.Name = "exportOBJToolStripMenuItem";
+            this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.exportOBJToolStripMenuItem.Text = "&Export OBJ";
+            this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -128,7 +137,8 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.characterToolStripMenuItem,
-            this.levelToolStripMenuItem});
+            this.levelToolStripMenuItem,
+            this.deathZonesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -143,7 +153,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
             this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-            this.characterToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.characterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.characterToolStripMenuItem.Text = "&Character";
             this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
             // 
@@ -192,7 +202,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-            this.levelToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.levelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.levelToolStripMenuItem.Text = "&Level";
             this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
             // 
@@ -280,7 +290,8 @@
             // 
             this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.levelPieceToolStripMenuItem,
-            this.objectToolStripMenuItem});
+            this.objectToolStripMenuItem,
+            this.deathZoneToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addToolStripMenuItem.Text = "&Add...";
@@ -299,12 +310,20 @@
             this.objectToolStripMenuItem.Text = "&Object";
             this.objectToolStripMenuItem.Click += new System.EventHandler(this.objectToolStripMenuItem_Click);
             // 
-            // exportOBJToolStripMenuItem
+            // deathZonesToolStripMenuItem
             // 
-            this.exportOBJToolStripMenuItem.Name = "exportOBJToolStripMenuItem";
-            this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.exportOBJToolStripMenuItem.Text = "&Export OBJ";
-            this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
+            this.deathZonesToolStripMenuItem.CheckOnClick = true;
+            this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
+            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deathZonesToolStripMenuItem.Text = "&Death Zones";
+            this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
+            // 
+            // deathZoneToolStripMenuItem
+            // 
+            this.deathZoneToolStripMenuItem.Name = "deathZoneToolStripMenuItem";
+            this.deathZoneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deathZoneToolStripMenuItem.Text = "&Death Zone";
+            this.deathZoneToolStripMenuItem.Click += new System.EventHandler(this.deathZoneToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -362,6 +381,8 @@
         private System.Windows.Forms.ToolStripMenuItem levelPieceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportOBJToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deathZonesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deathZoneToolStripMenuItem;
     }
 }
 

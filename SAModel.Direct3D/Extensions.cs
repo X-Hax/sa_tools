@@ -142,8 +142,8 @@ namespace SonicRetro.SAModel.Direct3D
                 device.SetTransform(TransformType.World, transform.Top);
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
-                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
-                    if (!useMat) col = Color.White;
+                    System.Drawing.Color col = Color.White;
+                    if (useMat) col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     device.Material = new Microsoft.DirectX.Direct3D.Material
                     {
