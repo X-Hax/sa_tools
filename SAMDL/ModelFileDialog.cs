@@ -50,5 +50,10 @@ namespace SonicRetro.SAModel.SAMDL
                     break;
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDown3.Enabled = checkBox1.Checked;
+        }
     }
 }

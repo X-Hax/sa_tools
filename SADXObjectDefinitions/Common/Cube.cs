@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(Dictionary<string, string> data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Collision/Cube Model.ini");
+            model = ObjectHelper.LoadModel("Objects/Collision/Cube Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
@@ -29,16 +29,18 @@ namespace SADXObjectDefinitions.Common
             return dist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(0, item.Rotation.Y, 0);
             transform.ScaleLocal((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.Z + 10) / 5f);
-            model.DrawModelTree(dev, transform, null, meshes);
+            result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
             if (selected)
-                model.DrawModelTreeInvert(dev, transform, meshes);
+                result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
             transform.Pop();
+            return result.ToArray();
         }
 
         public override string Name { get { return "Solid Cube"; } }

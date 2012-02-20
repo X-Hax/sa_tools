@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel.SADXLVL2
     {
         public abstract void Init(Dictionary<string, string> data, string name, Device dev);
         public abstract float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
-        public abstract void Render(SETItem item, Device dev, MatrixStack transform, bool selected);
+        public abstract RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected);
         public abstract string Name { get; }
 
         public virtual Type ObjectType { get { return typeof(SETItem); } }
@@ -51,22 +51,30 @@ namespace SonicRetro.SAModel.SADXLVL2
             return dist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             if (model == null)
-                ObjectHelper.RenderSprite(dev, transform, null, selected);
+                result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), selected));
             else
             {
-                model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes);
+                result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes));
                 if (selected)
-                    model.DrawModelTreeInvert(dev, transform, meshes);
+                    result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
             }
             transform.Pop();
+            return result.ToArray();
         }
 
         public override string Name { get { return name; } }
+    }
+
+    public abstract class LevelDefinition
+    {
+        public abstract void Init(Dictionary<string, string> data, byte act, Device dev);
+        public abstract void Render(Device dev, Camera cam);
     }
 }

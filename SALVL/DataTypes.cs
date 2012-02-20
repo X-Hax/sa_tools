@@ -21,8 +21,6 @@ namespace SonicRetro.SAModel.SALVL
             this.dev = dev;
             COL = new COL();
             COL.Model = new Object();
-            Position = new EditableVertex();
-            Rotation = new EditableRotation();
             ImportModel();
             Paste();
         }
@@ -31,30 +29,28 @@ namespace SonicRetro.SAModel.SALVL
         {
             COL = col;
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
-            Position = new EditableVertex(COL.Model.Position);
-            Rotation = new EditableRotation(COL.Model.Rotation);
             this.dev = dev;
         }
 
-        private EditableVertex position;
-        public override EditableVertex Position { get { return position; } set { position = value; COL.Model.Position = value.ToVertex(); } }
+        public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; } }
 
-        private EditableRotation rotation;
-        public override EditableRotation Rotation { get { return rotation; } set { rotation = value; COL.Model.Rotation = value.ToRotation(); } }
+        public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
-        public override void Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             if (!string.IsNullOrEmpty(LevelData.leveltexs))
-                COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
+                result.AddRange(COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
             else
-                COL.Model.DrawModel(dev, transform, null, Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
+                result.AddRange(COL.Model.DrawModel(dev, transform, null, Mesh, Visible));
             if (selected)
-                COL.Model.DrawModelInvert(dev, transform, Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
+                result.AddRange(COL.Model.DrawModelInvert(dev, transform, Mesh, Visible));
+            return result.ToArray();
         }
 
         public override void Paste()
@@ -146,11 +142,6 @@ namespace SonicRetro.SAModel.SALVL
             }
         }
 
-        public void Save()
-        {
-            COL.Model.Position = Position.ToVertex();
-            COL.Model.Rotation = Rotation.ToRotation();
-            COL.CalculateBounds();
-        }
+        public void Save() { COL.CalculateBounds(); }
     }
 }

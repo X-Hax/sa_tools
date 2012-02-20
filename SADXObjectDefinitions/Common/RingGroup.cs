@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(Dictionary<string, string> data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Ring/Model.ini");
+            model = ObjectHelper.LoadModel("Objects/Ring/Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
@@ -64,8 +64,9 @@ namespace SADXObjectDefinitions.Common
             return mindist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
             {
                 transform.Push();
@@ -82,9 +83,9 @@ namespace SADXObjectDefinitions.Common
                     Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
-                    model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes);
+                    result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
                     if (selected)
-                        model.DrawModelTreeInvert(dev, transform, meshes);
+                        result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
                 }
                 else // line
                 {
@@ -99,12 +100,13 @@ namespace SADXObjectDefinitions.Common
                     Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
-                    model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes);
+                    result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
                     if (selected)
-                        model.DrawModelTreeInvert(dev, transform, meshes);
+                        result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
                 }
                 transform.Pop();
             }
+            return result.ToArray();
         }
 
         public override string Name { get { return "Ring Group"; } }

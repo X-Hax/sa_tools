@@ -57,10 +57,7 @@ namespace SonicRetro.SAModel
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
-                        StringBuilder sb = new StringBuilder();
-                        while (file[tmpaddr] != 0)
-                            sb.Append((char)file[tmpaddr++]);
-                        TextureFileName = sb.ToString();
+                        TextureFileName = file.GetCString((int)tmpaddr, Encoding.ASCII);
                     }
                     TextureList = ByteConverter.ToUInt32(file, address + 0x18);
                     Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
@@ -95,10 +92,7 @@ namespace SonicRetro.SAModel
                     if (tmpaddr != 0)
                     {
                         tmpaddr -= imageBase;
-                        StringBuilder sb = new StringBuilder();
-                        while (file[tmpaddr] != 0)
-                            sb.Append((char)file[tmpaddr++]);
-                        TextureFileName = sb.ToString();
+                        TextureFileName = file.GetCString((int)tmpaddr, Encoding.ASCII);
                     }
                     TextureList = ByteConverter.ToUInt32(file, address + 0x1C);
                     break;
@@ -206,7 +200,7 @@ namespace SonicRetro.SAModel
             if (TextureFileName != null)
             {
                 texnameaddr = imageBase + (uint)result.Count;
-                result.AddRange(System.Text.Encoding.ASCII.GetBytes(TextureFileName));
+                result.AddRange(Encoding.ASCII.GetBytes(TextureFileName));
                 result.Add(0);
             }
             result.Align(4);

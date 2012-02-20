@@ -46,11 +46,15 @@
     <Compile Include="Common\Spring.cs" />
     <Compile Include="Common\SpringB.cs" />
     <Compile Include="Common\SwingSpikeBall.cs" />
+    <Compile Include="Level Effects\EmeraldCoast.cs" />
+    <Compile Include="Level Effects\WindyValley1.cs" />
+    <Compile Include="Level Effects\WindyValley2.cs" />
+    <Compile Include="Level Effects\WindyValley3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\SADXLVL\SADXLVL2.csproj">
+    <ProjectReference Include="..\SADXLVL2\SADXLVL2.csproj">
       <Project>{5997DC6A-DA95-487E-BB19-2D8890684A54}</Project>
       <Name>SADXLVL2</Name>
     </ProjectReference>

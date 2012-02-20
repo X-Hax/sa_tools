@@ -21,11 +21,22 @@ namespace SonicRetro.SAModel.Direct3D
                 foreach (Poly poly in mesh.Poly)
                     foreach (ushort index in poly.Indexes)
                         verts.Add(attach.Vertex[index].ToVector3());
-            Vector3 center = new Vector3();
-            attach.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), FVF_PositionNormalTexturedColored.Format, out center);
-            attach.Center.X = center.X;
-            attach.Center.Y = center.Y;
-            attach.Center.Z = center.Z;
+            Vector3 center;
+            attach.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+            attach.Bounds.Center.X = center.X;
+            attach.Bounds.Center.Y = center.Y;
+            attach.Bounds.Center.Z = center.Z;
+        }
+
+        public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
+        {
+            List<Vector3> verts = new List<Vector3>();
+            foreach (Poly poly in attach.Mesh[mesh].Poly)
+                foreach (ushort index in poly.Indexes)
+                    verts.Add(Vector3.TransformCoordinate(attach.Vertex[index].ToVector3(), transform));
+            Vector3 center;
+            float radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+            return new BoundingSphere(center.X, center.Y, center.Z, radius);
         }
 
         public static void CalculateBounds(this COL col)
@@ -39,10 +50,10 @@ namespace SonicRetro.SAModel.Direct3D
                     foreach (ushort index in poly.Indexes)
                         verts.Add(Vector3.TransformCoordinate(col.Model.Attach.Vertex[index].ToVector3(), matrix));
             Vector3 center = new Vector3();
-            col.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), FVF_PositionNormalTexturedColored.Format, out center);
-            col.Center.X = center.X;
-            col.Center.Y = center.Y;
-            col.Center.Z = center.Z;
+            col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+            col.Bounds.Center.X = center.X;
+            col.Bounds.Center.Y = center.Y;
+            col.Bounds.Center.Z = center.Z;
         }
 
         public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Microsoft.DirectX.Direct3D.Device dev)
@@ -79,22 +90,25 @@ namespace SonicRetro.SAModel.Direct3D
             return (float)(BAMS / (65536 / (2 * Math.PI)));
         }
 
-        public static void DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+        public static RenderInfo[] DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
         {
-            if (mesh == null) return;
+            if (mesh == null) return new RenderInfo[0];
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null)
-            {
-                device.SetTransform(TransformType.World, transform.Top);
+            if (obj.Attach != null & mesh != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
+                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Texture texture = null;
+                    bool alphaBlend = false;
+                    bool sphereMap = false;
                     if (useMat)
                     {
                         Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        device.Material = new Microsoft.DirectX.Direct3D.Material
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
                         {
                             Diffuse = mat.DiffuseColor,
                             Ambient = mat.DiffuseColor,
@@ -102,167 +116,276 @@ namespace SonicRetro.SAModel.Direct3D
                             SpecularSharpness = mat.Unknown1
                         };
                         if (textures != null && mat.TextureID < textures.Length)
-                            device.SetTexture(0, textures[mat.TextureID]);
-                        else
-                            device.SetTexture(0, null);
-                        device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
-                        if ((mat.Flags & 0x40) == 0x40)
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
-                        else
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
+                            texture = textures[mat.TextureID];
+                        alphaBlend = (mat.Flags & 0x10) == 0x10;
+                        sphereMap = (mat.Flags & 0x40) == 0x40;
                     }
                     else
                     {
-                        device.Material = new Microsoft.DirectX.Direct3D.Material
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
                         {
                             Diffuse = Color.White,
                             Ambient = Color.White,
                         };
-                        device.SetTexture(0, null);
-                        device.SetRenderState(RenderStates.AlphaBlendEnable, false);
-                        device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
                     }
-                    mesh.DrawSubset(j);
+                    result.Add(new RenderInfo(mesh, j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
-            }
             transform.Pop();
+            return result.ToArray();
         }
 
-        public static void DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+        public static RenderInfo[] DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
         {
-            if (mesh == null) return;
-            FillMode mode = device.RenderState.FillMode;
-            device.RenderState.FillMode = FillMode.WireFrame;
+            if (mesh == null) return new RenderInfo[0];
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null)
-            {
-                device.SetTransform(TransformType.World, transform.Top);
+            if (obj.Attach != null & mesh != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     System.Drawing.Color col = Color.White;
                     if (useMat) col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-                    device.Material = new Microsoft.DirectX.Direct3D.Material
+                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
                     {
                         Diffuse = col,
                         Ambient = col
                     };
-                    device.SetTexture(0, null);
-                    device.SetRenderState(RenderStates.AlphaBlendEnable, false);
-                    mesh.DrawSubset(j);
+                    result.Add(new RenderInfo(mesh, j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
-            }
             transform.Pop();
-            device.RenderState.FillMode = mode;
+            return result.ToArray();
         }
 
-        public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+        public static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
         {
             int modelindex = -1;
-            obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
+            return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
         }
 
-        public static void DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        public static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
-                transform.Push();
-                modelindex++;
-                transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
-                transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
-                transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-                if (obj.Attach != null & meshes[modelindex] != null)
-                {
-                    device.SetTransform(TransformType.World, transform.Top);
-                    for (int j = 0; j < obj.Attach.Mesh.Count; j++)
-                    {
-                        if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
-                        {
-                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        device.Material = new Microsoft.DirectX.Direct3D.Material
-                        {
-                            Diffuse = mat.DiffuseColor,
-                            Ambient = mat.DiffuseColor,
-                            Specular = mat.SpecularColor,
-                            SpecularSharpness = mat.Unknown1
-                        };
-                        if (textures != null && mat.TextureID < textures.Length)
-                            device.SetTexture(0, textures[mat.TextureID]);
-                        else
-                            device.SetTexture(0, null);
-                        device.SetRenderState(RenderStates.AlphaBlendEnable, (mat.Flags & 0x10) == 0x10);
-                        if ((mat.Flags & 0x40) == 0x40)
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0x40000);
-                        else
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
-                        }
-                        else
-                        {
-                            device.Material = new Microsoft.DirectX.Direct3D.Material
-                            {
-                                Diffuse = Color.White,
-                                Ambient = Color.White,
-                            };
-                            device.SetTexture(0, null);
-                            device.SetRenderState(RenderStates.AlphaBlendEnable, false);
-                            device.SetTextureStageState(0, TextureStageStates.TextureCoordinateIndex, 0);
-                        }
-                        meshes[modelindex].DrawSubset(j);
-                    }
-                }
-                foreach (Object child in obj.Children)
-                    DrawModelTree(child, device, transform, textures, meshes, ref modelindex);
-                transform.Pop();
-        }
-
-        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
-        {
-            int modelindex = -1;
-            obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
-        }
-
-        public static void DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
-        {
-            FillMode mode = device.RenderState.FillMode;
-            device.RenderState.FillMode = FillMode.WireFrame;
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             modelindex++;
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             if (obj.Attach != null & meshes[modelindex] != null)
-            {
-                device.SetTransform(TransformType.World, transform.Top);
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                {
+                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Texture texture = null;
+                    bool alphaBlend = false;
+                    bool sphereMap = false;
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
+                    {
+                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = mat.DiffuseColor,
+                            Ambient = mat.DiffuseColor,
+                            Specular = mat.SpecularColor,
+                            SpecularSharpness = mat.Unknown1
+                        };
+                        if (textures != null && mat.TextureID < textures.Length)
+                            texture = textures[mat.TextureID];
+                        alphaBlend = (mat.Flags & 0x10) == 0x10;
+                        sphereMap = (mat.Flags & 0x40) == 0x40;
+                    }
+                    else
+                    {
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = Color.White,
+                            Ambient = Color.White,
+                        };
+                    }
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+                }
+            foreach (Object child in obj.Children)
+                result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
+            transform.Pop();
+            return result.ToArray();
+        }
+
+        public static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+        {
+            int modelindex = -1;
+            return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
+        }
+
+        public static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        {
+            List<RenderInfo> result = new List<RenderInfo>();
+            transform.Push();
+            modelindex++;
+            transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            if (obj.Attach != null & meshes[modelindex] != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-                    device.Material = new Microsoft.DirectX.Direct3D.Material
+                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
                     {
                         Diffuse = col,
                         Ambient = col
                     };
-                    device.SetTexture(0, null);
-                    device.SetRenderState(RenderStates.AlphaBlendEnable, false);
-                    meshes[modelindex].DrawSubset(j);
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
-            }
             foreach (Object child in obj.Children)
-                DrawModelTreeInvert(child, device, transform, meshes, ref modelindex);
+                result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
             transform.Pop();
-            device.RenderState.FillMode = mode;
+            return result.ToArray();
+        }
+
+        public static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+        {
+            int modelindex = -1;
+            int animindex = -1;
+            return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
+        }
+
+        public static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        {
+            List<RenderInfo> result = new List<RenderInfo>();
+            transform.Push();
+            modelindex++;
+            bool animate = ((obj.Flags & ObjectFlags.NoAnimate) == 0);
+            if (animate) animindex++;
+            if (!anim.Models.ContainsKey(animindex)) animate = false;
+            if (animate)
+            {
+                if (anim.Models[animindex].Position.Count > 0)
+                    transform.TranslateLocal(anim.Models[animindex].GetPosition(animframe).ToVector3());
+                else
+                    transform.TranslateLocal(obj.Position.ToVector3());
+                Rotation rot;
+                if (anim.Models[animindex].Rotation.Count > 0)
+                    rot = anim.Models[animindex].GetRotation(animframe);
+                else
+                    rot = obj.Rotation;
+                transform.RotateXYZLocal(rot.X, rot.Y, rot.Z);
+                if (anim.Models[animindex].Scale.Count > 0)
+                    transform.ScaleLocal(anim.Models[animindex].GetScale(animframe).ToVector3());
+                else
+                    transform.ScaleLocal(obj.Scale.ToVector3());
+            }
+            else
+            {
+                transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+                transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+                transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            }
+            if (obj.Attach != null & meshes[modelindex] != null)
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                {
+                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Texture texture = null;
+                    bool alphaBlend = false;
+                    bool sphereMap = false;
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
+                    {
+                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = mat.DiffuseColor,
+                            Ambient = mat.DiffuseColor,
+                            Specular = mat.SpecularColor,
+                            SpecularSharpness = mat.Unknown1
+                        };
+                        if (textures != null && mat.TextureID < textures.Length)
+                            texture = textures[mat.TextureID];
+                        alphaBlend = (mat.Flags & 0x10) == 0x10;
+                        sphereMap = (mat.Flags & 0x40) == 0x40;
+                    }
+                    else
+                    {
+                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        {
+                            Diffuse = Color.White,
+                            Ambient = Color.White,
+                        };
+                    }
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+                }
+            foreach (Object child in obj.Children)
+                result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
+            transform.Pop();
+            return result.ToArray();
+        }
+
+        public static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+        {
+            int modelindex = -1;
+            int animindex = -1;
+            return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
+        }
+
+        public static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        {
+            List<RenderInfo> result = new List<RenderInfo>();
+            transform.Push();
+            modelindex++;
+            bool animate = ((obj.Flags & ObjectFlags.NoAnimate) == 0);
+            if (animate) animindex++;
+            if (!anim.Models.ContainsKey(animindex)) animate = false;
+            if (animate)
+            {
+                if (anim.Models[animindex].Position.Count > 0)
+                    transform.TranslateLocal(anim.Models[animindex].GetPosition(animframe).ToVector3());
+                else
+                    transform.TranslateLocal(obj.Position.ToVector3());
+                Rotation rot;
+                if (anim.Models[animindex].Rotation.Count > 0)
+                    rot = anim.Models[animindex].GetRotation(animframe);
+                else
+                    rot = obj.Rotation;
+                transform.RotateXYZLocal(rot.X, rot.Y, rot.Z);
+                if (anim.Models[animindex].Scale.Count > 0)
+                    transform.ScaleLocal(anim.Models[animindex].GetScale(animframe).ToVector3());
+                else
+                    transform.ScaleLocal(obj.Scale.ToVector3());
+            }
+            else
+            {
+                transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+                transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+                transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            }
+            if (obj.Attach != null & meshes[modelindex] != null)
+                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                {
+                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
+                    col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
+                    {
+                        Diffuse = col,
+                        Ambient = col
+                    };
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+                }
+            foreach (Object child in obj.Children)
+                result.AddRange(DrawModelTreeAnimatedInvert(child, device, transform, meshes, anim, animframe, ref modelindex, ref animindex));
+            transform.Pop();
+            return result.ToArray();
         }
 
         public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
         {
             if (mesh == null) return -1;
-            Matrix transform = Matrix.Identity;
-            transform.Multiply(Matrix.RotationYawPitchRoll(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z)));
-            transform.Multiply(Matrix.Translation(obj.Position.ToVector3()));
-            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform);
-            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform));
+            MatrixStack transform = new MatrixStack();
+            transform.Push();
+            transform.TranslateLocal(obj.Position.ToVector3());
+            transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
             IntersectInformation info;
             if (!mesh.Intersect(pos, dir, out info)) return -1;
             return info.Dist;
@@ -303,6 +426,70 @@ namespace SonicRetro.SAModel.Direct3D
                 else if (dist > r & r != -1)
                     dist = r;
             }
+            transform.Pop();
+            return dist;
+        }
+
+        public static float CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
+        {
+            int modelindex = -1;
+            int animindex = -1;
+            return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
+        }
+
+        public static float CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        {
+            transform.Push();
+            modelindex++;
+            bool animate = ((obj.Flags & ObjectFlags.NoAnimate) == 0);
+            if (animate) animindex++;
+            if (!anim.Models.ContainsKey(animindex)) animate = false;
+            if (animate)
+            {
+                if (anim.Models[animindex].Position.Count > 0)
+                    transform.TranslateLocal(anim.Models[animindex].GetPosition(animframe).ToVector3());
+                else
+                    transform.TranslateLocal(obj.Position.ToVector3());
+                Rotation rot;
+                if (anim.Models[animindex].Rotation.Count > 0)
+                    rot = anim.Models[animindex].GetRotation(animframe);
+                else
+                    rot = obj.Rotation;
+                transform.RotateXYZLocal(rot.X, rot.Y, rot.Z);
+                if (anim.Models[animindex].Scale.Count > 0)
+                    transform.ScaleLocal(anim.Models[animindex].GetScale(animframe).ToVector3());
+                else
+                    transform.ScaleLocal(obj.Scale.ToVector3());
+            }
+            else
+            {
+                transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
+                transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
+                transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+            }
+            float dist = -1;
+            if (obj.Attach != null & mesh[modelindex] != null)
+            {
+                Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+                Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
+                IntersectInformation info;
+                if (mesh[modelindex].Intersect(pos, dir, out info))
+                {
+                    if (dist == -1)
+                        dist = info.Dist;
+                    else if (dist > info.Dist)
+                        dist = info.Dist;
+                }
+            }
+            foreach (Object child in obj.Children)
+            {
+                float r = CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
+                if (dist == -1)
+                    dist = r;
+                else if (dist > r & r != -1)
+                    dist = r;
+            }
+            transform.Pop();
             return dist;
         }
 

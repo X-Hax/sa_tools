@@ -57,7 +57,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.Lights[0].Range = 100000;
             d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
             d3ddevice.Lights[0].Enabled = true;
-            ObjectHelper.QuestionMark = new Texture(d3ddevice, Properties.Resources.UnknownImg, Usage.SoftwareProcessing, Pool.Managed);
+            ObjectHelper.Init(d3ddevice);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,8 +169,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                             break;
                         }
                     }
-                    Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "mdl"]);
-                    LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty][LevelData.Characters[i] + "tex"], float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+                    if (i == 0 & levelnum == 19)
+                        LevelData.StartPositions[i] = new StartPosItem(new ModelFile(IniFile.Load(ini[string.Empty]["supermdl"]), Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["supermdl"]))).Model, ini[string.Empty]["supertex"], float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+                    else
+                        LevelData.StartPositions[i] = new StartPosItem(new ModelFile(IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "mdl"]), Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, ini[string.Empty][LevelData.Characters[i] + "mdl"]))).Model, ini[string.Empty][LevelData.Characters[i] + "tex"], float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
                     Dictionary<string, Dictionary<string, string>> texini = IniFile.Load(ini[string.Empty][LevelData.Characters[i] + "texlist"]);
                     int ti = 0;
                     while (texini.ContainsKey(ti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
@@ -186,11 +188,6 @@ namespace SonicRetro.SAModel.SADXLVL2
                             LevelData.Textures.Add(texname, texs);
                         }
                         ti++;
-                    }
-                    if (i == 0 & levelnum == 19)
-                    {
-                        mdlini = IniFile.Load(ini[string.Empty]["supermdl"]);
-                        LevelData.StartPositions[i] = new StartPosItem(new Object(mdlini, mdlini[string.Empty]["Root"]), ini[string.Empty]["supertex"], float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
                     }
                 }
                 if (!group.ContainsKey("DeathZones"))
@@ -245,6 +242,22 @@ namespace SonicRetro.SAModel.SADXLVL2
                         }
                         ti++;
                     }
+                }
+                objtexini = IniFile.Load(group["ObjTexs"]);
+                oti = 0;
+                while (objtexini.ContainsKey(oti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
+                {
+                    string texname = objtexini[oti.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Name"];
+                    if (!string.IsNullOrEmpty(texname) & !LevelData.TextureBitmaps.ContainsKey(texname))
+                    {
+                        BMPInfo[] TexBmps = LevelData.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
+                        Texture[] texs = new Texture[TexBmps.Length];
+                        for (int j = 0; j < TexBmps.Length; j++)
+                            texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+                        LevelData.TextureBitmaps.Add(texname, TexBmps);
+                        LevelData.Textures.Add(texname, texs);
+                    }
+                    oti++;
                 }
                 if (group.ContainsKey("Textures"))
                 {
@@ -354,14 +367,55 @@ namespace SonicRetro.SAModel.SADXLVL2
                 }
                 else
                     LevelData.SETItems = null;
+                LevelData.leveleff = null;
+                if (group.ContainsKey("Effects"))
+                {
+                    LevelDefinition def = null;
+                    string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(group["Effects"]);
+                    string dllfile = Path.Combine("dllcache", ty + ".dll");
+                    DateTime modDate = DateTime.MinValue;
+                    if (File.Exists(dllfile))
+                        modDate = File.GetLastWriteTime(dllfile);
+                    string fp = group["Effects"].Replace('/', System.IO.Path.DirectorySeparatorChar);
+                    if (modDate >= File.GetLastWriteTime(fp))
+                        def = (LevelDefinition)Activator.CreateInstance(System.Reflection.Assembly.LoadFile(System.IO.Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
+                    else
+                    {
+                        string ext = System.IO.Path.GetExtension(fp);
+                        CodeDomProvider pr = null;
+                        switch (ext.ToLowerInvariant())
+                        {
+                            case ".cs":
+                                pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                                break;
+                            case ".vb":
+                                pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                                break;
+                        }
+                        if (pr != null)
+                        {
+                            CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location });
+                            para.GenerateExecutable = false;
+                            para.GenerateInMemory = false;
+                            para.IncludeDebugInformation = true;
+                            para.OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile);
+                            CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+                            if (!res.Errors.HasErrors)
+                                def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+                        }
+                    }
+                    if (def != null)
+                        def.Init(group, actnum, d3ddevice);
+                    LevelData.leveleff = def;
+                }
 #if !DEBUG
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + System.IO.Path.Combine(Environment.CurrentDirectory, "SADXLVL.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
-                    "SADXLVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                File.WriteAllText("SADXLVL.log", ex.ToString());
+                    ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + System.IO.Path.Combine(Environment.CurrentDirectory, "SADXLVL2.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
+                    "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.WriteAllText("SADXLVL2.log", ex.ToString());
                 initerror = true;
             }
 #endif
@@ -468,7 +522,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         internal void DrawLevel()
         {
             if (!loaded) return;
-            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
+            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 30000));
             d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
             Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
             d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
@@ -496,6 +550,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
+            if (LevelData.leveleff != null)
+                LevelData.leveleff.Render(d3ddevice, cam);
+            List<RenderInfo> renderlist = new List<RenderInfo>();
             if (LevelData.LevelItems != null)
                 for (int i = 0; i < LevelData.LevelItems.Count; i++)
                 {
@@ -507,16 +564,17 @@ namespace SonicRetro.SAModel.SADXLVL2
                     else if (allToolStripMenuItem.Checked)
                         display = true;
                     if (display)
-                        LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i]));
+                        renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
                 }
-            LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character]));
+            renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
             if (LevelData.SETItems != null)
                 foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-                    item.Render(d3ddevice, transform, SelectedItems.Contains(item));
+                    renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
             if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
                 foreach (DeathZoneItem item in LevelData.DeathZones)
                     if (item.Visible)
-                        item.Render(d3ddevice, transform, SelectedItems.Contains(item));
+                        renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
+            RenderInfo.Draw(renderlist, d3ddevice, cam);
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -786,7 +844,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 Vector3 verti = vertvect * (-chg.Y / 2);
                 foreach (Item item in SelectedItems)
                 {
-                    item.Position = new EditableVertex(
+                    item.Position = new Vertex(
                         item.Position.X + horiz.X + verti.X,
                         item.Position.Y + horiz.Y + verti.Y,
                         item.Position.Z + horiz.Z + verti.Z);
@@ -857,7 +915,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
             foreach (Item item in objs)
             {
-                item.Position = new EditableVertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
+                item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
                 item.Paste();
             }
             SelectedItems = new List<Item>(objs);
@@ -896,14 +954,14 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             LevelItem item = new LevelItem(d3ddevice);
             Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
         }
 
         private void objectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SETItem item = new SETItem();
             Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
             LevelData.SETItems[LevelData.Character].Add(item);
         }
 
@@ -1107,7 +1165,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             DeathZoneItem item = new DeathZoneItem(d3ddevice);
             Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
         }
     }
 }

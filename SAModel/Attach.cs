@@ -11,8 +11,7 @@ namespace SonicRetro.SAModel
         public Vertex[] Normal { get; private set; }
         public List<Mesh> Mesh { get; set; }
         public List<Material> Material { get; set; }
-        public Vertex Center { get; set; }
-        public float Radius { get; set; }
+        public BoundingSphere Bounds { get; set; }
 
         public static int Size(ModelFormat format)
         {
@@ -32,7 +31,7 @@ namespace SonicRetro.SAModel
         public Attach()
         {
             Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
-            Center = new Vertex();
+            Bounds = new BoundingSphere();
             Material = new List<Material>();
             Mesh = new List<Mesh>();
             Vertex = new Vertex[0];
@@ -86,8 +85,7 @@ namespace SonicRetro.SAModel
                             tmpaddr += SAModel.Material.Size;
                         }
                     }
-                    Center = new Vertex(file, address + 0x18);
-                    Radius = ByteConverter.ToSingle(file, address + 0x24);
+                    Bounds = new BoundingSphere(file, address + 0x18);
                     break;
                 case ModelFormat.SA2:
                 case ModelFormat.SA2B:
@@ -386,8 +384,7 @@ namespace SonicRetro.SAModel
                             ctype = file[tmpaddr];
                         }
                     }
-                    Center = new Vertex(file, address + 8);
-                    Radius = ByteConverter.ToSingle(file, address + 0x14);
+                    Bounds = new BoundingSphere(file, address + 8);
                     break;
             }
         }
@@ -415,8 +412,7 @@ namespace SonicRetro.SAModel
                 for (int i = 0; i < matlist.Length; i++)
                     Material.Add(new Material(INI[matlist[i]], matlist[i]));
             }
-            Center = new Vertex(group["Center"]);
-            Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            Bounds = new BoundingSphere(group["Bounds"]);
         }
 
         public Attach(Vertex[] vertex, Vertex[] normal, IEnumerable<Mesh> mesh, IEnumerable<Material> material)
@@ -426,7 +422,7 @@ namespace SonicRetro.SAModel
             Normal = normal;
             Mesh = new List<Mesh>(mesh);
             Material = new List<Material>(material);
-            Center = new Vertex();
+            Bounds = new BoundingSphere();
         }
 
         public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
@@ -514,8 +510,7 @@ namespace SonicRetro.SAModel
                     result.AddRange(ByteConverter.GetBytes(materialAddress));
                     result.AddRange(ByteConverter.GetBytes((short)Mesh.Count));
                     result.AddRange(ByteConverter.GetBytes((short)Material.Count));
-                    result.AddRange(Center.GetBytes());
-                    result.AddRange(ByteConverter.GetBytes(Radius));
+                    result.AddRange(Bounds.GetBytes());
                     if (format == ModelFormat.SADX) result.AddRange(new byte[4]);
                     break;
                 case ModelFormat.SA2:
@@ -555,8 +550,7 @@ namespace SonicRetro.SAModel
                 Material[i].Save(INI);
             }
             group.Add("Material", string.Join(",", mlist.ToArray()));
-            group.Add("Center", Center.ToString());
-            group.Add("Radius", Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            group.Add("Bounds", Bounds.ToString());
             if (!INI.ContainsKey(Name))
                 INI.Add(Name, group);
         }

@@ -14,15 +14,15 @@ namespace SonicRetro.SAModel.SADXLVL2
         [ParenthesizePropertyName(true)]
         public string Type { get { return GetType().Name; } }
 
-        public abstract EditableVertex Position { get; set; }
-        public abstract EditableRotation Rotation { get; set; }
+        public abstract Vertex Position { get; set; }
+        public abstract Rotation Rotation { get; set; }
 
         [Browsable(false)]
         public virtual bool CanCopy { get { return true; } }
         public abstract void Paste();
         public abstract void Delete();
         public abstract float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-        public abstract void Render(Device dev, MatrixStack transform, bool selected);
+        public abstract SonicRetro.SAModel.Direct3D.RenderInfo[] Render(Device dev, MatrixStack transform, bool selected);
 
         #region IComponent Members
         // IComponent required by PropertyGrid control to discover IMenuCommandService supporting DesignerVerbs

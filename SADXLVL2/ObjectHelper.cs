@@ -9,20 +9,31 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
     public static class ObjectHelper
     {
-        internal static CustomVertex.PositionTextured[] Square = {
+        internal static CustomVertex.PositionTextured[] SquareVerts = {
         new CustomVertex.PositionTextured(-8, 8, 0, 1, 0),
         new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0),
         new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
         new CustomVertex.PositionTextured(8, -8, 0, 0, 1),
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0)};
+        internal static Microsoft.DirectX.Direct3D.Mesh SquareMesh;
+
+        public static void Init(Device device)
+        {
+            SquareMesh = new Microsoft.DirectX.Direct3D.Mesh(2, 6, MeshFlags.Managed, CustomVertex.PositionTextured.Format, device);
+            List<short> ib = new List<short>();
+            for (int i = 0; i < SquareVerts.Length; i++)
+                ib.Add((short)(i));
+            SquareMesh.SetVertexBufferData(SquareVerts, LockFlags.None);
+            SquareMesh.SetIndexBufferData(ib.ToArray(), LockFlags.None);
+            QuestionMark = new Texture(device, Properties.Resources.UnknownImg, Usage.SoftwareProcessing, Pool.Managed);
+        }
 
         internal static Texture QuestionMark;
 
         public static Object LoadModel(string file)
         {
-            Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(file);
-            return new Object(mdlini, mdlini[string.Empty]["Root"]);
+            return Object.LoadFromFile(file);
         }
 
         public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(Object model, Device dev)
@@ -46,59 +57,32 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
             Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-            float dist = -1;
-            for (int i = 0; i < 2; i++)
-            {
-                IntersectInformation info;
-                if (Geometry.IntersectTri(Square[i * 3].Position, Square[i * 3 + 1].Position, Square[i * 3 + 2].Position, pos, dir, out info))
-                {
-                    if (dist == -1)
-                        dist = info.Dist;
-                    else if (dist > info.Dist)
-                        dist = info.Dist;
-                }
-            }
-            return dist;
+            IntersectInformation info;
+            if (!SquareMesh.Intersect(pos, dir, out info)) return -1;
+            return info.Dist;
         }
 
-        public static void RenderSprite(Device dev, MatrixStack transform, Texture texture, bool selected)
+        public static RenderInfo[] RenderSprite(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
         {
-            VertexFormats fmt = dev.VertexFormat;
-            dev.VertexFormat = CustomVertex.PositionTextured.Format;
-            dev.Material = new Microsoft.DirectX.Direct3D.Material
+            List<RenderInfo> result = new List<RenderInfo>();
+            Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
             {
                 Diffuse = Color.White,
                 Ambient = Color.White
             };
-            dev.TextureState[0].TextureCoordinateIndex = 0;
-            TextureFilter magfilter = dev.SamplerState[0].MagFilter;
-            TextureFilter minfilter = dev.SamplerState[0].MinFilter;
-            TextureFilter mipfilter = dev.SamplerState[0].MipFilter;
-            dev.SamplerState[0].MagFilter = TextureFilter.None;
-            dev.SamplerState[0].MinFilter = TextureFilter.None;
-            dev.SamplerState[0].MipFilter = TextureFilter.None;
-            dev.Transform.World = transform.Top;
             if (texture == null)
-                dev.SetTexture(0, QuestionMark);
-            else
-                dev.SetTexture(0, texture);
-            dev.DrawUserPrimitives(PrimitiveType.TriangleList, 2, Square);
+                texture = QuestionMark;
+            result.Add(new RenderInfo(SquareMesh, 0, transform.Top, d3dmat, texture, true, false, false, dev.RenderState.FillMode, new BoundingSphere(center.X, center.Y, center.Z, 8)));
             if (selected)
             {
-                dev.Material = new Microsoft.DirectX.Direct3D.Material
+                d3dmat = new Microsoft.DirectX.Direct3D.Material
                 {
                     Diffuse = Color.Yellow,
                     Ambient = Color.Yellow
                 };
-                FillMode mode = dev.RenderState.FillMode;
-                dev.RenderState.FillMode = FillMode.WireFrame;
-                dev.DrawUserPrimitives(PrimitiveType.TriangleList, 2, Square);
-                dev.RenderState.FillMode = mode;
+                result.Add(new RenderInfo(SquareMesh, 0, transform.Top, d3dmat, null, false, false, false, FillMode.WireFrame, new BoundingSphere(center.X, center.Y, center.Z, 8)));
             }
-            dev.SamplerState[0].MagFilter = magfilter;
-            dev.SamplerState[0].MinFilter = minfilter;
-            dev.SamplerState[0].MipFilter = mipfilter;
-            dev.VertexFormat = fmt;
+            return result.ToArray();
         }
 
         public static float BAMSToRad(int BAMS)

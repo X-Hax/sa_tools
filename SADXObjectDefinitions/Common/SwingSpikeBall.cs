@@ -18,11 +18,11 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(Dictionary<string, string> data, string name, Device dev)
         {
-            centermodel = ObjectHelper.LoadModel("Objects/SwingBall/Center Model.ini");
+            centermodel = ObjectHelper.LoadModel("Objects/SwingBall/Center Model.sa1mdl");
             centermeshes = ObjectHelper.GetMeshes(centermodel, dev);
-            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.ini");
+            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.sa1mdl");
             cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
-            ballmodel = ObjectHelper.LoadModel("Objects/FallBall/Model.ini");
+            ballmodel = ObjectHelper.LoadModel("Objects/FallBall/Model.sa1mdl");
             ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
         }
 
@@ -59,14 +59,15 @@ namespace SADXObjectDefinitions.Common
             return mindist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-            centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes);
+            result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
             if (selected)
-                centermodel.DrawModelTreeInvert(dev, transform, centermeshes);
+                result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));
             transform.Pop();
             /*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
@@ -87,6 +88,7 @@ namespace SADXObjectDefinitions.Common
             if (selected)
                 cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes);
             transform.Pop();*/
+            return result.ToArray();
         }
 
         public override string Name { get { return "Swinging Spike Ball"; } }

@@ -43,7 +43,12 @@ namespace SonicRetro.SAModel.SAMDL
         FillMode rendermode;
         Cull cullmode = Cull.None;
         Object model;
+        Animation animation;
+        ModelFile modelFile;
+        int animnum = -1;
+        int animframe = 0;
         Microsoft.DirectX.Direct3D.Mesh[] meshes;
+        string[] TextureNames;
         Bitmap[] TextureBmps;
         Texture[] Textures;
 
@@ -73,21 +78,27 @@ namespace SonicRetro.SAModel.SAMDL
                 }
             OpenFileDialog a = new OpenFileDialog()
             {
-                DefaultExt = "ini",
-                Filter = "Model Files|*.ini;*.exe;*.dll;*.bin|All Files|*.*"
+                DefaultExt = "sa1mdl",
+                Filter = "Model Files|*.sa1mdl;*.ini;*.exe;*.dll;*.bin|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
                 loaded = false;
                 Environment.CurrentDirectory = Path.GetDirectoryName(a.FileName);
+                timer1.Stop();
+                modelFile = null;
+                animation = null;
+                animnum = -1;
+                animframe = 0;
                 if (Path.GetExtension(a.FileName).Equals(".ini", StringComparison.OrdinalIgnoreCase))
                 {
                     Dictionary<string, Dictionary<string, string>> ini = IniFile.Load(a.FileName);
                     model = new Object(ini, ini[string.Empty]["Root"]);
                 }
-                else if (Object.CheckModelFile(a.FileName))
+                else if (ModelFile.CheckModelFile(a.FileName))
                 {
-                    model = Object.LoadFromFile(a.FileName);
+                    modelFile = new ModelFile(a.FileName);
+                    model = modelFile.Model;
                 }
                 else
                 {
@@ -95,6 +106,8 @@ namespace SonicRetro.SAModel.SAMDL
                     using (ModelFileDialog dlg = new ModelFileDialog())
                     {
                         dlg.ShowDialog(this);
+                        if (dlg.checkBox1.Checked)
+                            animation = new Animation(file, (int)dlg.numericUpDown3.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
                         model = new Object(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
                     }
                 }
@@ -127,8 +140,8 @@ namespace SonicRetro.SAModel.SAMDL
         {
             SaveFileDialog a = new SaveFileDialog()
             {
-                DefaultExt = "ini",
-                Filter = "Model Files|*.ini|All Files|*.*"
+                DefaultExt = "sa1mdl",
+                Filter = "Model Files|*.sa1mdl;*.ini;*.xml|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
@@ -138,6 +151,8 @@ namespace SonicRetro.SAModel.SAMDL
                     ini.Add(string.Empty, new Dictionary<string, string>() { { "Root", model.Name } });
                     model.Save(ini);
                 }
+                else if (modelFile != null)
+                    modelFile.SaveToFile(a.FileName, ModelFormat.SA1);
                 else
                     model.SaveToFile(a.FileName, ModelFormat.SA1);
             }
@@ -153,7 +168,7 @@ namespace SonicRetro.SAModel.SAMDL
             if (!loaded) return;
             d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
             d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-            Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
+            Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
             d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
             d3ddevice.SetRenderState(RenderStates.CullMode, (int)cullmode);
             d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
@@ -179,7 +194,10 @@ namespace SonicRetro.SAModel.SAMDL
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
-            model.DrawModelTree(d3ddevice, transform, Textures, meshes);
+            if (animation != null)
+                RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
+            else
+                RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -271,6 +289,38 @@ namespace SonicRetro.SAModel.SAMDL
                 interval += 1;
             if (e.KeyCode == Keys.W)
                 interval -= 1;
+            if (e.KeyCode == Keys.OemQuotes & modelFile != null)
+            {
+                animnum++;
+                animframe = 0;
+                if (animnum == modelFile.Animations.Count) animnum = -1;
+                if (animnum > -1)
+                    animation = modelFile.Animations[animnum];
+                else
+                    animation = null;
+            }
+            if (e.KeyCode == Keys.OemSemicolon & modelFile != null)
+            {
+                animnum--;
+                animframe = 0;
+                if (animnum == -2) animnum = modelFile.Animations.Count - 1;
+                if (animnum > -1)
+                    animation = modelFile.Animations[animnum];
+                else
+                    animation = null;
+            }
+            if (e.KeyCode == Keys.OemOpenBrackets & animation != null)
+            {
+                animframe--;
+                if (animframe < 0) animframe = animation.Frames - 1;
+            }
+            if (e.KeyCode == Keys.OemCloseBrackets & animation != null)
+            {
+                animframe++;
+                if (animframe == animation.Frames) animframe = 0;
+            }
+            if (e.KeyCode == Keys.P & animation != null)
+                timer1.Enabled = !timer1.Enabled;
             if (e.KeyCode == Keys.N)
                 if (rendermode == FillMode.Solid)
                     rendermode = FillMode.Point;
@@ -298,9 +348,9 @@ namespace SonicRetro.SAModel.SAMDL
             lastmouse = evloc;
         }
 
-        public static Bitmap[] GetTextures(string filename)
+        public static Dictionary<string, Bitmap> GetTextures(string filename)
         {
-            List<Bitmap> functionReturnValue = new List<Bitmap>();
+            Dictionary<string, Bitmap> functionReturnValue = new Dictionary<string,Bitmap>();
             PVM pvmfile = new PVM();
             PvpClut pvp = null;
             Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
@@ -326,20 +376,20 @@ namespace SonicRetro.SAModel.SAMDL
                             if (a.ShowDialog() == DialogResult.OK)
                                 pvp = new PvpClut(a.FileName);
                             else
-                                return new Bitmap[0];
+                                return new Dictionary<string, Bitmap>();
                     }
                     vrfile.SetClut(pvp);
                 }
                 try
                 {
-                    functionReturnValue.Add(vrfile.GetTextureAsBitmap());
+                    functionReturnValue.Add(Path.GetFileNameWithoutExtension(file.Filename), vrfile.GetTextureAsBitmap());
                 }
                 catch
                 {
-                    functionReturnValue.Add(new Bitmap(1, 1));
+                    functionReturnValue.Add(Path.GetFileNameWithoutExtension(file.Filename), new Bitmap(1, 1));
                 }
             }
-            return functionReturnValue.ToArray();
+            return functionReturnValue;
         }
 
         private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -348,10 +398,41 @@ namespace SonicRetro.SAModel.SAMDL
             {
                 if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    TextureBmps = GetTextures(a.FileName);
+                    List<string> texnames = new List<string>();
+                    List<Bitmap> bmps = new List<Bitmap>();
+                    foreach (KeyValuePair<string, Bitmap> item in GetTextures(a.FileName))
+                    {
+                        texnames.Add(item.Key);
+                        bmps.Add(item.Value);
+                    }
+                    TextureNames = texnames.ToArray();
+                    TextureBmps = bmps.ToArray();
                     Textures = new Texture[TextureBmps.Length];
                     for (int j = 0; j < TextureBmps.Length; j++)
                         Textures[j] = new Texture(d3ddevice, TextureBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+                }
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (animation == null) return;
+            animframe++;
+            if (animframe == animation.Frames) animframe = 0;
+            DrawLevel();
+        }
+
+        private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
+            {
+                if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    model.ToCollada(TextureNames).Save(sd.FileName);
+                    string p = Path.GetDirectoryName(sd.FileName);
+                    if (TextureNames != null)
+                        for (int i = 0; i < TextureNames.Length; i++)
+                            TextureBmps[i].Save(Path.Combine(p, TextureNames[i] + ".png"));
                 }
             }
         }

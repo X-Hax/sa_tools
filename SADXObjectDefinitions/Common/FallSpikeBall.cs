@@ -16,9 +16,9 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(Dictionary<string, string> data, string name, Device dev)
         {
-            ballmodel = ObjectHelper.LoadModel("Objects/FallBall/Model.ini");
+            ballmodel = ObjectHelper.LoadModel("Objects/FallBall/Model.sa1mdl");
             ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
-            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.ini");
+            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.sa1mdl");
             cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
         }
 
@@ -45,24 +45,26 @@ namespace SADXObjectDefinitions.Common
             return mindist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(0, item.Rotation.Y, 0);
-            ballmodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), ballmeshes);
+            result.AddRange(ballmodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), ballmeshes));
             if (selected)
-                ballmodel.DrawModelTreeInvert(dev, transform, ballmeshes);
+                result.AddRange(ballmodel.DrawModelTreeInvert(dev, transform, ballmeshes));
             transform.Pop();
             double v24 = item.Scale.X * 0.05000000074505806;
             transform.Push();
             double v22 = item.Scale.X * 0.5 + item.Position.Y;
             transform.TranslateLocal(item.Position.X, (float)v22, item.Position.Z);
             transform.ScaleLocal(1.0f, (float)v24, 1.0f);
-            cylindermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), cylindermeshes);
+            result.AddRange(cylindermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), cylindermeshes));
             if (selected)
-                cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes);
+                result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
             transform.Pop();
+            return result.ToArray();
         }
 
         public override string Name { get { return "Falling Spike Ball"; } }

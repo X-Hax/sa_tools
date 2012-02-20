@@ -40,14 +40,17 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="Attach.cs" />
+    <Compile Include="BoundingSphere.cs" />
     <Compile Include="ByteConverter.cs" />
     <Compile Include="COL.cs" />
+    <Compile Include="collada_schema_1_4.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GeoAnimData.cs" />
     <Compile Include="LandTable.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="ModelFile.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="Poly.cs" />
     <Compile Include="PolyNormal.cs" />

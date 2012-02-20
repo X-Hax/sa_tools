@@ -25,6 +25,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static List<ObjectDefinition> ObjDefs;
         public static List<SETItem>[] SETItems;
         public static List<DeathZoneItem> DeathZones;
+        public static LevelDefinition leveleff;
 
         public static BMPInfo[] GetTextures(string filename)
         {

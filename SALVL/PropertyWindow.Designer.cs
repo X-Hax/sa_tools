@@ -55,7 +55,7 @@
             this.Name = "PropertyWindow";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "SADXLVL2 - Object Properties";
+            this.Text = "SALVL - Object Properties";
             this.ResumeLayout(false);
 
         }

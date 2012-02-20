@@ -108,11 +108,12 @@ namespace SonicRetro.SAModel.SALVL
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
-                    if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-                        LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-                    if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-                        LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-                    LevelData.leveltexs = LevelData.geo.TextureFileName;
+                    string texname = Path.GetFileName(a.FileName);
+                    if (!LevelData.TextureBitmaps.ContainsKey(texname))
+                        LevelData.TextureBitmaps.Add(texname, TexBmps);
+                    if (!LevelData.Textures.ContainsKey(texname))
+                        LevelData.Textures.Add(texname, texs);
+                    LevelData.leveltexs = texname;
                 }
                 if (PropertyWindow == null)
                 {
@@ -185,6 +186,7 @@ namespace SonicRetro.SAModel.SALVL
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
             MatrixStack transform = new MatrixStack();
+            List<RenderInfo> renderlist = new List<RenderInfo>();
             if (LevelData.LevelItems != null)
                 for (int i = 0; i < LevelData.LevelItems.Count; i++)
                 {
@@ -196,8 +198,9 @@ namespace SonicRetro.SAModel.SALVL
                     else if (allToolStripMenuItem.Checked)
                         display = true;
                     if (display)
-                        LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i]));
+                        renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
                 }
+            RenderInfo.Draw(renderlist, d3ddevice, cam);
             d3ddevice.EndScene(); //all drawings before this line
             d3ddevice.Present();
         }
@@ -438,7 +441,7 @@ namespace SonicRetro.SAModel.SALVL
                 Vector3 verti = vertvect * (-chg.Y / 2);
                 foreach (Item item in SelectedItems)
                 {
-                    item.Position = new EditableVertex(
+                    item.Position = new Vertex(
                         item.Position.X + horiz.X + verti.X,
                         item.Position.Y + horiz.Y + verti.Y,
                         item.Position.Z + horiz.Z + verti.Z);
@@ -509,7 +512,7 @@ namespace SonicRetro.SAModel.SALVL
             center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
             foreach (Item item in objs)
             {
-                item.Position = new EditableVertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
+                item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
                 item.Paste();
             }
             SelectedItems = new List<Item>(objs);
@@ -539,7 +542,7 @@ namespace SonicRetro.SAModel.SALVL
         {
             LevelItem item = new LevelItem(d3ddevice);
             Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new EditableVertex(pos.X, pos.Y, pos.Z);
+            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
         }
 
         public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<string> usedmtls, MatrixStack transform, ref int totverts, ref int totuvs)

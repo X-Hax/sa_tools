@@ -5,8 +5,7 @@ namespace SonicRetro.SAModel
 {
     public class COL
     {
-        public Vertex Center { get; set; }
-        public float Radius { get; set; }
+        public BoundingSphere Bounds { get; set; }
         public ulong Unknown1 { get; private set; }
         public Object Model { get; set; }
         public int Unknown2 { get; set; }
@@ -41,7 +40,7 @@ namespace SonicRetro.SAModel
         public COL()
         {
             Name = "col_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
-            Center = new Vertex();
+            Bounds = new BoundingSphere();
         }
 
         public COL(byte[] file, int address, uint imageBase, ModelFormat format)
@@ -49,8 +48,7 @@ namespace SonicRetro.SAModel
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
             Name = "col_" + address.ToString("X8");
-            Center = new Vertex(file, address);
-            Radius = ByteConverter.ToSingle(file, address + 0xC);
+            Bounds = new BoundingSphere(file, address);
             switch (format)
             {
                 case ModelFormat.SA1:
@@ -75,8 +73,7 @@ namespace SonicRetro.SAModel
         {
             Name = groupname;
             Dictionary<string, string> group = INI[groupname];
-            Center = new Vertex(group["Center"]);
-            Radius = float.Parse(group["Radius"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            Bounds = new BoundingSphere(group["Bounds"]);
             Unknown1 = ulong.Parse(group["Unknown1"], System.Globalization.NumberStyles.HexNumber);
             Model = new Object(INI, group["Model"]);
             Unknown2 = int.Parse(group["Unknown2"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
@@ -88,8 +85,7 @@ namespace SonicRetro.SAModel
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
             List<byte> result = new List<byte>();
-            result.AddRange(Center.GetBytes());
-            result.AddRange(ByteConverter.GetBytes(Radius));
+            result.AddRange(Bounds.GetBytes());
             switch (format)
             {
                 case ModelFormat.SA1:
@@ -111,8 +107,7 @@ namespace SonicRetro.SAModel
         public void Save(Dictionary<string, Dictionary<string, string>> INI)
         {
             Dictionary<string, string> group = new Dictionary<string, string>();
-            group.Add("Center", Center.ToString());
-            group.Add("Radius", Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+            group.Add("Bounds", Bounds.ToString());
             group.Add("Unknown1", Unknown1.ToString("X16"));
             group.Add("Model", Model.Name);
             Model.Save(INI);

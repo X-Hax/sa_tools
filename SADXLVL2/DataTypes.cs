@@ -21,8 +21,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             this.dev = dev;
             COL = new COL();
             COL.Model = new Object();
-            Position = new EditableVertex();
-            Rotation = new EditableRotation();
             ImportModel();
             Paste();
         }
@@ -31,27 +29,25 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             COL = col;
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
-            Position = new EditableVertex(COL.Model.Position);
-            Rotation = new EditableRotation(COL.Model.Rotation);
             this.dev = dev;
         }
 
-        private EditableVertex position;
-        public override EditableVertex Position { get { return position; } set { position = value; COL.Model.Position = value.ToVertex(); } }
+        public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; } }
 
-        private EditableRotation rotation;
-        public override EditableRotation Rotation { get { return rotation; } set { rotation = value; COL.Model.Rotation = value.ToRotation(); } }
+        public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
-        public override void Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
         {
-            COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
+            List<RenderInfo> result = new List<RenderInfo>();
+            result.AddRange(COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible));
             if (selected)
-                COL.Model.DrawModelInvert(dev, transform, Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible);
+                result.AddRange(COL.Model.DrawModelInvert(dev, transform, Mesh, (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible));
+            return result.ToArray();
         }
 
         public override void Paste()
@@ -148,8 +144,8 @@ namespace SonicRetro.SAModel.SADXLVL2
     {
         public SETItem()
         {
-            Position = new EditableVertex();
-            Scale = new EditableVertex();
+            Position = new Vertex();
+            Scale = new Vertex();
         }
 
         public SETItem(byte[] file, int address)
@@ -158,9 +154,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             ushort xrot = BitConverter.ToUInt16(file, address + 2);
             ushort yrot = BitConverter.ToUInt16(file, address + 4);
             ushort zrot = BitConverter.ToUInt16(file, address + 6);
-            Rotation = new EditableRotation(xrot, yrot, zrot);
-            Position = new EditableVertex(file, address + 8);
-            Scale = new EditableVertex(file, address + 0x14);
+            Rotation = new Rotation(xrot, yrot, zrot);
+            Position = new Vertex(file, address + 8);
+            Scale = new Vertex(file, address + 0x14);
             isLoaded = true;
         }
 
@@ -183,11 +179,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
 
-        public override EditableVertex Position { get; set; }
+        public override Vertex Position { get; set; }
 
-        public override EditableRotation Rotation { get; set; }
+        public override Rotation Rotation { get; set; }
 
-        public EditableVertex Scale { get; set; }
+        public Vertex Scale { get; set; }
 
         public override void Paste()
         {
@@ -204,9 +200,9 @@ namespace SonicRetro.SAModel.SADXLVL2
             return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
         }
 
-        public override void Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
         {
-            LevelData.ObjDefs[ID].Render(this, dev, transform, selected);
+            return LevelData.ObjDefs[ID].Render(this, dev, transform, selected);
         }
 
         public byte[] GetBytes()
@@ -242,11 +238,11 @@ namespace SonicRetro.SAModel.SADXLVL2
                     Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
             texture = textures;
             this.offset = offset;
-            Position = new EditableVertex(position);
+            Position = position;
             YRotation = yrot;
         }
 
-        public override EditableVertex Position { get; set; }
+        public override Vertex Position { get; set; }
 
         [Browsable(false)]
         public int YRotation { get; set; }
@@ -259,7 +255,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         }
 
         [Browsable(false)]
-        public override EditableRotation Rotation { get { return new EditableRotation(0, YRotation, 0); } set { YRotation = value.Y; } }
+        public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; } }
 
         public override bool CanCopy { get { return false; } }
 
@@ -283,16 +279,18 @@ namespace SonicRetro.SAModel.SADXLVL2
             return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
         }
 
-        public override void Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(0, offset, 0);
             transform.TranslateLocal(Position.ToVector3());
             transform.RotateXYZLocal(0, YRotation, 0);
-            Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes);
+            result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
             if (selected)
-                Model.DrawModelTreeInvert(dev, transform, Meshes);
+                result.AddRange(Model.DrawModelTreeInvert(dev, transform, Meshes));
             transform.Pop();
+            return result.ToArray();
         }
     }
 
@@ -309,8 +307,6 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             this.dev = dev;
             Model = new Object();
-            Position = new EditableVertex();
-            Rotation = new EditableRotation();
             ImportModel();
             Paste();
         }
@@ -320,27 +316,25 @@ namespace SonicRetro.SAModel.SADXLVL2
             Model = model;
             Flags = flags;
             Mesh = Model.Attach.CreateD3DMesh(dev);
-            Position = new EditableVertex(Model.Position);
-            Rotation = new EditableRotation(Model.Rotation);
             this.dev = dev;
         }
 
-        private EditableVertex position;
-        public override EditableVertex Position { get { return position; } set { position = value; Model.Position = value.ToVertex(); } }
+        public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
 
-        private EditableRotation rotation;
-        public override EditableRotation Rotation { get { return rotation; } set { rotation = value; Model.Rotation = value.ToRotation(); } }
+        public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
         public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
-        public override void Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
         {
-            Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false);
+            List<RenderInfo> result = new List<RenderInfo>();
+            result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
             if (selected)
-                Model.DrawModelInvert(dev, transform, Mesh, false);
+                result.AddRange(Model.DrawModelInvert(dev, transform, Mesh, false));
+            return result.ToArray();
         }
 
         public override void Paste()

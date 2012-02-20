@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(Dictionary<string, string> data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Spring/Model.ini");
+            model = ObjectHelper.LoadModel("Objects/Spring/Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
@@ -28,15 +28,17 @@ namespace SADXObjectDefinitions.Common
             return dist;
         }
 
-        public override void Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
+            List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-            model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes);
+            result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
             if (selected)
-                model.DrawModelTreeInvert(dev, transform, meshes);
+                result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
             transform.Pop();
+            return result.ToArray();
         }
 
         public override string Name { get { return "Ground Spring"; } }

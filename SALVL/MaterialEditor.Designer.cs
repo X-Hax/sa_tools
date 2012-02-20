@@ -68,7 +68,7 @@
             this.Name = "MaterialEditor";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "SADXLVL2 - Material Editor";
+            this.Text = "SALVL - Material Editor";
             this.Load += new System.EventHandler(this.MaterialEditor_Load);
             this.ResumeLayout(false);
 
