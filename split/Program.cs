@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using SonicRetro.SAModel;
 
 namespace split
 {
@@ -52,20 +53,24 @@ namespace split
                 switch (type)
                 {
                     case "landtable":
-                        new SonicRetro.SAModel.LandTable(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX).SaveToFile(data["filename"], SonicRetro.SAModel.ModelFormat.SA1);
+                        new LandTable(exefile, address, imageBase, ModelFormat.SADX).SaveToFile(data["filename"], ModelFormat.SA1);
                         break;
                     case "model":
-                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX);
-                        Dictionary<string, Dictionary<string, string>> mdlini = new Dictionary<string, Dictionary<string, string>>();
-                        mdlini.Add(string.Empty, new Dictionary<string, string>());
-                        mdlini[string.Empty].Add("Root", mdl.Name);
+                        SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, ModelFormat.SADX);
+                        string[] mdlanis = new string[0];
                         if (data.ContainsKey("animations"))
-                            mdlini[string.Empty].Add("Animations", data["animations"]);
-                        mdl.Save(mdlini);
-                        IniFile.Save(mdlini, data["filename"]);
+                            mdlanis = data["animations"].Split(',');
+                        ModelFile.CreateFile(data["filename"], mdl, mdlanis, ModelFormat.SA1);
+                        break;
+                    case "inimodel":
+                        mdl = new SonicRetro.SAModel.Object(exefile, address, imageBase, ModelFormat.SADX);
+                        mdlanis = new string[0];
+                        if (data.ContainsKey("animations"))
+                            mdlanis = data["animations"].Split(',');
+                        IniFile.Save(ModelFile.Create(mdl, mdlanis, ModelFormat.SA1), data["filename"]);
                         break;
                     case "animation":
-                        SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(exefile, address, imageBase, SonicRetro.SAModel.ModelFormat.SADX);
+                        Animation ani = new Animation(exefile, address, imageBase, ModelFormat.SADX) { Name = filedesc };
                         ani.Save(data["filename"]);
                         break;
                     case "objlist":
@@ -93,7 +98,7 @@ namespace split
                         while (BitConverter.ToUInt16(exefile, address) != (ushort)LevelIDs.Invalid)
                         {
                             Dictionary<string, string> objgrp = new Dictionary<string, string>();
-                            objgrp.Add("Position", new SonicRetro.SAModel.Vertex(exefile, address + 4).ToString());
+                            objgrp.Add("Position", new Vertex(exefile, address + 4).ToString());
                             objgrp.Add("YRotation", BitConverter.ToInt32(exefile, address + 0x10).ToString("X8"));
                             posini.Add(((LevelIDs)BitConverter.ToUInt16(exefile, address)).ToString() + " " + BitConverter.ToUInt16(exefile, address + 2).ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
                             numpos++;
@@ -164,7 +169,7 @@ namespace split
                         {
                             Dictionary<string, string> objgrp = new Dictionary<string, string>();
                             objgrp.Add("Field", ((LevelIDs)exefile[address + 2]).ToString());
-                            objgrp.Add("Position", new SonicRetro.SAModel.Vertex(exefile, address + 4).ToString());
+                            objgrp.Add("Position", new Vertex(exefile, address + 4).ToString());
                             objgrp.Add("YRotation", BitConverter.ToInt32(exefile, address + 0x10).ToString("X8"));
                             posini.Add(((LevelIDs)exefile[address]).ToString(), objgrp);
                             numpos++;
@@ -296,9 +301,29 @@ namespace split
                             Dictionary<string, string> objgrp = new Dictionary<string, string>();
                             objgrp.Add("Flags", ((CharacterFlags)BitConverter.ToInt32(exefile, address)).ToString());
                             posini.Add(numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
-                            new SonicRetro.SAModel.Object(exefile, (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase), imageBase, SonicRetro.SAModel.ModelFormat.SADX).SaveToFile(Path.Combine(path, numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), SonicRetro.SAModel.ModelFormat.SA1);
+                            new SonicRetro.SAModel.Object(exefile, (int)(BitConverter.ToUInt32(exefile, address + 4) - imageBase), imageBase, ModelFormat.SADX).SaveToFile(Path.Combine(path, numpos.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), ModelFormat.SA1);
                             numpos++;
                             address += 8;
+                        }
+                        IniFile.Save(posini, data["filename"]);
+                        break;
+                    case "skyboxscale":
+                        cnt = int.Parse(data["count"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                        posini = new Dictionary<string, Dictionary<string, string>>();
+                        for (int i = 0; i < cnt; i++)
+                        {
+                            if (BitConverter.ToUInt32(exefile, address) != 0)
+                            {
+                                int ptr = (int)(BitConverter.ToUInt32(exefile, address) - imageBase);
+                                Dictionary<string, string> objgrp = new Dictionary<string, string>();
+                                objgrp.Add("Far", new Vertex(exefile, ptr).ToString());
+                                ptr += Vertex.Size;
+                                objgrp.Add("Normal", new Vertex(exefile, ptr).ToString());
+                                ptr += Vertex.Size;
+                                objgrp.Add("Near", new Vertex(exefile, ptr).ToString());
+                                posini.Add(i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), objgrp);
+                            }
+                            address += 4;
                         }
                         IniFile.Save(posini, data["filename"]);
                         break;
@@ -315,7 +340,7 @@ namespace split
                     data.Add("md5", FileHash(data["filename"]));
                 itemcount++;
             }
-            IniFile.Save(inifile, Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
+            IniFile.Save(inifile, Path.Combine(Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(exefilename)), Path.GetFileNameWithoutExtension(exefilename)) + "_data.ini");
             timer.Stop();
             Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
             Console.Write("Press a key to continue...");

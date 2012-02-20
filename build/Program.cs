@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.CodeDom.Compiler;
+using SonicRetro.SAModel;
 
 namespace build
 {
@@ -25,6 +26,7 @@ namespace build
             SetupEXE(ref exefile);
             Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(exefilename));
             Dictionary<string, uint> addresses = new Dictionary<string, uint>();
+            Dictionary<string, int> modelparts = new Dictionary<string, int>();
             string inistartpath = Path.Combine(Path.GetDirectoryName(exefilename), Path.GetFileNameWithoutExtension(exefilename));
             Dictionary<string, Dictionary<string, string>> inifile = IniFile.Load(inistartpath + "_data.ini");
             uint imageBase = uint.Parse(inifile[string.Empty]["key"], System.Globalization.NumberStyles.HexNumber);
@@ -99,22 +101,36 @@ namespace build
                     switch (type)
                     {
                         case "landtable":
-                            SonicRetro.SAModel.LandTable tbl = SonicRetro.SAModel.LandTable.LoadFromFile(data["filename"]);
-                            datasection.AddRange(tbl.GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out dataaddr));
-                            //tbl = new SonicRetro.SAModel.LandTable(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
+                            LandTable tbl = LandTable.LoadFromFile(data["filename"]);
+                            datasection.AddRange(tbl.GetBytes(curaddr, ModelFormat.SADX, out dataaddr));
+                            //tbl = new LandTable(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
                             dataaddr += curaddr;
                             break;
                         case "model":
-                            Dictionary<string, Dictionary<string, string>> mdlini = IniFile.Load(data["filename"]);
-                            SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(mdlini, mdlini[string.Empty]["Root"]);
-                            datasection.AddRange(mdl.GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out dataaddr));
-                            //mdl = new SonicRetro.SAModel.Object(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
+                            SonicRetro.SAModel.Object mdl = SonicRetro.SAModel.Object.LoadFromFile(data["filename"]);
+                            int modelp = 0;
+                            foreach (SonicRetro.SAModel.Object o in mdl.GetObjects())
+                                if ((mdl.Flags & ObjectFlags.NoAnimate) == 0)
+                                    modelp++;
+                            modelparts.Add(filedesc, modelp);
+                            datasection.AddRange(mdl.GetBytes(curaddr, ModelFormat.SADX, out dataaddr));
+                            //mdl = new Object(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
+                            dataaddr += curaddr;
+                            break;
+                        case "inimodel":
+                            mdl = new ModelFile(IniFile.Load(data["filename"]), Path.GetDirectoryName(data["filename"])).Model;
+                            modelp = 0;
+                            foreach (SonicRetro.SAModel.Object o in mdl.GetObjects())
+                                if ((mdl.Flags & ObjectFlags.NoAnimate) == 0)
+                                    modelp++;
+                            modelparts.Add(filedesc, modelp);
+                            datasection.AddRange(mdl.GetBytes(curaddr, ModelFormat.SADX, out dataaddr));
+                            //mdl = new Object(datasection.ToArray(), (int)dataaddr, curaddr, true); //sanity check
                             dataaddr += curaddr;
                             break;
                         case "animation":
-                            Dictionary<string, Dictionary<string, string>> mdlini2 = IniFile.Load(inifile[data["model]"]]["filename"]);
-                            SonicRetro.SAModel.Animation ani = new SonicRetro.SAModel.Animation(data["filename"]);
-                            datasection.AddRange(ani.GetBytes(curaddr, addresses[data["model"]], new SonicRetro.SAModel.Object(mdlini2, mdlini2[string.Empty]["Root"]).GetObjects().Length, out dataaddr));
+                            Animation ani = new Animation(data["filename"]);
+                            datasection.AddRange(ani.GetBytes(curaddr, addresses[data["model"]], modelparts[data["model"]], out dataaddr));
                             dataaddr += curaddr;
                             break;
                         case "objlist":
@@ -154,7 +170,7 @@ namespace build
                                 ushort levelact = ParseLevelAct(item.Key);
                                 datasection.AddRange(BitConverter.GetBytes((ushort)(levelact >> 8)));
                                 datasection.AddRange(BitConverter.GetBytes((ushort)(levelact & 0xFF)));
-                                datasection.AddRange(new SonicRetro.SAModel.Vertex(item.Value["Position"]).GetBytes());
+                                datasection.AddRange(new Vertex(item.Value["Position"]).GetBytes());
                                 datasection.AddRange(BitConverter.GetBytes(int.Parse(item.Value["YRotation"], System.Globalization.NumberStyles.HexNumber)));
                             }
                             datasection.AddRange(BitConverter.GetBytes((ushort)LevelIDs.Invalid));
@@ -244,7 +260,7 @@ namespace build
                                 if (string.IsNullOrEmpty(item.Key)) continue;
                                 datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), item.Key)));
                                 datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), data["Field"])));
-                                datasection.AddRange(new SonicRetro.SAModel.Vertex(data["Position"]).GetBytes());
+                                datasection.AddRange(new Vertex(data["Position"]).GetBytes());
                                 datasection.AddRange(BitConverter.GetBytes(int.Parse(data["YRotation"], System.Globalization.NumberStyles.HexNumber)));
                             }
                             datasection.AddRange(BitConverter.GetBytes((ushort)LevelIDs.Invalid));
@@ -397,7 +413,7 @@ namespace build
                             foreach (string line in levels)
                             {
                                 if (string.IsNullOrEmpty(line)) continue;
-                                datasection.AddRange(BitConverter.GetBytes((ushort)Enum.Parse(typeof(LevelIDs), line.Split(' ')[0])));
+                                datasection.AddRange(BitConverter.GetBytes((ushort)(LevelIDs)Enum.Parse(typeof(LevelIDs), line.Split(' ')[0])));
                                 datasection.AddRange(BitConverter.GetBytes(ushort.Parse(line.Split(' ')[1], System.Globalization.NumberStyles.HexNumber)));
                             }
                             datasection.AddRange(BitConverter.GetBytes(uint.MaxValue));
@@ -412,7 +428,7 @@ namespace build
                                 Dictionary<string, string> group = posini[soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
                                 curaddr = startaddress + imageBase + (uint)datasection.Count;
                                 uint mdladdr;
-                                datasection.AddRange(SonicRetro.SAModel.Object.LoadFromFile(Path.Combine(path, soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl")).GetBytes(curaddr, SonicRetro.SAModel.ModelFormat.SADX, out mdladdr));
+                                datasection.AddRange(SonicRetro.SAModel.Object.LoadFromFile(Path.Combine(path, soundcnt.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl")).GetBytes(curaddr, ModelFormat.SADX, out mdladdr));
                                 datasection.Align(4);
                                 soundents.AddRange(BitConverter.GetBytes((int)Enum.Parse(typeof(CharacterFlags), group["Flags"])));
                                 soundents.AddRange(BitConverter.GetBytes(curaddr + mdladdr));
@@ -421,6 +437,26 @@ namespace build
                             dataaddr = startaddress + imageBase + (uint)datasection.Count;
                             datasection.AddRange(soundents.ToArray());
                             datasection.AddRange(new byte[8]);
+                            break;
+                        case "skyboxscale":
+                            headaddr = uint.Parse(data["address"], System.Globalization.NumberStyles.HexNumber);
+                            dataaddr = headaddr + imageBase;
+                            cnt = int.Parse(data["count"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+                            posini = IniFile.Load(data["filename"]);
+                            for (int i = 0; i < cnt; i++)
+                            {
+                                if (BitConverter.ToUInt32(exefile, (int)headaddr) != 0)
+                                {
+                                    int ptr = (int)(BitConverter.ToUInt32(exefile, (int)headaddr) - imageBase);
+                                    Dictionary<string, string> objgrp = posini[i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)];
+                                    new Vertex(objgrp["Far"]).GetBytes().CopyTo(exefile, ptr);
+                                    ptr += Vertex.Size;
+                                    new Vertex(objgrp["Normal"]).GetBytes().CopyTo(exefile, ptr);
+                                    ptr += Vertex.Size;
+                                    new Vertex(objgrp["Near"]).GetBytes().CopyTo(exefile, ptr);
+                                }
+                                headaddr += 4;
+                            }
                             break;
                         default: // raw binary
                             bool reloc = true;
@@ -454,7 +490,7 @@ namespace build
             if (File.Exists("postbuild.cs"))
             {
                 CodeDomProvider pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-                CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", System.Reflection.Assembly.GetAssembly(typeof(SonicRetro.SAModel.LandTable)).Location });
+                CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", System.Reflection.Assembly.GetAssembly(typeof(LandTable)).Location });
                 para.GenerateExecutable = false;
                 para.GenerateInMemory = false;
                 para.IncludeDebugInformation = true;
