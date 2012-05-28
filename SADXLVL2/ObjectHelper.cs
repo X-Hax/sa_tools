@@ -18,7 +18,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0)};
         internal static Microsoft.DirectX.Direct3D.Mesh SquareMesh;
 
-        public static void Init(Device device)
+        internal static void Init(Device device)
         {
             SquareMesh = new Microsoft.DirectX.Direct3D.Mesh(2, 6, MeshFlags.Managed, CustomVertex.PositionTextured.Format, device);
             List<short> ib = new List<short>();
@@ -33,7 +33,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public static Object LoadModel(string file)
         {
-            return Object.LoadFromFile(file);
+            return new ModelFile(file).Model;
         }
 
         public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(Object model, Device dev)
@@ -53,34 +53,33 @@ namespace SonicRetro.SAModel.SADXLVL2
             return null;
         }
 
-        public static float CheckSpriteHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        public static HitResult CheckSpriteHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
             Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
             Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
             IntersectInformation info;
-            if (!SquareMesh.Intersect(pos, dir, out info)) return -1;
-            return info.Dist;
+            if (!SquareMesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
+            return new HitResult(null, info.Dist);
         }
 
         public static RenderInfo[] RenderSprite(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
-            Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
+            Material mat = new Material
             {
-                Diffuse = Color.White,
-                Ambient = Color.White
+                DiffuseColor = Color.White
             };
             if (texture == null)
                 texture = QuestionMark;
-            result.Add(new RenderInfo(SquareMesh, 0, transform.Top, d3dmat, texture, true, false, false, dev.RenderState.FillMode, new BoundingSphere(center.X, center.Y, center.Z, 8)));
+            result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, texture, dev.RenderState.FillMode, new BoundingSphere(center.X, center.Y, center.Z, 8)));
             if (selected)
             {
-                d3dmat = new Microsoft.DirectX.Direct3D.Material
+                mat = new Material
                 {
-                    Diffuse = Color.Yellow,
-                    Ambient = Color.Yellow
+                    DiffuseColor = Color.Yellow,
+                    UseAlpha = false
                 };
-                result.Add(new RenderInfo(SquareMesh, 0, transform.Top, d3dmat, null, false, false, false, FillMode.WireFrame, new BoundingSphere(center.X, center.Y, center.Z, 8)));
+                result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, null, FillMode.WireFrame, new BoundingSphere(center.X, center.Y, center.Z, 8)));
             }
             return result.ToArray();
         }

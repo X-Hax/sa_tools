@@ -101,34 +101,24 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null & mesh != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
-                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Material mat;
                     Texture texture = null;
-                    bool alphaBlend = false;
-                    bool sphereMap = false;
                     if (useMat)
                     {
-                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
-                        {
-                            Diffuse = mat.DiffuseColor,
-                            Ambient = mat.DiffuseColor,
-                            Specular = mat.SpecularColor,
-                            SpecularSharpness = mat.Unknown1
-                        };
+                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
-                        alphaBlend = (mat.Flags & 0x10) == 0x10;
-                        sphereMap = (mat.Flags & 0x40) == 0x40;
                     }
                     else
                     {
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        mat = new Material
                         {
-                            Diffuse = Color.White,
-                            Ambient = Color.White,
+                            DiffuseColor = Color.White,
+                            IgnoreLighting = true,
+                            UseAlpha = false
                         };
                     }
-                    result.Add(new RenderInfo(mesh, j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             transform.Pop();
             return result.ToArray();
@@ -148,12 +138,13 @@ namespace SonicRetro.SAModel.Direct3D
                     System.Drawing.Color col = Color.White;
                     if (useMat) col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
+                    Material mat = new Material
                     {
-                        Diffuse = col,
-                        Ambient = col
+                        DiffuseColor = col,
+                        IgnoreLighting = true,
+                        UseAlpha = false
                     };
-                    result.Add(new RenderInfo(mesh, j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             transform.Pop();
             return result.ToArray();
@@ -165,7 +156,7 @@ namespace SonicRetro.SAModel.Direct3D
             return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
         }
 
-        public static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        private static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -176,34 +167,24 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null & meshes[modelindex] != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
-                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Material mat;
                     Texture texture = null;
-                    bool alphaBlend = false;
-                    bool sphereMap = false;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
-                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
-                        {
-                            Diffuse = mat.DiffuseColor,
-                            Ambient = mat.DiffuseColor,
-                            Specular = mat.SpecularColor,
-                            SpecularSharpness = mat.Unknown1
-                        };
+                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
-                        alphaBlend = (mat.Flags & 0x10) == 0x10;
-                        sphereMap = (mat.Flags & 0x40) == 0x40;
                     }
                     else
                     {
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        mat = new Material
                         {
-                            Diffuse = Color.White,
-                            Ambient = Color.White,
+                            DiffuseColor = Color.White,
+                            IgnoreLighting = true,
+                            UseAlpha = false
                         };
                     }
-                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             foreach (Object child in obj.Children)
                 result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
@@ -217,7 +198,7 @@ namespace SonicRetro.SAModel.Direct3D
             return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
         }
 
-        public static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+        private static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -231,12 +212,13 @@ namespace SonicRetro.SAModel.Direct3D
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
+                    Material mat = new Material
                     {
-                        Diffuse = col,
-                        Ambient = col
+                        DiffuseColor = col,
+                        IgnoreLighting = true,
+                        UseAlpha = false
                     };
-                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             foreach (Object child in obj.Children)
                 result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
@@ -251,7 +233,7 @@ namespace SonicRetro.SAModel.Direct3D
             return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
         }
 
-        public static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        private static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -285,34 +267,24 @@ namespace SonicRetro.SAModel.Direct3D
             if (obj.Attach != null & meshes[modelindex] != null)
                 for (int j = 0; j < obj.Attach.Mesh.Count; j++)
                 {
-                    Microsoft.DirectX.Direct3D.Material d3dmat;
+                    Material mat;
                     Texture texture = null;
-                    bool alphaBlend = false;
-                    bool sphereMap = false;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
-                        Material mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
-                        {
-                            Diffuse = mat.DiffuseColor,
-                            Ambient = mat.DiffuseColor,
-                            Specular = mat.SpecularColor,
-                            SpecularSharpness = mat.Unknown1
-                        };
+                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
-                        alphaBlend = (mat.Flags & 0x10) == 0x10;
-                        sphereMap = (mat.Flags & 0x40) == 0x40;
                     }
                     else
                     {
-                        d3dmat = new Microsoft.DirectX.Direct3D.Material
+                        mat = new Material
                         {
-                            Diffuse = Color.White,
-                            Ambient = Color.White,
+                            DiffuseColor = Color.White,
+                            IgnoreLighting = true,
+                            UseAlpha = false
                         };
                     }
-                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, texture, alphaBlend, sphereMap, true, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             foreach (Object child in obj.Children)
                 result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
@@ -327,7 +299,7 @@ namespace SonicRetro.SAModel.Direct3D
             return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
         }
 
-        public static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        private static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -364,12 +336,13 @@ namespace SonicRetro.SAModel.Direct3D
                     System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-                    Microsoft.DirectX.Direct3D.Material d3dmat = new Microsoft.DirectX.Direct3D.Material
+                    Material mat = new Material
                     {
-                        Diffuse = col,
-                        Ambient = col
+                        DiffuseColor = col,
+                        IgnoreLighting = true,
+                        UseAlpha = false
                     };
-                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, d3dmat, null, false, false, true, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+                    result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
                 }
             foreach (Object child in obj.Children)
                 result.AddRange(DrawModelTreeAnimatedInvert(child, device, transform, meshes, anim, animframe, ref modelindex, ref animindex));
@@ -377,9 +350,9 @@ namespace SonicRetro.SAModel.Direct3D
             return result.ToArray();
         }
 
-        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
+        public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
         {
-            if (mesh == null) return -1;
+            if (mesh == null) return HitResult.NoHit;
             MatrixStack transform = new MatrixStack();
             transform.Push();
             transform.TranslateLocal(obj.Position.ToVector3());
@@ -387,24 +360,24 @@ namespace SonicRetro.SAModel.Direct3D
             Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
             Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
             IntersectInformation info;
-            if (!mesh.Intersect(pos, dir, out info)) return -1;
-            return info.Dist;
+            if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
+            return new HitResult(obj, info.Dist);
         }
 
-        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
+        public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
         {
             int modelindex = -1;
             return CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
         }
 
-        public static float CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
+        private static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
         {
             transform.Push();
             modelindex++;
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            float dist = -1;
+            HitResult result = HitResult.NoHit;
             if (obj.Attach != null & mesh[modelindex] != null)
             {
                 Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
@@ -412,32 +385,26 @@ namespace SonicRetro.SAModel.Direct3D
                 IntersectInformation info;
                 if (mesh[modelindex].Intersect(pos, dir, out info))
                 {
-                    if (dist == -1)
-                        dist = info.Dist;
-                    else if (dist > info.Dist)
-                        dist = info.Dist;
+                    if (!result.IsHit)
+                        result = new HitResult(obj, info.Dist);
+                    else if (result.Distance > info.Dist)
+                        result = new HitResult(obj, info.Dist);
                 }
             }
             foreach (Object child in obj.Children)
-            {
-                float r = CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
-                if (dist == -1)
-                    dist = r;
-                else if (dist > r & r != -1)
-                    dist = r;
-            }
+                result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
             transform.Pop();
-            return dist;
+            return result;
         }
 
-        public static float CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
+        public static HitResult CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
         {
             int modelindex = -1;
             int animindex = -1;
             return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
         }
 
-        public static float CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
+        private static HitResult CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
         {
             transform.Push();
             modelindex++;
@@ -467,7 +434,7 @@ namespace SonicRetro.SAModel.Direct3D
                 transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
                 transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             }
-            float dist = -1;
+            HitResult result = HitResult.NoHit;
             if (obj.Attach != null & mesh[modelindex] != null)
             {
                 Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
@@ -475,22 +442,16 @@ namespace SonicRetro.SAModel.Direct3D
                 IntersectInformation info;
                 if (mesh[modelindex].Intersect(pos, dir, out info))
                 {
-                    if (dist == -1)
-                        dist = info.Dist;
-                    else if (dist > info.Dist)
-                        dist = info.Dist;
+                    if (!result.IsHit)
+                        result = new HitResult(obj, info.Dist);
+                    else if (result.Distance > info.Dist)
+                        result = new HitResult(obj, info.Dist);
                 }
             }
             foreach (Object child in obj.Children)
-            {
-                float r = CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
-                if (dist == -1)
-                    dist = r;
-                else if (dist > r & r != -1)
-                    dist = r;
-            }
+                result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
             transform.Pop();
-            return dist;
+            return result;
         }
 
         public static Attach obj2nj(string objfile)

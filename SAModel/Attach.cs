@@ -8,9 +8,13 @@ namespace SonicRetro.SAModel
     {
         public string Name { get; set; }
         public Vertex[] Vertex { get; private set; }
+        public string VertexName { get; set; }
         public Vertex[] Normal { get; private set; }
+        public string NormalName { get; set; }
         public List<Mesh> Mesh { get; set; }
+        public string MeshName { get; set; }
         public List<Material> Material { get; set; }
+        public string MaterialName { get; set; }
         public BoundingSphere Bounds { get; set; }
 
         public static int Size(ModelFormat format)
@@ -30,58 +34,93 @@ namespace SonicRetro.SAModel
 
         public Attach()
         {
-            Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Name = "attach_" + Object.GenerateIdentifier();
             Bounds = new BoundingSphere();
             Material = new List<Material>();
+            MaterialName = "matlist_" + Object.GenerateIdentifier();
             Mesh = new List<Mesh>();
+            MeshName = "meshlist_" + Object.GenerateIdentifier();
             Vertex = new Vertex[0];
+            VertexName = "vertex_" + Object.GenerateIdentifier();
             Normal = new Vertex[0];
+            NormalName = "normal_" + Object.GenerateIdentifier();
         }
 
         public Attach(byte[] file, int address, uint imageBase, ModelFormat format)
+            : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
+
+        public Attach(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+            : this(file, address, imageBase, format, labels, false) { }
+
+        public Attach(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, bool forceBasic)
+            : this()
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Name = "attach_" + address.ToString("X8");
-            switch (format)
+            if (labels.ContainsKey(address))
+                Name = labels[address];
+            else
+                Name = "attach_" + address.ToString("X8");
+            switch (forceBasic ? ModelFormat.SA1 : format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
                     Vertex = new Vertex[ByteConverter.ToInt32(file, address + 8)];
                     Normal = new Vertex[Vertex.Length];
                     int tmpaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+                    if (labels.ContainsKey(tmpaddr))
+                        VertexName = labels[tmpaddr];
+                    else
+                        VertexName = "vertex_" + tmpaddr.ToString("X8");
                     for (int i = 0; i < Vertex.Length; i++)
                     {
                         Vertex[i] = new Vertex(file, tmpaddr);
                         tmpaddr += SAModel.Vertex.Size;
                     }
-                    tmpaddr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
-                    for (int i = 0; i < Vertex.Length; i++)
+                    tmpaddr = ByteConverter.ToInt32(file, address + 4);
+                    if (tmpaddr != 0)
                     {
-                        Normal[i] = new Vertex(file, tmpaddr);
-                        tmpaddr += SAModel.Vertex.Size;
+                        tmpaddr = (int)((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            NormalName = labels[tmpaddr];
+                        else
+                            NormalName = "normal_" + tmpaddr.ToString("X8");
+                        for (int i = 0; i < Vertex.Length; i++)
+                        {
+                            Normal[i] = new Vertex(file, tmpaddr);
+                            tmpaddr += SAModel.Vertex.Size;
+                        }
                     }
-                    Mesh = new List<Mesh>();
+                    else
+                        for (int i = 0; i < Vertex.Length; i++)
+                            Normal[i] = new Vertex(0, 1, 0);
                     int meshcnt = ByteConverter.ToInt16(file, address + 0x14);
                     tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            MeshName = labels[tmpaddr];
+                        else
+                            MeshName = "meshlist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < meshcnt; i++)
                         {
-                            Mesh.Add(new Mesh(file, tmpaddr, imageBase));
+                            Mesh.Add(new Mesh(file, tmpaddr, imageBase, labels));
                             tmpaddr += SAModel.Mesh.Size(format == ModelFormat.SADX);
                         }
                     }
-                    Material = new List<Material>();
                     int matcnt = ByteConverter.ToInt16(file, address + 0x16);
                     tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            MaterialName = labels[tmpaddr];
+                        else
+                            MaterialName = "matlist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < matcnt; i++)
                         {
-                            Material.Add(new Material(file, tmpaddr));
+                            Material.Add(new Material(file, tmpaddr, labels));
                             tmpaddr += SAModel.Material.Size;
                         }
                     }
@@ -96,11 +135,13 @@ namespace SonicRetro.SAModel
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                        ctype = file[tmpaddr];
+                        uint header = ByteConverter.ToUInt32(file, tmpaddr);
+                        ctype = (byte)(header & 0xFF);
                         while (ctype == 0x00)
                         {
-                            tmpaddr += 2;
-                            ctype = file[tmpaddr];
+                            tmpaddr += 4;
+                            header = ByteConverter.ToUInt32(file, tmpaddr);
+                            ctype = (byte)(header & 0xFF);
                         }
                         if (ctype < 0x20 | ctype > 0x36)
                         {
@@ -109,8 +150,9 @@ namespace SonicRetro.SAModel
                         }
                         while (ctype != 0xFF)
                         {
-                            int curvert = ByteConverter.ToUInt16(file, tmpaddr + 4);
-                            int vcnt = ByteConverter.ToUInt16(file, tmpaddr + 6);
+                            uint inf = ByteConverter.ToUInt32(file, tmpaddr + 4);
+                            int curvert = (int)(inf & 0xFFFF);
+                            int vcnt = (int)(inf >> 16);
                             ResizeVertexes(Math.Max(Vertex.Length, curvert + vcnt));
                             tmpaddr += 8;
                             for (int i = curvert; i < curvert + vcnt; i++)
@@ -234,11 +276,13 @@ namespace SonicRetro.SAModel
                                         break;
                                 }
                             }
-                            ctype = file[tmpaddr];
+                            header = ByteConverter.ToUInt32(file, tmpaddr);
+                            ctype = (byte)(header & 0xFF);
                             while (ctype == 0x00)
                             {
-                                tmpaddr += 2;
-                                ctype = file[tmpaddr];
+                                tmpaddr += 4;
+                                header = ByteConverter.ToUInt32(file, tmpaddr);
+                                ctype = (byte)(header & 0xFF);
                             }
                             if (ctype < 0x20 | ctype > 0x36)
                             {
@@ -247,14 +291,13 @@ namespace SonicRetro.SAModel
                             }
                         }
                     }
-                poly: Material = new List<Material>();
-                    Mesh = new List<Mesh>();
-                    Material mat = new Material();
+            poly:   Material mat = new Material();
                     tmpaddr = ByteConverter.ToInt32(file, address + 4);
                     if (tmpaddr != 0)
                     {
                         tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                        ctype = file[tmpaddr];
+                        ushort header = ByteConverter.ToUInt16(file, tmpaddr);
+                        ctype = (byte)(header & 0xFF);
                         while (ctype != 0xFF)
                         {
                             switch (ctype)
@@ -272,26 +315,22 @@ namespace SonicRetro.SAModel
                                 case 0x15:
                                 case 0x16:
                                 case 0x17:
-                                    bool hasDiffuse = (file[tmpaddr] & 1) != 0;
+                                    bool hasDiffuse = (ctype & 1) != 0;
                                     int curaddr = tmpaddr + 4;
                                     if (hasDiffuse)
                                     {
                                         mat.DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, curaddr));
                                         curaddr += 4;
                                     }
-                                    else
-                                        mat.DiffuseColor = Color.FromArgb(0xFF, 0xCC, 0xCC, 0xCC);
-                                    bool hasAmbient = (file[tmpaddr] & 2) != 0;
+                                    bool hasAmbient = (ctype & 2) != 0;
                                     if (hasAmbient)
                                         curaddr += 4;
-                                    bool hasSpecular = (file[tmpaddr] & 4) != 0;
+                                    bool hasSpecular = (ctype & 4) != 0;
                                     if (hasSpecular)
                                     {
                                         mat.SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, curaddr));
                                         curaddr += 4;
                                     }
-                                    else
-                                        mat.SpecularColor = Color.Transparent;
                                     tmpaddr = curaddr;
                                     break;
                                 case 0x38:
@@ -309,8 +348,8 @@ namespace SonicRetro.SAModel
                                     int matnum = Material.Count;
                                     Material.Add(mat);
                                     mat = new Material() { TextureID = mat.TextureID, DiffuseColor = mat.DiffuseColor, SpecularColor = mat.SpecularColor };
-                                    int striptype = file[tmpaddr] & 0xF;
-                                    int numflags = file[tmpaddr + 1] & 3;
+                                    int striptype = header & 0xF;
+                                    int numflags = (header >> 8) & 3;
                                     Poly[] polys = new Poly[ByteConverter.ToUInt16(file, tmpaddr + 4) & 0x3FFF];
                                     List<UV> uvs = new List<UV>();
                                     List<Color> vcs = new List<Color>();
@@ -381,7 +420,8 @@ namespace SonicRetro.SAModel
                                     tmpaddr += 2;
                                     break;
                             }
-                            ctype = file[tmpaddr];
+                            header = ByteConverter.ToUInt16(file, tmpaddr);
+                            ctype = (byte)(header & 0xFF);
                         }
                     }
                     Bounds = new BoundingSphere(file, address + 8);
@@ -389,118 +429,139 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public Attach(Dictionary<string, Dictionary<string, string>> INI, string groupname)
-        {
-            Name = groupname;
-            Dictionary<string, string> group = INI[groupname];
-            string[] verts = group["Vertex"].Split('|');
-            Vertex = new Vertex[verts.Length];
-            Normal = new Vertex[Vertex.Length];
-            for (int i = 0; i < Vertex.Length; i++)
-                Vertex[i] = new Vertex(verts[i]);
-            verts = group["Normal"].Split('|');
-            for (int i = 0; i < Vertex.Length; i++)
-                Normal[i] = new Vertex(verts[i]);
-            string[] meshlist = group["Mesh"].Split(',');
-            Mesh = new List<Mesh>();
-            for (int i = 0; i < meshlist.Length; i++)
-                Mesh.Add(new Mesh(INI, meshlist[i]));
-            Material = new List<Material>();
-            if (!string.IsNullOrEmpty(group["Material"]))
-            {
-                string[] matlist = group["Material"].Split(',');
-                for (int i = 0; i < matlist.Length; i++)
-                    Material.Add(new Material(INI[matlist[i]], matlist[i]));
-            }
-            Bounds = new BoundingSphere(group["Bounds"]);
-        }
-
         public Attach(Vertex[] vertex, Vertex[] normal, IEnumerable<Mesh> mesh, IEnumerable<Material> material)
+            : this()
         {
-            Name = "attach_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Vertex = vertex;
             Normal = normal;
             Mesh = new List<Mesh>(mesh);
             Material = new List<Material>(material);
-            Bounds = new BoundingSphere();
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> labels, out uint address)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
             List<byte> result = new List<byte>();
-            address = 0;
             switch (format)
             {
                 case ModelFormat.SA1:
                 case ModelFormat.SADX:
-                    uint materialAddress = imageBase;
-                    if (Material != null)
+                    uint materialAddress = 0;
+                    if (Material != null && Material.Count > 0)
                     {
-                        materialAddress = imageBase;
-                        foreach (Material item in Material)
-                            result.AddRange(item.GetBytes());
+                        if (labels.ContainsKey(MaterialName))
+                            materialAddress = labels[MaterialName];
+                        else
+                        {
+                            materialAddress = imageBase;
+                            labels.Add(MaterialName, materialAddress);
+                            foreach (Material item in Material)
+                            {
+                                labels.Add(item.Name, (uint)result.Count + imageBase);
+                                result.AddRange(item.GetBytes());
+                            }
+                        }
                     }
-                    uint[] polyAddrs = new uint[Mesh.Count];
-                    uint[] polyNormalAddrs = new uint[Mesh.Count];
-                    uint[] vColorAddrs = new uint[Mesh.Count];
-                    uint[] uVAddrs = new uint[Mesh.Count];
-                    for (int i = 0; i < Mesh.Count; i++)
+                    uint meshAddress = 0;
+                    if (labels.ContainsKey(MaterialName))
+                        materialAddress = labels[MaterialName];
+                    else
                     {
+                        uint[] polyAddrs = new uint[Mesh.Count];
+                        uint[] polyNormalAddrs = new uint[Mesh.Count];
+                        uint[] vColorAddrs = new uint[Mesh.Count];
+                        uint[] uVAddrs = new uint[Mesh.Count];
+                        for (int i = 0; i < Mesh.Count; i++)
+                            if (labels.ContainsKey(Mesh[i].PolyName))
+                                polyAddrs[i] = labels[Mesh[i].PolyName];
+                            else
+                            {
+                                result.Align(4);
+                                polyAddrs[i] = (uint)result.Count + imageBase;
+                                labels.Add(Mesh[i].PolyName, polyAddrs[i]);
+                                for (int j = 0; j < Mesh[i].Poly.Count; j++)
+                                    result.AddRange(Mesh[i].Poly[j].GetBytes());
+                            }
+                        for (int i = 0; i < Mesh.Count; i++)
+                            if (Mesh[i].PolyNormal != null)
+                            {
+                                if (labels.ContainsKey(Mesh[i].PolyNormalName))
+                                    polyNormalAddrs[i] = labels[Mesh[i].PolyNormalName];
+                                else
+                                {
+                                    result.Align(4);
+                                    polyNormalAddrs[i] = (uint)result.Count + imageBase;
+                                    labels.Add(Mesh[i].PolyNormalName, polyNormalAddrs[i]);
+                                    for (int j = 0; j < Mesh[i].PolyNormal.Length; j++)
+                                        result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
+                                }
+                            }
+                        for (int i = 0; i < Mesh.Count; i++)
+                            if (Mesh[i].VColor != null)
+                            {
+                                if (labels.ContainsKey(Mesh[i].VColorName))
+                                    vColorAddrs[i] = labels[Mesh[i].VColorName];
+                                else
+                                {
+                                    result.Align(4);
+                                    vColorAddrs[i] = (uint)result.Count + imageBase;
+                                    labels.Add(Mesh[i].VColorName, vColorAddrs[i]);
+                                    for (int j = 0; j < Mesh[i].VColor.Length; j++)
+                                        result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
+                                }
+                            }
+                        for (int i = 0; i < Mesh.Count; i++)
+                            if (Mesh[i].UV != null)
+                            {
+                                if (labels.ContainsKey(Mesh[i].UVName))
+                                    uVAddrs[i] = labels[Mesh[i].UVName];
+                                else
+                                {
+                                    result.Align(4);
+                                    uVAddrs[i] = (uint)result.Count + imageBase;
+                                    labels.Add(Mesh[i].UVName, uVAddrs[i]);
+                                    for (int j = 0; j < Mesh[i].UV.Length; j++)
+                                        result.AddRange(Mesh[i].UV[j].GetBytes());
+                                }
+                            }
                         result.Align(4);
-                        polyAddrs[i] = (uint)result.Count + imageBase;
-                        for (int j = 0; j < Mesh[i].Poly.Count; j++)
-                            result.AddRange(Mesh[i].Poly[j].GetBytes());
-                    }
-                    for (int i = 0; i < Mesh.Count; i++)
-                    {
-                        if (Mesh[i].PolyNormal != null)
+                        meshAddress = (uint)result.Count + imageBase;
+                        labels.Add(MeshName, meshAddress);
+                        for (int i = 0; i < Mesh.Count; i++)
                         {
-                            result.Align(4);
-                            polyNormalAddrs[i] = (uint)result.Count + imageBase;
-                            for (int j = 0; j < Mesh[i].PolyNormal.Length; j++)
-                                result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
-                        }
-                    }
-                    for (int i = 0; i < Mesh.Count; i++)
-                    {
-                        if (Mesh[i].VColor != null)
-                        {
-                            result.Align(4);
-                            vColorAddrs[i] = (uint)result.Count + imageBase;
-                            for (int j = 0; j < Mesh[i].VColor.Length; j++)
-                                result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
-                        }
-                    }
-                    for (int i = 0; i < Mesh.Count; i++)
-                    {
-                        if (Mesh[i].UV != null)
-                        {
-                            result.Align(4);
-                            uVAddrs[i] = (uint)result.Count + imageBase;
-                            for (int j = 0; j < Mesh[i].UV.Length; j++)
-                                result.AddRange(Mesh[i].UV[j].GetBytes());
+                            labels.Add(Mesh[i].Name, (uint)result.Count + imageBase);
+                            result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], format == ModelFormat.SADX));
                         }
                     }
                     result.Align(4);
-                    uint meshAddress = (uint)result.Count + imageBase;
-                    for (int i = 0; i < Mesh.Count; i++)
-                        result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], format == ModelFormat.SADX));
+                    uint vertexAddress;
+                    if (labels.ContainsKey(VertexName))
+                        vertexAddress = labels[VertexName];
+                    else
+                    {
+                        vertexAddress = (uint)result.Count + imageBase;
+                        labels.Add(VertexName, vertexAddress);
+                        foreach (Vertex item in Vertex)
+                            if (item == null)
+                                result.AddRange(new byte[SAModel.Vertex.Size]);
+                            else
+                                result.AddRange(item.GetBytes());
+                    }
                     result.Align(4);
-                    uint vertexAddress = (uint)result.Count + imageBase;
-                    foreach (Vertex item in Vertex)
-                        if (item == null)
-                            result.AddRange(new byte[SAModel.Vertex.Size]);
-                        else
-                            result.AddRange(item.GetBytes());
-                    result.Align(4);
-                    uint normalAddress = (uint)result.Count + imageBase;
-                    foreach (Vertex item in Normal)
-                        if (item == null)
-                            result.AddRange(new byte[SAModel.Vertex.Size]);
-                        else
-                            result.AddRange(item.GetBytes());
+                    uint normalAddress;
+                    if (labels.ContainsKey(NormalName))
+                        normalAddress = labels[NormalName];
+                    else
+                    {
+                        normalAddress = (uint)result.Count + imageBase;
+                        labels.Add(NormalName, normalAddress);
+                        foreach (Vertex item in Normal)
+                            if (item == null)
+                                result.AddRange(new byte[SAModel.Vertex.Size]);
+                            else
+                                result.AddRange(item.GetBytes());
+                    }
                     result.Align(4);
                     address = (uint)result.Count;
                     result.AddRange(ByteConverter.GetBytes(vertexAddress));
@@ -513,46 +574,23 @@ namespace SonicRetro.SAModel
                     result.AddRange(Bounds.GetBytes());
                     if (format == ModelFormat.SADX) result.AddRange(new byte[4]);
                     break;
-                case ModelFormat.SA2:
-                case ModelFormat.SA2B:
+                default:
+                    address = 0;
                     throw new Exception(); // implement this later
             }
+            labels.Add(Name, address + imageBase);
             return result.ToArray();
+        }
+
+        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
+        {
+            return GetBytes(imageBase, format, new Dictionary<string, uint>(), out address);
         }
 
         public byte[] GetBytes(uint imageBase, ModelFormat format)
         {
             uint address;
             return GetBytes(imageBase, format, out address);
-        }
-
-        public void Save(Dictionary<string, Dictionary<string, string>> INI)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            List<string> verts = new List<string>();
-            for (int i = 0; i < Vertex.Length; i++)
-                verts.Add(Vertex[i].ToString());
-            group.Add("Vertex", string.Join("|", verts.ToArray()));
-            verts = new List<string>();
-            for (int i = 0; i < Vertex.Length; i++)
-                verts.Add(Normal[i].ToString());
-            group.Add("Normal", string.Join("|", verts.ToArray())); List<string> mlist = new List<string>();
-            for (int i = 0; i < Mesh.Count; i++)
-            {
-                mlist.Add(Mesh[i].Name);
-                Mesh[i].Save(INI);
-            }
-            group.Add("Mesh", string.Join(",", mlist.ToArray()));
-            mlist = new List<string>();
-            for (int i = 0; i < Material.Count; i++)
-            {
-                mlist.Add(Material[i].Name);
-                Material[i].Save(INI);
-            }
-            group.Add("Material", string.Join(",", mlist.ToArray()));
-            group.Add("Bounds", Bounds.ToString());
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
         }
 
         public VertexData[][] GetVertexData()
@@ -619,8 +657,8 @@ namespace SonicRetro.SAModel
                                 hasUV ? mesh.UV[currentstriptotal + 3] : new UV()));
                             currentstriptotal += 4;
                             break;
+                        case PolyType.NPoly:
                         case PolyType.Strips:
-                        case PolyType.Strips2:
                             bool flip = !((Strip)poly).Reversed;
                             for (int k = 0; k < poly.Indexes.Length - 2; k++)
                             {

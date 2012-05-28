@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.SALVL
 
         public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
 
-        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }

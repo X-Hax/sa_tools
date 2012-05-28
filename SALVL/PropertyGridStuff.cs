@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using System.Collections.Generic;
+using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -21,8 +22,8 @@ namespace SonicRetro.SAModel.SALVL
         public virtual bool CanCopy { get { return true; } }
         public abstract void Paste();
         public abstract void Delete();
-        public abstract float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-        public abstract SonicRetro.SAModel.Direct3D.RenderInfo[] Render(Device dev, MatrixStack transform, bool selected);
+        public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
+        public abstract RenderInfo[] Render(Device dev, MatrixStack transform, bool selected);
 
         #region IComponent Members
         // IComponent required by PropertyGrid control to discover IMenuCommandService supporting DesignerVerbs

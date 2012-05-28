@@ -47,6 +47,9 @@
     <Reference Include="puyo_tools">
       <HintPath>..\Puyo Tools\puyo_tools.exe</HintPath>
     </Reference>
+    <Reference Include="SADXPCTools">
+      <HintPath>..\..\SADXPCTools\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -56,12 +59,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BugReportDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BugReportDialog.designer.cs">
+      <DependentUpon>BugReportDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ErrorDialog.designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="IDSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataTypes.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="IniFile.cs" />
     <Compile Include="LevelData.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -80,12 +94,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGridStuff.cs" />
-    <Compile Include="PropertyWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PropertyWindow.Designer.cs">
-      <DependentUpon>PropertyWindow.cs</DependentUpon>
-    </Compile>
+    <EmbeddedResource Include="BugReportDialog.resx">
+      <DependentUpon>BugReportDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IDSelector.resx">
       <DependentUpon>IDSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -105,9 +119,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="PropertyWindow.resx">
-      <DependentUpon>PropertyWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

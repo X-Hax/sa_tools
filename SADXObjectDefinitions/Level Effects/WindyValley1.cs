@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using SADXPCTools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SADXLVL2;
 
@@ -14,12 +15,12 @@ namespace SADXObjectDefinitions.Level_Effects
 
         public override void Init(Dictionary<string, string> data, byte act, Device dev)
         {
-            Dictionary<string, Dictionary<string, string>> skyboxdata = IniFile.Load("Levels/Windy Valley/Skybox Data.ini");
-            if (skyboxdata.ContainsKey(act.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)))
-                Skybox_Scale = new SonicRetro.SAModel.Vertex(skyboxdata[act.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)]["Far"]).ToVector3();
+            SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Windy Valley/Skybox Data.ini");
+            if (skyboxdata.Length > act)
+                Skybox_Scale = skyboxdata[act].Far.ToVector3();
             for (int i = 0; i < 5; i++)
             {
-                models[i] = SonicRetro.SAModel.Object.LoadFromFile("Levels/Windy Valley/Act 1/Skybox model " + (i + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+                models[i] = new SonicRetro.SAModel.ModelFile("Levels/Windy Valley/Act 1/Skybox model " + (i + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl").Model;
                 meshes[i] = ObjectHelper.GetMeshes(models[i], dev);
             }
         }

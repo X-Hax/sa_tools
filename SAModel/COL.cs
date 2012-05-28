@@ -12,14 +12,8 @@ namespace SonicRetro.SAModel
         public int Flags { get; set; }
         public SurfaceFlags SurfaceFlags
         {
-            get
-            {
-                return (SurfaceFlags)Flags;
-            }
-            set
-            {
-                Flags = (int)value;
-            }
+            get { return (SurfaceFlags)Flags; }
+            set { Flags = (int)value; }
         }
         public string Name { get; set; }
 
@@ -39,15 +33,21 @@ namespace SonicRetro.SAModel
 
         public COL()
         {
-            Name = "col_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
+            Name = "col_" + Object.GenerateIdentifier();
             Bounds = new BoundingSphere();
         }
 
         public COL(byte[] file, int address, uint imageBase, ModelFormat format)
+            : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
+
+        public COL(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Name = "col_" + address.ToString("X8");
+            if (labels.ContainsKey(address))
+                Name = labels[address];
+            else
+                Name = "col_" + address.ToString("X8");
             Bounds = new BoundingSphere(file, address);
             switch (format)
             {
@@ -55,29 +55,18 @@ namespace SonicRetro.SAModel
                 case ModelFormat.SADX:
                     Unknown1 = ByteConverter.ToUInt64(file, 0x10);
                     uint tmpaddr = ByteConverter.ToUInt32(file, address + 0x18) - imageBase;
-                    Model = new Object(file, (int)tmpaddr, imageBase, format);
+                    Model = new Object(file, (int)tmpaddr, imageBase, format, labels);
                     Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
                     Flags = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case ModelFormat.SA2:
                 case ModelFormat.SA2B:
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
-                    Model = new Object(file, (int)tmpaddr, imageBase, format);
-                    Unknown1 = ByteConverter.ToUInt64(file, 0x14);
                     Flags = ByteConverter.ToInt32(file, address + 0x1C);
+                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
+                    Model = new Object(file, (int)tmpaddr, imageBase, format, labels, (SurfaceFlags & SAModel.SurfaceFlags.Solid) == SAModel.SurfaceFlags.Solid);
+                    Unknown1 = ByteConverter.ToUInt64(file, 0x14);
                     break;
             }
-        }
-
-        public COL(Dictionary<string, Dictionary<string, string>> INI, string groupname)
-        {
-            Name = groupname;
-            Dictionary<string, string> group = INI[groupname];
-            Bounds = new BoundingSphere(group["Bounds"]);
-            Unknown1 = ulong.Parse(group["Unknown1"], System.Globalization.NumberStyles.HexNumber);
-            Model = new Object(INI, group["Model"]);
-            Unknown2 = int.Parse(group["Unknown2"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Flags = int.Parse(group["Flags"], System.Globalization.NumberStyles.HexNumber);
         }
 
         public byte[] GetBytes(uint imageBase, uint modelptr, ModelFormat format)
@@ -102,19 +91,6 @@ namespace SonicRetro.SAModel
             }
             result.AddRange(ByteConverter.GetBytes(Flags));
             return result.ToArray();
-        }
-
-        public void Save(Dictionary<string, Dictionary<string, string>> INI)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            group.Add("Bounds", Bounds.ToString());
-            group.Add("Unknown1", Unknown1.ToString("X16"));
-            group.Add("Model", Model.Name);
-            Model.Save(INI);
-            group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Flags", Flags.ToString("X8"));
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
         }
     }
 }

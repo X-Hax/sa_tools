@@ -6,8 +6,8 @@ namespace SonicRetro.SAModel
     {
         Triangles,
         Quads,
-        Strips,
-        Strips2
+        NPoly,
+        Strips
     }
 
     [Flags()]
@@ -20,7 +20,27 @@ namespace SonicRetro.SAModel
         NoChildren = 0x10,
         RotateZYX = 0x20,
         NoAnimate = 0x40,
-        ObjectFlags_80 = 0x80
+        NoMorph = 0x80
+    }
+
+    public enum FilterMode
+    {
+        PointSampled,
+        Bilinear,
+        Trilinear,
+        Reserved
+    }
+
+    public enum AlphaInstruction
+    {
+        Zero,
+        One,
+        OtherColor,
+        InverseOtherColor,
+        SourceAlpha,
+        InverseSourceAlpha,
+        DestinationAlpha,
+        InverseDestinationAlpha
     }
 
     [Flags()]

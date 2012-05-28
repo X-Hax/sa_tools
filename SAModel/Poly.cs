@@ -7,26 +7,15 @@ namespace SonicRetro.SAModel
     {
         public Triangle()
         {
-            Name = "tri_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[3];
         }
 
         public Triangle(byte[] file, int address)
+            : this()
         {
-            Name = "tri_" + address.ToString("X8");
-            Indexes = new ushort[3];
             Indexes[0] = ByteConverter.ToUInt16(file, address);
             Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
             Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
-        }
-
-        public Triangle(Dictionary<string, string> group, string name)
-        {
-            Name = name;
-            Indexes = new ushort[3];
-            string[] inds = group["Indexes"].Split(',');
-            for (int i = 0; i < 3; i++)
-                Indexes[i] = ushort.Parse(inds[i], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
         public override PolyType PolyType { get { return SAModel.PolyType.Triangles; } }
@@ -36,27 +25,16 @@ namespace SonicRetro.SAModel
     {
         public Quad()
         {
-            Name = "quad_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[4];
         }
 
         public Quad(byte[] file, int address)
+            : this()
         {
-            Name = "quad_" + address.ToString("X8");
-            Indexes = new ushort[4];
             Indexes[0] = ByteConverter.ToUInt16(file, address);
             Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
             Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
             Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
-        }
-
-        public Quad(Dictionary<string, string> group, string name)
-        {
-            Name = name;
-            Indexes = new ushort[4];
-            string[] inds = group["Indexes"].Split(',');
-            for (int i = 0; i < 4; i++)
-                Indexes[i] = ushort.Parse(inds[i], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
         public override PolyType PolyType { get { return SAModel.PolyType.Quads; } }
@@ -68,21 +46,18 @@ namespace SonicRetro.SAModel
 
         public Strip(int NumVerts, bool Reverse)
         {
-            Name = "strip_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = new ushort[NumVerts];
             Reversed = Reverse;
         }
 
         public Strip(ushort[] Verts, bool Reverse)
         {
-            Name = "strip_" + DateTime.Now.Ticks.ToString("X") + Object.rand.Next(0, 256).ToString("X2");
             Indexes = Verts;
             Reversed = Reverse;
         }
 
         public Strip(byte[] file, int address)
         {
-            Name = "strip_" + address.ToString("X8");
             Indexes = new ushort[ByteConverter.ToUInt16(file, address) & 0x7FFF];
             Reversed = (ByteConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
             address += 2;
@@ -91,16 +66,6 @@ namespace SonicRetro.SAModel
                 Indexes[i] = ByteConverter.ToUInt16(file, address);
                 address += 2;
             }
-        }
-
-        public Strip(Dictionary<string, string> group, string name)
-        {
-            Name = name;
-            string[] inds = group["Indexes"].Split(',');
-            Indexes = new ushort[inds.Length];
-            for (int i = 0; i < inds.Length; i++)
-                Indexes[i] = ushort.Parse(inds[i], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Reversed = bool.Parse(group["Reversed"]);
         }
 
         public override int Size { get { return base.Size + 2; } }
@@ -114,24 +79,11 @@ namespace SonicRetro.SAModel
             result.AddRange(base.GetBytes());
             return result.ToArray();
         }
-
-        public override void Save(Dictionary<string, Dictionary<string, string>> INI)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            string[] inds = new string[Indexes.Length];
-            for (int i = 0; i < inds.Length; i++)
-                inds[i] = Indexes[i].ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
-            group.Add("Indexes", string.Join(",", inds));
-            group.Add("Reversed", Reversed.ToString());
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
-        }
     }
 
     public abstract class Poly
     {
         public ushort[] Indexes { get; protected set; }
-        public string Name { get; set; }
 
         internal Poly() { }
 
@@ -147,17 +99,6 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public virtual void Save(Dictionary<string, Dictionary<string, string>> INI)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            string[] inds = new string[Indexes.Length];
-            for (int i = 0; i < inds.Length; i++)
-                inds[i] = Indexes[i].ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
-            group.Add("Indexes", string.Join(",", inds));
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
-        }
-
         public static Poly CreatePoly(PolyType type)
         {
             switch (type)
@@ -166,8 +107,8 @@ namespace SonicRetro.SAModel
                     return new Triangle();
                 case PolyType.Quads:
                     return new Quad();
+                case PolyType.NPoly:
                 case PolyType.Strips:
-                case PolyType.Strips2:
                     throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", "type");
             }
             throw new ArgumentException("Unknown poly type!", "type");
@@ -181,24 +122,9 @@ namespace SonicRetro.SAModel
                     return new Triangle(file, address);
                 case PolyType.Quads:
                     return new Quad(file, address);
+                case PolyType.NPoly:
                 case PolyType.Strips:
-                case PolyType.Strips2:
                     return new Strip(file, address);
-            }
-            throw new ArgumentException("Unknown poly type!", "type");
-        }
-
-        public static Poly CreatePoly(PolyType type, Dictionary<string, string> group, string name)
-        {
-            switch (type)
-            {
-                case PolyType.Triangles:
-                    return new Triangle(group, name);
-                case PolyType.Quads:
-                    return new Quad(group, name);
-                case PolyType.Strips:
-                case PolyType.Strips2:
-                    return new Strip(group, name);
             }
             throw new ArgumentException("Unknown poly type!", "type");
         }

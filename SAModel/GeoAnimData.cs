@@ -16,28 +16,22 @@ namespace SonicRetro.SAModel
         public static int Size { get { return 0x18; } }
 
         public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format)
+            : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
+
+        public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Name = "anim_" + address.ToString("X8");
+            if (labels.ContainsKey(address))
+                Name = labels[address];
+            else
+                Name = "anim_" + address.ToString("X8");
             Unknown1 = ByteConverter.ToInt32(file, address);
             Unknown2 = ByteConverter.ToSingle(file, address + 4);
             Unknown3 = ByteConverter.ToSingle(file, address + 8);
             Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, format);
-            Animation = new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format);
+            Animation = Animation.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format, labels);
             Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
-        }
-
-        public GeoAnimData(Dictionary<string, Dictionary<string, string>> INI, string groupname)
-        {
-            Name = groupname;
-            Dictionary<string, string> group = INI[groupname];
-            Unknown1 = int.Parse(group["Unknown1"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Unknown2 = float.Parse(group["Unknown2"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Unknown3 = float.Parse(group["Unknown3"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Model = new Object(INI, group["Model"]);
-            Animation = new Animation(group["Animation"]);
-            Unknown4 = int.Parse(group["Unknown4"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
         public byte[] GetBytes(uint imageBase, uint modelptr, uint animptr)
@@ -50,21 +44,6 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes(animptr));
             result.AddRange(ByteConverter.GetBytes(Unknown4));
             return result.ToArray();
-        }
-
-        public void Save(Dictionary<string, Dictionary<string, string>> INI, string animpath)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            group.Add("Unknown1", Unknown1.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Unknown3", Unknown3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Model", Model.Name);
-            Model.Save(INI);
-            group.Add("Animation", System.IO.Path.Combine(animpath, Animation.Name + ".xml"));
-            group.Add("Unknown4", Unknown4.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
-            Animation.Save(group["Animation"]);
         }
     }
 }

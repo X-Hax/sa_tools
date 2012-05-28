@@ -12,15 +12,15 @@ namespace SADXObjectDefinitions.Common
         private SonicRetro.SAModel.Object model;
         private Microsoft.DirectX.Direct3D.Mesh[] meshes;
 
-        public override void Init(Dictionary<string, string> data, string name, Device dev)
+        public override void Init(ObjectData data, string name, Device dev)
         {
             model = ObjectHelper.LoadModel("Objects/Ring/Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
-        public override float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
-            float mindist = float.PositiveInfinity;
+            HitResult result = HitResult.NoHit;
             for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
             {
                 transform.Push();
@@ -37,9 +37,7 @@ namespace SADXObjectDefinitions.Common
                     Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
-                    float dist = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
-                    if (dist > 0 & dist < mindist)
-                        mindist = dist;
+                    result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
                 }
                 else // line
                 {
@@ -54,14 +52,11 @@ namespace SADXObjectDefinitions.Common
                     Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
                     transform.Pop();
                     transform.TranslateLocal(pos);
-                    float dist = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
-                    if (dist > 0 & dist < mindist)
-                        mindist = dist;
+                    result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
                 }
                 transform.Pop();
             }
-            if (float.IsPositiveInfinity(mindist)) return -1;
-            return mindist;
+            return result;
         }
 
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)

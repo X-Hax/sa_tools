@@ -6,8 +6,17 @@ namespace SonicRetro.SAModel
 {
     public class LandTable
     {
+        public const ulong SA1LVL = 0x4C564C314153u;
+        public const ulong SA2LVL = 0x4C564C324153u;
+        public const ulong FormatMask = 0xFFFFFFFFFFFFu;
+        public const ulong CurrentVersion = 1;
+        public const ulong SA1LVLVer = SA1LVL | (CurrentVersion << 56);
+        public const ulong SA2LVLVer = SA2LVL | (CurrentVersion << 56);
+
         public List<COL> COL { get; set; }
+        public string COLName { get; set; }
         public List<GeoAnimData> Anim { get; set; }
+        public string AnimName { get; set; }
         public int Flags { get; set; }
         public float Unknown1 { get; set; }
         public string TextureFileName { get; set; }
@@ -19,10 +28,16 @@ namespace SonicRetro.SAModel
         public static int Size { get { return 0x24; } }
 
         public LandTable(byte[] file, int address, uint imageBase, ModelFormat format)
+            : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
+
+        public LandTable(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Name = "landtable_" + address.ToString("X8");
+            if (labels.ContainsKey(address))
+                Name = labels[address];
+            else
+                Name = "landtable_" + address.ToString("X8");
             short colcnt = ByteConverter.ToInt16(file, address);
             short anicnt = ByteConverter.ToInt16(file, address + 2);
             switch (format)
@@ -32,31 +47,43 @@ namespace SonicRetro.SAModel
                     Flags = ByteConverter.ToInt32(file, address + 4);
                     Unknown1 = ByteConverter.ToSingle(file, address + 8);
                     COL = new List<COL>();
-                    uint tmpaddr = ByteConverter.ToUInt32(file, address + 0xC);
+                    int tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            COLName = labels[tmpaddr];
+                        else
+                            COLName = "collist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < colcnt; i++)
                         {
-                            COL.Add(new COL(file, (int)tmpaddr, imageBase, format));
-                            tmpaddr += (uint)SAModel.COL.Size(format);
+                            COL.Add(new COL(file, tmpaddr, imageBase, format, labels));
+                            tmpaddr += SAModel.COL.Size(format);
                         }
                     }
+                    else
+                        COLName = "collist_" + Object.GenerateIdentifier();
                     Anim = new List<GeoAnimData>();
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            AnimName = labels[tmpaddr];
+                        else
+                            AnimName = "animlist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < anicnt; i++)
                         {
-                            Anim.Add(new GeoAnimData(file, (int)tmpaddr, imageBase, format));
-                            tmpaddr += (uint)GeoAnimData.Size;
+                            Anim.Add(new GeoAnimData(file, tmpaddr, imageBase, format, labels));
+                            tmpaddr += GeoAnimData.Size;
                         }
                     }
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x14);
+                    else
+                        AnimName = "animlist_" + Object.GenerateIdentifier();
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
                         TextureFileName = file.GetCString((int)tmpaddr, Encoding.ASCII);
                     }
                     TextureList = ByteConverter.ToUInt32(file, address + 0x18);
@@ -67,31 +94,43 @@ namespace SonicRetro.SAModel
                 case ModelFormat.SA2B:
                     Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
                     COL = new List<COL>();
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x10);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            COLName = labels[tmpaddr];
+                        else
+                            COLName = "collist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < colcnt; i++)
                         {
-                            COL.Add(new COL(file, (int)tmpaddr, imageBase, format));
-                            tmpaddr += (uint)SAModel.COL.Size(format);
+                            COL.Add(new COL(file, tmpaddr, imageBase, format, labels));
+                            tmpaddr += SAModel.COL.Size(format);
                         }
                     }
+                    else
+                        COLName = "collist_" + Object.GenerateIdentifier();
                     Anim = new List<GeoAnimData>();
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x14);
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+                        if (labels.ContainsKey(tmpaddr))
+                            AnimName = labels[tmpaddr];
+                        else
+                            AnimName = "animlist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < anicnt; i++)
                         {
-                            Anim.Add(new GeoAnimData(file, (int)tmpaddr, imageBase, format));
-                            tmpaddr += (uint)GeoAnimData.Size;
+                            Anim.Add(new GeoAnimData(file, tmpaddr, imageBase, format, labels));
+                            tmpaddr += GeoAnimData.Size;
                         }
                     }
-                    tmpaddr = ByteConverter.ToUInt32(file, address + 0x18);
+                    else
+                        AnimName = "animlist_" + Object.GenerateIdentifier();
+                    tmpaddr = ByteConverter.ToInt32(file, address + 0x18);
                     if (tmpaddr != 0)
                     {
-                        tmpaddr -= imageBase;
+                        tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
                         TextureFileName = file.GetCString((int)tmpaddr, Encoding.ASCII);
                     }
                     TextureList = ByteConverter.ToUInt32(file, address + 0x1C);
@@ -99,42 +138,33 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public LandTable(Dictionary<string, Dictionary<string, string>> INI, string groupname)
-        {
-            Name = groupname;
-            Dictionary<string, string> group = INI[groupname];
-            COL = new List<COL>();
-            if (group.ContainsKey("COL"))
-            {
-                string[] cols = group["COL"].Split(',');
-                foreach (string item in cols)
-                    COL.Add(new COL(INI, item));
-            }
-            Anim = new List<GeoAnimData>();
-            if (group.ContainsKey("Anim"))
-            {
-                string[] cols = group["Anim"].Split(',');
-                foreach (string item in cols)
-                    Anim.Add(new GeoAnimData(INI, item));
-            }
-            Flags = int.Parse(group["Flags"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Unknown1 = float.Parse(group["Unknown1"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
-            if (group.ContainsKey("TextureFileName"))
-                TextureFileName = group["TextureFileName"];
-            TextureList = uint.Parse(group["TextureList"], System.Globalization.NumberStyles.HexNumber);
-            Unknown2 = int.Parse(group["Unknown2"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Unknown3 = int.Parse(group["Unknown3"], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-        }
-
         public static LandTable LoadFromFile(string filename)
         {
             ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = ByteConverter.ToUInt64(file, 0);
-            if (magic == 0x00004C564C314153u)
-                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
-            else if (magic == 0x00004C564C324153u)
-                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
+            ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+            byte version = file[7];
+            if (version > CurrentVersion)
+                throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
+            Dictionary<int, string> labels = new Dictionary<int, string>();
+            if (version == 1)
+            {
+                int tmpaddr = BitConverter.ToInt32(file, 0xC);
+                if (tmpaddr != 0)
+                {
+                    int addr = BitConverter.ToInt32(file, tmpaddr);
+                    while (addr != -1)
+                    {
+                        labels.Add(addr, file.GetCString(BitConverter.ToInt32(file, tmpaddr + 4)));
+                        tmpaddr += 8;
+                        addr = BitConverter.ToInt32(file, tmpaddr);
+                    }
+                }
+            }
+            if (magic == SA1LVL)
+                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA1, labels);
+            else if (magic == SA2LVL)
+                return new LandTable(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA2, labels);
             else
                 throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
         }
@@ -143,57 +173,91 @@ namespace SonicRetro.SAModel
         {
             ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = ByteConverter.ToUInt64(file, 0);
-            if (magic == 0x00004C564C314153u)
-                return true;
-            else if (magic == 0x00004C564C324153u)
-                return true;
-            else
-                return false;
+            switch (ByteConverter.ToUInt64(file, 0) & FormatMask)
+            {
+                case SA1LVL:
+                case SA2LVL:
+                    return file[7] <= CurrentVersion;
+                default:
+                    return false;
+            }
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> labels, out uint address)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Dictionary<string, uint> attachaddrs = new Dictionary<string, uint>();
             List<byte> result = new List<byte>();
             byte[] tmpbyte;
             uint[] colmdladdrs = new uint[COL.Count];
             uint tmpaddr = 0;
             for (int i = 0; i < COL.Count; i++)
             {
-                result.Align(4);
-                tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, format, attachaddrs, out tmpaddr);
-                colmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
-                result.AddRange(tmpbyte);
+                if (labels.ContainsKey(COL[i].Model.Name))
+                    colmdladdrs[i] = labels[COL[i].Model.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, format, labels, out tmpaddr);
+                    colmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                    result.AddRange(tmpbyte);
+                }
             }
             uint[] animmdladdrs = new uint[Anim.Count];
             uint[] animaniaddrs = new uint[Anim.Count];
             for (int i = 0; i < Anim.Count; i++)
             {
-                result.Align(4);
-                tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, format, out tmpaddr);
-                animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
-                result.AddRange(tmpbyte);
-                result.Align(4);
-                tmpbyte = Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], Anim[i].Model.GetObjects().Length, out tmpaddr);
-                animaniaddrs[i] = tmpaddr + (uint)result.Count + imageBase;
-                result.AddRange(tmpbyte);
+                if (labels.ContainsKey(Anim[i].Model.Name))
+                    animmdladdrs[i] = labels[Anim[i].Model.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, format, labels, out tmpaddr);
+                    animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                    result.AddRange(tmpbyte);
+                }
+                if (labels.ContainsKey(Anim[i].Animation.Name))
+                    animaniaddrs[i] = labels[Anim[i].Animation.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = Anim[i].Animation.WriteHeader(imageBase + (uint)result.Count, animmdladdrs[i], labels, out tmpaddr);
+                    animaniaddrs[i] = tmpaddr + (uint)result.Count + imageBase;
+                    result.AddRange(tmpbyte);
+                }
             }
-            uint coladdr = imageBase + (uint)result.Count;
-            for (int i = 0; i < COL.Count; i++)
+            uint coladdr;
+            if (labels.ContainsKey(COLName))
+                coladdr = labels[COLName];
+            else
             {
-                result.Align(4);
-                result.AddRange(COL[i].GetBytes(imageBase + (uint)result.Count, colmdladdrs[i], format));
+                coladdr = imageBase + (uint)result.Count;
+                labels.Add(COLName, coladdr);
+                for (int i = 0; i < COL.Count; i++)
+                {
+                    result.Align(4);
+                    labels.Add(COL[i].Name, imageBase + (uint)result.Count);
+                    result.AddRange(COL[i].GetBytes(imageBase + (uint)result.Count, colmdladdrs[i], format));
+                }
             }
-            uint animaddr = imageBase + (uint)result.Count;
-            for (int i = 0; i < Anim.Count; i++)
+            uint animaddr;
+            if (Anim.Count > 0)
             {
-                result.Align(4);
-                result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
+                if (labels.ContainsKey(AnimName))
+                    animaddr = labels[AnimName];
+                else
+                {
+                    animaddr = imageBase + (uint)result.Count;
+                    labels.Add(AnimName, animaddr);
+                    for (int i = 0; i < Anim.Count; i++)
+                    {
+                        result.Align(4);
+                        labels.Add(Anim[i].Name, imageBase + (uint)result.Count);
+                        result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
+                    }
+                }
             }
-            if (Anim.Count == 0)
+            else
                 animaddr = 0;
             result.Align(4);
             uint texnameaddr = 0;
@@ -230,69 +294,62 @@ namespace SonicRetro.SAModel
                     result.AddRange(ByteConverter.GetBytes(TextureList));
                     break;
             }
+            labels.Add(Name, address + imageBase);
             return result.ToArray();
         }
 
-        public void Save(Dictionary<string, Dictionary<string, string>> INI, string animpath)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
         {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            if (COL.Count > 0)
-            {
-                List<string> cols = new List<string>();
-                foreach (COL item in COL)
-                {
-                    item.Save(INI);
-                    cols.Add(item.Name);
-                }
-                group.Add("COL", string.Join(",", cols.ToArray()));
-            }
-            if (Anim.Count > 0)
-            {
-                List<string> cols = new List<string>();
-                foreach (GeoAnimData item in Anim)
-                {
-                    item.Save(INI, animpath);
-                    cols.Add(item.Name);
-                }
-                group.Add("Anim", string.Join(",", cols.ToArray()));
-            }
-            group.Add("Flags", Flags.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Unknown1", Unknown1.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            if (!string.IsNullOrEmpty(TextureFileName))
-                group.Add("TextureFileName", TextureFileName);
-            group.Add("TextureList", TextureList.ToString("X8"));
-            group.Add("Unknown2", Unknown2.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            group.Add("Unknown3", Unknown3.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
+            return GetBytes(imageBase, format, new Dictionary<string, uint>(), out address);
+        }
+
+        public byte[] GetBytes(uint imageBase, ModelFormat format)
+        {
+            uint address;
+            return GetBytes(imageBase, format, out address);
         }
 
         public void SaveToFile(string filename, ModelFormat format)
         {
             ByteConverter.BigEndian = false;
             List<byte> file = new List<byte>();
+            ulong magic;
             switch (format)
             {
                 case ModelFormat.SA1:
-                    file.AddRange(ByteConverter.GetBytes(0x00004C564C314153u));
-                    uint addr = 0;
-                    byte[] lvl = GetBytes(0x10, ModelFormat.SA1, out addr);
-                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-                    file.Align(0x10);
-                    file.AddRange(lvl);
+                    magic = SA1LVLVer;
                     break;
-                case ModelFormat.SADX:
-                    throw new ArgumentException("Cannot save SADX format levels to file!", "format");
-                case ModelFormat.SA2:
-                    file.AddRange(ByteConverter.GetBytes(0x00004C564C324153u));
-                    addr = 0;
-                    lvl = GetBytes(0x10, ModelFormat.SA2, out addr);
-                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-                    file.Align(0x10);
-                    file.AddRange(lvl);
-                    break;
-                case ModelFormat.SA2B:
-                    throw new ArgumentException("Cannot save SA2B format levels to file!", "format");
+                /*case ModelFormat.SA2:
+                    magic = SA2LVLVer;
+                    break;*/
+                default:
+                    throw new ArgumentException("Cannot save " + format.ToString() + " format levels to file!", "format");
+            }
+            file.AddRange(ByteConverter.GetBytes(magic));
+            uint addr = 0;
+            Dictionary<string, uint> labels = new Dictionary<string, uint>();
+            byte[] lvl = GetBytes(0x10, ModelFormat.SA1, labels, out addr);
+            file.AddRange(ByteConverter.GetBytes(addr + 0x10));
+            file.Align(0x10);
+            file.AddRange(lvl);
+            file.Align(4);
+            if (labels.Count > 0)
+            {
+                file.RemoveRange(0xC, 4);
+                file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
+                int straddr = file.Count + (labels.Count * 8) + 8;
+                List<byte> strbytes = new List<byte>();
+                foreach (KeyValuePair<string, uint> label in labels)
+                {
+                    file.AddRange(ByteConverter.GetBytes(label.Value));
+                    file.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
+                    strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
+                    strbytes.Add(0);
+                    strbytes.Align(4);
+                }
+                file.AddRange(ByteConverter.GetBytes(-1L));
+                file.AddRange(strbytes);
+                file.Align(4);
             }
             System.IO.File.WriteAllBytes(filename, file.ToArray());
         }

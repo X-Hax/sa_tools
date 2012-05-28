@@ -16,7 +16,7 @@ namespace SADXObjectDefinitions.Common
         private SonicRetro.SAModel.Object ballmodel;
         private Microsoft.DirectX.Direct3D.Mesh[] ballmeshes;
 
-        public override void Init(Dictionary<string, string> data, string name, Device dev)
+        public override void Init(ObjectData data, string name, Device dev)
         {
             centermodel = ObjectHelper.LoadModel("Objects/SwingBall/Center Model.sa1mdl");
             centermeshes = ObjectHelper.GetMeshes(centermodel, dev);
@@ -26,15 +26,13 @@ namespace SADXObjectDefinitions.Common
             ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
         }
 
-        public override float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
-            float mindist = float.PositiveInfinity;
+            HitResult result = HitResult.NoHit;
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-            float dist = centermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, centermeshes);
-            if (dist > 0 & dist < mindist)
-                mindist = dist;
+            result = HitResult.Min(result, centermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, centermeshes));
             transform.Pop();
             /*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
@@ -42,21 +40,16 @@ namespace SADXObjectDefinitions.Common
             transform.TranslateLocal(item.Position.X, (float)v8, item.Position.Z);
             double v9 = item.Scale.Y * 0.05000000074505806;
             transform.ScaleLocal((float)v14, (float)v9, (float)v14);
-            dist = cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes);
-            if (dist > 0 & dist < mindist)
-                mindist = dist;
+            result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
             transform.Pop();
             double v15 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v13 = item.Scale.Y * 0.5;
             transform.TranslateLocal(item.Position.X, (float)v13, item.Position.Z);
             transform.ScaleLocal((float)v15, 0.1000000014901161f, (float)v15);
-            dist = cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes);
-            if (dist > 0 & dist < mindist)
-                mindist = dist;
+            result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
             transform.Pop();*/
-            if (float.IsPositiveInfinity(mindist)) return -1;
-            return mindist;
+            return result;
         }
 
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
@@ -75,18 +68,18 @@ namespace SADXObjectDefinitions.Common
             transform.TranslateLocal(item.Position.X, (float)v8, item.Position.Z);
             double v9 = item.Scale.Y * 0.05000000074505806;
             transform.ScaleLocal((float)v14, (float)v9, (float)v14);
-            cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes);
+            result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
             if (selected)
-                cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes);
+                result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
             transform.Pop();
             double v15 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v13 = item.Scale.Y * 0.5;
             transform.TranslateLocal(item.Position.X, (float)v13, item.Position.Z);
             transform.ScaleLocal((float)v15, 0.1000000014901161f, (float)v15);
-            cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes);
+            result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
             if (selected)
-                cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes);
+                result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
             transform.Pop();*/
             return result.ToArray();
         }

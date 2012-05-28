@@ -1,15 +1,12 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using SonicRetro.SAModel.Direct3D;
-using System.Reflection;
 using puyo_tools;
+using SonicRetro.SAModel.Direct3D;
 using VrSharp.PvrTexture;
 
 namespace SonicRetro.SAModel.SAMDL
@@ -43,6 +40,7 @@ namespace SonicRetro.SAModel.SAMDL
         FillMode rendermode;
         Cull cullmode = Cull.None;
         Object model;
+        Animation[] animations;
         Animation animation;
         ModelFile modelFile;
         int animnum = -1;
@@ -79,7 +77,7 @@ namespace SonicRetro.SAModel.SAMDL
             OpenFileDialog a = new OpenFileDialog()
             {
                 DefaultExt = "sa1mdl",
-                Filter = "Model Files|*.sa1mdl;*.ini;*.exe;*.dll;*.bin|All Files|*.*"
+                Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.exe;*.dll;*.bin|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
@@ -88,27 +86,92 @@ namespace SonicRetro.SAModel.SAMDL
                 timer1.Stop();
                 modelFile = null;
                 animation = null;
+                animations = null;
                 animnum = -1;
                 animframe = 0;
-                if (Path.GetExtension(a.FileName).Equals(".ini", StringComparison.OrdinalIgnoreCase))
-                {
-                    Dictionary<string, Dictionary<string, string>> ini = IniFile.Load(a.FileName);
-                    model = new Object(ini, ini[string.Empty]["Root"]);
-                }
-                else if (ModelFile.CheckModelFile(a.FileName))
+                if (ModelFile.CheckModelFile(a.FileName))
                 {
                     modelFile = new ModelFile(a.FileName);
                     model = modelFile.Model;
+                    animations = new Animation[modelFile.Animations.Count];
+                    modelFile.Animations.CopyTo(animations, 0);
                 }
                 else
                 {
-                    byte[] file = File.ReadAllBytes(a.FileName);
-                    using (ModelFileDialog dlg = new ModelFileDialog())
+                    using (FileTypeDialog ftd = new FileTypeDialog())
                     {
-                        dlg.ShowDialog(this);
-                        if (dlg.checkBox1.Checked)
-                            animation = new Animation(file, (int)dlg.numericUpDown3.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
-                        model = new Object(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
+                        if (ftd.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+                            return;
+                        byte[] file = File.ReadAllBytes(a.FileName);
+                        if (ftd.typBinary.Checked)
+                        {
+                            using (ModelFileDialog dlg = new ModelFileDialog())
+                            {
+                                dlg.ShowDialog(this);
+                                if (dlg.checkBox1.Checked)
+                                    animations = new Animation[] { Animation.ReadHeader(file, (int)dlg.numericUpDown3.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex) };
+                                model = new Object(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
+                            }
+                        }
+                        else if (ftd.typSA2MDL.Checked | ftd.typSA2BMDL.Checked)
+                        {
+                            ModelFormat fmt = ModelFormat.SA2;
+                            ByteConverter.BigEndian = false;
+                            if (ftd.typSA2BMDL.Checked)
+                            {
+                                fmt = ModelFormat.SA2B;
+                                ByteConverter.BigEndian = true;
+                            }
+                            using (SA2MDLDialog dlg = new SA2MDLDialog())
+                            {
+                                int address = 0;
+                                SortedDictionary<int, Object> sa2models = new SortedDictionary<int, Object>();
+                                int i = ByteConverter.ToInt32(file, address);
+                                while (i != -1)
+                                {
+                                    sa2models.Add(i, new Object(file, ByteConverter.ToInt32(file, address + 4), 0, fmt));
+                                    address += 8;
+                                    i = ByteConverter.ToInt32(file, address);
+                                }
+                                foreach (KeyValuePair<int, Object> item in sa2models)
+                                    dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+                                dlg.ShowDialog(this);
+                                i = 0;
+                                foreach (KeyValuePair<int, Object> item in sa2models)
+                                {
+                                    if (i == dlg.modelChoice.SelectedIndex)
+                                    {
+                                        model = item.Value;
+                                        break;
+                                    }
+                                    i++;
+                                }
+                                if (dlg.checkBox1.Checked)
+                                {
+                                    using (OpenFileDialog anidlg = new OpenFileDialog()
+                                        {
+                                            DefaultExt = "bin",
+                                            Filter = "Motion Files|*MTN.BIN|All Files|*.*"
+                                        })
+                                    {
+                                        if (anidlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                                        {
+                                            byte[] anifile = File.ReadAllBytes(anidlg.FileName);
+                                            address = 0;
+                                            SortedDictionary<int, Animation> anis = new SortedDictionary<int, Animation>();
+                                            i = ByteConverter.ToInt32(file, address);
+                                            while (i != -1)
+                                            {
+                                                anis.Add(i, new Animation(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, model.CountAnimated()));
+                                                address += 8;
+                                                i = ByteConverter.ToInt32(file, address);
+                                            }
+                                            animations = new List<Animation>(anis.Values).ToArray();
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 Object[] models = model.GetObjects();
@@ -141,20 +204,14 @@ namespace SonicRetro.SAModel.SAMDL
             SaveFileDialog a = new SaveFileDialog()
             {
                 DefaultExt = "sa1mdl",
-                Filter = "Model Files|*.sa1mdl;*.ini;*.xml|All Files|*.*"
+                Filter = "Model Files|*.sa1mdl|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
             {
-                if (Path.GetExtension(a.FileName).Equals(".ini", StringComparison.OrdinalIgnoreCase))
-                {
-                    Dictionary<string, Dictionary<string, string>> ini = new Dictionary<string, Dictionary<string, string>>();
-                    ini.Add(string.Empty, new Dictionary<string, string>() { { "Root", model.Name } });
-                    model.Save(ini);
-                }
-                else if (modelFile != null)
+                if (modelFile != null)
                     modelFile.SaveToFile(a.FileName, ModelFormat.SA1);
                 else
-                    model.SaveToFile(a.FileName, ModelFormat.SA1);
+                    ModelFile.CreateFile(a.FileName, model, ModelFormat.SA1);
             }
         }
 
@@ -289,23 +346,23 @@ namespace SonicRetro.SAModel.SAMDL
                 interval += 1;
             if (e.KeyCode == Keys.W)
                 interval -= 1;
-            if (e.KeyCode == Keys.OemQuotes & modelFile != null)
+            if (e.KeyCode == Keys.OemQuotes & animations != null)
             {
                 animnum++;
                 animframe = 0;
-                if (animnum == modelFile.Animations.Count) animnum = -1;
+                if (animnum == animations.Length) animnum = -1;
                 if (animnum > -1)
-                    animation = modelFile.Animations[animnum];
+                    animation = animations[animnum];
                 else
                     animation = null;
             }
-            if (e.KeyCode == Keys.OemSemicolon & modelFile != null)
+            if (e.KeyCode == Keys.OemSemicolon & animations != null)
             {
                 animnum--;
                 animframe = 0;
-                if (animnum == -2) animnum = modelFile.Animations.Count - 1;
+                if (animnum == -2) animnum = animations.Length - 1;
                 if (animnum > -1)
-                    animation = modelFile.Animations[animnum];
+                    animation = animations[animnum];
                 else
                     animation = null;
             }
@@ -350,9 +407,20 @@ namespace SonicRetro.SAModel.SAMDL
 
         public static Dictionary<string, Bitmap> GetTextures(string filename)
         {
-            Dictionary<string, Bitmap> functionReturnValue = new Dictionary<string,Bitmap>();
-            PVM pvmfile = new PVM();
-            PvpClut pvp = null;
+            Dictionary<string, Bitmap> functionReturnValue = new Dictionary<string, Bitmap>();
+            bool gvm = false;
+            ArchiveModule pvmfile = null;
+            switch (Path.GetExtension(filename).ToLowerInvariant())
+            {
+                case ".pvm":
+                    pvmfile = new PVM();
+                    break;
+                case ".gvm":
+                    pvmfile = new GVM();
+                    gvm = true;
+                    break;
+            }
+            VrSharp.VpClut pvp = null;
             Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
             pvmdata = pvmfile.TranslateData(ref pvmdata);
             ArchiveFileList pvmentries = pvmfile.GetFileList(ref pvmdata);
@@ -361,20 +429,20 @@ namespace SonicRetro.SAModel.SAMDL
                 byte[] data = new byte[file.Length];
                 pvmdata.Seek(file.Offset, SeekOrigin.Begin);
                 pvmdata.Read(data, 0, (int)file.Length);
-                PvrTexture vrfile = new PvrTexture(data);
+                VrSharp.VrTexture vrfile = gvm ? (VrSharp.VrTexture)new VrSharp.GvrTexture.GvrTexture(data) : (VrSharp.VrTexture)new VrSharp.PvrTexture.PvrTexture(data);
                 if (vrfile.NeedsExternalClut())
                 {
                     using (OpenFileDialog a = new OpenFileDialog
                     {
-                        DefaultExt = "pvp",
-                        Filter = "PVP Files|*.pvp",
+                        DefaultExt = gvm ? "gvp" : "pvp",
+                        Filter = gvm ? "GVP Files|*.gvp" : "PVP Files|*.pvp",
                         InitialDirectory = System.IO.Path.GetDirectoryName(filename),
                         Title = "External palette file"
                     })
                     {
                         if (pvp == null)
                             if (a.ShowDialog() == DialogResult.OK)
-                                pvp = new PvpClut(a.FileName);
+                                pvp = gvm ? (VrSharp.VpClut)new VrSharp.GvrTexture.GvpClut(a.FileName) : (VrSharp.VpClut)new PvpClut(a.FileName);
                             else
                                 return new Dictionary<string, Bitmap>();
                     }
@@ -394,7 +462,7 @@ namespace SonicRetro.SAModel.SAMDL
 
         private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm" })
+            using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.gvm" })
             {
                 if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -435,6 +503,11 @@ namespace SonicRetro.SAModel.SAMDL
                             TextureBmps[i].Save(Path.Combine(p, TextureNames[i] + ".png"));
                 }
             }
+        }
+
+        private void modelTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ModelTreeForm(model).Show(this);
         }
     }
 }

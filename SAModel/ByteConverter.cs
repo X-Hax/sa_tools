@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+
 namespace SonicRetro.SAModel
 {
+    [DebuggerNonUserCode]
     public static class ByteConverter
     {
         public static bool BigEndian { get; set; }

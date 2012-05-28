@@ -37,6 +37,13 @@ namespace SonicRetro.SAModel
             Z = z;
         }
 
+        public Vertex(float[] data)
+        {
+            X = data[0];
+            Y = data[1];
+            Z = data[2];
+        }
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();

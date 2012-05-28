@@ -312,7 +312,7 @@ namespace SonicRetro.SAModel.SALVL
         {
             if (!loaded) return;
             float mindist = float.PositiveInfinity;
-            float dist;
+            HitResult dist;
             Item item = null;
             Vector3 mousepos = new Vector3(e.X, e.Y, 0);
             Viewport viewport = d3ddevice.Viewport;
@@ -337,9 +337,9 @@ namespace SonicRetro.SAModel.SALVL
                     if (display)
                     {
                         dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
-                        if (dist > 0 & dist < mindist)
+                        if (dist.IsHit & dist.Distance < mindist)
                         {
-                            mindist = dist;
+                            mindist = dist.Distance;
                             item = LevelData.LevelItems[i];
                         }
                     }
@@ -624,8 +624,8 @@ namespace SonicRetro.SAModel.SALVL
                                     objstream.WriteLine();
                                     currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
                                     break;
+                                case PolyType.NPoly:
                                 case PolyType.Strips:
-                                case PolyType.Strips2:
                                     for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
                                     {
                                         bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;
@@ -663,8 +663,8 @@ namespace SonicRetro.SAModel.SALVL
                                     objstream.WriteLine();
                                     currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
                                     break;
+                                case PolyType.NPoly:
                                 case PolyType.Strips:
-                                case PolyType.Strips2:
                                     for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
                                     {
                                         bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;

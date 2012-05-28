@@ -7,14 +7,14 @@ using SonicRetro.SAModel.SADXLVL2;
 
 namespace SADXObjectDefinitions.Common
 {
-    public class DashPanel : ObjectDefinition
+    public class Cylinder : ObjectDefinition
     {
         private SonicRetro.SAModel.Object model;
         private Microsoft.DirectX.Direct3D.Mesh[] meshes;
 
         public override void Init(ObjectData data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Dash Panel/Model.sa1mdl");
+            model = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
@@ -22,7 +22,8 @@ namespace SADXObjectDefinitions.Common
         {
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+            transform.RotateXYZLocal(0, item.Rotation.Y, 0);
+            transform.ScaleLocal((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.X + 10) / 5f);
             HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
             transform.Pop();
             return result;
@@ -33,46 +34,15 @@ namespace SADXObjectDefinitions.Common
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
-            result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+            transform.RotateXYZLocal(0, item.Rotation.Y, 0);
+            transform.ScaleLocal((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.X + 10) / 5f);
+            result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
             if (selected)
                 result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
             transform.Pop();
             return result.ToArray();
         }
 
-        public override string Name { get { return "Dash Panel"; } }
-
-        public override Type ObjectType { get { return typeof(DashPanelSETItem); } }
-    }
-
-    public class DashPanelSETItem : SETItem
-    {
-        public DashPanelSETItem() : base() { }
-        public DashPanelSETItem(byte[] file, int address) : base(file, address) { }
-
-        public float Speed
-        {
-            get
-            {
-                return Scale.X > 0 ? Scale.X : 14.0f;
-            }
-            set
-            {
-                Scale.X = value > 0 ? value : 14.0f;
-            }
-        }
-
-        public float DisableTime
-        {
-            get
-            {
-                return Scale.Y > 0 ? Scale.Y : 60.0f;
-            }
-            set
-            {
-                Scale.Y = value > 0 ? value : 60.0f;
-            }
-        }
+        public override string Name { get { return "Solid Cylinder"; } }
     }
 }

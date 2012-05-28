@@ -1,40 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SonicRetro.SAModel
 {
     public class Object
     {
+        [Browsable(false)]
         public ObjectFlags Flags { get; set; }
+        [Browsable(false)]
         public Attach Attach { get; set; }
         public Vertex Position { get; set; }
         public Rotation Rotation { get; set; }
         public Vertex Scale { get; set; }
+        [Browsable(false)]
         public List<Object> Children { get; set; }
         internal Object Sibling { get; set; }
         public string Name { get; set; }
+
+        [DefaultValue(true)]
+        public bool Render { get { return (Flags & ObjectFlags.NoDisplay) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoDisplay) | (value ? 0 : ObjectFlags.NoDisplay)); } }
+        [DefaultValue(true)]
+        public bool Animate { get { return (Flags & ObjectFlags.NoAnimate) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoAnimate) | (value ? 0 : ObjectFlags.NoAnimate)); } }
+        [DefaultValue(true)]
+        public bool Morph { get { return (Flags & ObjectFlags.NoMorph) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoMorph) | (value ? 0 : ObjectFlags.NoMorph)); } }
 
         public static int Size { get { return 0x34; } }
 
         public Object()
         {
-            Name = "object_" + DateTime.Now.Ticks.ToString("X") + rand.Next(0, 256).ToString("X2");
+            Name = "object_" + GenerateIdentifier();
             Position = new Vertex();
             Rotation = new Rotation();
             Scale = new Vertex(1, 1, 1);
         }
 
         public Object(byte[] file, int address, uint imageBase, ModelFormat format)
+            : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
+
+        public Object(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+            : this(file, address, imageBase, format, labels, false) { }
+
+        public Object(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, bool forceBasic)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
-            Name = "object_" + address.ToString("X8");
+            if (labels.ContainsKey(address))
+                Name = labels[address];
+            else
+                Name = "object_" + address.ToString("X8");
             Flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
             int tmpaddr = ByteConverter.ToInt32(file, address + 4);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                Attach = new Attach(file, tmpaddr, imageBase, format);
+                Attach = new Attach(file, tmpaddr, imageBase, format, labels, forceBasic);
             }
             Position = new Vertex(file, address + 8);
             Rotation = new Rotation(file, address + 0x14);
@@ -45,7 +65,7 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                child = new Object(file, tmpaddr, imageBase, format);
+                child = new Object(file, tmpaddr, imageBase, format, labels);
             }
             while (child != null)
             {
@@ -56,56 +76,11 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                Sibling = new Object(file, tmpaddr, imageBase, format);
+                Sibling = new Object(file, tmpaddr, imageBase, format, labels);
             }
         }
 
-        public Object(Dictionary<string, Dictionary<string, string>> INI, string groupname)
-        {
-            Dictionary<string, string> group = INI[groupname];
-            Name = groupname;
-            Flags = (ObjectFlags)Enum.Parse(typeof(ObjectFlags), group["Flags"]);
-            if (group.ContainsKey("Attach"))
-                Attach = new Attach(INI, group["Attach"]);
-            Position = new Vertex(group["Position"]);
-            Rotation = new Rotation(group["Rotation"]);
-            Scale = new Vertex(group["Scale"]);
-            Children = new List<Object>();
-            if (group.ContainsKey("Children"))
-            {
-                string[] chldrn = group["Children"].Split(',');
-                foreach (string item in chldrn)
-                    Children.Add(new Object(INI, item));
-            }
-        }
-
-        public static Object LoadFromFile(string filename)
-        {
-            ByteConverter.BigEndian = false;
-            byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = ByteConverter.ToUInt64(file, 0);
-            if (magic == 0x00004C444D314153u)
-                return new Object(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA1);
-            else if (magic == 0x00004C444D324153u)
-                return new Object(file, ByteConverter.ToInt32(file, 8), 0, ModelFormat.SA2);
-            else
-                throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
-        }
-
-        public static bool CheckModelFile(string filename)
-        {
-            ByteConverter.BigEndian = false;
-            byte[] file = System.IO.File.ReadAllBytes(filename);
-            ulong magic = ByteConverter.ToUInt64(file, 0);
-            if (magic == 0x00004C444D314153u)
-                return true;
-            else if (magic == 0x00004C444D324153u)
-                return true;
-            else
-                return false;
-        }
-
-        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> attachaddrs, out uint address)
+        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> labels, out uint address)
         {
             if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
             else ByteConverter.BigEndian = false;
@@ -118,28 +93,37 @@ namespace SonicRetro.SAModel
             byte[] tmpbyte;
             if (Children.Count > 0)
             {
-                result.Align(4);
-                result.AddRange(Children[0].GetBytes(imageBase, format, out childaddr));
-                childaddr += imageBase;
-            }
-            if (Sibling != null)
-            {
-                result.Align(4);
-                tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, format, out siblingaddr);
-                siblingaddr += imageBase + (uint)result.Count;
-                result.AddRange(tmpbyte);
-            }
-            if (Attach != null)
-            {
-                if (attachaddrs.ContainsKey(Attach.Name))
-                    attachaddr = attachaddrs[Attach.Name];
+                if (labels.ContainsKey(Children[0].Name))
+                    childaddr = labels[Children[0].Name];
                 else
                 {
                     result.Align(4);
-                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, format, out attachaddr);
+                    result.AddRange(Children[0].GetBytes(imageBase, format, labels, out childaddr));
+                    childaddr += imageBase;
+                }
+            }
+            if (Sibling != null)
+            {
+                if (labels.ContainsKey(Sibling.Name))
+                    siblingaddr = labels[Sibling.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, format, labels, out siblingaddr);
+                    siblingaddr += imageBase + (uint)result.Count;
+                    result.AddRange(tmpbyte);
+                }
+            }
+            if (Attach != null)
+            {
+                if (labels.ContainsKey(Attach.Name))
+                    attachaddr = labels[Attach.Name];
+                else
+                {
+                    result.Align(4);
+                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, format, labels, out attachaddr);
                     attachaddr += imageBase + (uint)result.Count;
                     result.AddRange(tmpbyte);
-                    attachaddrs.Add(Attach.Name, attachaddr);
                 }
             }
             result.Align(4);
@@ -151,6 +135,7 @@ namespace SonicRetro.SAModel
             result.AddRange(Scale.GetBytes());
             result.AddRange(ByteConverter.GetBytes(childaddr));
             result.AddRange(ByteConverter.GetBytes(siblingaddr));
+            labels.Add(Name, address + imageBase);
             return result.ToArray();
         }
 
@@ -165,68 +150,28 @@ namespace SonicRetro.SAModel
             return GetBytes(imageBase, format, out address);
         }
 
-        public void Save(Dictionary<string, Dictionary<string, string>> INI)
-        {
-            Dictionary<string, string> group = new Dictionary<string, string>();
-            group.Add("Flags", Flags.ToString());
-            if (Attach != null)
-            {
-                group.Add("Attach", Attach.Name);
-                Attach.Save(INI);
-            }
-            group.Add("Position", Position.ToString());
-            group.Add("Rotation", Rotation.ToString());
-            group.Add("Scale", Scale.ToString());
-            if (Children.Count > 0)
-            {
-                List<string> chldrn = new List<string>();
-                foreach (Object child in Children)
-                {
-                    chldrn.Add(child.Name);
-                    child.Save(INI);
-                }
-                group.Add("Children", string.Join(",", chldrn.ToArray()));
-            }
-            if (!INI.ContainsKey(Name))
-                INI.Add(Name, group);
-        }
-
-        public void SaveToFile(string filename, ModelFormat format)
-        {
-            ByteConverter.BigEndian = false;
-            List<byte> file = new List<byte>();
-            switch (format)
-            {
-                case ModelFormat.SA1:
-                    file.AddRange(ByteConverter.GetBytes(0x00004C444D314153u));
-                    uint addr = 0;
-                    byte[] mdl = GetBytes(0x10, ModelFormat.SA1, out addr);
-                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-                    file.Align(0x10);
-                    file.AddRange(mdl);
-                    break;
-                case ModelFormat.SADX:
-                    throw new ArgumentException("Cannot save SADX format models to file!", "format");
-                case ModelFormat.SA2:
-                    file.AddRange(ByteConverter.GetBytes(0x00004C444D314153u));
-                    addr = 0;
-                    mdl = GetBytes(0x10, ModelFormat.SA2, out addr);
-                    file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-                    file.Align(0x10);
-                    file.AddRange(mdl);
-                    break;
-                case ModelFormat.SA2B:
-                    throw new ArgumentException("Cannot save SA2B format levels to file!", "format");
-            }
-            System.IO.File.WriteAllBytes(filename, file.ToArray());
-        }
-
         public Object[] GetObjects()
         {
             List<Object> result = new List<Object>() { this };
             foreach (Object item in Children)
                 result.AddRange(item.GetObjects());
             return result.ToArray();
+        }
+
+        public int CountAnimated()
+        {
+            int result = (Flags & ObjectFlags.NoAnimate) == ObjectFlags.NoAnimate ? 0 : 1;
+            foreach (Object item in Children)
+                result += item.CountAnimated();
+            return result;
+        }
+
+        public int CountMorph()
+        {
+            int result = (Flags & ObjectFlags.NoMorph) == ObjectFlags.NoMorph ? 0 : 1;
+            foreach (Object item in Children)
+                result += item.CountMorph();
+            return result;
         }
 
         public Collada141.COLLADA ToCollada(int texcount)
@@ -303,6 +248,16 @@ namespace SonicRetro.SAModel
                         {
                             new Collada141.effectFx_profile_abstractProfile_COMMON()
                             {
+                                Items = new object[]
+                                {
+                                    new Collada141.common_newparam_type()
+                                    {
+                                         sid = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "_sampler",
+                                          Item = new Collada141.fx_sampler2D_common()
+                                          { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
+                                          ItemElementName = Collada141.ItemChoiceType.sampler2D
+                                    }
+                                },
                                 technique = new Collada141.effectFx_profile_abstractProfile_COMMONTechnique()
                                 {
                                     sid = "standard",
@@ -312,7 +267,7 @@ namespace SonicRetro.SAModel
                                         {
                                             Item = new Collada141.common_color_or_texture_typeTexture()
                                             {
-                                                texture = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo),
+                                                texture = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "_sampler",
                                                 texcoord = "CHANNEL0"
                                             }
                                         },
@@ -477,8 +432,8 @@ namespace SonicRetro.SAModel
                             }
                             currentstriptotal += 4;
                             break;
+                        case PolyType.NPoly:
                         case PolyType.Strips:
-                        case PolyType.Strips2:
                             bool flip = !((Strip)poly).Reversed;
                             for (int k = 0; k < poly.Indexes.Length - 2; k++)
                             {
@@ -592,6 +547,11 @@ namespace SonicRetro.SAModel
             return node;
         }
 
-        internal static Random rand = new Random();
+        static readonly Random rand = new Random();
+
+        internal static string GenerateIdentifier()
+        {
+            return DateTime.Now.Ticks.ToString("X") + rand.Next(0, 65536).ToString("X4");
+        }
     }
 }

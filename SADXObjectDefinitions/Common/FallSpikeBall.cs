@@ -10,39 +10,42 @@ namespace SADXObjectDefinitions.Common
     public class FallSpikeBall : ObjectDefinition
     {
         private SonicRetro.SAModel.Object ballmodel;
-        private Microsoft.DirectX.Direct3D.Mesh[] ballmeshes;
+        private Mesh[] ballmeshes;
         private SonicRetro.SAModel.Object cylindermodel;
-        private Microsoft.DirectX.Direct3D.Mesh[] cylindermeshes;
+        private Mesh[] cylindermeshes;
+        private SonicRetro.SAModel.Object spheremodel;
+        private Mesh[] spheremeshes;
 
-        public override void Init(Dictionary<string, string> data, string name, Device dev)
+        public override void Init(ObjectData data, string name, Device dev)
         {
             ballmodel = ObjectHelper.LoadModel("Objects/FallBall/Model.sa1mdl");
             ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
             cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.sa1mdl");
             cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
+            spheremodel = ObjectHelper.LoadModel("Objects/Collision/Sphere Model.sa1mdl");
+            spheremeshes = ObjectHelper.GetMeshes(spheremodel, dev);
         }
 
-        public override float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
-            float mindist = float.PositiveInfinity;
+            HitResult result = HitResult.NoHit;
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(0, item.Rotation.Y, 0);
-            float dist = ballmodel.CheckHit(Near, Far, Viewport, Projection, View, transform, ballmeshes);
-            if (dist > 0 & dist < mindist)
-                mindist = dist;
+            result = HitResult.Min(result, ballmodel.CheckHit(Near, Far, Viewport, Projection, View, transform, ballmeshes));
             transform.Pop();
             double v24 = item.Scale.X * 0.05000000074505806;
             transform.Push();
             double v22 = item.Scale.X * 0.5 + item.Position.Y;
             transform.TranslateLocal(item.Position.X, (float)v22, item.Position.Z);
             transform.ScaleLocal(1.0f, (float)v24, 1.0f);
-            dist = cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes);
-            if (dist > 0 & dist < mindist)
-                mindist = dist;
+            result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
             transform.Pop();
-            if (float.IsPositiveInfinity(mindist)) return -1;
-            return mindist;
+            transform.Push();
+            transform.TranslateLocal(item.Position.X, item.Position.Y + item.Scale.Z, item.Position.Z);
+            result = HitResult.Min(result, spheremodel.CheckHit(Near, Far, Viewport, Projection, View, transform, spheremeshes));
+            transform.Pop();
+            return result;
         }
 
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
@@ -60,9 +63,15 @@ namespace SADXObjectDefinitions.Common
             double v22 = item.Scale.X * 0.5 + item.Position.Y;
             transform.TranslateLocal(item.Position.X, (float)v22, item.Position.Z);
             transform.ScaleLocal(1.0f, (float)v24, 1.0f);
-            result.AddRange(cylindermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), cylindermeshes));
+            result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
             if (selected)
                 result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
+            transform.Pop();
+            transform.Push();
+            transform.TranslateLocal(item.Position.X, item.Position.Y + item.Scale.Z, item.Position.Z);
+            result.AddRange(spheremodel.DrawModelTree(dev, transform, null, spheremeshes));
+            if (selected)
+                result.AddRange(spheremodel.DrawModelTreeInvert(dev, transform, spheremeshes));
             transform.Pop();
             return result.ToArray();
         }

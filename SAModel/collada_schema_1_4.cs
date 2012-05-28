@@ -497,6 +497,8 @@ namespace Collada141
             set { mipmap_biasField = value; }
         }
 
+        public instance_image instance_image { get; set; }
+
         /// <remarks />
         [XmlElement("extra")]
         public extra[] extra
@@ -554,6 +556,13 @@ namespace Collada141
 
         /// <remarks />
         LINEAR_MIPMAP_LINEAR,
+    }
+
+    [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
+    public class instance_image
+    {
+        [XmlAttribute(DataType = "anyURI")]
+        public string url { get; set; }
     }
 
     /// <remarks />

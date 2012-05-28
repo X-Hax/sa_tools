@@ -1,9 +1,10 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SonicRetro.SAModel.Direct3D;
-using System.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
+using SADXPCTools;
+using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -36,7 +37,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
 
-        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
@@ -195,7 +196,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             LevelData.SETItems[LevelData.Character].Remove(this);
         }
 
-        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
         }
@@ -269,7 +270,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             throw new System.NotImplementedException();
         }
 
-        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             MatrixStack transform = new MatrixStack();
             transform.Push();
@@ -323,7 +324,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
-        public override float CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
             return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
@@ -473,12 +474,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
         }
 
-        public Dictionary<string, string> Save(string path, int i)
+        public DeathZoneFlags Save(string path, int i)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            result.Add("Flags", Flags.ToString());
-            Model.SaveToFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), ModelFormat.SA1);
-            return result;
+            ModelFile.CreateFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, ModelFormat.SA1);
+            return new DeathZoneFlags() { Flags = Flags };
         }
     }
 }

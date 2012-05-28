@@ -60,7 +60,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.OK_Button.Name = "OK_Button";
             this.OK_Button.Size = new System.Drawing.Size(67, 23);
             this.OK_Button.TabIndex = 0;
-            this.OK_Button.Text = "OK";
+            this.OK_Button.Text = "&OK";
             // 
             // Label1
             // 

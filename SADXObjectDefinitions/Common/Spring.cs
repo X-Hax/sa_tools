@@ -12,20 +12,20 @@ namespace SADXObjectDefinitions.Common
         private SonicRetro.SAModel.Object model;
         private Microsoft.DirectX.Direct3D.Mesh[] meshes;
 
-        public override void Init(Dictionary<string, string> data, string name, Device dev)
+        public override void Init(ObjectData data, string name, Device dev)
         {
             model = ObjectHelper.LoadModel("Objects/Spring/Model.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
         }
 
-        public override float CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
-            float dist = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
+            HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
             transform.Pop();
-            return dist;
+            return result;
         }
 
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
