@@ -36,6 +36,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteConverter.cs" />
+    <Compile Include="EndianReader.cs" />
+    <Compile Include="EndianWriter.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="IniFile.cs" />

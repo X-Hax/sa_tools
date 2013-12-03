@@ -82,9 +82,9 @@ namespace SADXTweaker2
                 deleteButton.Enabled = groupBox1.Enabled = copyButton.Enabled = pasteButton.Enabled = true;
                 cgMovie.Value = CurrentItem.CGMovie;
                 level.SelectedIndex = (int)CurrentItem.Level;
-                nextLevel.Value = new LevelAct(CurrentItem.NextLevel, CurrentItem.NextAct);
+                nextLevel.Value = new SA1LevelAct(CurrentItem.NextLevel, CurrentItem.NextAct);
                 entrance.Value = CurrentItem.StartPos;
-                altNextLevel.Value = new LevelAct(CurrentItem.AltNextLevel, CurrentItem.AltNextAct);
+                altNextLevel.Value = new SA1LevelAct(CurrentItem.AltNextLevel, CurrentItem.AltNextAct);
                 altEntrance.Value = CurrentItem.AltStartPos;
             }
         }
@@ -94,7 +94,7 @@ namespace SADXTweaker2
             List<NextLevelListEntry> currentList = new List<NextLevelListEntry>(CurrentList);
             currentList.Add(new NextLevelListEntry());
             CurrentList = currentList.ToArray();
-            objectList.Items.Add(currentList.Count - 1 + ": " + LevelIDs.HedgehogHammer.ToString());
+            objectList.Items.Add(currentList.Count - 1 + ": " + SA1LevelIDs.HedgehogHammer.ToString());
             objectList.SelectedIndex = currentList.Count - 1;
         }
 
@@ -115,7 +115,7 @@ namespace SADXTweaker2
 
         private void level_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CurrentItem.Level = (LevelIDs)level.SelectedIndex;
+            CurrentItem.Level = (SA1LevelIDs)level.SelectedIndex;
             objectList.Items[objectList.SelectedIndex] = objectList.SelectedIndex + ": " + CurrentItem.Level.ToString();
         }
 

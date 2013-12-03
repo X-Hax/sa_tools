@@ -73,7 +73,8 @@ namespace SADXTweaker2
             ReloadObjectData();
         }
 
-        private void objectList_SelectedIndexChanged(object sender, EventArgs e) { ReloadObjectData(); }
+        bool noreload = false;
+        private void objectList_SelectedIndexChanged(object sender, EventArgs e) { if (!noreload) ReloadObjectData(); }
 
         private void ReloadObjectData()
         {
@@ -89,7 +90,9 @@ namespace SADXTweaker2
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
             CurrentItem = richTextBox1.Text.Replace(Environment.NewLine, "\n");
+            noreload = true;
             objectList.Items[objectList.SelectedIndex] = objectList.SelectedIndex + ": " + CurrentItem.Split('\n')[0];
+            noreload = false;
         }
     }
 }

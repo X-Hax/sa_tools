@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{11716985-0288-4E2D-AE7A-59AA6BCB70B9}</ProjectGuid>
+    <ProjectGuid>{744DBD22-7CD6-4C2C-B653-40030EAFB570}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>split</RootNamespace>
@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FraGag.Compression.Prs">
+      <HintPath>..\..\..\..\Downloads\FraGag-prs.net-f4b8427\FraGag.Compression.Prs\bin\Release\FraGag.Compression.Prs.dll</HintPath>
+    </Reference>
     <Reference Include="SAModel">
       <HintPath>..\..\SAModel\SAModel\bin\Release\SAModel.dll</HintPath>
     </Reference>
@@ -46,13 +49,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SADXPCTools\SADXPCTools.csproj">
       <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
       <Name>SADXPCTools</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

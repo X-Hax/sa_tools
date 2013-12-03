@@ -189,7 +189,7 @@ namespace SADXPCTools
                 DefaultValueAttribute defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
                 if (defattr != null)
                     defval = defattr.Value;
-                if (!object.Equals(item, defval))
+                if (Attribute.GetCustomAttribute(member, typeof(IniAlwaysIncludeAttribute), true) != null || !object.Equals(item, defval))
                     SerializeInternal(membername, item, ini, newgroup, false, Attribute.GetCustomAttribute(member, typeof(IniCollectionAttribute)) == null);
             }
         }
@@ -612,4 +612,7 @@ namespace SADXPCTools
 
         public string Name { get; private set; }
     }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    public sealed class IniAlwaysIncludeAttribute : Attribute { }
 }

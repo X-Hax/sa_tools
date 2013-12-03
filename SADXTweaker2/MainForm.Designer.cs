@@ -36,10 +36,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.cascadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tileHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tileVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelTextureListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,12 +44,21 @@
             this.soundTestListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.musicListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.soundListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bugReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stringListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nextLevelListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutsceneTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recapScreenEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nPCMessageEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelClearFlagListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.messageFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.cascadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tileHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tileVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bugReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chaoMessageFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -120,7 +125,12 @@
             this.stringListEditorToolStripMenuItem,
             this.nextLevelListEditorToolStripMenuItem,
             this.cutsceneTextEditorToolStripMenuItem,
+            this.recapScreenEditorToolStripMenuItem,
+            this.nPCMessageEditorToolStripMenuItem,
             this.levelClearFlagListEditorToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.messageFileEditorToolStripMenuItem,
+            this.chaoMessageFileEditorToolStripMenuItem,
             this.toolStripSeparator2,
             this.cascadeToolStripMenuItem,
             this.tileHorizontalToolStripMenuItem,
@@ -129,32 +139,6 @@
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
             this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowToolStripMenuItem.Text = "&Window";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
-            // 
-            // cascadeToolStripMenuItem
-            // 
-            this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.cascadeToolStripMenuItem.Text = "&Cascade";
-            this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.cascadeToolStripMenuItem_Click);
-            // 
-            // tileHorizontalToolStripMenuItem
-            // 
-            this.tileHorizontalToolStripMenuItem.Name = "tileHorizontalToolStripMenuItem";
-            this.tileHorizontalToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.tileHorizontalToolStripMenuItem.Text = "Tile &Horizontal";
-            this.tileHorizontalToolStripMenuItem.Click += new System.EventHandler(this.tileHorizontalToolStripMenuItem_Click);
-            // 
-            // tileVerticalToolStripMenuItem
-            // 
-            this.tileVerticalToolStripMenuItem.Name = "tileVerticalToolStripMenuItem";
-            this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.tileVerticalToolStripMenuItem.Text = "Tile &Vertical";
-            this.tileVerticalToolStripMenuItem.Click += new System.EventHandler(this.tileVerticalToolStripMenuItem_Click);
             // 
             // objectListEditorToolStripMenuItem
             // 
@@ -212,21 +196,6 @@
             this.soundListEditorToolStripMenuItem.Text = "Sound List Editor";
             this.soundListEditorToolStripMenuItem.Click += new System.EventHandler(this.soundListEditorToolStripMenuItem_Click);
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bugReportToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
-            // 
-            // bugReportToolStripMenuItem
-            // 
-            this.bugReportToolStripMenuItem.Name = "bugReportToolStripMenuItem";
-            this.bugReportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.bugReportToolStripMenuItem.Text = "&Bug Report...";
-            this.bugReportToolStripMenuItem.Click += new System.EventHandler(this.bugReportToolStripMenuItem_Click);
-            // 
             // stringListEditorToolStripMenuItem
             // 
             this.stringListEditorToolStripMenuItem.Name = "stringListEditorToolStripMenuItem";
@@ -248,12 +217,86 @@
             this.cutsceneTextEditorToolStripMenuItem.Text = "Cutscene Text Editor";
             this.cutsceneTextEditorToolStripMenuItem.Click += new System.EventHandler(this.cutsceneTextEditorToolStripMenuItem_Click);
             // 
+            // recapScreenEditorToolStripMenuItem
+            // 
+            this.recapScreenEditorToolStripMenuItem.Name = "recapScreenEditorToolStripMenuItem";
+            this.recapScreenEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.recapScreenEditorToolStripMenuItem.Text = "Recap Screen Editor";
+            this.recapScreenEditorToolStripMenuItem.Click += new System.EventHandler(this.recapScreenEditorToolStripMenuItem_Click);
+            // 
+            // nPCMessageEditorToolStripMenuItem
+            // 
+            this.nPCMessageEditorToolStripMenuItem.Name = "nPCMessageEditorToolStripMenuItem";
+            this.nPCMessageEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.nPCMessageEditorToolStripMenuItem.Text = "NPC Message Editor";
+            this.nPCMessageEditorToolStripMenuItem.Click += new System.EventHandler(this.nPCMessageEditorToolStripMenuItem_Click);
+            // 
             // levelClearFlagListEditorToolStripMenuItem
             // 
             this.levelClearFlagListEditorToolStripMenuItem.Name = "levelClearFlagListEditorToolStripMenuItem";
             this.levelClearFlagListEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.levelClearFlagListEditorToolStripMenuItem.Text = "Level Clear Flag List Editor";
             this.levelClearFlagListEditorToolStripMenuItem.Click += new System.EventHandler(this.levelClearFlagListEditorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(208, 6);
+            // 
+            // messageFileEditorToolStripMenuItem
+            // 
+            this.messageFileEditorToolStripMenuItem.Name = "messageFileEditorToolStripMenuItem";
+            this.messageFileEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.messageFileEditorToolStripMenuItem.Text = "Message File Editor";
+            this.messageFileEditorToolStripMenuItem.Click += new System.EventHandler(this.messageFileEditorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
+            // 
+            // cascadeToolStripMenuItem
+            // 
+            this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
+            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.cascadeToolStripMenuItem.Text = "&Cascade";
+            this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.cascadeToolStripMenuItem_Click);
+            // 
+            // tileHorizontalToolStripMenuItem
+            // 
+            this.tileHorizontalToolStripMenuItem.Name = "tileHorizontalToolStripMenuItem";
+            this.tileHorizontalToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.tileHorizontalToolStripMenuItem.Text = "Tile &Horizontal";
+            this.tileHorizontalToolStripMenuItem.Click += new System.EventHandler(this.tileHorizontalToolStripMenuItem_Click);
+            // 
+            // tileVerticalToolStripMenuItem
+            // 
+            this.tileVerticalToolStripMenuItem.Name = "tileVerticalToolStripMenuItem";
+            this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.tileVerticalToolStripMenuItem.Text = "Tile &Vertical";
+            this.tileVerticalToolStripMenuItem.Click += new System.EventHandler(this.tileVerticalToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bugReportToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
+            // 
+            // bugReportToolStripMenuItem
+            // 
+            this.bugReportToolStripMenuItem.Name = "bugReportToolStripMenuItem";
+            this.bugReportToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.bugReportToolStripMenuItem.Text = "&Bug Report...";
+            this.bugReportToolStripMenuItem.Click += new System.EventHandler(this.bugReportToolStripMenuItem_Click);
+            // 
+            // chaoMessageFileEditorToolStripMenuItem
+            // 
+            this.chaoMessageFileEditorToolStripMenuItem.Name = "chaoMessageFileEditorToolStripMenuItem";
+            this.chaoMessageFileEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.chaoMessageFileEditorToolStripMenuItem.Text = "Chao Message File Editor";
+            this.chaoMessageFileEditorToolStripMenuItem.Click += new System.EventHandler(this.chaoMessageFileEditorToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -302,6 +345,11 @@
         private System.Windows.Forms.ToolStripMenuItem nextLevelListEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cutsceneTextEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem levelClearFlagListEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recapScreenEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem messageFileEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nPCMessageEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem chaoMessageFileEditorToolStripMenuItem;
     }
 }
 

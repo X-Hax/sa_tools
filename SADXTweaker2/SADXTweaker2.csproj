@@ -57,6 +57,30 @@
     <Compile Include="BugReportDialog.designer.cs">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChaoMessageFileEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChaoMessageFileEditor.Designer.cs">
+      <DependentUpon>ChaoMessageFileEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NPCMessageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NPCMessageEditor.Designer.cs">
+      <DependentUpon>NPCMessageEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageFileEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageFileEditor.Designer.cs">
+      <DependentUpon>MessageFileEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RecapScreenEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RecapScreenEditor.Designer.cs">
+      <DependentUpon>RecapScreenEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="CutsceneTextEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,6 +173,12 @@
     <Compile Include="TextureListEditor.Designer.cs">
       <DependentUpon>TextureListEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TimeControl.designer.cs">
+      <DependentUpon>TimeControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="TrialLevelListEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +190,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChaoMessageFileEditor.resx">
+      <DependentUpon>ChaoMessageFileEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NPCMessageEditor.resx">
+      <DependentUpon>NPCMessageEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageFileEditor.resx">
+      <DependentUpon>MessageFileEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RecapScreenEditor.resx">
+      <DependentUpon>RecapScreenEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CutsceneTextEditor.resx">
       <DependentUpon>CutsceneTextEditor.cs</DependentUpon>
@@ -215,6 +257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TextureListEditor.resx">
       <DependentUpon>TextureListEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimeControl.resx">
+      <DependentUpon>TimeControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TrialLevelListEditor.resx">
       <DependentUpon>TrialLevelListEditor.cs</DependentUpon>

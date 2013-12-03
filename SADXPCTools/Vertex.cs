@@ -19,9 +19,9 @@ namespace SADXPCTools
 
         public Vertex(byte[] file, int address)
         {
-            X = BitConverter.ToSingle(file, address);
-            Y = BitConverter.ToSingle(file, address + 4);
-            Z = BitConverter.ToSingle(file, address + 8);
+            X = ByteConverter.ToSingle(file, address);
+            Y = ByteConverter.ToSingle(file, address + 4);
+            Z = ByteConverter.ToSingle(file, address + 8);
         }
 
         public Vertex(string data)
@@ -49,15 +49,23 @@ namespace SADXPCTools
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            result.AddRange(BitConverter.GetBytes(X));
-            result.AddRange(BitConverter.GetBytes(Y));
-            result.AddRange(BitConverter.GetBytes(Z));
+            result.AddRange(ByteConverter.GetBytes(X));
+            result.AddRange(ByteConverter.GetBytes(Y));
+            result.AddRange(ByteConverter.GetBytes(Z));
             return result.ToArray();
         }
 
         public override string ToString()
         {
             return X.ToString(NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(NumberFormatInfo.InvariantInfo);
+        }
+
+        public string ToStruct()
+        {
+            if (X == 0 && Y == 0 && Z == 0)
+                return "{ 0 }";
+            else
+                return "{ " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " }";
         }
 
         public float[] ToArray()

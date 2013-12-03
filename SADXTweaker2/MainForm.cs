@@ -112,18 +112,23 @@ namespace SADXTweaker2
                 brd.ShowDialog(this);
         }
 
+        private void AddChildForm(Type formType, ToolStripMenuItem menuItem)
+        {
+            Form form = (Form)Activator.CreateInstance(formType);
+            form.FormClosed += new FormClosedEventHandler(form_FormClosed);
+            ActiveForms.Add(form, menuItem);
+            form.MdiParent = this;
+            form.Show();
+            menuItem.Checked = true;
+            menuItem.Enabled = false;
+        }
+
         private void AddChildForm(Type formType, string dataType, ToolStripMenuItem menuItem)
         {
             foreach (KeyValuePair<string, SADXPCTools.FileInfo> item in Program.IniData.Files)
                 if (item.Value.Type.Equals(dataType, StringComparison.OrdinalIgnoreCase))
                 {
-                    Form form = (Form)Activator.CreateInstance(formType);
-                    form.FormClosed += new FormClosedEventHandler(form_FormClosed);
-                    ActiveForms.Add(form, menuItem);
-                    form.MdiParent = this;
-                    form.Show();
-                    menuItem.Checked = true;
-                    menuItem.Enabled = false;
+                    AddChildForm(formType, menuItem);
                     return;
                 }
             MessageBox.Show(this, "No data of the specified type found!", menuItem.Text.Replace("&", ""), MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -190,9 +195,29 @@ namespace SADXTweaker2
             AddChildForm(typeof(CutsceneTextEditor), "cutscenetext", cutsceneTextEditorToolStripMenuItem);
         }
 
+        private void recapScreenEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddChildForm(typeof(RecapScreenEditor), "recapscreen", recapScreenEditorToolStripMenuItem);
+        }
+
         private void levelClearFlagListEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddChildForm(typeof(LevelClearFlagListEditor), "levelclearflags", levelClearFlagListEditorToolStripMenuItem);
+        }
+
+        private void messageFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddChildForm(typeof(MessageFileEditor), messageFileEditorToolStripMenuItem);
+        }
+
+        private void nPCMessageEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddChildForm(typeof(NPCMessageEditor), "npctext", nPCMessageEditorToolStripMenuItem);
+        }
+
+        private void chaoMessageFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddChildForm(typeof(ChaoMessageFileEditor), chaoMessageFileEditorToolStripMenuItem);
         }
     }
 }

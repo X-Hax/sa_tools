@@ -90,7 +90,7 @@ namespace SADXTweaker2
             List<LevelClearFlag> currentList = new List<LevelClearFlag>(CurrentList);
             currentList.Add(new LevelClearFlag());
             CurrentList = currentList.ToArray();
-            objectList.Items.Add(currentList.Count - 1 + ": " + LevelIDs.HedgehogHammer.ToString());
+            objectList.Items.Add(currentList.Count - 1 + ": " + SA1LevelIDs.HedgehogHammer.ToString());
             objectList.SelectedIndex = currentList.Count - 1;
         }
 
@@ -106,7 +106,7 @@ namespace SADXTweaker2
 
         private void level_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CurrentItem.Level = (LevelIDs)level.SelectedIndex;
+            CurrentItem.Level = (SA1LevelIDs)level.SelectedIndex;
             objectList.Items[objectList.SelectedIndex] = objectList.SelectedIndex + ": " + CurrentItem.Level.ToString();
         }
 

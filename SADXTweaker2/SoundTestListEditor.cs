@@ -45,8 +45,8 @@ namespace SADXTweaker2
                     musicfiles = MusicList.Load(item.Value.Filename);
                 }
             levelList.EndUpdate();
-            levelList.SelectedIndex = 0;
             axWindowsMediaPlayer1.settings.autoStart = false;
+            levelList.SelectedIndex = 0;
         }
 
         private void SoundTestListEditor_FormClosing(object sender, FormClosingEventArgs e)

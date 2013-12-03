@@ -12,19 +12,19 @@ namespace SADXTweaker2
             InitializeComponent();
         }
 
-        private string ClipboardFormat = typeof(LevelAct).AssemblyQualifiedName;
-        private List<KeyValuePair<string, LevelAct[]>> levelLists = new List<KeyValuePair<string, LevelAct[]>>();
+        private string ClipboardFormat = typeof(SA1LevelAct).AssemblyQualifiedName;
+        private List<KeyValuePair<string, SA1LevelAct[]>> levelLists = new List<KeyValuePair<string, SA1LevelAct[]>>();
 
-        private LevelAct[] CurrentList
+        private SA1LevelAct[] CurrentList
         {
             get { return levelLists[levelList.SelectedIndex].Value; }
             set
             {
-                levelLists[levelList.SelectedIndex] = new KeyValuePair<string, LevelAct[]>(levelLists[levelList.SelectedIndex].Key, value);
+                levelLists[levelList.SelectedIndex] = new KeyValuePair<string, SA1LevelAct[]>(levelLists[levelList.SelectedIndex].Key, value);
             }
         }
 
-        private LevelAct CurrentItem
+        private SA1LevelAct CurrentItem
         {
             get { return CurrentList[objectList.SelectedIndex]; }
             set { CurrentList[objectList.SelectedIndex] = value; }
@@ -36,7 +36,7 @@ namespace SADXTweaker2
             foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
                 if (item.Value.Type.Equals("bosslevellist", StringComparison.OrdinalIgnoreCase))
                 {
-                    levelLists.Add(new KeyValuePair<string, LevelAct[]>(item.Value.Filename, BossLevelList.Load(item.Value.Filename)));
+                    levelLists.Add(new KeyValuePair<string, SA1LevelAct[]>(item.Value.Filename, BossLevelList.Load(item.Value.Filename)));
                     levelList.Items.Add(item.Key);
                 }
             levelList.EndUpdate();
@@ -51,7 +51,7 @@ namespace SADXTweaker2
                     e.Cancel = true;
                     break;
                 case DialogResult.Yes:
-                    foreach (KeyValuePair<string, LevelAct[]> item in levelLists)
+                    foreach (KeyValuePair<string, SA1LevelAct[]> item in levelLists)
                         TrialLevelList.Save(item.Value, item.Key);
                     break;
             }
@@ -65,7 +65,7 @@ namespace SADXTweaker2
             objectList.Items.Clear();
             objectList.BeginUpdate();
             int i = 0;
-            foreach (LevelAct item in CurrentList)
+            foreach (SA1LevelAct item in CurrentList)
                 objectList.Items.Add(i++ + ": " + item.ToString());
             objectList.EndUpdate();
             ReloadObjectData();
@@ -86,16 +86,16 @@ namespace SADXTweaker2
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            List<LevelAct> currentList = new List<LevelAct>(CurrentList);
-            currentList.Add(new LevelAct());
+            List<SA1LevelAct> currentList = new List<SA1LevelAct>(CurrentList);
+            currentList.Add(new SA1LevelAct());
             CurrentList = currentList.ToArray();
-            objectList.Items.Add(currentList.Count - 1 + ": " + new LevelAct().ToString());
+            objectList.Items.Add(currentList.Count - 1 + ": " + new SA1LevelAct().ToString());
             objectList.SelectedIndex = currentList.Count - 1;
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            List<LevelAct> currentList = new List<LevelAct>(CurrentList);
+            List<SA1LevelAct> currentList = new List<SA1LevelAct>(CurrentList);
             int i = objectList.SelectedIndex;
             currentList.RemoveAt(i);
             CurrentList = currentList.ToArray();
@@ -119,7 +119,7 @@ namespace SADXTweaker2
         {
             if (Clipboard.ContainsData(ClipboardFormat))
             {
-                CurrentItem = (LevelAct)Clipboard.GetData(ClipboardFormat);
+                CurrentItem = (SA1LevelAct)Clipboard.GetData(ClipboardFormat);
                 ReloadObjectData();
             }
         }

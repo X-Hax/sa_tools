@@ -27,9 +27,9 @@ namespace SADXTweaker2
 
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public LevelAct Value
+        public SA1LevelAct Value
         {
-            get { return new LevelAct(level.SelectedIndex, (int)act.Value); }
+            get { return new SA1LevelAct(level.SelectedIndex, (int)act.Value); }
             set
             {
                 level.SelectedIndex = (int)value.Level;

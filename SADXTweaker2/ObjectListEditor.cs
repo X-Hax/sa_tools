@@ -12,19 +12,19 @@ namespace SADXTweaker2
             InitializeComponent();
         }
 
-        private string ClipboardFormat = typeof(ObjectListEntry).AssemblyQualifiedName;
-        private List<KeyValuePair<string, ObjectListEntry[]>> objectLists = new List<KeyValuePair<string, ObjectListEntry[]>>();
+        private string ClipboardFormat = typeof(SA1ObjectListEntry).AssemblyQualifiedName;
+        private List<KeyValuePair<string, SA1ObjectListEntry[]>> objectLists = new List<KeyValuePair<string, SA1ObjectListEntry[]>>();
 
-        private ObjectListEntry[] CurrentList
+        private SA1ObjectListEntry[] CurrentList
         {
             get { return objectLists[levelList.SelectedIndex].Value; }
             set
             {
-                objectLists[levelList.SelectedIndex] = new KeyValuePair<string, ObjectListEntry[]>(objectLists[levelList.SelectedIndex].Key, value);
+                objectLists[levelList.SelectedIndex] = new KeyValuePair<string, SA1ObjectListEntry[]>(objectLists[levelList.SelectedIndex].Key, value);
             }
         }
 
-        private ObjectListEntry CurrentItem
+        private SA1ObjectListEntry CurrentItem
         {
             get { return CurrentList[objectList.SelectedIndex]; }
             set { CurrentList[objectList.SelectedIndex] = value; }
@@ -36,7 +36,7 @@ namespace SADXTweaker2
             foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
                 if (item.Value.Type.Equals("objlist", StringComparison.OrdinalIgnoreCase))
                 {
-                    objectLists.Add(new KeyValuePair<string, ObjectListEntry[]>(item.Value.Filename, ObjectList.Load(item.Value.Filename)));
+                    objectLists.Add(new KeyValuePair<string, SA1ObjectListEntry[]>(item.Value.Filename, (SA1ObjectListEntry[])ObjectList.Load(item.Value.Filename, false)));
                     levelList.Items.Add(item.Key);
                 }
             levelList.EndUpdate();
@@ -51,7 +51,7 @@ namespace SADXTweaker2
                     e.Cancel = true;
                     break;
                 case DialogResult.Yes:
-                    foreach (KeyValuePair<string, ObjectListEntry[]> item in objectLists)
+                    foreach (KeyValuePair<string, SA1ObjectListEntry[]> item in objectLists)
                         item.Value.Save(item.Key);
                     break;
             }
@@ -65,7 +65,7 @@ namespace SADXTweaker2
             objectList.Items.Clear();
             objectList.BeginUpdate();
             int i = 0;
-            foreach (ObjectListEntry item in CurrentList)
+            foreach (SA1ObjectListEntry item in CurrentList)
                 objectList.Items.Add(i++ + ": " + item.Name);
             objectList.EndUpdate();
             ReloadObjectData();
@@ -91,8 +91,8 @@ namespace SADXTweaker2
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            List<ObjectListEntry> currentList = new List<ObjectListEntry>(CurrentList);
-            currentList.Add(new ObjectListEntry());
+            List<SA1ObjectListEntry> currentList = new List<SA1ObjectListEntry>(CurrentList);
+            currentList.Add(new SA1ObjectListEntry());
             CurrentList = currentList.ToArray();
             objectList.Items.Add(currentList.Count - 1 + ": ");
             objectList.SelectedIndex = currentList.Count - 1;
@@ -100,7 +100,7 @@ namespace SADXTweaker2
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            List<ObjectListEntry> currentList = new List<ObjectListEntry>(CurrentList);
+            List<SA1ObjectListEntry> currentList = new List<SA1ObjectListEntry>(CurrentList);
             int i = objectList.SelectedIndex;
             currentList.RemoveAt(i);
             CurrentList = currentList.ToArray();
@@ -148,7 +148,7 @@ namespace SADXTweaker2
         {
             if (Clipboard.ContainsData(ClipboardFormat))
             {
-                CurrentItem = (ObjectListEntry)Clipboard.GetData(ClipboardFormat);
+                CurrentItem = (SA1ObjectListEntry)Clipboard.GetData(ClipboardFormat);
                 ReloadObjectData();
             }
         }
