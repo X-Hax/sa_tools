@@ -41,12 +41,18 @@ namespace SonicRetro.SAModel.Direct3D
             this.UV = UV;
         }
 
-        public FVF_PositionNormalTexturedColored(VertexData data)
+        public FVF_PositionNormalTexturedColored(VertexData data, Material mat)
         {
             Position = data.Position.ToVector3();
             Normal = data.Normal.ToVector3();
             Color = data.Color.ToArgb();
-            UV = new Vector2((float)data.UV.U / 255f, (float)data.UV.V / 255f);
+            float U = data.UV.U;
+            if (mat != null && mat.FlipU)
+                U = -U;
+            float V = data.UV.V;
+            if (mat != null && mat.FlipV)
+                V = -V;
+            UV = new Vector2(U, V);
         }
     }
 }

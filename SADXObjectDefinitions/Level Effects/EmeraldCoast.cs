@@ -18,9 +18,9 @@ namespace SADXObjectDefinitions.Level_Effects
             SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Emerald Coast/Skybox Data.ini");
             if (skyboxdata.Length > act)
                 Skybox_Scale = skyboxdata[act].Far.ToVector3();
-            model1 = new SonicRetro.SAModel.ModelFile("Levels/Emerald Coast/Skybox model.sa1mdl").Model;
+            model1 = ObjectHelper.LoadModel("Levels/Emerald Coast/Skybox model.sa1mdl");
             mesh1 = ObjectHelper.GetMeshes(model1, dev);
-            model2 = new SonicRetro.SAModel.ModelFile("Levels/Emerald Coast/Skybox bottom model.sa1mdl").Model;
+            model2 = ObjectHelper.LoadModel("Levels/Emerald Coast/Skybox bottom model.sa1mdl");
             mesh2 = ObjectHelper.GetMeshes(model2, dev);
         }
 

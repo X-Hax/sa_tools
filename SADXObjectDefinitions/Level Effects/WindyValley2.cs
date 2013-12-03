@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Level_Effects
         {
             for (int i = 0; i < 3; i++)
             {
-                models[i] = new SonicRetro.SAModel.ModelFile("Levels/Windy Valley/Act 2/Skybox model " + (i + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl").Model;
+                models[i] = ObjectHelper.LoadModel("Levels/Windy Valley/Act 2/Skybox model " + (i + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl");
                 meshes[i] = ObjectHelper.GetMeshes(models[i], dev);
             }
         }

@@ -38,6 +38,11 @@
             this.ComboBox1 = new System.Windows.Forms.ComboBox();
             this.Label1 = new System.Windows.Forms.Label();
             this.fileSelector1 = new SonicRetro.SAModel.LevelExtractor.FileSelector();
+            this.label4 = new System.Windows.Forms.Label();
+            this.author = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.description = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).BeginInit();
@@ -45,8 +50,7 @@
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(205, 94);
+            this.button1.Location = new System.Drawing.Point(114, 122);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(67, 23);
             this.button1.TabIndex = 18;
@@ -161,11 +165,61 @@
             this.fileSelector1.TabIndex = 27;
             this.fileSelector1.FileNameChanged += new System.EventHandler(this.fileSelector1_FileNameChanged);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 154);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 13);
+            this.label4.TabIndex = 28;
+            this.label4.Text = "Author:";
+            // 
+            // author
+            // 
+            this.author.Location = new System.Drawing.Point(59, 151);
+            this.author.Name = "author";
+            this.author.Size = new System.Drawing.Size(213, 20);
+            this.author.TabIndex = 29;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 180);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 13);
+            this.label5.TabIndex = 30;
+            this.label5.Text = "Description:";
+            // 
+            // description
+            // 
+            this.description.AcceptsReturn = true;
+            this.description.AcceptsTab = true;
+            this.description.Location = new System.Drawing.Point(81, 177);
+            this.description.Multiline = true;
+            this.description.Name = "description";
+            this.description.Size = new System.Drawing.Size(191, 85);
+            this.description.TabIndex = 31;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(187, 97);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(77, 17);
+            this.checkBox1.TabIndex = 32;
+            this.checkBox1.Text = "Big Endian";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 129);
+            this.ClientSize = new System.Drawing.Size(284, 280);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.description);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.author);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.fileSelector1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.comboBox2);
@@ -179,6 +233,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "MainForm";
+            this.ShowIcon = false;
             this.Text = "Level Extractor";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
@@ -191,7 +246,6 @@
 
         #endregion
 
-        internal System.Windows.Forms.Button button1;
         internal System.Windows.Forms.ComboBox comboBox2;
         internal System.Windows.Forms.Label label3;
         internal System.Windows.Forms.NumericUpDown numericUpDown2;
@@ -201,6 +255,12 @@
         internal System.Windows.Forms.ComboBox ComboBox1;
         internal System.Windows.Forms.Label Label1;
         private FileSelector fileSelector1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox author;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox description;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.LevelExtractor
 {
     public partial class MainForm : Form
     {
+        Properties.Settings Settings = Properties.Settings.Default;
+
         public MainForm()
         {
             InitializeComponent();
@@ -18,6 +16,7 @@ namespace SonicRetro.SAModel.LevelExtractor
         private void MainForm_Load(object sender, EventArgs e)
         {
             comboBox2.SelectedIndex = 1;
+            author.Text = Settings.Author;
         }
 
         private void CheckBox3_CheckedChanged(object sender, EventArgs e)
@@ -53,17 +52,33 @@ namespace SonicRetro.SAModel.LevelExtractor
         private void fileSelector1_FileNameChanged(object sender, EventArgs e)
         {
             button1.Enabled = true;
+            file = File.ReadAllBytes(fileSelector1.FileName);
         }
 
+        enum SectOffs
+        {
+            VSize = 8,
+            VAddr = 0xC,
+            FSize = 0x10,
+            FAddr = 0x14,
+            Flags = 0x24,
+            Size = 0x28
+        }
+
+        byte[] file;
         private void button1_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "sa1lvl", Filter = "SA1LVL Files|*.sa1lvl|All Files|*.*" })
-            {
+            LandTableFormat format = (LandTableFormat)comboBox2.SelectedIndex;
+            LandTableFormat outfmt = format;
+            if (format == LandTableFormat.SADX) outfmt = LandTableFormat.SA1;
+            ByteConverter.BigEndian = checkBox1.Checked;
+            using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" })
                 if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    new LandTable(System.IO.File.ReadAllBytes(fileSelector1.FileName), (int)NumericUpDown1.Value, (uint)numericUpDown2.Value, (ModelFormat)comboBox2.SelectedIndex).SaveToFile(sd.FileName, ModelFormat.SA1);
+                    new LandTable(file, (int)NumericUpDown1.Value, (uint)numericUpDown2.Value, format) { Author = author.Text, Description = description.Text, Tool = "LevelExtractor" }.SaveToFile(sd.FileName, outfmt);
+                    Settings.Author = author.Text;
+                    Settings.Save();
                 }
-            }
         }
     }
 }

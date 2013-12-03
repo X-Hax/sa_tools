@@ -38,6 +38,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(Object model, Device dev)
         {
+            model.ProcessVertexData();
             Object[] models = model.GetObjects();
             Microsoft.DirectX.Direct3D.Mesh[] Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
             for (int i = 0; i < models.Length; i++)

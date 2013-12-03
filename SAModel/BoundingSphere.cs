@@ -53,6 +53,15 @@ namespace SonicRetro.SAModel
             return Center.ToString() + ", " + Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
+        public string ToStruct()
+        {
+            System.Text.StringBuilder result = new StringBuilder();
+            result.Append(Center.ToStruct());
+            result.Append(", ");
+            result.Append(Radius.ToC());
+            return result.ToString();
+        }
+
         public float[] ToArray()
         {
             float[] result = new float[4];

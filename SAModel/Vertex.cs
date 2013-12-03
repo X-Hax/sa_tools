@@ -58,6 +58,14 @@ namespace SonicRetro.SAModel
             return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
         }
 
+        public string ToStruct()
+        {
+            if (X == 0 && Y == 0 && Z == 0)
+                return "{ 0 }";
+            else
+                return "{ " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " }";
+        }
+
         public float[] ToArray()
         {
             float[] result = new float[3];
@@ -101,6 +109,8 @@ namespace SonicRetro.SAModel
                 }
             }
         }
+
+        public static readonly Vertex UpNormal = new Vertex(0, 1, 0);
     }
 
     public class VertexConverter : ExpandableObjectConverter

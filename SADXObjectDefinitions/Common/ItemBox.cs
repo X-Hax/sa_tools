@@ -30,7 +30,7 @@ namespace SADXObjectDefinitions.Common
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
-            model.Children[2].Attach.Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
+            ((SonicRetro.SAModel.BasicAttach)model.Children[2].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
@@ -73,7 +73,7 @@ namespace SADXObjectDefinitions.Common
         public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
-            model.Children[1].Attach.Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
+            ((SonicRetro.SAModel.BasicAttach)model.Children[1].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);

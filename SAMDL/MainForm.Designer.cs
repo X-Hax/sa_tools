@@ -34,8 +34,10 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colladaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colladaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -70,7 +72,7 @@
             this.openToolStripMenuItem,
             this.loadTexturesToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.colladaToolStripMenuItem,
+            this.exportToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -92,17 +94,11 @@
             // 
             // saveToolStripMenuItem
             // 
+            this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.saveToolStripMenuItem.Text = "&Save...";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // colladaToolStripMenuItem
-            // 
-            this.colladaToolStripMenuItem.Name = "colladaToolStripMenuItem";
-            this.colladaToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.colladaToolStripMenuItem.Text = "&Collada";
-            this.colladaToolStripMenuItem.Click += new System.EventHandler(this.colladaToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -110,6 +106,30 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.colladaToolStripMenuItem,
+            this.cStructsToolStripMenuItem});
+            this.exportToolStripMenuItem.Enabled = false;
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.exportToolStripMenuItem.Text = "&Export";
+            // 
+            // colladaToolStripMenuItem
+            // 
+            this.colladaToolStripMenuItem.Name = "colladaToolStripMenuItem";
+            this.colladaToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.colladaToolStripMenuItem.Text = "&Collada";
+            this.colladaToolStripMenuItem.Click += new System.EventHandler(this.colladaToolStripMenuItem_Click);
+            // 
+            // cStructsToolStripMenuItem
+            // 
+            this.cStructsToolStripMenuItem.Name = "cStructsToolStripMenuItem";
+            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cStructsToolStripMenuItem.Text = "C &Structs";
+            this.cStructsToolStripMenuItem.Click += new System.EventHandler(this.cStructsToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -123,7 +143,7 @@
             // modelTreeToolStripMenuItem
             // 
             this.modelTreeToolStripMenuItem.Name = "modelTreeToolStripMenuItem";
-            this.modelTreeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modelTreeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.modelTreeToolStripMenuItem.Text = "Model &Tree";
             this.modelTreeToolStripMenuItem.Click += new System.EventHandler(this.modelTreeToolStripMenuItem_Click);
             // 
@@ -244,6 +264,8 @@
         private System.Windows.Forms.ToolStripMenuItem colladaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cStructsToolStripMenuItem;
     }
 }
 

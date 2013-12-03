@@ -28,6 +28,7 @@ namespace SonicRetro.SAModel.SALVL
         public LevelItem(COL col, Device dev)
         {
             COL = col;
+            col.Model.ProcessVertexData();
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
             this.dev = dev;
         }
@@ -89,7 +90,8 @@ namespace SonicRetro.SAModel.SALVL
         [DisplayName("Edit Materials")]
         public void EditMaterials()
         {
-            using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
+            if (COL.Model.Attach is BasicAttach)
+            using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
                 pw.ShowDialog();
         }
 

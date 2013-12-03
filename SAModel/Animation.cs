@@ -14,17 +14,15 @@ namespace SonicRetro.SAModel
 
         public AnimationHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
-            Animation = new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase, format, Model.CountAnimated(), labels);
+            Animation = new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase, Model.CountAnimated(), labels);
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> labels, out uint address)
+        public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
         {
             List<byte> result = new List<byte>();
             uint modeladdr;
-            result.AddRange(Model.GetBytes(imageBase, format, labels, out modeladdr));
+            result.AddRange(Model.GetBytes(imageBase, DX, labels, out modeladdr));
             uint tmp = (uint)result.Count;
             uint head2;
             result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out head2));
@@ -34,15 +32,15 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
+        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
-            return GetBytes(imageBase, format, new Dictionary<string, uint>(), out address);
+            return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format)
+        public byte[] GetBytes(uint imageBase, bool DX)
         {
             uint address;
-            return GetBytes(imageBase, format, out address);
+            return GetBytes(imageBase, DX, out address);
         }
     }
     
@@ -50,12 +48,12 @@ namespace SonicRetro.SAModel
     {
         public const ulong SAANIM = 0x4D494E414153u;
         public const ulong FormatMask = 0xFFFFFFFFFFFFu;
-        public const ulong CurrentVersion = 0;
+        public const ulong CurrentVersion = 1;
         public const ulong SAANIMVer = SAANIM | (CurrentVersion << 56);
 
         public int Frames { get; set; }
         public string Name { get; set; }
-        private int modelParts;
+        public int ModelParts { get; private set; }
 
         public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
         public Animation()
@@ -63,13 +61,11 @@ namespace SonicRetro.SAModel
             Name = "animation_" + Object.GenerateIdentifier();
         }
 
-        public Animation(byte[] file, int address, uint imageBase, ModelFormat format, int nummodels)
-            : this(file, address, imageBase, format, nummodels, new Dictionary<int, string>()) { }
+        public Animation(byte[] file, int address, uint imageBase, int nummodels)
+            : this(file, address, imageBase, nummodels, new Dictionary<int, string>()) { }
 
-        public Animation(byte[] file, int address, uint imageBase, ModelFormat format, int nummodels, Dictionary<int, string> labels)
+        public Animation(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             if (labels.ContainsKey(address))
                 Name = labels[address];
             else
@@ -77,21 +73,15 @@ namespace SonicRetro.SAModel
             Int32 ptr = address;
             Frames = ByteConverter.ToInt32(file, ptr + 4);
             AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, ptr + 8);
+            int framesize = ByteConverter.ToUInt16(file, ptr + 10) * 8;
             ptr = (int)(ByteConverter.ToUInt32(file, ptr) - imageBase);
-            int framesize = 0;
-            if ((animtype & AnimFlags.Translate) == AnimFlags.Translate)
-                framesize += 8;
-            if ((animtype & AnimFlags.Rotate) == AnimFlags.Rotate)
-                framesize += 8;
-            if ((animtype & AnimFlags.Scale) == AnimFlags.Scale)
-                framesize += 8;
             for (int i = 0; i < nummodels; i++)
             {
                 Models.Add(i, new AnimModelData(file, ptr + (i * framesize), imageBase, animtype));
                 if (Models[i].Position.Count == 0 & Models[i].Rotation.Count == 0 & Models[i].Scale.Count == 0)
                     Models.Remove(i);
             }
-            modelParts = nummodels;
+            ModelParts = nummodels;
         }
 
         public static Animation ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format)
@@ -101,14 +91,42 @@ namespace SonicRetro.SAModel
 
         public static Animation ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             Object Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
-            return new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase, format, Model.CountAnimated(), labels);
+            return new Animation(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase, Model.CountAnimated(), labels);
+        }
+
+        public static Animation Load(string filename)
+        {
+            bool be = ByteConverter.BigEndian;
+            ByteConverter.BigEndian = false;
+            byte[] file = System.IO.File.ReadAllBytes(filename);
+            ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+            byte version = file[7];
+            if (version > CurrentVersion)
+                throw new FormatException("Not a valid SAANIM file.");
+            if (version == 0)
+                throw new NotImplementedException("Cannot open version 0 animations without a model!");
+            int aniaddr = ByteConverter.ToInt32(file, 8);
+            Dictionary<int, string> labels = new Dictionary<int, string>();
+            int tmpaddr = BitConverter.ToInt32(file, 0xC);
+            if (tmpaddr != 0)
+                labels.Add(aniaddr, file.GetCString(tmpaddr));
+            if (magic == SAANIM)
+            {
+                Animation anim = new Animation(file, aniaddr, 0, BitConverter.ToInt32(file, 0x10), labels);
+                ByteConverter.BigEndian = be;
+                return anim;
+            }
+            else
+            {
+                ByteConverter.BigEndian = be;
+                throw new FormatException("Not a valid SAANIM file.");
+            }
         }
 
         public static Animation Load(string filename, int nummodels)
         {
+            bool be = ByteConverter.BigEndian;
             ByteConverter.BigEndian = false;
             byte[] file = System.IO.File.ReadAllBytes(filename);
             ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
@@ -121,20 +139,27 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
                 labels.Add(aniaddr, file.GetCString(tmpaddr));
             if (magic == SAANIM)
-                return new Animation(file, aniaddr, 0, ModelFormat.SA1, nummodels, labels);
+            {
+                Animation anim = new Animation(file, aniaddr, 0, nummodels, labels);
+                ByteConverter.BigEndian = be;
+                return anim;
+            }
             else
+            {
+                ByteConverter.BigEndian = be;
                 throw new FormatException("Not a valid SAANIM file.");
+            }
         }
 
         public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address)
         {
             List<byte> result = new List<byte>();
-            uint[] posoffs = new uint[modelParts];
-            int[] posframes = new int[modelParts];
-            uint[] rotoffs = new uint[modelParts];
-            int[] rotframes = new int[modelParts];
-            uint[] scloffs = new uint[modelParts];
-            int[] sclframes = new int[modelParts];
+            uint[] posoffs = new uint[ModelParts];
+            int[] posframes = new int[ModelParts];
+            uint[] rotoffs = new uint[ModelParts];
+            int[] rotframes = new int[ModelParts];
+            uint[] scloffs = new uint[ModelParts];
+            int[] sclframes = new int[ModelParts];
             bool hasPos = false, hasRot = false, hasScl = false;
             foreach (KeyValuePair<int, AnimModelData> model in Models)
             {
@@ -177,7 +202,13 @@ namespace SonicRetro.SAModel
             }
             result.Align(4);
             uint modeldata = imageBase + (uint)result.Count;
-            for (int i = 0; i < modelParts; i++)
+            if (hasPos & !hasRot & !hasScl)
+                hasRot = true;
+            if (hasRot & !hasPos & !hasScl)
+                hasPos = true;
+            if (hasScl & !hasPos & !hasRot)
+                hasRot = true;
+            for (int i = 0; i < ModelParts; i++)
             {
                 if (hasPos)
                     result.AddRange(ByteConverter.GetBytes(posoffs[i]));
@@ -197,20 +228,23 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes(modeldata));
             result.AddRange(ByteConverter.GetBytes(Frames));
             AnimFlags flags = 0;
-            if (hasPos)
-                flags |= AnimFlags.Translate;
-            if (hasRot)
-                flags |= AnimFlags.Rotate;
-            if (hasScl)
-                flags |= AnimFlags.Scale;
-            result.AddRange(ByteConverter.GetBytes((ushort)flags));
             ushort numpairs = 0;
             if (hasPos)
-                numpairs += 1;
+            {
+                flags |= AnimFlags.Translate;
+                numpairs++;
+            }
             if (hasRot)
-                numpairs += 1;
+            {
+                flags |= AnimFlags.Rotate;
+                numpairs++;
+            }
             if (hasScl)
-                numpairs += 1;
+            {
+                flags |= AnimFlags.Scale;
+                numpairs++;
+            }
+            result.AddRange(ByteConverter.GetBytes((ushort)flags));
             result.AddRange(ByteConverter.GetBytes(numpairs));
             return result.ToArray();
         }
@@ -224,6 +258,139 @@ namespace SonicRetro.SAModel
         {
             uint address;
             return GetBytes(imageBase, out address);
+        }
+
+        public string ToStructVariables()
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder();
+            bool hasPos = false, hasRot = false, hasScl = false;
+            string id = Name.MakeIdentifier();
+            foreach (KeyValuePair<int, AnimModelData> model in Models)
+            {
+                if (model.Value.Position.Count > 0)
+                {
+                    hasPos = true;
+                    result.Append("NJS_MKEY_F ");
+                    result.Append(id);
+                    result.Append("_");
+                    result.Append(model.Key);
+                    result.AppendLine("_pos[] = {");
+                    List<string> lines = new List<string>(model.Value.Position.Count);
+                    foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
+                        lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
+                    result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+                    result.AppendLine("};");
+                    result.AppendLine();
+                }
+                if (model.Value.Rotation.Count > 0)
+                {
+                    hasRot = true;
+                    result.Append("NJS_MKEY_A ");
+                    result.Append(id);
+                    result.Append("_");
+                    result.Append(model.Key);
+                    result.AppendLine("_rot[] = {");
+                    List<string> lines = new List<string>(model.Value.Rotation.Count);
+                    foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+                        lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
+                    result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+                    result.AppendLine("};");
+                    result.AppendLine();
+                }
+                if (model.Value.Scale.Count > 0)
+                {
+                    hasScl = true;
+                    result.Append("NJS_MKEY_F ");
+                    result.Append(id);
+                    result.Append("_");
+                    result.Append(model.Key);
+                    result.AppendLine("_scl[] = {");
+                    List<string> lines = new List<string>(model.Value.Scale.Count);
+                    foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
+                        lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
+                    result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+                    result.AppendLine("};");
+                    result.AppendLine();
+                }
+            }
+            if (hasPos & !hasRot & !hasScl)
+                hasRot = true;
+            if (hasRot & !hasPos & !hasScl)
+                hasPos = true;
+            if (hasScl & !hasPos & !hasRot)
+                hasRot = true;
+            AnimFlags flags = 0;
+            ushort numpairs = 0;
+            if (hasPos)
+            {
+                flags |= AnimFlags.Translate;
+                numpairs++;
+            }
+            if (hasRot)
+            {
+                flags |= AnimFlags.Rotate;
+                numpairs++;
+            }
+            if (hasScl)
+            {
+                flags |= AnimFlags.Scale;
+                numpairs++;
+            }
+            result.Append("NJS_MDATA");
+            result.Append(numpairs);
+            result.Append(" ");
+            result.Append(id);
+            result.AppendLine("_mdat[] = {");
+            List<string> mdats = new List<string>(ModelParts);
+            for (int i = 0; i < ModelParts; i++)
+            {
+                List<string> elems = new List<string>(numpairs * 2);
+                if (hasPos)
+                    if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+                        elems.Add(string.Format("{0}_{1}_pos", id, i));
+                    else
+                        elems.Add("NULL");
+                if (hasRot)
+                    if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+                        elems.Add(string.Format("{0}_{1}_rot", id, i));
+                    else
+                        elems.Add("NULL");
+                if (hasScl)
+                    if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+                        elems.Add(string.Format("{0}_{1}_scl", id, i));
+                    else
+                        elems.Add("NULL");
+                if (hasPos)
+                    if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+                        elems.Add(string.Format("LengthOfArray({0}_{1}_pos)", id, i));
+                    else
+                        elems.Add("0");
+                if (hasRot)
+                    if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+                        elems.Add(string.Format("LengthOfArray({0}_{1}_rot)", id, i));
+                    else
+                        elems.Add("0");
+                if (hasScl)
+                    if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+                        elems.Add(string.Format("LengthOfArray({0}_{1}_scl)", id, i));
+                    else
+                        elems.Add("0");
+                mdats.Add("\t{ " + string.Join(", ", elems.ToArray()) + " }");
+            }
+            result.AppendLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
+            result.AppendLine("};");
+            result.AppendLine();
+            result.Append("NJS_MOTION ");
+            result.Append(id);
+            result.Append(" = { ");
+            result.AppendFormat("{0}_mdat, ", id);
+            result.Append(Frames);
+            result.Append(", ");
+            result.Append(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
+            result.Append(", ");
+            result.Append(numpairs);
+            result.AppendLine(" };");
+            return result.ToString();
         }
 
         public byte[] WriteHeader(uint imageBase, uint modeladdr, Dictionary<string, uint> labels, out uint address)
@@ -250,13 +417,16 @@ namespace SonicRetro.SAModel
 
         public void Save(string filename)
         {
+            bool be = ByteConverter.BigEndian;
             ByteConverter.BigEndian = false;
             List<byte> file = new List<byte>();
             file.AddRange(ByteConverter.GetBytes(SAANIMVer));
             uint addr;
-            byte[] anim = GetBytes(0x10, out addr);
-            file.AddRange(ByteConverter.GetBytes(addr + 0x10));
+            byte[] anim = GetBytes(0x14, out addr);
+            file.AddRange(ByteConverter.GetBytes(addr + 0x14));
             file.Align(0x10);
+            file.AddRange(ByteConverter.GetBytes(ModelParts));
+            file.Align(0x14);
             file.AddRange(anim);
             file.Align(4);
             file.RemoveRange(0xC, 4);
@@ -265,6 +435,7 @@ namespace SonicRetro.SAModel
             file.Add(0);
             file.Align(4);
             System.IO.File.WriteAllBytes(filename, file.ToArray());
+            ByteConverter.BigEndian = be;
         }
     }
 
@@ -278,26 +449,26 @@ namespace SonicRetro.SAModel
 
         public AnimModelData(byte[] file, int address, uint imageBase, AnimFlags animtype)
         {
-            int posoff = 0, rotoff = 0, scaoff = 0;
+            uint posoff = 0, rotoff = 0, scaoff = 0;
             if ((animtype & AnimFlags.Translate) == AnimFlags.Translate)
             {
-                posoff = ByteConverter.ToInt32(file, address);
+                posoff = ByteConverter.ToUInt32(file, address);
                 if (posoff > 0)
-                    posoff = (int)((uint)posoff - imageBase);
+                    posoff = posoff - imageBase;
                 address += 4;
             }
             if ((animtype & AnimFlags.Rotate) == AnimFlags.Rotate)
             {
-                rotoff = ByteConverter.ToInt32(file, address);
+                rotoff = ByteConverter.ToUInt32(file, address);
                 if (rotoff > 0)
-                    rotoff = (int)((uint)rotoff - imageBase);
+                    rotoff = rotoff - imageBase;
                 address += 4;
             }
             if ((animtype & AnimFlags.Scale) == AnimFlags.Scale)
             {
-                scaoff = ByteConverter.ToInt32(file, address);
+                scaoff = ByteConverter.ToUInt32(file, address);
                 if (scaoff > 0)
-                    scaoff = (int)((uint)scaoff - imageBase);
+                    scaoff = scaoff - imageBase;
                 address += 4;
             }
             try
@@ -308,7 +479,7 @@ namespace SonicRetro.SAModel
                     int posframes = ByteConverter.ToInt32(file, address);
                     if (posframes > 0)
                     {
-                        tmpaddr = posoff;
+                        tmpaddr = (int)posoff;
                         for (int i = 0; i < posframes; i++)
                         {
                             Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -322,7 +493,7 @@ namespace SonicRetro.SAModel
                     int rotframes = ByteConverter.ToInt32(file, address);
                     if (rotframes > 0)
                     {
-                        tmpaddr = rotoff;
+                        tmpaddr = (int)rotoff;
                         for (int i = 0; i < rotframes; i++)
                         {
                             Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
@@ -336,7 +507,7 @@ namespace SonicRetro.SAModel
                     int scaframes = ByteConverter.ToInt32(file, address);
                     if (scaframes > 0)
                     {
-                        tmpaddr = scaoff;
+                        tmpaddr = (int)scaoff;
                         for (int i = 0; i < scaframes; i++)
                         {
                             Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));

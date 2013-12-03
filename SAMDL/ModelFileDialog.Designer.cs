@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+
 namespace SonicRetro.SAModel.SAMDL
 {
     partial class ModelFileDialog : Form

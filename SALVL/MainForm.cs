@@ -1,10 +1,7 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
@@ -42,7 +39,6 @@ namespace SonicRetro.SAModel.SALVL
         FillMode rendermode;
         Cull cullmode = Cull.None;
         internal List<Item> SelectedItems;
-        PropertyWindow PropertyWindow;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -55,6 +51,8 @@ namespace SonicRetro.SAModel.SALVL
             d3ddevice.Lights[0].Range = 100000;
             d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
             d3ddevice.Lights[0].Enabled = true;
+            if (Program.Arguments.Length > 0)
+                LoadFile(Program.Arguments[0]);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -71,38 +69,44 @@ namespace SonicRetro.SAModel.SALVL
             OpenFileDialog a = new OpenFileDialog()
             {
                 DefaultExt = "sa1lvl",
-                Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.exe;*.dll;*.bin|All Files|*.*"
+                Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.exe;*.dll;*.bin;*.prs|All Files|*.*"
             };
             if (a.ShowDialog(this) == DialogResult.OK)
+                LoadFile(a.FileName);
+        }
+
+        private void LoadFile(string filename)
+        {
+            loaded = false;
+            UseWaitCursor = true;
+            Enabled = false;
+            LevelData.leveltexs = null;
+            cam = new Camera();
+            if (LandTable.CheckLevelFile(filename))
+                LevelData.geo = LandTable.LoadFromFile(filename);
+            else
             {
-                loaded = false;
-                UseWaitCursor = true;
-                Enabled = false;
-                LevelData.leveltexs = null;
-                cam = new Camera();
-                if (LandTable.CheckLevelFile(a.FileName))
-                    LevelData.geo = LandTable.LoadFromFile(a.FileName);
-                else
+                byte[] file = File.ReadAllBytes(filename);
+                if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                    file = FraGag.Compression.Prs.Decompress(file);
+                using (LevelFileDialog dlg = new LevelFileDialog())
                 {
-                    byte[] file = File.ReadAllBytes(a.FileName);
-                    using (LevelFileDialog dlg = new LevelFileDialog())
-                    {
-                        dlg.ShowDialog(this);
-                        LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (ModelFormat)dlg.comboBox2.SelectedIndex);
-                    }
+                    dlg.ShowDialog(this);
+                    LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (LandTableFormat)dlg.comboBox2.SelectedIndex);
                 }
-                LevelData.LevelItems = new List<LevelItem>();
-                foreach (COL item in LevelData.geo.COL)
-                    LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
-                LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-                LevelData.Textures = new Dictionary<string, Texture[]>();
-                a.DefaultExt = "pvm";
-                a.Filter = "PVM Files|*.pvm|All Files|*.*";
+            }
+            LevelData.LevelItems = new List<LevelItem>();
+            foreach (COL item in LevelData.geo.COL)
+                LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
+            LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+            LevelData.Textures = new Dictionary<string, Texture[]>();
+            using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+            {
                 if (!string.IsNullOrEmpty(LevelData.geo.TextureFileName))
                     a.FileName = LevelData.geo.TextureFileName + ".pvm";
                 else
                     a.FileName = string.Empty;
-                if (a.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                if (a.ShowDialog(this) == DialogResult.OK)
                 {
                     BMPInfo[] TexBmps = LevelData.GetTextures(a.FileName);
                     Texture[] texs = new Texture[TexBmps.Length];
@@ -115,18 +119,12 @@ namespace SonicRetro.SAModel.SALVL
                         LevelData.Textures.Add(texname, texs);
                     LevelData.leveltexs = texname;
                 }
-                if (PropertyWindow == null)
-                {
-                    PropertyWindow = new PropertyWindow();
-                    PropertyWindow.Show(this);
-                    Activate();
-                }
-                loaded = true;
-                SelectedItems = new List<Item>();
-                UseWaitCursor = false;
-                Enabled = true;
-                DrawLevel();
             }
+            loaded = true;
+            SelectedItems = new List<Item>();
+            UseWaitCursor = false;
+            Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
+            DrawLevel();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -145,9 +143,19 @@ namespace SonicRetro.SAModel.SALVL
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog a = new SaveFileDialog() { DefaultExt = "sa1lvl", Filter = "SA1LVL Files|*.sa1lvl" })
+            LandTableFormat outfmt = LevelData.geo.Format;
+            if (outfmt == LandTableFormat.SADX)
+                outfmt = LandTableFormat.SA1;
+            using (SaveFileDialog a = new SaveFileDialog()
+            {
+                DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl",
+                Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*"
+            })
                 if (a.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                    LevelData.geo.SaveToFile(a.FileName, ModelFormat.SA1);
+                {
+                    LevelData.geo.Tool = "SALVL";
+                    LevelData.geo.SaveToFile(a.FileName, outfmt);
+                }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -212,100 +220,18 @@ namespace SonicRetro.SAModel.SALVL
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!loaded) return;
-            if (cam.mode == 0)
+            switch (e.KeyCode)
             {
-                if (e.KeyCode == Keys.Down)
-                    if (e.Shift)
-                        cam.Position += cam.Up * -interval;
-                    else
-                        cam.Position += cam.Look * interval;
-                if (e.KeyCode == Keys.Up)
-                    if (e.Shift)
-                        cam.Position += cam.Up * interval;
-                    else
-                        cam.Position += cam.Look * -interval;
-                if (e.KeyCode == Keys.Left)
-                    cam.Position += cam.Right * -interval;
-                if (e.KeyCode == Keys.Right)
-                    cam.Position += cam.Right * interval;
-                if (e.KeyCode == Keys.K)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.J)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.H)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-                if (e.KeyCode == Keys.L)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-                if (e.KeyCode == Keys.M)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                if (e.KeyCode == Keys.I)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                if (e.KeyCode == Keys.E)
-                    cam.Position = new Vector3();
-                if (e.KeyCode == Keys.R)
-                {
-                    cam.Pitch = 0;
-                    cam.Yaw = 0;
-                }
+                case Keys.O:
+                    if (e.Control)
+                        openToolStripMenuItem_Click(sender, EventArgs.Empty);
+                    break;
+                case Keys.S:
+                    if (!loaded) return;
+                    if (e.Control)
+                        saveToolStripMenuItem_Click(sender, EventArgs.Empty);
+                    break;
             }
-            else
-            {
-                if (e.KeyCode == Keys.Down)
-                    if (e.Shift)
-                        cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                    else
-                        cam.Distance += interval;
-                if (e.KeyCode == Keys.Up)
-                    if (e.Shift)
-                        cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                    else
-                    {
-                        cam.Distance -= interval;
-                        cam.Distance = Math.Max(cam.Distance, interval);
-                    }
-                if (e.KeyCode == Keys.Left)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.Right)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.K)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.J)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.H)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-                if (e.KeyCode == Keys.L)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-                if (e.KeyCode == Keys.M)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                if (e.KeyCode == Keys.I)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                if (e.KeyCode == Keys.R)
-                {
-                    cam.Pitch = 0;
-                    cam.Yaw = 0;
-                }
-            }
-            if (e.KeyCode == Keys.X)
-                cam.mode = (cam.mode + 1) % 2;
-            if (e.KeyCode == Keys.Q)
-                interval += 1;
-            if (e.KeyCode == Keys.W)
-                interval -= 1;
-            if (e.KeyCode == Keys.N)
-                if (rendermode == FillMode.Solid)
-                    rendermode = FillMode.Point;
-                else
-                    rendermode += 1;
-            if (e.KeyCode == Keys.Delete)
-            {
-                foreach (Item item in SelectedItems)
-                    item.Delete();
-                SelectedItems.Clear();
-                SelectedItemChanged();
-                DrawLevel();
-            }
-            DrawLevel();
         }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
@@ -474,7 +400,7 @@ namespace SonicRetro.SAModel.SALVL
 
         internal void SelectedItemChanged()
         {
-            PropertyWindow.propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+            propertyGrid1.SelectedObjects = SelectedItems.ToArray();
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -543,161 +469,70 @@ namespace SonicRetro.SAModel.SALVL
             LevelItem item = new LevelItem(d3ddevice);
             Vector3 pos = cam.Position + (-20 * cam.Look);
             item.Position = new Vertex(pos.X, pos.Y, pos.Z);
+            item.Visible = true;
+            SelectedItems = new List<Item>() { item };
+            SelectedItemChanged();
+            DrawLevel();
         }
 
-        public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<string> usedmtls, MatrixStack transform, ref int totverts, ref int totuvs)
+        public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<Material> usedmtls, MatrixStack transform, ref int totverts)
         {
             if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
-            {
-                for (int j = 0; j < obj.Attach.Material.Count; j++)
-                {
-                    if (!usedmtls.Contains(obj.Attach.Material[j].Name))
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
+                    if (obj.Attach.MeshInfo[j].Material != null && !usedmtls.Contains(obj.Attach.MeshInfo[j].Material))
                     {
-                        mtlstream.WriteLine("newmtl " + obj.Attach.Material[j].Name);
+                        mtlstream.WriteLine("newmtl material_" + usedmtls.Count);
                         mtlstream.WriteLine("Ka 1 1 1");
-                        mtlstream.WriteLine("Kd " + obj.Attach.Material[j].DiffuseColor.R / 255f + " " + obj.Attach.Material[j].DiffuseColor.G / 255f + " " + obj.Attach.Material[j].DiffuseColor.B / 255f);
-                        mtlstream.WriteLine("d " + obj.Attach.Material[j].DiffuseColor.A / 255f);
-                        mtlstream.WriteLine("Ks " + obj.Attach.Material[j].SpecularColor.R / 255f + " " + obj.Attach.Material[j].SpecularColor.G / 255f + " " + obj.Attach.Material[j].SpecularColor.B / 255f);
+                        mtlstream.WriteLine("Kd " + obj.Attach.MeshInfo[j].Material.DiffuseColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.B / 255f);
+                        if (obj.Attach.MeshInfo[j].Material.UseAlpha)
+                            mtlstream.WriteLine("d " + obj.Attach.MeshInfo[j].Material.DiffuseColor.A / 255f);
+                        if (!obj.Attach.MeshInfo[j].Material.IgnoreSpecular)
+                            mtlstream.WriteLine("Ks " + obj.Attach.MeshInfo[j].Material.SpecularColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.B / 255f);
                         mtlstream.WriteLine("illum 1");
-                        mtlstream.WriteLine("texid " + obj.Attach.Material[j].TextureID);
-                        mtlstream.WriteLine("Map_Ka " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.Material[j].TextureID].Name + ".png");
-                        mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.Material[j].TextureID].Name + ".png");
-                        usedmtls.Add(obj.Attach.Material[j].Name);
+                        if (obj.Attach.MeshInfo[j].Material.UseTexture)
+                        {
+                            mtlstream.WriteLine("texid " + obj.Attach.MeshInfo[j].Material.TextureID);
+                            if (!string.IsNullOrEmpty(LevelData.leveltexs))
+                            {
+                                mtlstream.WriteLine("Map_Ka " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
+                                mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
+                            }
+                        }
+                        usedmtls.Add(obj.Attach.MeshInfo[j].Material);
                     }
-                }
-                objstream.WriteLine("g " + obj.Name);
-            }
             transform.Push();
             transform.TranslateLocal(obj.Position.ToVector3());
             transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.ToVector3());
             if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
             {
+                objstream.WriteLine("g " + obj.Name);
                 objstream.WriteLine("# " + obj.Attach.Name);
-                objstream.WriteLine("# vertex_" + obj.Attach.Name);
-                for (int j = 0; j < obj.Attach.Vertex.Length; j++)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
-                    Vector3 x = Vector3.TransformCoordinate(obj.Attach.Vertex[j].ToVector3(), transform.Top);
-                    objstream.WriteLine("v " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
-                }
-                objstream.WriteLine("# normal_" + obj.Attach.Name);
-                for (int j = 0; j < obj.Attach.Vertex.Length; j++)
-                {
-                    Vector3 vect = Vector3.TransformNormal(obj.Attach.Normal[j].ToVector3(), Matrix.Invert(transform.Top));
-                    objstream.WriteLine("vn " + vect.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vect.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vect.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
-                }
-                int c = 0;
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
-                    if (obj.Attach.Mesh[j].VColor != null)
+                    objstream.WriteLine("usemtl material_" + usedmtls.IndexOf(obj.Attach.MeshInfo[j].Material));
+                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k++)
                     {
-                        objstream.WriteLine("# vcolor_" + obj.Attach.Mesh[j].Name);
-                        for (int k = 0; k < obj.Attach.Mesh[j].VColor.Length; k++)
-                            objstream.WriteLine("vc " + obj.Attach.Mesh[j].VColor[k].A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + obj.Attach.Mesh[j].VColor[k].B.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + c + k + totuvs + 1);
-                        c += obj.Attach.Mesh[j].VColor.Length;
+                        VertexData vert = obj.Attach.MeshInfo[j].Vertices[k];
+                        Vector3 x = Vector3.TransformCoordinate(vert.Position.ToVector3(), transform.Top);
+                        objstream.WriteLine("v " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
+                        x = Vector3.TransformNormal(vert.Normal.ToVector3(), Matrix.Invert(transform.Top));
+                        objstream.WriteLine("vn " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
+                        objstream.WriteLine("vc " + vert.Color.A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.B.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                        objstream.WriteLine("vt " + vert.UV.U.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-vert.UV.V).ToString(System.Globalization.CultureInfo.InvariantCulture));
                     }
-                c = 0;
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
-                    if (obj.Attach.Mesh[j].UV != null)
+                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k += 3)
                     {
-                        objstream.WriteLine("# uv_" + obj.Attach.Mesh[j].Name);
-                        for (int k = 0; k < obj.Attach.Mesh[j].UV.Length; k++)
-                            objstream.WriteLine("vt " + (obj.Attach.Mesh[j].UV[k].U / 255f).ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-obj.Attach.Mesh[j].UV[k].V / 255f).ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + c + k + totuvs + 1);
-                        c += obj.Attach.Mesh[j].UV.Length;
+                        objstream.Write("f");
+                        for (int l = 0; l < 3; l++)
+                            objstream.Write(" " + (k + l + totverts + 1) + "/" + (k + l + totverts + 1) + "/" + (k + l + totverts + 1));
+                        objstream.WriteLine();
                     }
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
-                {
-                    objstream.WriteLine("# mesh_" + obj.Attach.Mesh[j].Name);
-                    objstream.WriteLine("usemtl " + obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].Name);
-                    int currentstriptotal = 0;
-                    for (int k = 0; k < obj.Attach.Mesh[j].Poly.Count; k++)
-                    {
-                        objstream.WriteLine("# poly " + k);
-                        if (obj.Attach.Mesh[j].UV != null)
-                        {
-                            switch (obj.Attach.Mesh[j].PolyType)
-                            {
-                                case PolyType.Triangles:
-                                case PolyType.Quads:
-                                    objstream.Write("f");
-                                    for (int l = 0; l < obj.Attach.Mesh[j].Poly[k].Indexes.Length; l++)
-                                        objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "/" + (currentstriptotal + l + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
-                                    objstream.WriteLine();
-                                    currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
-                                    break;
-                                case PolyType.NPoly:
-                                case PolyType.Strips:
-                                    for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
-                                    {
-                                        bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;
-                                        if (l % 2 == 0)
-                                            flip = !flip;
-                                        if (flip)
-                                        {
-                                            objstream.Write("f");
-                                            for (int m = 0; m <= 2; m++)
-                                                objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1) + "/" + (currentstriptotal + m + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1));
-                                        }
-                                        else
-                                        {
-                                            objstream.Write("f");
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1) + "/" + (currentstriptotal + 1 + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1));
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "/" + (currentstriptotal + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1) + "/" + (currentstriptotal + 2 + totuvs + 1) + "/" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1));
-                                        }
-                                        objstream.WriteLine();
-                                        currentstriptotal += 1;
-                                    }
-                                    currentstriptotal += 2;
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            switch (obj.Attach.Mesh[j].PolyType)
-                            {
-                                case PolyType.Triangles:
-                                case PolyType.Quads:
-                                    objstream.Write("f");
-                                    for (int l = 0; l < obj.Attach.Mesh[j].Poly[k].Indexes.Length; l++)
-                                        objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
-                                    objstream.WriteLine();
-                                    currentstriptotal += obj.Attach.Mesh[j].Poly[k].Indexes.Length;
-                                    break;
-                                case PolyType.NPoly:
-                                case PolyType.Strips:
-                                    for (int l = 0; l <= obj.Attach.Mesh[j].Poly[k].Indexes.Length - 3; l++)
-                                    {
-                                        bool flip = ((Strip)obj.Attach.Mesh[j].Poly[k]).Reversed;
-                                        if (l % 2 == 0)
-                                            flip = !flip;
-                                        if (flip)
-                                        {
-                                            objstream.Write("f");
-                                            for (int m = 0; m <= 2; m++)
-                                                objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + m] + totverts + 1));
-                                        }
-                                        else
-                                        {
-                                            objstream.Write("f");
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 1] + totverts + 1));
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l] + totverts + 1));
-                                            objstream.Write(" " + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1) + "//" + (obj.Attach.Mesh[j].Poly[k].Indexes[l + 2] + totverts + 1));
-                                        }
-                                        objstream.WriteLine();
-                                        currentstriptotal += 1;
-                                    }
-                                    currentstriptotal += 2;
-                                    break;
-                            }
-                        }
-                    }
-                    if (obj.Attach.Mesh[j].UV != null)
-                        totuvs += obj.Attach.Mesh[j].UV.Length;
+                    totverts += obj.Attach.MeshInfo[j].Vertices.Length;
                 }
-                totverts += obj.Attach.Vertex.Length;
             }
             foreach (Object item in obj.Children)
-                Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts, ref totuvs);
+                Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts);
             transform.Pop();
         }
 
@@ -710,30 +545,221 @@ namespace SonicRetro.SAModel.SALVL
             };
             if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                System.IO.StreamWriter objstream = new System.IO.StreamWriter(a.FileName, false);
-                System.IO.StreamWriter mtlstream = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(a.FileName, "mtl"), false);
-                objstream.WriteLine("mtllib " + System.IO.Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-                mtlstream.WriteLine("newmtl material_0");
-                mtlstream.WriteLine("Ka 1 1 1");
-                mtlstream.WriteLine("Kd 1 1 1");
-                mtlstream.WriteLine("Ks 0 0 0");
-                mtlstream.WriteLine("illum 1");
-                string mypath = System.IO.Path.GetDirectoryName(a.FileName);
-                foreach (BMPInfo Item in LevelData.TextureBitmaps[LevelData.leveltexs])
-                    Item.Image.Save(System.IO.Path.Combine(mypath, Item.Name + ".png"));
-                int totverts = 0;
-                int totuvs = 0;
-                List<string> usedmtls = new List<string>();
-                objstream.WriteLine("# geo_" + LevelData.geo.Name);
-                for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                    Writeobj(objstream, mtlstream, LevelData.geo.COL[i].Model, usedmtls, new MatrixStack(), ref totverts, ref totuvs);
-                for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-                    Writeobj(objstream, mtlstream, LevelData.geo.Anim[i].Model, usedmtls, new MatrixStack(), ref totverts, ref totuvs);
-                mtlstream.Write("#EOF");
-                mtlstream.Close();
-                objstream.Write("#EOF");
-                objstream.Close();
+                List<Material> usedmtls = new List<Material>() { null };
+                using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                {
+                    objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+                    mtlstream.WriteLine("newmtl material_0");
+                    mtlstream.WriteLine("Ka 1 1 1");
+                    mtlstream.WriteLine("Kd 1 1 1");
+                    mtlstream.WriteLine("Ks 0 0 0");
+                    mtlstream.WriteLine("illum 1");
+                    int totverts = 0;
+                    objstream.WriteLine("# geo_" + LevelData.geo.Name);
+                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                        Writeobj(objstream, mtlstream, LevelData.geo.COL[i].Model, usedmtls, new MatrixStack(), ref totverts);
+                    if (LevelData.geo.Anim != null)
+                        for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+                            Writeobj(objstream, mtlstream, LevelData.geo.Anim[i].Model, usedmtls, new MatrixStack(), ref totverts);
+                    mtlstream.Write("#EOF");
+                    objstream.Write("#EOF");
+                }
+                if (!string.IsNullOrEmpty(LevelData.leveltexs))
+                {
+                    bool[] usedtexs = new bool[LevelData.TextureBitmaps[LevelData.leveltexs].Length];
+                    foreach (Material mtl in usedmtls)
+                        if (mtl != null)
+                            if (mtl.UseTexture)
+                                usedtexs[mtl.TextureID] = true;
+                    string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+                    for (int i = 0; i < usedtexs.Length; i++)
+                        if (usedtexs[i])
+                        {
+                            BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+                            item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
+                        }
+                }
             }
+        }
+
+        private void editInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (AdvancedInfoDialog dlg = new AdvancedInfoDialog())
+                dlg.ShowDialog(this);
+        }
+
+        private void panel1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!loaded) return;
+            if (cam.mode == 0)
+            {
+                if (e.KeyCode == Keys.Down)
+                    if (e.Shift)
+                        cam.Position += cam.Up * -interval;
+                    else
+                        cam.Position += cam.Look * interval;
+                if (e.KeyCode == Keys.Up)
+                    if (e.Shift)
+                        cam.Position += cam.Up * interval;
+                    else
+                        cam.Position += cam.Look * -interval;
+                if (e.KeyCode == Keys.Left)
+                    cam.Position += cam.Right * -interval;
+                if (e.KeyCode == Keys.Right)
+                    cam.Position += cam.Right * interval;
+                if (e.KeyCode == Keys.K)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
+                if (e.KeyCode == Keys.J)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
+                if (e.KeyCode == Keys.H)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
+                if (e.KeyCode == Keys.L)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
+                if (e.KeyCode == Keys.M)
+                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
+                if (e.KeyCode == Keys.I)
+                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
+                if (e.KeyCode == Keys.E)
+                    cam.Position = new Vector3();
+                if (e.KeyCode == Keys.R)
+                {
+                    cam.Pitch = 0;
+                    cam.Yaw = 0;
+                }
+            }
+            else
+            {
+                if (e.KeyCode == Keys.Down)
+                    if (e.Shift)
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
+                    else
+                        cam.Distance += interval;
+                if (e.KeyCode == Keys.Up)
+                    if (e.Shift)
+                        cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
+                    else
+                    {
+                        cam.Distance -= interval;
+                        cam.Distance = Math.Max(cam.Distance, interval);
+                    }
+                if (e.KeyCode == Keys.Left)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
+                if (e.KeyCode == Keys.Right)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
+                if (e.KeyCode == Keys.K)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
+                if (e.KeyCode == Keys.J)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
+                if (e.KeyCode == Keys.H)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
+                if (e.KeyCode == Keys.L)
+                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
+                if (e.KeyCode == Keys.M)
+                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
+                if (e.KeyCode == Keys.I)
+                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
+                if (e.KeyCode == Keys.R)
+                {
+                    cam.Pitch = 0;
+                    cam.Yaw = 0;
+                }
+            }
+            if (e.KeyCode == Keys.X)
+                cam.mode = (cam.mode + 1) % 2;
+            if (e.KeyCode == Keys.Q)
+                interval += 1;
+            if (e.KeyCode == Keys.W)
+                interval -= 1;
+            if (e.KeyCode == Keys.N)
+                if (rendermode == FillMode.Solid)
+                    rendermode = FillMode.Point;
+                else
+                    rendermode += 1;
+            if (e.KeyCode == Keys.Delete)
+            {
+                foreach (Item item in SelectedItems)
+                    item.Delete();
+                SelectedItems.Clear();
+                SelectedItemChanged();
+                DrawLevel();
+            }
+            DrawLevel();
+        }
+
+        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Down:
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                    e.IsInputKey = true;
+                    break;
+            }
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            DrawLevel();
+        }
+
+        private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C Files|*.c" })
+                if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    LandTableFormat fmt = LevelData.geo.Format;
+                    switch (fmt)
+                    {
+                        case LandTableFormat.SA1:
+                        case LandTableFormat.SADX:
+                            using (StructExportDialog ed = new StructExportDialog() { Format = LevelData.geo.Format })
+                                if (ed.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                                    fmt = ed.Format;
+                                else
+                                    return;
+                            break;
+                    }
+                    List<string> labels = new List<string>() { LevelData.geo.Name };
+                    System.Text.StringBuilder result = new System.Text.StringBuilder("/* Sonic Adventure ");
+                    switch (fmt)
+                    {
+                        case LandTableFormat.SA1:
+                            result.Append("1");
+                            break;
+                        case LandTableFormat.SADX:
+                            result.Append("DX");
+                            break;
+                        case LandTableFormat.SA2:
+                            result.Append("2");
+                            break;
+                        case LandTableFormat.SA2B:
+                            result.Append("2 Battle");
+                            break;
+                    }
+                    result.AppendLine(" LandTable");
+                    result.AppendLine(" * ");
+                    result.AppendLine(" * Generated by SALVL");
+                    result.AppendLine(" * ");
+                    if (!string.IsNullOrEmpty(LevelData.geo.Description))
+                    {
+                        result.Append(" * Description: ");
+                        result.AppendLine(LevelData.geo.Description);
+                        result.AppendLine(" * ");
+                    }
+                    if (!string.IsNullOrEmpty(LevelData.geo.Author))
+                    {
+                        result.Append(" * Author: ");
+                        result.AppendLine(LevelData.geo.Author);
+                        result.AppendLine(" * ");
+                    }
+                    result.AppendLine(" */");
+                    result.AppendLine();
+                    result.Append(LevelData.geo.ToStructVariables(fmt, labels));
+                    File.WriteAllText(sd.FileName, result.ToString());
+                }
         }
     }
 }

@@ -11,7 +11,6 @@ namespace SonicRetro.SAModel
         public float Exponent { get; set; }
         public int TextureID { get; set; }
         public uint Flags { get; set; }
-        public string Name { get; set; }
 
         public byte UserFlags { get { return (byte)(Flags & 0x7F); } set { Flags = (uint)((Flags & ~0x7F) | (value & 0x7Fu)); } }
         public bool PickStatus { get { return (Flags & 0x80) == 0x80; } set { Flags = (uint)((Flags & ~0x80) | (value ? 0x80u : 0)); } }
@@ -35,7 +34,6 @@ namespace SonicRetro.SAModel
 
         public Material()
         {
-            Name = "material_" + Object.GenerateIdentifier();
             DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
             SpecularColor = Color.Transparent;
             UseAlpha = true;
@@ -49,10 +47,6 @@ namespace SonicRetro.SAModel
 
         public Material(byte[] file, int address, Dictionary<int, string> labels)
         {
-            if (labels.ContainsKey(address))
-                Name = labels[address];
-            else
-                Name = "material_" + address.ToString("X8");
             DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, address));
             SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, address + 4));
             Exponent = ByteConverter.ToSingle(file, address + 8);
@@ -69,6 +63,43 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes(TextureID));
             result.AddRange(ByteConverter.GetBytes(Flags));
             return result.ToArray();
+        }
+
+        public string ToStruct()
+        {
+            if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+                return "{ 0 }";
+            System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+            result.Append(DiffuseColor.ToStruct());
+            result.Append(", ");
+            result.Append(SpecularColor.ToStruct());
+            result.Append(", ");
+            result.Append(Exponent.ToC());
+            result.Append(", ");
+            int callback = (int)(TextureID & 0xC0000000);
+            int texid = (int)(TextureID & ~0xC0000000);
+            if (callback != 0)
+                result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + " | ");
+            result.Append(texid);
+            result.Append(", ");
+            result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
+            if (UserFlags != 0)
+                result.Append(" | 0x" + UserFlags.ToString("X"));
+            result.Append(" }");
+            return result.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Material))
+                return false;
+            Material other = (Material)obj;
+            return this.DiffuseColor == other.DiffuseColor && this.SpecularColor == other.SpecularColor && this.Exponent == other.Exponent && this.TextureID == other.TextureID && this.Flags == other.Flags;
+        }
+
+        public override int GetHashCode()
+        {
+            return DiffuseColor.GetHashCode() ^ SpecularColor.GetHashCode() ^ Exponent.GetHashCode() ^ TextureID.GetHashCode() ^ Flags.GetHashCode();
         }
     }
 }

@@ -154,7 +154,7 @@ namespace SonicRetro.SAModel.SALVL
             this.label3.TabIndex = 16;
             this.label3.Text = "Format:";
             // 
-            // ModelFileDialog
+            // LevelFileDialog
             // 
             this.AcceptButton = this.OK_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -172,7 +172,7 @@ namespace SonicRetro.SAModel.SALVL
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ModelFileDialog";
+            this.Name = "LevelFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SA1/SA2 Level Editor";

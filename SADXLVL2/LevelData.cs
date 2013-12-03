@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using puyo_tools;
+using PuyoTools;
 using VrSharp.PvrTexture;
 using Microsoft.DirectX.Direct3D;
 using System;
@@ -32,8 +32,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             List<BMPInfo> functionReturnValue = new List<BMPInfo>();
             PVM pvmfile = new PVM();
             Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
-            pvmdata = pvmfile.TranslateData(ref pvmdata);
-            ArchiveFileList pvmentries = pvmfile.GetFileList(ref pvmdata);
+            pvmdata = pvmfile.TranslateData(pvmdata);
+            ArchiveFileList pvmentries = pvmfile.GetFileList(pvmdata);
             foreach (ArchiveFileList.Entry file in pvmentries.Entries)
             {
                 byte[] data = new byte[file.Length];

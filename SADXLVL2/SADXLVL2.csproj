@@ -41,11 +41,8 @@
     <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="PngSharp">
-      <HintPath>..\Puyo Tools\PngSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="puyo_tools">
-      <HintPath>..\Puyo Tools\puyo_tools.exe</HintPath>
+    <Reference Include="PuyoTools">
+      <HintPath>..\Puyo Tools\PuyoTools.exe</HintPath>
     </Reference>
     <Reference Include="SADXPCTools">
       <HintPath>..\..\SADXPCTools\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
@@ -54,7 +51,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="VrSharp">
+    <Reference Include="VrSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Puyo Tools\VrSharp.dll</HintPath>
     </Reference>
   </ItemGroup>

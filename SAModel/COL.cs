@@ -6,91 +6,144 @@ namespace SonicRetro.SAModel
     public class COL
     {
         public BoundingSphere Bounds { get; set; }
-        public ulong Unknown1 { get; private set; }
-        public Object Model { get; set; }
+        public int Unknown1 { get; set; }
         public int Unknown2 { get; set; }
+        public Object Model { get; set; }
+        public int Unknown3 { get; set; }
         public int Flags { get; set; }
         public SurfaceFlags SurfaceFlags
         {
             get { return (SurfaceFlags)Flags; }
             set { Flags = (int)value; }
         }
-        public string Name { get; set; }
 
-        public static int Size(ModelFormat format)
+        public static int Size(LandTableFormat format)
         {
             switch (format)
             {
-                case ModelFormat.SA1:
-                case ModelFormat.SADX:
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
                     return 0x24;
-                case ModelFormat.SA2:
-                case ModelFormat.SA2B:
+                case LandTableFormat.SA2:
+                case LandTableFormat.SA2B:
                     return 0x20;
+                default:
+                    throw new ArgumentOutOfRangeException("format");
             }
-            return -1;
         }
 
         public COL()
         {
-            Name = "col_" + Object.GenerateIdentifier();
             Bounds = new BoundingSphere();
         }
 
-        public COL(byte[] file, int address, uint imageBase, ModelFormat format)
+        public COL(byte[] file, int address, uint imageBase, LandTableFormat format)
             : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
 
-        public COL(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+        public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels)
+            : this(file, address, imageBase, format, labels, false) { }
+
+        public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, bool forceBasic)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
-            if (labels.ContainsKey(address))
-                Name = labels[address];
-            else
-                Name = "col_" + address.ToString("X8");
             Bounds = new BoundingSphere(file, address);
+            ModelFormat mfmt = 0;
             switch (format)
             {
-                case ModelFormat.SA1:
-                case ModelFormat.SADX:
-                    Unknown1 = ByteConverter.ToUInt64(file, 0x10);
+                case LandTableFormat.SA1:
+                    mfmt = ModelFormat.Basic;
+                    break;
+                case LandTableFormat.SADX:
+                    mfmt = ModelFormat.BasicDX;
+                    break;
+                case LandTableFormat.SA2:
+                    if (forceBasic)
+                        mfmt = ModelFormat.Basic;
+                    else
+                        mfmt = ModelFormat.Chunk;
+                    break;
+                case LandTableFormat.SA2B:
+                    if (forceBasic)
+                        mfmt = ModelFormat.Basic;
+                    else
+                        mfmt = ModelFormat.SA2B;
+                    break;
+            }
+            switch (format)
+            {
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
+                    Unknown1 = ByteConverter.ToInt32(file, address + 0x10);
+                    Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
                     uint tmpaddr = ByteConverter.ToUInt32(file, address + 0x18) - imageBase;
-                    Model = new Object(file, (int)tmpaddr, imageBase, format, labels);
-                    Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
+                    Model = new Object(file, (int)tmpaddr, imageBase, mfmt, labels);
+                    Unknown3 = ByteConverter.ToInt32(file, address + 0x1C);
                     Flags = ByteConverter.ToInt32(file, address + 0x20);
                     break;
-                case ModelFormat.SA2:
-                case ModelFormat.SA2B:
-                    Flags = ByteConverter.ToInt32(file, address + 0x1C);
+                case LandTableFormat.SA2:
+                case LandTableFormat.SA2B:
                     tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
-                    Model = new Object(file, (int)tmpaddr, imageBase, format, labels, (SurfaceFlags & SAModel.SurfaceFlags.Solid) == SAModel.SurfaceFlags.Solid);
-                    Unknown1 = ByteConverter.ToUInt64(file, 0x14);
+                    Model = new Object(file, (int)tmpaddr, imageBase, mfmt, labels);
+                    Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
+                    Unknown3 = ByteConverter.ToInt32(file, address + 0x18);
+                    Flags = ByteConverter.ToInt32(file, address + 0x1C);
                     break;
             }
         }
 
-        public byte[] GetBytes(uint imageBase, uint modelptr, ModelFormat format)
+        public byte[] GetBytes(uint imageBase, uint modelptr, LandTableFormat format)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             List<byte> result = new List<byte>();
             result.AddRange(Bounds.GetBytes());
             switch (format)
             {
-                case ModelFormat.SA1:
-                case ModelFormat.SADX:
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
                     result.AddRange(ByteConverter.GetBytes(Unknown1));
+                    result.AddRange(ByteConverter.GetBytes(Unknown2));
+                    result.AddRange(ByteConverter.GetBytes(modelptr));
+                    result.AddRange(ByteConverter.GetBytes(Unknown3));
+                    break;
+                case LandTableFormat.SA2:
+                case LandTableFormat.SA2B:
                     result.AddRange(ByteConverter.GetBytes(modelptr));
                     result.AddRange(ByteConverter.GetBytes(Unknown2));
-                    break;
-                case ModelFormat.SA2:
-                case ModelFormat.SA2B:
-                    result.AddRange(ByteConverter.GetBytes(modelptr));
-                    result.AddRange(ByteConverter.GetBytes(Unknown1));
+                    result.AddRange(ByteConverter.GetBytes(Unknown3));
                     break;
             }
             result.AddRange(ByteConverter.GetBytes(Flags));
             return result.ToArray();
+        }
+
+        public string ToStruct(LandTableFormat format)
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+            result.Append(Bounds.ToStruct());
+            result.Append(", ");
+            switch (format)
+            {
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
+                    result.Append(Unknown1.ToCHex());
+                    result.Append(", ");
+                    result.Append(Unknown2.ToCHex());
+                    result.Append(", ");
+                    result.Append(Model != null ? "&" + Model.Name : "NULL");
+                    result.Append(", ");
+                    result.AppendFormat(Unknown3.ToCHex());
+                    break;
+                case LandTableFormat.SA2:
+                case LandTableFormat.SA2B:
+                    result.Append(Model != null ? "&" + Model.Name : "NULL");
+                    result.Append(", ");
+                    result.Append(Unknown2.ToCHex());
+                    result.Append(", ");
+                    result.Append(Unknown3.ToCHex());
+                    break;
+            }
+            result.Append(", ");
+            result.AppendFormat(Flags.ToCHex());
+            result.Append(" }");
+            return result.ToString();
         }
     }
 }

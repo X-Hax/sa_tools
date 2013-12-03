@@ -1,41 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.ComponentModel;
 
 namespace SonicRetro.SAModel
 {
+    [TypeConverter(typeof(UVConverter))]
     public class UV
     {
-        public short U { get; set; }
-        public short V { get; set; }
+        public float U { get; set; }
+        public float V { get; set; }
 
         public static int Size { get { return 4; } }
 
         public UV() { }
 
         public UV(byte[] file, int address)
+            : this(file, address, false) { }
+
+        public UV(byte[] file, int address, bool UVH)
         {
-            U = ByteConverter.ToInt16(file, address);
-            V = ByteConverter.ToInt16(file, address + 2);
+            U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
+            V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
         }
 
         public UV(string data)
         {
             string[] uv = data.Split(',');
-            U = short.Parse(uv[0], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
-            V = short.Parse(uv[1], System.Globalization.NumberStyles.Integer, System.Globalization.NumberFormatInfo.InvariantInfo);
+            U = short.Parse(uv[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
+            V = short.Parse(uv[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
         }
 
-        public byte[] GetBytes()
+        public byte[] GetBytes() { return GetBytes(false); }
+
+        public byte[] GetBytes(bool UVH)
         {
             List<byte> result = new List<byte>();
-            result.AddRange(ByteConverter.GetBytes(U));
-            result.AddRange(ByteConverter.GetBytes(V));
+            result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023f : 255f))));
+            result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023f : 255f))));
             return result.ToArray();
         }
 
         public override string ToString()
         {
-            return U.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "," + V.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return U.ToString(NumberFormatInfo.InvariantInfo) + ", " + V.ToString(NumberFormatInfo.InvariantInfo);
+        }
+
+        public string ToStruct()
+        {
+            if (U == 0 && V == 0)
+                return "{ 0 }";
+            else
+                return "{ " + (short)(U * 255f) + ", " + (short)(V * 255f) + " }";
+        }
+    }
+
+    public class UVConverter : ExpandableObjectConverter
+    {
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            if (destinationType == typeof(UV))
+                return true;
+            return base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType == typeof(string) && value is UV)
+                return ((UV)value).ToString();
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            if (sourceType == typeof(string))
+                return true;
+            return base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            if (value is string)
+                return new UV((string)value);
+            return base.ConvertFrom(context, culture, value);
         }
     }
 }

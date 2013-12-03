@@ -8,7 +8,7 @@ namespace SonicRetro.SAModel
     public class Mesh
     {
         public ushort MaterialID { get; set; }
-        public PolyType PolyType { get; private set; }
+        public Basic_PolyType PolyType { get; private set; }
         public ReadOnlyCollection<Poly> Poly { get; private set; }
         public string PolyName { get; set; }
         public int PAttr { get; set; }
@@ -18,7 +18,6 @@ namespace SonicRetro.SAModel
         public string VColorName { get; set; }
         public UV[] UV { get; private set; }
         public string UVName { get; set; }
-        public string Name { get; set; }
 
         public static int Size(bool DX) { return DX ? 0x1C : 0x18; }
 
@@ -27,12 +26,8 @@ namespace SonicRetro.SAModel
         
         public Mesh(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
         {
-            if (labels.ContainsKey(address))
-                Name = labels[address];
-            else
-                Name = "mesh_" + address.ToString("X8");
             MaterialID = ByteConverter.ToUInt16(file, address);
-            PolyType = (PolyType)(MaterialID >> 0xE);
+            PolyType = (Basic_PolyType)(MaterialID >> 0xE);
             MaterialID &= 0x3FFF;
             Poly[] polys = new Poly[ByteConverter.ToInt16(file, address + 2)];
             int tmpaddr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
@@ -78,7 +73,7 @@ namespace SonicRetro.SAModel
                 for (int i = 0; i < striptotal; i++)
                 {
                     VColor[i] = SAModel.VColor.FromBytes(file, tmpaddr);
-                    tmpaddr += SAModel.VColor.Size;
+                    tmpaddr += SAModel.VColor.Size(ColorType.ARGB8888_32);
                 }
             }
             else
@@ -102,10 +97,9 @@ namespace SonicRetro.SAModel
                 UVName = "uv_" + Object.GenerateIdentifier();
         }
 
-        public Mesh(PolyType polyType, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
+        public Mesh(Basic_PolyType polyType, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
         {
-            if (polyType == SAModel.PolyType.NPoly | polyType == SAModel.PolyType.Strips) throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", "polyType");
-            Name = "mesh_" + Object.GenerateIdentifier();
+            if (polyType == SAModel.Basic_PolyType.NPoly | polyType == SAModel.Basic_PolyType.Strips) throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", "polyType");
             PolyName = "poly_" + Object.GenerateIdentifier();
             PolyType = polyType;
             Poly[] polys = new Poly[polyCount];
@@ -166,6 +160,27 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes(uVAddress));
             if (DX) result.AddRange(new byte[4]);
             return result.ToArray();
+        }
+
+        public string ToStruct(bool DX)
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+            result.Append((StructEnums.NJD_MESHSET)((int)PolyType << 0xE));
+            result.Append(" | ");
+            result.Append(MaterialID & 0x3FFF);
+            result.Append(", ");
+            result.Append(Poly != null ? (ushort)Poly.Count : 0);
+            result.Append(", ");
+            result.Append(Poly != null ? PolyName : "NULL");
+            result.Append(", NULL, ");
+            result.Append(PolyNormal != null ? PolyNormalName : "NULL");
+            result.Append(", ");
+            result.Append(VColor != null ? VColorName : "NULL");
+            result.Append(", ");
+            result.Append(UV != null ? UVName : "NULL");
+            if (DX) result.Append(", NULL");
+            result.Append(" }");
+            return result.ToString();
         }
     }
 }

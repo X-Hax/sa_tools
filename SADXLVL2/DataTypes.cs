@@ -29,6 +29,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public LevelItem(COL col, Device dev)
         {
             COL = col;
+            col.Model.ProcessVertexData();
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
             this.dev = dev;
         }
@@ -87,8 +88,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         [DisplayName("Edit Materials")]
         public void EditMaterials()
         {
-            using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
-                pw.ShowDialog();
+            if (COL.Model.Attach is BasicAttach)
+                using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
+                    pw.ShowDialog();
         }
 
         public string Flags
@@ -112,7 +114,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             set
             {
                 COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0);
-                COL.Model.Flags = (COL.Model.Flags & ~ObjectFlags.NoDisplay) | (value ? 0 : ObjectFlags.NoDisplay);
             }
         }
 
@@ -146,6 +147,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public SETItem()
         {
             Position = new Vertex();
+            Rotation = new Rotation();
             Scale = new Vertex();
         }
 
@@ -232,6 +234,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         public StartPosItem(Object model, string textures, float offset, Vertex position, int yrot, Device dev)
         {
             Model = model;
+            model.ProcessVertexData();
             Object[] models = model.GetObjects();
             Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
             for (int i = 0; i < models.Length; i++)
@@ -312,9 +315,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             Paste();
         }
 
-        public DeathZoneItem(Object model, CharacterFlags flags, Device dev)
+        public DeathZoneItem(Object model, SA1CharacterFlags flags, Device dev)
         {
             Model = model;
+            model.ProcessVertexData();
             Flags = flags;
             Mesh = Model.Attach.CreateD3DMesh(dev);
             this.dev = dev;
@@ -372,11 +376,12 @@ namespace SonicRetro.SAModel.SADXLVL2
         [DisplayName("Edit Materials")]
         public void EditMaterials()
         {
-            using (MaterialEditor pw = new MaterialEditor(Model.Attach.Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
+            if (Model.Attach is BasicAttach)
+            using (MaterialEditor pw = new MaterialEditor(((BasicAttach)Model.Attach).Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
                 pw.ShowDialog();
         }
 
-        public CharacterFlags Flags { get; set; }
+        public SA1CharacterFlags Flags { get; set; }
 
         [Browsable(false)]
         public bool Visible
@@ -386,17 +391,17 @@ namespace SonicRetro.SAModel.SADXLVL2
                 switch (LevelData.Character)
                 {
                     case 0:
-                        return (Flags & CharacterFlags.Sonic) == CharacterFlags.Sonic;
+                        return (Flags & SA1CharacterFlags.Sonic) == SA1CharacterFlags.Sonic;
                     case 1:
-                        return (Flags & CharacterFlags.Tails) == CharacterFlags.Tails;
+                        return (Flags & SA1CharacterFlags.Tails) == SA1CharacterFlags.Tails;
                     case 2:
-                        return (Flags & CharacterFlags.Knuckles) == CharacterFlags.Knuckles;
+                        return (Flags & SA1CharacterFlags.Knuckles) == SA1CharacterFlags.Knuckles;
                     case 3:
-                        return (Flags & CharacterFlags.Amy) == CharacterFlags.Amy;
+                        return (Flags & SA1CharacterFlags.Amy) == SA1CharacterFlags.Amy;
                     case 4:
-                        return (Flags & CharacterFlags.Gamma) == CharacterFlags.Gamma;
+                        return (Flags & SA1CharacterFlags.Gamma) == SA1CharacterFlags.Gamma;
                     case 5:
-                        return (Flags & CharacterFlags.Big) == CharacterFlags.Big;
+                        return (Flags & SA1CharacterFlags.Big) == SA1CharacterFlags.Big;
                 }
                 return false;
             }
@@ -406,11 +411,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Sonic) == CharacterFlags.Sonic;
+                return (Flags & SA1CharacterFlags.Sonic) == SA1CharacterFlags.Sonic;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Sonic) | (value ? CharacterFlags.Sonic : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Sonic) | (value ? SA1CharacterFlags.Sonic : 0);
             }
         }
 
@@ -418,11 +423,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Tails) == CharacterFlags.Tails;
+                return (Flags & SA1CharacterFlags.Tails) == SA1CharacterFlags.Tails;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Tails) | (value ? CharacterFlags.Tails : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Tails) | (value ? SA1CharacterFlags.Tails : 0);
             }
         }
 
@@ -430,11 +435,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Knuckles) == CharacterFlags.Knuckles;
+                return (Flags & SA1CharacterFlags.Knuckles) == SA1CharacterFlags.Knuckles;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Knuckles) | (value ? CharacterFlags.Knuckles : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Knuckles) | (value ? SA1CharacterFlags.Knuckles : 0);
             }
         }
 
@@ -442,11 +447,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Amy) == CharacterFlags.Amy;
+                return (Flags & SA1CharacterFlags.Amy) == SA1CharacterFlags.Amy;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Amy) | (value ? CharacterFlags.Amy : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Amy) | (value ? SA1CharacterFlags.Amy : 0);
             }
         }
 
@@ -454,11 +459,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Gamma) == CharacterFlags.Gamma;
+                return (Flags & SA1CharacterFlags.Gamma) == SA1CharacterFlags.Gamma;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Gamma) | (value ? CharacterFlags.Gamma : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Gamma) | (value ? SA1CharacterFlags.Gamma : 0);
             }
         }
 
@@ -466,17 +471,17 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             get
             {
-                return (Flags & CharacterFlags.Big) == CharacterFlags.Big;
+                return (Flags & SA1CharacterFlags.Big) == SA1CharacterFlags.Big;
             }
             set
             {
-                Flags = (Flags & ~CharacterFlags.Big) | (value ? CharacterFlags.Big : 0);
+                Flags = (Flags & ~SA1CharacterFlags.Big) | (value ? SA1CharacterFlags.Big : 0);
             }
         }
 
         public DeathZoneFlags Save(string path, int i)
         {
-            ModelFile.CreateFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, ModelFormat.SA1);
+            ModelFile.CreateFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.MainForm.levelName + " Death Zone " + i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
             return new DeathZoneFlags() { Flags = Flags };
         }
     }

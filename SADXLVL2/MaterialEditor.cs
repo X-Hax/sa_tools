@@ -23,8 +23,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void MaterialEditor_Load(object sender, EventArgs e)
         {
-            foreach (Material item in materials)
-                comboBox1.Items.Add(item.Name);
+            for (int i = 0; i < materials.Length; i++)
+                comboBox1.Items.Add(i);
             if (comboBox1.Items.Count > 0)
                 comboBox1.SelectedIndex = 0;
         }

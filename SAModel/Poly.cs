@@ -18,7 +18,7 @@ namespace SonicRetro.SAModel
             Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
         }
 
-        public override PolyType PolyType { get { return SAModel.PolyType.Triangles; } }
+        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Triangles; } }
     }
 
     public sealed class Quad : Poly
@@ -37,7 +37,7 @@ namespace SonicRetro.SAModel
             Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
         }
 
-        public override PolyType PolyType { get { return SAModel.PolyType.Quads; } }
+        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Quads; } }
     }
 
     public sealed class Strip : Poly
@@ -70,7 +70,7 @@ namespace SonicRetro.SAModel
 
         public override int Size { get { return base.Size + 2; } }
 
-        public override PolyType PolyType { get { return SAModel.PolyType.Strips; } }
+        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Strips; } }
 
         public override byte[] GetBytes()
         {
@@ -78,6 +78,17 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes((ushort)(Indexes.Length | (Reversed ? 0x8000 : 0))));
             result.AddRange(base.GetBytes());
             return result.ToArray();
+        }
+
+        public override string ToStruct()
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder();
+            if (Reversed)
+                result.Append("0x8000u | ");
+            result.Append(Indexes.Length & 0x7FFF);
+            result.Append(", ");
+            result.Append(base.ToStruct());
+            return result.ToString();
         }
     }
 
@@ -89,7 +100,7 @@ namespace SonicRetro.SAModel
 
         public virtual int Size { get { return Indexes.Length * 2; } }
 
-        public abstract PolyType PolyType { get; }
+        public abstract Basic_PolyType PolyType { get; }
 
         public virtual byte[] GetBytes()
         {
@@ -99,31 +110,39 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public static Poly CreatePoly(PolyType type)
+        public virtual string ToStruct()
+        {
+            List<string> s = new List<string>(Indexes.Length);
+            for (int i = 0; i < Indexes.Length; i++)
+                s.Add(Indexes[i].ToString());
+            return string.Join(", ", s.ToArray());
+        }
+
+        public static Poly CreatePoly(Basic_PolyType type)
         {
             switch (type)
             {
-                case PolyType.Triangles:
+                case Basic_PolyType.Triangles:
                     return new Triangle();
-                case PolyType.Quads:
+                case Basic_PolyType.Quads:
                     return new Quad();
-                case PolyType.NPoly:
-                case PolyType.Strips:
+                case Basic_PolyType.NPoly:
+                case Basic_PolyType.Strips:
                     throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", "type");
             }
             throw new ArgumentException("Unknown poly type!", "type");
         }
 
-        public static Poly CreatePoly(PolyType type, byte[] file, int address)
+        public static Poly CreatePoly(Basic_PolyType type, byte[] file, int address)
         {
             switch (type)
             {
-                case PolyType.Triangles:
+                case Basic_PolyType.Triangles:
                     return new Triangle(file, address);
-                case PolyType.Quads:
+                case Basic_PolyType.Quads:
                     return new Quad(file, address);
-                case PolyType.NPoly:
-                case PolyType.Strips:
+                case Basic_PolyType.NPoly:
+                case Basic_PolyType.Strips:
                     return new Strip(file, address);
             }
             throw new ArgumentException("Unknown poly type!", "type");

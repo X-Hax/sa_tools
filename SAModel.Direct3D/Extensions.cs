@@ -17,10 +17,9 @@ namespace SonicRetro.SAModel.Direct3D
         public static void CalculateBounds(this Attach attach)
         {
             List<Vector3> verts = new List<Vector3>();
-            foreach (SAModel.Mesh mesh in attach.Mesh)
-                foreach (Poly poly in mesh.Poly)
-                    foreach (ushort index in poly.Indexes)
-                        verts.Add(attach.Vertex[index].ToVector3());
+            foreach (MeshInfo mesh in attach.MeshInfo)
+                foreach (VertexData vert in mesh.Vertices)
+                    verts.Add(vert.Position.ToVector3());
             Vector3 center;
             attach.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
             attach.Bounds.Center.X = center.X;
@@ -31,9 +30,8 @@ namespace SonicRetro.SAModel.Direct3D
         public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
         {
             List<Vector3> verts = new List<Vector3>();
-            foreach (Poly poly in attach.Mesh[mesh].Poly)
-                foreach (ushort index in poly.Indexes)
-                    verts.Add(Vector3.TransformCoordinate(attach.Vertex[index].ToVector3(), transform));
+            foreach (VertexData vert in attach.MeshInfo[mesh].Vertices)
+                verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), transform));
             Vector3 center;
             float radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
             return new BoundingSphere(center.X, center.Y, center.Z, radius);
@@ -45,10 +43,9 @@ namespace SonicRetro.SAModel.Direct3D
             matrix *= Matrix.RotationYawPitchRoll(BAMSToRad(col.Model.Rotation.Y), BAMSToRad(col.Model.Rotation.X), BAMSToRad(col.Model.Rotation.Z));
             matrix *= Matrix.Translation(col.Model.Position.ToVector3());
             List<Vector3> verts = new List<Vector3>();
-            foreach (SAModel.Mesh mesh in col.Model.Attach.Mesh)
-                foreach (Poly poly in mesh.Poly)
-                    foreach (ushort index in poly.Indexes)
-                        verts.Add(Vector3.TransformCoordinate(col.Model.Attach.Vertex[index].ToVector3(), matrix));
+            foreach (MeshInfo mesh in col.Model.Attach.MeshInfo)
+                foreach (VertexData vert in mesh.Vertices)
+                    verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), matrix));
             Vector3 center = new Vector3();
             col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
             col.Bounds.Center.X = center.X;
@@ -59,24 +56,23 @@ namespace SonicRetro.SAModel.Direct3D
         public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Microsoft.DirectX.Direct3D.Device dev)
         {
             int numverts = 0;
-            VertexData[][] verts = attach.GetVertexData();
-            foreach (VertexData[] item in verts)
-                numverts += item.Length;
+            foreach (MeshInfo item in attach.MeshInfo)
+                numverts += item.Vertices.Length;
             if (numverts == 0) return null;
             Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts, MeshFlags.Managed, FVF_PositionNormalTexturedColored.Elements, dev);
             List<FVF_PositionNormalTexturedColored> vb = new List<FVF_PositionNormalTexturedColored>();
             List<short> ib = new List<short>();
             int[] at = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
             int vind;
-            for (int i = 0; i < verts.Length; i++)
+            for (int i = 0; i < attach.MeshInfo.Length; i++)
             {
                 vind = vb.Count;
-                for (int j = 0; j < verts[i].Length; j++)
+                for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
                 {
-                    vb.Add(new FVF_PositionNormalTexturedColored(verts[i][j]));
+                    vb.Add(new FVF_PositionNormalTexturedColored(attach.MeshInfo[i].Vertices[j], attach.MeshInfo[i].Material));
                     ib.Add((short)(vind + j));
                 }
-                for (int j = 0; j < verts[i].Length / 3; j++)
+                for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
                     at[(vind / 3) + j] = i;
             }
             functionReturnValue.SetVertexBufferData(vb.ToArray(), LockFlags.None);
@@ -98,14 +94,14 @@ namespace SonicRetro.SAModel.Direct3D
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null & mesh != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+            if (obj.Attach != null)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
                     Material mat;
                     Texture texture = null;
                     if (useMat)
                     {
-                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        mat = obj.Attach.MeshInfo[j].Material;
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
                     }
@@ -132,11 +128,11 @@ namespace SonicRetro.SAModel.Direct3D
             transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-            if (obj.Attach != null & mesh != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+            if (obj.Attach != null)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
                     System.Drawing.Color col = Color.White;
-                    if (useMat) col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    if (useMat) col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     Material mat = new Material
                     {
@@ -165,13 +161,13 @@ namespace SonicRetro.SAModel.Direct3D
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             if (obj.Attach != null & meshes[modelindex] != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
                     Material mat;
                     Texture texture = null;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
-                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        mat = obj.Attach.MeshInfo[j].Material;
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
                     }
@@ -207,9 +203,9 @@ namespace SonicRetro.SAModel.Direct3D
             transform.RotateYawPitchRollLocal(BAMSToRad(obj.Rotation.Y), BAMSToRad(obj.Rotation.X), BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             if (obj.Attach != null & meshes[modelindex] != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
-                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     Material mat = new Material
@@ -265,13 +261,13 @@ namespace SonicRetro.SAModel.Direct3D
                 transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             }
             if (obj.Attach != null & meshes[modelindex] != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
                     Material mat;
                     Texture texture = null;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == 0)
                     {
-                        mat = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID];
+                        mat = obj.Attach.MeshInfo[j].Material;
                         if (textures != null && mat.TextureID < textures.Length)
                             texture = textures[mat.TextureID];
                     }
@@ -331,9 +327,9 @@ namespace SonicRetro.SAModel.Direct3D
                 transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
             }
             if (obj.Attach != null & meshes[modelindex] != null)
-                for (int j = 0; j < obj.Attach.Mesh.Count; j++)
+                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
-                    System.Drawing.Color col = obj.Attach.Material[obj.Attach.Mesh[j].MaterialID].DiffuseColor;
+                    System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
                     if ((obj.Flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay) col = Color.White;
                     col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
                     Material mat = new Material
@@ -462,7 +458,8 @@ namespace SonicRetro.SAModel.Direct3D
             List<Color> vcolors = new List<Color>();
             List<Vertex> verts = new List<Vertex>();
             List<Vertex> norms = new List<Vertex>();
-            List<Material> mtls = new List<Material>();
+            Dictionary<string, Material> mtls = new Dictionary<string, Material>();
+            Material lastmtl = null;
             List<Vertex> model_Vertex = new List<Vertex>();
             List<Vertex> model_Normal = new List<Vertex>();
             List<Material> model_Material = new List<Material>();
@@ -488,20 +485,21 @@ namespace SonicRetro.SAModel.Direct3D
                             switch (mlin[0].ToLowerInvariant())
                             {
                                 case "newmtl":
-                                    mtls.Add(new Material { Name = mlin[1] });
+                                    lastmtl = new Material();
+                                    mtls.Add(mlin[1], lastmtl);
                                     break;
                                 case "kd":
-                                    mtls[mtls.Count - 1].DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+                                    lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
                                     break;
                                 case "d":
                                 case "tr":
-                                    mtls[mtls.Count - 1].DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), mtls[mtls.Count - 1].DiffuseColor);
+                                    lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), lastmtl.DiffuseColor);
                                     break;
                                 case "ks":
-                                    mtls[mtls.Count - 1].SpecularColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+                                    lastmtl.SpecularColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
                                     break;
                                 case "texid":
-                                    mtls[mtls.Count - 1].TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+                                    lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
                                     break;
                             }
                         }
@@ -523,29 +521,19 @@ namespace SonicRetro.SAModel.Direct3D
                         model_Mesh_Poly.Add(new List<Poly>());
                         model_Mesh_UV.Add(new List<UV>());
                         model_Mesh_VColor.Add(new List<Color>());
-                        bool found = false;
-                        for (int i = 0; i <= model_Material.Count - 1; i++)
+                        if (mtls.ContainsKey(lin[1]))
                         {
-                            if (model_Material[i].Name == lin[1])
-                            {
-                                model_Mesh_MaterialID.Add((ushort)i);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found) break;
-                        for (int i = 0; i <= mtls.Count - 1; i++)
-                        {
-                            if (mtls[i].Name == lin[1])
+                            Material mtl = mtls[lin[1]];
+                            if (model_Material.Contains(mtl))
+                                model_Mesh_MaterialID.Add((ushort)model_Material.IndexOf(mtl));
+                            else
                             {
                                 model_Mesh_MaterialID.Add((ushort)model_Material.Count);
-                                model_Material.Add(mtls[i]);
-                                found = true;
-                                break;
+                                model_Material.Add(mtl);
                             }
                         }
-                        if (found) break;
-                        model_Mesh_MaterialID.Add(0);
+                        else
+                            model_Mesh_MaterialID.Add(0);
                         break;
                     case "f":
                         if (model_Mesh_MaterialID.Count == 0)
@@ -599,7 +587,7 @@ namespace SonicRetro.SAModel.Direct3D
                                 pol[i - 1] = (ushort)(model_Vertex.Count - 1);
                             }
                         }
-                        Poly tri = Poly.CreatePoly(PolyType.Triangles);
+                        Poly tri = Poly.CreatePoly(Basic_PolyType.Triangles);
                         for (int i = 0; i < 3; i++)
                             tri.Indexes[i] = pol[i];
                         model_Mesh_Poly[model_Mesh_Poly.Count - 1].Add(tri);
@@ -694,7 +682,8 @@ namespace SonicRetro.SAModel.Direct3D
                         model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
                 }
             }
-            model = new Attach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            model.ProcessVertexData();
             model.CalculateBounds();
             return model;
         }

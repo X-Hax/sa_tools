@@ -5,7 +5,6 @@ namespace SonicRetro.SAModel
 {
     public class GeoAnimData
     {
-        public string Name { get; set; }
         public int Unknown1 { get; set; }
         public float Unknown2 { get; set; }
         public float Unknown3 { get; set; }
@@ -15,22 +14,32 @@ namespace SonicRetro.SAModel
 
         public static int Size { get { return 0x18; } }
 
-        public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format)
+        public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format)
             : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
 
-        public GeoAnimData(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+        public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
-            if (labels.ContainsKey(address))
-                Name = labels[address];
-            else
-                Name = "anim_" + address.ToString("X8");
+            ModelFormat mfmt = 0;
+            switch (format)
+            {
+                case LandTableFormat.SA1:
+                    mfmt = ModelFormat.Basic;
+                    break;
+                case LandTableFormat.SADX:
+                    mfmt = ModelFormat.BasicDX;
+                    break;
+                case LandTableFormat.SA2:
+                    mfmt = ModelFormat.Chunk;
+                    break;
+                case LandTableFormat.SA2B:
+                    mfmt = ModelFormat.SA2B;
+                    break;
+            }
             Unknown1 = ByteConverter.ToInt32(file, address);
             Unknown2 = ByteConverter.ToSingle(file, address + 4);
             Unknown3 = ByteConverter.ToSingle(file, address + 8);
-            Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, format);
-            Animation = Animation.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, format, labels);
+            Model = new Object(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt);
+            Animation = Animation.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, mfmt, labels);
             Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
         }
 
@@ -44,6 +53,24 @@ namespace SonicRetro.SAModel
             result.AddRange(ByteConverter.GetBytes(animptr));
             result.AddRange(ByteConverter.GetBytes(Unknown4));
             return result.ToArray();
+        }
+
+        public string ToStruct()
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+            result.Append(Unknown1.ToCHex());
+            result.Append(", ");
+            result.Append(Unknown2.ToC());
+            result.Append(", ");
+            result.Append(Unknown3.ToC());
+            result.Append(", ");
+            result.Append(Model != null ? "&" + Model.Name : "NULL");
+            result.Append(", ");
+            result.Append(Animation != null ? "&action_" + Animation.Name : "NULL");
+            result.Append(", (NJS_TEXLIST *)");
+            result.Append(Unknown4.ToCHex());
+            result.Append(" }");
+            return result.ToString();
         }
     }
 }

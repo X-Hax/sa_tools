@@ -39,12 +39,7 @@ namespace SonicRetro.SAModel
             : this(file, address, imageBase, format, new Dictionary<int, string>()) { }
 
         public Object(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
-            : this(file, address, imageBase, format, labels, false) { }
-
-        public Object(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, bool forceBasic)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             if (labels.ContainsKey(address))
                 Name = labels[address];
             else
@@ -54,7 +49,7 @@ namespace SonicRetro.SAModel
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-                Attach = new Attach(file, tmpaddr, imageBase, format, labels, forceBasic);
+                Attach = Attach.Load(file, tmpaddr, imageBase, format, labels);
             }
             Position = new Vertex(file, address + 8);
             Rotation = new Rotation(file, address + 0x14);
@@ -80,10 +75,8 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, Dictionary<string, uint> labels, out uint address)
+        public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
         {
-            if (format == ModelFormat.SA2B) ByteConverter.BigEndian = true;
-            else ByteConverter.BigEndian = false;
             for (int i = 1; i < Children.Count; i++)
                 Children[i - 1].Sibling = Children[i];
             List<byte> result = new List<byte>();
@@ -98,7 +91,7 @@ namespace SonicRetro.SAModel
                 else
                 {
                     result.Align(4);
-                    result.AddRange(Children[0].GetBytes(imageBase, format, labels, out childaddr));
+                    result.AddRange(Children[0].GetBytes(imageBase, DX, labels, out childaddr));
                     childaddr += imageBase;
                 }
             }
@@ -109,7 +102,7 @@ namespace SonicRetro.SAModel
                 else
                 {
                     result.Align(4);
-                    tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, format, labels, out siblingaddr);
+                    tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, labels, out siblingaddr);
                     siblingaddr += imageBase + (uint)result.Count;
                     result.AddRange(tmpbyte);
                 }
@@ -121,7 +114,7 @@ namespace SonicRetro.SAModel
                 else
                 {
                     result.Align(4);
-                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, format, labels, out attachaddr);
+                    tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, DX, labels, out attachaddr);
                     attachaddr += imageBase + (uint)result.Count;
                     result.AddRange(tmpbyte);
                 }
@@ -139,15 +132,15 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format, out uint address)
+        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
-            return GetBytes(imageBase, format, new Dictionary<string, uint>(), out address);
+            return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
         }
 
-        public byte[] GetBytes(uint imageBase, ModelFormat format)
+        public byte[] GetBytes(uint imageBase, bool DX)
         {
             uint address;
-            return GetBytes(imageBase, format, out address);
+            return GetBytes(imageBase, DX, out address);
         }
 
         public Object[] GetObjects()
@@ -172,6 +165,13 @@ namespace SonicRetro.SAModel
             foreach (Object item in Children)
                 result += item.CountMorph();
             return result;
+        }
+
+        public void ProcessVertexData()
+        {
+            if (Attach != null) Attach.ProcessVertexData();
+            foreach (Object item in Children)
+                item.ProcessVertexData();
         }
 
         public Collada141.COLLADA ToCollada(int texcount)
@@ -224,26 +224,28 @@ namespace SonicRetro.SAModel
 
         protected Collada141.node AddToCollada(List<Collada141.material> materials, List<Collada141.effect> effects, List<Collada141.geometry> geometries, List<string> visitedAttaches, bool hasTextures)
         {
+            BasicAttach Attach = this.Attach as BasicAttach;
             if (Attach == null || visitedAttaches.Contains(Attach.Name))
                 goto skipAttach;
             visitedAttaches.Add(Attach.Name);
+            int m = 0;
             foreach (Material item in Attach.Material)
             {
                 materials.Add(new Collada141.material()
                 {
-                    id = item.Name,
-                    name = item.Name,
+                    id = "material_" + Attach.Name + "_" + m,
+                    name = "material_" + Attach.Name + "_" + m,
                     instance_effect = new Collada141.instance_effect()
                     {
-                        url = "#" + item.Name + "_eff"
+                        url = "#" + "material_" + Attach.Name + "_" + m + "_eff"
                     }
                 });
-                if (hasTextures)
+                if (hasTextures & item.UseTexture)
                 {
                     effects.Add(new Collada141.effect()
                     {
-                        id = item.Name + "_eff",
-                        name = item.Name + "_eff",
+                        id = "material_" + Attach.Name + "_" + m + "_eff",
+                        name = "material_" + Attach.Name + "_" + m + "_eff",
                         Items = new Collada141.effectFx_profile_abstractProfile_COMMON[]
                         {
                             new Collada141.effectFx_profile_abstractProfile_COMMON()
@@ -252,10 +254,16 @@ namespace SonicRetro.SAModel
                                 {
                                     new Collada141.common_newparam_type()
                                     {
-                                         sid = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "_sampler",
-                                          Item = new Collada141.fx_sampler2D_common()
-                                          { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
-                                          ItemElementName = Collada141.ItemChoiceType.sampler2D
+                                         sid = "material_" + Attach.Name + "_" + m + "_eff_surface",
+                                         /*Item = new Collada141.fx_sampler2D_common()
+                                         { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
+                                         ItemElementName = Collada141.ItemChoiceType.sampler2D*/
+                                         Item = new Collada141.fx_surface_common()
+                                         {
+                                             type = Collada141.fx_surface_type_enum.Item2D,
+                                             init_from = new Collada141.fx_surface_init_from_common[] { new Collada141.fx_surface_init_from_common() { Value  = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } }
+                                         },
+                                         ItemElementName = Collada141.ItemChoiceType.surface
                                     }
                                 },
                                 technique = new Collada141.effectFx_profile_abstractProfile_COMMONTechnique()
@@ -267,7 +275,7 @@ namespace SonicRetro.SAModel
                                         {
                                             Item = new Collada141.common_color_or_texture_typeTexture()
                                             {
-                                                texture = "image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "_sampler",
+                                                texture = "material_" + Attach.Name + "_" + m + "_eff_surface",
                                                 texcoord = "CHANNEL0"
                                             }
                                         },
@@ -275,7 +283,7 @@ namespace SonicRetro.SAModel
                                         {
                                             Item = new Collada141.common_color_or_texture_typeColor()
                                             {
-                                                Values = new double[] { item.DiffuseColor.R / 255d, item.DiffuseColor.G / 255d, item.DiffuseColor.B / 255d, item.DiffuseColor.A / 255d }
+                                                Values = new double[] { item.DiffuseColor.R / 255d, item.DiffuseColor.G / 255d, item.DiffuseColor.B / 255d, item.UseAlpha ? item.DiffuseColor.A / 255d : 1 }
                                             }
                                         }
                                     }
@@ -288,8 +296,8 @@ namespace SonicRetro.SAModel
                 {
                     effects.Add(new Collada141.effect()
                     {
-                        id = item.Name + "_eff",
-                        name = item.Name + "_eff",
+                        id = "material_" + Attach.Name + "_" + m + "_eff",
+                        name = "material_" + Attach.Name + "_" + m + "_eff",
                         Items = new Collada141.effectFx_profile_abstractProfile_COMMON[]
                         {
                             new Collada141.effectFx_profile_abstractProfile_COMMON()
@@ -303,7 +311,7 @@ namespace SonicRetro.SAModel
                                         {
                                             Item = new Collada141.common_color_or_texture_typeColor()
                                             {
-                                                Values = new double[] { item.DiffuseColor.R / 255d, item.DiffuseColor.G / 255d, item.DiffuseColor.B / 255d, item.DiffuseColor.A / 255d }
+                                                Values = new double[] { item.DiffuseColor.R / 255d, item.DiffuseColor.G / 255d, item.DiffuseColor.B / 255d, item.UseAlpha ? item.DiffuseColor.A / 255d : 1 }
                                             }
                                         }
                                     }
@@ -312,6 +320,7 @@ namespace SonicRetro.SAModel
                         }
                     });
                 }
+                m++;
             }
             List<double> verts = new List<double>();
             foreach (Vertex item in Attach.Vertex)
@@ -336,7 +345,7 @@ namespace SonicRetro.SAModel
                         source = "#" + Attach.Name + "_position_array",
                         count = (ulong)(verts.Count / 3),
                         stride = 3,
-                        param = new Collada141.param[] { new Collada141.param() { name = "X", type = "float" }, new Collada141.param() { name = "Y", type = "float" }, new Collada141.param() { name = "Y", type = "float" } }
+                        param = new Collada141.param[] { new Collada141.param() { name = "X", type = "float" }, new Collada141.param() { name = "Y", type = "float" }, new Collada141.param() { name = "Z", type = "float" } }
                     }
                 }
             };
@@ -363,7 +372,7 @@ namespace SonicRetro.SAModel
                         source = "#" + Attach.Name + "_normal_array",
                         count = (ulong)(verts.Count / 3),
                         stride = 3,
-                        param = new Collada141.param[] { new Collada141.param() { name = "X", type = "float" }, new Collada141.param() { name = "Y", type = "float" }, new Collada141.param() { name = "Y", type = "float" } }
+                        param = new Collada141.param[] { new Collada141.param() { name = "X", type = "float" }, new Collada141.param() { name = "Y", type = "float" }, new Collada141.param() { name = "Z", type = "float" } }
                     }
                 }
             };
@@ -376,14 +385,14 @@ namespace SonicRetro.SAModel
                     foreach (UV item in mitem.UV)
                     {
                         verts.Add(item.U / 255d);
-                        verts.Add(item.V / 255d);
+                        verts.Add(-item.V / 255d);
                     }
                     srcs.Add(new Collada141.source()
                     {
-                        id = mitem.Name + "_uv",
+                        id = mitem.UVName,
                         Item = new Collada141.float_array()
                         {
-                            id = mitem.Name + "_uv_array",
+                            id = mitem.UVName + "_array",
                             count = (ulong)verts.Count,
                             Values = verts.ToArray()
                         },
@@ -391,7 +400,7 @@ namespace SonicRetro.SAModel
                         {
                             accessor = new Collada141.accessor()
                             {
-                                source = "#" + mitem.Name + "_uv_array",
+                                source = "#" + mitem.UVName + "_array",
                                 count = (ulong)(verts.Count / 2),
                                 stride = 2,
                                 param = new Collada141.param[] { new Collada141.param() { name = "S", type = "float" }, new Collada141.param() { name = "T", type = "float" } }
@@ -411,7 +420,7 @@ namespace SonicRetro.SAModel
                     List<uint> inds = new List<uint>();
                     switch (mesh.PolyType)
                     {
-                        case PolyType.Triangles:
+                        case Basic_PolyType.Triangles:
                             for (uint i = 0; i < 3; i++)
                             {
                                 inds.Add(poly.Indexes[i]);
@@ -419,7 +428,7 @@ namespace SonicRetro.SAModel
                             }
                             currentstriptotal += 3;
                             break;
-                        case PolyType.Quads:
+                        case Basic_PolyType.Quads:
                             for (uint i = 0; i < 3; i++)
                             {
                                 inds.Add(poly.Indexes[i]);
@@ -432,8 +441,8 @@ namespace SonicRetro.SAModel
                             }
                             currentstriptotal += 4;
                             break;
-                        case PolyType.NPoly:
-                        case PolyType.Strips:
+                        case Basic_PolyType.NPoly:
+                        case Basic_PolyType.Strips:
                             bool flip = !((Strip)poly).Reversed;
                             for (int k = 0; k < poly.Indexes.Length - 2; k++)
                             {
@@ -467,10 +476,10 @@ namespace SonicRetro.SAModel
                     {
                         new Collada141.InputLocalOffset() { semantic = "VERTEX", offset = 0, source = "#" + Attach.Name + "_vertices"},
                     };
-                    if (hasUV) inp.Add(new Collada141.InputLocalOffset() { semantic = "TEXCOORD", offset = 1, source = "#" + mesh.Name + "_uv", setSpecified = true });
+                    if (hasUV) inp.Add(new Collada141.InputLocalOffset() { semantic = "TEXCOORD", offset = 1, source = "#" + mesh.UVName, setSpecified = true });
                     tris.Add(new Collada141.triangles()
                     {
-                        material = Attach.Material[mesh.MaterialID].Name,
+                        material = "material_" +  Attach.Name + "_" + mesh.MaterialID,
                         count = (ulong)(inds.Count / (hasUV ? 6 : 3)),
                         input = inp.ToArray(),
                         p = string.Join(" ", indstr)
@@ -512,9 +521,9 @@ namespace SonicRetro.SAModel
                 Items = new object[]
                 {
                     new Collada141.TargetableFloat3() { sid = "translate", Values = new double[] { Position.X, Position.Y, Position.Z } },
-                    new Collada141.rotate() { sid = "rotateZ", Values = new double[] { 0, 0, 1, Rotation.Z / 65536d } },
-                    new Collada141.rotate() { sid = "rotateX", Values = new double[] { 1, 0, 0, Rotation.X / 65536d } },
-                    new Collada141.rotate() { sid = "rotateY", Values = new double[] { 0, 1, 0, Rotation.Y / 65536d } },
+                    new Collada141.rotate() { sid = "rotateZ", Values = new double[] { 0, 0, 1, Rotation.ZDeg } },
+                    new Collada141.rotate() { sid = "rotateX", Values = new double[] { 1, 0, 0, Rotation.XDeg } },
+                    new Collada141.rotate() { sid = "rotateY", Values = new double[] { 0, 1, 0, Rotation.YDeg } },
                     new Collada141.TargetableFloat3() { sid = "scale", Values = new double[] { Scale.X, Scale.Y, Scale.Z } }
                 },
                 ItemsElementName = new Collada141.ItemsChoiceType2[]
@@ -530,7 +539,7 @@ namespace SonicRetro.SAModel
             {
                 List<Collada141.instance_material> mats = new List<Collada141.instance_material>();
                 foreach (Mesh item in Attach.Mesh)
-                    mats.Add(new Collada141.instance_material() { symbol = Attach.Material[item.MaterialID].Name, target = "#" + Attach.Material[item.MaterialID].Name });
+                    mats.Add(new Collada141.instance_material() { symbol = "material_" + Attach.Name + "_" + item.MaterialID, target = "#" + "material_" + Attach.Name + "_" + item.MaterialID });
                 node.instance_geometry = new Collada141.instance_geometry[]
                 {
                     new Collada141.instance_geometry()
@@ -545,6 +554,91 @@ namespace SonicRetro.SAModel
                 childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures));
             node.node1 = childnodes.ToArray();
             return node;
+        }
+
+        public Object ToBasicModel()
+        {
+            List<Object> newchildren = new List<Object>(Children.Count);
+            foreach (Object item in Children)
+                newchildren.Add(item.ToBasicModel());
+            Object result = new Object();
+            result.Flags = Flags;
+            if (Attach != null)
+                result.Attach = Attach.ToBasicModel();
+            result.Position = Position;
+            result.Rotation = Rotation;
+            result.Scale = Scale;
+            result.Children = newchildren;
+            return result;
+        }
+
+        public Object ToChunkModel()
+        {
+            List<Object> newchildren = new List<Object>(Children.Count);
+            foreach (Object item in Children)
+                newchildren.Add(item.ToBasicModel());
+            Object result = new Object();
+            result.Flags = Flags;
+            if (Attach != null)
+                result.Attach = Attach.ToChunkModel();
+            result.Position = Position;
+            result.Rotation = Rotation;
+            result.Scale = Scale;
+            result.Children = newchildren;
+            return result;
+        }
+
+        public string ToStruct()
+        {
+            System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+            result.Append(((StructEnums.NJD_EVAL)Flags).ToString().Replace(", ", " | "));
+            result.Append(", ");
+            result.Append(Attach != null ? "&" + Attach.Name : "NULL");
+            foreach (float value in Position.ToArray())
+            {
+                result.Append(", ");
+                result.Append(value.ToC());
+            }
+            foreach (int value in Rotation.ToArray())
+            {
+                result.Append(", ");
+                result.Append(value.ToCHex());
+            }
+            foreach (float value in Scale.ToArray())
+            {
+                result.Append(", ");
+                result.Append(value.ToC());
+            }
+            result.Append(", ");
+            result.Append(Children.Count > 0 ? "&" + Children[0].Name : "NULL");
+            result.Append(", ");
+            result.Append(Sibling != null ? "&" + Sibling.Name : "NULL");
+            result.Append(" }");
+            return result.ToString();
+        }
+
+        public string ToStructVariables(bool DX, List<string> labels)
+        {
+            for (int i = 1; i < Children.Count; i++)
+                Children[i - 1].Sibling = Children[i];
+            System.Text.StringBuilder result = new System.Text.StringBuilder();
+            for (int i = Children.Count - 1; i >= 0; i--)
+                if (!labels.Contains(Children[i].Name))
+                {
+                    labels.Add(Children[i].Name);
+                    result.AppendLine(Children[i].ToStructVariables(DX, labels));
+                }
+            if (Attach != null && !labels.Contains(Attach.Name))
+            {
+                labels.Add(Attach.Name);
+                result.AppendLine(Attach.ToStructVariables(DX, labels));
+            }
+            result.Append("NJS_OBJECT ");
+            result.Append(Name);
+            result.Append(" = ");
+            result.Append(ToStruct());
+            result.AppendLine(";");
+            return result.ToString();
         }
 
         static readonly Random rand = new Random();
