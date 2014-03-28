@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using IniFile;
 using SonicRetro.SAModel;
 
 namespace buildMDL
@@ -37,16 +38,24 @@ namespace buildMDL
                 foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
                     if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out i))
                         models.Add(i, new ModelFile(file).Model);
-                List<byte> mdlfile = new List<byte>();
+				Dictionary<int, string> modelnames = IniSerializer.Deserialize<Dictionary<int, string>>(
+					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"),
+					new IniCollectionSettings(IniCollectionMode.IndexOnly));
+				List<byte> mdlfile = new List<byte>();
                 List<byte> modelbytes = new List<byte>();
-                uint imageBase = (uint)(models.Count * 8) + 8;
-                foreach (KeyValuePair<int, SonicRetro.SAModel.Object> item in models)
+				Dictionary<string, uint> labels = new Dictionary<string, uint>();
+                uint imageBase = (uint)(modelnames.Count * 8) + 8;
+				foreach (KeyValuePair<int, SonicRetro.SAModel.Object> item in models)
+				{
+					uint address;
+					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out address);
+					modelbytes.AddRange(tmp);
+					imageBase += (uint)tmp.Length;
+				}
+				foreach (KeyValuePair<int, string> item in modelnames)
                 {
                     mdlfile.AddRange(ByteConverter.GetBytes(item.Key));
-                    uint address;
-                    modelbytes.AddRange(item.Value.GetBytes((uint)(imageBase), false, out address));
-                    mdlfile.AddRange(ByteConverter.GetBytes(imageBase + address));
-                    imageBase = (uint)(models.Count * 8) + 8 + (uint)modelbytes.Count;
+                    mdlfile.AddRange(ByteConverter.GetBytes(labels[item.Value]));
                 }
                 mdlfile.AddRange(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0, 0 });
                 mdlfile.AddRange(modelbytes);

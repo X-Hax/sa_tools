@@ -384,8 +384,8 @@ namespace SonicRetro.SAModel
                     verts = new List<double>();
                     foreach (UV item in mitem.UV)
                     {
-                        verts.Add(item.U / 255d);
-                        verts.Add(-item.V / 255d);
+                        verts.Add(item.U);
+                        verts.Add(-item.V);
                     }
                     srcs.Add(new Collada141.source()
                     {

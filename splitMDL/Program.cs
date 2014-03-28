@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using IniFile;
 using SonicRetro.SAModel;
 
 namespace splitMDL
@@ -44,12 +46,25 @@ namespace splitMDL
                 Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
                 int address = 0;
                 int i = ByteConverter.ToInt32(mdlfile, address);
-                Dictionary<int, SonicRetro.SAModel.Object> models = new Dictionary<int, SonicRetro.SAModel.Object>();
-                while (i != -1)
+				SortedDictionary<int, int> modeladdrs = new SortedDictionary<int, int>();
+				while (i != -1)
+				{
+					modeladdrs[i] = ByteConverter.ToInt32(mdlfile, address + 4);
+					address += 8;
+					i = ByteConverter.ToInt32(mdlfile, address);
+				}
+				Dictionary<int, SonicRetro.SAModel.Object> models = new Dictionary<int, SonicRetro.SAModel.Object>();
+				Dictionary<int, string> modelnames = new Dictionary<int, string>();
+				List<string> partnames = new List<string>();
+                foreach (KeyValuePair<int, int> item in modeladdrs)
                 {
-                    models[i] = new SonicRetro.SAModel.Object(mdlfile, ByteConverter.ToInt32(mdlfile, address + 4), 0, ModelFormat.Chunk);
-                    address += 8;
-                    i = ByteConverter.ToInt32(mdlfile, address);
+					SonicRetro.SAModel.Object obj = new SonicRetro.SAModel.Object(mdlfile, item.Value, 0, ModelFormat.Chunk);
+					modelnames[item.Key] = obj.Name;
+					if (!partnames.Contains(obj.Name))
+					{
+						models[item.Key] = obj;
+						partnames.AddRange(obj.GetObjects().Select((o) => o.Name));
+					}
                 }
                 Dictionary<int, string> animfns = new Dictionary<int, string>();
                 Dictionary<int, Animation> anims = new Dictionary<int, Animation>();
@@ -64,7 +79,7 @@ namespace splitMDL
                     while (i != -1)
                     {
                         anims[i] = new Animation(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
-                        animfns[i] = Path.GetFileNameWithoutExtension(anifilename) + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim";
+                        animfns[i] = Path.Combine(Path.GetFileNameWithoutExtension(anifilename), i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
                         address += 8;
                         i = ByteConverter.ToInt16(anifile, address);
                     }
@@ -75,8 +90,12 @@ namespace splitMDL
                     foreach (KeyValuePair<int, Animation> anim in anims)
                         if (model.Value.CountAnimated() == anim.Value.ModelParts)
                             animlist.Add("../" + animfns[anim.Key]);
-                    ModelFile.CreateFile(Path.GetFileNameWithoutExtension(mdlfilename) + "/" + model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl", model.Value, animlist.ToArray(), null, null, null, "splitMDL", null, ModelFormat.Chunk);
+                    ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
+						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
+						null, null, null, "splitMDL", null, ModelFormat.Chunk);
                 }
+				IniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
+					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
                 foreach (KeyValuePair<int, Animation> anim in anims)
                     anim.Value.Save(animfns[anim.Key]);
             }
