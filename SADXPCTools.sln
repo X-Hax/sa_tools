@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructConverter", "StructCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionListGenerator", "FunctionListGenerator\FunctionListGenerator.csproj", "{397FCC67-9C8A-43E7-BA1D-2003AABDD366}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splitDLL", "splitDLL\splitDLL.csproj", "{FA3DFE1D-560B-487D-A791-92B2287594B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,16 @@ Global
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|Mixed Platforms.Build.0 = Release|x86
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|x86.ActiveCfg = Release|x86
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|x86.Build.0 = Release|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|x86.ActiveCfg = Debug|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|x86.Build.0 = Debug|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Any CPU.ActiveCfg = Release|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Mixed Platforms.Build.0 = Release|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|x86.ActiveCfg = Release|x86
+		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
