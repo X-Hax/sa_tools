@@ -93,17 +93,15 @@ namespace splitDLL
 				int address = exports[name];
 				Console.WriteLine(name + " → " + data.Filename);
 				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
-				Dictionary<int, string> tmplabels;
 				switch (type)
 				{
 					case "landtable":
 						{
-							tmplabels = new Dictionary<int, string>();
-							LandTable land = new LandTable(datafile, address, imageBase, landfmt, tmplabels) { Description = name, Tool = "splitDLL" };
+							LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
 							land.SaveToFile(data.Filename, landfmt);
 							output.Labels.Items[name] = land.Name;
 							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(tmplabels.Values);
+							labels.AddRange(land.GetLabels());
 						}
 						break;
 					case "landtablearray":
@@ -113,16 +111,15 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								LandTable land = new LandTable(datafile, ptr, imageBase, landfmt, tmplabels) { Description = idx, Tool = "splitDLL" };
+								LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
 								output.Labels.Items[idx] = land.Name;
 								if (!labels.Contains(land.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 									land.SaveToFile(fn, landfmt);
 									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
-									labels.AddRange(tmplabels.Values);
+									labels.AddRange(land.GetLabels());
 								}
 							}
 							address += 4;
@@ -130,11 +127,10 @@ namespace splitDLL
 						break;
 					case "model":
 						{
-							tmplabels = new Dictionary<int, string>();
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt, tmplabels);
+							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
 							output.Labels.Items[name] = mdl.Name;
-							labels.AddRange(tmplabels.Values);
+							labels.AddRange(mdl.GetLabels());
 						}
 						break;
 					case "modelarray":
@@ -144,15 +140,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, modelfmt, tmplabels);
+								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
-									labels.AddRange(tmplabels.Values);
+									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							address += 4;
@@ -160,11 +155,10 @@ namespace splitDLL
 						break;
 					case "basicmodel":
 						{
-							tmplabels = new Dictionary<int, string>();
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic, tmplabels);
+							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
 							output.Labels.Items[name] = mdl.Name;
-							labels.AddRange(tmplabels.Values);
+							labels.AddRange(mdl.GetLabels());
 						}
 						break;
 					case "basicmodelarray":
@@ -174,15 +168,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Basic, tmplabels);
+								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Basic);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
-									labels.AddRange(tmplabels.Values);
+									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							address += 4;
@@ -190,11 +183,10 @@ namespace splitDLL
 						break;
 					case "basicdxmodel":
 						{
-							tmplabels = new Dictionary<int, string>();
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX, tmplabels);
+							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
 							output.Labels.Items[name] = mdl.Name;
-							labels.AddRange(tmplabels.Values);
+							labels.AddRange(mdl.GetLabels());
 						}
 						break;
 					case "basicdxmodelarray":
@@ -204,15 +196,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.BasicDX, tmplabels);
+								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.BasicDX);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-									labels.AddRange(tmplabels.Values);
+									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							address += 4;
@@ -220,11 +211,10 @@ namespace splitDLL
 						break;
 					case "chunkmodel":
 						{
-							tmplabels = new Dictionary<int, string>();
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk, tmplabels);
+							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
 							output.Labels.Items[name] = mdl.Name;
-							labels.AddRange(tmplabels.Values);
+							labels.AddRange(mdl.GetLabels());
 						}
 						break;
 					case "chunkmodelarray":
@@ -234,15 +224,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Chunk, tmplabels);
+								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Chunk);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
-									labels.AddRange(tmplabels.Values);
+									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							address += 4;
@@ -255,8 +244,7 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								tmplabels = new Dictionary<int, string>();
-								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt, tmplabels);
+								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								output.Labels.Items[idx + ".motion"] = ani.Animation.Name;
 								output.Labels.Items[idx + ".object"] = ani.Model.Name;
@@ -297,6 +285,67 @@ namespace splitDLL
 		[DllImport("shlwapi.dll", SetLastError = true)]
 		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath,
 			string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+
+		static List<string> GetLabels(this LandTable land)
+		{
+			List<string> labels = new List<string>() { land.Name };
+			if (land.COLName != null)
+			{
+				labels.Add(land.COLName);
+				foreach (COL col in land.COL)
+					if (col.Model != null)
+						labels.AddRange(col.Model.GetLabels());
+			}
+			if (land.AnimName != null)
+			{
+				labels.Add(land.AnimName);
+				foreach (GeoAnimData gan in land.Anim)
+				{
+					if (gan.Model != null)
+						labels.AddRange(gan.Model.GetLabels());
+					if (gan.Animation != null)
+						labels.Add(gan.Animation.Name);
+				}
+			}
+			return labels;
+		}
+
+		static List<string> GetLabels(this SonicRetro.SAModel.Object obj)
+		{
+			List<string> labels = new List<string>() { obj.Name };
+			if (obj.Attach != null)
+				labels.AddRange(obj.Attach.GetLabels());
+			if (obj.Children != null)
+				foreach (SonicRetro.SAModel.Object o in obj.Children)
+					labels.AddRange(o.GetLabels());
+			return labels;
+		}
+
+		static List<string> GetLabels(this Attach att)
+		{
+			List<string> labels = new List<string>() { att.Name };
+			if (att is BasicAttach)
+			{
+				BasicAttach bas = (BasicAttach)att;
+				if (bas.VertexName != null)
+					labels.Add(bas.VertexName);
+				if (bas.NormalName != null)
+					labels.Add(bas.NormalName);
+				if (bas.MaterialName != null)
+					labels.Add(bas.MaterialName);
+				if (bas.MeshName != null)
+					labels.Add(bas.MeshName);
+			}
+			else if (att is ChunkAttach)
+			{
+				ChunkAttach cnk = (ChunkAttach)att;
+				if (cnk.VertexName != null)
+					labels.Add(cnk.VertexName);
+				if (cnk.PolyName != null)
+					labels.Add(cnk.PolyName);
+			}
+			return labels;
+		}
 	}
 
 	class ModelAnimationsDictionary : System.Collections.ObjectModel.KeyedCollection<string, ModelAnimations>
@@ -349,6 +398,7 @@ namespace splitDLL
 			Items = new Dictionary<string, string>();
 		}
 	}
+
 	struct IMAGE_EXPORT_DIRECTORY
 	{
 		public int Characteristics;
