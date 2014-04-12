@@ -13,6 +13,8 @@ namespace splitDLL
         [IniName("game")]
         [DefaultValue(Game.SADX)]
         public Game Game { get; set; }
+		[IniName("modulename")]
+		public string ModuleName { get; set; }
         [IniCollection]
         public Dictionary<string, FileInfo> Files { get; set; }
     }

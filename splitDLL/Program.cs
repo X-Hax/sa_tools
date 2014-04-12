@@ -81,6 +81,8 @@ namespace splitDLL
 			List<string> labels = new List<string>();
 			ModelAnimationsDictionary models = new ModelAnimationsDictionary();
 			MyClass output = new MyClass();
+			output.Name = inifile.ModuleName;
+			output.Game = inifile.Game;
 			Stopwatch timer = new Stopwatch();
 			timer.Start();
 			foreach (KeyValuePair<string, FileInfo> item in inifile.Files)
@@ -130,6 +132,7 @@ namespace splitDLL
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
 							output.Labels.Items[name] = mdl.Name;
+							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 							labels.AddRange(mdl.GetLabels());
 						}
 						break;
@@ -147,6 +150,7 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
+									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -158,6 +162,7 @@ namespace splitDLL
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
 							output.Labels.Items[name] = mdl.Name;
+							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 							labels.AddRange(mdl.GetLabels());
 						}
 						break;
@@ -175,6 +180,7 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
+									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -186,6 +192,7 @@ namespace splitDLL
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
 							output.Labels.Items[name] = mdl.Name;
+							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 							labels.AddRange(mdl.GetLabels());
 						}
 						break;
@@ -203,6 +210,7 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
+									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -214,6 +222,7 @@ namespace splitDLL
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
 							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
 							output.Labels.Items[name] = mdl.Name;
+							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 							labels.AddRange(mdl.GetLabels());
 						}
 						break;
@@ -231,6 +240,7 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
+									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -376,6 +386,11 @@ namespace splitDLL
 
 	public class MyClass
 	{
+		[IniName("name")]
+		public string Name { get; set; }
+		[IniAlwaysInclude]
+		[IniName("game")]
+		public Game Game { get; set; }
 		public DictionaryContainer ItemTypes { get; set; }
 		public DictionaryContainer Files { get; set; }
 		public DictionaryContainer Labels { get; set; }
