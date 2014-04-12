@@ -151,7 +151,20 @@ namespace SonicRetro.SAModel
             }
         }
 
-        public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address)
+		public static bool CheckAnimationFile(string filename)
+		{
+			bool be = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = false;
+			byte[] file = System.IO.File.ReadAllBytes(filename);
+			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			ByteConverter.BigEndian = be;
+			if (magic == SAANIM)
+				return file[7] <= CurrentVersion;
+			else
+				return false;
+		}
+
+		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address)
         {
             List<byte> result = new List<byte>();
             uint[] posoffs = new uint[ModelParts];
