@@ -100,10 +100,13 @@ namespace splitDLL
 					case "landtable":
 						{
 							LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
-							land.SaveToFile(data.Filename, landfmt);
 							output.Labels.Items[name] = land.Name;
-							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(land.GetLabels());
+							if (!labels.Contains(land.Name))
+							{
+								land.SaveToFile(data.Filename, landfmt);
+								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								labels.AddRange(land.GetLabels());
+							}
 						}
 						break;
 					case "landtablearray":
@@ -130,10 +133,13 @@ namespace splitDLL
 					case "model":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
-							models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
 							output.Labels.Items[name] = mdl.Name;
-							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(mdl.GetLabels());
+							if (!labels.Contains(mdl.Name))
+							{
+								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								labels.AddRange(mdl.GetLabels());
+							}
 						}
 						break;
 					case "modelarray":
@@ -160,10 +166,13 @@ namespace splitDLL
 					case "basicmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
-							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
 							output.Labels.Items[name] = mdl.Name;
-							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(mdl.GetLabels());
+							if (!labels.Contains(mdl.Name))
+							{
+								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
+								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								labels.AddRange(mdl.GetLabels());
+							}
 						}
 						break;
 					case "basicmodelarray":
@@ -190,10 +199,13 @@ namespace splitDLL
 					case "basicdxmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
-							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
 							output.Labels.Items[name] = mdl.Name;
-							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(mdl.GetLabels());
+							if (!labels.Contains(mdl.Name))
+							{
+								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
+								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								labels.AddRange(mdl.GetLabels());
+							}
 						}
 						break;
 					case "basicdxmodelarray":
@@ -220,10 +232,13 @@ namespace splitDLL
 					case "chunkmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
-							models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
 							output.Labels.Items[name] = mdl.Name;
-							output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
-							labels.AddRange(mdl.GetLabels());
+							if (!labels.Contains(mdl.Name))
+							{
+								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
+								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								labels.AddRange(mdl.GetLabels());
+							}
 						}
 						break;
 					case "chunkmodelarray":
