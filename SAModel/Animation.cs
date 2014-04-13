@@ -73,7 +73,7 @@ namespace SonicRetro.SAModel
             Int32 ptr = address;
             Frames = ByteConverter.ToInt32(file, ptr + 4);
             AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, ptr + 8);
-            int framesize = ByteConverter.ToUInt16(file, ptr + 10) * 8;
+            int framesize = (ByteConverter.ToUInt16(file, ptr + 10) & 0xF) * 8;
             ptr = (int)(ByteConverter.ToUInt32(file, ptr) - imageBase);
             for (int i = 0; i < nummodels; i++)
             {
