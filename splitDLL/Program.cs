@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using SADXPCTools;
 using SonicRetro.SAModel;
-using System.Runtime.InteropServices;
 
 namespace splitDLL
 {
@@ -104,7 +104,7 @@ namespace splitDLL
 							if (!labels.Contains(land.Name))
 							{
 								land.SaveToFile(data.Filename, landfmt);
-								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
+								output.Files.Items[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(data.Filename));
 								labels.AddRange(land.GetLabels());
 							}
 						}
@@ -123,7 +123,7 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 									land.SaveToFile(fn, landfmt);
-									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
+									output.Files.Items[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
 									labels.AddRange(land.GetLabels());
 								}
 							}
@@ -267,7 +267,7 @@ namespace splitDLL
 								output.Labels.Items[idx + ".object"] = ani.Model.Name;
 								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 								ani.Animation.Save(fn);
-								output.Files.Items[fn] = HelperFunctions.FileHash(fn);
+								output.Files.Items[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
 								if (models.Contains(ani.Model.Name))
 								{
 									ModelAnimations mdl = models[ani.Model.Name];
@@ -280,7 +280,7 @@ namespace splitDLL
 									string mfn = Path.ChangeExtension(fn, modelext);
 									ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
 										idx + ".object", "splitDLL", null, modelfmt);
-									output.Files.Items[mfn] = HelperFunctions.FileHash(mfn);
+									output.Files.Items[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
 								}
 							}
 							address += 4;
@@ -293,7 +293,20 @@ namespace splitDLL
 			{
 				ModelFile.CreateFile(item.Filename, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
 					null, item.Format);
-				output.Files.Items[item.Filename] = HelperFunctions.FileHash(item.Filename);
+				string type = "model";
+				switch (item.Format)
+				{
+					case ModelFormat.Basic:
+						type = "basicmodel";
+						break;
+					case ModelFormat.BasicDX:
+						type = "basicdxmodel";
+						break;
+					case ModelFormat.Chunk:
+						type = "chunkmodel";
+						break;
+				}
+				output.Files.Items[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
 			}
 			IniFile.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
 				+ "_data.ini");
@@ -401,26 +414,51 @@ namespace splitDLL
 		[IniAlwaysInclude]
 		[IniName("game")]
 		public Game Game { get; set; }
-		public DictionaryContainer ItemTypes { get; set; }
-		public DictionaryContainer Files { get; set; }
-		public DictionaryContainer Labels { get; set; }
+		public DictionaryContainer<string> ItemTypes { get; set; }
+		public DictionaryContainer<FileTypeHash> Files { get; set; }
+		public DictionaryContainer<string> Labels { get; set; }
 
 		public MyClass()
 		{
-			ItemTypes = new DictionaryContainer();
-			Files = new DictionaryContainer();
-			Labels = new DictionaryContainer();
+			ItemTypes = new DictionaryContainer<string>();
+			Files = new DictionaryContainer<FileTypeHash>();
+			Labels = new DictionaryContainer<string>();
 		}
 	}
 
-	public class DictionaryContainer
+	public class DictionaryContainer<T>
 	{
 		[IniCollection]
-		public Dictionary<string, string> Items { get; set; }
+		public Dictionary<string, T> Items { get; set; }
 
 		public DictionaryContainer()
 		{
-			Items = new Dictionary<string, string>();
+			Items = new Dictionary<string, T>();
+		}
+	}
+
+	[System.ComponentModel.TypeConverter(typeof(StringConverter<FileTypeHash>))]
+	public class FileTypeHash
+	{
+		public string Type { get; set; }
+		public string Hash { get; set; }
+
+		public FileTypeHash(string type, string hash)
+		{
+			Type = type;
+			Hash = hash;
+		}
+
+		public FileTypeHash(string data)
+		{
+			string[] split = data.Split('|');
+			Type = split[0];
+			Hash = split[1];
+		}
+
+		public override string ToString()
+		{
+			return Type + "|" + Hash;
 		}
 	}
 

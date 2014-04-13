@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using SADXPCTools;
 using SonicRetro.SAModel;
@@ -82,9 +80,9 @@ namespace DLLModGenerator
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			listView1.BeginUpdate();
-			foreach (KeyValuePair<string, string> item in IniData.Files.Items)
+			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Items)
 			{
-				bool modified = HelperFunctions.FileHash(item.Key) != item.Value;
+				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
 				listView1.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified });
 			}
 			listView1.EndUpdate();
@@ -161,25 +159,36 @@ namespace DLLModGenerator
 						writer.WriteLine();
 						List<string> labels = new List<string>();
 						int _i = 0;
-						foreach (KeyValuePair<string, string> item in IniData.Files.Items)
+						foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Items)
 							if (listView1.CheckedIndices.Contains(_i++))
-								if (LandTable.CheckLevelFile(item.Key))
+								switch (item.Value.Type)
 								{
-									LandTable tbl = LandTable.LoadFromFile(item.Key);
-									writer.WriteLine(tbl.ToStructVariables(landfmt, new List<string>()));
-									labels.AddRange(tbl.GetLabels());
-								}
-								else if (ModelFile.CheckModelFile(item.Key))
-								{
-									SonicRetro.SAModel.Object mdl = new ModelFile(item.Key).Model;
-									writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
-									labels.AddRange(mdl.GetLabels());
-								}
-								else if (Animation.CheckAnimationFile(item.Key))
-								{
-									Animation ani = Animation.Load(item.Key);
-									writer.WriteLine(ani.ToStructVariables());
-									labels.Add(ani.Name);
+									case "landtable":
+										LandTable tbl = LandTable.LoadFromFile(item.Key);
+										writer.WriteLine(tbl.ToStructVariables(landfmt, new List<string>()));
+										labels.AddRange(tbl.GetLabels());
+										break;
+									case "model":
+										SonicRetro.SAModel.Object mdl = new ModelFile(item.Key).Model;
+										writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
+										labels.AddRange(mdl.GetLabels());
+										break;
+									case "basicmodel":
+									case "chunkmodel":
+										mdl = new ModelFile(item.Key).Model;
+										writer.WriteLine(mdl.ToStructVariables(false, new List<string>()));
+										labels.AddRange(mdl.GetLabels());
+										break;
+									case "basicdxmodel":
+										mdl = new ModelFile(item.Key).Model;
+										writer.WriteLine(mdl.ToStructVariables(true, new List<string>()));
+										labels.AddRange(mdl.GetLabels());
+										break;
+									case "animation":
+										Animation ani = Animation.Load(item.Key);
+										writer.WriteLine(ani.ToStructVariables());
+										labels.Add(ani.Name);
+										break;
 								}
 						writer.WriteLine("void __cdecl Init(const char *path)");
 						writer.WriteLine("{");
@@ -190,7 +199,7 @@ namespace DLLModGenerator
 							writer.WriteLine("\t{0} = &{1};", item.Key, item.Value);
 						writer.WriteLine("}");
 						writer.WriteLine();
-						writer.WriteLine("extern \"C\" __declspec(dllexport) ModInfo {0}ModInfo = {{ ModLoaderVer, Init, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0 }};", SA2 ? "SA2" : "SADX");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) ModInfo {0}ModInfo = {{ ModLoaderVer, Init, NULL, 0, NULL, 0, NULL, 0, NULL, 0 }};", SA2 ? "SA2" : "SADX");
 					}
 		}
 	}
@@ -199,28 +208,54 @@ namespace DLLModGenerator
 	{
 		[IniName("name")]
 		public string Name { get; set; }
+		[IniAlwaysInclude]
 		[IniName("game")]
 		public Game Game { get; set; }
-		public DictionaryContainer ItemTypes { get; set; }
-		public DictionaryContainer Files { get; set; }
-		public DictionaryContainer Labels { get; set; }
+		public DictionaryContainer<string> ItemTypes { get; set; }
+		public DictionaryContainer<FileTypeHash> Files { get; set; }
+		public DictionaryContainer<string> Labels { get; set; }
 
 		public MyClass()
 		{
-			ItemTypes = new DictionaryContainer();
-			Files = new DictionaryContainer();
-			Labels = new DictionaryContainer();
+			ItemTypes = new DictionaryContainer<string>();
+			Files = new DictionaryContainer<FileTypeHash>();
+			Labels = new DictionaryContainer<string>();
 		}
 	}
 
-	public class DictionaryContainer
+	public class DictionaryContainer<T>
 	{
 		[IniCollection]
-		public Dictionary<string, string> Items { get; set; }
+		public Dictionary<string, T> Items { get; set; }
 
 		public DictionaryContainer()
 		{
-			Items = new Dictionary<string, string>();
+			Items = new Dictionary<string, T>();
+		}
+	}
+
+	[System.ComponentModel.TypeConverter(typeof(StringConverter<FileTypeHash>))]
+	public class FileTypeHash
+	{
+		public string Type { get; set; }
+		public string Hash { get; set; }
+
+		public FileTypeHash(string type, string hash)
+		{
+			Type = type;
+			Hash = hash;
+		}
+
+		public FileTypeHash(string data)
+		{
+			string[] split = data.Split('|');
+			Type = split[0];
+			Hash = split[1];
+		}
+
+		public override string ToString()
+		{
+			return Type + "|" + Hash;
 		}
 	}
 
