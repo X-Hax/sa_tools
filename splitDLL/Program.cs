@@ -137,7 +137,6 @@ namespace splitDLL
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
-								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -156,7 +155,6 @@ namespace splitDLL
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
-									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -170,7 +168,6 @@ namespace splitDLL
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
-								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -187,9 +184,8 @@ namespace splitDLL
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
-									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -203,7 +199,6 @@ namespace splitDLL
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
-								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -220,9 +215,8 @@ namespace splitDLL
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -236,7 +230,6 @@ namespace splitDLL
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
-								output.Files.Items[data.Filename] = HelperFunctions.FileHash(data.Filename);
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -253,9 +246,8 @@ namespace splitDLL
 								output.Labels.Items[idx] = mdl.Name;
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
-									output.Files.Items[fn] = HelperFunctions.FileHash(fn);
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
@@ -298,8 +290,11 @@ namespace splitDLL
 				itemcount++;
 			}
 			foreach (ModelAnimations item in models)
+			{
 				ModelFile.CreateFile(item.Filename, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
 					null, item.Format);
+				output.Files.Items[item.Filename] = HelperFunctions.FileHash(item.Filename);
+			}
 			IniFile.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
 				+ "_data.ini");
 			timer.Stop();
