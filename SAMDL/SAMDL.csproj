@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\..\..\..\Downloads\FraGag-prs.net-f4b8427\FraGag.Compression.Prs\bin\Release\FraGag.Compression.Prs.dll</HintPath>
+      <HintPath>..\..\prs.net\FraGag.Compression.Prs\bin\Release\FraGag.Compression.Prs.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />

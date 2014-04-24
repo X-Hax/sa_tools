@@ -6,6 +6,9 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+    /// <summary>
+    /// This is a standard tri mesh representation of a BasicAttach or ChunkAttach.
+    /// </summary>
     public class MeshInfo
     {
         public Material Material { get; private set; }

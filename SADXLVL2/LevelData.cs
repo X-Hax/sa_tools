@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+
+using Microsoft.DirectX.Direct3D;
+
 using PuyoTools;
 using VrSharp.PvrTexture;
-using Microsoft.DirectX.Direct3D;
-using System;
-using System.CodeDom.Compiler;
+
+using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -26,24 +30,6 @@ namespace SonicRetro.SAModel.SADXLVL2
         public static List<SETItem>[] SETItems;
         public static List<DeathZoneItem> DeathZones;
         public static LevelDefinition leveleff;
-
-        public static BMPInfo[] GetTextures(string filename)
-        {
-            List<BMPInfo> functionReturnValue = new List<BMPInfo>();
-            PVM pvmfile = new PVM();
-            Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
-            pvmdata = pvmfile.TranslateData(pvmdata);
-            ArchiveFileList pvmentries = pvmfile.GetFileList(pvmdata);
-            foreach (ArchiveFileList.Entry file in pvmentries.Entries)
-            {
-                byte[] data = new byte[file.Length];
-                pvmdata.Seek(file.Offset, SeekOrigin.Begin);
-                pvmdata.Read(data, 0, (int)file.Length);
-                PvrTexture vrfile = new PvrTexture(data);
-                functionReturnValue.Add(new BMPInfo(Path.GetFileNameWithoutExtension(file.Filename), vrfile.GetTextureAsBitmap()));
-            }
-            return functionReturnValue.ToArray();
-        }
 
         internal static void ChangeObjectType(SETItem entry)
         {
@@ -70,18 +56,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { });
             oe.ID = ID;
             return oe;
-        }
-    }
-
-    internal class BMPInfo
-    {
-        public string Name { get; set; }
-        public Bitmap Image { get; set; }
-
-        public BMPInfo(string name, Bitmap image)
-        {
-            Name = name;
-            Image = image;
         }
     }
 }

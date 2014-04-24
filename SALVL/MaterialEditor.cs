@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using SonicRetro.SAModel.Direct3D.TextureSystem;
+
 namespace SonicRetro.SAModel.SALVL
 {
     internal partial class MaterialEditor : Form

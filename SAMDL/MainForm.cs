@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+
 using PuyoTools;
+
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.Direct3D.TextureSystem;
+
 using VrSharp.PvrTexture;
 
 namespace SonicRetro.SAModel.SAMDL
@@ -422,78 +427,23 @@ namespace SonicRetro.SAModel.SAMDL
             lastmouse = evloc;
         }
 
-        public static Dictionary<string, Bitmap> GetTextures(string filename)
-        {
-            Dictionary<string, Bitmap> functionReturnValue = new Dictionary<string, Bitmap>();
-            bool gvm = false;
-            ArchiveModule pvmfile = null;
-            Stream pvmdata = new MemoryStream(File.ReadAllBytes(filename));
-            if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-            {
-                Stream decomp = new MemoryStream();
-                FraGag.Compression.Prs.Decompress(pvmdata, decomp);
-                pvmdata.Dispose();
-                pvmdata = decomp;
-            }
-            pvmfile = new PVM();
-            if (!pvmfile.Check(pvmdata, filename))
-            {
-                pvmfile = new GVM();
-                gvm = true;
-            }
-            VrSharp.VpClut pvp = null;
-            pvmdata = pvmfile.TranslateData(pvmdata);
-            ArchiveFileList pvmentries = pvmfile.GetFileList(pvmdata);
-            foreach (ArchiveFileList.Entry file in pvmentries.Entries)
-            {
-                byte[] data = new byte[file.Length];
-                pvmdata.Seek(file.Offset, SeekOrigin.Begin);
-                pvmdata.Read(data, 0, (int)file.Length);
-                VrSharp.VrTexture vrfile = gvm ? (VrSharp.VrTexture)new VrSharp.GvrTexture.GvrTexture(data) : (VrSharp.VrTexture)new VrSharp.PvrTexture.PvrTexture(data);
-                if (vrfile.NeedsExternalClut())
-                {
-                    using (OpenFileDialog a = new OpenFileDialog
-                    {
-                        DefaultExt = gvm ? "gvp" : "pvp",
-                        Filter = gvm ? "GVP Files|*.gvp" : "PVP Files|*.pvp",
-                        InitialDirectory = System.IO.Path.GetDirectoryName(filename),
-                        Title = "External palette file"
-                    })
-                    {
-                        if (pvp == null)
-                            if (a.ShowDialog() == DialogResult.OK)
-                                pvp = gvm ? (VrSharp.VpClut)new VrSharp.GvrTexture.GvpClut(a.FileName) : (VrSharp.VpClut)new PvpClut(a.FileName);
-                            else
-                                return new Dictionary<string, Bitmap>();
-                    }
-                    vrfile.SetClut(pvp);
-                }
-                try
-                {
-                    functionReturnValue[Path.GetFileNameWithoutExtension(file.Filename)] = vrfile.GetTextureAsBitmap();
-                }
-                catch
-                {
-                    functionReturnValue[Path.GetFileNameWithoutExtension(file.Filename)] = new Bitmap(1, 1);
-                }
-            }
-            pvmdata.Dispose();
-            return functionReturnValue;
-        }
-
         private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
             {
                 if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    BMPInfo[] textureBMPs = TextureArchive.GetTextures(a.FileName);
+
                     List<string> texnames = new List<string>();
                     List<Bitmap> bmps = new List<Bitmap>();
-                    foreach (KeyValuePair<string, Bitmap> item in GetTextures(a.FileName))
+
+                    foreach (BMPInfo bmpEntry in textureBMPs)
                     {
-                        texnames.Add(item.Key);
-                        bmps.Add(item.Value);
+                        texnames.Add(bmpEntry.Name);
+                        bmps.Add(bmpEntry.Image);
                     }
+
                     TextureNames = texnames.ToArray();
                     TextureBmps = bmps.ToArray();
                     Textures = new Texture[TextureBmps.Length];

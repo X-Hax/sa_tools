@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -108,7 +109,7 @@ namespace SonicRetro.SAModel.SALVL
                     a.FileName = string.Empty;
                 if (a.ShowDialog(this) == DialogResult.OK)
                 {
-                    BMPInfo[] TexBmps = LevelData.GetTextures(a.FileName);
+                    BMPInfo[] TexBmps = TextureArchive.GetTextures(a.FileName);
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
@@ -475,10 +476,21 @@ namespace SonicRetro.SAModel.SALVL
             DrawLevel();
         }
 
+        /// <summary>
+        /// Writes a specified SAModel.Object to objstream in WaveFront *.OBJ format.
+        /// </summary>
+        /// <param name="objstream">obj stream to write to</param>
+        /// <param name="mtlstream">material stream to write to, if current material isn't already written</param>
+        /// <param name="obj"></param>
+        /// <param name="usedmtls"></param>
+        /// <param name="transform"></param>
+        /// <param name="totverts"></param>
         public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<Material> usedmtls, MatrixStack transform, ref int totverts)
         {
             if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
+            {
                 for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
+                {
                     if (obj.Attach.MeshInfo[j].Material != null && !usedmtls.Contains(obj.Attach.MeshInfo[j].Material))
                     {
                         mtlstream.WriteLine("newmtl material_" + usedmtls.Count);
@@ -500,17 +512,23 @@ namespace SonicRetro.SAModel.SALVL
                         }
                         usedmtls.Add(obj.Attach.MeshInfo[j].Material);
                     }
+                }
+            }
+
             transform.Push();
             transform.TranslateLocal(obj.Position.ToVector3());
             transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.ToVector3());
+
             if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
             {
                 objstream.WriteLine("g " + obj.Name);
                 objstream.WriteLine("# " + obj.Attach.Name);
+
                 for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
                 {
                     objstream.WriteLine("usemtl material_" + usedmtls.IndexOf(obj.Attach.MeshInfo[j].Material));
+
                     for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k++)
                     {
                         VertexData vert = obj.Attach.MeshInfo[j].Vertices[k];
@@ -521,6 +539,7 @@ namespace SonicRetro.SAModel.SALVL
                         objstream.WriteLine("vc " + vert.Color.A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.B.ToString(System.Globalization.CultureInfo.InvariantCulture));
                         objstream.WriteLine("vt " + vert.UV.U.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-vert.UV.V).ToString(System.Globalization.CultureInfo.InvariantCulture));
                     }
+
                     for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k += 3)
                     {
                         objstream.Write("f");
@@ -528,9 +547,11 @@ namespace SonicRetro.SAModel.SALVL
                             objstream.Write(" " + (k + l + totverts + 1) + "/" + (k + l + totverts + 1) + "/" + (k + l + totverts + 1));
                         objstream.WriteLine();
                     }
+
                     totverts += obj.Attach.MeshInfo[j].Vertices.Length;
                 }
             }
+
             foreach (Object item in obj.Children)
                 Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts);
             transform.Pop();
