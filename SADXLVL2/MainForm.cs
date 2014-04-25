@@ -203,7 +203,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                         pos = posini[levelact].Position.ToSAModel();
                         rot = posini[levelact].YRotation;
                     }
-                    if (i == 0 & levelact.Level == SA1LevelIDs.Chaos7)
+                    if (i == 0 & levelact.Level == SA1LevelIDs.PerfectChaos)
                         LevelData.StartPositions[i] = new StartPosItem(new ModelFile(ini[string.Empty]["supermdl"]).Model, ini[string.Empty]["supertex"], float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
                     else
                         LevelData.StartPositions[i] = new StartPosItem(new ModelFile(ini[string.Empty][LevelData.Characters[i] + "mdl"]).Model, ini[string.Empty][LevelData.Characters[i] + "tex"], float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
