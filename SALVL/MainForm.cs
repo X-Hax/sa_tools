@@ -347,6 +347,7 @@ namespace SonicRetro.SAModel.SALVL
             {
                 cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
                 cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                DrawLevel();
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {

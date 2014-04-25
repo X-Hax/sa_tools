@@ -760,6 +760,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
                 cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                DrawLevel();
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
@@ -909,65 +910,209 @@ namespace SonicRetro.SAModel.SADXLVL2
             DrawLevel();
         }
 
-        public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<Material> usedmtls, MatrixStack transform, ref int totverts)
+        /// <summary>
+        /// Writes an object model to the specified stream, if the model is in Basic format.
+        /// </summary>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="transform">Used for calculating transforms.</param>
+        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs)
         {
-            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
-                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
-                    if (obj.Attach.MeshInfo[j].Material != null && !usedmtls.Contains(obj.Attach.MeshInfo[j].Material))
-                    {
-                        mtlstream.WriteLine("newmtl material_" + usedmtls.Count);
-                        mtlstream.WriteLine("Ka 1 1 1");
-                        mtlstream.WriteLine("Kd " + obj.Attach.MeshInfo[j].Material.DiffuseColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.B / 255f);
-                        if (obj.Attach.MeshInfo[j].Material.UseAlpha)
-                            mtlstream.WriteLine("d " + obj.Attach.MeshInfo[j].Material.DiffuseColor.A / 255f);
-                        if (!obj.Attach.MeshInfo[j].Material.IgnoreSpecular)
-                            mtlstream.WriteLine("Ks " + obj.Attach.MeshInfo[j].Material.SpecularColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.B / 255f);
-                        mtlstream.WriteLine("illum 1");
-                        if (obj.Attach.MeshInfo[j].Material.UseTexture)
-                        {
-                            mtlstream.WriteLine("texid " + obj.Attach.MeshInfo[j].Material.TextureID);
-                            if (!string.IsNullOrEmpty(LevelData.leveltexs))
-                            {
-                                mtlstream.WriteLine("Map_Ka " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
-                                mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
-                            }
-                        }
-                        usedmtls.Add(obj.Attach.MeshInfo[j].Material);
-                    }
             transform.Push();
             transform.TranslateLocal(obj.Position.ToVector3());
             transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.ToVector3());
-            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
+
+            if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
             {
-                objstream.WriteLine("g " + obj.Name);
-                objstream.WriteLine("# " + obj.Attach.Name);
-                objstream.WriteLine("# Meshes: " + obj.Attach.MeshInfo.Length);
-                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
+                BasicAttach basicAttach = (BasicAttach)obj.Attach;
+                bool wroteNormals = false;
+
+                if (!(obj.Attach is BasicAttach))
                 {
-                    objstream.WriteLine("usemtl material_" + usedmtls.IndexOf(obj.Attach.MeshInfo[j].Material));
-                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k++)
-                    {
-                        VertexData vert = obj.Attach.MeshInfo[j].Vertices[k];
-                        Vector3 x = Vector3.TransformCoordinate(vert.Position.ToVector3(), transform.Top);
-                        objstream.WriteLine("v " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + (k + totverts + 1));
-                        x = Vector3.TransformNormal(vert.Normal.ToVector3(), Matrix.Invert(transform.Top));
-                        objstream.WriteLine("vn " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + (k + totverts + 1));
-                        objstream.WriteLine("vc " + vert.Color.A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.B.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                        objstream.WriteLine("vt " + vert.UV.U.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-vert.UV.V).ToString(System.Globalization.CultureInfo.InvariantCulture));
-                    }
-                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k += 3)
-                    {
-                        objstream.Write("f");
-                        for (int l = 0; l < 3; l++)
-                            objstream.Write(" " + (k + l + totverts + 1) + "/" + (k + l + totverts + 1) + "/" + (k + l + totverts + 1));
-                        objstream.WriteLine();
-                    }
-                    totverts += obj.Attach.MeshInfo[j].Vertices.Length;
+                    Console.WriteLine("Error in WriteObjFromBasicAttach() - obj.attach is not BasicAttach!");
+                    return;
                 }
+                
+                objstream.WriteLine("g " + obj.Name);
+
+                // outputting verts
+                for (int vIndx = 0; vIndx < basicAttach.Vertex.Length; vIndx++)
+                {
+                    Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
+                    Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+                    objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+                }
+
+
+                // outputting normals
+                if (basicAttach.Vertex.Length == basicAttach.Normal.Length)
+                {
+                    for (int vnIndx = 0; vnIndx < basicAttach.Normal.Length; vnIndx++)
+                    {
+                        objstream.WriteLine(String.Format("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X, basicAttach.Normal[vnIndx].Y, basicAttach.Normal[vnIndx].Z));
+                    }
+                    wroteNormals = true;
+                }
+
+                // outputting meshes
+                for (int meshIndx = 0; meshIndx < basicAttach.Mesh.Count; meshIndx++)
+                {
+                    if (basicAttach.Material.Count > 0)
+                    {
+                        if (basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].UseTexture)
+                        {
+                            objstream.WriteLine(String.Format("usemtl material_{0}", basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID));
+                        }
+                    }
+
+                    List<ushort> uvList = new List<ushort>();
+                    List<Vector3> faceIDList = new List<Vector3>();
+
+                    for (int polyIndx = 0; polyIndx < basicAttach.Mesh[meshIndx].Poly.Count; polyIndx++)
+                    {
+                        if (basicAttach.Mesh[meshIndx].UV != null)
+                        {
+                            for (int uvIndx = 0; uvIndx < basicAttach.Mesh[meshIndx].UV.Length; uvIndx++)
+                            {
+                                objstream.WriteLine(String.Format("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U, basicAttach.Mesh[meshIndx].UV[uvIndx].V));
+                            }
+                        }
+
+                        if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Strips)
+                        {
+                            Strip polyStrip = (Strip)basicAttach.Mesh[meshIndx].Poly[polyIndx];
+                            int expectedTrisCount = polyStrip.Indexes.Length - 2;
+                            bool triangleWindReversed = polyStrip.Reversed;
+
+                            for (int stripIndx = 0; stripIndx < polyStrip.Indexes.Length-2; stripIndx++)
+                            {
+                                if (triangleWindReversed)
+                                {
+                                    Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+                                    faceIDList.Add(newFace);
+
+                                    if (basicAttach.Mesh[meshIndx].UV != null)
+                                    {
+                                        uvList.Add((ushort)(stripIndx + 1));
+                                        uvList.Add((ushort)stripIndx);
+                                        uvList.Add((ushort)(stripIndx + 2));
+                                    }
+                                }
+                                else
+                                {
+                                    Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+                                    faceIDList.Add(newFace);
+
+                                    if (basicAttach.Mesh[meshIndx].UV != null)
+                                    {
+                                        uvList.Add((ushort)(stripIndx));
+                                        uvList.Add((ushort)(stripIndx + 1));
+                                        uvList.Add((ushort)(stripIndx + 2));
+                                    }
+                                }
+
+                                #region old formatting - strips only
+                                /*if (wroteNormals)
+                                {
+                                    if (triangleWindReversed)
+                                    {
+                                        objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (polyStrip.Indexes[stripIndx] + 1) + totalVerts, (polyStrip.Indexes[stripIndx] + 1) + totalNorms,
+                                            (polyStrip.Indexes[stripIndx + 1] + 1) + totalVerts, (polyStrip.Indexes[stripIndx + 1] + 1) + totalNorms, (polyStrip.Indexes[stripIndx + 2] + 1) + totalVerts, (polyStrip.Indexes[stripIndx + 2] + 1) + totalNorms));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (polyStrip.Indexes[stripIndx + 1] + 1) + totalVerts, (polyStrip.Indexes[stripIndx + 1] + 1) + totalNorms,
+                                            (polyStrip.Indexes[stripIndx] + 1) + totalVerts, (polyStrip.Indexes[stripIndx] + 1) + totalNorms, (polyStrip.Indexes[stripIndx + 2] + 1) + totalVerts, (polyStrip.Indexes[stripIndx + 2] + 1) + totalNorms));
+                                    }
+                                }
+                                else
+                                {
+                                    if (triangleWindReversed)
+                                    {
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (polyStrip.Indexes[stripIndx+1] +1) + totalVerts, (polyStrip.Indexes[stripIndx] +1) + totalVerts, (polyStrip.Indexes[stripIndx+2] +1) + totalVerts));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (polyStrip.Indexes[stripIndx] +1) + totalVerts, (polyStrip.Indexes[stripIndx+1] +1) + totalVerts , (polyStrip.Indexes[stripIndx+2] +1) + totalVerts));
+                                    }
+                                }*/
+                                #endregion
+
+                                triangleWindReversed = !triangleWindReversed; // flip every other triangle or the output will be wrong
+                            }
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Triangles)
+                        {
+                            for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length - 3; faceVIndx++)
+                            {
+                                Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
+                                faceIDList.Add(newFace);
+
+                                if (basicAttach.Mesh[meshIndx].UV != null)
+                                {
+                                    uvList.Add((ushort)(faceVIndx));
+                                    uvList.Add((ushort)(faceVIndx + 1));
+                                    uvList.Add((ushort)(faceVIndx + 2));
+                                }
+                            }
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Quads)
+                        {
+                            objstream.WriteLine("#Error in WriteObjFromBasicAttach() - Quads not supported yet!");
+                            continue;
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.NPoly)
+                        {
+                            objstream.WriteLine("#Error in WriteObjFromBasicAttach() - NPoly not supported yet!");
+                            continue;
+                        }
+
+                        for (int f = 0; f < faceIDList.Count; f++) // final formatting
+                        {
+                            if (wroteNormals)
+                            {
+                                if (uvList.Count > 0)
+                                {
+                                    objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)faceIDList[f].X + totalVerts, uvList[f] + 1 + totalUVs, (int)faceIDList[f].X + totalNorms, (int)faceIDList[f].Y + totalVerts, uvList[f] + 1 + totalUVs + 1, (int)faceIDList[f].Y + totalNorms, (int)faceIDList[f].Z + totalVerts, uvList[f] + 1 + totalUVs + 2, +(int)faceIDList[f].Z + totalNorms));
+                                }
+                                else
+                                {
+                                    objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)faceIDList[f].X + totalVerts, (int)faceIDList[f].X + totalNorms, (int)faceIDList[f].Y + totalVerts, (int)faceIDList[f].Y + totalNorms, (int)faceIDList[f].Z + totalVerts, +(int)faceIDList[f].Z + totalNorms));
+                                }
+                            }
+                            else
+                            {
+                                if (uvList.Count > 0)
+                                {
+                                    objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)faceIDList[f].X + totalVerts, uvList[f] + 1 + totalUVs, (int)faceIDList[f].Y + totalVerts, uvList[f] + 1 + totalUVs + 1, (int)faceIDList[f].Z + totalVerts, uvList[f] + 1 + totalUVs + 2));
+                                }
+                                else
+                                {
+                                    objstream.WriteLine(String.Format("f {0} {1} {2}", (int)faceIDList[f].X + totalVerts, (int)faceIDList[f].Y + totalVerts, (int)faceIDList[f].Z + totalVerts));
+                                }
+                            }
+                        }
+                    }
+
+                    totalUVs += uvList.Count;
+
+                } // done outputting meshes
+
+                objstream.WriteLine("");
+
+                // add totals
+                totalVerts += basicAttach.Vertex.Length;
+                totalNorms += basicAttach.Normal.Length;
             }
+
+            // handle child nodes should they exist (They shouldn't though, because this is sadxlvl2)
             foreach (Object item in obj.Children)
-                Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts);
+                WriteObjFromBasicAttach(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs);
+
             transform.Pop();
         }
 
@@ -984,21 +1129,32 @@ namespace SonicRetro.SAModel.SADXLVL2
                 using (StreamWriter objstream = new StreamWriter(a.FileName, false))
                 using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
                 {
+                    #region Material Exporting
                     objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-                    mtlstream.WriteLine("newmtl material_0");
-                    mtlstream.WriteLine("Ka 1 1 1");
-                    mtlstream.WriteLine("Kd 1 1 1");
-                    mtlstream.WriteLine("Ks 0 0 0");
-                    mtlstream.WriteLine("illum 1");
-                    int totverts = 0;
-                    objstream.WriteLine("# geo_" + LevelData.geo.Name);
+
+                    // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                    // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                    for (int texIndx = 0; texIndx < LevelData.TextureBitmaps[LevelData.leveltexs].Length; texIndx++)
+                    {
+                        mtlstream.WriteLine(String.Format("newmtl material_{0}", texIndx));
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine("Kd 1 1 1");
+                        mtlstream.WriteLine("Ks 0 0 0");
+                        mtlstream.WriteLine("illum 1");
+
+                        mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][texIndx].Name + ".png");
+                    }
+                    #endregion
+
+                    int totalVerts = 0;
+                    int totalNorms = 0;
+                    int totalUVs = 0;
+
                     for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                        Writeobj(objstream, mtlstream, LevelData.geo.COL[i].Model, usedmtls, new MatrixStack(), ref totverts);
+                        WriteObjFromBasicAttach(objstream, LevelData.geo.COL[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs);
                     if (LevelData.geo.Anim != null)
                         for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-                            Writeobj(objstream, mtlstream, LevelData.geo.Anim[i].Model, usedmtls, new MatrixStack(), ref totverts);
-                    mtlstream.Write("#EOF");
-                    objstream.Write("#EOF");
+                            WriteObjFromBasicAttach(objstream, LevelData.geo.Anim[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs);
                 }
                 if (!string.IsNullOrEmpty(LevelData.leveltexs))
                 {
@@ -1006,7 +1162,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     foreach (Material mtl in usedmtls)
                         if (mtl != null)
                             if (mtl.UseTexture)
-                                usedtexs[mtl.TextureID] = true;
+                            {
+                                if(mtl.TextureID < usedtexs.Length) 
+                                    usedtexs[mtl.TextureID] = true;
+                            }
                     string mypath = System.IO.Path.GetDirectoryName(a.FileName);
                     for (int i = 0; i < usedtexs.Length; i++)
                         if (usedtexs[i])
