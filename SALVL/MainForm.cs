@@ -37,7 +37,7 @@ namespace SonicRetro.SAModel.SALVL
         Camera cam = new Camera();
         bool loaded;
         int interval = 20;
-        FillMode rendermode;
+        FillMode rendermode = FillMode.Solid;
         Cull cullmode = Cull.None;
         internal List<Item> SelectedItems;
 
@@ -167,7 +167,7 @@ namespace SonicRetro.SAModel.SALVL
         internal void DrawLevel()
         {
             if (!loaded) return;
-            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
+            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
             d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
             Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
             d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
@@ -238,7 +238,7 @@ namespace SonicRetro.SAModel.SALVL
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
             if (!loaded) return;
-            float mindist = float.PositiveInfinity;
+            float mindist = cam.DrawDistance;
             HitResult dist;
             Item item = null;
             Vector3 mousepos = new Vector3(e.X, e.Y, 0);
@@ -477,87 +477,6 @@ namespace SonicRetro.SAModel.SALVL
             DrawLevel();
         }
 
-        /// <summary>
-        /// Writes a specified SAModel.Object to objstream in WaveFront *.OBJ format.
-        /// </summary>
-        /// <param name="objstream">obj stream to write to</param>
-        /// <param name="mtlstream">material stream to write to, if current material isn't already written</param>
-        /// <param name="obj"></param>
-        /// <param name="usedmtls"></param>
-        /// <param name="transform"></param>
-        /// <param name="totverts"></param>
-        public void Writeobj(System.IO.StreamWriter objstream, System.IO.StreamWriter mtlstream, SAModel.Object obj, List<Material> usedmtls, MatrixStack transform, ref int totverts)
-        {
-            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
-            {
-                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
-                {
-                    if (obj.Attach.MeshInfo[j].Material != null && !usedmtls.Contains(obj.Attach.MeshInfo[j].Material))
-                    {
-                        mtlstream.WriteLine("newmtl material_" + usedmtls.Count);
-                        mtlstream.WriteLine("Ka 1 1 1");
-                        mtlstream.WriteLine("Kd " + obj.Attach.MeshInfo[j].Material.DiffuseColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.DiffuseColor.B / 255f);
-                        if (obj.Attach.MeshInfo[j].Material.UseAlpha)
-                            mtlstream.WriteLine("d " + obj.Attach.MeshInfo[j].Material.DiffuseColor.A / 255f);
-                        if (!obj.Attach.MeshInfo[j].Material.IgnoreSpecular)
-                            mtlstream.WriteLine("Ks " + obj.Attach.MeshInfo[j].Material.SpecularColor.R / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.G / 255f + " " + obj.Attach.MeshInfo[j].Material.SpecularColor.B / 255f);
-                        mtlstream.WriteLine("illum 1");
-                        if (obj.Attach.MeshInfo[j].Material.UseTexture)
-                        {
-                            mtlstream.WriteLine("texid " + obj.Attach.MeshInfo[j].Material.TextureID);
-                            if (!string.IsNullOrEmpty(LevelData.leveltexs))
-                            {
-                                mtlstream.WriteLine("Map_Ka " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
-                                mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][obj.Attach.MeshInfo[j].Material.TextureID].Name + ".png");
-                            }
-                        }
-                        usedmtls.Add(obj.Attach.MeshInfo[j].Material);
-                    }
-                }
-            }
-
-            transform.Push();
-            transform.TranslateLocal(obj.Position.ToVector3());
-            transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
-            transform.ScaleLocal(obj.Scale.ToVector3());
-
-            if (obj.Attach != null && (obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0)
-            {
-                objstream.WriteLine("g " + obj.Name);
-                objstream.WriteLine("# " + obj.Attach.Name);
-
-                for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
-                {
-                    objstream.WriteLine("usemtl material_" + usedmtls.IndexOf(obj.Attach.MeshInfo[j].Material));
-
-                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k++)
-                    {
-                        VertexData vert = obj.Attach.MeshInfo[j].Vertices[k];
-                        Vector3 x = Vector3.TransformCoordinate(vert.Position.ToVector3(), transform.Top);
-                        objstream.WriteLine("v " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
-                        x = Vector3.TransformNormal(vert.Normal.ToVector3(), Matrix.Invert(transform.Top));
-                        objstream.WriteLine("vn " + x.X.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + x.Z.ToString(System.Globalization.CultureInfo.InvariantCulture) + " #" + j + totverts + 1);
-                        objstream.WriteLine("vc " + vert.Color.A.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.R.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.G.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + vert.Color.B.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                        objstream.WriteLine("vt " + vert.UV.U.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + (-vert.UV.V).ToString(System.Globalization.CultureInfo.InvariantCulture));
-                    }
-
-                    for (int k = 0; k < obj.Attach.MeshInfo[j].Vertices.Length; k += 3)
-                    {
-                        objstream.Write("f");
-                        for (int l = 0; l < 3; l++)
-                            objstream.Write(" " + (k + l + totverts + 1) + "/" + (k + l + totverts + 1) + "/" + (k + l + totverts + 1));
-                        objstream.WriteLine();
-                    }
-
-                    totverts += obj.Attach.MeshInfo[j].Vertices.Length;
-                }
-            }
-
-            foreach (Object item in obj.Children)
-                Writeobj(objstream, mtlstream, item, usedmtls, transform, ref totverts);
-            transform.Pop();
-        }
-
         private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog a = new SaveFileDialog
@@ -567,40 +486,47 @@ namespace SonicRetro.SAModel.SALVL
             };
             if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                List<Material> usedmtls = new List<Material>() { null };
                 using (StreamWriter objstream = new StreamWriter(a.FileName, false))
                 using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
                 {
+                    #region Material Exporting
                     objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-                    mtlstream.WriteLine("newmtl material_0");
-                    mtlstream.WriteLine("Ka 1 1 1");
-                    mtlstream.WriteLine("Kd 1 1 1");
-                    mtlstream.WriteLine("Ks 0 0 0");
-                    mtlstream.WriteLine("illum 1");
-                    int totverts = 0;
-                    objstream.WriteLine("# geo_" + LevelData.geo.Name);
-                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                        Writeobj(objstream, mtlstream, LevelData.geo.COL[i].Model, usedmtls, new MatrixStack(), ref totverts);
-                    if (LevelData.geo.Anim != null)
-                        for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-                            Writeobj(objstream, mtlstream, LevelData.geo.Anim[i].Model, usedmtls, new MatrixStack(), ref totverts);
-                    mtlstream.Write("#EOF");
-                    objstream.Write("#EOF");
-                }
-                if (!string.IsNullOrEmpty(LevelData.leveltexs))
-                {
-                    bool[] usedtexs = new bool[LevelData.TextureBitmaps[LevelData.leveltexs].Length];
-                    foreach (Material mtl in usedmtls)
-                        if (mtl != null)
-                            if (mtl.UseTexture)
-                                usedtexs[mtl.TextureID] = true;
-                    string mypath = System.IO.Path.GetDirectoryName(a.FileName);
-                    for (int i = 0; i < usedtexs.Length; i++)
-                        if (usedtexs[i])
+
+                    // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                    // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                    for (int texIndx = 0; texIndx < LevelData.TextureBitmaps[LevelData.leveltexs].Length; texIndx++)
+                    {
+                        mtlstream.WriteLine(String.Format("newmtl material_{0}", texIndx));
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine("Kd 1 1 1");
+                        mtlstream.WriteLine("Ks 0 0 0");
+                        mtlstream.WriteLine("illum 1");
+
+                        if (!string.IsNullOrEmpty(LevelData.leveltexs))
                         {
-                            BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+                            mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][texIndx].Name + ".png");
+
+                            // save texture
+                            string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+                            BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][texIndx];
                             item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
                         }
+                    }
+                    #endregion
+
+                    int totalVerts = 0;
+                    int totalNorms = 0;
+                    int totalUVs = 0;
+
+                    bool errorFlag = false;
+
+                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                        SAModel.Direct3D.Extensions.WriteObjFromBasicAttach(objstream, LevelData.geo.COL[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                    if (LevelData.geo.Anim != null)
+                        for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+                            SAModel.Direct3D.Extensions.WriteObjFromBasicAttach(objstream, LevelData.geo.Anim[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                    if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
                 }
             }
         }

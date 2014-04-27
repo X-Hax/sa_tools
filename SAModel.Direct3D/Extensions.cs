@@ -705,5 +705,225 @@ namespace SonicRetro.SAModel.Direct3D
             transform.RotateAxisLocal(XAxis, BAMSToRad(x));
             transform.RotateAxisLocal(YAxis, BAMSToRad(y));
         }
+
+        /// <summary>
+        /// Writes an object model to the specified stream, if the model is in Basic format.
+        /// </summary>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="transform">Used for calculating transforms.</param>
+        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        public static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        {
+            transform.Push();
+            transform.TranslateLocal(obj.Position.ToVector3());
+            transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.ToVector3());
+
+            if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
+            {
+                BasicAttach basicAttach = (BasicAttach)obj.Attach;
+                bool wroteNormals = false;
+
+                if (obj.Attach is ChunkAttach)
+                {
+                    basicAttach = obj.Attach.ToBasicModel();
+                }
+                else if (obj.Attach is SA2BAttach)
+                {
+                    objstream.WriteLine("# Error in Extensions.WriteObjFromBasicAttach() - Encountered model with SA2BAttach data type, which is not supported (yet). Skipping");
+                    errorFlag = true;
+                    return;
+                }
+
+                objstream.WriteLine("g " + obj.Name);
+
+                #region Outputting Verts and Normals
+                for (int vIndx = 0; vIndx < basicAttach.Vertex.Length; vIndx++)
+                {
+                    Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
+                    Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+                    objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+                }
+
+                if (basicAttach.Vertex.Length == basicAttach.Normal.Length)
+                {
+                    for (int vnIndx = 0; vnIndx < basicAttach.Normal.Length; vnIndx++)
+                    {
+                        objstream.WriteLine(String.Format("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X, basicAttach.Normal[vnIndx].Y, basicAttach.Normal[vnIndx].Z));
+                    }
+                    wroteNormals = true;
+                }
+                #endregion
+
+                #region Outputting Meshes
+                for (int meshIndx = 0; meshIndx < basicAttach.Mesh.Count; meshIndx++)
+                {
+                    if (basicAttach.Material.Count > 0)
+                    {
+                        if (basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].UseTexture)
+                        {
+                            objstream.WriteLine(String.Format("usemtl material_{0}", basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID));
+                        }
+                    }
+
+                    if (basicAttach.Mesh[meshIndx].UV != null)
+                    {
+                        for (int uvIndx = 0; uvIndx < basicAttach.Mesh[meshIndx].UV.Length; uvIndx++)
+                        {
+                            objstream.WriteLine(String.Format("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U, basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1));
+                        }
+                    }
+
+                    int processedUVStripCount = 0;
+                    for (int polyIndx = 0; polyIndx < basicAttach.Mesh[meshIndx].Poly.Count; polyIndx++)
+                    {
+                        if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Strips)
+                        {
+                            Strip polyStrip = (Strip)basicAttach.Mesh[meshIndx].Poly[polyIndx];
+                            int expectedTrisCount = polyStrip.Indexes.Length - 2;
+                            bool triangleWindReversed = polyStrip.Reversed;
+
+                            for (int stripIndx = 0; stripIndx < polyStrip.Indexes.Length - 2; stripIndx++)
+                            {
+                                if (triangleWindReversed)
+                                {
+                                    Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+
+                                    if (basicAttach.Mesh[meshIndx].UV != null)
+                                    {
+                                        int uv1, uv2, uv3;
+
+                                        uv1 = (stripIndx + 1) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+                                        uv2 = (stripIndx) + processedUVStripCount + 1;
+                                        uv3 = (stripIndx + 2) + processedUVStripCount + 1;
+
+                                        if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
+                                        else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+                                    }
+                                    else
+                                    {
+                                        if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
+                                        else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+                                    }
+                                }
+                                else
+                                {
+                                    Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+
+                                    if (basicAttach.Mesh[meshIndx].UV != null)
+                                    {
+                                        int uv1, uv2, uv3;
+
+                                        uv1 = (stripIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+                                        uv2 = stripIndx + 1 + processedUVStripCount + 1;
+                                        uv3 = stripIndx + 2 + processedUVStripCount + 1;
+
+                                        if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
+                                        else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+                                    }
+                                    else
+                                    {
+                                        if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
+                                        else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+                                    }
+                                }
+
+                                triangleWindReversed = !triangleWindReversed; // flip every other triangle or the output will be wrong
+                            }
+
+                            if (basicAttach.Mesh[meshIndx].UV != null)
+                            {
+                                processedUVStripCount += polyStrip.Indexes.Length;
+                                objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+                            }
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Triangles)
+                        {
+                            for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length - 3; faceVIndx++)
+                            {
+                                Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
+
+                                if (basicAttach.Mesh[meshIndx].UV != null)
+                                {
+                                    int uv1, uv2, uv3;
+
+                                    uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+                                    uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+                                    uv3 = faceVIndx + 2 + processedUVStripCount + 1;
+
+                                    if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
+                                    else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+                                }
+                                else
+                                {
+                                    if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
+                                    else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+                                }
+
+                                if (basicAttach.Mesh[meshIndx].UV != null)
+                                {
+                                    processedUVStripCount += 3;
+                                    objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+                                }
+                            }
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Quads)
+                        {
+                            for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length - 4; faceVIndx++)
+                            {
+                                Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
+
+                                if (basicAttach.Mesh[meshIndx].UV != null)
+                                {
+                                    int uv1, uv2, uv3, uv4;
+
+                                    uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+                                    uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+                                    uv3 = faceVIndx + 2 + processedUVStripCount + 1;
+                                    uv4 = faceVIndx + 3 + processedUVStripCount + 1;
+
+                                    if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8} {9}/{10}/{11}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalVerts), (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms);
+                                    else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5} {6}/{7}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs));
+                                }
+                                else
+                                {
+                                    if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5} {6}//{7}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms), (int)newFace.W + totalVerts, (int)newFace.W + totalNorms);
+                                    else objstream.WriteLine(String.Format("f {0} {1} {2} {3}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts), (int)newFace.W + totalVerts);
+                                }
+
+                                if (basicAttach.Mesh[meshIndx].UV != null)
+                                {
+                                    processedUVStripCount += 3;
+                                    objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+                                }
+                            }
+                        }
+                        else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.NPoly)
+                        {
+                            objstream.WriteLine("# Error in WriteObjFromBasicAttach() - NPoly not supported yet!");
+                            continue;
+                        }
+                    }
+
+                    if (basicAttach.Mesh[meshIndx].UV != null) totalUVs += basicAttach.Mesh[meshIndx].UV.Length;
+                }
+                #endregion
+
+                objstream.WriteLine("");
+
+                // add totals
+                totalVerts += basicAttach.Vertex.Length;
+                totalNorms += basicAttach.Normal.Length;
+            }
+
+            // handle child nodes should they exist.
+            foreach (Object item in obj.Children)
+                WriteObjFromBasicAttach(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+            transform.Pop();
+        }
     }
 }

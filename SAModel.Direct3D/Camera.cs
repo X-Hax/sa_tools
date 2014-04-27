@@ -13,8 +13,9 @@ namespace SonicRetro.SAModel.Direct3D
         public Vector3 Right { get; private set; }
         public int mode { get; set; }
         public Vector3 FocalPoint { get; set; }
+        public float DrawDistance { get; set; }
 
-        public Camera() { Distance = 20; }
+        public Camera() { Distance = 20; DrawDistance = 30000f; }
 
         public Matrix ToMatrix()
         {

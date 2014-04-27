@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel.SAMDL
         Camera cam = new Camera();
         bool loaded;
         int interval = 1;
-        FillMode rendermode;
+        FillMode rendermode = FillMode.Solid;
         Cull cullmode = Cull.None;
         Object model;
         Animation[] animations;
@@ -245,7 +245,7 @@ namespace SonicRetro.SAModel.SAMDL
         internal void DrawLevel()
         {
             if (!loaded) return;
-            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, 10000));
+            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
             d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
             Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
             d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
