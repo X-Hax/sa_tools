@@ -268,6 +268,29 @@ namespace split
                             SA2AnimationInfoList.Load(datafile, address, cnt).Save(data.Filename);
                         }
                         break;
+					case "levelpathlist":
+						{
+							List<string> hashes = new List<string>();
+							ushort lvlnum = (ushort)SADXPCTools.ByteConverter.ToUInt32(datafile, address);
+							while (lvlnum != 0xFFFF)
+							{
+								int ptr = SADXPCTools.ByteConverter.ToInt32(datafile, address + 4);
+								if (ptr != 0)
+								{
+									ptr = (int)((uint)ptr - imageBase);
+									SA1LevelAct level = new SA1LevelAct(lvlnum);
+									string lvldir = Path.Combine(data.Filename, level.ToString());
+									string[] lvlhashes;
+									PathList.Load(datafile, ptr, imageBase).Save(lvldir, out lvlhashes);
+									hashes.Add(level.ToString() + ":" + string.Join(",", lvlhashes));
+								}
+								address += 8;
+								lvlnum = (ushort)SADXPCTools.ByteConverter.ToUInt32(datafile, address);
+							}
+							data.MD5Hash = string.Join("|", hashes.ToArray());
+							nohash = true;
+						}
+						break;
                     default: // raw binary
                         {
                             byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];

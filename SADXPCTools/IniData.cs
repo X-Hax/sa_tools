@@ -2229,6 +2229,186 @@ namespace SADXPCTools
         }
     }
 
+	public static class PathList
+	{
+		public static List<PathData> Load(string directory)
+		{
+			List<PathData> result = new List<PathData>();
+			int i = 0;
+			string filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			while (File.Exists(filename))
+			{
+				result.Add(PathData.Load(filename));
+				filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			}
+			return result;
+		}
+
+		public static List<PathData> Load(byte[] file, int address, uint imageBase)
+		{
+			List<PathData> result = new List<PathData>();
+			int ptr = ByteConverter.ToInt32(file, address);
+			address += 4;
+			while (ptr != 0)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				result.Add(new PathData(file, ptr, imageBase));
+				ptr = ByteConverter.ToInt32(file, address);
+				address += 4;
+			}
+			return result;
+		}
+
+		public static void Save(this List<PathData> paths, string directory, out string[] hashes)
+		{
+			Directory.CreateDirectory(directory);
+			hashes = new string[paths.Count];
+			for (int i = 0; i < paths.Count; i++)
+			{
+				string filename = Path.Combine(directory, string.Format("{0}.ini", i));
+				IniFile.Serialize(paths[i], filename);
+				hashes[i] = HelperFunctions.FileHash(filename);
+			}
+		}
+
+		public static byte[] GetBytes(this List<PathData> paths, uint imageBase, out uint dataaddr)
+		{
+			List<byte> result = new List<byte>();
+			List<uint> pointers = new List<uint>();
+			foreach (PathData path in paths)
+			{
+				uint ptr;
+				result.AddRange(path.GetBytes(imageBase, out ptr));
+				pointers.Add(ptr);
+			}
+			dataaddr = imageBase + (uint)result.Count;
+			foreach (uint item in pointers)
+				result.AddRange(ByteConverter.GetBytes(item));
+			result.AddRange(new byte[4]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class PathData
+	{
+		public short Unknown { get; set; }
+		public float TotalDistance { get; set; }
+		[IniCollection]
+		public List<PathDataEntry> Path { get; set; }
+		[IniIgnore]
+		public uint Code { get; set; }
+		[IniName("Code")]
+		public string CodeString
+		{
+			get { return Code.ToString("X"); }
+			set { Code = value == null ? 0 : uint.Parse(value, NumberStyles.HexNumber); }
+		}
+
+		public PathData() { Path = new List<PathDataEntry>(); }
+
+		public static PathData Load(string filename)
+		{
+			return IniFile.Deserialize<PathData>(filename);
+		}
+
+		public PathData(byte[] file, int address, uint imageBase)
+		{
+			Unknown = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			ushort count = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			TotalDistance = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Path = new List<PathDataEntry>();
+			int ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				for (int i = 0; i < count; i++)
+				{
+					Path.Add(new PathDataEntry(file, ptr));
+					ptr += PathDataEntry.Size;
+				}
+			}
+			Code = ByteConverter.ToUInt32(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniFile.Serialize(this, filename);
+		}
+
+		public byte[] GetBytes(uint imageBase, out uint dataaddr)
+		{
+			List<byte> result = new List<byte>(PathDataEntry.Size * Path.Count);
+			foreach (PathDataEntry entry in Path)
+				result.AddRange(entry.GetBytes());
+			dataaddr = imageBase + (uint)result.Count;
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes((ushort)result.Count));
+			result.AddRange(ByteConverter.GetBytes(TotalDistance));
+			result.AddRange(ByteConverter.GetBytes(imageBase));
+			result.AddRange(ByteConverter.GetBytes(Code));
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class PathDataEntry
+	{
+		[IniIgnore]
+		public ushort XRotation { get; set; }
+		[IniName("XRotation")]
+		public string XRotationString
+		{
+			get { return XRotation.ToString("X4"); }
+			set { XRotation = value == null ? (ushort)0 : ushort.Parse(value, NumberStyles.HexNumber); }
+		}
+		[IniIgnore]
+		public ushort YRotation { get; set; }
+		[IniName("YRotation")]
+		public string YRotationString
+		{
+			get { return YRotation.ToString("X4"); }
+			set { YRotation = value == null ? (ushort)0 : ushort.Parse(value, NumberStyles.HexNumber); }
+		}
+		public float Distance { get; set; }
+		public Vertex Position { get; set; }
+
+		public static int Size { get { return (sizeof(ushort) * 2) + sizeof(float) + Vertex.Size; } }
+
+		public PathDataEntry() { Position = new Vertex(); }
+
+		public PathDataEntry(byte[] file, int address)
+		{
+			XRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			Distance = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Position = new Vertex(file, address);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(XRotation));
+			result.AddRange(ByteConverter.GetBytes(YRotation));
+			result.AddRange(ByteConverter.GetBytes(Distance));
+			result.AddRange(Position.GetBytes());
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), YRotation.ToC(), Distance.ToC(),
+				Position.ToStruct());
+		}
+	}
+
     /// <summary>
     /// Converts between <see cref="System.String"/> and <typeparamref name="T"/>
     /// </summary>
