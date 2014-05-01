@@ -2404,7 +2404,7 @@ namespace SADXPCTools
 
 		public string ToStruct()
 		{
-			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), YRotation.ToC(), Distance.ToC(),
+			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), YRotation.ToCHex(), Distance.ToC(),
 				Position.ToStruct());
 		}
 	}

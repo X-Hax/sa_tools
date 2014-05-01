@@ -46,7 +46,8 @@ namespace StructConverter
             { "levelrankscores", "Level Rank Scores" },
             { "levelranktimes", "Level Rank Times" },
             { "endpos", "End Positions" },
-            { "animationlist", "Animation List" }
+            { "animationlist", "Animation List" },
+			{ "levelpathlist", "Path List" }
         };
 
         public MainForm()
@@ -162,6 +163,59 @@ namespace StructConverter
                                 }
                         }
                         break;
+					case "levelpathlist":
+						{
+							modified = false;
+							Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
+							string[] hash1 = item.Value.MD5Hash.Split('|');
+							foreach (string hash in hash1)
+							{
+								string[] hash2 = hash.Split(':');
+								hashes.Add(hash2[0], hash2[1].Split(','));
+							}
+							foreach (string dir in Directory.GetDirectories(item.Value.Filename))
+							{
+								string name = new DirectoryInfo(dir).Name;
+								if (!hashes.ContainsKey(name))
+								{
+									modified = true;
+									break;
+								}
+							}
+							if (modified.Value)
+								break;
+							foreach (KeyValuePair<string, string[]> dirinfo in hashes)
+							{
+								string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
+								if (!Directory.Exists(dir))
+								{
+									modified = true;
+									break;
+								}
+								if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
+								{
+									modified = true;
+									break;
+								}
+								for (int i = 0; i < dirinfo.Value.Length; i++)
+								{
+									string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									if (!File.Exists(file))
+									{
+										modified = true;
+										break;
+									}
+									else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
+									{
+										modified = true;
+										break;
+									}
+								}
+								if (modified.Value)
+									break;
+							}
+						}
+						break;
                     default:
                         if (!item.Value.NoHash)
                             modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
@@ -707,6 +761,47 @@ namespace StructConverter
                                             writer.WriteLine("};");
                                         }
                                         break;
+									case "levelpathlist":
+										{
+											List<SA1LevelAct> levels = new List<SA1LevelAct>();
+											foreach (string dir in Directory.GetDirectories(data.Filename))
+											{
+												SA1LevelAct level;
+												try { level = new SA1LevelAct(new DirectoryInfo(dir).Name); }
+												catch { continue; }
+												levels.Add(level);
+												List<PathData> paths = PathList.Load(dir);
+												for (int i = 0; i < paths.Count; i++)
+												{
+													writer.WriteLine("Loop {0}_{1}_{2}_Entries[] = {{", name, level.ToString().MakeIdentifier(), i);
+													List<string> objs = new List<string>(paths[i].Path.Count);
+													foreach (PathDataEntry entry in paths[i].Path)
+														objs.Add(entry.ToStruct());
+													writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+													writer.WriteLine("};");
+													writer.WriteLine();
+													writer.WriteLine("LoopHead {0}_{1}_{2} = {{ {3}, LengthOfArray({0}_{1}_{2}_Entries), {4}, {0}_{1}_{2}_Entries, (ObjectFuncPtr){5} }};",
+														name, level.ToString().MakeIdentifier(), i,	paths[i].Unknown,
+														HelperFunctions.ToC(paths[i].TotalDistance),
+														HelperFunctions.ToCHex(paths[i].Code));
+													writer.WriteLine();
+												}
+												writer.WriteLine("LoopHead *{0}_{1}[] = {{", name, level.ToString().MakeIdentifier());
+												for (int i = 0; i < paths.Count; i++)
+													writer.WriteLine("\t&{0}_{1}_{2},", name, level.ToString().MakeIdentifier(), i);
+												writer.WriteLine("\tNULL");
+												writer.WriteLine("};");
+												writer.WriteLine();
+											}
+											writer.WriteLine("LoopDataPtr {0}[] = {{", name);
+											foreach (SA1LevelAct level in levels)
+												writer.WriteLine("\t{{ {0}, &{1}_{2} }},", level.ToC(), name,
+													level.ToString().MakeIdentifier());
+											writer.WriteLine("\t{ 0xFFFF }");
+											writer.WriteLine("};");
+											writer.WriteLine();
+										}
+										break;
                                 }
                                 writer.WriteLine();
                                 if (data.PointerList != null && data.PointerList.Length > 0)
