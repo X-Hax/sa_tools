@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildPE", "buildSADX\buildPE.csproj", "{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXPCTools", "SADXPCTools\SADXPCTools.csproj", "{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweaker2", "SADXTweaker2\SADXTweaker2.csproj", "{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3}"
@@ -31,16 +29,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Debug|x86.ActiveCfg = Debug|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Debug|x86.Build.0 = Debug|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Release|Any CPU.ActiveCfg = Release|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Release|Mixed Platforms.Build.0 = Release|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Release|x86.ActiveCfg = Release|x86
-		{8BDE1272-BD5B-4541-81F0-A2A6E86FAB8E}.Release|x86.Build.0 = Release|x86
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
