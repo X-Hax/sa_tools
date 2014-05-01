@@ -724,9 +724,13 @@ namespace SonicRetro.SAModel.Direct3D
 
             if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
             {
-                BasicAttach basicAttach = (BasicAttach)obj.Attach;
+                BasicAttach basicAttach = new BasicAttach();
                 bool wroteNormals = false;
 
+                if (obj.Attach is BasicAttach)
+                {
+                    basicAttach = (BasicAttach)obj.Attach;
+                }
                 if (obj.Attach is ChunkAttach)
                 {
                     basicAttach = obj.Attach.ToBasicModel();
