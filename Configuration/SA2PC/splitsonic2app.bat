@@ -1,0 +1,1 @@
+split sonic2app.exe splitsonic2app.ini

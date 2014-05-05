@@ -1,0 +1,1 @@
+To use this, copy the files from a disc image of Sonic Adventure 2 into a folder, then place these files in the main folder with 1ST_READ.BIN.
