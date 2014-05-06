@@ -7,6 +7,8 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -17,7 +19,6 @@ namespace SonicRetro.SAModel.SALVL
             InitializeComponent();
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            LevelData.MainForm = this;
         }
 
         void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -54,6 +55,8 @@ namespace SonicRetro.SAModel.SALVL
             d3ddevice.Lights[0].Enabled = true;
             if (Program.Arguments.Length > 0)
                 LoadFile(Program.Arguments[0]);
+
+            LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -468,13 +471,49 @@ namespace SonicRetro.SAModel.SALVL
 
         private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LevelItem item = new LevelItem(d3ddevice);
-            Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-            item.Visible = true;
-            SelectedItems = new List<Item>() { item };
-            SelectedItemChanged();
-            DrawLevel();
+            if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = importFileDialog.FileName;
+                IOFileFormat fileFormat;
+
+                if (!File.Exists(filePath))
+                {
+                    MessageBox.Show("File does not exist!");
+                }
+
+                DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
+
+                switch (filePathInfo.Extension)
+                {
+                    case(".obj"):
+                        fileFormat = IOFileFormat.WaveFrontOBJ;
+                        LevelItem item = new LevelItem(d3ddevice, filePath, fileFormat);
+                        Vector3 pos = cam.Position + (-20 * cam.Look);
+                        item.Position = new Vertex(pos.X, pos.Y, pos.Z);
+                        item.Visible = true;
+                        SelectedItems = new List<Item>() { item };
+                        SelectedItemChanged();
+                        break;
+
+                    case("*.txt"):
+                        fileFormat = IOFileFormat.NodeTable1_5;
+                        // todo: open the nodetable text file, iteratively create levelItems accordingly
+                        throw new NotImplementedException();
+                        break;
+
+                    case("*.bin"):
+                        fileFormat = IOFileFormat.NodeTable1_6;
+                        // todo: open the nodetable binary file, iteratively create levelItems accordingly
+                        throw new NotImplementedException();
+                        break;
+
+                    default:
+                        MessageBox.Show("Invalid file format!");
+                        return;
+                }
+
+                DrawLevel();
+            }
         }
 
         private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
@@ -708,6 +747,11 @@ namespace SonicRetro.SAModel.SALVL
                     result.Append(LevelData.geo.ToStructVariables(fmt, labels));
                     File.WriteAllText(sd.FileName, result.ToString());
                 }
+        }
+
+        void LevelData_StateChanged()
+        {
+            DrawLevel();
         }
     }
 }

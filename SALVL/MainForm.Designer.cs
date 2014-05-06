@@ -53,6 +53,7 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -86,7 +87,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -94,7 +95,7 @@
             // 
             this.editInfoToolStripMenuItem.Enabled = false;
             this.editInfoToolStripMenuItem.Name = "editInfoToolStripMenuItem";
-            this.editInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editInfoToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.editInfoToolStripMenuItem.Text = "E&dit Info";
             this.editInfoToolStripMenuItem.Click += new System.EventHandler(this.editInfoToolStripMenuItem_Click);
             // 
@@ -102,7 +103,7 @@
             // 
             this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -113,27 +114,27 @@
             this.cStructsToolStripMenuItem});
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // exportOBJToolStripMenuItem
             // 
             this.exportOBJToolStripMenuItem.Name = "exportOBJToolStripMenuItem";
-            this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.exportOBJToolStripMenuItem.Text = "&OBJ";
             this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
             // 
             // cStructsToolStripMenuItem
             // 
             this.cStructsToolStripMenuItem.Name = "cStructsToolStripMenuItem";
-            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.cStructsToolStripMenuItem.Text = "C &Structs";
             this.cStructsToolStripMenuItem.Click += new System.EventHandler(this.cStructsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -271,6 +272,13 @@
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             // 
+            // importFileDialog
+            // 
+            this.importFileDialog.FileName = "file";
+            this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable 1.5|*.txt|NodeTable 1.6|*.bin";
+            this.importFileDialog.RestoreDirectory = true;
+            this.importFileDialog.Title = "Select a file to import.";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -323,6 +331,7 @@
         internal System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cStructsToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog importFileDialog;
     }
 }
 

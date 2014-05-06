@@ -3,6 +3,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SADXLVL2;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 
 namespace SADXObjectDefinitions.Level_Effects
 {

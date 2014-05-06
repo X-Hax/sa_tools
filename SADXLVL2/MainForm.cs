@@ -12,6 +12,10 @@ using SADXPCTools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
+using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+
 namespace SonicRetro.SAModel.SADXLVL2
 {
     public partial class MainForm : Form
@@ -19,7 +23,6 @@ namespace SonicRetro.SAModel.SADXLVL2
         public MainForm()
         {
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
-            LevelData.MainForm = this;
             InitializeComponent();
         }
 
@@ -53,7 +56,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             d3ddevice.Lights[0].Range = 100000;
             d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
             d3ddevice.Lights[0].Enabled = true;
-            ObjectHelper.Init(d3ddevice);
+            ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
             if (Properties.Settings.Default.MRUList == null)
                 Properties.Settings.Default.MRUList = new System.Collections.Specialized.StringCollection();
             System.Collections.Specialized.StringCollection mru = new System.Collections.Specialized.StringCollection();
@@ -66,6 +69,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             Properties.Settings.Default.MRUList = mru;
             if (Program.args.Length > 0)
                 LoadINI(Program.args[0]);
+
+            LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -147,6 +152,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             Enabled = false;
             string[] itempath = levelID.Split('\\');
             levelName = itempath[itempath.Length - 1];
+            LevelData.LevelName = levelName;
             Text = "SADXLVL2 - Loading " + levelName + "...";
 #if !DEBUG
             backgroundWorker1.RunWorkerAsync();
@@ -471,6 +477,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (loaded)
+            {
                 switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
@@ -480,6 +487,9 @@ namespace SonicRetro.SAModel.SADXLVL2
                         e.Cancel = true;
                         break;
                 }
+
+                LevelData.StateChanged -= LevelData_StateChanged;
+            }
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -902,7 +912,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LevelItem item = new LevelItem(d3ddevice);
+            LevelItem item = new LevelItem(new COL(), d3ddevice);
             Vector3 pos = cam.Position + (-20 * cam.Look);
             item.Position = new Vertex(pos.X, pos.Y, pos.Z);
             item.Visible = true;
@@ -1142,6 +1152,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             using (BugReportDialog dlg = new BugReportDialog())
                 dlg.ShowDialog(this);
+        }
+
+        void LevelData_StateChanged()
+        {
+            DrawLevel();
         }
     }
 }

@@ -72,26 +72,15 @@
     <Compile Include="IDSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataTypes.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="LevelData.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="MainForm.designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MaterialEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MaterialEditor.Designer.cs">
-      <DependentUpon>MaterialEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ObjectDefinition.cs" />
-    <Compile Include="ObjectHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyGridStuff.cs" />
     <EmbeddedResource Include="BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -103,9 +92,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MaterialEditor.resx">
-      <DependentUpon>MaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -129,6 +115,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
+      <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
+      <Name>SAEditorCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj">
       <Project>{E81631CC-8721-425B-87A3-CB6199DECAF4}</Project>
       <Name>SAModel.Direct3D</Name>

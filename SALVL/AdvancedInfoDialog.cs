@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+
 namespace SonicRetro.SAModel.SALVL
 {
     public partial class AdvancedInfoDialog : Form

@@ -5,6 +5,9 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+
 namespace SonicRetro.SAModel.SADXLVL2
 {
     public class IDControl : UserControl

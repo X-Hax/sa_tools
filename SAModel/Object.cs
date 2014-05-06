@@ -33,6 +33,7 @@ namespace SonicRetro.SAModel
             Position = new Vertex();
             Rotation = new Rotation();
             Scale = new Vertex(1, 1, 1);
+            Children = new List<Object>();
         }
 
         public Object(byte[] file, int address, uint imageBase, ModelFormat format)

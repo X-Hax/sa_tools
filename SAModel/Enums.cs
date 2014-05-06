@@ -82,6 +82,19 @@ namespace SonicRetro.SAModel
         SA2B
     }
 
+    /// <summary>
+    /// Describes a file format used for import/export
+    /// </summary>
+    public enum IOFileFormat
+    {
+        /// <summary>File is a WaveFront *.obj file.</summary>
+        WaveFrontOBJ,
+        /// <summary>File is a NodeTable file, version 1.5.</summary>
+        NodeTable1_5,
+        /// <summary>File is a NodeTable file, version 1.6.</summary>
+        NodeTable1_6
+    }
+
     public enum ChunkType : byte
     {
         Null = 0,
@@ -289,5 +302,5 @@ namespace SonicRetro.SAModel
             NJD_MTYPE_SPLINE = 0x0040,    /* use spline               */
             NJD_MTYPE_USER = 0x0080    /* use user function        */
         }
-}
+    }
 }

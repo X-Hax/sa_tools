@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+
 namespace SonicRetro.SAModel.SADXLVL2
 {
     static class Program
     {
         internal static string[] args;
+        public static MainForm primaryForm;
 
         /// <summary>
         /// The main entry point for the application.
@@ -17,14 +20,15 @@ namespace SonicRetro.SAModel.SADXLVL2
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            primaryForm = new MainForm();
+            Application.Run(primaryForm);
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (LevelData.MainForm != null)
+            if (primaryForm != null)
                 using (ErrorDialog ed = new ErrorDialog((Exception)e.ExceptionObject, false))
-                    ed.ShowDialog(LevelData.MainForm);
+                    ed.ShowDialog(primaryForm);
             else
             {
                 System.IO.File.WriteAllText("SADXLVL2.log", e.ExceptionObject.ToString());
