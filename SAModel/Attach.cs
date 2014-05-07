@@ -20,7 +20,6 @@ namespace SonicRetro.SAModel
                 case ModelFormat.BasicDX:
                     return 0x2C;
                 case ModelFormat.Chunk:
-                case ModelFormat.SA2B:
                     return 0x18;
             }
             return -1;
@@ -34,7 +33,6 @@ namespace SonicRetro.SAModel
                 case ModelFormat.BasicDX:
                     return new BasicAttach();
                 case ModelFormat.Chunk:
-                case ModelFormat.SA2B:
                     return new ChunkAttach();
             }
             throw new ArgumentOutOfRangeException("format");
@@ -50,7 +48,6 @@ namespace SonicRetro.SAModel
                 case ModelFormat.BasicDX:
                     return new BasicAttach(file, address, imageBase, format == ModelFormat.BasicDX, labels);
                 case ModelFormat.Chunk:
-                case ModelFormat.SA2B:
                     return new ChunkAttach(file, address, imageBase, labels);
             }
             throw new ArgumentOutOfRangeException("format");

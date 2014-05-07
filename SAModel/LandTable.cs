@@ -40,7 +40,6 @@ namespace SonicRetro.SAModel
                 case LandTableFormat.SADX:
                     return 0x24;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     return 0x20;
                 default:
                     throw new ArgumentOutOfRangeException("format");
@@ -110,7 +109,6 @@ namespace SonicRetro.SAModel
                     Unknown3 = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     short cnkcnt = ByteConverter.ToInt16(file, address + 2);
                     Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
                     COL = new List<COL>();
@@ -389,7 +387,6 @@ namespace SonicRetro.SAModel
                     result.AddRange(ByteConverter.GetBytes(Unknown3));
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     result.AddRange(ByteConverter.GetBytes((ushort)cnk.Count));
                     result.AddRange(new byte[8]); // TODO: figure out what these do
                     result.AddRange(ByteConverter.GetBytes(Unknown1));
@@ -509,7 +506,6 @@ namespace SonicRetro.SAModel
                     result.Append(Unknown3.ToCHex());
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     result.Append(cnk.Count);
                     result.Append(", 0, 0, 0, 0, ");
                     result.Append(Unknown1.ToC());

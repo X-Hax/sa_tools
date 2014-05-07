@@ -70,16 +70,14 @@ namespace SonicRetro.SAModel
     {
         SA1,
         SADX,
-        SA2,
-        SA2B
+        SA2
     }
 
     public enum ModelFormat
     {
         Basic,
         BasicDX,
-        Chunk,
-        SA2B
+        Chunk
     }
 
     /// <summary>

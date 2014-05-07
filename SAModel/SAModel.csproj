@@ -58,7 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rotation.cs" />
     <Compile Include="ChunkAttach.cs" />
-    <Compile Include="SA2BAttach.cs" />
     <Compile Include="UV.cs" />
     <Compile Include="VColor.cs" />
     <Compile Include="Vertex.cs" />

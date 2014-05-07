@@ -31,9 +31,6 @@ namespace SonicRetro.SAModel
                 case LandTableFormat.SA2:
                     mfmt = ModelFormat.Chunk;
                     break;
-                case LandTableFormat.SA2B:
-                    mfmt = ModelFormat.SA2B;
-                    break;
             }
             Unknown1 = ByteConverter.ToInt32(file, address);
             Unknown2 = ByteConverter.ToSingle(file, address + 4);

@@ -25,7 +25,6 @@ namespace SonicRetro.SAModel
                 case LandTableFormat.SADX:
                     return 0x24;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     return 0x20;
                 default:
                     throw new ArgumentOutOfRangeException("format");
@@ -61,12 +60,6 @@ namespace SonicRetro.SAModel
                     else
                         mfmt = ModelFormat.Chunk;
                     break;
-                case LandTableFormat.SA2B:
-                    if (forceBasic)
-                        mfmt = ModelFormat.Basic;
-                    else
-                        mfmt = ModelFormat.SA2B;
-                    break;
             }
             switch (format)
             {
@@ -80,7 +73,6 @@ namespace SonicRetro.SAModel
                     Flags = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
                     Model = new Object(file, (int)tmpaddr, imageBase, mfmt, labels);
                     Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
@@ -104,7 +96,6 @@ namespace SonicRetro.SAModel
                     result.AddRange(ByteConverter.GetBytes(Unknown3));
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     result.AddRange(ByteConverter.GetBytes(modelptr));
                     result.AddRange(ByteConverter.GetBytes(Unknown2));
                     result.AddRange(ByteConverter.GetBytes(Unknown3));
@@ -132,7 +123,6 @@ namespace SonicRetro.SAModel
                     result.AppendFormat(Unknown3.ToCHex());
                     break;
                 case LandTableFormat.SA2:
-                case LandTableFormat.SA2B:
                     result.Append(Model != null ? "&" + Model.Name : "NULL");
                     result.Append(", ");
                     result.Append(Unknown2.ToCHex());
