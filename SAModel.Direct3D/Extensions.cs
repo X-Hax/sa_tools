@@ -735,13 +735,6 @@ namespace SonicRetro.SAModel.Direct3D
                 {
                     basicAttach = obj.Attach.ToBasicModel();
                 }
-                else if (obj.Attach is SA2BAttach)
-                {
-                    objstream.WriteLine("# Error in Extensions.WriteObjFromBasicAttach() - Encountered model with SA2BAttach data type, which is not supported (yet). Skipping");
-                    errorFlag = true;
-                    return;
-                }
-
                 objstream.WriteLine("g " + obj.Name);
 
                 #region Outputting Verts and Normals

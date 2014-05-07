@@ -132,7 +132,6 @@ namespace SonicRetro.SAModel.SAMDL
                                 outfmt = ModelFormat.Basic;
                                 break;
                             case ModelFormat.Chunk:
-                            case ModelFormat.SA2B:
                                 outfmt = ModelFormat.Chunk;
                                 break;
                         }
@@ -501,9 +500,6 @@ namespace SonicRetro.SAModel.SAMDL
                             break;
                         case ModelFormat.Chunk:
                             result.Append("Chunk");
-                            break;
-                        case ModelFormat.SA2B:
-                            result.Append("Sonic Adventure 2 Battle");
                             break;
                     }
                     result.AppendLine(" model");

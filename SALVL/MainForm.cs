@@ -722,9 +722,6 @@ namespace SonicRetro.SAModel.SALVL
                         case LandTableFormat.SA2:
                             result.Append("2");
                             break;
-                        case LandTableFormat.SA2B:
-                            result.Append("2 Battle");
-                            break;
                     }
                     result.AppendLine(" LandTable");
                     result.AppendLine(" * ");
