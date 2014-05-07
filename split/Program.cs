@@ -54,12 +54,9 @@ namespace split
                     landfmt = LandTableFormat.SADX;
                     break;
                 case Game.SA2:
-                    modelfmt = ModelFormat.Chunk;
-                    landfmt = LandTableFormat.SA2;
-                    break;
                 case Game.SA2B:
                     modelfmt = ModelFormat.Chunk;
-                    landfmt = LandTableFormat.SA2B;
+                    landfmt = LandTableFormat.SA2;
                     break;
             }
             int itemcount = 0;

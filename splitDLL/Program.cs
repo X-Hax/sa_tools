@@ -72,9 +72,9 @@ namespace splitDLL
 					break;
 				case Game.SA2B:
 					modelfmt = ModelFormat.Chunk;
-					landfmt = LandTableFormat.SA2B;
+					landfmt = LandTableFormat.SA2;
 					modelext = ".sa2mdl";
-					landext = ".sa2blvl";
+					landext = ".sa2lvl";
 					break;
 			}
 			int itemcount = 0;

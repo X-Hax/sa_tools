@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SAModel">
-      <HintPath>..\..\samodel_git\SAModel\bin\Release\SAModel.dll</HintPath>
+      <HintPath>..\..\SAModel\SAModel\bin\Release\SAModel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
