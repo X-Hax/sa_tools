@@ -122,7 +122,7 @@ namespace SonicRetro.SAModel
                             COLName = "collist_" + tmpaddr.ToString("X8");
                         for (int i = 0; i < colcnt; i++)
                         {
-                            COL.Add(new COL(file, tmpaddr, imageBase, format, labels, i >= cnkcnt));
+                            COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt)));
                             tmpaddr += SAModel.COL.Size(format);
                         }
                     }

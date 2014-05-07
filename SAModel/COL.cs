@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel
         public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels)
             : this(file, address, imageBase, format, labels, false) { }
 
-        public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, bool forceBasic)
+        public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, bool? forceBasic)
         {
             Bounds = new BoundingSphere(file, address);
             ModelFormat mfmt = 0;
@@ -55,7 +55,7 @@ namespace SonicRetro.SAModel
                     mfmt = ModelFormat.BasicDX;
                     break;
                 case LandTableFormat.SA2:
-                    if (forceBasic)
+                    if (forceBasic.HasValue && forceBasic.Value)
                         mfmt = ModelFormat.Basic;
                     else
                         mfmt = ModelFormat.Chunk;
@@ -73,11 +73,13 @@ namespace SonicRetro.SAModel
                     Flags = ByteConverter.ToInt32(file, address + 0x20);
                     break;
                 case LandTableFormat.SA2:
+                    Flags = ByteConverter.ToInt32(file, address + 0x1C);
+					if (!forceBasic.HasValue)
+						mfmt = Flags < 0 ? ModelFormat.Chunk : ModelFormat.Basic;
                     tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
                     Model = new Object(file, (int)tmpaddr, imageBase, mfmt, labels);
                     Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
                     Unknown3 = ByteConverter.ToInt32(file, address + 0x18);
-                    Flags = ByteConverter.ToInt32(file, address + 0x1C);
                     break;
             }
         }
