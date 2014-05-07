@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\..\prs.net\FraGag.Compression.Prs\bin\Release\FraGag.Compression.Prs.dll</HintPath>
+      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

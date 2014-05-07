@@ -45,10 +45,10 @@
       <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2911.0\Microsoft.DirectX.Direct3DX.dll</HintPath>
     </Reference>
     <Reference Include="PuyoTools">
-      <HintPath>..\..\SA Tools Dependencies\PuyoTools.exe</HintPath>
+      <HintPath>..\Dependencies\PuyoTools.exe</HintPath>
     </Reference>
     <Reference Include="SADXPCTools">
-      <HintPath>..\..\sadxpc_tools_git\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
+      <HintPath>..\..\sa_tools\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,7 +59,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="VrSharp">
-      <HintPath>..\..\SA Tools Dependencies\VrSharp.dll</HintPath>
+      <HintPath>..\Dependencies\VrSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
