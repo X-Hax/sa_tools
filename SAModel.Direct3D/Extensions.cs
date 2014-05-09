@@ -707,7 +707,7 @@ namespace SonicRetro.SAModel.Direct3D
         }
 
         /// <summary>
-        /// Writes an object model to the specified stream, if the model is in Basic format.
+        /// Writes an object model (basic format) to the specified stream, in Alias-Wavefront *.OBJ format.
         /// </summary>
         /// <param name="objstream">stream representing a wavefront obj file to export to</param>
         /// <param name="obj">Model to export.</param>
@@ -715,7 +715,7 @@ namespace SonicRetro.SAModel.Direct3D
         /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
         /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
         /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
-        public static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
         {
             transform.Push();
             transform.TranslateLocal(obj.Position.ToVector3());
@@ -733,7 +733,10 @@ namespace SonicRetro.SAModel.Direct3D
                 }
                 if (obj.Attach is ChunkAttach)
                 {
-                    basicAttach = obj.Attach.ToBasicModel();
+                    objstream.WriteLine("#Error - Chunk Model got sent to Basic writer.");
+                    errorFlag = true;
+
+                    goto skip_processing;
                 }
                 objstream.WriteLine("g " + obj.Name);
 
@@ -916,11 +919,173 @@ namespace SonicRetro.SAModel.Direct3D
                 totalNorms += basicAttach.Normal.Length;
             }
 
+            skip_processing:
             // handle child nodes should they exist.
             foreach (Object item in obj.Children)
-                WriteObjFromBasicAttach(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                WriteModelAsObj(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
             transform.Pop();
+        }
+
+        /// <summary>
+        /// Writes an object model (chunk format) to the specified stream, in Alias-Wavefront *.OBJ format.
+        /// </summary>
+        /// <param name="objstream"></param>
+        /// <param name="obj"></param>
+        /// <param name="transform"></param>
+        /// <param name="totalVerts"></param>
+        /// <param name="totalNorms"></param>
+        /// <param name="totalUVs"></param>
+        /// <param name="errorFlag"></param>
+        private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        {
+            transform.Push();
+            transform.TranslateLocal(obj.Position.ToVector3());
+            transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
+            transform.ScaleLocal(obj.Scale.ToVector3());
+
+            // add obj writing here
+            if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
+            {
+                ChunkAttach chunkAttach = (ChunkAttach)obj.Attach;
+                bool wroteNormals = false;
+                int outputVertCount = 0;
+                int outputNormalCount = 0;
+
+                objstream.WriteLine("g " + obj.Name);
+
+                #region Outputting Verts and Normals
+                int vertexChunkCount = chunkAttach.Vertex.Count;
+                int polyChunkCount = chunkAttach.Poly.Count;
+
+                if (vertexChunkCount != 1)
+                {
+                    errorFlag = true;
+                    objstream.WriteLine("#A chunk model with more than one vertex chunk was found. Output is probably corrupt.");
+                }
+
+                for (int vc = 0; vc < vertexChunkCount; vc++)
+                {
+                    for (int vIndx = 0; vIndx < chunkAttach.Vertex[vc].VertexCount; vIndx++)
+                    {
+                        if(chunkAttach.Vertex[vc].Flags == 0)
+                        {
+                            Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
+                            Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+                            objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+
+                            outputVertCount++;
+                        }
+                    }
+
+                    if (chunkAttach.Vertex[vc].Normals.Count > 0)
+                    {
+                        if(chunkAttach.Vertex[vc].Flags == 0)
+                        {
+                            for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
+                            {
+                                objstream.WriteLine(String.Format("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z));
+                                outputNormalCount++;
+                            }
+                            wroteNormals = true;
+                        }
+                    }
+                }
+                #endregion
+
+                #region Outputting Polys
+                for (int pc = 0; pc < polyChunkCount; pc++)
+                {
+                    PolyChunk polyChunk = (PolyChunk)chunkAttach.Poly[pc];
+
+                    if (polyChunk is PolyChunkStrip)
+                    {
+                        PolyChunkStrip chunkStrip = (PolyChunkStrip)polyChunk;
+
+                        for (int stripNum = 0; stripNum < chunkStrip.StripCount; stripNum++)
+                        {
+                            // output texture verts before use, if necessary
+                            bool uvsAreValid = false;
+                            if (chunkStrip.Strips[stripNum].UVs != null)
+                            {
+                                if (chunkStrip.Strips[stripNum].UVs.Length > 0)
+                                {
+                                    uvsAreValid = true;
+                                    for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
+                                    {
+                                        objstream.WriteLine(String.Format("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V));
+                                    }
+                                }
+                            }
+
+                            bool windingReversed = chunkStrip.Strips[stripNum].Reversed;
+                            for (int currentStripIndx = 0; currentStripIndx < chunkStrip.Strips[stripNum].Indexes.Length - 2; currentStripIndx++)
+                            {
+                                if (windingReversed)
+                                {
+                                    if (uvsAreValid)
+                                    {
+                                        // note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
+                                        objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+                                    }
+                                }
+                                else
+                                {
+                                    if (uvsAreValid)
+                                    {
+                                        // note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
+                                        objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+                                    }
+                                }
+
+                                windingReversed = !windingReversed;
+                            }
+
+                            // increment output verts
+                            if(uvsAreValid) totalUVs += chunkStrip.Strips[stripNum].UVs.Length;
+                        }
+                    }
+                    else if (polyChunk is PolyChunkMaterial)
+                    {
+                        // no behavior defined yet.
+                    }
+                    else if (polyChunk is PolyChunkTinyTextureID)
+                    {
+                        PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
+                        objstream.WriteLine(String.Format("usemtl material_{0}", chunkTexID.TextureID));
+                    }
+                }
+                #endregion
+
+                totalVerts += outputVertCount;
+                totalNorms += outputNormalCount;
+            }
+
+            // handle child nodes should they exist.
+            foreach (Object item in obj.Children)
+                WriteModelAsObj(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+            transform.Pop();
+        }
+
+        public static void WriteModelAsObj(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        {
+            if (obj.Attach is BasicAttach)
+            {
+                WriteObjFromBasicAttach(objstream, obj, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+            }
+            else if (obj.Attach is ChunkAttach)
+            {
+                WriteObjFromChunkAttach(objstream, obj, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+            }
         }
     }
 }

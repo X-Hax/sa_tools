@@ -108,12 +108,12 @@ namespace SonicRetro.SAModel
 
         public static float BAMSToDeg(int BAMS)
         {
-            return (float)((BAMS / 65536) * 360.0);
+            return (float)(BAMS / (65536 / 360.0));
         }
 
         public static int DegToBAMS(float deg)
         {
-            return (int)((deg * 65536) / 360.0);
+            return (int)(deg * (65536 / 360.0));
         }
     }
 

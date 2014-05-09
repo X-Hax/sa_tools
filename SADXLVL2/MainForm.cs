@@ -976,10 +976,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     bool errorFlag = false;
 
                     for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                        SAModel.Direct3D.Extensions.WriteObjFromBasicAttach(objstream, LevelData.geo.COL[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
                     if (LevelData.geo.Anim != null)
                         for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-                            SAModel.Direct3D.Extensions.WriteObjFromBasicAttach(objstream, LevelData.geo.Anim[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                            SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
                     if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
                 }
