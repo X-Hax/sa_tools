@@ -65,7 +65,7 @@ namespace SonicRetro.SAModel
             return result.ToArray();
         }
 
-        public string ToStruct()
+        public string ToStruct(string[] textures)
         {
             if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
                 return "{ 0 }";
@@ -80,7 +80,10 @@ namespace SonicRetro.SAModel
             int texid = (int)(TextureID & ~0xC0000000);
             if (callback != 0)
                 result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + " | ");
-            result.Append(texid);
+			if (textures == null || texid >= textures.Length)
+				result.Append(texid);
+			else
+				result.Append(textures[texid].MakeIdentifier());
             result.Append(", ");
             result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
             if (UserFlags != 0)
@@ -88,6 +91,8 @@ namespace SonicRetro.SAModel
             result.Append(" }");
             return result.ToString();
         }
+
+		public string ToStruct() { return ToStruct(null); }
 
         public override bool Equals(object obj)
         {

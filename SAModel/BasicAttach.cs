@@ -260,7 +260,7 @@ namespace SonicRetro.SAModel
             return result.ToString();
         }
 
-        public override string ToStructVariables(bool DX, List<string> labels)
+        public override string ToStructVariables(bool DX, List<string> labels, string[] textures)
         {
             System.Text.StringBuilder result = new System.Text.StringBuilder();
             if (Material != null && Material.Count > 0 && !labels.Contains(MaterialName))
@@ -271,7 +271,7 @@ namespace SonicRetro.SAModel
                 result.AppendLine("[] = {");
                 List<string> mtls = new List<string>(Material.Count);
                 foreach (Material item in Material)
-                    mtls.Add(item.ToStruct());
+                    mtls.Add(item.ToStruct(textures));
                 result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
                 result.AppendLine("};");
                 result.AppendLine();

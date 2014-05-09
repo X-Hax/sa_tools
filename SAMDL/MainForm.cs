@@ -52,6 +52,7 @@ namespace SonicRetro.SAModel.SAMDL
         int animnum = -1;
         int animframe = 0;
         Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		string TexturePackName;
         string[] TextureNames;
         Bitmap[] TextureBmps;
         Texture[] Textures;
@@ -444,6 +445,7 @@ namespace SonicRetro.SAModel.SAMDL
                         bmps.Add(bmpEntry.Image);
                     }
 
+					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
                     TextureNames = texnames.ToArray();
                     TextureBmps = bmps.ToArray();
                     Textures = new Texture[TextureBmps.Length];
@@ -523,7 +525,20 @@ namespace SonicRetro.SAModel.SAMDL
                     }
                     result.AppendLine(" */");
                     result.AppendLine();
-                    result.Append(model.ToStructVariables(dx, labels));
+					string[] texnames = null;
+					if (TexturePackName != null)
+					{
+						texnames = new string[TextureNames.Length];
+						for (int i = 0; i < TextureNames.Length; i++)
+							texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureNames[i]);
+						result.AppendFormat("enum {0}TexName", TexturePackName);
+						result.AppendLine();
+						result.AppendLine("{");
+						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", texnames));
+						result.AppendLine("};");
+						result.AppendLine();
+					}
+                    result.Append(model.ToStructVariables(dx, labels, texnames));
                     File.WriteAllText(sd.FileName, result.ToString());
                 }
         }

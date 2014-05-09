@@ -133,7 +133,7 @@ namespace SonicRetro.SAModel
             return result.ToString();
         }
 
-        public override string ToStructVariables(bool DX, List<string> labels)
+        public override string ToStructVariables(bool DX, List<string> labels, string[] textures)
         {
             System.Text.StringBuilder result = new StringBuilder();
             if (Vertex != null && !labels.Contains(VertexName))

@@ -618,7 +618,7 @@ namespace SonicRetro.SAModel
             return result.ToString();
         }
 
-        public string ToStructVariables(bool DX, List<string> labels)
+        public string ToStructVariables(bool DX, List<string> labels, string[] textures)
         {
             for (int i = 1; i < Children.Count; i++)
                 Children[i - 1].Sibling = Children[i];
@@ -627,12 +627,12 @@ namespace SonicRetro.SAModel
                 if (!labels.Contains(Children[i].Name))
                 {
                     labels.Add(Children[i].Name);
-                    result.AppendLine(Children[i].ToStructVariables(DX, labels));
+                    result.AppendLine(Children[i].ToStructVariables(DX, labels, textures));
                 }
             if (Attach != null && !labels.Contains(Attach.Name))
             {
                 labels.Add(Attach.Name);
-                result.AppendLine(Attach.ToStructVariables(DX, labels));
+                result.AppendLine(Attach.ToStructVariables(DX, labels, textures));
             }
             result.Append("NJS_OBJECT ");
             result.Append(Name);
@@ -641,6 +641,8 @@ namespace SonicRetro.SAModel
             result.AppendLine(";");
             return result.ToString();
         }
+
+		public string ToStructVariables(bool DX, List<string> labels) { return ToStructVariables(DX, labels, null); }
 
         static readonly Random rand = new Random();
 

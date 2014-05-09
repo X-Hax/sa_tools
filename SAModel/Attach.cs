@@ -68,7 +68,9 @@ namespace SonicRetro.SAModel
 
         public abstract string ToStruct(bool DX);
 
-        public abstract string ToStructVariables(bool DX, List<string> labels);
+        public abstract string ToStructVariables(bool DX, List<string> labels, string[] textures);
+
+		public string ToStructVariables(bool DX, List<string> labels) { return ToStructVariables(DX, labels, null); }
 
         public abstract void ProcessVertexData();
 

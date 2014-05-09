@@ -411,7 +411,7 @@ namespace SonicRetro.SAModel
             return GetBytes(imageBase, format, out address);
         }
 
-        public string ToStructVariables(LandTableFormat format, List<string> labels)
+        public string ToStructVariables(LandTableFormat format, List<string> labels, string[] textures)
         {
             System.Text.StringBuilder result = new StringBuilder();
             List<COL> cnk = new List<COL>();
@@ -428,7 +428,7 @@ namespace SonicRetro.SAModel
                 if (!labels.Contains(COL[i].Model.Name))
                 {
                     labels.Add(COL[i].Model.Name);
-                    result.AppendLine(COL[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels));
+                    result.AppendLine(COL[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels, textures));
                 }
             for (int i = 0; i < Anim.Count; i++)
             {
@@ -436,7 +436,7 @@ namespace SonicRetro.SAModel
                 if (!labels.Contains(Anim[i].Model.Name))
                 {
                     labels.Add(Anim[i].Model.Name);
-                    result.AppendLine(Anim[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels));
+                    result.AppendLine(Anim[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels, textures));
                 }
                 if (labels.Contains(aniid))
                 {
@@ -522,6 +522,8 @@ namespace SonicRetro.SAModel
             result.AppendLine(" };");
             return result.ToString();
         }
+
+		public string ToStructVariables(LandTableFormat format, List<string> labels) { return ToStructVariables(format, labels, null); }
 
         public void SaveToFile(string filename, LandTableFormat format)
         {

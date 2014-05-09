@@ -741,7 +741,21 @@ namespace SonicRetro.SAModel.SALVL
                     }
                     result.AppendLine(" */");
                     result.AppendLine();
-                    result.Append(LevelData.geo.ToStructVariables(fmt, labels));
+					string[] texnames = null;
+					if (LevelData.leveltexs != null)
+					{
+						texnames = new string[LevelData.TextureBitmaps[LevelData.leveltexs].Length];
+						for (int i = 0; i < LevelData.TextureBitmaps[LevelData.leveltexs].Length; i++)
+							texnames[i] = string.Format("{0}TexName_{1}", LevelData.leveltexs,
+								LevelData.TextureBitmaps[LevelData.leveltexs][i].Name);
+						result.AppendFormat("enum {0}TexName", LevelData.leveltexs);
+						result.AppendLine();
+						result.AppendLine("{");
+						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", texnames));
+						result.AppendLine("};");
+						result.AppendLine();
+					}
+					result.Append(LevelData.geo.ToStructVariables(fmt, labels, texnames));
                     File.WriteAllText(sd.FileName, result.ToString());
                 }
         }

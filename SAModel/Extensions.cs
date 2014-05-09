@@ -145,7 +145,7 @@ namespace SonicRetro.SAModel
 
         internal static string MakeIdentifier(this string s)
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new StringBuilder(s.Length + 1);
             foreach (char item in s)
                 if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
                     result.Append(item);
