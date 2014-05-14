@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace SonicRetro.SAModel
 {
+    [Serializable]
     public class Object
     {
         [Browsable(false)]

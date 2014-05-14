@@ -11,10 +11,12 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
+    [Serializable]
     public class LevelItem : Item
     {
         [Browsable(false)]
         private COL COL { get; set; }
+        public COL CollisionData { get { return COL; } }
         [Browsable(false)]
         private Microsoft.DirectX.Direct3D.Mesh Mesh { get; set; }
 
@@ -24,14 +26,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         /// Creates a Levelitem from an external file.
         /// </summary>
         /// <param name="dev">Current Direct3D device.</param>
-        /// <param name="filePath">location of the file to use</param>
-        /// <param name="fileFormat">Format of the file at location filePath.</param>
-        public LevelItem(Device dev, string filePath, IOFileFormat fileFormat)
+        /// <param name="filePath">location of the file to use.</param>
+        /// <param name="position">Position to place the resulting model (worldspace).</param>
+        /// <param name="rotation">Rotation to apply to the model.</param>
+        public LevelItem(Device dev, string filePath, Vertex position, Rotation rotation)
         {
             this.dev = dev;
             COL = new COL();
             COL.Model = new SonicRetro.SAModel.Object();
-            ImportModel(filePath, fileFormat);
+            COL.Model.Position = position;
+            COL.Model.Rotation = rotation;
+            ImportModel(filePath);
+            COL.CalculateBounds();
             Paste();
         }
 
@@ -46,6 +52,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             col.Model.ProcessVertexData();
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
             this.dev = dev;
+        }
+
+        /// <summary>
+        /// Creates a new instance of an existing item with the specified position and rotation.
+        /// </summary>
+        /// <param name="attach">Attach to use for this levelItem</param>
+        /// <param name="position">Position in worldspace to place this LevelItem.</param>
+        /// <param name="rotation">Rotation.</param>
+        public LevelItem(Device dev, Attach attach, Vertex position, Rotation rotation)
+        {
+            COL = new COL();
+            COL.Model = new SonicRetro.SAModel.Object();
+            COL.Model.Attach = attach;
+            COL.Model.Position = position;
+            COL.Model.Rotation = rotation;
+            COL.Model.Flags = ObjectFlags.NoChildren;
+            Visible = true;
+            Solid = true;
+            COL.CalculateBounds();
+            Mesh = COL.Model.Attach.CreateD3DMesh(dev);
+            Paste();
         }
 
         public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; } }
@@ -83,28 +110,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         [Browsable(true)]
         [DisplayName("Import Model")]
-        public void ImportModel(string filePath, IOFileFormat fileFormat)
+        public void ImportModel(string filePath)
         {
-            switch (fileFormat)
-            {
-                case (IOFileFormat.WaveFrontOBJ):
-                    COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
-                    COL.Model.Flags = ObjectFlags.NoChildren;
-                    break;
+            COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
+            COL.Model.Flags = ObjectFlags.NoChildren;
+            Visible = true;
+            Solid = true;
 
-                case (IOFileFormat.NodeTable1_5):
-                    throw new NotImplementedException();
-                    break;
-
-                case (IOFileFormat.NodeTable1_6):
-                    throw new NotImplementedException();
-                    break;
-
-                default:
-                    break;
-            }
-
-            COL.CalculateBounds();
             Mesh = COL.Model.Attach.CreateD3DMesh(dev);
         }
 

@@ -6,6 +6,7 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+    [Serializable]
     public class ChunkAttach : Attach
     {
         public List<VertexChunk> Vertex { get; set; }

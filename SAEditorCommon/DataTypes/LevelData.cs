@@ -75,5 +75,68 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                 StateChanged();
             }
         }
+
+        /// <summary>
+        /// This will clear the level's geometry, letting the user start fresh.
+        /// </summary>
+        public static void ClearLevelGeometry()
+        {
+            LevelItems.Clear();
+            geo.COL.Clear();
+            if(StateChanged != null) StateChanged();
+        }
+
+        /// <summary>
+        /// This will clear all animated level models.
+        /// </summary>
+        public static void ClearLevelGeoAnims()
+        {
+            geo.Anim.Clear();
+            if (StateChanged != null) StateChanged();
+        }
+
+        public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.Camera camera, out bool errorFlag, out string errorMsg)
+        {
+            List<Item> createdItems = new List<Item>();
+
+            if (!File.Exists(filePath))
+            {
+                errorFlag = true;
+                errorMsg = "File does not exist!";
+                return null;
+            }
+
+            DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
+
+            bool importError = false;
+            string importErrorMsg = "";
+
+            switch (filePathInfo.Extension)
+            {
+                case (".obj"):
+                    Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
+                    LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
+
+                    item.Visible = true;
+                    createdItems.Add(item);
+                    break;
+
+                case (".txt"):
+                    SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
+                    break;
+
+                default:
+                    errorFlag = true;
+                    errorMsg = "Invalid file format!";
+                    return null;
+            }
+
+            StateChanged();
+
+            errorFlag = importError;
+            errorMsg = importErrorMsg;
+
+            return createdItems;
+        }
     }
 }

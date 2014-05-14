@@ -125,9 +125,10 @@ namespace SonicRetro.SAModel.SALVL
                 }
             }
             loaded = true;
+            clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
             SelectedItems = new List<Item>();
             UseWaitCursor = false;
-            Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
+            Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = true;
             DrawLevel();
         }
 
@@ -437,6 +438,13 @@ namespace SonicRetro.SAModel.SALVL
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<Item> objs = Clipboard.GetData("SADXLVLObjectList") as List<Item>;
+
+            if (objs == null)
+            {
+                MessageBox.Show("Paste operation failed - this is a known issue and is being worked on.");
+                return; // todo: finish implementing proper copy/paste
+            }
+
             Vector3 center = new Vector3();
             foreach (Item item in objs)
                 center.Add(item.Position.ToVector3());
@@ -474,45 +482,48 @@ namespace SonicRetro.SAModel.SALVL
             if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = importFileDialog.FileName;
-                IOFileFormat fileFormat;
 
-                if (!File.Exists(filePath))
+                bool errorFlag = false;
+                string errorMsg = "";
+
+                LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+
+                if (errorFlag)
                 {
-                    MessageBox.Show("File does not exist!");
+                    MessageBox.Show(errorMsg);
+                }
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = importFileDialog.FileName;
+                DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+
+                if (userClearLevelResult == System.Windows.Forms.DialogResult.Cancel) return;
+                else if (userClearLevelResult == DialogResult.Yes)
+                {
+                    DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
+
+                    LevelData.ClearLevelGeometry();
+
+                    if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        LevelData.ClearLevelGeoAnims();
+                    }
                 }
 
-                DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
+                bool errorFlag = false;
+                string errorMsg = "";
 
-                switch (filePathInfo.Extension)
+                LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+
+                if (errorFlag)
                 {
-                    case(".obj"):
-                        fileFormat = IOFileFormat.WaveFrontOBJ;
-                        LevelItem item = new LevelItem(d3ddevice, filePath, fileFormat);
-                        Vector3 pos = cam.Position + (-20 * cam.Look);
-                        item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-                        item.Visible = true;
-                        SelectedItems = new List<Item>() { item };
-                        SelectedItemChanged();
-                        break;
-
-                    case("*.txt"):
-                        fileFormat = IOFileFormat.NodeTable1_5;
-                        // todo: open the nodetable text file, iteratively create levelItems accordingly
-                        throw new NotImplementedException();
-                        break;
-
-                    case("*.bin"):
-                        fileFormat = IOFileFormat.NodeTable1_6;
-                        // todo: open the nodetable binary file, iteratively create levelItems accordingly
-                        throw new NotImplementedException();
-                        break;
-
-                    default:
-                        MessageBox.Show("Invalid file format!");
-                        return;
+                    MessageBox.Show(errorMsg);
                 }
-
-                DrawLevel();
             }
         }
 
@@ -763,6 +774,20 @@ namespace SonicRetro.SAModel.SALVL
         void LevelData_StateChanged()
         {
             DrawLevel();
+        }
+
+        private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNoCancel);
+
+            if (clearAnimsResult == System.Windows.Forms.DialogResult.Cancel) return;
+
+            LevelData.ClearLevelGeometry();
+
+            if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+            {
+                LevelData.ClearLevelGeoAnims();
+            }
         }
     }
 }

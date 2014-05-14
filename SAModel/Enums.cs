@@ -80,19 +80,6 @@ namespace SonicRetro.SAModel
         Chunk
     }
 
-    /// <summary>
-    /// Describes a file format used for import/export
-    /// </summary>
-    public enum IOFileFormat
-    {
-        /// <summary>File is a WaveFront *.obj file.</summary>
-        WaveFrontOBJ,
-        /// <summary>File is a NodeTable file, version 1.5.</summary>
-        NodeTable1_5,
-        /// <summary>File is a NodeTable file, version 1.6.</summary>
-        NodeTable1_6
-    }
-
     public enum ChunkType : byte
     {
         Null = 0,

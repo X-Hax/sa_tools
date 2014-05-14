@@ -11,6 +11,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
+    [Serializable]
     public class SETItem : Item
     {
         public SETItem()

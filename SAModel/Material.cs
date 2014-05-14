@@ -38,6 +38,14 @@ namespace SonicRetro.SAModel
             SpecularColor = Color.Transparent;
             UseAlpha = true;
             UseTexture = true;
+            DoubleSided = false;
+            FlatShading = false;
+            IgnoreLighting = false;
+            ClampU = false;
+            ClampV = false;
+            FlipU = false;
+            FlipV = false;
+            EnvironmentMap = false;
             DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
             SourceAlpha = AlphaInstruction.SourceAlpha;
         }

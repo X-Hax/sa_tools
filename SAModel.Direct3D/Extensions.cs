@@ -4,7 +4,6 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 
-
 namespace SonicRetro.SAModel.Direct3D
 {
     public static class Extensions
@@ -482,26 +481,99 @@ namespace SonicRetro.SAModel.Direct3D
                             string[] mlin = mln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                             if (mlin.Length == 0)
                                 continue;
+                            #region Parsing Material Properties
                             switch (mlin[0].ToLowerInvariant())
                             {
                                 case "newmtl":
                                     lastmtl = new Material();
+                                    lastmtl.UseAlpha = false;
+                                    lastmtl.UseTexture = false;
                                     mtls.Add(mlin[1], lastmtl);
                                     break;
+
                                 case "kd":
                                     lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
                                     break;
+
+                                case "map_ka":
+                                    lastmtl.UseAlpha = true;
+                                    break;
+
+                                case "map_kd":
+                                    lastmtl.UseTexture = true;
+                                    break;
+
+                                case "ke":
+                                    lastmtl.Exponent = float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+                                    break;
+
                                 case "d":
                                 case "tr":
                                     lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), lastmtl.DiffuseColor);
                                     break;
+
                                 case "ks":
                                     lastmtl.SpecularColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
                                     break;
+
                                 case "texid":
                                     lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
                                     break;
+
+                                case "-u_mirror":
+                                    bool uMirror = false;
+
+                                    if (bool.TryParse(mlin[1], out uMirror))
+                                    {
+                                        lastmtl.FlipU = uMirror;
+                                    }
+                                    break;
+
+                                case "-v_mirror":
+                                    bool vMirror = false;
+
+                                    if (bool.TryParse(mlin[1], out vMirror))
+                                    {
+                                        lastmtl.FlipV = vMirror;
+                                    }
+                                    break;
+
+
+                                case "-u_tile":
+                                    bool uTile = true;
+
+                                    if (bool.TryParse(mlin[1], out uTile))
+                                    {
+                                        lastmtl.ClampU = !uTile;
+                                    }
+                                    break;
+
+                                case "-v_tile":
+                                    bool vTile = true;
+
+                                    if (bool.TryParse(mlin[1], out vTile))
+                                    {
+                                        lastmtl.ClampV = !vTile;
+                                    }
+                                    break;
+
+                                case "-enviromap":
+                                    lastmtl.EnvironmentMap = true;
+                                    break;
+
+                                case "-doublesided":
+                                    lastmtl.DoubleSided = true;
+                                    break;
+
+                                case "-ignorelighting":
+                                    lastmtl.IgnoreLighting = bool.Parse(mlin[1]);
+                                    break;
+
+                                case "-flatshaded":
+                                    lastmtl.FlatShading = bool.Parse(mlin[1]);
+                                    break;
                             }
+                            #endregion
                         }
 
                         break;
@@ -512,7 +584,7 @@ namespace SonicRetro.SAModel.Direct3D
                         norms.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
                         break;
                     case "vt":
-                        uvs.Add(new UV() { U = unchecked((short)(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * 255)), V = unchecked((short)(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * 255)) });
+                        uvs.Add(new UV() { U = float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * -1, V = float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * -1 });
                         break;
                     case "vc":
                         vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[4], System.Globalization.CultureInfo.InvariantCulture))));
@@ -682,7 +754,13 @@ namespace SonicRetro.SAModel.Direct3D
                         model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
                 }
             }
-            model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = System.IO.Path.GetFileNameWithoutExtension(objfile) };
+            string sanitizedName = System.IO.Path.GetFileNameWithoutExtension(objfile);
+            double throwAway = 0;
+            if (double.TryParse(sanitizedName, out throwAway)) // checking to see if the name will cause compile-time issues.
+            {
+                sanitizedName = string.Concat("model_", sanitizedName);
+            }
+            model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = sanitizedName };
             model.ProcessVertexData();
             model.CalculateBounds();
             return model;
@@ -715,6 +793,7 @@ namespace SonicRetro.SAModel.Direct3D
         /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
         /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
         /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
         private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
         {
             transform.Push();
@@ -930,13 +1009,13 @@ namespace SonicRetro.SAModel.Direct3D
         /// <summary>
         /// Writes an object model (chunk format) to the specified stream, in Alias-Wavefront *.OBJ format.
         /// </summary>
-        /// <param name="objstream"></param>
-        /// <param name="obj"></param>
-        /// <param name="transform"></param>
-        /// <param name="totalVerts"></param>
-        /// <param name="totalNorms"></param>
-        /// <param name="totalUVs"></param>
-        /// <param name="errorFlag"></param>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="transform">Used for calculating transforms.</param>
+        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
         private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
         {
             transform.Push();
@@ -1076,6 +1155,16 @@ namespace SonicRetro.SAModel.Direct3D
             transform.Pop();
         }
 
+        /// <summary>
+        /// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
+        /// </summary>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="transform">Used for calculating transforms.</param>
+        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
         public static void WriteModelAsObj(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
         {
             if (obj.Attach is BasicAttach)

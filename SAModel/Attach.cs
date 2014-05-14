@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SonicRetro.SAModel
 {
+    [Serializable]
     public abstract class Attach
     {
         public string Name { get; set; }

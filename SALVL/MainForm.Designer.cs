@@ -35,10 +35,13 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visibleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +68,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -78,6 +82,7 @@
             this.openToolStripMenuItem,
             this.editInfoToolStripMenuItem,
             this.saveToolStripMenuItem,
+            this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -87,7 +92,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -95,7 +100,7 @@
             // 
             this.editInfoToolStripMenuItem.Enabled = false;
             this.editInfoToolStripMenuItem.Name = "editInfoToolStripMenuItem";
-            this.editInfoToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.editInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.editInfoToolStripMenuItem.Text = "E&dit Info";
             this.editInfoToolStripMenuItem.Click += new System.EventHandler(this.editInfoToolStripMenuItem_Click);
             // 
@@ -103,9 +108,17 @@
             // 
             this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Enabled = false;
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importToolStripMenuItem.Text = "&Import";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -114,7 +127,7 @@
             this.cStructsToolStripMenuItem});
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // exportOBJToolStripMenuItem
@@ -134,9 +147,25 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearLevelToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // clearLevelToolStripMenuItem
+            // 
+            this.clearLevelToolStripMenuItem.Enabled = false;
+            this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
+            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.clearLevelToolStripMenuItem.Text = "Clear Level";
+            this.clearLevelToolStripMenuItem.Click += new System.EventHandler(this.clearLevelToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -275,7 +304,7 @@
             // importFileDialog
             // 
             this.importFileDialog.FileName = "file";
-            this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable 1.5|*.txt|NodeTable 1.6|*.bin";
+            this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable|*.txt";
             this.importFileDialog.RestoreDirectory = true;
             this.importFileDialog.Title = "Select a file to import.";
             // 
@@ -332,6 +361,9 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cStructsToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog importFileDialog;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
     }
 }
 

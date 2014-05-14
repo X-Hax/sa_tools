@@ -14,6 +14,7 @@ using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
+    [Serializable]
     public abstract class Item : IComponent
     {
         [ReadOnly(true)]

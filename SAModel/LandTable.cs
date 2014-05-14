@@ -331,18 +331,23 @@ namespace SonicRetro.SAModel
                 }
             }
             uint coladdr;
-            if (labels.ContainsKey(COLName))
-                coladdr = labels[COLName];
-            else
+            if (COL.Count > 0)
             {
-                coladdr = imageBase + (uint)result.Count;
-                labels.Add(COLName, coladdr);
-                for (int i = 0; i < COL.Count; i++)
+                if (labels.ContainsKey(COLName))
+                    coladdr = labels[COLName];
+                else
                 {
-                    result.Align(4);
-                    result.AddRange(COL[i].GetBytes(imageBase + (uint)result.Count, colmdladdrs[i], format));
+                    coladdr = imageBase + (uint)result.Count;
+                    labels.Add(COLName, coladdr);
+                    for (int i = 0; i < COL.Count; i++)
+                    {
+                        result.Align(4);
+                        result.AddRange(COL[i].GetBytes(imageBase + (uint)result.Count, colmdladdrs[i], format));
+                    }
                 }
             }
+            else
+                coladdr = 0;
             uint animaddr;
             if (Anim.Count > 0)
             {

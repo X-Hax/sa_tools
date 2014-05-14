@@ -463,7 +463,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                 return;
             }
             levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
+            clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
             objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
+            importToolStripMenuItem.Enabled = LevelData.geo != null;
+            exportOBJToolStripMenuItem.Enabled = LevelData.geo != null;
             deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
             if (LevelData.DeathZones == null)
                 deathZonesToolStripMenuItem.Checked = false;
@@ -853,7 +856,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             SelectedItemChanged();
             DrawLevel();
             if (selitems.Count == 0) return;
-            Clipboard.SetData("SADXLVLObjectList", selitems);
+            Clipboard.SetData(DataFormats.Serializable, selitems);
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -868,7 +871,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Item> objs = Clipboard.GetData("SADXLVLObjectList") as List<Item>;
+            object obj = Clipboard.GetData("SADXLVLObjectList");
+
+            if (obj == null)
+            {
+                MessageBox.Show("Paste operation failed - this is a known issue and is being worked on.");
+                return; // todo: finish implementing proper copy/paste
+            }
+            List<Item> objs = (List<Item>)obj;
             Vector3 center = new Vector3();
             foreach (Item item in objs)
                 center.Add(item.Position.ToVector3());
@@ -912,13 +922,52 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LevelItem item = new LevelItem(new COL(), d3ddevice);
-            Vector3 pos = cam.Position + (-20 * cam.Look);
-            item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-            item.Visible = true;
-            SelectedItems = new List<Item>() { item };
-            SelectedItemChanged();
-            DrawLevel();
+            if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = importFileDialog.FileName;
+
+                bool errorFlag = false;
+                string errorMsg = "";
+
+                LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+
+                if (errorFlag)
+                {
+                    MessageBox.Show(errorMsg);
+                }
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = importFileDialog.FileName;
+                DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+
+                if (userClearLevelResult == System.Windows.Forms.DialogResult.Cancel) return;
+                else if (userClearLevelResult == DialogResult.Yes)
+                {
+                    DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
+
+                    LevelData.ClearLevelGeometry();
+
+                    if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        LevelData.ClearLevelGeoAnims();
+                    }
+                }
+
+                bool errorFlag = false;
+                string errorMsg = "";
+
+                LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+
+                if (errorFlag)
+                {
+                    MessageBox.Show(errorMsg);
+                }
+            }
         }
 
         private void objectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1157,6 +1206,20 @@ namespace SonicRetro.SAModel.SADXLVL2
         void LevelData_StateChanged()
         {
             DrawLevel();
+        }
+
+        private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNoCancel);
+
+            if (clearAnimsResult == System.Windows.Forms.DialogResult.Cancel) return;
+
+            LevelData.ClearLevelGeometry();
+
+            if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+            {
+                LevelData.ClearLevelGeoAnims();
+            }
         }
     }
 }

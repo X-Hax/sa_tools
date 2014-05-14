@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SonicRetro.SAModel
 {
+    [Serializable]
     public class COL
     {
         public BoundingSphere Bounds { get; set; }

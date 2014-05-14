@@ -4,6 +4,7 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+    [Serializable]
     public class BasicAttach : Attach
     {
         public Vertex[] Vertex { get; private set; }
