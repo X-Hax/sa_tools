@@ -263,8 +263,8 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx + ".motion"] = ani.Animation.Name;
-								output.Labels.Items[idx + ".object"] = ani.Model.Name;
+								output.Labels.Items[idx + "->motion"] = ani.Animation.Name;
+								output.Labels.Items[idx + "->object"] = ani.Model.Name;
 								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 								ani.Animation.Save(fn);
 								output.Files.Items[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
@@ -279,7 +279,7 @@ namespace splitDLL
 								{
 									string mfn = Path.ChangeExtension(fn, modelext);
 									ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
-										idx + ".object", "splitDLL", null, modelfmt);
+										idx + "->object", "splitDLL", null, modelfmt);
 									output.Files.Items[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
 								}
 							}
