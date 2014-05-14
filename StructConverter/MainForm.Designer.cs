@@ -63,38 +63,39 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // recentProjectsToolStripMenuItem
             // 
             this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
-            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.recentProjectsToolStripMenuItem.Text = "&Recent Projects";
             this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProjectsToolStripMenuItem_DropDownItemClicked);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(147, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // listView1
             // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.CheckBoxes = true;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -105,7 +106,7 @@
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView1.Location = new System.Drawing.Point(12, 27);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(560, 286);
+            this.listView1.Size = new System.Drawing.Size(560, 484);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -126,9 +127,10 @@
             // 
             // button1
             // 
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.button1.AutoSize = true;
             this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button1.Location = new System.Drawing.Point(12, 319);
+            this.button1.Location = new System.Drawing.Point(12, 527);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(62, 23);
             this.button1.TabIndex = 2;
@@ -138,9 +140,10 @@
             // 
             // button2
             // 
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.button2.AutoSize = true;
             this.button2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button2.Location = new System.Drawing.Point(80, 319);
+            this.button2.Location = new System.Drawing.Point(80, 527);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(91, 23);
             this.button2.TabIndex = 3;
@@ -150,9 +153,10 @@
             // 
             // button3
             // 
+            this.button3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.button3.AutoSize = true;
             this.button3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button3.Location = new System.Drawing.Point(177, 319);
+            this.button3.Location = new System.Drawing.Point(177, 527);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 4;
@@ -162,7 +166,8 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(258, 319);
+            this.button4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button4.Location = new System.Drawing.Point(258, 527);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 5;
