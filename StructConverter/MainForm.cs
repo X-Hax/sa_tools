@@ -790,9 +790,9 @@ namespace StructConverter
 												writer.WriteLine("};");
 												writer.WriteLine();
 											}
-											writer.WriteLine("LoopDataPtr {0}[] = {{", name);
+											writer.WriteLine("PathDataPtr {0}[] = {{", name);
 											foreach (SA1LevelAct level in levels)
-												writer.WriteLine("\t{{ {0}, &{1}_{2} }},", level.ToC(), name,
+												writer.WriteLine("\t{{ {0}, {1}_{2} }},", level.ToC(), name,
 													level.ToString().MakeIdentifier());
 											writer.WriteLine("\t{ 0xFFFF }");
 											writer.WriteLine("};");
