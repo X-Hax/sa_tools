@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SADXObjectDefinitions</RootNamespace>
+    <AssemblyName>SADXObjectDefinitions</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="SADXPCTools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sa_tools\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Cube.cs" />
+    <Compile Include="Common\Cylinder.cs" />
+    <Compile Include="Common\DashPanel.cs" />
+    <Compile Include="Common\FallSpikeBall.cs" />
+    <Compile Include="Common\ItemBox.cs" />
+    <Compile Include="Common\RingGroup.cs" />
+    <Compile Include="Common\Sphere.cs" />
+    <Compile Include="Common\Spikes.cs" />
+    <Compile Include="Common\Spring.cs" />
+    <Compile Include="Common\SpringB.cs" />
+    <Compile Include="Common\SwingSpikeBall.cs" />
+    <Compile Include="Common\Wall.cs" />
+    <Compile Include="Level Effects\EmeraldCoast.cs" />
+    <Compile Include="Level Effects\TwinklePark.cs" />
+    <Compile Include="Level Effects\WindyValley1.cs" />
+    <Compile Include="Level Effects\WindyValley2.cs" />
+    <Compile Include="Level Effects\WindyValley3.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SADXLVL2\SADXLVL2.csproj">
+      <Project>{5997DC6A-DA95-487E-BB19-2D8890684A54}</Project>
+      <Name>SADXLVL2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
+      <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
+      <Name>SAEditorCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj">
+      <Project>{E81631CC-8721-425B-87A3-CB6199DECAF4}</Project>
+      <Name>SAModel.Direct3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SAModel\SAModel.csproj">
+      <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
+      <Name>SAModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
