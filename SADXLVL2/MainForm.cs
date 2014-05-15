@@ -346,7 +346,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 }
                                 if (pr != null)
                                 {
-                                    CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location });
+                                    CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(ObjectDefinition)).Location });
                                     para.GenerateExecutable = false;
                                     para.GenerateInMemory = false;
                                     para.IncludeDebugInformation = true;
@@ -428,7 +428,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                         }
                         if (pr != null)
                         {
-                            CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location });
+                            CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(Item)).Location });
                             para.GenerateExecutable = false;
                             para.GenerateInMemory = false;
                             para.IncludeDebugInformation = true;
