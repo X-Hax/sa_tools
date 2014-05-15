@@ -21,9 +21,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         #region Events
         public delegate void LevelStateChangeHandler();
         public static event LevelStateChangeHandler StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
-
-        public delegate void ObjectTypeChangeHandler(SETItem item);
-        public static event ObjectTypeChangeHandler ObjectTypeChanged; // this one allows for the ChangeObjectType() method below to function as intended without a MainForm reference
         #endregion
 
         public static LandTable geo;
@@ -41,29 +38,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public static List<SETItem>[] SETItems;
         public static List<DeathZoneItem> DeathZones;
         public static LevelDefinition leveleff;
-
-        internal static void ChangeObjectType(SETItem entry)
-        {
-            Type t = ObjDefs[entry.ID].ObjectType;
-            if (entry.GetType() == t) return;
-            byte[] entb = entry.GetBytes();
-            SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { entb, 0 });
-            int i = SETItems[Character].IndexOf(entry);
-            SETItems[Character][i] = oe;
-
-            if (ObjectTypeChanged != null)
-            {
-                ObjectTypeChanged(oe);
-            }
-        }
-
-        internal static SETItem CreateObject(ushort ID)
-        {
-            Type t = ObjDefs[ID].ObjectType;
-            SETItem oe = (SETItem)Activator.CreateInstance(t, new object[] { });
-            oe.ID = ID;
-            return oe;
-        }
 
         /// <summary>
         /// This invokes the StateChanged event. Call this any time an outside form or control modifies the level data.

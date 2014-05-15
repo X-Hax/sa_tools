@@ -76,36 +76,11 @@ namespace SADXObjectDefinitions.Common
 
         public override string Name { get { return "Spikes"; } }
 
-        public override Type ObjectType { get { return typeof(SpikesSETItem); } }
-    }
+		private PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Rows", typeof(int), "Extended", null, 1, (o) => Math.Max((int)o.Scale.X, 1), (o, v) => o.Scale.X = Math.Max((int)v, 1)),
+			new PropertySpec("Columns", typeof(int), "Extended", null, 1, (o) => Math.Max((int)o.Scale.Z, 1), (o, v) => o.Scale.Z = Math.Max((int)v, 1))
+		};
 
-    public class SpikesSETItem : SETItem
-    {
-        public SpikesSETItem() : base() { }
-        public SpikesSETItem(byte[] file, int address) : base(file, address) { }
-
-        public int Rows
-        {
-            get
-            {
-                return Math.Max((int)Scale.X, 1);
-            }
-            set
-            {
-                Scale.X = Math.Max(value, 1);
-            }
-        }
-
-        public int Columns
-        {
-            get
-            {
-                return Math.Max((int)Scale.Z, 1);
-            }
-            set
-            {
-                Scale.Z = Math.Max(value, 1);
-            }
-        }
-    }
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+	}
 }

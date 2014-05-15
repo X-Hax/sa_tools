@@ -88,66 +88,79 @@ namespace SADXObjectDefinitions.Common
 
         public override string Name { get { return "Swinging Spike Ball"; } }
 
-        public override Type ObjectType
-        {
-            get
-            {
-                return typeof(SwingSpikeBallSETItem);
-            }
-        }
-    }
+		public static object GetOneBall(SETItem item)
+		{
+			return (long)item.Scale.Z % 10 >= 1;
+		}
 
-    public class SwingSpikeBallSETItem : SETItem
-    {
-        public SwingSpikeBallSETItem() : base() { }
-        public SwingSpikeBallSETItem(byte[] file, int address) : base(file, address)
-        {
-            yspeed = (long)(Scale.Z / 1000);
-             uint v4 = (uint)Math.Abs(Scale.Z % 1000);
-             if (v4 >= 100)
-                 Chain = false;
-             uint v5 = v4 % 100;
-             if (v5 >= 10)
-             {
-                 if (v5 < 90)
-                     shadow = ShadowType.Off;
-                 else
-                     shadow = ShadowType.Heavy;
-             }
-             if (v5 % 10 >= 1)
-                 oneball = true;
-        }
+		public static object GetShadow(SETItem item)
+		{
+			long v5 = Math.Abs((long)item.Scale.Z % 100);
+			if (v5 >= 10)
+			{
+				if (v5 < 90)
+					return ShadowType.Off;
+				else
+					return ShadowType.Heavy;
+			}
+			else
+				return ShadowType.Light;
+		}
 
-        public float ChainLength { get { return Scale.X; } set { Scale.X = value; } }
+		public static object GetChain(SETItem item)
+		{
+			return Math.Abs((long)item.Scale.Z % 1000) >= 100;
+		}
 
-        public float YDistance { get { return Scale.Y; } set { Scale.Y = value; } }
+		public static object GetVerticalSpeed(SETItem item)
+		{
+			return (long)(item.Scale.Z / 1000);
+		}
 
-        private bool oneball = false;
-        public bool OneBall { get { return oneball; } set { oneball = value; UpdateZScl(); } }
+		public static void UpdateZScale(SETItem item, bool oneBall, ShadowType shadow, bool chain, long yspeed)
+		{
+			float value = oneBall ? 1 : 0;
+			if (shadow == ShadowType.Off)
+				value += 10;
+			else if (shadow == ShadowType.Heavy)
+				value += 90;
+			if (!chain)
+				value += 100;
+			value += (float)yspeed * 1000;
+			item.Scale.Z = value;
+		}
 
-        private bool chain = true;
-        public bool Chain { get { return chain; } set { chain = value; UpdateZScl(); } }
+		public static void SetOneBall(SETItem item, object value)
+		{
+			UpdateZScale(item, (bool)value, (ShadowType)GetShadow(item), (bool)GetChain(item), (long)GetVerticalSpeed(item));
+		}
 
-        private ShadowType shadow = ShadowType.Light;
-        public ShadowType Shadow { get { return shadow; } set { shadow = value; UpdateZScl(); } }
+		public static void SetShadow(SETItem item, object value)
+		{
+			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)value, (bool)GetChain(item), (long)GetVerticalSpeed(item));
+		}
 
-        private long yspeed = 0;
-        public long YSpeed { get { return yspeed; } set { yspeed = value; UpdateZScl(); } }
+		public static void SetChain(SETItem item, object value)
+		{
+			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)value, (long)GetVerticalSpeed(item));
+		}
 
-        private void UpdateZScl()
-        {
-            float value = (float)yspeed * 1000;
-            if (!chain)
-                value += 100;
-            if (shadow == ShadowType.Off)
-                value += 10;
-            else if (shadow == ShadowType.Heavy)
-                value += 90;
-            if (oneball)
-                value += 1;
-            Scale.Z = value;
-        }
-    }
+		public static void SetVerticalSpeed(SETItem item, object value)
+		{
+			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
+		}
+
+		private PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Chain Length", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X =  (float)v),
+			new PropertySpec("Vertical Distance", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("One Ball", typeof(bool), "Extended", null, null, GetOneBall, SetOneBall),
+			new PropertySpec("Shadow", typeof(ShadowType), "Extended", null, null, GetShadow, SetShadow),
+			new PropertySpec("Chain", typeof(bool), "Extended", null, null, GetChain, SetChain),
+			new PropertySpec("Vertical Speed", typeof(long), "Extended", null, null, GetVerticalSpeed, SetVerticalSpeed)
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+	}
 
     public enum ShadowType
     {

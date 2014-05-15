@@ -53,7 +53,6 @@
     <Compile Include="Common\Sphere.cs" />
     <Compile Include="Common\Spikes.cs" />
     <Compile Include="Common\Spring.cs" />
-    <Compile Include="Common\SpringB.cs" />
     <Compile Include="Common\SwingSpikeBall.cs" />
     <Compile Include="Common\Wall.cs" />
     <Compile Include="Level Effects\EmeraldCoast.cs" />

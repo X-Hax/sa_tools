@@ -382,14 +382,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 for (int j = 0; j < count; j++)
                                 {
                                     SETItem ent = new SETItem(setfile, address);
-                                    try
-                                    {
-                                        Type t = LevelData.ObjDefs[ent.ID].ObjectType;
-                                        if (ent.GetType() != t)
-                                            ent = (SETItem)Activator.CreateInstance(t, new object[] { ent.GetBytes(), 0 });
                                     list.Add(ent);
-                                    }
-                                    catch { }
                                     address += 0x20;
                                 }
                             }

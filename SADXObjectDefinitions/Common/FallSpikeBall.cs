@@ -80,21 +80,11 @@ namespace SADXObjectDefinitions.Common
 
         public override string Name { get { return "Falling Spike Ball"; } }
 
-        public override Type ObjectType
-        {
-            get
-            {
-                return typeof(FallSpikeBallSETItem);
-            }
-        }
-    }
+		private PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Distance", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
+		};
 
-    public class FallSpikeBallSETItem : SETItem
-    {
-        public FallSpikeBallSETItem() : base() { }
-        public FallSpikeBallSETItem(byte[] file, int address) : base(file, address) { }
-
-        public float Distance { get { return Scale.X; } set { Scale.X = value; } }
-        public float Speed { get { return Scale.Y; } set { Scale.Y = value; } }
-    }
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+	}
 }
