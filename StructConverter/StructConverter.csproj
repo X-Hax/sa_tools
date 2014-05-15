@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SAModel">
-      <HintPath>..\..\SAModel\SAModel\bin\Release\SAModel.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -80,6 +77,10 @@
     <ProjectReference Include="..\SA Tools\SA Tools.csproj">
       <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
       <Name>SA Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SAModel\SAModel.csproj">
+      <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
+      <Name>SAModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
