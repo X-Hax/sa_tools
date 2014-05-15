@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweaker2
 {

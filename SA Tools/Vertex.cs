@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace SADXPCTools
+namespace SA_Tools
 {
     [Serializable]
     [TypeConverter(typeof(VertexConverter))]

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Windows.Forms.Design.Behavior;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweaker2
 {

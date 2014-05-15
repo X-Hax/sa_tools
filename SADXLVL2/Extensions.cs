@@ -13,17 +13,17 @@ namespace SonicRetro.SAModel.SADXLVL2
             return @default;
         }
 
-        public static Vector3 ToVector3(this SADXPCTools.Vertex vertex)
+        public static Vector3 ToVector3(this SA_Tools.Vertex vertex)
         {
             return new Vector3(vertex.X, vertex.Y, vertex.Z);
         }
 
-        public static SADXPCTools.Vertex ToSADXPCTools(this Vertex vertex)
+        public static SA_Tools.Vertex ToSA_Tools(this Vertex vertex)
         {
-            return new SADXPCTools.Vertex(vertex.X, vertex.Y, vertex.Z);
+            return new SA_Tools.Vertex(vertex.X, vertex.Y, vertex.Z);
         }
 
-        public static Vertex ToSAModel(this SADXPCTools.Vertex vertex)
+        public static Vertex ToSAModel(this SA_Tools.Vertex vertex)
         {
             return new Vertex(vertex.X, vertex.Y, vertex.Z);
         }

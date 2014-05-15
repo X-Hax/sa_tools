@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using SADXPCTools;
+using SA_Tools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
@@ -514,7 +514,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                 {
                     posini.Add(levelact,
                         new SA1StartPosInfo() {
-                        Position = LevelData.StartPositions[i].Position.ToSADXPCTools(),
+                        Position = LevelData.StartPositions[i].Position.ToSA_Tools(),
                         YRotation = LevelData.StartPositions[i].Rotation.Y });
                 }
                  posini.Save(ini[string.Empty][LevelData.Characters[i] + "start"]);

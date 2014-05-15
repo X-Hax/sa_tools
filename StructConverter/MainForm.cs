@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 using SonicRetro.SAModel;
 
 namespace StructConverter
@@ -103,7 +103,7 @@ namespace StructConverter
             recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
             Environment.CurrentDirectory = Path.GetDirectoryName(filename);
             listView1.BeginUpdate();
-            foreach (KeyValuePair<string, SADXPCTools.FileInfo> item in IniData.Files)
+            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files)
             {
                 bool? modified = null;
                 switch (item.Value.Type)
@@ -296,11 +296,11 @@ namespace StructConverter
                         writer.WriteLine();
                         Dictionary<string, string> models = new Dictionary<string, string>();
                         int _i = 0;
-                        foreach (KeyValuePair<string, SADXPCTools.FileInfo> item in IniData.Files)
+                        foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files)
                             if (listView1.CheckedIndices.Contains(_i++))
                             {
                                 string name = item.Key.MakeIdentifier();
-                                SADXPCTools.FileInfo data = item.Value;
+                                SA_Tools.FileInfo data = item.Value;
                                 switch (data.Type)
                                 {
                                     case "landtable":
@@ -541,7 +541,7 @@ namespace StructConverter
                                                 {
                                                     RecapScreen scr = texts[j][l];
                                                     objs.Add(string.Format("{{ {0}, arraylengthandptr({1}_{2}_{3}_Text) }}",
-                                                        SADXPCTools.HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
+                                                        SA_Tools.HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
                                                 }
                                                 writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
                                                 writer.WriteLine("};");

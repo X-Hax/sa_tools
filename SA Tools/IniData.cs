@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace SADXPCTools
+namespace SA_Tools
 {
     public class IniData
     {

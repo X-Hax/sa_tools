@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweakerLite
 {

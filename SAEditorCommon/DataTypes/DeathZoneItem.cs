@@ -31,7 +31,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             Paste();
         }
 
-        public DeathZoneItem(SonicRetro.SAModel.Object model, SADXPCTools.SA1CharacterFlags flags, Device dev)
+        public DeathZoneItem(SonicRetro.SAModel.Object model, SA_Tools.SA1CharacterFlags flags, Device dev)
         {
             Model = model;
             model.ProcessVertexData();
@@ -102,7 +102,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             }
         }
 
-        public SADXPCTools.SA1CharacterFlags Flags { get; set; }
+        public SA_Tools.SA1CharacterFlags Flags { get; set; }
 
         [Browsable(false)]
         public bool Visible
@@ -112,17 +112,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                 switch (LevelData.Character)
                 {
                     case 0:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Sonic) == SADXPCTools.SA1CharacterFlags.Sonic;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Sonic) == SA_Tools.SA1CharacterFlags.Sonic;
                     case 1:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Tails) == SADXPCTools.SA1CharacterFlags.Tails;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Tails) == SA_Tools.SA1CharacterFlags.Tails;
                     case 2:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Knuckles) == SADXPCTools.SA1CharacterFlags.Knuckles;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Knuckles) == SA_Tools.SA1CharacterFlags.Knuckles;
                     case 3:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Amy) == SADXPCTools.SA1CharacterFlags.Amy;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Amy) == SA_Tools.SA1CharacterFlags.Amy;
                     case 4:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Gamma) == SADXPCTools.SA1CharacterFlags.Gamma;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Gamma) == SA_Tools.SA1CharacterFlags.Gamma;
                     case 5:
-                        return (Flags & SADXPCTools.SA1CharacterFlags.Big) == SADXPCTools.SA1CharacterFlags.Big;
+                        return (Flags & SA_Tools.SA1CharacterFlags.Big) == SA_Tools.SA1CharacterFlags.Big;
                 }
                 return false;
             }
@@ -132,11 +132,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Sonic) == SADXPCTools.SA1CharacterFlags.Sonic;
+                return (Flags & SA_Tools.SA1CharacterFlags.Sonic) == SA_Tools.SA1CharacterFlags.Sonic;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Sonic) | (value ? SADXPCTools.SA1CharacterFlags.Sonic : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Sonic) | (value ? SA_Tools.SA1CharacterFlags.Sonic : 0);
             }
         }
 
@@ -144,11 +144,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Tails) == SADXPCTools.SA1CharacterFlags.Tails;
+                return (Flags & SA_Tools.SA1CharacterFlags.Tails) == SA_Tools.SA1CharacterFlags.Tails;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Tails) | (value ? SADXPCTools.SA1CharacterFlags.Tails : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Tails) | (value ? SA_Tools.SA1CharacterFlags.Tails : 0);
             }
         }
 
@@ -156,11 +156,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Knuckles) == SADXPCTools.SA1CharacterFlags.Knuckles;
+                return (Flags & SA_Tools.SA1CharacterFlags.Knuckles) == SA_Tools.SA1CharacterFlags.Knuckles;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Knuckles) | (value ? SADXPCTools.SA1CharacterFlags.Knuckles : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Knuckles) | (value ? SA_Tools.SA1CharacterFlags.Knuckles : 0);
             }
         }
 
@@ -168,11 +168,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Amy) == SADXPCTools.SA1CharacterFlags.Amy;
+                return (Flags & SA_Tools.SA1CharacterFlags.Amy) == SA_Tools.SA1CharacterFlags.Amy;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Amy) | (value ? SADXPCTools.SA1CharacterFlags.Amy : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Amy) | (value ? SA_Tools.SA1CharacterFlags.Amy : 0);
             }
         }
 
@@ -180,11 +180,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Gamma) == SADXPCTools.SA1CharacterFlags.Gamma;
+                return (Flags & SA_Tools.SA1CharacterFlags.Gamma) == SA_Tools.SA1CharacterFlags.Gamma;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Gamma) | (value ? SADXPCTools.SA1CharacterFlags.Gamma : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Gamma) | (value ? SA_Tools.SA1CharacterFlags.Gamma : 0);
             }
         }
 
@@ -192,18 +192,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             get
             {
-                return (Flags & SADXPCTools.SA1CharacterFlags.Big) == SADXPCTools.SA1CharacterFlags.Big;
+                return (Flags & SA_Tools.SA1CharacterFlags.Big) == SA_Tools.SA1CharacterFlags.Big;
             }
             set
             {
-                Flags = (Flags & ~SADXPCTools.SA1CharacterFlags.Big) | (value ? SADXPCTools.SA1CharacterFlags.Big : 0);
+                Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Big) | (value ? SA_Tools.SA1CharacterFlags.Big : 0);
             }
         }
 
-        public SADXPCTools.DeathZoneFlags Save(string path, int i)
+        public SA_Tools.DeathZoneFlags Save(string path, int i)
         {
             ModelFile.CreateFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
-            return new SADXPCTools.DeathZoneFlags() { Flags = Flags };
+            return new SA_Tools.DeathZoneFlags() { Flags = Flags };
         }
 
         // Form property update event method

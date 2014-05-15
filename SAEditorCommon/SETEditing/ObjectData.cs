@@ -5,7 +5,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 
-using SADXPCTools;
+using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {

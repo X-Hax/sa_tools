@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweaker2
 {

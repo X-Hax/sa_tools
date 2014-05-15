@@ -47,9 +47,6 @@
     <Reference Include="PuyoTools">
       <HintPath>..\Dependencies\PuyoTools.exe</HintPath>
     </Reference>
-    <Reference Include="SADXPCTools">
-      <HintPath>..\..\sa_tools\SADXPCTools\bin\Release\SADXPCTools.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -115,6 +112,10 @@
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SA Tools\SA Tools.csproj">
+      <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
+      <Name>SA Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -77,9 +77,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SADXPCTools\SADXPCTools.csproj">
+    <ProjectReference Include="..\SA Tools\SA Tools.csproj">
       <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
-      <Name>SADXPCTools</Name>
+      <Name>SA Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

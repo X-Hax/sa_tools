@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 
-namespace SADXPCTools
+namespace SA_Tools
 {
     public static class IniFile
     {

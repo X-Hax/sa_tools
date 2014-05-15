@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace SADXPCTools
+namespace SA_Tools
 {
     [DebuggerNonUserCode]
     public static class ByteConverter

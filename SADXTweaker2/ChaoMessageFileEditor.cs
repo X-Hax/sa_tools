@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweaker2
 {

@@ -8,8 +8,8 @@
     <ProjectGuid>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SADXPCTools</RootNamespace>
-    <AssemblyName>SADXPCTools</AssemblyName>
+    <RootNamespace>SA_Tools</RootNamespace>
+    <AssemblyName>SA Tools</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

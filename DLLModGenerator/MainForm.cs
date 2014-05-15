@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 using SonicRetro.SAModel;
 
 namespace DLLModGenerator

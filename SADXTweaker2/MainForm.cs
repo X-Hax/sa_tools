@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
-using SADXPCTools;
+using SA_Tools;
 
 namespace SADXTweaker2
 {
@@ -125,7 +125,7 @@ namespace SADXTweaker2
 
         private void AddChildForm(Type formType, string dataType, ToolStripMenuItem menuItem)
         {
-            foreach (KeyValuePair<string, SADXPCTools.FileInfo> item in Program.IniData.Files)
+            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in Program.IniData.Files)
                 if (item.Value.Type.Equals(dataType, StringComparison.OrdinalIgnoreCase))
                 {
                     AddChildForm(formType, menuItem);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using SADXPCTools;
+using SA_Tools;
 using SonicRetro.SAModel;
 
 namespace split
@@ -35,7 +35,7 @@ namespace split
             }
             byte[] datafile = File.ReadAllBytes(datafilename);
             IniData inifile = IniFile.Deserialize<IniData>(inifilename);
-            SADXPCTools.ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
+            SA_Tools.ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
             Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
             if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);
             uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
@@ -62,11 +62,11 @@ namespace split
             int itemcount = 0;
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            foreach (KeyValuePair<string, SADXPCTools.FileInfo> item in inifile.Files)
+            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in inifile.Files)
             {
                 if (string.IsNullOrEmpty(item.Key)) continue;
                 string filedesc = item.Key;
-                SADXPCTools.FileInfo data = item.Value;
+                SA_Tools.FileInfo data = item.Value;
                 Dictionary<string, string> customProperties = data.CustomProperties;
                 string type = data.Type;
                 int address = data.Address;
@@ -228,7 +228,7 @@ namespace split
                             List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
                             string path = Path.GetDirectoryName(data.Filename);
                             int num = 0;
-                            while (SADXPCTools.ByteConverter.ToUInt32(datafile, address + 4) != 0)
+                            while (SA_Tools.ByteConverter.ToUInt32(datafile, address + 4) != 0)
                             {
                                 flags.Add(new DeathZoneFlags(datafile, address));
                                 ModelFile.CreateFile(Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl")), new SonicRetro.SAModel.Object(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
@@ -268,10 +268,10 @@ namespace split
 					case "levelpathlist":
 						{
 							List<string> hashes = new List<string>();
-							ushort lvlnum = (ushort)SADXPCTools.ByteConverter.ToUInt32(datafile, address);
+							ushort lvlnum = (ushort)SA_Tools.ByteConverter.ToUInt32(datafile, address);
 							while (lvlnum != 0xFFFF)
 							{
-								int ptr = SADXPCTools.ByteConverter.ToInt32(datafile, address + 4);
+								int ptr = SA_Tools.ByteConverter.ToInt32(datafile, address + 4);
 								if (ptr != 0)
 								{
 									ptr = (int)((uint)ptr - imageBase);
@@ -282,7 +282,7 @@ namespace split
 									hashes.Add(level.ToString() + ":" + string.Join(",", lvlhashes));
 								}
 								address += 8;
-								lvlnum = (ushort)SADXPCTools.ByteConverter.ToUInt32(datafile, address);
+								lvlnum = (ushort)SA_Tools.ByteConverter.ToUInt32(datafile, address);
 							}
 							data.MD5Hash = string.Join("|", hashes.ToArray());
 							nohash = true;
