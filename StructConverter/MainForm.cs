@@ -611,9 +611,12 @@ namespace StructConverter
                                                     {
                                                         writer.WriteLine("HintText_Text {0}_{1}_{2}_Text[] = {{", name, (Languages)l, j);
                                                         List<string> objs = new List<string>();
-                                                        foreach (NPCTextGroup group in texts[l][j].Groups)
-                                                            foreach (NPCTextLine line in group.Lines)
-                                                                objs.Add(line.ToStruct((Languages)l) + " " + line.Line.ToComment());
+														foreach (NPCTextGroup group in texts[l][j].Groups)
+														{
+															foreach (NPCTextLine line in group.Lines)
+																objs.Add(line.ToStruct((Languages)l) + " " + line.Line.ToComment());
+															objs.Add("{ 0 }");
+														}
                                                         writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
                                                         writer.WriteLine("};");
                                                         writer.WriteLine();
