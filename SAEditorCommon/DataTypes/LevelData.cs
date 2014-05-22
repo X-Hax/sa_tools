@@ -69,6 +69,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             if (StateChanged != null) StateChanged();
         }
 
+        public static string GetStats()
+        {
+            int landtableItems = LevelData.geo.COL.Count;
+            int textureCount = LevelData.Textures.Count;
+            int setItems = 0;
+
+            if (LevelData.SETItems != null) setItems = LevelData.SETItems.Length;
+
+            //return String.Format("Landtable items: {0}\nTextures: {1}\nSET Items: {2}", landtableItems, textureCount, setItems);
+            return String.Format("Landtable items: {0}\nTextures: {1}", landtableItems, textureCount);
+        }
+
         public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.Camera camera, out bool errorFlag, out string errorMsg)
         {
             List<Item> createdItems = new List<Item>();

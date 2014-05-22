@@ -460,6 +460,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
             importToolStripMenuItem.Enabled = LevelData.geo != null;
             exportOBJToolStripMenuItem.Enabled = LevelData.geo != null;
+            statsToolStripMenuItem.Enabled = LevelData.geo != null;
             deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
             if (LevelData.DeathZones == null)
                 deathZonesToolStripMenuItem.Checked = false;
@@ -1213,6 +1214,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 LevelData.ClearLevelGeoAnims();
             }
+        }
+
+        private void statsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(LevelData.GetStats());
         }
     }
 }

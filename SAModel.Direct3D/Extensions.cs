@@ -801,7 +801,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
             transform.ScaleLocal(obj.Scale.ToVector3());
 
-            if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
+            if ((obj.Attach != null))
             {
                 BasicAttach basicAttach = new BasicAttach();
                 bool wroteNormals = false;
@@ -1024,7 +1024,7 @@ namespace SonicRetro.SAModel.Direct3D
             transform.ScaleLocal(obj.Scale.ToVector3());
 
             // add obj writing here
-            if ((obj.Attach != null) && ((obj.Flags & SAModel.ObjectFlags.NoDisplay) == 0))
+            if ((obj.Attach != null))
             {
                 ChunkAttach chunkAttach = (ChunkAttach)obj.Attach;
                 bool wroteNormals = false;

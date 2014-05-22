@@ -126,6 +126,7 @@ namespace SonicRetro.SAModel.SALVL
             }
             loaded = true;
             clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
+            statsToolStripMenuItem.Enabled = LevelData.geo != null;
             SelectedItems = new List<Item>();
             UseWaitCursor = false;
             Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = true;
@@ -788,6 +789,11 @@ namespace SonicRetro.SAModel.SALVL
             {
                 LevelData.ClearLevelGeoAnims();
             }
+        }
+
+        private void statsToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            MessageBox.Show(LevelData.GetStats());
         }
     }
 }
