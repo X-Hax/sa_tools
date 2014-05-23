@@ -132,21 +132,26 @@ namespace SonicRetro.SAModel
         }
 
         public Mesh(Poly[] polys, bool hasPolyNormal, bool hasUV, bool hasVColor)
-            : this(polys[0].PolyType, polys.Length, hasPolyNormal, hasUV, hasVColor)
         {
-            int striptotal = 0;
+			PolyName = "poly_" + Object.GenerateIdentifier();
+			PolyType = polys[0].PolyType;
+			int striptotal = 0;
             for (int i = 0; i < polys.Length; i++)
                 striptotal += polys[i].Indexes.Length;
             Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
             if (hasVColor)
-                VColor = new Color[striptotal];
-            if (hasUV)
-            {
-                UV = new UV[striptotal];
-                for (int i = 0; i < striptotal; i++)
-                    UV[i] = new UV();
-            }
-        }
+			{
+				VColorName = "vcolor_" + Object.GenerateIdentifier();
+				VColor = new Color[striptotal];
+			}
+			if (hasUV)
+			{
+				UVName = "uv_" + Object.GenerateIdentifier();
+				UV = new UV[striptotal];
+				for (int i = 0; i < striptotal; i++)
+					UV[i] = new UV();
+			}
+		}
 
         public byte[] GetBytes(uint polyAddress, uint polyNormalAddress, uint vColorAddress, uint uVAddress, bool DX)
         {
