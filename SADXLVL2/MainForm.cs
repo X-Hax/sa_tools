@@ -600,8 +600,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
             #region Adding SET Layout
             if (LevelData.SETItems != null)
-                foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-                    renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
+            {
+                if (sETITemsToolStripMenuItem.Checked)
+                {
+                    foreach (SETItem item in LevelData.SETItems[LevelData.Character])
+                        renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
+                }
+            }
             #endregion
 
             #region Adding Death Zones
@@ -682,15 +687,20 @@ namespace SonicRetro.SAModel.SADXLVL2
                 item = LevelData.StartPositions[LevelData.Character];
             }
             if (LevelData.SETItems != null)
-                foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
+            {
+                if (sETITemsToolStripMenuItem.Checked)
                 {
-                    dist = setitem.CheckHit(Near, Far, viewport, proj, view);
-                    if (dist.IsHit & dist.Distance < mindist)
+                    foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
                     {
-                        mindist = dist.Distance;
-                        item = setitem;
+                        dist = setitem.CheckHit(Near, Far, viewport, proj, view);
+                        if (dist.IsHit & dist.Distance < mindist)
+                        {
+                            mindist = dist.Distance;
+                            item = setitem;
+                        }
                     }
                 }
+            }
             if (LevelData.DeathZones != null)
                 foreach (DeathZoneItem dzitem in LevelData.DeathZones)
                 {
@@ -1219,6 +1229,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         private void statsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(LevelData.GetStats());
+        }
+
+        private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawLevel();
         }
     }
 }
