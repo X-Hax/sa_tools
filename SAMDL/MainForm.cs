@@ -53,10 +53,12 @@ namespace SonicRetro.SAModel.SAMDL
 		Bitmap[] TextureBmps;
 		Texture[] Textures;
 		ModelFileDialog modelinfo = new ModelFileDialog();
-		Object selectedObject;
+		ModelTreeForm modelTree;
+		internal Object selectedObject;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			modelTree = new ModelTreeForm(this);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			d3ddevice.Lights[0].Type = LightType.Directional;
@@ -199,6 +201,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (models[i].Attach != null)
 					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
 					catch { }
+			modelTree.Repopulate(model);
 			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
 			DrawLevel();
 		}
@@ -540,7 +543,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void modelTreeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			new ModelTreeForm(model).Show(this);
+			if (modelTree.Visible)
+				modelTree.Hide();
+			else
+				modelTree.Show(this);
+			modelTreeToolStripMenuItem.Checked = modelTree.Visible;
 		}
 
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -620,14 +627,16 @@ namespace SonicRetro.SAModel.SAMDL
 			Far.Z = -1;
 			dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
 			if (dist.IsHit)
+			{
 				selectedObject = dist.Model;
-			SelectedItemChanged();
-			DrawLevel();
+				SelectedItemChanged();
+			}
 		}
 
 		internal void SelectedItemChanged()
 		{
-
+			modelTree.SelectNode(selectedObject);
+			DrawLevel();
 		}
 	}
 }

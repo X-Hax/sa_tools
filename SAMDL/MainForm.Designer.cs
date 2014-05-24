@@ -138,12 +138,11 @@
 			this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
 			this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.viewToolStripMenuItem.Text = "&View";
-			this.viewToolStripMenuItem.Visible = false;
 			// 
 			// modelTreeToolStripMenuItem
 			// 
 			this.modelTreeToolStripMenuItem.Name = "modelTreeToolStripMenuItem";
-			this.modelTreeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+			this.modelTreeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.modelTreeToolStripMenuItem.Text = "Model &Tree";
 			this.modelTreeToolStripMenuItem.Click += new System.EventHandler(this.modelTreeToolStripMenuItem_Click);
 			// 
@@ -206,13 +205,13 @@
 			// levelPieceToolStripMenuItem
 			// 
 			this.levelPieceToolStripMenuItem.Name = "levelPieceToolStripMenuItem";
-			this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+			this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.levelPieceToolStripMenuItem.Text = "&Level Piece";
 			// 
 			// objectToolStripMenuItem
 			// 
 			this.objectToolStripMenuItem.Name = "objectToolStripMenuItem";
-			this.objectToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+			this.objectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.objectToolStripMenuItem.Text = "&Object";
 			// 
 			// timer1
