@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweaker2", "SADXTweaker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweakerLite", "SADXTweakerLite\SADXTweakerLite.csproj", "{C0B52914-E9AA-4249-BAA1-60CE31B52D26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXPath2", "SADXPath2\SADXPath2.csproj", "{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "split", "split\split.csproj", "{744DBD22-7CD6-4C2C-B653-40030EAFB570}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructConverter", "StructConverter\StructConverter.csproj", "{68A3365C-2CE4-4916-8A1A-4583351089D7}"
@@ -93,16 +91,6 @@ Global
 		{C0B52914-E9AA-4249-BAA1-60CE31B52D26}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C0B52914-E9AA-4249-BAA1-60CE31B52D26}.Release|x86.ActiveCfg = Release|x86
 		{C0B52914-E9AA-4249-BAA1-60CE31B52D26}.Release|x86.Build.0 = Release|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Debug|x86.ActiveCfg = Debug|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Debug|x86.Build.0 = Debug|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Release|Any CPU.ActiveCfg = Release|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Release|Mixed Platforms.Build.0 = Release|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Release|x86.ActiveCfg = Release|x86
-		{2A80BCF6-0444-48FF-8DF0-1DF4B9D832F6}.Release|x86.Build.0 = Release|x86
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Mixed Platforms.Build.0 = Debug|x86
