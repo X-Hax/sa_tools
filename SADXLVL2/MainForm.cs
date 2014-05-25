@@ -15,6 +15,7 @@ using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -744,19 +745,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 					foreach (Item obj in SelectedItems)
 						if (obj.CanCopy)
 							cancopy = true;
-					if (cancopy)
-					{
-						cutToolStripMenuItem.Enabled = true;
-						copyToolStripMenuItem.Enabled = true;
-						deleteToolStripMenuItem.Enabled = true;
-					}
-					else
-					{
-						cutToolStripMenuItem.Enabled = false;
-						copyToolStripMenuItem.Enabled = false;
-						deleteToolStripMenuItem.Enabled = false;
-					}
-					pasteToolStripMenuItem.Enabled = Clipboard.GetDataObject().GetDataPresent("SADXLVLObjectList");
+                    if (cancopy)
+                    {
+                        /*cutToolStripMenuItem.Enabled = true;
+                        copyToolStripMenuItem.Enabled = true;*/
+                        deleteToolStripMenuItem.Enabled = true;
+
+                        cutToolStripMenuItem.Enabled = false;
+                        copyToolStripMenuItem.Enabled = false;
+                    }
+                    else
+                    {
+                        cutToolStripMenuItem.Enabled = false;
+                        copyToolStripMenuItem.Enabled = false;
+                        deleteToolStripMenuItem.Enabled = false;
+                    }
+                    pasteToolStripMenuItem.Enabled = false;
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
@@ -1225,5 +1229,58 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			DrawLevel();
 		}
+
+        private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SETFindReplace findReplaceForm = new SETFindReplace();
+
+            DialogResult findReplaceResult = findReplaceForm.ShowDialog();
+
+            if (findReplaceResult == System.Windows.Forms.DialogResult.OK)
+            {
+                SelectedItemChanged();
+                DrawLevel();
+            }
+        }
+
+        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedItems == null) return;
+            if (SelectedItems.Count > 1)
+            {
+                MessageBox.Show("Multi-duplicate is currently not supported, because gizmos have not yet been implemented.");
+                return;
+            }
+            else if (SelectedItems.Count > 0)
+            {
+                // duplicate goes here
+                if (SelectedItems[0] is SETItem)
+                {
+                    SETItem originalItem = (SETItem)SelectedItems[0];
+                    SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+
+                    LevelData.SETItems[LevelData.Character].Add(newItem);
+                    SelectedItems = new List<Item>() { newItem };
+                    SelectedItemChanged();
+                    DrawLevel();
+
+                }
+                else if (SelectedItems[0] is LevelItem)
+                {
+                    LevelItem originalItem = (LevelItem)SelectedItems[0];
+                    LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+
+                    newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
+                    SelectedItems.Clear();
+                    SelectedItems = new List<Item>() { newItem };
+                    SelectedItemChanged();
+                    DrawLevel();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selection must have a single item for duplicate operation to succeed.");
+            }
+        }
 	}
 }
