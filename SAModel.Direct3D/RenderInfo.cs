@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+
+using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -109,14 +112,16 @@ namespace SonicRetro.SAModel.Direct3D
             device.SamplerState[0].MipFilter = mipfilter;
         }
 
-        public static void Draw(IEnumerable<RenderInfo> items, Device device, Camera camera)
+        public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera)
         {
             List<KeyValuePair<float, RenderInfo>> drawList = new List<KeyValuePair<float, RenderInfo>>();
             foreach (RenderInfo item in items)
             {
-                float dist = Vector3.Dot(camera.Position - item.Bounds.Center.ToVector3(), camera.Look);
-                if (dist + item.Bounds.Radius < 0 | dist - item.Bounds.Radius > 5000)
-                    continue;
+                //float dist = Vector3.Dot(camera.Position - item.Bounds.Center.ToVector3(), camera.Look);
+                float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3());
+
+                if (dist > camera.DrawDistance) continue; // todo: eliminate this once distance culls are done in the item classes
+
                 if (item.Material.UseAlpha)
                 {
                     bool ins = false;

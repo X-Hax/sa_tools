@@ -34,12 +34,14 @@ namespace SonicRetro.SAModel.SALVL
         }
 
         internal Device d3ddevice;
-        Camera cam = new Camera();
+        EditorCamera cam = new EditorCamera();
         bool loaded;
         int interval = 20;
         FillMode rendermode = FillMode.Solid;
         Cull cullmode = Cull.None;
         internal List<Item> SelectedItems;
+        bool lookKeyDown;
+        bool zoomKeyDown;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -84,7 +86,7 @@ namespace SonicRetro.SAModel.SALVL
             UseWaitCursor = true;
             Enabled = false;
             LevelData.leveltexs = null;
-            cam = new Camera();
+            cam = new EditorCamera();
             if (LandTable.CheckLevelFile(filename))
                 LevelData.geo = LandTable.LoadFromFile(filename);
             else
@@ -211,7 +213,7 @@ namespace SonicRetro.SAModel.SALVL
                     else if (allToolStripMenuItem.Checked)
                         display = true;
                     if (display)
-                        renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+                        renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
                 }
             RenderInfo.Draw(renderlist, d3ddevice, cam);
             d3ddevice.EndScene(); //all drawings before this line
@@ -223,6 +225,7 @@ namespace SonicRetro.SAModel.SALVL
             DrawLevel();
         }
 
+        #region User Keyboard / Mouse Methods
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -318,9 +321,12 @@ namespace SonicRetro.SAModel.SALVL
                             cancopy = true;
                     if (cancopy)
                     {
-                        cutToolStripMenuItem.Enabled = true;
-                        copyToolStripMenuItem.Enabled = true;
+                        /*cutToolStripMenuItem.Enabled = true;
+                        copyToolStripMenuItem.Enabled = true;*/
                         deleteToolStripMenuItem.Enabled = true;
+
+                        cutToolStripMenuItem.Enabled = false;
+                        copyToolStripMenuItem.Enabled = false;
                     }
                     else
                     {
@@ -328,12 +334,87 @@ namespace SonicRetro.SAModel.SALVL
                         copyToolStripMenuItem.Enabled = false;
                         deleteToolStripMenuItem.Enabled = false;
                     }
-                    pasteToolStripMenuItem.Enabled = Clipboard.GetDataObject().GetDataPresent("SADXLVLObjectList");
+                    pasteToolStripMenuItem.Enabled = false;
                     contextMenuStrip1.Show(panel1, e.Location);
                     break;
             }
             SelectedItemChanged();
             DrawLevel();
+        }
+
+        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Down:
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                    e.IsInputKey = true;
+                    break;
+            }
+        }
+
+        private void panel1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (!e.Alt) lookKeyDown = false;
+            if (!e.Control) zoomKeyDown = false;
+        }
+
+        private void panel1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (!loaded) return;
+            if (cam.mode == 0)
+            {
+                if (e.KeyCode == Keys.E)
+                {
+                    cam.Position = new Vector3();
+                    DrawLevel();
+                }
+
+                if (e.KeyCode == Keys.R)
+                {
+                    cam.Pitch = 0;
+                    cam.Yaw = 0;
+                    DrawLevel();
+                }
+            }
+
+            if (e.Alt) { lookKeyDown = true; if (panel1.ContainsFocus) e.Handled = false; }
+            if (e.Control) zoomKeyDown = true;
+
+            if (e.KeyCode == Keys.X)
+            {
+                cam.mode = (cam.mode + 1) % 2;
+
+                if (cam.mode == 1)
+                {
+                    if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+                    else
+                    {
+                        cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+                    }
+                }
+
+                DrawLevel();
+            }
+            if (e.KeyCode == Keys.N)
+            {
+                if (rendermode == FillMode.Solid)
+                    rendermode = FillMode.Point;
+                else
+                    rendermode += 1;
+
+                DrawLevel();
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                foreach (Item item in SelectedItems)
+                    item.Delete();
+                SelectedItems.Clear();
+                SelectedItemChanged();
+                DrawLevel();
+            }
         }
 
         Point lastmouse;
@@ -349,8 +430,42 @@ namespace SonicRetro.SAModel.SALVL
             Point chg = evloc - (Size)lastmouse;
             if (e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
-                cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-                cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                // all cam controls are now bound to the middle mouse button
+                if (cam.mode == 0)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
+                        cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+                    }
+                }
+                else if (cam.mode == 1)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
+                        cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+                    }
+                }
+
                 DrawLevel();
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -403,10 +518,16 @@ namespace SonicRetro.SAModel.SALVL
             }
             lastmouse = evloc;
         }
+        #endregion
 
         internal void SelectedItemChanged()
         {
             propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+
+            if (cam.mode == 1)
+            {
+                cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+            }
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -587,117 +708,6 @@ namespace SonicRetro.SAModel.SALVL
                 dlg.ShowDialog(this);
         }
 
-        private void panel1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (!loaded) return;
-            if (cam.mode == 0)
-            {
-                if (e.KeyCode == Keys.Down)
-                    if (e.Shift)
-                        cam.Position += cam.Up * -interval;
-                    else
-                        cam.Position += cam.Look * interval;
-                if (e.KeyCode == Keys.Up)
-                    if (e.Shift)
-                        cam.Position += cam.Up * interval;
-                    else
-                        cam.Position += cam.Look * -interval;
-                if (e.KeyCode == Keys.Left)
-                    cam.Position += cam.Right * -interval;
-                if (e.KeyCode == Keys.Right)
-                    cam.Position += cam.Right * interval;
-                if (e.KeyCode == Keys.K)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.J)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.H)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-                if (e.KeyCode == Keys.L)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-                if (e.KeyCode == Keys.M)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                if (e.KeyCode == Keys.I)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                if (e.KeyCode == Keys.E)
-                    cam.Position = new Vector3();
-                if (e.KeyCode == Keys.R)
-                {
-                    cam.Pitch = 0;
-                    cam.Yaw = 0;
-                }
-            }
-            else
-            {
-                if (e.KeyCode == Keys.Down)
-                    if (e.Shift)
-                        cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                    else
-                        cam.Distance += interval;
-                if (e.KeyCode == Keys.Up)
-                    if (e.Shift)
-                        cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                    else
-                    {
-                        cam.Distance -= interval;
-                        cam.Distance = Math.Max(cam.Distance, interval);
-                    }
-                if (e.KeyCode == Keys.Left)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.Right)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.K)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-                if (e.KeyCode == Keys.J)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-                if (e.KeyCode == Keys.H)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-                if (e.KeyCode == Keys.L)
-                    cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-                if (e.KeyCode == Keys.M)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-                if (e.KeyCode == Keys.I)
-                    cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-                if (e.KeyCode == Keys.R)
-                {
-                    cam.Pitch = 0;
-                    cam.Yaw = 0;
-                }
-            }
-            if (e.KeyCode == Keys.X)
-                cam.mode = (cam.mode + 1) % 2;
-            if (e.KeyCode == Keys.Q)
-                interval += 1;
-            if (e.KeyCode == Keys.W)
-                interval -= 1;
-            if (e.KeyCode == Keys.N)
-                if (rendermode == FillMode.Solid)
-                    rendermode = FillMode.Point;
-                else
-                    rendermode += 1;
-            if (e.KeyCode == Keys.Delete)
-            {
-                foreach (Item item in SelectedItems)
-                    item.Delete();
-                SelectedItems.Clear();
-                SelectedItemChanged();
-                DrawLevel();
-            }
-            DrawLevel();
-        }
-
-        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Down:
-                case Keys.Left:
-                case Keys.Right:
-                case Keys.Up:
-                    e.IsInputKey = true;
-                    break;
-            }
-        }
-
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             DrawLevel();
@@ -793,6 +803,15 @@ namespace SonicRetro.SAModel.SALVL
         private void statsToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             MessageBox.Show(LevelData.GetStats());
+        }
+
+        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bool errorFlag = false;
+            string errorMsg = "";
+            LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
+
+            if (errorFlag) MessageBox.Show(errorMsg);
         }
     }
 }

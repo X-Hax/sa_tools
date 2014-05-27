@@ -35,7 +35,7 @@ namespace SonicRetro.SAModel.SAMDL
 		}
 
 		internal Device d3ddevice;
-		Camera cam = new Camera();
+		EditorCamera cam = new EditorCamera();
 		bool loaded;
 		int interval = 1;
 		FillMode rendermode = FillMode.Solid;

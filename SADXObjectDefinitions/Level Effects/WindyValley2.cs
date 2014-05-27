@@ -21,7 +21,7 @@ namespace SADXObjectDefinitions.Level_Effects
             }
         }
 
-        public override void Render(Device dev, Camera cam)
+        public override void Render(Device dev, EditorCamera cam)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             MatrixStack transform = new MatrixStack();

@@ -71,8 +71,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
         }
 
-        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
+            float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.Position.ToVector3());
+            if (dist > camera.DrawDistance) return Item.EmptyRenderInfo;
+
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.TranslateLocal(0, offset, 0);

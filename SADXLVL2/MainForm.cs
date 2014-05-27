@@ -36,15 +36,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal Device d3ddevice;
 		Dictionary<string, Dictionary<string, string>> ini;
-		Camera cam = new Camera();
+		EditorCamera cam = new EditorCamera();
 		string levelID;
 		internal string levelName;
 		bool loaded;
-		int interval = 20;
 		FillMode rendermode = FillMode.Solid;
 		Cull cullmode = Cull.None;
 		internal List<Item> SelectedItems;
 		Dictionary<string, ToolStripMenuItem> levelMenuItems;
+        bool lookKeyDown;
+        bool zoomKeyDown;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -175,7 +176,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
 				SA1LevelAct levelact = new SA1LevelAct(group.GetValueOrDefault("LevelID", "0000"));
 				LevelData.leveltexs = null;
-				cam = new Camera();
+				cam = new EditorCamera();
 				if (!group.ContainsKey("LevelGeo"))
 					LevelData.geo = null;
 				else
@@ -347,7 +348,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								}
 								if (pr != null)
 								{
-									CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(ObjectDefinition)).Location });
+									CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(ObjectDefinition)).Location });
 									para.GenerateExecutable = false;
 									para.GenerateInMemory = false;
 									para.IncludeDebugInformation = true;
@@ -422,7 +423,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 						if (pr != null)
 						{
-							CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(Camera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(Item)).Location });
+							CompilerParameters para = new CompilerParameters(new string[] { "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Texture)).Location, Assembly.GetAssembly(typeof(D3DX)).Location, Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location, Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location, Assembly.GetAssembly(typeof(Item)).Location });
 							para.GenerateExecutable = false;
 							para.GenerateInMemory = false;
 							para.IncludeDebugInformation = true;
@@ -553,7 +554,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!loaded) return;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
+			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
 			d3ddevice.SetRenderState(RenderStates.CullMode, (int)cullmode);
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
@@ -596,22 +597,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
-						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
 				}
-			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
+			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
 			#endregion
 
 			#region Adding SET Layout
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
 				foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-					renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
+					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
 			#endregion
 
 			#region Adding Death Zones
 			if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
 				foreach (DeathZoneItem item in LevelData.DeathZones)
 					if (item.Visible)
-						renderlist.AddRange(item.Render(d3ddevice, transform, SelectedItems.Contains(item)));
+						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
 			#endregion
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
@@ -624,7 +625,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        #region User Keyboard / Mouse Methods
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			switch (e.KeyCode)
 			{
@@ -768,77 +770,192 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		Point lastmouse;
-		private void Panel1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-		{
-			if (!loaded) return;
-			Point evloc = e.Location;
-			if (lastmouse == Point.Empty)
-			{
-				lastmouse = evloc;
-				return;
-			}
-			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == System.Windows.Forms.MouseButtons.Middle)
-			{
-				cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-				cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
-				DrawLevel();
-			}
-			if (e.Button == System.Windows.Forms.MouseButtons.Left)
-			{
-				Vector3 horivect = cam.Right;
-				Vector3 vertvect = cam.Up;
-				if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
-					horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
-				else if (Math.Abs(horivect.Y) > Math.Abs(horivect.X) & Math.Abs(horivect.Y) > Math.Abs(horivect.Z))
-					horivect = new Vector3(0, Math.Sign(horivect.Y), 0);
-				else if (Math.Abs(horivect.Z) > Math.Abs(horivect.X) & Math.Abs(horivect.Z) > Math.Abs(horivect.Y))
-					horivect = new Vector3(0, 0, Math.Sign(horivect.Z));
-				if (Math.Abs(vertvect.X) > Math.Abs(vertvect.Y) & Math.Abs(vertvect.X) > Math.Abs(vertvect.Z))
-					vertvect = new Vector3(Math.Sign(vertvect.X), 0, 0);
-				else if (Math.Abs(vertvect.Y) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Y) > Math.Abs(vertvect.Z))
-					vertvect = new Vector3(0, Math.Sign(vertvect.Y), 0);
-				else if (Math.Abs(vertvect.Z) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Z) > Math.Abs(vertvect.Y))
-					vertvect = new Vector3(0, 0, Math.Sign(vertvect.Z));
-				Vector3 horiz = horivect * (chg.X / 2);
-				Vector3 verti = vertvect * (-chg.Y / 2);
-				foreach (Item item in SelectedItems)
-				{
-					item.Position = new Vertex(
-						item.Position.X + horiz.X + verti.X,
-						item.Position.Y + horiz.Y + verti.Y,
-						item.Position.Z + horiz.Z + verti.Z);
-				}
-				DrawLevel();
-				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
-				if (Cursor.Position.X == scrbnds.Left)
-				{
-					Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
-					evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
-				}
-				else if (Cursor.Position.X == scrbnds.Right - 1)
-				{
-					Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
-					evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
-				}
-				if (Cursor.Position.Y == scrbnds.Top)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
-					evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
-				}
-				else if (Cursor.Position.Y == scrbnds.Bottom - 1)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
-					evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
-				}
-			}
-			lastmouse = evloc;
-		}
+        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Down:
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                    e.IsInputKey = true;
+                    break;
+            }
+        }
 
-		internal void SelectedItemChanged()
+        private void panel1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (!e.Alt) lookKeyDown = false;
+            if (!e.Control) zoomKeyDown = false;
+        }
+
+        private void panel1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (!loaded) return;
+            if (cam.mode == 0)
+            {
+                if (e.KeyCode == Keys.E)
+                {
+                    cam.Position = new Vector3();
+                    DrawLevel();
+                }
+
+                if (e.KeyCode == Keys.R)
+                {
+                    cam.Pitch = 0;
+                    cam.Yaw = 0;
+                    DrawLevel();
+                }
+            }
+
+            if (e.Alt) { lookKeyDown = true; if (panel1.ContainsFocus) e.Handled = false; }
+            if (e.Control) zoomKeyDown = true;
+
+            if (e.KeyCode == Keys.X)
+            {
+                cam.mode = (cam.mode + 1) % 2;
+
+                if (cam.mode == 1)
+                {
+                    if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+                    else
+                    {
+                        cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+                    }
+                }
+
+                DrawLevel();
+            }
+            if (e.KeyCode == Keys.N)
+            {
+                if (rendermode == FillMode.Solid)
+                    rendermode = FillMode.Point;
+                else
+                    rendermode += 1;
+
+                DrawLevel();
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                foreach (Item item in SelectedItems)
+                    item.Delete();
+                SelectedItems.Clear();
+                SelectedItemChanged();
+                DrawLevel();
+            }
+        }
+
+        Point lastmouse;
+        private void Panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!loaded) return;
+            Point evloc = e.Location;
+            if (lastmouse == Point.Empty)
+            {
+                lastmouse = evloc;
+                return;
+            }
+            Point chg = evloc - (Size)lastmouse;
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                // all cam controls are now bound to the middle mouse button
+                if (cam.mode == 0)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
+                        cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+                    }
+                }
+                else if (cam.mode == 1)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
+                        cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+                    }
+                }
+
+                DrawLevel();
+            }
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                Vector3 horivect = cam.Right;
+                Vector3 vertvect = cam.Up;
+                if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
+                    horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
+                else if (Math.Abs(horivect.Y) > Math.Abs(horivect.X) & Math.Abs(horivect.Y) > Math.Abs(horivect.Z))
+                    horivect = new Vector3(0, Math.Sign(horivect.Y), 0);
+                else if (Math.Abs(horivect.Z) > Math.Abs(horivect.X) & Math.Abs(horivect.Z) > Math.Abs(horivect.Y))
+                    horivect = new Vector3(0, 0, Math.Sign(horivect.Z));
+                if (Math.Abs(vertvect.X) > Math.Abs(vertvect.Y) & Math.Abs(vertvect.X) > Math.Abs(vertvect.Z))
+                    vertvect = new Vector3(Math.Sign(vertvect.X), 0, 0);
+                else if (Math.Abs(vertvect.Y) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Y) > Math.Abs(vertvect.Z))
+                    vertvect = new Vector3(0, Math.Sign(vertvect.Y), 0);
+                else if (Math.Abs(vertvect.Z) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Z) > Math.Abs(vertvect.Y))
+                    vertvect = new Vector3(0, 0, Math.Sign(vertvect.Z));
+                Vector3 horiz = horivect * (chg.X / 2);
+                Vector3 verti = vertvect * (-chg.Y / 2);
+                foreach (Item item in SelectedItems)
+                {
+                    item.Position = new Vertex(
+                        item.Position.X + horiz.X + verti.X,
+                        item.Position.Y + horiz.Y + verti.Y,
+                        item.Position.Z + horiz.Z + verti.Z);
+                }
+                DrawLevel();
+                Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
+                if (Cursor.Position.X == scrbnds.Left)
+                {
+                    Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
+                    evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
+                }
+                else if (Cursor.Position.X == scrbnds.Right - 1)
+                {
+                    Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
+                    evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
+                }
+                if (Cursor.Position.Y == scrbnds.Top)
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
+                    evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
+                }
+                else if (Cursor.Position.Y == scrbnds.Bottom - 1)
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
+                    evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
+                }
+            }
+            lastmouse = evloc;
+        }
+        #endregion
+
+        internal void SelectedItemChanged()
 		{
-			propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+            propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+
+            if (cam.mode == 1)
+            {
+                cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+            }
 		}
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1074,117 +1191,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			switch (e.KeyCode)
-			{
-				case Keys.Down:
-				case Keys.Left:
-				case Keys.Right:
-				case Keys.Up:
-					e.IsInputKey = true;
-					break;
-			}
-		}
-
-		private void panel1_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (!loaded) return;
-			if (cam.mode == 0)
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Position += cam.Up * -interval;
-					else
-						cam.Position += cam.Look * interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Position += cam.Up * interval;
-					else
-						cam.Position += cam.Look * -interval;
-				if (e.KeyCode == Keys.Left)
-					cam.Position += cam.Right * -interval;
-				if (e.KeyCode == Keys.Right)
-					cam.Position += cam.Right * interval;
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.E)
-					cam.Position = new Vector3();
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			else
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-					else
-						cam.Distance += interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-					else
-					{
-						cam.Distance -= interval;
-						cam.Distance = Math.Max(cam.Distance, interval);
-					}
-				if (e.KeyCode == Keys.Left)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.Right)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			if (e.KeyCode == Keys.X)
-				cam.mode = (cam.mode + 1) % 2;
-			if (e.KeyCode == Keys.Q)
-				interval += 1;
-			if (e.KeyCode == Keys.W)
-				interval -= 1;
-			if (e.KeyCode == Keys.N)
-				if (rendermode == FillMode.Solid)
-					rendermode = FillMode.Point;
-				else
-					rendermode += 1;
-			if (e.KeyCode == Keys.Delete)
-			{
-				foreach (Item item in SelectedItems)
-					item.Delete();
-				SelectedItems.Clear();
-				SelectedItemChanged();
-				DrawLevel();
-			}
-			DrawLevel();
-		}
-
 		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DrawLevel();
@@ -1245,42 +1251,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedItems == null) return;
-            if (SelectedItems.Count > 1)
-            {
-                MessageBox.Show("Multi-duplicate is currently not supported, because gizmos have not yet been implemented.");
-                return;
-            }
-            else if (SelectedItems.Count > 0)
-            {
-                // duplicate goes here
-                if (SelectedItems[0] is SETItem)
-                {
-                    SETItem originalItem = (SETItem)SelectedItems[0];
-                    SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+            bool errorFlag = false;
+            string errorMsg = "";
+            LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
 
-                    LevelData.SETItems[LevelData.Character].Add(newItem);
-                    SelectedItems = new List<Item>() { newItem };
-                    SelectedItemChanged();
-                    DrawLevel();
-
-                }
-                else if (SelectedItems[0] is LevelItem)
-                {
-                    LevelItem originalItem = (LevelItem)SelectedItems[0];
-                    LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
-
-                    newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
-                    SelectedItems.Clear();
-                    SelectedItems = new List<Item>() { newItem };
-                    SelectedItemChanged();
-                    DrawLevel();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Selection must have a single item for duplicate operation to succeed.");
-            }
+            if (errorFlag) MessageBox.Show(errorMsg);
         }
 	}
 }

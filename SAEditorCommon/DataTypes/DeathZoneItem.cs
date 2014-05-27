@@ -49,7 +49,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
         }
 
-        public override RenderInfo[] Render(Device dev, MatrixStack transform, bool selected)
+        public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));

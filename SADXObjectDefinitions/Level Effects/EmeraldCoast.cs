@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Level_Effects
             mesh2 = ObjectHelper.GetMeshes(model2, dev);
         }
 
-        public override void Render(Device dev, Camera cam)
+        public override void Render(Device dev, EditorCamera cam)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             MatrixStack transform = new MatrixStack();

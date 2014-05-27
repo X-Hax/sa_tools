@@ -29,7 +29,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public abstract void Paste();
         public abstract void Delete();
         public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-        public abstract RenderInfo[] Render(Device dev, MatrixStack transform, bool selected);
+        public abstract RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected);
 
         #region IComponent Members
         // IComponent required by PropertyGrid control to discover IMenuCommandService supporting DesignerVerbs
@@ -58,5 +58,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                 Disposed(this, EventArgs.Empty);
         }
         #endregion
+
+        protected static readonly RenderInfo[] EmptyRenderInfo = new RenderInfo[0];
+
+        public static Vertex CenterFromSelection(List<Item> SelectedItems)
+        {
+            Vertex center = new Vertex();
+
+            List<Vertex> vertList = new List<Vertex>();
+            foreach (Item item in SelectedItems)
+            {
+                if (item is LevelItem)
+                {
+                    LevelItem levelItem = (LevelItem)item;
+
+                    vertList.Add(levelItem.CollisionData.Bounds.Center);
+                }
+                else
+                {
+                    vertList.Add(item.Position);
+                }
+            }
+
+            center = Vertex.CenterOfPoints(vertList);
+
+            return center;
+        }
     }
 }

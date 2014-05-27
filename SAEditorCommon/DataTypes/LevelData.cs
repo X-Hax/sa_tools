@@ -81,7 +81,56 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return String.Format("Landtable items: {0}\nTextures: {1}", landtableItems, textureCount);
         }
 
-        public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.Camera camera, out bool errorFlag, out string errorMsg)
+        public static void DuplicateSelection(Device d3ddevice, ref List<Item> SelectedItems, out bool errorFlag, out string errorMsg)
+        {
+            if (SelectedItems == null) 
+            {
+                SelectedItems = null;
+                errorFlag = false;
+                errorMsg = "";
+                return;
+            }
+            if (SelectedItems.Count > 1)
+            {
+                errorFlag = true;
+                errorMsg = "Multi-duplicate is currently not supported, because gizmos have not yet been implemented.";
+                return;
+            }
+            else if (SelectedItems.Count > 0)
+            {
+                // duplicate goes here
+                if (SelectedItems[0] is SETItem)
+                {
+                    SETItem originalItem = (SETItem)SelectedItems[0];
+                    SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+
+                    LevelData.SETItems[LevelData.Character].Add(newItem);
+                    SelectedItems = new List<Item>() { newItem };
+                    InvalidateRenderState();
+                }
+                else if (SelectedItems[0] is LevelItem)
+                {
+                    LevelItem originalItem = (LevelItem)SelectedItems[0];
+                    LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+
+                    newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
+                    SelectedItems.Clear();
+                    SelectedItems = new List<Item>() { newItem };
+                    InvalidateRenderState();
+                }
+            }
+            else
+            {
+                errorFlag = true;
+                errorMsg = "Selection must have a single item for duplicate operation to succeed.";
+                return;
+            }
+
+            errorFlag = false;
+            errorMsg = "";
+        }
+
+        public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg)
         {
             List<Item> createdItems = new List<Item>();
 

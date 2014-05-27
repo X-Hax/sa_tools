@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Level_Effects
             NoRender = act == 1;
         }
 
-        public override void Render(Device dev, Camera cam)
+        public override void Render(Device dev, EditorCamera cam)
         {
             if (NoRender) return;
             MatrixStack transform = new MatrixStack();

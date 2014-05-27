@@ -111,6 +111,38 @@ namespace SonicRetro.SAModel
         }
 
         public static readonly Vertex UpNormal = new Vertex(0, 1, 0);
+
+        /// <summary>
+        /// Returns the center of a list of Vertex points.
+        /// </summary>
+        /// <param name="points">List of points to use.</param>
+        /// <returns></returns>
+        public static Vertex CenterOfPoints(List<Vertex> points)
+        {
+            Vertex center = new Vertex(0, 0, 0);
+            if (points == null) return center;
+
+            if (points.Count == 0) return center;
+            else
+            {
+                float xTotal = 0;
+                float yTotal = 0;
+                float zTotal = 0;
+
+                foreach (Vertex vertex in points)
+                {
+                    xTotal += vertex.X;
+                    yTotal += vertex.Y;
+                    zTotal += vertex.Z;
+                }
+
+                center.X = xTotal / points.Count;
+                center.Y = yTotal / points.Count;
+                center.Z = zTotal / points.Count;
+
+                return center;
+            }
+        }
     }
 
     public class VertexConverter : ExpandableObjectConverter

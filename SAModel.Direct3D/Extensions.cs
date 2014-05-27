@@ -77,6 +77,11 @@ namespace SonicRetro.SAModel.Direct3D
             functionReturnValue.SetVertexBufferData(vb.ToArray(), LockFlags.None);
             functionReturnValue.SetIndexBufferData(ib.ToArray(), LockFlags.None);
             functionReturnValue.UnlockAttributeBuffer(at);
+
+            int[] adjacency = new int[functionReturnValue.NumberFaces * 3];
+            functionReturnValue.GenerateAdjacency(0.0001f, adjacency);
+            functionReturnValue.Optimize(MeshFlags.OptimizeCompact, adjacency);
+
             return functionReturnValue;
         }
 
@@ -1175,6 +1180,11 @@ namespace SonicRetro.SAModel.Direct3D
             {
                 WriteObjFromChunkAttach(objstream, obj, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
             }
+        }
+
+        public static float Distance(this Vector3 vectorA, Vector3 vectorB)
+        {
+            return Vector3.Length(Vector3.Subtract(vectorA, vectorB));
         }
     }
 }
