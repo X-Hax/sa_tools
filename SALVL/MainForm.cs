@@ -117,7 +117,7 @@ namespace SonicRetro.SAModel.SALVL
                     Texture[] texs = new Texture[TexBmps.Length];
                     for (int j = 0; j < TexBmps.Length; j++)
                         texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
-                    string texname = Path.GetFileName(a.FileName);
+                    string texname = Path.GetFileNameWithoutExtension(a.FileName);
                     if (!LevelData.TextureBitmaps.ContainsKey(texname))
                         LevelData.TextureBitmaps.Add(texname, TexBmps);
                     if (!LevelData.Textures.ContainsKey(texname))
