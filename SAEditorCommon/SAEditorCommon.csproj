@@ -69,6 +69,12 @@
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
     <Compile Include="Import\NodeTable.cs" />
+    <Compile Include="UI\HCPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\HCPictureBox.designer.cs">
+      <DependentUpon>HCPictureBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\IDSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -97,6 +103,12 @@
     <Compile Include="UI\SETFindReplace.designer.cs">
       <DependentUpon>SETFindReplace.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\TexturePicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TexturePicker.Designer.cs">
+      <DependentUpon>TexturePicker.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UI\IDSelector.resx">
@@ -111,6 +123,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETFindReplace.resx">
       <DependentUpon>SETFindReplace.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TexturePicker.resx">
+      <DependentUpon>TexturePicker.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
