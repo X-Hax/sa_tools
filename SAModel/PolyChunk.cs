@@ -774,6 +774,14 @@ namespace SonicRetro.SAModel
             public ushort[] UserFlags2 { get; private set; }
             public ushort[] UserFlags3 { get; private set; }
 
+			public Strip(bool reversed, ushort[] indexes, UV[] uvs, Color[] vcolors)
+			{
+				Reversed = reversed;
+				Indexes = indexes;
+				UVs = uvs;
+				VColors = vcolors;
+			}
+
             public Strip(byte[] file, int address, ChunkType type, byte userFlags)
             {
                 Indexes = new ushort[Math.Abs(ByteConverter.ToInt16(file, address))];
@@ -975,11 +983,17 @@ namespace SonicRetro.SAModel
 
         public ushort StripCount
         {
-            get { return (ushort)(Header2 & 0x3FFF); }
+            get { return (ushort)Strips.Count; }
             private set { Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF)); }
         }
 
         public List<Strip> Strips { get; private set; }
+
+		public PolyChunkStrip(ChunkType type)
+		{
+			Type = type;
+			Strips = new List<Strip>();
+		}
 
         public PolyChunkStrip(byte[] file, int address)
         {
@@ -989,7 +1003,7 @@ namespace SonicRetro.SAModel
             address += sizeof(ushort);
             Header2 = ByteConverter.ToUInt16(file, address);
             address += sizeof(ushort);
-            Strips = new List<Strip>(StripCount);
+            Strips = new List<Strip>(Header2 & 0x3FFF);
             for (int i = 0; i < StripCount; i++)
             {
                 Strip str = new Strip(file, address, Type, UserFlags);
@@ -1000,6 +1014,7 @@ namespace SonicRetro.SAModel
 
         public override byte[] GetBytes()
         {
+			StripCount = (ushort)Strips.Count;
             Size = 1;
             foreach (Strip str in Strips)
                 Size += (ushort)(str.Size / 2);

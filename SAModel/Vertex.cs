@@ -143,7 +143,9 @@ namespace SonicRetro.SAModel
                 return center;
             }
         }
-    }
+
+		public bool IsEmpty { get { return X == 0 && Y == 0 && Z == 0; } }
+	}
 
     public class VertexConverter : ExpandableObjectConverter
     {

@@ -331,7 +331,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							if (System.IO.File.Exists(dllfile))
 								modDate = System.IO.File.GetLastWriteTime(dllfile);
 							string fp = defgroup.CodeFile.Replace('/', System.IO.Path.DirectorySeparatorChar);
-							if (modDate >= System.IO.File.GetLastWriteTime(fp))
+							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 								def = (ObjectDefinition)Activator.CreateInstance(System.Reflection.Assembly.LoadFile(System.IO.Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
 							else
 							{
@@ -406,7 +406,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (File.Exists(dllfile))
 						modDate = File.GetLastWriteTime(dllfile);
 					string fp = group["Effects"].Replace('/', System.IO.Path.DirectorySeparatorChar);
-					if (modDate >= File.GetLastWriteTime(fp))
+					if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 						def = (LevelDefinition)Activator.CreateInstance(System.Reflection.Assembly.LoadFile(System.IO.Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
 					else
 					{

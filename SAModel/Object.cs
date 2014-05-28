@@ -8,8 +8,6 @@ namespace SonicRetro.SAModel
     public class Object
     {
         [Browsable(false)]
-        public ObjectFlags Flags { get; set; }
-        [Browsable(false)]
         public Attach Attach { get; set; }
         public Vertex Position { get; set; }
         public Rotation Rotation { get; set; }
@@ -19,12 +17,11 @@ namespace SonicRetro.SAModel
         internal Object Sibling { get; set; }
         public string Name { get; set; }
 
-        [DefaultValue(true)]
-        public bool Render { get { return (Flags & ObjectFlags.NoDisplay) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoDisplay) | (value ? 0 : ObjectFlags.NoDisplay)); } }
-        [DefaultValue(true)]
-        public bool Animate { get { return (Flags & ObjectFlags.NoAnimate) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoAnimate) | (value ? 0 : ObjectFlags.NoAnimate)); } }
-        [DefaultValue(true)]
-        public bool Morph { get { return (Flags & ObjectFlags.NoMorph) == 0; } set { Flags = (ObjectFlags)((Flags & ~ObjectFlags.NoMorph) | (value ? 0 : ObjectFlags.NoMorph)); } }
+		public bool RotateZYX { get; set; }
+		[DefaultValue(true)]
+		public bool Animate { get; set; }
+		[DefaultValue(true)]
+		public bool Morph { get; set; }
 
         public static int Size { get { return 0x34; } }
 
@@ -46,8 +43,11 @@ namespace SonicRetro.SAModel
                 Name = labels[address];
             else
                 Name = "object_" + address.ToString("X8");
-            Flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
-            int tmpaddr = ByteConverter.ToInt32(file, address + 4);
+            ObjectFlags flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
+			RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			Animate = (flags & ObjectFlags.NoAnimate) == 0;
+			Morph = (flags & ObjectFlags.NoMorph) == 0;
+			int tmpaddr = ByteConverter.ToInt32(file, address + 4);
             if (tmpaddr != 0)
             {
                 tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
@@ -123,7 +123,8 @@ namespace SonicRetro.SAModel
             }
             result.Align(4);
             address = (uint)result.Count;
-            result.AddRange(ByteConverter.GetBytes((int)Flags));
+			ObjectFlags flags = GetFlags();
+            result.AddRange(ByteConverter.GetBytes((int)flags));
             result.AddRange(ByteConverter.GetBytes(attachaddr));
             result.AddRange(Position.GetBytes());
             result.AddRange(Rotation.GetBytes());
@@ -133,6 +134,28 @@ namespace SonicRetro.SAModel
             labels.Add(Name, address + imageBase);
             return result.ToArray();
         }
+
+		public ObjectFlags GetFlags()
+		{
+			ObjectFlags flags = 0;
+			if (Position.IsEmpty)
+				flags = ObjectFlags.NoPosition;
+			if (Rotation.IsEmpty)
+				flags |= ObjectFlags.NoRotate;
+			if (Scale.X == 1 && Scale.Y == 1 && Scale.Z == 1)
+				flags |= ObjectFlags.NoScale;
+			if (Attach == null)
+				flags |= ObjectFlags.NoDisplay;
+			if (Children.Count == 0)
+				flags |= ObjectFlags.NoChildren;
+			if (RotateZYX)
+				flags |= ObjectFlags.RotateZYX;
+			if (!Animate)
+				flags |= ObjectFlags.NoAnimate;
+			if (!Morph)
+				flags |= ObjectFlags.NoMorph;
+			return flags;
+		}
 
         public byte[] GetBytes(uint imageBase, bool DX, out uint address)
         {
@@ -155,7 +178,7 @@ namespace SonicRetro.SAModel
 
         public int CountAnimated()
         {
-            int result = (Flags & ObjectFlags.NoAnimate) == ObjectFlags.NoAnimate ? 0 : 1;
+            int result = Animate ? 0 : 1;
             foreach (Object item in Children)
                 result += item.CountAnimated();
             return result;
@@ -163,7 +186,7 @@ namespace SonicRetro.SAModel
 
         public int CountMorph()
         {
-            int result = (Flags & ObjectFlags.NoMorph) == ObjectFlags.NoMorph ? 0 : 1;
+            int result = Morph ? 0 : 1;
             foreach (Object item in Children)
                 result += item.CountMorph();
             return result;
@@ -564,7 +587,6 @@ namespace SonicRetro.SAModel
             foreach (Object item in Children)
                 newchildren.Add(item.ToBasicModel());
             Object result = new Object();
-            result.Flags = Flags;
             if (Attach != null)
                 result.Attach = Attach.ToBasicModel();
             result.Position = Position;
@@ -580,7 +602,6 @@ namespace SonicRetro.SAModel
             foreach (Object item in Children)
                 newchildren.Add(item.ToBasicModel());
             Object result = new Object();
-            result.Flags = Flags;
             if (Attach != null)
                 result.Attach = Attach.ToChunkModel();
             result.Position = Position;
@@ -593,7 +614,7 @@ namespace SonicRetro.SAModel
         public string ToStruct()
         {
             System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
-            result.Append(((StructEnums.NJD_EVAL)Flags).ToString().Replace(", ", " | "));
+            result.Append(((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | "));
             result.Append(", ");
             result.Append(Attach != null ? "&" + Attach.Name : "NULL");
             foreach (float value in Position.ToArray())

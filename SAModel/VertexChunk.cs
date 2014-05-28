@@ -23,7 +23,7 @@ namespace SonicRetro.SAModel
         public ushort Size
         {
             get { return (ushort)(Header1 >> 16); }
-            private set { Header1 = (uint)((Header1 & 0xFFFFu) | (uint)(value << 16)); }
+            set { Header1 = (uint)((Header1 & 0xFFFFu) | (uint)(value << 16)); }
         }
 
         public uint Header2 { get; set; }
@@ -37,7 +37,7 @@ namespace SonicRetro.SAModel
         public ushort VertexCount
         {
             get { return (ushort)(Header2 >> 16); }
-            private set { Header2 = (uint)((Header2 & 0xFFFFu) | (uint)(value << 16)); }
+            set { Header2 = (uint)((Header2 & 0xFFFFu) | (uint)(value << 16)); }
         }
 
         public List<Vertex> Vertices { get; set; }

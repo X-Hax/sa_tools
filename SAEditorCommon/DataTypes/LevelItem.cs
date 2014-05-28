@@ -67,7 +67,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             COL.Model.Attach = attach;
             COL.Model.Position = position;
             COL.Model.Rotation = rotation;
-            COL.Model.Flags = ObjectFlags.NoChildren;
             Visible = true;
             Solid = true;
             COL.CalculateBounds();
@@ -116,7 +115,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public void ImportModel(string filePath)
         {
             COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
-            COL.Model.Flags = ObjectFlags.NoChildren;
             Visible = true;
             Solid = true;
 
@@ -165,7 +163,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             set
             {
                 COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0);
-                COL.Model.Flags = (COL.Model.Flags & ~ObjectFlags.NoDisplay) | (value ? 0 : ObjectFlags.NoDisplay);
             }
         }
 

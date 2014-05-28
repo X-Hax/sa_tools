@@ -115,7 +115,9 @@ namespace SonicRetro.SAModel
         {
             return (int)(deg * (65536 / 360.0));
         }
-    }
+
+		public bool IsEmpty { get { return X == 0 && Y == 0 && Z == 0; } }
+	}
 
     public class RotationConverter : ExpandableObjectConverter
     {

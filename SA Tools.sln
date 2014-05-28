@@ -41,8 +41,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildMDL", "buildMDL\buildM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildMTN", "buildMTN\buildMTN.csproj", "{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDLConv", "MDLConv\MDLConv.csproj", "{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "replaceMDL", "replaceMDL\replaceMDL.csproj", "{89463C29-8914-4CA6-9DD0-B91C70A7EC7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAEditorCommon", "SAEditorCommon\SAEditorCommon.csproj", "{0D72870C-29A2-4B16-B016-2F2E266A0E64}"
@@ -261,16 +259,6 @@ Global
 		{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}.Release|x86.ActiveCfg = Release|x86
 		{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}.Release|x86.Build.0 = Release|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Debug|x86.ActiveCfg = Debug|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Debug|x86.Build.0 = Debug|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Release|Any CPU.ActiveCfg = Release|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Release|Mixed Platforms.Build.0 = Release|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Release|x86.ActiveCfg = Release|x86
-		{5972F0C4-1D1D-4E8C-9892-8BC5D261161F}.Release|x86.Build.0 = Release|x86
 		{89463C29-8914-4CA6-9DD0-B91C70A7EC7C}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{89463C29-8914-4CA6-9DD0-B91C70A7EC7C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{89463C29-8914-4CA6-9DD0-B91C70A7EC7C}.Debug|Mixed Platforms.Build.0 = Debug|x86
