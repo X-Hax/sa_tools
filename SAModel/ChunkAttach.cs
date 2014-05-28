@@ -150,8 +150,11 @@ namespace SonicRetro.SAModel
                 byte[] cb = chunks.ToArray();
                 List<string> s = new List<string>(cb.Length / 4);
                 for (int i = 0; i < cb.Length; i += 4)
-                    s.Add("0x" + ByteConverter.ToInt32(cb, i).ToString("X"));
-                result.Append(string.Join(", ", s.ToArray()));
+				{
+					int it = ByteConverter.ToInt32(cb, i);
+					s.Add("0x" + it.ToString("X") + (it < 0 ? "u" : ""));
+				}
+				result.Append(string.Join(", ", s.ToArray()));
                 result.AppendLine(" };");
                 result.AppendLine();
             }
@@ -167,8 +170,11 @@ namespace SonicRetro.SAModel
                 chunks.AddRange(new PolyChunkEnd().GetBytes());
                 byte[] cb = chunks.ToArray();
                 List<string> s = new List<string>(cb.Length / 2);
-                for (int i = 0; i < cb.Length; i += 2)
-                    s.Add("0x" + ByteConverter.ToInt16(cb, i).ToString("X"));
+				for (int i = 0; i < cb.Length; i += 2)
+				{
+					short sh = ByteConverter.ToInt16(cb, i);
+					s.Add("0x" + sh.ToString("X") + (sh < 0 ? "u" : ""));
+				}
                 result.Append(string.Join(", ", s.ToArray()));
                 result.AppendLine(" };");
                 result.AppendLine();
