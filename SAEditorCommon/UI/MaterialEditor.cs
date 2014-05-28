@@ -39,6 +39,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             clampToolTip.SetToolTip(doubleSideCheck, "Doesn't do anything, since Sonic Adventure does not support backface cull.");
             clampToolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die.");
             clampToolTip.SetToolTip(ignoreLightCheck, "If checked, the model will not have any lighting applied.");
+
+            clampToolTip.SetToolTip(diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this 'diffuse color' will act as a tint to the model.");
+            clampToolTip.SetToolTip(specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This specular color will tint the apparent highlights on the model.");
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)

@@ -76,11 +76,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(453, 465);
+            this.ControlBox = false;
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.listView1);
+            this.MaximizeBox = false;
             this.Name = "TexturePicker";
-            this.Text = "TexturePicker";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Texture Picker";
             this.Load += new System.EventHandler(this.TexturePicker_Load);
             this.ResumeLayout(false);
 

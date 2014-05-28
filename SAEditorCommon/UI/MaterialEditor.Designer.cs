@@ -398,7 +398,7 @@
             // diffuseColorBox
             // 
             this.diffuseColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.diffuseColorBox.Location = new System.Drawing.Point(80, 12);
+            this.diffuseColorBox.Location = new System.Drawing.Point(88, 11);
             this.diffuseColorBox.Name = "diffuseColorBox";
             this.diffuseColorBox.Size = new System.Drawing.Size(37, 19);
             this.diffuseColorBox.TabIndex = 4;
@@ -475,7 +475,7 @@
             this.AcceptButton = this.doneButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(538, 253);
+            this.ClientSize = new System.Drawing.Size(534, 249);
             this.ControlBox = false;
             this.Controls.Add(this.doneButton);
             this.Controls.Add(this.generalSettingBox);
