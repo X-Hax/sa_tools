@@ -1003,8 +1003,9 @@ namespace SonicRetro.SAModel
             address += sizeof(ushort);
             Header2 = ByteConverter.ToUInt16(file, address);
             address += sizeof(ushort);
-            Strips = new List<Strip>(Header2 & 0x3FFF);
-            for (int i = 0; i < StripCount; i++)
+			int stripCount = Header2 & 0x3FFF;
+            Strips = new List<Strip>(stripCount);
+            for (int i = 0; i < stripCount; i++)
             {
                 Strip str = new Strip(file, address, Type, UserFlags);
                 Strips.Add(str);
