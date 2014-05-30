@@ -34,12 +34,12 @@ namespace LevelConverter
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
 								newcol.SurfaceFlags = SurfaceFlags.Visible;
-								newcol.Model = new SonicRetro.SAModel.Object();
+								newcol.Model = new SonicRetro.SAModel.Object() { Name = col.Model.Name + "_cnk" };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
 								newcol.Model.Scale = col.Model.Scale;
 								BasicAttach basatt = (BasicAttach)col.Model.Attach;
-								ChunkAttach cnkatt = new ChunkAttach(true, true) { Bounds = basatt.Bounds };
+								ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
 								newcol.Model.Attach = cnkatt;
 								VertexChunk vcnk;
 								if (basatt.Normal != null && basatt.Normal.Length > 0)
