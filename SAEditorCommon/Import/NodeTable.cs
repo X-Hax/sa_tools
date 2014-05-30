@@ -316,5 +316,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
             errorFlag = false;
             errorMsg = "Import successful!";
         }
+
+        /// <summary>
+        /// Exports a nodetable file (a single-level instance heirarchy layout) file.
+        /// </summary>
+        /// <param name="filePath">Full file path to export to</param>
+        /// <param name="errorFlag">Set to TRUE if an error occured.</param>
+        /// <param name="errorMsg">Suggested error message to show the user.</param>
+        public static void ExportToFile(string filePath, out bool errorFlag, out string errorMsg)
+        {
+            try
+            {
+                string outputFolderPath = Path.GetDirectoryName(filePath);
+                File.CreateText(filePath);
+
+                //foreach
+            }
+            catch (Exception e)
+            {
+                errorFlag = true;
+                errorMsg = e.Message;
+                return;
+            }
+
+            errorFlag = false;
+            errorMsg = "";
+        }
     }
 }

@@ -36,12 +36,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal Device d3ddevice;
 		Dictionary<string, Dictionary<string, string>> ini;
-		EditorCamera cam = new EditorCamera();
+		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		string levelID;
 		internal string levelName;
 		bool loaded;
-		FillMode rendermode = FillMode.Solid;
-		Cull cullmode = Cull.None;
 		internal List<Item> SelectedItems;
 		Dictionary<string, ToolStripMenuItem> levelMenuItems;
         bool lookKeyDown;
@@ -51,13 +49,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-			d3ddevice.Lights[0].Type = LightType.Directional;
-			d3ddevice.Lights[0].Diffuse = Color.White;
-			d3ddevice.Lights[0].Ambient = Color.White;
-			d3ddevice.Lights[0].Specular = Color.White;
-			d3ddevice.Lights[0].Range = 100000;
-			d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
-			d3ddevice.Lights[0].Enabled = true;
+            EditorOptions.InitializeDefaultLights(d3ddevice);
 			ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
 			if (Properties.Settings.Default.MRUList == null)
 				Properties.Settings.Default.MRUList = new System.Collections.Specialized.StringCollection();
@@ -176,7 +168,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
 				SA1LevelAct levelact = new SA1LevelAct(group.GetValueOrDefault("LevelID", "0000"));
 				LevelData.leveltexs = null;
-				cam = new EditorCamera();
+				cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 				if (!group.ContainsKey("LevelGeo"))
 					LevelData.geo = null;
 				else
@@ -470,6 +462,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SelectedItems = new List<Item>();
 			UseWaitCursor = false;
 			Enabled = true;
+            //EditorOptions.InitializeDefaultLight(d3ddevice);
 			DrawLevel();
 		}
 
@@ -555,30 +548,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
-			d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
-			d3ddevice.SetRenderState(RenderStates.CullMode, (int)cullmode);
+			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
 			//all drawings after this line
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetRenderState(RenderStates.Lighting, true);
-			d3ddevice.SetRenderState(RenderStates.SpecularEnable, false);
-			d3ddevice.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
-			d3ddevice.SetRenderState(RenderStates.AlphaBlendEnable, true);
-			d3ddevice.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
-			d3ddevice.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
-			d3ddevice.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
-			d3ddevice.SetRenderState(RenderStates.AlphaTestEnable, true);
-			d3ddevice.SetRenderState(RenderStates.AlphaFunction, (int)Compare.Greater);
-			d3ddevice.SetRenderState(RenderStates.AmbientMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetRenderState(RenderStates.DiffuseMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetRenderState(RenderStates.SpecularMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
-			d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
+            EditorOptions.RenderStateCommonSetup(d3ddevice);            
 
 			MatrixStack transform = new MatrixStack();
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
@@ -828,10 +805,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
             if (e.KeyCode == Keys.N)
             {
-                if (rendermode == FillMode.Solid)
-                    rendermode = FillMode.Point;
+                if (EditorOptions.RenderFillMode == FillMode.Solid)
+                    EditorOptions.RenderFillMode = FillMode.Point;
                 else
-                    rendermode += 1;
+                    EditorOptions.RenderFillMode += 1;
 
                 DrawLevel();
             }
@@ -1256,6 +1233,18 @@ namespace SonicRetro.SAModel.SADXLVL2
             LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
 
             if (errorFlag) MessageBox.Show(errorMsg);
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
+            optionsEditor.FormUpdated += new EditorOptionsEditor.FormUpdatedHandler(optionsEditor_FormUpdated);
+            optionsEditor.Show();
+        }
+
+        void optionsEditor_FormUpdated()
+        {
+            DrawLevel();
         }
 	}
 }

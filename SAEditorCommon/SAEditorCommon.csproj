@@ -68,7 +68,20 @@
     <Compile Include="DataTypes\LevelItem.cs" />
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
+    <Compile Include="EditorOptions.cs" />
     <Compile Include="Import\NodeTable.cs" />
+    <Compile Include="UI\DefaultLightEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\DefaultLightEditor.Designer.cs">
+      <DependentUpon>DefaultLightEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\EditorOptionsEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\EditorOptionsEditor.Designer.cs">
+      <DependentUpon>EditorOptionsEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\HCPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -111,6 +124,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="UI\DefaultLightEditor.resx">
+      <DependentUpon>DefaultLightEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\EditorOptionsEditor.resx">
+      <DependentUpon>EditorOptionsEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\IDSelector.resx">
       <DependentUpon>IDSelector.cs</DependentUpon>
     </EmbeddedResource>

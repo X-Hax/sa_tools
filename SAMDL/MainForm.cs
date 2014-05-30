@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
+using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
@@ -35,7 +36,7 @@ namespace SonicRetro.SAModel.SAMDL
 		}
 
 		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera();
+		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		bool loaded;
 		int interval = 1;
 		FillMode rendermode = FillMode.Solid;
@@ -61,13 +62,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelTree = new ModelTreeForm(this);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-			d3ddevice.Lights[0].Type = LightType.Directional;
-			d3ddevice.Lights[0].Diffuse = Color.White;
-			d3ddevice.Lights[0].Ambient = Color.White;
-			d3ddevice.Lights[0].Specular = Color.White;
-			d3ddevice.Lights[0].Range = 100000;
-			d3ddevice.Lights[0].Direction = Vector3.Normalize(new Vector3(0, -1, 0));
-			d3ddevice.Lights[0].Enabled = true;
+            EditorOptions.InitializeDefaultLights(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -248,30 +243,15 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
-			d3ddevice.SetRenderState(RenderStates.FillMode, (int)rendermode);
-			d3ddevice.SetRenderState(RenderStates.CullMode, (int)cullmode);
+			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
 			//all drawings after this line
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Anisotropic);
-			d3ddevice.SetRenderState(RenderStates.Lighting, true);
-			d3ddevice.SetRenderState(RenderStates.SpecularEnable, false);
-			d3ddevice.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
-			d3ddevice.SetRenderState(RenderStates.AlphaBlendEnable, true);
-			d3ddevice.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
-			d3ddevice.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
-			d3ddevice.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
-			d3ddevice.SetRenderState(RenderStates.AlphaTestEnable, true);
-			d3ddevice.SetRenderState(RenderStates.AlphaFunction, (int)Compare.Greater);
-			d3ddevice.SetRenderState(RenderStates.AmbientMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetRenderState(RenderStates.DiffuseMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetRenderState(RenderStates.SpecularMaterialSource, (int)ColorSource.Material);
-			d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
-			d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
+            EditorOptions.RenderStateCommonSetup(d3ddevice);
+
 			MatrixStack transform = new MatrixStack();
 			if (animation != null)
 				RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
