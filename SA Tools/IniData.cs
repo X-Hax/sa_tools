@@ -20,6 +20,8 @@ namespace SA_Tools
         public Game Game { get; set; }
         [IniName("key")]
         public string ImageBaseString { get { return ImageBase.HasValue ? ImageBase.Value.ToString("X") : null; } set { if (value != null) ImageBase = uint.Parse(value, NumberStyles.HexNumber); } }
+		[IniName("masterobjlist")]
+		public string MasterObjectList { get; set; }
         [IniName("systemfolder")]
         [DefaultValue("system")]
         public string SystemFolder { get; set; }
@@ -394,6 +396,31 @@ namespace SA_Tools
             return result.ToString();
         }
     }
+
+	public class MasterObjectListEntry
+	{
+		[IniAlwaysInclude]
+		public byte Arg1 { get; set; }
+		[IniAlwaysInclude]
+		public byte Arg2 { get; set; }
+		[IniAlwaysInclude]
+		public ushort Flags { get; set; }
+		public float Distance { get; set; }
+		public string Name { get; set; }
+		public string[] Names { get; set; }
+
+		public MasterObjectListEntry() { }
+
+		public MasterObjectListEntry(ObjectListEntry obj)
+		{
+			Arg1 = obj.Arg1;
+			Arg2 = obj.Arg2;
+			Flags = obj.Flags;
+			Distance = obj.Distance;
+			Name = obj.Name;
+			Names = new[] { obj.Name };
+		}
+	}
 
     public static class SA1StartPosList
     {

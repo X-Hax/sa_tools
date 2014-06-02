@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using SA_Tools;
 using SonicRetro.SAModel;
 
@@ -60,6 +61,8 @@ namespace split
                     break;
             }
             int itemcount = 0;
+			Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
+			Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
             Stopwatch timer = new Stopwatch();
             timer.Start();
             foreach (KeyValuePair<string, SA_Tools.FileInfo> item in inifile.Files)
@@ -138,7 +141,22 @@ namespace split
                                 .Save(data.Filename);
                             break;
                     case "objlist":
-                        ObjectList.Load(datafile, address, imageBase, SA2).Save(data.Filename);
+                        {
+							ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
+							if (inifile.MasterObjectList != null)
+								foreach (ObjectListEntry obj in objs)
+								{
+									if (!masterobjlist.ContainsKey(obj.CodeString))
+										masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
+									if (!objnamecounts.ContainsKey(obj.CodeString))
+										objnamecounts.Add(obj.CodeString, new Dictionary<string, int>() { { obj.Name, 1 } });
+									else if (!objnamecounts[obj.CodeString].ContainsKey(obj.Name))
+										objnamecounts[obj.CodeString].Add(obj.Name, 1);
+									else
+										objnamecounts[obj.CodeString][obj.Name]++;
+								}
+							objs.Save(data.Filename);
+						}
                         break;
                     case "startpos":
                         if (SA2)
@@ -301,6 +319,19 @@ namespace split
                 data.NoHash = nohash;
                 itemcount++;
             }
+			if (inifile.MasterObjectList != null)
+			{
+				foreach (KeyValuePair<string, MasterObjectListEntry> obj in masterobjlist)
+				{
+					KeyValuePair<string, int> name = new KeyValuePair<string, int>();
+					foreach (KeyValuePair<string, int> it in objnamecounts[obj.Key])
+						if (it.Value > name.Value)
+							name = it;
+					obj.Value.Name = name.Key;
+					obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
+				}
+				IniFile.Serialize(masterobjlist, inifile.MasterObjectList);
+			}
             IniFile.Serialize(inifile, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename)) + "_data.ini");
             timer.Stop();
             Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
