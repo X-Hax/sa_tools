@@ -66,6 +66,7 @@
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />
+    <Compile Include="UI\TransformGizmo.cs" />
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
     <Compile Include="EditorOptions.cs" />
@@ -137,7 +138,7 @@
       <DependentUpon>MaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETFindReplace.resx">
@@ -163,6 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Resources\x_move.x" />
+    <None Include="Resources\x_rotation.x" />
+    <None Include="Resources\y_move.x" />
+    <None Include="Resources\y_rotation.x" />
+    <None Include="Resources\z_move.x" />
+    <None Include="Resources\z_rotation.x" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
