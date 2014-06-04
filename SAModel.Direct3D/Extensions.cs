@@ -733,13 +733,8 @@ namespace SonicRetro.SAModel.Direct3D
 						model_Mesh[i].VColor[j] = model_Mesh_VColor[i][j];
 				}
 			}
-			string sanitizedName = System.IO.Path.GetFileNameWithoutExtension(objfile);
-			double throwAway = 0;
-			if (double.TryParse(sanitizedName, out throwAway)) // checking to see if the name will cause compile-time issues.
-			{
-				sanitizedName = string.Concat("model_", sanitizedName);
-			}
-			model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material) { Name = sanitizedName };
+
+            model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material);
 			model.ProcessVertexData();
 			model.CalculateBounds();
 			return model;

@@ -29,11 +29,13 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
 				gvm = true;
 			}
 			VrSharp.VpPalette pvp = null;
-			ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
+            PvmArchiveReader pvmReader = (PvmArchiveReader)pvmfile.Open(pvmdata);
+            ArchiveEntryCollection pvmentries = pvmReader.Entries;
+          
 			foreach (ArchiveEntry file in pvmentries)
 			{
 				byte[] data = new byte[file.Length];
-				using (Stream str = file.Open())
+				using (Stream str = pvmReader.OpenEntry(file))
 					str.Read(data, 0, file.Length);
 				VrTexture vrfile = gvm ? (VrTexture)new GvrTexture(data) : (VrTexture)new PvrTexture(data);
 				if (vrfile.NeedsExternalPalette)

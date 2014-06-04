@@ -109,6 +109,8 @@ namespace SonicRetro.SAModel
             Normal = normal;
             Mesh = new List<Mesh>(mesh);
             Material = new List<Material>(material);
+
+            Name = "attach_" + Object.GenerateIdentifier();
         }
 
         public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
