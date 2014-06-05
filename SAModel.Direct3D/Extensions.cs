@@ -895,7 +895,7 @@ namespace SonicRetro.SAModel.Direct3D
 						}
 						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Triangles)
 						{
-							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length - 3; faceVIndx++)
+							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 3; faceVIndx++)
 							{
 								Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
 
@@ -925,31 +925,47 @@ namespace SonicRetro.SAModel.Direct3D
 						}
 						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Quads)
 						{
-							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length - 4; faceVIndx++)
+							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 4; faceVIndx++)
 							{
-								Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
+								Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 0] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
 
 								if (basicAttach.Mesh[meshIndx].UV != null)
 								{
 									int uv1, uv2, uv3, uv4;
 
-									uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+									uv1 = faceVIndx + 0 + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
 									uv2 = faceVIndx + 1 + processedUVStripCount + 1;
 									uv3 = faceVIndx + 2 + processedUVStripCount + 1;
 									uv4 = faceVIndx + 3 + processedUVStripCount + 1;
 
-									if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8} {9}/{10}/{11}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalVerts), (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms);
-									else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5} {6}/{7}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs));
+                                    if (wroteNormals)
+                                    {
+                                        objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
+                                        objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+                                        objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs));
+                                    }
 								}
 								else
 								{
-									if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5} {6}//{7}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms), (int)newFace.W + totalVerts, (int)newFace.W + totalNorms);
-									else objstream.WriteLine(String.Format("f {0} {1} {2} {3}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts), (int)newFace.W + totalVerts);
+                                    if (wroteNormals)
+                                    {
+                                        objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
+                                        objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, (int)newFace.W + totalNorms));
+                                    }
+                                    else
+                                    {
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+                                        objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.Z + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.W + totalVerts));
+                                    }
 								}
 
 								if (basicAttach.Mesh[meshIndx].UV != null)
 								{
-									processedUVStripCount += 3;
+									processedUVStripCount += 4;
 									objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
 								}
 							}
