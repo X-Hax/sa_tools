@@ -6,7 +6,6 @@ using System.IO;
 
 using Microsoft.DirectX.Direct3D;
 
-using PuyoTools;
 using VrSharp.PvrTexture;
 
 using SonicRetro.SAModel;
