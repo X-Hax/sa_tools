@@ -618,5 +618,56 @@ namespace SonicRetro.SAModel.SAMDL
 			modelTree.SelectNode(selectedObject);
 			DrawLevel();
 		}
+
+        private void objToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj"
+            };
+            if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                {
+                    #region Material Exporting
+                    string materialPrefix = model.Name;
+
+                    objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+                    // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                    // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                    for (int texIndx = 0; texIndx < TextureBmps.Length; texIndx++)
+                    {
+                        mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine("Kd 1 1 1");
+                        mtlstream.WriteLine("Ks 0 0 0");
+                        mtlstream.WriteLine("illum 1");
+
+                        if (!string.IsNullOrEmpty(TextureNames[texIndx]))
+                        {
+                            mtlstream.WriteLine("Map_Kd " + TextureNames[texIndx] + ".png");
+
+                            // save texture
+                            string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+                            TextureBmps[texIndx].Save(Path.Combine(mypath, TextureNames[texIndx] + ".png"));
+                        }
+                    }
+                    #endregion
+
+                    int totalVerts = 0;
+                    int totalNorms = 0;
+                    int totalUVs = 0;
+
+                    bool errorFlag = false;
+
+                    SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                    if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+                }
+            }
+        }
 	}
 }

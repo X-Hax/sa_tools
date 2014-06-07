@@ -641,13 +641,15 @@ namespace SonicRetro.SAModel.SALVL
                 using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
                 {
                     #region Material Exporting
+                    string materialPrefix = LevelData.leveltexs;
+
                     objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
                     // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
                     // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
                     for (int texIndx = 0; texIndx < LevelData.TextureBitmaps[LevelData.leveltexs].Length; texIndx++)
                     {
-                        mtlstream.WriteLine(String.Format("newmtl material_{0}", texIndx));
+                        mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
                         mtlstream.WriteLine("Ka 1 1 1");
                         mtlstream.WriteLine("Kd 1 1 1");
                         mtlstream.WriteLine("Ks 0 0 0");
@@ -672,10 +674,10 @@ namespace SonicRetro.SAModel.SALVL
                     bool errorFlag = false;
 
                     for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                        SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
                     if (LevelData.geo.Anim != null)
                         for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-                            SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                            SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
                     if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
                 }

@@ -768,7 +768,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			transform.TranslateLocal(obj.Position.ToVector3());
@@ -818,7 +818,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						if (basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].UseTexture)
 						{
-							objstream.WriteLine(String.Format("usemtl material_{0}", basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID));
+							objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID));
 						}
 					}
 
@@ -991,7 +991,7 @@ namespace SonicRetro.SAModel.Direct3D
 		skip_processing:
 			// handle child nodes should they exist.
 			foreach (Object item in obj.Children)
-				WriteModelAsObj(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 			transform.Pop();
 		}
@@ -1006,7 +1006,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			transform.TranslateLocal(obj.Position.ToVector3());
@@ -1129,7 +1129,7 @@ namespace SonicRetro.SAModel.Direct3D
 					else if (polyChunk is PolyChunkTinyTextureID)
 					{
 						PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
-						objstream.WriteLine(String.Format("usemtl material_{0}", chunkTexID.TextureID));
+						objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID));
 					}
 				}
 				#endregion
@@ -1140,7 +1140,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 			// handle child nodes should they exist.
 			foreach (Object item in obj.Children)
-				WriteModelAsObj(objstream, item, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 			transform.Pop();
 		}
@@ -1150,21 +1150,33 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
+        /// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteModelAsObj(System.IO.StreamWriter objstream, SAModel.Object obj, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		public static void WriteModelAsObj(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			if (obj.Attach is BasicAttach)
 			{
-				WriteObjFromBasicAttach(objstream, obj, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 			}
 			else if (obj.Attach is ChunkAttach)
 			{
-				WriteObjFromChunkAttach(objstream, obj, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 			}
+            else if (obj.Attach == null) // model is a dummy node
+            {
+                transform.Push();
+                transform.TranslateLocal(obj.Position.ToVector3());
+                transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
+                transform.ScaleLocal(obj.Scale.ToVector3());
+
+                foreach (Object child in obj.Children) WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                transform.Pop();
+            }
 		}
 
 		public static float Distance(this Vector3 vectorA, Vector3 vectorB)
