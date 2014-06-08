@@ -34,13 +34,13 @@ namespace GVM2PAK
 			{
 				if (PvrTexture.Is(filedata))
 				{
-					if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename, filedata))
+					if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename, new MemoryStream(filedata)))
 						return;
 					goto end;
 				}
 				else if (GvrTexture.Is(filedata))
 				{
-					if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename, filedata))
+					if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename, new MemoryStream(filedata)))
 						return;
 					goto end;
 				}
@@ -58,10 +58,7 @@ namespace GVM2PAK
 				ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
 				foreach (ArchiveEntry file in pvmentries)
 				{
-					byte[] data = new byte[file.Length];
-					using (Stream str = file.Open())
-						str.Read(data, 0, file.Length);
-					if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name, data))
+					if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name, file.Open()))
 						return;
 				}
 			}
@@ -70,7 +67,7 @@ namespace GVM2PAK
 			pak.Save(Path.ChangeExtension(filename, "pak"));
 		}
 
-		static bool AddTexture(PAKFile pak, string filenoext, string longdir, bool gvm, List<byte> inf, Device d3ddevice, string filename, byte[] data)
+		static bool AddTexture(PAKFile pak, string filenoext, string longdir, bool gvm, List<byte> inf, Device d3ddevice, string filename, Stream data)
 		{
 			VrTexture vrfile = gvm ? (VrTexture)new GvrTexture(data) : (VrTexture)new PvrTexture(data);
 			if (vrfile.NeedsExternalPalette)
