@@ -36,7 +36,7 @@ namespace SADXObjectDefinitions.Common
 		}
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Control", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Disable Timer", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
 		};
 

@@ -117,10 +117,9 @@ namespace SonicRetro.SAModel.Direct3D
             List<KeyValuePair<float, RenderInfo>> drawList = new List<KeyValuePair<float, RenderInfo>>();
             foreach (RenderInfo item in items)
             {
-                //float dist = Vector3.Dot(camera.Position - item.Bounds.Center.ToVector3(), camera.Look);
                 float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3());
 
-                if (dist > camera.DrawDistance) continue; // todo: eliminate this once distance culls are done in the item classes
+                if (dist > camera.DrawDistance) continue;
 
                 if (item.Material.UseAlpha)
                 {

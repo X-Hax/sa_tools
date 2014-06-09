@@ -84,7 +84,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
             d3ddevice.SetRenderState(RenderStates.SpecularEnable, false);
             if(!OverrideLighting) d3ddevice.SetRenderState(RenderStates.Ambient, Color.Black.ToArgb());
             else d3ddevice.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
-            d3ddevice.SetRenderState(RenderStates.AlphaBlendEnable, true);
+            d3ddevice.SetRenderState(RenderStates.AlphaBlendEnable, false);
             d3ddevice.SetRenderState(RenderStates.BlendOperation, (int)BlendOperation.Add);
             d3ddevice.SetRenderState(RenderStates.DestinationBlend, (int)Blend.InvSourceAlpha);
             d3ddevice.SetRenderState(RenderStates.SourceBlend, (int)Blend.SourceAlpha);
@@ -95,6 +95,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
             d3ddevice.SetRenderState(RenderStates.SpecularMaterialSource, (int)ColorSource.Material);
             d3ddevice.SetTextureStageState(0, TextureStageStates.AlphaOperation, (int)TextureOperation.BlendDiffuseAlpha);
             d3ddevice.SetRenderState(RenderStates.ColorVertex, true);
+            d3ddevice.SetRenderState(RenderStates.ZEnable, true);
         }
     }
 }

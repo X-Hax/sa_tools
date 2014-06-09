@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Common
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(0, item.Rotation.Y, 0);
-            transform.ScaleLocal((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.X + 10) / 5f);
+            transform.ScaleLocal((item.Scale.X + 5) / 10f, (item.Scale.Y + 5) / 10f, (item.Scale.Z + 5) / 10f);
             HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
             transform.Pop();
             return result;
@@ -37,7 +37,7 @@ namespace SADXObjectDefinitions.Common
             transform.Push();
             transform.TranslateLocal(item.Position.ToVector3());
             transform.RotateXYZLocal(0, item.Rotation.Y, 0);
-            transform.ScaleLocal((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.X + 10) / 5f);
+            transform.ScaleLocal((item.Scale.X + 5) / 10f, (item.Scale.Y + 5) / 10f, (item.Scale.Z + 5) / 10f);
             result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
             if (selected)
                 result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));

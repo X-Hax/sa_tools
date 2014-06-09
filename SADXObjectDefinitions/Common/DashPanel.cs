@@ -45,7 +45,7 @@ namespace SADXObjectDefinitions.Common
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Speed", typeof(float), "Extended", null, 14.0f, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v > 0 ? (float)v : 14.0f),
-			new PropertySpec("Speed", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f)
+			new PropertySpec("Disable Timer", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }

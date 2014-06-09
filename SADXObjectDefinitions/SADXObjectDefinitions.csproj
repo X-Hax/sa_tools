@@ -49,6 +49,9 @@
     <Compile Include="Common\DashPanel.cs" />
     <Compile Include="Common\FallSpikeBall.cs" />
     <Compile Include="Common\ItemBox.cs" />
+    <Compile Include="Common\JumpPanel.cs" />
+    <Compile Include="Common\Ottoto.cs" />
+    <Compile Include="Common\PUWind.cs" />
     <Compile Include="Common\RingGroup.cs" />
     <Compile Include="Common\Sphere.cs" />
     <Compile Include="Common\Spikes.cs" />

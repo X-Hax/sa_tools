@@ -44,6 +44,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Dictionary<string, ToolStripMenuItem> levelMenuItems;
         bool lookKeyDown;
         bool zoomKeyDown;
+        TransformGizmo transformGizmo;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -429,6 +430,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 						def.Init(group, levelact.Act, d3ddevice);
 					LevelData.leveleff = def;
 				}
+
+                transformGizmo = new TransformGizmo(d3ddevice);
 #if !DEBUG
 			}
 			catch (Exception ex)
@@ -462,7 +465,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SelectedItems = new List<Item>();
 			UseWaitCursor = false;
 			Enabled = true;
-            //EditorOptions.InitializeDefaultLight(d3ddevice);
 			DrawLevel();
 		}
 
@@ -593,6 +595,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
+
+            // gizmos will get drawn on their own layer/drawcall.
+            RenderInfo.Draw(transformGizmo.Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
+
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -932,6 +938,18 @@ namespace SonicRetro.SAModel.SADXLVL2
             if (cam.mode == 1)
             {
                 cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+            }
+
+            if (SelectedItems.Count > 0) // set up gizmo
+            {
+                transformGizmo.AffectedItems = SelectedItems;
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.AffectedItems = new List<Item>();
+                }
             }
 		}
 
