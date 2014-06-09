@@ -304,7 +304,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 				}
 				LevelData.ObjDefs = new List<ObjectDefinition>();
-				Dictionary<string, ObjectData> objdefini = IniFile.Deserialize<Dictionary<string, ObjectData>>(ini[string.Empty]["objdefs"]);
+				Dictionary<string, ObjectData> objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini[string.Empty]["objdefs"]);
 				if (File.Exists(group.GetValueOrDefault("ObjList", string.Empty)))
 				{
 					ObjectListEntry[] objlstini = ObjectList.Load(group["ObjList"], false);

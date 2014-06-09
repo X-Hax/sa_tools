@@ -70,7 +70,7 @@ namespace DLLModGenerator
 
 		private void LoadINI(string filename)
 		{
-			IniData = IniFile.Deserialize<MyClass>(filename);
+			IniData = IniSerializer.Deserialize<MyClass>(filename);
 			if (Settings.MRUList.Contains(filename))
 			{
 				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
@@ -222,7 +222,7 @@ namespace DLLModGenerator
 
 	public class DictionaryContainer<T>
 	{
-		[IniCollection]
+		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, T> Items { get; set; }
 
 		public DictionaryContainer()

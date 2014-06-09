@@ -15,7 +15,7 @@ namespace splitDLL
         public Game Game { get; set; }
 		[IniName("modulename")]
 		public string ModuleName { get; set; }
-        [IniCollection]
+        [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, FileInfo> Files { get; set; }
     }
 

@@ -42,6 +42,7 @@
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="IniFile.cs" />
+    <Compile Include="IniSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vertex.cs" />
   </ItemGroup>

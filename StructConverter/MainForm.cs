@@ -47,7 +47,8 @@ namespace StructConverter
             { "levelranktimes", "Level Rank Times" },
             { "endpos", "End Positions" },
             { "animationlist", "Animation List" },
-			{ "levelpathlist", "Path List" }
+			{ "levelpathlist", "Path List" },
+			{ "stagelightdatalist", "Stage Light Data List" }
         };
 
         public MainForm()
@@ -93,7 +94,7 @@ namespace StructConverter
 
         private void LoadINI(string filename)
         {
-            IniData = IniFile.Deserialize<IniData>(filename);
+            IniData = IniSerializer.Deserialize<IniData>(filename);
             if (Settings.MRUList.Contains(filename))
             {
                 recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
@@ -801,6 +802,18 @@ namespace StructConverter
 											writer.WriteLine("};");
 											writer.WriteLine();
 										}
+										break;
+									case "stagelightdatalist":
+                                        {
+                                            List<SA1StageLightData> list = SA1StageLightDataList.Load(data.Filename);
+                                            writer.WriteLine("StageLightData {0}[] = {{", name);
+                                            List<string> objs = new List<string>(list.Count + 1);
+                                            foreach (SA1StageLightData obj in list)
+                                                objs.Add(obj.ToStruct());
+                                            objs.Add("{ 0xFFu }");
+                                            writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+                                            writer.WriteLine("};");
+                                        }
 										break;
                                 }
                                 writer.WriteLine();

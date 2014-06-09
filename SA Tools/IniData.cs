@@ -34,7 +34,7 @@ namespace SA_Tools
         [IniName("voicefolder")]
         [DefaultValue("system/sounddata/voice_us/wma")]
         public string VoiceFolder { get; set; }
-        [IniCollection]
+        [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, FileInfo> Files { get; set; }
     }
 
@@ -86,7 +86,7 @@ namespace SA_Tools
                     PointerList[i] = int.Parse(data[i], NumberStyles.HexNumber);
             }
         }
-        [IniCollection]
+        [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, string> CustomProperties { get; set; }
     }
 
@@ -206,9 +206,9 @@ namespace SA_Tools
         public static ObjectListEntry[] Load(string filename, bool SA2)
         {
             if (SA2)
-                return IniFile.Deserialize<SA2ObjectListEntry[]>(filename);
+                return IniSerializer.Deserialize<SA2ObjectListEntry[]>(filename);
             else
-                return IniFile.Deserialize<SA1ObjectListEntry[]>(filename);
+                return IniSerializer.Deserialize<SA1ObjectListEntry[]>(filename);
         }
 
         public static ObjectListEntry[] Load(byte[] file, int address, uint imageBase, bool SA2)
@@ -239,7 +239,7 @@ namespace SA_Tools
 
         public static void Save(this ObjectListEntry[] objlist, string filename)
         {
-            IniFile.Serialize(objlist, filename);
+            IniSerializer.Serialize(objlist, filename);
         }
 
         public static byte[] GetBytes(this ObjectListEntry[] objlist, uint imageBase, Dictionary<string, uint> labels, out uint dataaddr)
@@ -407,6 +407,7 @@ namespace SA_Tools
 		public ushort Flags { get; set; }
 		public float Distance { get; set; }
 		public string Name { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public string[] Names { get; set; }
 
 		public MasterObjectListEntry() { }
@@ -428,7 +429,7 @@ namespace SA_Tools
 
         public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA1LevelAct, SA1StartPosInfo>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA1LevelAct, SA1StartPosInfo>>(filename);
         }
 
         public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address)
@@ -445,7 +446,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA1LevelAct, SA1StartPosInfo> startpos, string filename)
         {
-            IniFile.Serialize(startpos, filename);
+            IniSerializer.Serialize(startpos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA1LevelAct, SA1StartPosInfo> startpos)
@@ -511,7 +512,7 @@ namespace SA_Tools
 
         public static Dictionary<SA2LevelIDs, SA2StartPosInfo> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA2LevelIDs, SA2StartPosInfo>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, SA2StartPosInfo>>(filename);
         }
 
         public static Dictionary<SA2LevelIDs, SA2StartPosInfo> Load(byte[] file, int address)
@@ -528,7 +529,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA2LevelIDs, SA2StartPosInfo> startpos, string filename)
         {
-            IniFile.Serialize(startpos, filename);
+            IniSerializer.Serialize(startpos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2StartPosInfo> startpos)
@@ -626,7 +627,7 @@ namespace SA_Tools
     {
         public static TextureListEntry[] Load(string filename)
         {
-            return IniFile.Deserialize<TextureListEntry[]>(filename);
+            return IniSerializer.Deserialize<TextureListEntry[]>(filename);
         }
 
         public static TextureListEntry[] Load(byte[] file, int address, uint imageBase)
@@ -642,7 +643,7 @@ namespace SA_Tools
 
         public static void Save(this TextureListEntry[] texlist, string filename)
         {
-            IniFile.Serialize(texlist, filename);
+            IniSerializer.Serialize(texlist, filename);
         }
 
         public static byte[] GetBytes(this TextureListEntry[] texlist, uint imageBase, Dictionary<string, uint> labels, out uint dataaddr)
@@ -686,17 +687,17 @@ namespace SA_Tools
         }
 
         public SA1LevelAct Level { get; set; }
-        [IniCollection]
+        [IniCollection(IniCollectionMode.IndexOnly)]
         public TextureListEntry[] TextureList { get; set; }
 
         public static LevelTextureList Load(string filename)
         {
-            return IniFile.Deserialize<LevelTextureList>(filename);
+            return IniSerializer.Deserialize<LevelTextureList>(filename);
         }
 
         public void Save(string filename)
         {
-            IniFile.Serialize(this, filename);
+            IniSerializer.Serialize(this, filename);
         }
 
         public byte[] GetBytes(uint imageBase, out uint dataaddr)
@@ -864,7 +865,7 @@ namespace SA_Tools
 
         public static Dictionary<SA1LevelIDs, FieldStartPosInfo> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA1LevelIDs, FieldStartPosInfo>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA1LevelIDs, FieldStartPosInfo>>(filename);
         }
 
         public static Dictionary<SA1LevelIDs, FieldStartPosInfo> Load(byte[] file, int address)
@@ -881,7 +882,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA1LevelIDs, FieldStartPosInfo> FieldStartPos, string filename)
         {
-            IniFile.Serialize(FieldStartPos, filename);
+            IniSerializer.Serialize(FieldStartPos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA1LevelIDs, FieldStartPosInfo> FieldStartPos)
@@ -952,7 +953,7 @@ namespace SA_Tools
     {
         public static SoundTestListEntry[] Load(string filename)
         {
-            return IniFile.Deserialize<SoundTestListEntry[]>(filename);
+            return IniSerializer.Deserialize<SoundTestListEntry[]>(filename);
         }
 
         public static SoundTestListEntry[] Load(byte[] file, int address, uint imageBase)
@@ -970,7 +971,7 @@ namespace SA_Tools
 
         public static void Save(this SoundTestListEntry[] soundlist, string filename)
         {
-            IniFile.Serialize(soundlist, filename);
+            IniSerializer.Serialize(soundlist, filename);
         }
     }
 
@@ -1013,7 +1014,7 @@ namespace SA_Tools
     {
         public static MusicListEntry[] Load(string filename)
         {
-            return IniFile.Deserialize<MusicListEntry[]>(filename);
+            return IniSerializer.Deserialize<MusicListEntry[]>(filename);
         }
 
         public static MusicListEntry[] Load(byte[] file, int address, uint imageBase, int numsongs)
@@ -1029,7 +1030,7 @@ namespace SA_Tools
 
         public static void Save(this MusicListEntry[] soundlist, string filename)
         {
-            IniFile.Serialize(soundlist, filename);
+            IniSerializer.Serialize(soundlist, filename);
         }
     }
 
@@ -1071,7 +1072,7 @@ namespace SA_Tools
     {
         public static SoundListEntry[] Load(string filename)
         {
-            return IniFile.Deserialize<SoundListEntry[]>(filename);
+            return IniSerializer.Deserialize<SoundListEntry[]>(filename);
         }
 
         public static SoundListEntry[] Load(byte[] file, int address, uint imageBase)
@@ -1089,7 +1090,7 @@ namespace SA_Tools
 
         public static void Save(this SoundListEntry[] soundlist, string filename)
         {
-            IniFile.Serialize(soundlist, filename);
+            IniSerializer.Serialize(soundlist, filename);
         }
     }
 
@@ -1176,7 +1177,7 @@ namespace SA_Tools
     {
         public static NextLevelListEntry[] Load(string filename)
         {
-            return IniFile.Deserialize<NextLevelListEntry[]>(filename);
+            return IniSerializer.Deserialize<NextLevelListEntry[]>(filename);
         }
 
         public static NextLevelListEntry[] Load(byte[] file, int address)
@@ -1192,7 +1193,7 @@ namespace SA_Tools
 
         public static void Save(this NextLevelListEntry[] levellist, string filename)
         {
-            IniFile.Serialize(levellist, filename);
+            IniSerializer.Serialize(levellist, filename);
         }
 
         public static byte[] GetBytes(this NextLevelListEntry[] levellist)
@@ -1322,7 +1323,7 @@ namespace SA_Tools
             {
                 screens[i] = new RecapScreen[5];
                 for (int l = 0; l < 5; l++)
-                    screens[i][l] = IniFile.Deserialize<RecapScreen>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
+                    screens[i][l] = IniSerializer.Deserialize<RecapScreen>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
             }
             return screens;
         }
@@ -1361,7 +1362,7 @@ namespace SA_Tools
                 for (int l = 0; l < 5; l++)
                 {
                     string textname = Path.Combine(scrname, ((Languages)l).ToString() + ".ini");
-                    IniFile.Serialize(list[i][l], textname);
+                    IniSerializer.Serialize(list[i][l], textname);
                     hashes[i][l] = HelperFunctions.FileHash(textname);
                 }
             }
@@ -1393,7 +1394,7 @@ namespace SA_Tools
             {
                 screens[l] = new NPCText[length];
                 for (int i = 0; i < length; i++)
-                    screens[l][i] = IniFile.Deserialize<NPCText>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
+                    screens[l][i] = IniSerializer.Deserialize<NPCText>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
             }
             return screens;
         }
@@ -1435,7 +1436,7 @@ namespace SA_Tools
                     string scrname = Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo));
                     Directory.CreateDirectory(scrname);
                     string textname = Path.Combine(scrname, ((Languages)l).ToString() + ".ini");
-                    IniFile.Serialize(list[l][i], textname);
+                    IniSerializer.Serialize(list[l][i], textname);
                     hashes[l][i] = HelperFunctions.FileHash(textname);
                 }
             }
@@ -1526,7 +1527,7 @@ namespace SA_Tools
             Groups.Add(group);
         }
 
-        [IniCollection]
+        [IniCollection(IniCollectionMode.IndexOnly)]
         public List<NPCTextGroup> Groups { get; set; }
 
         [IniIgnore]
@@ -1712,12 +1713,12 @@ namespace SA_Tools
     {
         public static DeathZoneFlags[] Load(string filename)
         {
-            return IniFile.Deserialize<DeathZoneFlags[]>(filename);
+            return IniSerializer.Deserialize<DeathZoneFlags[]>(filename);
         }
 
         public static void Save(this DeathZoneFlags[] flags, string filename)
         {
-            IniFile.Serialize(flags, filename);
+            IniSerializer.Serialize(flags, filename);
         }
     }
 
@@ -1746,7 +1747,7 @@ namespace SA_Tools
     {
         public static SkyboxScale[] Load(string filename)
         {
-            return IniFile.Deserialize<SkyboxScale[]>(filename);
+            return IniSerializer.Deserialize<SkyboxScale[]>(filename);
         }
 
         public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
@@ -1765,7 +1766,7 @@ namespace SA_Tools
 
         public static void Save(this SkyboxScale[] scales, string filename)
         {
-            IniFile.Serialize(scales, filename);
+            IniSerializer.Serialize(scales, filename);
         }
     }
 
@@ -1808,7 +1809,7 @@ namespace SA_Tools
     {
         public static StageSelectLevel[] Load(string filename)
         {
-            return IniFile.Deserialize<StageSelectLevel[]>(filename);
+            return IniSerializer.Deserialize<StageSelectLevel[]>(filename);
         }
 
         public static StageSelectLevel[] Load(byte[] file, int address, int count)
@@ -1824,7 +1825,7 @@ namespace SA_Tools
 
         public static void Save(this StageSelectLevel[] levellist, string filename)
         {
-            IniFile.Serialize(levellist, filename);
+            IniSerializer.Serialize(levellist, filename);
         }
     }
 
@@ -1874,7 +1875,7 @@ namespace SA_Tools
 
         public static Dictionary<SA2LevelIDs, LevelRankScores> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA2LevelIDs, LevelRankScores>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, LevelRankScores>>(filename);
         }
 
         public static Dictionary<SA2LevelIDs, LevelRankScores> Load(byte[] file, int address)
@@ -1891,7 +1892,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA2LevelIDs, LevelRankScores> startpos, string filename)
         {
-            IniFile.Serialize(startpos, filename);
+            IniSerializer.Serialize(startpos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA2LevelIDs, LevelRankScores> startpos)
@@ -1953,7 +1954,7 @@ namespace SA_Tools
 
         public static Dictionary<SA2LevelIDs, LevelRankTimes> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA2LevelIDs, LevelRankTimes>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, LevelRankTimes>>(filename);
         }
 
         public static Dictionary<SA2LevelIDs, LevelRankTimes> Load(byte[] file, int address)
@@ -1970,7 +1971,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA2LevelIDs, LevelRankTimes> startpos, string filename)
         {
-            IniFile.Serialize(startpos, filename);
+            IniSerializer.Serialize(startpos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA2LevelIDs, LevelRankTimes> startpos)
@@ -2076,7 +2077,7 @@ namespace SA_Tools
 
         public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(string filename)
         {
-            return IniFile.Deserialize<Dictionary<SA2LevelIDs, SA2EndPosInfo>>(filename);
+            return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, SA2EndPosInfo>>(filename);
         }
 
         public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(byte[] file, int address)
@@ -2093,7 +2094,7 @@ namespace SA_Tools
 
         public static void Save(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos, string filename)
         {
-            IniFile.Serialize(EndPos, filename);
+            IniSerializer.Serialize(EndPos, filename);
         }
 
         public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos)
@@ -2173,7 +2174,7 @@ namespace SA_Tools
     {
         public static SA2AnimationInfo[] Load(string filename)
         {
-            return IniFile.Deserialize<SA2AnimationInfo[]>(filename);
+            return IniSerializer.Deserialize<SA2AnimationInfo[]>(filename);
         }
 
         public static SA2AnimationInfo[] Load(byte[] file, int address, int count)
@@ -2189,7 +2190,7 @@ namespace SA_Tools
 
         public static void Save(this SA2AnimationInfo[] levellist, string filename)
         {
-            IniFile.Serialize(levellist, filename);
+            IniSerializer.Serialize(levellist, filename);
         }
 
         public static byte[] GetBytes(this SA2AnimationInfo[] levellist)
@@ -2293,7 +2294,7 @@ namespace SA_Tools
 			for (int i = 0; i < paths.Count; i++)
 			{
 				string filename = Path.Combine(directory, string.Format("{0}.ini", i));
-				IniFile.Serialize(paths[i], filename);
+				IniSerializer.Serialize(paths[i], filename);
 				hashes[i] = HelperFunctions.FileHash(filename);
 			}
 		}
@@ -2321,7 +2322,7 @@ namespace SA_Tools
 	{
 		public short Unknown { get; set; }
 		public float TotalDistance { get; set; }
-		[IniCollection]
+		[IniCollection(IniCollectionMode.IndexOnly)]
 		public List<PathDataEntry> Path { get; set; }
 		[IniIgnore]
 		public uint Code { get; set; }
@@ -2336,7 +2337,7 @@ namespace SA_Tools
 
 		public static PathData Load(string filename)
 		{
-			return IniFile.Deserialize<PathData>(filename);
+			return IniSerializer.Deserialize<PathData>(filename);
 		}
 
 		public PathData(byte[] file, int address, uint imageBase)
@@ -2364,7 +2365,7 @@ namespace SA_Tools
 
 		public void Save(string filename)
 		{
-			IniFile.Serialize(this, filename);
+			IniSerializer.Serialize(this, filename);
 		}
 
 		public byte[] GetBytes(uint imageBase, out uint dataaddr)
@@ -2436,7 +2437,116 @@ namespace SA_Tools
 		}
 	}
 
-    /// <summary>
+	public static class SA1StageLightDataList
+	{
+		public static List<SA1StageLightData> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA1StageLightData>>(filename);
+		}
+
+		public static List<SA1StageLightData> Load(byte[] file, int address)
+		{
+			List<SA1StageLightData> result = new List<SA1StageLightData>();
+			while (file[address] != 0xFF)
+			{
+				result.Add(new SA1StageLightData(file, address));
+				address += SA1StageLightData.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA1StageLightData> startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+
+		public static byte[] GetBytes(this List<SA1StageLightData> startpos)
+		{
+			List<byte> result = new List<byte>(SA1StageLightData.Size * (startpos.Count + 1));
+			foreach (SA1StageLightData item in startpos)
+				result.AddRange(item.GetBytes());
+			result.Add(0xFF);
+			result.AddRange(new byte[SA1StageLightData.Size - 1]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class SA1StageLightData
+	{
+		public SA1StageLightData() { Direction = new Vertex(); }
+
+		public SA1StageLightData(byte[] file, int address)
+		{
+			Level = (SA1LevelIDs)file[address++];
+			Act = file[address++];
+			LightNum = file[address++];
+			UseDirection = file[address++] != 0;
+			Direction = new Vertex(file, address);
+			address += Vertex.Size;
+			Dif = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Multiplier = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			RGB = new Vertex(file, address);
+			address += Vertex.Size;
+			AmbientRGB = new Vertex(file, address);
+			address += Vertex.Size;
+		}
+
+		public SA1LevelIDs Level { get; set; }
+		public byte Act { get; set; }
+		public byte LightNum { get; set; }
+		public bool UseDirection { get; set; }
+		public Vertex Direction { get; set; }
+		public float Dif { get; set; }
+		public float Multiplier { get; set; }
+		public Vertex RGB { get; set; }
+		public Vertex AmbientRGB { get; set; }
+
+		public static int Size { get { return 0x30; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.Add((byte)Level);
+			result.Add(Act);
+			result.Add(LightNum);
+			result.Add((byte)(UseDirection ? 1 : 0));
+			result.AddRange(Direction.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Dif));
+			result.AddRange(ByteConverter.GetBytes(Multiplier));
+			result.AddRange(RGB.GetBytes());
+			result.AddRange(AmbientRGB.GetBytes());
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Level.ToC("LevelIDs"));
+			result.Append(", ");
+			result.Append(Act);
+			result.Append(", ");
+			result.Append(LightNum);
+			result.Append(", ");
+			result.Append(UseDirection ? 1 : 0);
+			result.Append(", ");
+			result.Append(Direction.ToStruct());
+			result.Append(", ");
+			result.Append(Dif.ToC());
+			result.Append(", ");
+			result.Append(Multiplier.ToC());
+			result.Append(", ");
+			result.Append(RGB.ToStruct());
+			result.Append(", ");
+			result.Append(AmbientRGB.ToStruct());
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	/// <summary>
     /// Converts between <see cref="System.String"/> and <typeparamref name="T"/>
     /// </summary>
     public class StringConverter<T> : TypeConverter

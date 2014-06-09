@@ -35,7 +35,7 @@ namespace splitDLL
 				inifilename = Console.ReadLine();
 			}
 			byte[] datafile = File.ReadAllBytes(datafilename);
-			IniData inifile = IniFile.Deserialize<IniData>(inifilename);
+			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 			uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
 			Dictionary<string, int> exports;
 			{
@@ -308,7 +308,7 @@ namespace splitDLL
 				}
 				output.Files.Items[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
 			}
-			IniFile.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
+			IniSerializer.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
 				+ "_data.ini");
 			timer.Stop();
 			Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
@@ -428,7 +428,7 @@ namespace splitDLL
 
 	public class DictionaryContainer<T>
 	{
-		[IniCollection]
+		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, T> Items { get; set; }
 
 		public DictionaryContainer()

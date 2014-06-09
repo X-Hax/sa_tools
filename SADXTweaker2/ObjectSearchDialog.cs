@@ -34,7 +34,7 @@ namespace SADXTweaker2
 
 		private void ObjectSearchDialog_Load(object sender, EventArgs e)
 		{
-			objects = IniFile.Deserialize<Dictionary<string, MasterObjectListEntry>>(Program.IniData.MasterObjectList);
+			objects = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(Program.IniData.MasterObjectList);
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
