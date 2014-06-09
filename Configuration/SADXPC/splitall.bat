@@ -1,11 +1,11 @@
-split.bat
-splitadv00models.bat
-splitadv01cmodels.bat
-splitadv01models.bat
-splitadv02models.bat
-splitadv03models.bat
-splitbosschaos0models.bat
-splitchaostggarden02mr_daytime.bat
-splitchaostggarden02mr_evening.bat
-splitchaostggarden02mr_night.bat
-splitchrmodels.bat
+call splitSADX.bat
+call splitadv00models.bat
+call splitadv01cmodels.bat
+call splitadv01models.bat
+call splitadv02models.bat
+call splitadv03models.bat
+call splitbosschaos0models.bat
+call splitchaostggarden02mr_daytime.bat
+call splitchaostggarden02mr_evening.bat
+call splitchaostggarden02mr_night.bat
+call splitchrmodels.bat

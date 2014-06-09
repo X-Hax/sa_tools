@@ -1,3 +1,3 @@
-splitdata_dll.bat
-splitmdl.bat
-splitsonic2app.bat
+call splitdata_dll.bat
+call splitmdl.bat
+call splitsonic2app.bat
