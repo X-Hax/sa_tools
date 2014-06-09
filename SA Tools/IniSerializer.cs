@@ -323,15 +323,15 @@ namespace SA_Tools
                     switch (collectionSettings.Mode)
                     {
                         case IniCollectionMode.Normal:
-                            for (int i = 0; i < maxind; i++)
+                            for (int i = 0; i < length; i++)
                                 obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + "[" + (i + collectionSettings.StartIndex).ToString() + "]", true, defaultCollectionSettings), i);
                             break;
                         case IniCollectionMode.IndexOnly:
-                            for (int i = 0; i < maxind; i++)
+                            for (int i = 0; i < length; i++)
                                 obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
                             break;
                         case IniCollectionMode.NoSquareBrackets:
-                            for (int i = 0; i < maxind; i++)
+                            for (int i = 0; i < length; i++)
                                 obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
                             break;
                     }
