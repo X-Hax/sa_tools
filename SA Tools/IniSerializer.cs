@@ -490,6 +490,7 @@ namespace SA_Tools
         private static string ConvertToString(this object @object)
         {
             if (@object is string) return (string)@object;
+			if (@object is Enum) return @object.ToString();
             TypeConverter converter = TypeDescriptor.GetConverter(@object);
             if (converter != null && !(converter is ComponentConverter) && converter.GetType() != typeof(TypeConverter))
                 if (converter.CanConvertTo(typeof(string)))
