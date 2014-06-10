@@ -178,7 +178,7 @@ namespace SonicRetro.SAModel
 
         public int CountAnimated()
         {
-            int result = Animate ? 0 : 1;
+            int result = Animate ? 1 : 0;
             foreach (Object item in Children)
                 result += item.CountAnimated();
             return result;
@@ -186,7 +186,7 @@ namespace SonicRetro.SAModel
 
         public int CountMorph()
         {
-            int result = Morph ? 0 : 1;
+            int result = Morph ? 1 : 0;
             foreach (Object item in Children)
                 result += item.CountMorph();
             return result;
