@@ -63,6 +63,11 @@
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UI\TransformGizmo.cs" />
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
@@ -96,11 +101,6 @@
       <DependentUpon>MaterialEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="PropertyGrid\CustomDesignerVerb.cs" />
     <Compile Include="PropertyGrid\DesignerVerbSite.cs" />
     <Compile Include="SETEditing\DefaultObjectDefinition.cs" />
@@ -161,14 +161,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Resources\xy_move.x" />
     <None Include="Resources\x_move.x" />
+    <None Include="Resources\x_null.x" />
     <None Include="Resources\x_rotation.x" />
     <None Include="Resources\y_move.x" />
+    <None Include="Resources\y_null.x" />
     <None Include="Resources\y_rotation.x" />
+    <None Include="Resources\zx_move.x" />
+    <None Include="Resources\zy_move.x" />
     <None Include="Resources\z_move.x" />
+    <None Include="Resources\z_null.x" />
     <None Include="Resources\z_rotation.x" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

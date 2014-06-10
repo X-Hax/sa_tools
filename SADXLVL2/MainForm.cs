@@ -66,6 +66,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LoadINI(Program.args[0]);
 
 			LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
+
+            panel1.MouseWheel += new MouseEventHandler(panel1_MouseWheel);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -432,6 +434,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 
                 transformGizmo = new TransformGizmo(d3ddevice);
+                gizmoSpaceComboBox.Enabled = true;
+                gizmoSpaceComboBox.SelectedIndex = 0;
 #if !DEBUG
 			}
 			catch (Exception ex)
@@ -596,11 +600,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
-            // gizmos will get drawn on their own layer/drawcall.
-            RenderInfo.Draw(transformGizmo.Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
-
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
+
+            transformGizmo.Draw(d3ddevice, cam);
 		}
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
@@ -628,104 +631,100 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
-			HitResult dist;
-			Item item = null;
-			Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-			Viewport viewport = d3ddevice.Viewport;
-			Matrix proj = d3ddevice.Transform.Projection;
-			Matrix view = d3ddevice.Transform.View;
-			Vector3 Near, Far;
-			Near = mousepos;
-			Near.Z = 0;
-			Far = Near;
-			Far.Z = -1;
 
-			if (LevelData.LevelItems != null)
-			{
-				for (int i = 0; i < LevelData.LevelItems.Count; i++)
-				{
-					bool display = false;
-					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
-						display = true;
-					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
-						display = true;
-					else if (allToolStripMenuItem.Checked)
-						display = true;
-					if (display)
-					{
-						dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
-						if (dist.IsHit & dist.Distance < mindist)
-						{
-							mindist = dist.Distance;
-							item = LevelData.LevelItems[i];
-						}
-					}
-				}
-			}
-			dist = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
-			if (dist.IsHit & dist.Distance < mindist)
-			{
-				mindist = dist.Distance;
-				item = LevelData.StartPositions[LevelData.Character];
-			}
-			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
-				foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
-				{
-					dist = setitem.CheckHit(Near, Far, viewport, proj, view);
-					if (dist.IsHit & dist.Distance < mindist)
-					{
-						mindist = dist.Distance;
-						item = setitem;
-					}
-				}
-			if (LevelData.DeathZones != null)
-				foreach (DeathZoneItem dzitem in LevelData.DeathZones)
-					if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
-					{
-						dist = dzitem.CheckHit(Near, Far, viewport, proj, view);
-						if (dist.IsHit & dist.Distance < mindist)
-						{
-							mindist = dist.Distance;
-							item = dzitem;
-						}
-					}
 			switch (e.Button)
 			{
 				case MouseButtons.Left:
-					if (item != null)
-					{
-						if (ModifierKeys == Keys.Control)
-						{
-							if (SelectedItems.Contains(item))
-								SelectedItems.Remove(item);
-							else
-								SelectedItems.Add(item);
-						}
-						else if (!SelectedItems.Contains(item))
-						{
-							SelectedItems.Clear();
-							SelectedItems.Add(item);
-						}
-					}
-					else if ((ModifierKeys & Keys.Control) == 0)
-					{
-						SelectedItems.Clear();
-					}
+                    float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
+			        HitResult dist;
+			        Item item = null;
+			        Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+			        Viewport viewport = d3ddevice.Viewport;
+			        Matrix proj = d3ddevice.Transform.Projection;
+			        Matrix view = d3ddevice.Transform.View;
+			        Vector3 Near, Far;
+			        Near = mousepos;
+			        Near.Z = 0;
+			        Far = Near;
+			        Far.Z = -1;
+
+                    transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+
+                    if ((transformGizmo.SelectedAxes == GizmoSelectedAxes.NONE))
+                    {
+                        if (LevelData.LevelItems != null)
+                        {
+                            for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                            {
+                                bool display = false;
+                                if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                                    display = true;
+                                else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                                    display = true;
+                                else if (allToolStripMenuItem.Checked)
+                                    display = true;
+                                if (display)
+                                {
+                                    dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+                                    if (dist.IsHit & dist.Distance < mindist)
+                                    {
+                                        mindist = dist.Distance;
+                                        item = LevelData.LevelItems[i];
+                                    }
+                                }
+                            }
+                        }
+                        dist = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
+                        if (dist.IsHit & dist.Distance < mindist)
+                        {
+                            mindist = dist.Distance;
+                            item = LevelData.StartPositions[LevelData.Character];
+                        }
+                        if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
+                            foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
+                            {
+                                dist = setitem.CheckHit(Near, Far, viewport, proj, view);
+                                if (dist.IsHit & dist.Distance < mindist)
+                                {
+                                    mindist = dist.Distance;
+                                    item = setitem;
+                                }
+                            }
+                        if (LevelData.DeathZones != null)
+                            foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+                                if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
+                                {
+                                    dist = dzitem.CheckHit(Near, Far, viewport, proj, view);
+                                    if (dist.IsHit & dist.Distance < mindist)
+                                    {
+                                        mindist = dist.Distance;
+                                        item = dzitem;
+                                    }
+                                }
+
+                        if (item != null)
+                        {
+                            if (ModifierKeys == Keys.Control)
+                            {
+                                if (SelectedItems.Contains(item))
+                                    SelectedItems.Remove(item);
+                                else
+                                    SelectedItems.Add(item);
+                            }
+                            else if (!SelectedItems.Contains(item))
+                            {
+                                SelectedItems.Clear();
+                                SelectedItems.Add(item);
+                            }
+                        }
+                        else if ((ModifierKeys & Keys.Control) == 0)
+                        {
+                            SelectedItems.Clear();
+                        }
+                    }
 					break;
+
 				case MouseButtons.Right:
-					if (item != null)
-					{
-						if (!SelectedItems.Contains(item))
-						{
-							SelectedItems.Clear();
-							SelectedItems.Add(item);
-						}
-					}
-					else
-					{
-						SelectedItems.Clear();
-					}
 					bool cancopy = false;
 					foreach (Item obj in SelectedItems)
 						if (obj.CanCopy)
@@ -881,7 +880,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                Vector3 horivect = cam.Right;
+                /*Vector3 horivect = cam.Right;
                 Vector3 vertvect = cam.Up;
                 if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
                     horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
@@ -903,8 +902,11 @@ namespace SonicRetro.SAModel.SADXLVL2
                         item.Position.X + horiz.X + verti.X,
                         item.Position.Y + horiz.Y + verti.Y,
                         item.Position.Z + horiz.Z + verti.Z);
-                }
+                }*/
+
+                transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
                 DrawLevel();
+
                 Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
                 if (Cursor.Position.X == scrbnds.Left)
                 {
@@ -927,7 +929,38 @@ namespace SonicRetro.SAModel.SADXLVL2
                     evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
                 }
             }
+            else if (e.Button == System.Windows.Forms.MouseButtons.None)
+            {
+                float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
+			    Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+			    Viewport viewport = d3ddevice.Viewport;
+			    Matrix proj = d3ddevice.Transform.Projection;
+			    Matrix view = d3ddevice.Transform.View;
+			    Vector3 Near, Far;
+			    Near = mousepos;
+			    Near.Z = 0;
+			    Far = Near;
+			    Far.Z = -1;
+
+                GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
+                transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+
+                if (oldSelection != transformGizmo.SelectedAxes) transformGizmo.Draw(d3ddevice, cam);
+            }
             lastmouse = evloc;
+        }
+
+        void panel1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (!loaded) return;
+            if (!panel1.Focused) return;
+
+            float detentValue = -1;
+
+            if (e.Delta < 0) detentValue = 1;
+
+            cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
+            DrawLevel();
         }
         #endregion
 
@@ -1266,5 +1299,48 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
             DrawLevel();
         }
-	}
+
+        #region Gizmo Button Event Methods
+        private void selectModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.NONE;
+                gizmoSpaceComboBox.Enabled = true;
+                DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+            }
+        }
+
+        private void moveModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
+                gizmoSpaceComboBox.Enabled = true;
+                DrawLevel();
+            }
+        }
+
+        private void rotateModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.TRANSFORM_ROTATE;
+                transformGizmo.LocalTransform = true;
+                gizmoSpaceComboBox.SelectedIndex = 1;
+                gizmoSpaceComboBox.Enabled = false;
+                DrawLevel();
+            }
+        }
+
+        private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex == 0) ? false : true;
+                DrawLevel();
+            }
+        }
+        #endregion
+    }
 }

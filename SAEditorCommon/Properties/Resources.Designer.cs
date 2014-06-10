@@ -73,6 +73,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] x_null {
+            get {
+                object obj = ResourceManager.GetObject("x_null", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] x_rotation {
             get {
                 object obj = ResourceManager.GetObject("x_rotation", resourceCulture);
@@ -83,9 +93,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] xy_move {
+            get {
+                object obj = ResourceManager.GetObject("xy_move", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] y_move {
             get {
                 object obj = ResourceManager.GetObject("y_move", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] y_null {
+            get {
+                object obj = ResourceManager.GetObject("y_null", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -113,9 +143,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] z_null {
+            get {
+                object obj = ResourceManager.GetObject("z_null", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] z_rotation {
             get {
                 object obj = ResourceManager.GetObject("z_rotation", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] zx_move {
+            get {
+                object obj = ResourceManager.GetObject("zx_move", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] zy_move {
+            get {
+                object obj = ResourceManager.GetObject("zy_move", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -13,6 +13,11 @@ namespace SonicRetro.SAModel.Direct3D
 			return new Vector3(vert.X, vert.Y, vert.Z);
 		}
 
+        public static Vertex ToVertex(this Vector3 input)
+        {
+            return new Vertex(input.X, input.Y, input.Z);
+        }
+
 		public static void CalculateBounds(this Attach attach)
 		{
 			List<Vector3> verts = new List<Vector3>();
@@ -751,12 +756,69 @@ namespace SonicRetro.SAModel.Direct3D
 		private static readonly Vector3 YAxis = new Vector3(0, 1, 0);
 		private static readonly Vector3 ZAxis = new Vector3(0, 0, 1);
 
+        public static int RadToBAMS(float rad)
+        {
+            return (int)(rad * (65536 / (2 * Math.PI)));
+        }
+
 		public static void RotateXYZLocal(this MatrixStack transform, int x, int y, int z)
 		{
 			transform.RotateAxisLocal(ZAxis, BAMSToRad(z));
 			transform.RotateAxisLocal(XAxis, BAMSToRad(x));
 			transform.RotateAxisLocal(YAxis, BAMSToRad(y));
 		}
+
+        /// <summary>
+        /// This is supposed to convert a matrix back into rotation values. But it doesn't.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public static Rotation FromMatrix(this Matrix matrix)
+        {
+            Rotation eulerRotationZXY = new Rotation();
+            
+            // code below is adopted from Ogre Engine source
+            float rfYAngle=0, rfPAngle=0, rfRAngle=0; // rfY angle = z, rfP angle = y, rfRAngle = x
+
+            // rot = cy*cz-sx*sy*sz -cx*sz cz*sy+cy*sx*sz
+            // cz*sx*sy+cy*sz cx*cz -cy*cz*sx+sy*sz
+            // -cx*sy sx cx*cy
+
+            //rfPAngle = Math::ASin(m[2][1]);
+            rfPAngle = (float)Math.Asin(matrix.M32);
+            if ( rfPAngle < (Math.PI / 2) )
+            {
+                if ( rfPAngle > (-Math.PI / 2) )
+                {
+                    //rfYAngle = Math::ATan2(-m[0][1],m[1][1]);
+                    //rfRAngle = Math::ATan2(-m[2][0],m[2][2]);
+                    rfYAngle = (float)Math.Atan2(-matrix.M12, matrix.M22);
+                    rfRAngle = (float)Math.Atan2(-matrix.M31, matrix.M33);
+                }
+                else
+                {
+                    // WARNING. Not a unique solution.
+                    //Radian fRmY = Math::ATan2(m[0][2],m[0][0]);
+                    float fRmY = (float)Math.Atan2(matrix.M13, matrix.M11);
+                    rfRAngle = 0f; // any angle works
+                    rfYAngle = rfRAngle - fRmY;
+                }
+            }
+            else
+            {
+                // WARNING. Not a unique solution.
+                // Radian fRpY = Math::ATan2(m[0][2],m[0][0]);
+                float fRpY = (float)Math.Atan2(matrix.M13, matrix.M11);
+                rfRAngle = 0f; // any angle works
+                rfYAngle = fRpY - rfRAngle;
+            }
+
+            eulerRotationZXY.X = Extensions.RadToBAMS(rfRAngle);
+            eulerRotationZXY.Y = Extensions.RadToBAMS(rfPAngle);
+            eulerRotationZXY.Z = Extensions.RadToBAMS(rfYAngle);
+
+            return eulerRotationZXY;
+        }
 
 		/// <summary>
 		/// Writes an object model (basic format) to the specified stream, in Alias-Wavefront *.OBJ format.

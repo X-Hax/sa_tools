@@ -126,6 +126,9 @@
     <None Include="Resources\delete.png" />
     <None Include="Resources\paste.png" />
     <None Include="Resources\UnknownImg.png" />
+    <None Include="Resources\SelectIcon.png" />
+    <None Include="Resources\MoveIcon.png" />
+    <None Include="Resources\RotateIcon.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <ItemGroup>
