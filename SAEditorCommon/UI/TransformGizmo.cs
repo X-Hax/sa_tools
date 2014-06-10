@@ -262,7 +262,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             dev.SetRenderState(RenderStates.Ambient, System.Drawing.Color.White.ToArgb());
             dev.SetRenderState(RenderStates.AlphaBlendEnable, false);
             dev.SetRenderState(RenderStates.ColorVertex, false);
-            dev.SetRenderState(RenderStates.ZEnable, false);
+            dev.Clear(ClearFlags.ZBuffer, 0, 1, 0);
             #endregion
 
             transform.Push();
