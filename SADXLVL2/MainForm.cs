@@ -600,7 +600,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
-			d3ddevice.EndScene(); //all drawings before this line
+			d3ddevice.EndScene(); // scene drawings go before this line
 			d3ddevice.Present();
 
             transformGizmo.Draw(d3ddevice, cam);
@@ -880,30 +880,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                /*Vector3 horivect = cam.Right;
-                Vector3 vertvect = cam.Up;
-                if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
-                    horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
-                else if (Math.Abs(horivect.Y) > Math.Abs(horivect.X) & Math.Abs(horivect.Y) > Math.Abs(horivect.Z))
-                    horivect = new Vector3(0, Math.Sign(horivect.Y), 0);
-                else if (Math.Abs(horivect.Z) > Math.Abs(horivect.X) & Math.Abs(horivect.Z) > Math.Abs(horivect.Y))
-                    horivect = new Vector3(0, 0, Math.Sign(horivect.Z));
-                if (Math.Abs(vertvect.X) > Math.Abs(vertvect.Y) & Math.Abs(vertvect.X) > Math.Abs(vertvect.Z))
-                    vertvect = new Vector3(Math.Sign(vertvect.X), 0, 0);
-                else if (Math.Abs(vertvect.Y) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Y) > Math.Abs(vertvect.Z))
-                    vertvect = new Vector3(0, Math.Sign(vertvect.Y), 0);
-                else if (Math.Abs(vertvect.Z) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Z) > Math.Abs(vertvect.Y))
-                    vertvect = new Vector3(0, 0, Math.Sign(vertvect.Z));
-                Vector3 horiz = horivect * (chg.X / 2);
-                Vector3 verti = vertvect * (-chg.Y / 2);
-                foreach (Item item in SelectedItems)
-                {
-                    item.Position = new Vertex(
-                        item.Position.X + horiz.X + verti.X,
-                        item.Position.Y + horiz.Y + verti.Y,
-                        item.Position.Z + horiz.Z + verti.Z);
-                }*/
-
                 transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
                 DrawLevel();
 
@@ -959,7 +935,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
             if (e.Delta < 0) detentValue = 1;
 
-            cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
+            if (cam.mode == 0) cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
+            else if (cam.mode == 1) cam.Distance += (detentValue * cam.MoveSpeed);
             DrawLevel();
         }
         #endregion
@@ -1307,6 +1284,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 transformGizmo.Mode = TransformMode.NONE;
                 gizmoSpaceComboBox.Enabled = true;
+                moveModeButton.Checked = false;
+                rotateModeButton.Checked = false;
                 DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
             }
         }
@@ -1317,6 +1296,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
                 gizmoSpaceComboBox.Enabled = true;
+                selectModeButton.Checked = false;
+                rotateModeButton.Checked = false;
                 DrawLevel();
             }
         }
@@ -1329,6 +1310,8 @@ namespace SonicRetro.SAModel.SADXLVL2
                 transformGizmo.LocalTransform = true;
                 gizmoSpaceComboBox.SelectedIndex = 1;
                 gizmoSpaceComboBox.Enabled = false;
+                selectModeButton.Checked = false;
+                moveModeButton.Checked = false;
                 DrawLevel();
             }
         }

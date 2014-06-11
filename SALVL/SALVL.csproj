@@ -133,6 +133,9 @@
     <None Include="Resources\delete.png" />
     <None Include="Resources\paste.png" />
     <None Include="Resources\UnknownImg.png" />
+    <Content Include="Resources\MoveIcon.png" />
+    <Content Include="Resources\RotateIcon.png" />
+    <Content Include="Resources\SelectIcon.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

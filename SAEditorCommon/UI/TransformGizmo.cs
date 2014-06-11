@@ -379,6 +379,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
                         currentItem.Position = new Vertex(currentItem.Position.X + xOff, currentItem.Position.Y + yOff, currentItem.Position.Z + zOff);
                     }
+
+                    if (currentItem is LevelItem)
+                    {
+                        LevelItem levelItem = (LevelItem)currentItem;
+                        levelItem.Save();
+                    }
                 }
                 else if (mode == TransformMode.TRANSFORM_ROTATE) // first, check what operation should be performed
                 {

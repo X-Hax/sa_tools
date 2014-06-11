@@ -71,13 +71,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public static string GetStats()
         {
             int landtableItems = LevelData.geo.COL.Count;
-            int textureCount = LevelData.Textures.Count;
+            int textureArcCount = LevelData.Textures.Count;
             int setItems = 0;
+            int animatedItems = LevelData.geo.Anim.Count;
 
             if (LevelData.SETItems != null) setItems = LevelData.SETItems.Length;
 
             //return String.Format("Landtable items: {0}\nTextures: {1}\nSET Items: {2}", landtableItems, textureCount, setItems);
-            return String.Format("Landtable items: {0}\nTextures: {1}", landtableItems, textureCount);
+            return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}", landtableItems, textureArcCount, animatedItems);
         }
 
         public static void DuplicateSelection(Device d3ddevice, ref List<Item> SelectedItems, out bool errorFlag, out string errorMsg)

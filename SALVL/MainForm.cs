@@ -43,6 +43,7 @@ namespace SonicRetro.SAModel.SALVL
         internal List<Item> SelectedItems;
         bool lookKeyDown;
         bool zoomKeyDown;
+        TransformGizmo transformGizmo;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -53,6 +54,7 @@ namespace SonicRetro.SAModel.SALVL
                 LoadFile(Program.Arguments[0]);
 
             LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
+            panel1.MouseWheel += new MouseEventHandler(panel1_MouseWheel);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -121,11 +123,16 @@ namespace SonicRetro.SAModel.SALVL
                 }
             }
             loaded = true;
+            transformGizmo = new TransformGizmo(d3ddevice);
+            gizmoSpaceComboBox.Enabled = false;
+            gizmoSpaceComboBox.SelectedIndex = 0;
+
             clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
             statsToolStripMenuItem.Enabled = LevelData.geo != null;
             SelectedItems = new List<Item>();
             UseWaitCursor = false;
             Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = true;
+
             DrawLevel();
         }
 
@@ -196,7 +203,10 @@ namespace SonicRetro.SAModel.SALVL
                         renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
                 }
             RenderInfo.Draw(renderlist, d3ddevice, cam);
-            d3ddevice.EndScene(); //all drawings before this line
+
+            d3ddevice.EndScene(); // scene drawings go before this line
+
+            transformGizmo.Draw(d3ddevice, cam);
             d3ddevice.Present();
         }
 
@@ -225,76 +235,71 @@ namespace SonicRetro.SAModel.SALVL
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
             if (!loaded) return;
-            float mindist = cam.DrawDistance;
-            HitResult dist;
-            Item item = null;
-            Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-            Viewport viewport = d3ddevice.Viewport;
-            Matrix proj = d3ddevice.Transform.Projection;
-            Matrix view = d3ddevice.Transform.View;
-            Vector3 Near, Far;
-            Near = mousepos;
-            Near.Z = 0;
-            Far = Near;
-            Far.Z = -1;
-            if (LevelData.LevelItems != null)
-            {
-                for (int i = 0; i < LevelData.LevelItems.Count; i++)
-                {
-                    bool display = false;
-                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
-                        display = true;
-                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
-                        display = true;
-                    else if (allToolStripMenuItem.Checked)
-                        display = true;
-                    if (display)
-                    {
-                        dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
-                        if (dist.IsHit & dist.Distance < mindist)
-                        {
-                            mindist = dist.Distance;
-                            item = LevelData.LevelItems[i];
-                        }
-                    }
-                }
-            }
+
             switch (e.Button)
             {
                 case MouseButtons.Left:
-                    if (item != null)
+                    float mindist = cam.DrawDistance;
+                    HitResult dist;
+                    Item item = null;
+                    Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+                    Viewport viewport = d3ddevice.Viewport;
+                    Matrix proj = d3ddevice.Transform.Projection;
+                    Matrix view = d3ddevice.Transform.View;
+                    Vector3 Near, Far;
+                    Near = mousepos;
+                    Near.Z = 0;
+                    Far = Near;
+                    Far.Z = -1;
+
+                    transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+                    if ((transformGizmo.SelectedAxes == GizmoSelectedAxes.NONE))
                     {
-                        if (ModifierKeys == Keys.Control)
+                        if (LevelData.LevelItems != null)
                         {
-                            if (SelectedItems.Contains(item))
-                                SelectedItems.Remove(item);
-                            else
-                                SelectedItems.Add(item);
+                            for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                            {
+                                bool display = false;
+                                if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                                    display = true;
+                                else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                                    display = true;
+                                else if (allToolStripMenuItem.Checked)
+                                    display = true;
+                                if (display)
+                                {
+                                    dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+                                    if (dist.IsHit & dist.Distance < mindist)
+                                    {
+                                        mindist = dist.Distance;
+                                        item = LevelData.LevelItems[i];
+                                    }
+                                }
+                            }
                         }
-                        else if (!SelectedItems.Contains(item))
+
+                        if (item != null)
+                        {
+                            if (ModifierKeys == Keys.Control)
+                            {
+                                if (SelectedItems.Contains(item))
+                                    SelectedItems.Remove(item);
+                                else
+                                    SelectedItems.Add(item);
+                            }
+                            else if (!SelectedItems.Contains(item))
+                            {
+                                SelectedItems.Clear();
+                                SelectedItems.Add(item);
+                            }
+                        }
+                        else if ((ModifierKeys & Keys.Control) == 0)
                         {
                             SelectedItems.Clear();
-                            SelectedItems.Add(item);
                         }
-                    }
-                    else if ((ModifierKeys & Keys.Control) == 0)
-                    {
-                        SelectedItems.Clear();
                     }
                     break;
                 case MouseButtons.Right:
-                    if (item != null)
-                    {
-                        if (!SelectedItems.Contains(item))
-                        {
-                            SelectedItems.Clear();
-                            SelectedItems.Add(item);
-                        }
-                    }
-                    else
-                    {
-                        SelectedItems.Clear();
-                    }
                     bool cancopy = false;
                     foreach (Item obj in SelectedItems)
                         if (obj.CanCopy)
@@ -450,30 +455,9 @@ namespace SonicRetro.SAModel.SALVL
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                Vector3 horivect = cam.Right;
-                Vector3 vertvect = cam.Up;
-                if (Math.Abs(horivect.X) > Math.Abs(horivect.Y) & Math.Abs(horivect.X) > Math.Abs(horivect.Z))
-                    horivect = new Vector3(Math.Sign(horivect.X), 0, 0);
-                else if (Math.Abs(horivect.Y) > Math.Abs(horivect.X) & Math.Abs(horivect.Y) > Math.Abs(horivect.Z))
-                    horivect = new Vector3(0, Math.Sign(horivect.Y), 0);
-                else if (Math.Abs(horivect.Z) > Math.Abs(horivect.X) & Math.Abs(horivect.Z) > Math.Abs(horivect.Y))
-                    horivect = new Vector3(0, 0, Math.Sign(horivect.Z));
-                if (Math.Abs(vertvect.X) > Math.Abs(vertvect.Y) & Math.Abs(vertvect.X) > Math.Abs(vertvect.Z))
-                    vertvect = new Vector3(Math.Sign(vertvect.X), 0, 0);
-                else if (Math.Abs(vertvect.Y) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Y) > Math.Abs(vertvect.Z))
-                    vertvect = new Vector3(0, Math.Sign(vertvect.Y), 0);
-                else if (Math.Abs(vertvect.Z) > Math.Abs(vertvect.X) & Math.Abs(vertvect.Z) > Math.Abs(vertvect.Y))
-                    vertvect = new Vector3(0, 0, Math.Sign(vertvect.Z));
-                Vector3 horiz = horivect * (chg.X / 2);
-                Vector3 verti = vertvect * (-chg.Y / 2);
-                foreach (Item item in SelectedItems)
-                {
-                    item.Position = new Vertex(
-                        item.Position.X + horiz.X + verti.X,
-                        item.Position.Y + horiz.Y + verti.Y,
-                        item.Position.Z + horiz.Z + verti.Z);
-                }
+                transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
                 DrawLevel();
+
                 Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
                 if (Cursor.Position.X == scrbnds.Left)
                 {
@@ -496,7 +480,39 @@ namespace SonicRetro.SAModel.SALVL
                     evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
                 }
             }
+            else if (e.Button == System.Windows.Forms.MouseButtons.None)
+            {
+                float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
+                Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+                Viewport viewport = d3ddevice.Viewport;
+                Matrix proj = d3ddevice.Transform.Projection;
+                Matrix view = d3ddevice.Transform.View;
+                Vector3 Near, Far;
+                Near = mousepos;
+                Near.Z = 0;
+                Far = Near;
+                Far.Z = -1;
+
+                GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
+                transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+
+                if (oldSelection != transformGizmo.SelectedAxes) transformGizmo.Draw(d3ddevice, cam);
+            }
             lastmouse = evloc;
+        }
+
+        void panel1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (!loaded) return;
+            if (!panel1.Focused) return;
+
+            float detentValue = -1;
+
+            if (e.Delta < 0) detentValue = 1;
+
+            if (cam.mode == 0) cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
+            else if (cam.mode == 1) cam.Distance += (detentValue * cam.MoveSpeed);
+            DrawLevel();
         }
         #endregion
 
@@ -507,6 +523,18 @@ namespace SonicRetro.SAModel.SALVL
             if (cam.mode == 1)
             {
                 cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+            }
+
+            if (SelectedItems.Count > 0) // set up gizmo
+            {
+                transformGizmo.AffectedItems = SelectedItems;
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.AffectedItems = new List<Item>();
+                }
             }
         }
 
@@ -813,6 +841,61 @@ namespace SonicRetro.SAModel.SALVL
         void optionsEditor_FormUpdated()
         {
             DrawLevel();
+        }
+
+        #region Gizmo Button Event Methods
+        private void selectModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.NONE;
+                gizmoSpaceComboBox.Enabled = true;
+                moveModeButton.Checked = false;
+                rotateModeButton.Checked = false;
+                DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+            }
+        }
+
+        private void moveModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
+                gizmoSpaceComboBox.Enabled = true;
+                selectModeButton.Checked = false;
+                rotateModeButton.Checked = false;
+                DrawLevel();
+            }
+        }
+
+        private void rotateModeButton_Click(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Mode = TransformMode.TRANSFORM_ROTATE;
+                transformGizmo.LocalTransform = true;
+                gizmoSpaceComboBox.SelectedIndex = 1;
+                gizmoSpaceComboBox.Enabled = false;
+                selectModeButton.Checked = false;
+                moveModeButton.Checked = false;
+                DrawLevel();
+            }
+        }
+
+        private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex == 0) ? false : true;
+                DrawLevel();
+            }
+        }
+        #endregion
+
+        private void gizmodebugToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gizmodebugToolStripMenuItem.Checked) transformGizmo.Enabled = true;
+            else transformGizmo.Enabled = false;
         }
     }
 }
