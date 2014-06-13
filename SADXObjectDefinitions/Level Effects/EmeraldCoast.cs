@@ -30,8 +30,8 @@ namespace SADXObjectDefinitions.Level_Effects
             List<RenderInfo> result = new List<RenderInfo>();
             MatrixStack transform = new MatrixStack();
             transform.Push();
-            transform.TranslateLocal(cam.Position.X, 0, cam.Position.Z);
-            transform.ScaleLocal(Skybox_Scale);
+            transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
+            transform.NJScale(Skybox_Scale);
             Texture[] texs = ObjectHelper.GetTextures("BG_BEACH");
             result.AddRange(model1.DrawModelTree(dev, transform, texs, mesh1));
             result.AddRange(model2.DrawModelTree(dev, transform, texs, mesh2));

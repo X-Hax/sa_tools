@@ -65,23 +65,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             MatrixStack transform = new MatrixStack();
             transform.Push();
-            transform.TranslateLocal(0, offset, 0);
-            transform.TranslateLocal(Position.ToVector3());
-            transform.RotateXYZLocal(0, YRotation, 0);
+            transform.NJTranslate(0, offset, 0);
+            transform.NJTranslate(Position);
+            transform.NJRotateY(YRotation);
             return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
         }
 
         public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
             float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.Position.ToVector3());
-            if (dist > camera.DrawDistance) return Item.EmptyRenderInfo;
+            if (dist > camera.DrawDistance) return EmptyRenderInfo;
 
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
-            transform.TranslateLocal(0, offset, 0);
-            transform.TranslateLocal(Position.ToVector3());
-            transform.RotateXYZLocal(0, YRotation, 0);
-            result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
+			transform.NJTranslate(0, offset, 0);
+			transform.NJTranslate(Position);
+			transform.NJRotateY(YRotation);
+			result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
             if (selected)
                 result.AddRange(Model.DrawModelTreeInvert(dev, transform, Meshes));
             transform.Pop();

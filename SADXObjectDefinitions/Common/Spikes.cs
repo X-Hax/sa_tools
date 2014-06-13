@@ -26,21 +26,21 @@ namespace SADXObjectDefinitions.Common
             int rows = (int)Math.Max(item.Scale.X, 1);
             int cols = (int)Math.Max(item.Scale.Z, 1);
             transform.Push();
-            transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+            transform.NJTranslate(item.Position);
+            transform.NJRotateXYZ(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
             double v4 = (1 - cols) * 7.5;
             double v5 = (1 - rows) * 7.5;
-            transform.TranslateLocal((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
+            transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
             for (int i = 0; i < rows; ++i)
             {
                 transform.Push();
                 for (int j = 0; j < cols; ++j)
                 {
                     result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
-                    transform.TranslateLocal(0, 0, 15);
+                    transform.NJTranslate(0, 0, 15);
                 }
                 transform.Pop();
-                transform.TranslateLocal(15, 0, 0);
+                transform.NJTranslate(15, 0, 0);
             }
             transform.Pop();
             return result;
@@ -52,11 +52,11 @@ namespace SADXObjectDefinitions.Common
             int rows = (int)Math.Max(item.Scale.X, 1);
             int cols = (int)Math.Max(item.Scale.Z, 1);
             transform.Push();
-            transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+            transform.NJTranslate(item.Position);
+            transform.NJRotateXYZ(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
             double v4 = (1 - cols) * 7.5;
             double v5 = (1 - rows) * 7.5;
-            transform.TranslateLocal((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
+            transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
             for (int i = 0; i < rows; ++i)
             {
                 transform.Push();
@@ -65,10 +65,10 @@ namespace SADXObjectDefinitions.Common
                     result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
                     if (selected)
                         result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
-                    transform.TranslateLocal(0, 0, 15);
+                    transform.NJTranslate(0, 0, 15);
                 }
                 transform.Pop();
-                transform.TranslateLocal(15, 0, 0);
+                transform.NJTranslate(15, 0, 0);
             }
             transform.Pop();
             return result.ToArray();

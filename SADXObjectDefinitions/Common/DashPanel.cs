@@ -21,8 +21,8 @@ namespace SADXObjectDefinitions.Common
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
-			transform.TranslateLocal(item.Position.ToVector3());
-			transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJTranslate(item.Position);
+			transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -32,8 +32,8 @@ namespace SADXObjectDefinitions.Common
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.TranslateLocal(item.Position.ToVector3());
-			transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJTranslate(item.Position);
+			transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));

@@ -31,8 +31,8 @@ namespace SADXObjectDefinitions.Level_Effects
             List<RenderInfo> result = new List<RenderInfo>();
             MatrixStack transform = new MatrixStack();
             transform.Push();
-            transform.TranslateLocal(cam.Position.X, 0, cam.Position.Z);
-            transform.ScaleLocal(Skybox_Scale);
+            transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
+            transform.NJScale(Skybox_Scale);
             Texture[] texs = ObjectHelper.GetTextures("WINDY_BACK");
             for (int i = 0; i < 5; i++)
                 result.AddRange(models[i].DrawModelTree(dev, transform, texs, meshes[i]));

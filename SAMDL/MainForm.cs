@@ -39,8 +39,6 @@ namespace SonicRetro.SAModel.SAMDL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		bool loaded;
 		int interval = 1;
-		FillMode rendermode = FillMode.Solid;
-		Cull cullmode = Cull.None;
 		Object model;
 		Animation[] animations;
 		Animation animation;
@@ -243,8 +241,8 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
-			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
-			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
+			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
+			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
@@ -276,28 +274,9 @@ namespace SonicRetro.SAModel.SAMDL
 			modelindex++;
 			if (obj.Animate) animindex++;
 			if (animation != null && animation.Models.ContainsKey(animindex))
-			{
-				if (animation.Models[animindex].Position.Count > 0)
-					transform.TranslateLocal(animation.Models[animindex].GetPosition(animframe).ToVector3());
-				else
-					transform.TranslateLocal(obj.Position.ToVector3());
-				Rotation rot;
-				if (animation.Models[animindex].Rotation.Count > 0)
-					rot = animation.Models[animindex].GetRotation(animframe);
-				else
-					rot = obj.Rotation;
-				transform.RotateXYZLocal(rot.X, rot.Y, rot.Z);
-				if (animation.Models[animindex].Scale.Count > 0)
-					transform.ScaleLocal(animation.Models[animindex].GetScale(animframe).ToVector3());
-				else
-					transform.ScaleLocal(obj.Scale.ToVector3());
-			}
+				transform.LoadMatrix(obj.ProcessTransforms(animation.Models[animindex], animframe, transform.Top));
 			else
-			{
-				transform.TranslateLocal(obj.Position.X, obj.Position.Y, obj.Position.Z);
-				transform.RotateYawPitchRollLocal(Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), Direct3D.Extensions.BAMSToRad(obj.Rotation.X), Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
-				transform.ScaleLocal(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
-			}
+				transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
 			if (obj == selectedObject)
 			{
 				if (obj.Attach != null)
@@ -446,10 +425,10 @@ namespace SonicRetro.SAModel.SAMDL
 			if (e.KeyCode == Keys.P & animation != null)
 				timer1.Enabled = !timer1.Enabled;
 			if (e.KeyCode == Keys.N)
-				if (rendermode == FillMode.Solid)
-					rendermode = FillMode.Point;
+				if (EditorOptions.RenderFillMode == FillMode.Solid)
+					EditorOptions.RenderFillMode = FillMode.Point;
 				else
-					rendermode += 1;
+					EditorOptions.RenderFillMode++;
 			DrawLevel();
 		}
 

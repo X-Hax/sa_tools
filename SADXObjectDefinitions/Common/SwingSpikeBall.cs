@@ -32,23 +32,23 @@ namespace SADXObjectDefinitions.Common
         {
             HitResult result = HitResult.NoHit;
             transform.Push();
-            transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+            transform.NJTranslate(item.Position.ToVector3());
+            transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             result = HitResult.Min(result, centermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, centermeshes));
             transform.Pop();
             /*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v8 = item.Scale.Y * 0.5;
-            transform.TranslateLocal(item.Position.X, (float)v8, item.Position.Z);
+            transform.NJTranslate(item.Position.X, (float)v8, item.Position.Z);
             double v9 = item.Scale.Y * 0.05000000074505806;
-            transform.ScaleLocal((float)v14, (float)v9, (float)v14);
+            transform.NJScale((float)v14, (float)v9, (float)v14);
             result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
             transform.Pop();
             double v15 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v13 = item.Scale.Y * 0.5;
-            transform.TranslateLocal(item.Position.X, (float)v13, item.Position.Z);
-            transform.ScaleLocal((float)v15, 0.1000000014901161f, (float)v15);
+            transform.NJTranslate(item.Position.X, (float)v13, item.Position.Z);
+            transform.NJScale((float)v15, 0.1000000014901161f, (float)v15);
             result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
             transform.Pop();*/
             return result;
@@ -58,8 +58,8 @@ namespace SADXObjectDefinitions.Common
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
-            transform.TranslateLocal(item.Position.ToVector3());
-            transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+            transform.NJTranslate(item.Position.ToVector3());
+            transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
             if (selected)
                 result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));
@@ -67,9 +67,9 @@ namespace SADXObjectDefinitions.Common
             /*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v8 = item.Scale.Y * 0.5;
-            transform.TranslateLocal(item.Position.X, (float)v8, item.Position.Z);
+            transform.NJTranslate(item.Position.X, (float)v8, item.Position.Z);
             double v9 = item.Scale.Y * 0.05000000074505806;
-            transform.ScaleLocal((float)v14, (float)v9, (float)v14);
+            transform.NJScale((float)v14, (float)v9, (float)v14);
             result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
             if (selected)
                 result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
@@ -77,8 +77,8 @@ namespace SADXObjectDefinitions.Common
             double v15 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
             transform.Push();
             double v13 = item.Scale.Y * 0.5;
-            transform.TranslateLocal(item.Position.X, (float)v13, item.Position.Z);
-            transform.ScaleLocal((float)v15, 0.1000000014901161f, (float)v15);
+            transform.NJTranslate(item.Position.X, (float)v13, item.Position.Z);
+            transform.NJScale((float)v15, 0.1000000014901161f, (float)v15);
             result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
             if (selected)
                 result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));

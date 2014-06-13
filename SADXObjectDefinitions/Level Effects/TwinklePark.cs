@@ -30,8 +30,8 @@ namespace SADXObjectDefinitions.Level_Effects
             if (NoRender) return;
             MatrixStack transform = new MatrixStack();
             transform.Push();
-            transform.TranslateLocal(cam.Position);
-            transform.ScaleLocal(Skybox_Scale);
+            transform.NJTranslate(cam.Position);
+            transform.NJScale(Skybox_Scale);
             RenderInfo.Draw(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BG_SHAREOBJ"), meshes), dev, cam);
             transform.Pop();
         }

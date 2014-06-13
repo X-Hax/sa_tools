@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Common
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
-			transform.TranslateLocal(item.Position.ToVector3());
+			transform.NJTranslate(item.Position.ToVector3());
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -29,7 +29,7 @@ namespace SADXObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			((SonicRetro.SAModel.BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
 			transform.Push();
-			transform.TranslateLocal(item.Position.ToVector3());
+			transform.NJTranslate(item.Position.ToVector3());
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));

@@ -34,18 +34,18 @@ namespace SADXObjectDefinitions.Common
 						0,
 						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
-					transform.TranslateLocal(item.Position.ToVector3());
-					transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+					transform.NJTranslate(item.Position);
+					transform.NJRotateXYZ(item.Rotation);
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
-					transform.TranslateLocal(pos);
+					transform.NJTranslate(pos);
 					result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 				}
 				else // line
 				{
 					transform.Push();
-					transform.TranslateLocal(item.Position.ToVector3());
-					transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+					transform.NJTranslate(item.Position);
+					transform.NJRotateXYZ(item.Rotation);
 					double v5;
 					if (i % 2 == 1)
 						v5 = i * item.Scale.Y * -0.5;
@@ -53,7 +53,7 @@ namespace SADXObjectDefinitions.Common
 						v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
 					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 					transform.Pop();
-					transform.TranslateLocal(pos);
+					transform.NJTranslate(pos);
 					result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 				}
 				transform.Pop();
@@ -75,11 +75,11 @@ namespace SADXObjectDefinitions.Common
 						0,
 						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
-					transform.TranslateLocal(item.Position.ToVector3());
-					transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+					transform.NJTranslate(item.Position);
+					transform.NJRotateXYZ(item.Rotation);
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
-					transform.TranslateLocal(pos);
+					transform.NJTranslate(pos);
 					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 					if (selected)
 						result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
@@ -87,8 +87,8 @@ namespace SADXObjectDefinitions.Common
 				else // line
 				{
 					transform.Push();
-					transform.TranslateLocal(item.Position.ToVector3());
-					transform.RotateXYZLocal(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+					transform.NJTranslate(item.Position);
+					transform.NJRotateXYZ(item.Rotation);
 					double v5;
 					if (i % 2 == 1)
 						v5 = i * item.Scale.Y * -0.5;
@@ -96,7 +96,7 @@ namespace SADXObjectDefinitions.Common
 						v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
 					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 					transform.Pop();
-					transform.TranslateLocal(pos);
+					transform.NJTranslate(pos);
 					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 					if (selected)
 						result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
