@@ -22,5 +22,16 @@ namespace PVMEditSharp.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection MRUList {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["MRUList"]));
+            }
+            set {
+                this["MRUList"] = value;
+            }
+        }
     }
 }
