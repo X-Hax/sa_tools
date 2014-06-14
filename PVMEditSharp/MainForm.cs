@@ -292,6 +292,11 @@ namespace PVMEditSharp
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					textures[listBox1.SelectedIndex].Image.Save(dlg.FileName);
 		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			Settings.Save();
+		}
 	}
 
 	class TextureInfo

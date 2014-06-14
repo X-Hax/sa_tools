@@ -46,13 +46,13 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.removeTextureButton = new System.Windows.Forms.Button();
 			this.addTextureButton = new System.Windows.Forms.Button();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.textureImage = new System.Windows.Forms.PictureBox();
+			this.panel2 = new System.Windows.Forms.Panel();
 			this.exportButton = new System.Windows.Forms.Button();
 			this.importButton = new System.Windows.Forms.Button();
-			this.panel2 = new System.Windows.Forms.Panel();
-			this.textureImage = new System.Windows.Forms.PictureBox();
 			this.globalIndex = new System.Windows.Forms.NumericUpDown();
 			this.textureName = new System.Windows.Forms.TextBox();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			this.menuStrip1.SuspendLayout();
@@ -60,10 +60,10 @@
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.panel2.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.textureImage)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).BeginInit();
 			this.tableLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.textureImage)).BeginInit();
+			this.panel2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -247,6 +247,44 @@
 			this.addTextureButton.UseVisualStyleBackColor = true;
 			this.addTextureButton.Click += new System.EventHandler(this.addTextureButton_Click);
 			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.AutoSize = true;
+			this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.tableLayoutPanel1.ColumnCount = 1;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 1);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 55);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 2;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 99);
+			this.tableLayoutPanel1.TabIndex = 6;
+			// 
+			// textureImage
+			// 
+			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.textureImage.Location = new System.Drawing.Point(0, 0);
+			this.textureImage.Margin = new System.Windows.Forms.Padding(0);
+			this.textureImage.Name = "textureImage";
+			this.textureImage.Size = new System.Drawing.Size(64, 64);
+			this.textureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.textureImage.TabIndex = 4;
+			this.textureImage.TabStop = false;
+			// 
+			// panel2
+			// 
+			this.panel2.AutoSize = true;
+			this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panel2.Controls.Add(this.exportButton);
+			this.panel2.Controls.Add(this.importButton);
+			this.panel2.Location = new System.Drawing.Point(3, 67);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(123, 29);
+			this.panel2.TabIndex = 5;
+			// 
 			// exportButton
 			// 
 			this.exportButton.AutoSize = true;
@@ -273,28 +311,6 @@
 			this.importButton.UseVisualStyleBackColor = true;
 			this.importButton.Click += new System.EventHandler(this.importButton_Click);
 			// 
-			// panel2
-			// 
-			this.panel2.AutoSize = true;
-			this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panel2.Controls.Add(this.exportButton);
-			this.panel2.Controls.Add(this.importButton);
-			this.panel2.Location = new System.Drawing.Point(3, 67);
-			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(123, 29);
-			this.panel2.TabIndex = 5;
-			// 
-			// textureImage
-			// 
-			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.textureImage.Location = new System.Drawing.Point(0, 0);
-			this.textureImage.Margin = new System.Windows.Forms.Padding(0);
-			this.textureImage.Name = "textureImage";
-			this.textureImage.Size = new System.Drawing.Size(64, 64);
-			this.textureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.textureImage.TabIndex = 4;
-			this.textureImage.TabStop = false;
-			// 
 			// globalIndex
 			// 
 			this.globalIndex.Enabled = false;
@@ -318,22 +334,6 @@
 			this.textureName.TabIndex = 1;
 			this.textureName.TextChanged += new System.EventHandler(this.textureName_TextChanged);
 			// 
-			// tableLayoutPanel1
-			// 
-			this.tableLayoutPanel1.AutoSize = true;
-			this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel1.ColumnCount = 1;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 1);
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 55);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 2;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 99);
-			this.tableLayoutPanel1.TabIndex = 6;
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -344,6 +344,7 @@
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "PVM Editor";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
@@ -354,12 +355,12 @@
 			this.splitContainer1.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
-			this.panel2.ResumeLayout(false);
-			this.panel2.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.textureImage)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).EndInit();
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.textureImage)).EndInit();
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
