@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GVM2PAK", "GVM2PAK\GVM2PAK.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilePAK", "CompilePAK\CompilePAK.csproj", "{B97C5F6C-8278-46A2-98BE-D805A65CCE19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVMEditSharp", "PVMEditSharp\PVMEditSharp.csproj", "{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -359,6 +361,16 @@ Global
 		{B97C5F6C-8278-46A2-98BE-D805A65CCE19}.Release|Mixed Platforms.Build.0 = Release|x86
 		{B97C5F6C-8278-46A2-98BE-D805A65CCE19}.Release|x86.ActiveCfg = Release|x86
 		{B97C5F6C-8278-46A2-98BE-D805A65CCE19}.Release|x86.Build.0 = Release|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Debug|x86.ActiveCfg = Debug|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Debug|x86.Build.0 = Debug|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|Any CPU.ActiveCfg = Release|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|x86.ActiveCfg = Release|x86
+		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
