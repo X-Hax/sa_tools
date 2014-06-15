@@ -5,12 +5,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using PuyoTools.Modules.Archive;
 using System.IO;
-using VrSharp;
-using VrSharp.PvrTexture;
+using PAKLib;
+using Microsoft.DirectX.Direct3D;
 
-namespace PVMEditSharp
+namespace PAKEdit
 {
 	public partial class MainForm : Form
 	{
@@ -21,6 +20,7 @@ namespace PVMEditSharp
 			InitializeComponent();
 		}
 
+		Device d3ddevice;
 		string filename;
 		List<TextureInfo> textures = new List<TextureInfo>();
 
@@ -35,46 +35,28 @@ namespace PVMEditSharp
 			}
 			Settings.MRUList.Insert(0, filename);
 			recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
-			Text = "PVM Editor - " + filename;
+			Text = "PAK Editor - " + filename;
 		}
 
 		private void GetTextures(string filename)
 		{
-			byte[] pvmdata = File.ReadAllBytes(filename);
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
-			ArchiveBase pvmfile = new PvmArchive();
-			if (!pvmfile.Is(pvmdata, filename))
+			PAKFile pak = new PAKFile(filename);
+			string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+			byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+			List<TextureInfo> newtextures = new List<TextureInfo>(inf.Length / 0x3C);
+			for (int i = 0; i < inf.Length; i += 0x3C)
 			{
-				MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				return;
-			}
-			PvpPalette pvp = null;
-			ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
-			List<TextureInfo> newtextures = new List<TextureInfo>(pvmentries.Count);
-			foreach (ArchiveEntry file in pvmentries)
-			{
-				PvrTexture vrfile = new PvrTexture(file.Open());
-				if (vrfile.NeedsExternalPalette)
-				{
-					if (pvp == null)
-						using (System.Windows.Forms.OpenFileDialog a = new System.Windows.Forms.OpenFileDialog
-						{
-							DefaultExt = "pvp",
-							Filter = "PVP Files|*.pvp",
-							InitialDirectory = Path.GetDirectoryName(filename),
-							Title = "External palette file"
-						})
-							if (a.ShowDialog(this) == DialogResult.OK)
-								pvp = new PvpPalette(a.FileName);
-							else
-							{
-								MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-								return;
-							}
-					vrfile.SetPalette(pvp);
-				}
-				newtextures.Add(new TextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
+				StringBuilder sb = new StringBuilder(0x1C);
+				for (int j = 0; j < 0x1C; j++)
+					if (inf[i + j] != 0)
+						sb.Append((char)inf[i + j]);
+					else
+						break;
+				byte[] dds = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+				using (MemoryStream str = new MemoryStream(dds))
+				using (Texture tex = TextureLoader.FromStream(d3ddevice, str))
+				using (Stream bmp = TextureLoader.SaveToStream(ImageFileFormat.Png, tex))
+					newtextures.Add(new TextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), new Bitmap(bmp)));
 			}
 			textures.Clear();
 			textures.AddRange(newtextures);
@@ -94,6 +76,7 @@ namespace PVMEditSharp
 						recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
 					}
 			Settings.MRUList = newlist;
+			d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			if (Program.Arguments.Length > 0)
 				GetTextures(Program.Arguments[0]);
 		}
@@ -103,12 +86,12 @@ namespace PVMEditSharp
 			textures.Clear();
 			listBox1.Items.Clear();
 			filename = null;
-			Text = "PVM Editor";
+			Text = "PAK Editor";
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.prs" })
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pak", Filter = "PAK Files|*.pak" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					GetTextures(dlg.FileName);
@@ -118,61 +101,31 @@ namespace PVMEditSharp
 
 		private void SaveTextures()
 		{
-			byte[] data;
-			using (MemoryStream str = new MemoryStream())
+			PAKFile pak = new PAKFile();
+			string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+			string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
+			List<byte> inf = new List<byte>(textures.Count * 0x3C);
+			foreach (TextureInfo item in textures)
 			{
-				PvmArchiveWriter writer = new PvmArchiveWriter(str);
-				foreach (TextureInfo tex in textures)
-				{
-					if (tex.DataFormat != PvrDataFormat.Index4 && tex.DataFormat != PvrDataFormat.Index8)
-					{
-						System.Drawing.Imaging.BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-						int stride = bmpd.Stride;
-						byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
-						System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
-						tex.Image.UnlockBits(bmpd);
-						int tlevels = 0;
-						for (int y = 0; y < tex.Image.Height; y++)
-						{
-							int srcaddr = y * Math.Abs(stride);
-							for (int x = 0; x < tex.Image.Width; x++)
-							{
-								Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
-								if (c.A == 0)
-									tlevels = 1;
-								else if (c.A < 255)
-								{
-									tlevels = 2;
-									break;
-								}
-							}
-							if (tlevels == 2)
-								break;
-						}
-						tex.PixelFormat = PvrPixelFormat.Rgb565;
-						if (tlevels == 1)
-							tex.PixelFormat = PvrPixelFormat.Argb1555;
-						else if (tlevels == 2)
-							tex.PixelFormat = PvrPixelFormat.Argb4444;
-						tex.DataFormat = PvrDataFormat.Rectangle;
-						if (tex.Image.Width == tex.Image.Height)
-							tex.DataFormat = PvrDataFormat.SquareTwiddled;
-					}
-					PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
-					encoder.GlobalIndex = tex.GlobalIndex;
-					MemoryStream pvr = new MemoryStream();
-					encoder.Save(pvr);
-					pvr.Seek(0, SeekOrigin.Begin);
-					writer.CreateEntry(pvr, tex.Name);
-				}
-				writer.Flush();
-				data = str.ToArray();
-				str.Close();
+				Stream tex = TextureLoader.SaveToStream(ImageFileFormat.Dds, Texture.FromBitmap(d3ddevice, item.Image, Usage.SoftwareProcessing, Pool.Managed));
+				byte[] tb = new byte[tex.Length];
+				tex.Read(tb, 0, tb.Length);
+				string name = item.Name;
+				if (name.Length > 0x1C)
+					name = name.Substring(0, 0x1C);
+				pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
+				inf.AddRange(Encoding.ASCII.GetBytes(name));
+				if (name.Length != 0x1C)
+					inf.AddRange(new byte[0x1C - name.Length]);
+				inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
+				inf.AddRange(new byte[0xC]);
+				inf.AddRange(BitConverter.GetBytes(item.Image.Width));
+				inf.AddRange(BitConverter.GetBytes(item.Image.Height));
+				inf.AddRange(new byte[4]);
+				inf.AddRange(BitConverter.GetBytes(0x80000000));
 			}
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				FraGag.Compression.Prs.Compress(data, filename);
-			else
-				File.WriteAllBytes(filename, data);
+			pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
+			pak.Save(filename);
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -185,7 +138,7 @@ namespace PVMEditSharp
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.prs" })
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pak", Filter = "PAK Files|*.pak" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					SetFilename(dlg.FileName);
@@ -229,15 +182,9 @@ namespace PVMEditSharp
 
 		private KeyValuePair<string, Bitmap>? BrowseForTexture()
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp" })
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Image Files|*.png;*.jpg;*.jpeg;*.gif;*.bmp" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					string name = Path.GetFileNameWithoutExtension(dlg.FileName);
-					if (PvrTexture.Is(dlg.FileName))
-						return new KeyValuePair<string, Bitmap>(name, new PvrTexture(dlg.FileName).ToBitmap());
-					else
-						return new KeyValuePair<string, Bitmap>(name, new Bitmap(dlg.FileName));
-				}
+					return new KeyValuePair<string, Bitmap>(Path.GetFileNameWithoutExtension(dlg.FileName), new Bitmap(dlg.FileName));
 				else
 					return null;
 		}
@@ -303,8 +250,6 @@ namespace PVMEditSharp
 	{
 		public string Name { get; set; }
 		public uint GlobalIndex { get; set; }
-		public PvrDataFormat DataFormat { get; set; }
-		public PvrPixelFormat PixelFormat { get; set; }
 		public Bitmap Image { get; set; }
 
 		public TextureInfo() { }
@@ -313,18 +258,7 @@ namespace PVMEditSharp
 		{
 			Name = name;
 			GlobalIndex = gbix;
-			DataFormat = PvrDataFormat.Unknown;
-			PixelFormat = PvrPixelFormat.Unknown;
 			Image = bitmap;
-		}
-
-		public TextureInfo(string name, PvrTexture texture)
-		{
-			Name = name;
-			GlobalIndex = texture.GlobalIndex;
-			DataFormat = texture.DataFormat;
-			PixelFormat = texture.PixelFormat;
-			Image = texture.ToBitmap();
 		}
 	}
 }
