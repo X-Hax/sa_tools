@@ -7,12 +7,15 @@ namespace SonicRetro.SAModel
 {
     public class Material
     {
+        #region Basic Variables (internal use)
         public Color DiffuseColor { get; set; }
         public Color SpecularColor { get; set; }
         public float Exponent { get; set; }
         public int TextureID { get; set; }
         public uint Flags { get; set; }
+        #endregion
 
+        #region Accessors (user use)
         public byte UserFlags { get { return (byte)(Flags & 0x7F); } set { Flags = (uint)((Flags & ~0x7F) | (value & 0x7Fu)); } }
         public bool PickStatus { get { return (Flags & 0x80) == 0x80; } set { Flags = (uint)((Flags & ~0x80) | (value ? 0x80u : 0)); } }
         public bool SuperSample { get { return (Flags & 0x1000) == 0x1000; } set { Flags = (uint)((Flags & ~0x1000) | (value ? 0x1000u : 0)); } }
@@ -30,9 +33,13 @@ namespace SonicRetro.SAModel
         public bool IgnoreLighting { get { return (Flags & 0x2000000) == 0x2000000; } set { Flags = (uint)((Flags & ~0x2000000) | (value ? 0x2000000u : 0)); } }
         public AlphaInstruction DestinationAlpha { get { return (AlphaInstruction)((Flags >> 26) & 7); } set { Flags = (uint)((Flags & ~0x1C000000) | ((uint)value << 26)); } }
         public AlphaInstruction SourceAlpha { get { return (AlphaInstruction)((Flags >> 29) & 7); } set { Flags = (uint)((Flags & ~0xE0000000) | ((uint)value << 29)); } }
+        #endregion
 
         public static int Size { get { return 0x14; } }
 
+        /// <summary>
+        /// Create a new material.
+        /// </summary>
         public Material()
         {
             DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
@@ -51,9 +58,33 @@ namespace SonicRetro.SAModel
             SourceAlpha = AlphaInstruction.SourceAlpha;
         }
 
+        /// <summary>
+        /// Use this if you need a copy of a material.
+        /// </summary>
+        /// <param name="copy"></param>
+        public Material(Material copy)
+        {
+            DiffuseColor = copy.DiffuseColor;
+            SpecularColor = copy.SpecularColor;
+            Exponent = copy.Exponent;
+            TextureID = copy.TextureID;
+            Flags = copy.Flags;
+        }
+
+        /// <summary>
+        /// Load a material from a file buffer
+        /// </summary>
+        /// <param name="file">byte array representing file</param>
+        /// <param name="address">address of this material within 'file' byte array.</param>
         public Material(byte[] file, int address)
             : this(file, address, new Dictionary<int, string>()) { }
 
+        /// <summary>
+        /// Load a material from a file buffer, with labels.
+        /// </summary>
+        /// <param name="file">byte array representing file</param>
+        /// <param name="address">address of this material within 'file' byte array.</param>
+        /// <param name="labels"></param>
         public Material(byte[] file, int address, Dictionary<int, string> labels)
         {
             DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, address));

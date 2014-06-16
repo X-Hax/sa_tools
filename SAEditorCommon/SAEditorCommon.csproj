@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTypes\CAMItem.cs" />
     <Compile Include="DataTypes\DeathZoneItem.cs" />
     <Compile Include="DataTypes\EditableRotation.cs" />
     <Compile Include="DataTypes\EditableVertex.cs" />

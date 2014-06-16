@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,23 +67,24 @@
             this.reportBugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.UserControl();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelPieceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deathZoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
-            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
-            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
+            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
+            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
+            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.cAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -240,6 +242,7 @@
             this.deathZonesToolStripMenuItem,
             this.backgroundToolStripMenuItem,
             this.sETITemsToolStripMenuItem,
+            this.cAMItemsToolStripMenuItem,
             this.statsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
@@ -255,7 +258,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
             this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-            this.characterToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.characterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.characterToolStripMenuItem.Text = "&Character";
             this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
             // 
@@ -304,7 +307,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-            this.levelToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.levelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.levelToolStripMenuItem.Text = "&Level";
             this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
             // 
@@ -332,7 +335,7 @@
             // 
             this.deathZonesToolStripMenuItem.CheckOnClick = true;
             this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
-            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deathZonesToolStripMenuItem.Text = "&Death Zones";
             this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
             // 
@@ -342,7 +345,7 @@
             this.backgroundToolStripMenuItem.CheckOnClick = true;
             this.backgroundToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.backgroundToolStripMenuItem.Text = "&Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
@@ -352,7 +355,7 @@
             this.sETITemsToolStripMenuItem.CheckOnClick = true;
             this.sETITemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.sETITemsToolStripMenuItem.Name = "sETITemsToolStripMenuItem";
-            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sETITemsToolStripMenuItem.Text = "SET Items";
             this.sETITemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
             // 
@@ -360,7 +363,7 @@
             // 
             this.statsToolStripMenuItem.Enabled = false;
             this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-            this.statsToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.statsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.statsToolStripMenuItem.Text = "Stats";
             this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
             // 
@@ -440,6 +443,39 @@
             this.deathZoneToolStripMenuItem.Text = "&Death Zone";
             this.deathZoneToolStripMenuItem.Click += new System.EventHandler(this.deathZoneToolStripMenuItem_Click);
             // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cut;
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.cutToolStripMenuItem.Text = "Cu&t";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.copy;
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.copyToolStripMenuItem.Text = "&Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Enabled = false;
+            this.pasteToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.paste;
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.pasteToolStripMenuItem.Text = "&Paste";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.delete;
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.deleteToolStripMenuItem.Text = "&Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -493,17 +529,6 @@
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // gizmoSpaceComboBox
-            // 
-            this.gizmoSpaceComboBox.Enabled = false;
-            this.gizmoSpaceComboBox.Items.AddRange(new object[] {
-            "Global",
-            "Local"});
-            this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
-            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
-            this.gizmoSpaceComboBox.Text = "Gizmo Space";
-            this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
-            // 
             // selectModeButton
             // 
             this.selectModeButton.Checked = true;
@@ -542,38 +567,24 @@
             this.rotateModeButton.ToolTipText = "Rotate Item Mode";
             this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
             // 
-            // cutToolStripMenuItem
+            // gizmoSpaceComboBox
             // 
-            this.cutToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cut;
-            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.cutToolStripMenuItem.Text = "Cu&t";
-            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            this.gizmoSpaceComboBox.Enabled = false;
+            this.gizmoSpaceComboBox.Items.AddRange(new object[] {
+            "Global",
+            "Local"});
+            this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
+            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
+            this.gizmoSpaceComboBox.Text = "Gizmo Space";
+            this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
             // 
-            // copyToolStripMenuItem
+            // cAMItemsToolStripMenuItem
             // 
-            this.copyToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.copy;
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.copyToolStripMenuItem.Text = "&Copy";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
-            // 
-            // pasteToolStripMenuItem
-            // 
-            this.pasteToolStripMenuItem.Enabled = false;
-            this.pasteToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.paste;
-            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.pasteToolStripMenuItem.Text = "&Paste";
-            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.delete;
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.deleteToolStripMenuItem.Text = "&Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.cAMItemsToolStripMenuItem.CheckOnClick = true;
+            this.cAMItemsToolStripMenuItem.Name = "cAMItemsToolStripMenuItem";
+            this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cAMItemsToolStripMenuItem.Text = "CAM Items";
+            this.cAMItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.cAMItemsToolStripMenuItem_CheckedChanged);
             // 
             // MainForm
             // 
@@ -661,6 +672,7 @@
         private System.Windows.Forms.ToolStripButton moveModeButton;
         private System.Windows.Forms.ToolStripButton rotateModeButton;
         private System.Windows.Forms.ToolStripComboBox gizmoSpaceComboBox;
+        private System.Windows.Forms.ToolStripMenuItem cAMItemsToolStripMenuItem;
     }
 }
 

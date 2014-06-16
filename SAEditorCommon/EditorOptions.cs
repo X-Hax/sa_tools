@@ -77,13 +77,13 @@ namespace SonicRetro.SAModel.SAEditorCommon
 
 		public static void RenderStateCommonSetup(Device d3ddevice)
 		{
-			d3ddevice.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
+            d3ddevice.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
 			d3ddevice.SamplerState[0].MagFilter = TextureFilter.Anisotropic;
 			d3ddevice.SamplerState[0].MipFilter = TextureFilter.Anisotropic;
 			d3ddevice.RenderState.Lighting = true;
 			d3ddevice.RenderState.SpecularEnable = true;
-			if (!OverrideLighting) d3ddevice.RenderState.Ambient = Color.Black;
-			else d3ddevice.RenderState.Ambient = Color.White;
+            if (!OverrideLighting) d3ddevice.RenderState.Ambient = Color.Black;
+            else d3ddevice.RenderState.Ambient = Color.White;
 			d3ddevice.RenderState.AlphaBlendEnable = false;
 			d3ddevice.RenderState.BlendOperation = BlendOperation.Add;
 			d3ddevice.RenderState.DestinationBlend = Blend.InvSourceAlpha;

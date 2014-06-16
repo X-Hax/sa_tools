@@ -84,6 +84,8 @@ namespace SonicRetro.SAModel.Direct3D
 			int[] adjacency = new int[functionReturnValue.NumberFaces * 3];
 			functionReturnValue.GenerateAdjacency(0.0001f, adjacency);
 			functionReturnValue.Optimize(MeshFlags.OptimizeCompact, adjacency);
+            /*float[] texCoordEps = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }; // TODO: make d3d mesh only for picking, ruthlessly weld things. Draw models with d3dDrawPrimitive
+            functionReturnValue.WeldVertices(WeldEpsilonsFlags.WeldAll, new WeldEpsilons { Position = 0.001f, TextureCoordinate = texCoordEps }, adjacency);*/
 
 			return functionReturnValue;
 		}
@@ -106,7 +108,8 @@ namespace SonicRetro.SAModel.Direct3D
 					Texture texture = null;
 					if (useMat)
 					{
-						mat = obj.Attach.MeshInfo[j].Material;
+                        mat = obj.Attach.MeshInfo[j].Material;
+
 						if (textures != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
 					}

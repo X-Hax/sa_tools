@@ -194,8 +194,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
 						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
 					LevelData.leveltexs = LevelData.geo.TextureFileName;
-				}
-				LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
+                }
+
+                #region Start Positions
+                LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
 				for (int i = 0; i < LevelData.StartPositions.Length; i++)
 				{
 					Dictionary<SA1LevelAct, SA1StartPosInfo> posini = SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
@@ -224,8 +226,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.Textures.Add(texname, texs);
 						}
 					}
-				}
-				if (!group.ContainsKey("DeathZones"))
+                }
+                #endregion
+
+                #region Death Zones
+                if (!group.ContainsKey("DeathZones"))
 					LevelData.DeathZones = null;
 				else
 				{
@@ -240,8 +245,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 							dzini[i].Flags, d3ddevice));
 						cnt++;
 					}
-				}
-				TextureListEntry[] objtexini = TextureList.Load(ini[string.Empty]["objtexlist"]);
+                }
+                #endregion
+
+                #region Textures and Texture Lists
+                TextureListEntry[] objtexini = TextureList.Load(ini[string.Empty]["objtexlist"]);
 				for (int oti = 0; oti < objtexini.Length; oti++)
 				{
 					string texname = objtexini[oti].Name;
@@ -304,8 +312,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if (string.IsNullOrEmpty(LevelData.leveltexs))
 							LevelData.leveltexs = tex;
 					}
-				}
-				LevelData.ObjDefs = new List<ObjectDefinition>();
+                }
+                #endregion
+
+                #region Object Definitions / SET Layout
+                LevelData.ObjDefs = new List<ObjectDefinition>();
 				Dictionary<string, ObjectData> objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini[string.Empty]["objdefs"]);
 				if (File.Exists(group.GetValueOrDefault("ObjList", string.Empty)))
 				{
@@ -363,6 +374,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.ObjDefs.Add(def);
 						def.Init(defgroup, objlstini[ID].Name, d3ddevice);
 					}
+
+                    // Loading SET Layout
 					if (LevelData.ObjDefs.Count > 0)
 					{
 						LevelData.SETName = group.GetValueOrDefault("SETName", ((int)levelact.Level).ToString("00") + levelact.Act.ToString("00"));
@@ -391,7 +404,36 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				else
 					LevelData.SETItems = null;
-				LevelData.leveleff = null;
+                #endregion
+
+                #region CAM Layout
+                LevelData.CAMName = ((int)levelact.Level).ToString("00") + levelact.Act.ToString("00");
+                string camstr = Path.Combine(syspath, "CAM" + LevelData.CAMName + "{0}.bin");
+
+                LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
+                for (int i = 0; i < LevelData.SETChars.Length; i++)
+                {
+                    List<CAMItem> list = new List<CAMItem>();
+                    if (File.Exists(string.Format(camstr, LevelData.SETChars[i])))
+                    {
+                        byte[] camfile = File.ReadAllBytes(string.Format(camstr, LevelData.SETChars[i]));
+                        int count = BitConverter.ToInt32(camfile, 0);
+                        int address = 0x40;
+                        for (int j = 0; j < count; j++)
+                        {
+                            CAMItem ent = new CAMItem(d3ddevice, camfile, address);
+                            list.Add(ent);
+                            address += 0x40;
+                        }
+                    }
+
+                    LevelData.CAMItems[i] = list;
+                }
+
+                #endregion
+
+                #region Loading Level Effects
+                LevelData.leveleff = null;
 				if (group.ContainsKey("Effects"))
 				{
 					LevelDefinition def = null;
@@ -431,7 +473,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (def != null)
 						def.Init(group, levelact.Act, d3ddevice);
 					LevelData.leveleff = def;
-				}
+                }
+                #endregion
 
                 transformGizmo = new TransformGizmo(d3ddevice);
                 gizmoSpaceComboBox.Enabled = true;
@@ -598,7 +641,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
 			#endregion
 
-			RenderInfo.Draw(renderlist, d3ddevice, cam);
+            #region Adding CAM Layout
+            if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
+            {
+                foreach (CAMItem item in LevelData.CAMItems[LevelData.Character]) renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+            }
+            #endregion
+
+            RenderInfo.Draw(renderlist, d3ddevice, cam);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 			d3ddevice.Present();
@@ -1157,11 +1207,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DrawLevel();
-		}
-
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DeathZoneItem item = new DeathZoneItem(d3ddevice);
@@ -1242,6 +1287,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			DrawLevel();
 		}
+
+        private void cAMItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawLevel();
+        }
+        private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DrawLevel();
+        }
 
         private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
         {

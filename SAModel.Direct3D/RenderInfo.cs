@@ -47,11 +47,11 @@ namespace SonicRetro.SAModel.Direct3D
                 Diffuse = Material.DiffuseColor,
                 Ambient = Material.DiffuseColor,
                 Specular = Material.IgnoreSpecular ? System.Drawing.Color.Transparent : Material.SpecularColor,
-                SpecularSharpness = Material.Exponent
+                SpecularSharpness = Material.Exponent * Material.Exponent
             };
             device.SetTexture(0, Material.UseTexture ? Texture : null);
-            device.Lights[0].Enabled = !Material.IgnoreLighting;
-            device.RenderState.AlphaBlendEnable = Material.UseAlpha;
+            device.RenderState.Ambient = (Material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+            device.RenderState.AlphaBlendEnable = Material.UseAlpha; if(Material.UseAlpha) device.RenderState.Ambient = Material.DiffuseColor;
             switch (Material.DestinationAlpha)
             {
                 case AlphaInstruction.Zero:
@@ -105,7 +105,7 @@ namespace SonicRetro.SAModel.Direct3D
             device.TextureState[0].TextureCoordinateIndex = Material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
             if (Mesh != null)
                 Mesh.DrawSubset(Subset);
-            device.Lights[0].Enabled = true;
+            device.RenderState.Ambient = System.Drawing.Color.Black;
             device.RenderState.FillMode = mode;
             device.SamplerState[0].MagFilter = magfilter;
             device.SamplerState[0].MinFilter = minfilter;

@@ -33,8 +33,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public static StartPosItem[] StartPositions;
         public static string LevelName;
         public static string SETName;
+        public static string CAMName;
         public static List<ObjectDefinition> ObjDefs;
         public static List<SETItem>[] SETItems;
+        public static List<CAMItem>[] CAMItems;
         public static List<DeathZoneItem> DeathZones;
         public static LevelDefinition leveleff;
 
