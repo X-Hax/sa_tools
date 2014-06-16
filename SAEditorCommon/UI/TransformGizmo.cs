@@ -80,6 +80,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         Material zMaterial;
         Material doubleAxisMaterial;
         Material highlightMaterial;
+        Texture gizmoTexture;
 
         private List<Item> affectedItems; // these are the items that will be affected by any transforms we are given.
         #endregion
@@ -159,6 +160,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             zMaterial = new SAModel.Material() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
             doubleAxisMaterial = new SAModel.Material() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
             highlightMaterial = new Material() { DiffuseColor = System.Drawing.Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+
+            gizmoTexture = new Texture(d3dDevice, new System.Drawing.Bitmap(2, 2), 0, Pool.Managed); // setting up texture
             #endregion
 
             #region Cleanup
@@ -193,7 +196,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             MatrixStack transform = new MatrixStack();
             transform.Push();
 
-            //float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(cam.Position, position) * ((mode == TransformMode.TRANSFORM_ROTATE) ? 1f : 0.0825f);
             float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(cam.Position, position) * 0.0825f;
 
             transform.TranslateLocal(position.X, position.Y, position.Z);
@@ -274,7 +276,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             if (mode == TransformMode.TRANFORM_MOVE)
             {
                 BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(position.X, position.Y, position.Z), Radius = (1.0f * Math.Abs(dist)) };
-                Texture gizmoTexture = new Texture(dev, new System.Drawing.Bitmap(2, 2), 0, Pool.Managed);
                 RenderInfo xRenderInfo = new RenderInfo(xMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? highlightMaterial : xMaterial, gizmoTexture, FillMode.Solid, gizmoSphere);
                 result.Add(xRenderInfo);
                 RenderInfo yRenderInfo = new RenderInfo(yMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? highlightMaterial : yMaterial, gizmoTexture, FillMode.Solid, gizmoSphere);
@@ -344,7 +345,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             if ((selectedAxes == GizmoSelectedAxes.NONE) || (mode == TransformMode.NONE)) return;
 
             float yFlip = -1; // I don't think we'll ever need to mess with this
-            float xFlip = 1; // this though, should get flipped depending on the camera's orientation to the object.
+            float xFlip = 1; // TODO: this though, should get flipped depending on the camera's orientation to the object.
 
             for (int i = 0; i < affectedItems.Count; i++) // loop through operands
             {
@@ -354,7 +355,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                     if (isTransformnLocal) // then check operant space.
                     {
                         Vector3 Up = new Vector3(), Look = new Vector3(), Right = new Vector3();
-                        //float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f;
                         Matrix itemMatrix = affectedItems[i].Transform(out Up, out Right, out Look);
 
                         Vector3 currentPosition = currentItem.Position.ToVector3();
@@ -417,7 +417,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                         Rotation oldRotation = currentItem.Rotation;
                         Rotation newRotation = SAModel.Direct3D.Extensions.FromMatrix(objTransform.Top);
 
-                        // todo: Fix Matrix->Euler conversion, then uncomment the line with the rotatexyzlocal call. Then uncomment the call below and the gizmo should work.
+                        // todo: Fix Matrix->Euler conversion, then uncomment the line with the rotatexyz call. Then uncomment the call below and the gizmo should work.
                         //currentItem.Rotation = newRotation;
                     }
                 }

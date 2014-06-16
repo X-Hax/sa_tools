@@ -6,18 +6,23 @@ using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SADXLVL2;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using System.Drawing;
 
 namespace SADXObjectDefinitions.Common
 {
     class PUWind : ObjectDefinition
     {
-        private SonicRetro.SAModel.Object model;
-        private Microsoft.DirectX.Direct3D.Mesh[] meshes;
+        SonicRetro.SAModel.Material material;
+        Texture texture;
+        Mesh mesh;
 
         public override void Init(ObjectData data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Collision/Cube Model.sa1mdl");
-            meshes = ObjectHelper.GetMeshes(model, dev);
+            mesh = Mesh.Box(dev, 1f, 1f, 1f);
+            material = new SonicRetro.SAModel.Material();
+            material.DiffuseColor = Color.FromArgb(180,180,180,180);
+            material.UseAlpha = true;
+            texture = new Texture(dev, new System.Drawing.Bitmap(2, 2), 0, Pool.Managed);
         }
 
         public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -25,9 +30,10 @@ namespace SADXObjectDefinitions.Common
             transform.Push();
             transform.NJTranslate(item.Position);
             transform.NJRotateY(item.Rotation.Y);
-            transform.NJScale((item.Scale.X + 5) / 10f, (item.Scale.Y + 5) / 10f, (item.Scale.Z + 5) / 10f);
-            HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
-            transform.Pop();
+            transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
+            HitResult result = mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
+            
+            transform.Pop(); 
             return result;
         }
 
@@ -37,10 +43,17 @@ namespace SADXObjectDefinitions.Common
             transform.Push();
             transform.NJTranslate(item.Position);
             transform.NJRotateY(item.Rotation.Y);
-            transform.NJScale((item.Scale.X + 5) / 10f, (item.Scale.Y + 5) / 10f, (item.Scale.Z + 5) / 10f);
-            result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-            if (selected)
-                result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+            transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
+
+            float largestScale = item.Scale.X;
+            if (item.Scale.Y > largestScale) largestScale = item.Scale.Y;
+            if(item.Scale.Z > largestScale) largestScale = item.Scale.Z;
+
+            SonicRetro.SAModel.BoundingSphere boxSphere = new SonicRetro.SAModel.BoundingSphere() { Center = new SonicRetro.SAModel.Vertex(item.Position.X,item.Position.Y, item.Position.Z), Radius = (1.5f * largestScale) };
+
+            RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Solid, boxSphere);
+            result.Add(outputInfo);
+
             transform.Pop();
             return result.ToArray();
         }

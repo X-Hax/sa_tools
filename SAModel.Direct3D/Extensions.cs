@@ -281,6 +281,16 @@ namespace SonicRetro.SAModel.Direct3D
 			return result.ToArray();
 		}
 
+        public static HitResult CheckHit(this Microsoft.DirectX.Direct3D.Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+        {
+            if (mesh == null) return HitResult.NoHit;
+            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
+            IntersectInformation info;
+            if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
+            return new HitResult(null, info.Dist);
+        }
+
 		public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
