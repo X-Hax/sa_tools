@@ -5,6 +5,7 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     public class Material
     {
         #region Basic Variables (internal use)

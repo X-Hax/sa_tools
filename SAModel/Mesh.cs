@@ -5,6 +5,7 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     public class Mesh
     {
         public ushort MaterialID { get; set; }
@@ -60,7 +61,7 @@ namespace SonicRetro.SAModel
                 }
             }
             else
-                PolyNormalName = "polynormal_" + Object.GenerateIdentifier();
+                PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
             tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
             if (tmpaddr != 0)
             {
@@ -77,7 +78,7 @@ namespace SonicRetro.SAModel
                 }
             }
             else
-                VColorName = "vcolor_" + Object.GenerateIdentifier();
+                VColorName = "vcolor_" + Extensions.GenerateIdentifier();
             tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
             if (tmpaddr != 0)
             {
@@ -94,13 +95,13 @@ namespace SonicRetro.SAModel
                 }
             }
             else
-                UVName = "uv_" + Object.GenerateIdentifier();
+                UVName = "uv_" + Extensions.GenerateIdentifier();
         }
 
         public Mesh(Basic_PolyType polyType, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
         {
             if (polyType == SAModel.Basic_PolyType.NPoly | polyType == SAModel.Basic_PolyType.Strips) throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", "polyType");
-            PolyName = "poly_" + Object.GenerateIdentifier();
+            PolyName = "poly_" + Extensions.GenerateIdentifier();
             PolyType = polyType;
             Poly[] polys = new Poly[polyCount];
             int striptotal = 0;
@@ -112,19 +113,19 @@ namespace SonicRetro.SAModel
             Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
             if (hasPolyNormal)
             {
-                PolyNormalName = "polynormal_" + Object.GenerateIdentifier();
+                PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
                 PolyNormal = new Vertex[polys.Length];
                 for (int i = 0; i < polys.Length; i++)
                     PolyNormal[i] = new Vertex();
             }
             if (hasVColor)
             {
-                VColorName = "vcolor_" + Object.GenerateIdentifier();
+                VColorName = "vcolor_" + Extensions.GenerateIdentifier();
                 VColor = new Color[striptotal];
             }
             if (hasUV)
             {
-                UVName = "uv_" + Object.GenerateIdentifier();
+                UVName = "uv_" + Extensions.GenerateIdentifier();
                 UV = new UV[striptotal];
                 for (int i = 0; i < striptotal; i++)
                     UV[i] = new UV();
@@ -133,7 +134,7 @@ namespace SonicRetro.SAModel
 
         public Mesh(Poly[] polys, bool hasPolyNormal, bool hasUV, bool hasVColor)
         {
-			PolyName = "poly_" + Object.GenerateIdentifier();
+			PolyName = "poly_" + Extensions.GenerateIdentifier();
 			PolyType = polys[0].PolyType;
 			int striptotal = 0;
             for (int i = 0; i < polys.Length; i++)
@@ -141,12 +142,12 @@ namespace SonicRetro.SAModel
             Poly = new ReadOnlyCollection<SAModel.Poly>(polys);
             if (hasVColor)
 			{
-				VColorName = "vcolor_" + Object.GenerateIdentifier();
+				VColorName = "vcolor_" + Extensions.GenerateIdentifier();
 				VColor = new Color[striptotal];
 			}
 			if (hasUV)
 			{
-				UVName = "uv_" + Object.GenerateIdentifier();
+				UVName = "uv_" + Extensions.GenerateIdentifier();
 				UV = new UV[striptotal];
 				for (int i = 0; i < striptotal; i++)
 					UV[i] = new UV();

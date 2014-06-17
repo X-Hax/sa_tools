@@ -27,7 +27,7 @@ namespace SonicRetro.SAModel
 
         public Object()
         {
-            Name = "object_" + GenerateIdentifier();
+            Name = "object_" + Extensions.GenerateIdentifier();
             Position = new Vertex();
             Rotation = new Rotation();
             Scale = new Vertex(1, 1, 1);
@@ -665,12 +665,5 @@ namespace SonicRetro.SAModel
         }
 
 		public string ToStructVariables(bool DX, List<string> labels) { return ToStructVariables(DX, labels, null); }
-
-        static readonly Random rand = new Random();
-
-        internal static string GenerateIdentifier()
-        {
-            return DateTime.Now.Ticks.ToString("X") + rand.Next(0, 65536).ToString("X4");
-        }
     }
 }

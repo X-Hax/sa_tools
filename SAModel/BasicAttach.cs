@@ -18,16 +18,16 @@ namespace SonicRetro.SAModel
 
         public BasicAttach()
         {
-            Name = "attach_" + Object.GenerateIdentifier();
+            Name = "attach_" + Extensions.GenerateIdentifier();
             Bounds = new BoundingSphere();
             Material = new List<Material>();
-            MaterialName = "matlist_" + Object.GenerateIdentifier();
+            MaterialName = "matlist_" + Extensions.GenerateIdentifier();
             Mesh = new List<Mesh>();
-            MeshName = "meshlist_" + Object.GenerateIdentifier();
+            MeshName = "meshlist_" + Extensions.GenerateIdentifier();
             Vertex = new Vertex[0];
-            VertexName = "vertex_" + Object.GenerateIdentifier();
+            VertexName = "vertex_" + Extensions.GenerateIdentifier();
             Normal = new Vertex[0];
-            NormalName = "normal_" + Object.GenerateIdentifier();
+            NormalName = "normal_" + Extensions.GenerateIdentifier();
         }
 
         public BasicAttach(byte[] file, int address, uint imageBase, bool DX)
@@ -110,7 +110,7 @@ namespace SonicRetro.SAModel
             Mesh = new List<Mesh>(mesh);
             Material = new List<Material>(material);
 
-            Name = "attach_" + Object.GenerateIdentifier();
+            Name = "attach_" + Extensions.GenerateIdentifier();
         }
 
         public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)

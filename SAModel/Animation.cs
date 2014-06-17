@@ -58,7 +58,7 @@ namespace SonicRetro.SAModel
         public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
         public Animation()
         {
-            Name = "animation_" + Object.GenerateIdentifier();
+            Name = "animation_" + Extensions.GenerateIdentifier();
         }
 
         public Animation(byte[] file, int address, uint imageBase, int nummodels)

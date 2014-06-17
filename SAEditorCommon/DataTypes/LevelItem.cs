@@ -17,10 +17,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         [Browsable(false)]
         private COL COL { get; set; }
         public COL CollisionData { get { return COL; } }
+		[NonSerialized]
+		private Microsoft.DirectX.Direct3D.Mesh mesh;
         [Browsable(false)]
-        private Microsoft.DirectX.Direct3D.Mesh Mesh { get; set; }
-
-        private Device dev;
+		private Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
         /// <summary>
         /// Creates a Levelitem from an external file.
@@ -31,12 +31,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         /// <param name="rotation">Rotation to apply to the model.</param>
         public LevelItem(Device dev, string filePath, Vertex position, Rotation rotation)
         {
-            this.dev = dev;
             COL = new COL();
             COL.Model = new SonicRetro.SAModel.Object();
             COL.Model.Position = position;
             COL.Model.Rotation = rotation;
-            ImportModel(filePath);
+            ImportModel(filePath, dev);
             COL.CalculateBounds();
             Paste();
         }
@@ -51,7 +50,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             COL = col;
             col.Model.ProcessVertexData();
             Mesh = col.Model.Attach.CreateD3DMesh(dev);
-            this.dev = dev;
         }
 
         /// <summary>
@@ -110,9 +108,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             LevelData.LevelItems.Remove(this);
         }
 
-        [Browsable(true)]
-        [DisplayName("Import Model")]
-        public void ImportModel(string filePath)
+        public void ImportModel(string filePath, Device dev)
         {
             COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
             Visible = true;

@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     [TypeConverter(typeof(VertexConverter))]
     public class Vertex
     {

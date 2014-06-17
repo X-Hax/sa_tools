@@ -4,6 +4,7 @@ using System.Drawing;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     public class VertexChunk
     {
         public uint Header1 { get; set; }

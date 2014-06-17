@@ -18,9 +18,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
     {
         [Browsable(false)]
         private SonicRetro.SAModel.Object Model { get; set; }
-        [Browsable(false)]
-        private Microsoft.DirectX.Direct3D.Mesh Mesh { get; set; }
+		[NonSerialized]
+		private Microsoft.DirectX.Direct3D.Mesh mesh;
+		[Browsable(false)]
+		private Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
+		[NonSerialized]
         private Device dev;
 
         public DeathZoneItem(Device dev)

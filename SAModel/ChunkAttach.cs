@@ -16,7 +16,7 @@ namespace SonicRetro.SAModel
 
         public ChunkAttach()
         {
-            Name = "attach_" + Object.GenerateIdentifier();
+            Name = "attach_" + Extensions.GenerateIdentifier();
             Bounds = new BoundingSphere();
         }
 
@@ -26,12 +26,12 @@ namespace SonicRetro.SAModel
             if (hasVertex)
             {
                 Vertex = new List<VertexChunk>();
-                VertexName = "vertex_" + Object.GenerateIdentifier();
+                VertexName = "vertex_" + Extensions.GenerateIdentifier();
             }
             if (hasPoly)
             {
                 Poly = new List<PolyChunk>();
-                PolyName = "poly_" + Object.GenerateIdentifier();
+                PolyName = "poly_" + Extensions.GenerateIdentifier();
             }
         }
 

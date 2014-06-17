@@ -10,7 +10,9 @@ namespace SonicRetro.SAModel
     {
         public string Name { get; set; }
         public BoundingSphere Bounds { get; set; }
-        public MeshInfo[] MeshInfo { get; protected set; }
+		[NonSerialized]
+		private MeshInfo[] meshInfo;
+		public MeshInfo[] MeshInfo { get { return meshInfo; } protected set { meshInfo = value; } }
 
         public static int Size(ModelFormat format)
         {

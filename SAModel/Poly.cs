@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     public sealed class Triangle : Poly
     {
         public Triangle()
@@ -21,6 +22,7 @@ namespace SonicRetro.SAModel
         public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Triangles; } }
     }
 
+	[Serializable]
     public sealed class Quad : Poly
     {
         public Quad()
@@ -40,6 +42,7 @@ namespace SonicRetro.SAModel
         public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Quads; } }
     }
 
+	[Serializable]
     public sealed class Strip : Poly
     {
         public bool Reversed { get; private set; }
@@ -92,6 +95,7 @@ namespace SonicRetro.SAModel
         }
     }
 
+	[Serializable]
     public abstract class Poly
     {
         public ushort[] Indexes { get; protected set; }

@@ -80,7 +80,7 @@ namespace SonicRetro.SAModel
                         }
                     }
                     else
-                        COLName = "collist_" + Object.GenerateIdentifier();
+                        COLName = "collist_" + Extensions.GenerateIdentifier();
                     Anim = new List<GeoAnimData>();
                     tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
                     if (tmpaddr != 0)
@@ -97,7 +97,7 @@ namespace SonicRetro.SAModel
                         }
                     }
                     else
-                        AnimName = "animlist_" + Object.GenerateIdentifier();
+                        AnimName = "animlist_" + Extensions.GenerateIdentifier();
                     tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
                     if (tmpaddr != 0)
                     {
@@ -127,9 +127,9 @@ namespace SonicRetro.SAModel
                         }
                     }
                     else
-                        COLName = "collist_" + Object.GenerateIdentifier();
+                        COLName = "collist_" + Extensions.GenerateIdentifier();
                     Anim = new List<GeoAnimData>();
-                    AnimName = "animlist_" + Object.GenerateIdentifier();
+                    AnimName = "animlist_" + Extensions.GenerateIdentifier();
                     tmpaddr = ByteConverter.ToInt32(file, address + 0x18);
                     if (tmpaddr != 0)
                     {

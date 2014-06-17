@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SonicRetro.SAModel
 {
+	[Serializable]
     public class BoundingSphere
     {
         public Vertex Center { get; set; }

@@ -6,6 +6,7 @@ using System.ComponentModel;
 namespace SonicRetro.SAModel
 {
     [TypeConverter(typeof(UVConverter))]
+	[Serializable]
     public class UV
     {
         public float U { get; set; }

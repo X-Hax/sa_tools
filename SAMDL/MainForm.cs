@@ -60,7 +60,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelTree = new ModelTreeForm(this);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-            EditorOptions.InitializeDefaultLights(d3ddevice);
+			EditorOptions.InitializeDefaultLights(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -196,7 +196,8 @@ namespace SonicRetro.SAModel.SAMDL
 					catch { }
 			modelTree.Repopulate(model);
 			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
-			DrawLevel();
+			selectedObject = model;
+			SelectedItemChanged();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -248,7 +249,7 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
 			//all drawings after this line
-            EditorOptions.RenderStateCommonSetup(d3ddevice);
+			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			MatrixStack transform = new MatrixStack();
 			if (animation != null)
@@ -592,61 +593,106 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 		}
 
+		internal Type GetAttachType()
+		{
+			return outfmt == ModelFormat.Chunk ? typeof(ChunkAttach) : typeof(BasicAttach);
+		}
+
 		internal void SelectedItemChanged()
 		{
 			modelTree.SelectNode(selectedObject);
+			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
+			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 			DrawLevel();
 		}
 
-        private void objToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog a = new SaveFileDialog
-            {
-                DefaultExt = "obj",
-                Filter = "OBJ Files|*.obj"
-            };
-            if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-                using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-                {
-                    #region Material Exporting
-                    string materialPrefix = model.Name;
+		private void objToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "obj",
+				Filter = "OBJ Files|*.obj"
+			};
+			if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+				{
+					#region Material Exporting
+					string materialPrefix = model.Name;
 
-                    objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-                    // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-                    // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-                    for (int texIndx = 0; texIndx < TextureBmps.Length; texIndx++)
-                    {
-                        mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-                        mtlstream.WriteLine("Ka 1 1 1");
-                        mtlstream.WriteLine("Kd 1 1 1");
-                        mtlstream.WriteLine("Ks 0 0 0");
-                        mtlstream.WriteLine("illum 1");
+					// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+					for (int texIndx = 0; texIndx < TextureBmps.Length; texIndx++)
+					{
+						mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+						mtlstream.WriteLine("Ka 1 1 1");
+						mtlstream.WriteLine("Kd 1 1 1");
+						mtlstream.WriteLine("Ks 0 0 0");
+						mtlstream.WriteLine("illum 1");
 
-                        if (!string.IsNullOrEmpty(TextureNames[texIndx]))
-                        {
-                            mtlstream.WriteLine("Map_Kd " + TextureNames[texIndx] + ".png");
+						if (!string.IsNullOrEmpty(TextureNames[texIndx]))
+						{
+							mtlstream.WriteLine("Map_Kd " + TextureNames[texIndx] + ".png");
 
-                            // save texture
-                            string mypath = System.IO.Path.GetDirectoryName(a.FileName);
-                            TextureBmps[texIndx].Save(Path.Combine(mypath, TextureNames[texIndx] + ".png"));
-                        }
-                    }
-                    #endregion
+							// save texture
+							string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+							TextureBmps[texIndx].Save(Path.Combine(mypath, TextureNames[texIndx] + ".png"));
+						}
+					}
+					#endregion
 
-                    int totalVerts = 0;
-                    int totalNorms = 0;
-                    int totalUVs = 0;
+					int totalVerts = 0;
+					int totalNorms = 0;
+					int totalUVs = 0;
 
-                    bool errorFlag = false;
+					bool errorFlag = false;
 
-                    SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+					SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-                    if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-                }
-            }
-        }
+					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+				}
+			}
+		}
+
+		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetData(GetAttachType().AssemblyQualifiedName, selectedObject.Attach);
+		}
+
+		private void pasteModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
+			if (selectedObject.Attach != null)
+				attach.Name = selectedObject.Attach.Name;
+			if (attach is BasicAttach)
+			{
+				BasicAttach batt = (BasicAttach)attach;
+				batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+				batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
+				foreach (Mesh m in batt.Mesh)
+				{
+					m.PolyName = "poly_" + Extensions.GenerateIdentifier();
+					m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+					m.UVName = "uv_" + Extensions.GenerateIdentifier();
+					m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+				}
+			}
+			else if (attach is ChunkAttach)
+			{
+				ChunkAttach catt = (ChunkAttach)attach;
+				catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+				catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+			}
+			selectedObject.Attach = attach;
+			attach.ProcessVertexData();
+			Object[] models = model.GetObjects();
+			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
+			catch { }
+		}
 	}
 }
