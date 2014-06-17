@@ -660,6 +660,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Clipboard.SetData(GetAttachType().AssemblyQualifiedName, selectedObject.Attach);
+			pasteModelToolStripMenuItem.Enabled = true;
 		}
 
 		private void pasteModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -693,6 +694,7 @@ namespace SonicRetro.SAModel.SAMDL
 			Object[] models = model.GetObjects();
 			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
 			catch { }
+			DrawLevel();
 		}
 	}
 }
