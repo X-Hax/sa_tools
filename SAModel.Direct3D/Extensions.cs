@@ -100,7 +100,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (mesh == null) return new RenderInfo[0];
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			if (obj.Attach != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -133,7 +133,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (mesh == null) return new RenderInfo[0];
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			if (obj.Attach != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -163,7 +163,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -191,7 +191,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -227,9 +227,9 @@ namespace SonicRetro.SAModel.Direct3D
 			if (animate) animindex++;
 			if (!anim.Models.ContainsKey(animindex)) animate = false;
 			if (animate)
-				transform.LoadMatrix(obj.ProcessTransforms(anim.Models[animindex], animframe, transform.Top));
+				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
 			else
-				transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+				obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -262,9 +262,9 @@ namespace SonicRetro.SAModel.Direct3D
 			if (animate) animindex++;
 			if (!anim.Models.ContainsKey(animindex)) animate = false;
 			if (animate)
-				transform.LoadMatrix(obj.ProcessTransforms(anim.Models[animindex], animframe, transform.Top));
+				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
 			else
-				transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+				obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
@@ -299,7 +299,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (mesh == null) return HitResult.NoHit;
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
 			IntersectInformation info;
@@ -317,7 +317,7 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			transform.Push();
 			modelindex++;
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
 			if (obj.Attach != null & mesh[modelindex] != null)
 			{
@@ -353,9 +353,9 @@ namespace SonicRetro.SAModel.Direct3D
 			if (animate) animindex++;
 			if (!anim.Models.ContainsKey(animindex)) animate = false;
 			if (animate)
-				transform.LoadMatrix(obj.ProcessTransforms(anim.Models[animindex], animframe, transform.Top));
+				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
 			else
-				transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+				obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
 			if (obj.Attach != null & mesh[modelindex] != null)
 			{
@@ -776,7 +776,7 @@ namespace SonicRetro.SAModel.Direct3D
 		private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 
 			if ((obj.Attach != null))
 			{
@@ -1012,7 +1012,7 @@ namespace SonicRetro.SAModel.Direct3D
 		private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
-			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+			obj.ProcessTransforms(transform);
 
 			// add obj writing here
 			if ((obj.Attach != null))
@@ -1170,9 +1170,7 @@ namespace SonicRetro.SAModel.Direct3D
 			else if (obj.Attach == null) // model is a dummy node
 			{
 				transform.Push();
-				transform.TranslateLocal(obj.Position.ToVector3());
-				transform.RotateYawPitchRollLocal(SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Y), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.X), SAModel.Direct3D.Extensions.BAMSToRad(obj.Rotation.Z));
-				transform.ScaleLocal(obj.Scale.ToVector3());
+				obj.ProcessTransforms(transform);
 
 				foreach (Object child in obj.Children)
 					WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
@@ -1199,6 +1197,11 @@ namespace SonicRetro.SAModel.Direct3D
 			return matrix;
 		}
 
+		public static void ProcessTransforms(this Object obj, MatrixStack transform)
+		{
+			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+		}
+
 		public static Matrix ProcessTransforms(this Object obj, AnimModelData anim, int animframe, Matrix matrix)
 		{
 			if (anim == null)
@@ -1221,6 +1224,11 @@ namespace SonicRetro.SAModel.Direct3D
 			if (scale.X != 1 || scale.Y != 1 || scale.Z != 1)
 				MatrixFunctions.Scale(ref matrix, scale);
 			return matrix;
+		}
+
+		public static void ProcessTransforms(this Object obj, AnimModelData anim, int animframe, MatrixStack transform)
+		{
+			transform.LoadMatrix(obj.ProcessTransforms(anim, animframe, transform.Top));
 		}
 
 		private static float[] BAMSTable = {

@@ -274,9 +274,9 @@ namespace SonicRetro.SAModel.SAMDL
 			modelindex++;
 			if (obj.Animate) animindex++;
 			if (animation != null && animation.Models.ContainsKey(animindex))
-				transform.LoadMatrix(obj.ProcessTransforms(animation.Models[animindex], animframe, transform.Top));
+				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
 			else
-				transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
+				obj.ProcessTransforms(transform);
 			if (obj == selectedObject)
 			{
 				if (obj.Attach != null)
