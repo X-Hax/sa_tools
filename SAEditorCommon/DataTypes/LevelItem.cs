@@ -154,41 +154,73 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             }
         }
 
-        public bool Visible
-        {
-            get
-            {
-                return (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible;
-            }
-            set
-            {
-                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0);
-            }
-        }
-
+        #region Surface Flag Accessors
         public bool Solid
         {
-            get
-            {
-                return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid;
-            }
-            set
-            {
-                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0);
-            }
+            get { return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0); }
         }
 
         public bool Water
         {
-            get
-            {
-                return (COL.SurfaceFlags & SurfaceFlags.Water) == SurfaceFlags.Water;
-            }
-            set
-            {
-                COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Water) | (value ? SurfaceFlags.Water : 0);
-            }
+            get { return (COL.SurfaceFlags & SurfaceFlags.Water) == SurfaceFlags.Water; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Water) | (value ? SurfaceFlags.Water : 0); }
         }
+
+        public bool NoFriction
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.NoFriction) == SurfaceFlags.NoFriction;}
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.NoFriction) | (value ? SurfaceFlags.NoFriction : 0); }
+        }
+
+        public bool NoAcceleration
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.NoAcceleration) == SurfaceFlags.NoAcceleration; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.NoAcceleration) | (value ? SurfaceFlags.NoAcceleration : 0); }
+        }
+
+        public bool CannotLand
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.CannotLand) == SurfaceFlags.CannotLand; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.CannotLand) | (value ? SurfaceFlags.CannotLand : 0); }
+        }
+
+        public bool IncreasedAcceleration
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.IncreasedAcceleration) == SurfaceFlags.IncreasedAcceleration; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.IncreasedAcceleration) | (value ? SurfaceFlags.IncreasedAcceleration : 0); }
+        }
+
+        public bool Diggable
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.Diggable) == SurfaceFlags.Diggable; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Diggable) | (value ? SurfaceFlags.Diggable : 0); }
+        }
+
+        public bool Unclimbable
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.Unclimbable) == SurfaceFlags.Unclimbable; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Unclimbable) | (value ? SurfaceFlags.Unclimbable : 0); }
+        }
+
+        public bool Hurt
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.Hurt) == SurfaceFlags.Hurt; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Hurt) | (value ? SurfaceFlags.Hurt : 0); }
+        }
+
+        public bool Footprints
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.Footprints) == SurfaceFlags.Footprints; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Footprints) | (value ? SurfaceFlags.Footprints : 0); }
+        }
+
+        public bool Visible
+        {
+            get { return (COL.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible; }
+            set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Visible) | (value ? SurfaceFlags.Visible : 0); }
+        }
+        #endregion
 
         public void Save() { COL.CalculateBounds(); }
 

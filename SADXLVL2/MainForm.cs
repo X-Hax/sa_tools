@@ -702,6 +702,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
                     if ((transformGizmo.SelectedAxes == GizmoSelectedAxes.NONE))
                     {
+                        #region Picking Level Items
                         if (LevelData.LevelItems != null)
                         {
                             for (int i = 0; i < LevelData.LevelItems.Count; i++)
@@ -724,12 +725,18 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 }
                             }
                         }
+                        #endregion
+
+                        #region Picking Start Positions
                         dist = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
                         if (dist.IsHit & dist.Distance < mindist)
                         {
                             mindist = dist.Distance;
                             item = LevelData.StartPositions[LevelData.Character];
                         }
+                        #endregion
+
+                        #region Picking SET Items
                         if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
                             foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
                             {
@@ -740,6 +747,24 @@ namespace SonicRetro.SAModel.SADXLVL2
                                     item = setitem;
                                 }
                             }
+                        #endregion
+
+                        #region Picking CAM Items
+                        if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
+                        {
+                            foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+                            {
+                                dist = camItem.CheckHit(Near, Far, viewport, proj, view);
+                                if (dist.IsHit & dist.Distance < mindist)
+                                {
+                                    mindist = dist.Distance;
+                                    item = camItem;
+                                }
+                            }
+                        }
+                        #endregion
+
+                        #region Picking Death Zones
                         if (LevelData.DeathZones != null)
                             foreach (DeathZoneItem dzitem in LevelData.DeathZones)
                                 if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
@@ -751,6 +776,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                         item = dzitem;
                                     }
                                 }
+                        #endregion
 
                         if (item != null)
                         {

@@ -58,6 +58,7 @@ namespace SonicRetro.SAModel
         Water = 0x2,
         NoFriction = 0x4,
         NoAcceleration = 0x8,
+        CannotLand = 0x40,
         IncreasedAcceleration = 0x80,
         Diggable = 0x100,
         Unclimbable = 0x1000,

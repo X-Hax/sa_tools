@@ -52,7 +52,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         private Rotation rotation;
 
         private bool enabled = false;
-        private bool isTransformnLocal = false; // if TRUE,  the gizmo is in Local mode.
+        private bool isTransformLocal = false; // if TRUE,  the gizmo is in Local mode.
         private GizmoSelectedAxes selectedAxes = GizmoSelectedAxes.NONE; // if this value is not NONE and enabled is true, you've gotten yourself into an invalid state.
         private TransformMode mode = TransformMode.NONE;
 
@@ -104,10 +104,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         public bool LocalTransform
         {
-            get { return isTransformnLocal; }
+            get { return isTransformLocal; }
             set
             {
-                isTransformnLocal = value;
+                isTransformLocal = value;
                 SetGizmo();
             }
         }
@@ -283,7 +283,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 RenderInfo zRenderInfo = new RenderInfo(zMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? highlightMaterial : zMaterial, gizmoTexture, FillMode.Solid, gizmoSphere);
                 result.Add(zRenderInfo);
 
-                if(!isTransformnLocal) // this is such a cop-out. I'll try to find a better solution.
+                if(!isTransformLocal) // this is such a cop-out. I'll try to find a better solution.
                 {
                 RenderInfo xyRenderInfo = new RenderInfo(xyMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XY_AXIS) ? highlightMaterial : doubleAxisMaterial, gizmoTexture, FillMode.Solid, gizmoSphere);
                 result.Add(xyRenderInfo);
@@ -327,7 +327,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         private void SetGizmo()
         {
             position = Item.CenterFromSelection(affectedItems).ToVector3();
-            if ((affectedItems.Count == 1) && isTransformnLocal) rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
+            if ((affectedItems.Count == 1) && isTransformLocal) rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
             else rotation = new Rotation();
 
             if (affectedItems.Count > 0) enabled = true;
@@ -352,7 +352,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 Item currentItem = affectedItems[i];
                 if (mode == TransformMode.TRANFORM_MOVE) // first, check what operation should be performed
                 {
-                    if (isTransformnLocal) // then check operant space.
+                    if (isTransformLocal) // then check operant space.
                     {
                         Vector3 Up = new Vector3(), Look = new Vector3(), Right = new Vector3();
                         Matrix itemMatrix = affectedItems[i].Transform(out Up, out Right, out Look);
@@ -388,13 +388,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 }
                 else if (mode == TransformMode.TRANSFORM_ROTATE) // first, check what operation should be performed
                 {
-                    if (currentItem is StartPosItem)
+                    if (currentItem is StartPosItem) 
                     {
                         currentItem.Rotation.Y += (int)xChange;
                         continue;
                     }
+                    else if (currentItem is CAMItem)
+                    {
+                        currentItem.Rotation.Y += (int)xChange * 2;
+                        continue;
+                    }
 
-                    if (isTransformnLocal) // then check operant space.
+                    if (isTransformLocal) // then check operant space.
                     {
                         if (selectedAxes == GizmoSelectedAxes.X_AXIS) currentItem.Rotation.XDeg += (int)xChange;
                         else if (selectedAxes == GizmoSelectedAxes.Y_AXIS) currentItem.Rotation.ZDeg += (int)xChange;

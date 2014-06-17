@@ -21,7 +21,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public byte PanSpeed { get; set; }
         public byte Priority { get; set; }
         public short Unknown_2 { get; set; } // possibly a x or z rotation
-        public short YRotation { get; set; }
+        //public short YRotation { get; set; }
         public Vertex Scale { get; set; }
         public Int32 NotUsed { get; set; }
         public Vertex PointA { get; set; }
@@ -29,7 +29,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public float Variable { get; set; }
 
         public override Vertex Position { get; set; }
-        public override Rotation Rotation
+        /*public override Rotation Rotation
         {
             get
             {
@@ -39,13 +39,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             {
                 YRotation = (short)value.Y;
             }
-        }
+        }*/
+        public override Rotation Rotation { get; set; }
         #endregion
 
         #region Render / Volume Vars
         Microsoft.DirectX.Direct3D.Mesh volumeMesh;
         SonicRetro.SAModel.Material material;
-        Texture texture;
         #endregion
 
         #region Construction / Initialization
@@ -73,7 +73,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             PanSpeed = file[address + 2];
             Priority = file[address + 3];
             Unknown_2 = BitConverter.ToInt16(file, address + 4);
-            YRotation = BitConverter.ToInt16(file, address + 6);
+            Rotation = new Rotation(0, BitConverter.ToInt16(file, address + 6), 0);
             Position = new Vertex(file, address + 8);
             Scale = new Vertex(file, address + 20);
             NotUsed = BitConverter.ToInt32(file, address + 32);
@@ -88,13 +88,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             volumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 1.5f, 1.5f, 1.5f);
             material = new Material();
-            material.DiffuseColor = System.Drawing.Color.FromArgb(240, System.Drawing.Color.Purple);
+            material.DiffuseColor = System.Drawing.Color.FromArgb(200, System.Drawing.Color.Purple);
             material.SpecularColor = System.Drawing.Color.Black;
             material.DoubleSided = false;
-            material.Exponent = 0;
-            material.IgnoreSpecular = true;
+            material.Exponent = 10;
+            material.IgnoreSpecular = false;
             material.UseTexture = false;
-            texture = new Texture(dev, new System.Drawing.Bitmap(2, 2), 0, Pool.Managed);
         }
         #endregion
 
@@ -140,6 +139,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                 };
                 result.Add(new RenderInfo(volumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, boxSphere));
             }
+
             result.Add(outputInfo);
 
             transform.Pop();
@@ -154,6 +154,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             transform.NJTranslate(this.Position);
             transform.NJRotateY(this.Rotation.Y);
             transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
+
             HitResult result = volumeMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 
             transform.Pop();

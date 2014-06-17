@@ -123,9 +123,9 @@ namespace SonicRetro.SAModel.SALVL
                 }
             }
             loaded = true;
-            transformGizmo = new TransformGizmo(d3ddevice);
+            /*transformGizmo = new TransformGizmo(d3ddevice);
             gizmoSpaceComboBox.Enabled = false;
-            gizmoSpaceComboBox.SelectedIndex = 0;
+            gizmoSpaceComboBox.SelectedIndex = 0;*/
 
             clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
             statsToolStripMenuItem.Enabled = LevelData.geo != null;
@@ -206,7 +206,7 @@ namespace SonicRetro.SAModel.SALVL
 
             d3ddevice.EndScene(); // scene drawings go before this line
 
-            transformGizmo.Draw(d3ddevice, cam);
+            if(gizmodebugToolStripMenuItem.Checked) transformGizmo.Draw(d3ddevice, cam);
             d3ddevice.Present();
         }
 
@@ -251,51 +251,53 @@ namespace SonicRetro.SAModel.SALVL
                     Near.Z = 0;
                     Far = Near;
                     Far.Z = -1;
-
-                    transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
-                    if ((transformGizmo.SelectedAxes == GizmoSelectedAxes.NONE))
+                    if (transformGizmo != null)
                     {
-                        if (LevelData.LevelItems != null)
+                        transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+                        if ((transformGizmo.SelectedAxes == GizmoSelectedAxes.NONE))
                         {
-                            for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                            if (LevelData.LevelItems != null)
                             {
-                                bool display = false;
-                                if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
-                                    display = true;
-                                else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
-                                    display = true;
-                                else if (allToolStripMenuItem.Checked)
-                                    display = true;
-                                if (display)
+                                for (int i = 0; i < LevelData.LevelItems.Count; i++)
                                 {
-                                    dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
-                                    if (dist.IsHit & dist.Distance < mindist)
+                                    bool display = false;
+                                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                                        display = true;
+                                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                                        display = true;
+                                    else if (allToolStripMenuItem.Checked)
+                                        display = true;
+                                    if (display)
                                     {
-                                        mindist = dist.Distance;
-                                        item = LevelData.LevelItems[i];
+                                        dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+                                        if (dist.IsHit & dist.Distance < mindist)
+                                        {
+                                            mindist = dist.Distance;
+                                            item = LevelData.LevelItems[i];
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if (item != null)
-                        {
-                            if (ModifierKeys == Keys.Control)
+                            if (item != null)
                             {
-                                if (SelectedItems.Contains(item))
-                                    SelectedItems.Remove(item);
-                                else
+                                if (ModifierKeys == Keys.Control)
+                                {
+                                    if (SelectedItems.Contains(item))
+                                        SelectedItems.Remove(item);
+                                    else
+                                        SelectedItems.Add(item);
+                                }
+                                else if (!SelectedItems.Contains(item))
+                                {
+                                    SelectedItems.Clear();
                                     SelectedItems.Add(item);
+                                }
                             }
-                            else if (!SelectedItems.Contains(item))
+                            else if ((ModifierKeys & Keys.Control) == 0)
                             {
                                 SelectedItems.Clear();
-                                SelectedItems.Add(item);
                             }
-                        }
-                        else if ((ModifierKeys & Keys.Control) == 0)
-                        {
-                            SelectedItems.Clear();
                         }
                     }
                     break;
@@ -455,7 +457,7 @@ namespace SonicRetro.SAModel.SALVL
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+                if(transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
                 DrawLevel();
 
                 Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
@@ -493,10 +495,13 @@ namespace SonicRetro.SAModel.SALVL
                 Far = Near;
                 Far.Z = -1;
 
-                GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
-                transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+                if (transformGizmo != null)
+                {
+                    GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
+                    transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
 
-                if (oldSelection != transformGizmo.SelectedAxes) transformGizmo.Draw(d3ddevice, cam);
+                    if (oldSelection != transformGizmo.SelectedAxes) transformGizmo.Draw(d3ddevice, cam);
+                }
             }
             lastmouse = evloc;
         }
@@ -894,8 +899,19 @@ namespace SonicRetro.SAModel.SALVL
 
         private void gizmodebugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (gizmodebugToolStripMenuItem.Checked) transformGizmo.Enabled = true;
-            else transformGizmo.Enabled = false;
+            if (transformGizmo == null)
+            {
+                transformGizmo = new TransformGizmo(d3ddevice);
+                transformGizmo.Enabled = gizmodebugToolStripMenuItem.Checked;
+                gizmoSpaceComboBox.Enabled = gizmodebugToolStripMenuItem.Checked;
+                gizmoSpaceComboBox.SelectedIndex = 0;
+
+                transformGizmo.AffectedItems = SelectedItems;
+            }
+
+            transformGizmo.Enabled = gizmodebugToolStripMenuItem.Checked;
+
+            DrawLevel();
         }
     }
 }
