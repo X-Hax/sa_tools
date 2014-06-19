@@ -145,6 +145,7 @@ namespace SonicRetro.SAModel
             }
         }
 
+		[Browsable(false)]
 		public bool IsEmpty { get { return X == 0 && Y == 0 && Z == 0; } }
 	}
 

@@ -86,12 +86,6 @@
     <Compile Include="UI\EditorOptionsEditor.Designer.cs">
       <DependentUpon>EditorOptionsEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\HCPictureBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\HCPictureBox.designer.cs">
-      <DependentUpon>HCPictureBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\IDSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>

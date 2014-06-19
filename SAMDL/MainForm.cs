@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
-using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAMDL
 {
@@ -48,8 +48,7 @@ namespace SonicRetro.SAModel.SAMDL
 		int animframe = 0;
 		Microsoft.DirectX.Direct3D.Mesh[] meshes;
 		string TexturePackName;
-		string[] TextureNames;
-		Bitmap[] TextureBmps;
+		BMPInfo[] TextureInfo;
 		Texture[] Textures;
 		ModelFileDialog modelinfo = new ModelFileDialog();
 		ModelTreeForm modelTree;
@@ -311,7 +310,7 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawLevel();
 		}
 
-		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!loaded) return;
 			if (cam.mode == 0)
@@ -433,6 +432,19 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawLevel();
 		}
 
+		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Down:
+				case Keys.Left:
+				case Keys.Right:
+				case Keys.Up:
+					e.IsInputKey = true;
+					break;
+			}
+		}
+
 		Point lastmouse;
 		private void Panel1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
@@ -459,23 +471,12 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 				{
-					BMPInfo[] textureBMPs = TextureArchive.GetTextures(a.FileName);
-
-					List<string> texnames = new List<string>();
-					List<Bitmap> bmps = new List<Bitmap>();
-
-					foreach (BMPInfo bmpEntry in textureBMPs)
-					{
-						texnames.Add(bmpEntry.Name);
-						bmps.Add(bmpEntry.Image);
-					}
+					TextureInfo = TextureArchive.GetTextures(a.FileName);
 
 					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
-					TextureNames = texnames.ToArray();
-					TextureBmps = bmps.ToArray();
-					Textures = new Texture[TextureBmps.Length];
-					for (int j = 0; j < TextureBmps.Length; j++)
-						Textures[j] = new Texture(d3ddevice, TextureBmps[j], Usage.SoftwareProcessing, Pool.Managed);
+					Textures = new Texture[TextureInfo.Length];
+					for (int j = 0; j < TextureInfo.Length; j++)
+						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.SoftwareProcessing, Pool.Managed);
 				}
 			}
 		}
@@ -493,11 +494,11 @@ namespace SonicRetro.SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
 				if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				{
-					model.ToCollada(TextureNames).Save(sd.FileName);
+					model.ToCollada(TextureInfo == null ? null : TextureInfo.Select((item) => item.Name).ToArray()).Save(sd.FileName);
 					string p = Path.GetDirectoryName(sd.FileName);
-					if (TextureNames != null)
-						for (int i = 0; i < TextureNames.Length; i++)
-							TextureBmps[i].Save(Path.Combine(p, TextureNames[i] + ".png"));
+					if (TextureInfo != null)
+						for (int i = 0; i < TextureInfo.Length; i++)
+							TextureInfo[i].Image.Save(Path.Combine(p, TextureInfo[i].Name + ".png"));
 				}
 		}
 
@@ -557,9 +558,9 @@ namespace SonicRetro.SAModel.SAMDL
 					string[] texnames = null;
 					if (TexturePackName != null)
 					{
-						texnames = new string[TextureNames.Length];
-						for (int i = 0; i < TextureNames.Length; i++)
-							texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureNames[i]);
+						texnames = new string[TextureInfo.Length];
+						for (int i = 0; i < TextureInfo.Length; i++)
+							texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
 						result.AppendFormat("enum {0}TexName", TexturePackName);
 						result.AppendLine();
 						result.AppendLine("{");
@@ -601,8 +602,10 @@ namespace SonicRetro.SAModel.SAMDL
 		internal void SelectedItemChanged()
 		{
 			modelTree.SelectNode(selectedObject);
+			propertyGrid1.SelectedObject = selectedObject;
 			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+			editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
 			DrawLevel();
 		}
 
@@ -625,7 +628,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 					// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
 					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-					for (int texIndx = 0; texIndx < TextureBmps.Length; texIndx++)
+					for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
 					{
 						mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
 						mtlstream.WriteLine("Ka 1 1 1");
@@ -633,13 +636,13 @@ namespace SonicRetro.SAModel.SAMDL
 						mtlstream.WriteLine("Ks 0 0 0");
 						mtlstream.WriteLine("illum 1");
 
-						if (!string.IsNullOrEmpty(TextureNames[texIndx]))
+						if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
 						{
-							mtlstream.WriteLine("Map_Kd " + TextureNames[texIndx] + ".png");
+							mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
 
 							// save texture
 							string mypath = System.IO.Path.GetDirectoryName(a.FileName);
-							TextureBmps[texIndx].Save(Path.Combine(mypath, TextureNames[texIndx] + ".png"));
+							TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
 						}
 					}
 					#endregion
@@ -695,6 +698,12 @@ namespace SonicRetro.SAModel.SAMDL
 			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
 			catch { }
 			DrawLevel();
+		}
+
+		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material.ToArray(), TextureInfo))
+				dlg.ShowDialog(this);
 		}
 	}
 }
