@@ -47,9 +47,9 @@
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.menuStrip1.SuspendLayout();
@@ -184,7 +184,7 @@
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(400, 538);
+			this.panel1.Size = new System.Drawing.Size(320, 538);
 			this.panel1.TabIndex = 1;
 			this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
 			this.panel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -212,20 +212,8 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
 			this.splitContainer1.Size = new System.Drawing.Size(584, 538);
-			this.splitContainer1.SplitterDistance = 400;
+			this.splitContainer1.SplitterDistance = 320;
 			this.splitContainer1.TabIndex = 2;
-			// 
-			// propertyGrid1
-			// 
-			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
-			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-			this.propertyGrid1.Size = new System.Drawing.Size(172, 512);
-			this.propertyGrid1.TabIndex = 14;
-			this.propertyGrid1.ToolbarVisible = false;
-			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
 			// 
 			// tabControl1
 			// 
@@ -235,7 +223,7 @@
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(180, 538);
+			this.tabControl1.Size = new System.Drawing.Size(260, 538);
 			this.tabControl1.TabIndex = 15;
 			// 
 			// tabPage1
@@ -243,10 +231,22 @@
 			this.tabPage1.Controls.Add(this.propertyGrid1);
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
-			this.tabPage1.Size = new System.Drawing.Size(172, 512);
+			this.tabPage1.Size = new System.Drawing.Size(252, 512);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "Properties";
 			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// propertyGrid1
+			// 
+			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
+			this.propertyGrid1.Name = "propertyGrid1";
+			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+			this.propertyGrid1.Size = new System.Drawing.Size(252, 512);
+			this.propertyGrid1.TabIndex = 14;
+			this.propertyGrid1.ToolbarVisible = false;
+			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
 			// 
 			// tabPage2
 			// 
