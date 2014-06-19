@@ -43,25 +43,29 @@
 			this.copyModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editMaterialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.modelTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1 = new System.Windows.Forms.UserControl();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			this.tabControl1.SuspendLayout();
+			this.tabPage1.SuspendLayout();
+			this.tabPage2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.editToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(584, 24);
@@ -175,27 +179,12 @@
 			this.editMaterialsToolStripMenuItem.Text = "Edit &Materials...";
 			this.editMaterialsToolStripMenuItem.Click += new System.EventHandler(this.editMaterialsToolStripMenuItem_Click);
 			// 
-			// viewToolStripMenuItem
-			// 
-			this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modelTreeToolStripMenuItem});
-			this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-			this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-			this.viewToolStripMenuItem.Text = "&View";
-			// 
-			// modelTreeToolStripMenuItem
-			// 
-			this.modelTreeToolStripMenuItem.Name = "modelTreeToolStripMenuItem";
-			this.modelTreeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-			this.modelTreeToolStripMenuItem.Text = "Model &Tree";
-			this.modelTreeToolStripMenuItem.Click += new System.EventHandler(this.modelTreeToolStripMenuItem_Click);
-			// 
 			// panel1
 			// 
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(363, 538);
+			this.panel1.Size = new System.Drawing.Size(400, 538);
 			this.panel1.TabIndex = 1;
 			this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
 			this.panel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -211,6 +200,7 @@
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainer1.Location = new System.Drawing.Point(0, 24);
 			this.splitContainer1.Name = "splitContainer1";
 			// 
@@ -220,9 +210,9 @@
 			// 
 			// splitContainer1.Panel2
 			// 
-			this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+			this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
 			this.splitContainer1.Size = new System.Drawing.Size(584, 538);
-			this.splitContainer1.SplitterDistance = 363;
+			this.splitContainer1.SplitterDistance = 400;
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// propertyGrid1
@@ -231,10 +221,51 @@
 			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
 			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
 			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-			this.propertyGrid1.Size = new System.Drawing.Size(217, 538);
+			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+			this.propertyGrid1.Size = new System.Drawing.Size(172, 512);
 			this.propertyGrid1.TabIndex = 14;
 			this.propertyGrid1.ToolbarVisible = false;
+			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+			// 
+			// tabControl1
+			// 
+			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.tabPage2);
+			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabControl1.Location = new System.Drawing.Point(0, 0);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(180, 538);
+			this.tabControl1.TabIndex = 15;
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.Controls.Add(this.propertyGrid1);
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Size = new System.Drawing.Size(172, 512);
+			this.tabPage1.TabIndex = 0;
+			this.tabPage1.Text = "Properties";
+			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// tabPage2
+			// 
+			this.tabPage2.Controls.Add(this.treeView1);
+			this.tabPage2.Location = new System.Drawing.Point(4, 22);
+			this.tabPage2.Name = "tabPage2";
+			this.tabPage2.Size = new System.Drawing.Size(172, 512);
+			this.tabPage2.TabIndex = 1;
+			this.tabPage2.Text = "Tree";
+			this.tabPage2.UseVisualStyleBackColor = true;
+			// 
+			// treeView1
+			// 
+			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeView1.Location = new System.Drawing.Point(0, 0);
+			this.treeView1.Name = "treeView1";
+			this.treeView1.Size = new System.Drawing.Size(172, 512);
+			this.treeView1.TabIndex = 1;
+			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
 			// MainForm
 			// 
@@ -255,6 +286,9 @@
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			this.splitContainer1.ResumeLayout(false);
+			this.tabControl1.ResumeLayout(false);
+			this.tabPage1.ResumeLayout(false);
+			this.tabPage2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -271,9 +305,7 @@
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.ToolStripMenuItem colladaToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modelTreeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem colladaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cStructsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objToolStripMenuItem;
@@ -281,8 +313,12 @@
 		private System.Windows.Forms.ToolStripMenuItem copyModelToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pasteModelToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splitContainer1;
-		internal System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.ToolStripMenuItem editMaterialsToolStripMenuItem;
+		private System.Windows.Forms.TabControl tabControl1;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.PropertyGrid propertyGrid1;
+		private System.Windows.Forms.TreeView treeView1;
     }
 }
 

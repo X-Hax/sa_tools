@@ -51,12 +51,11 @@ namespace SonicRetro.SAModel.SAMDL
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
 		ModelFileDialog modelinfo = new ModelFileDialog();
-		ModelTreeForm modelTree;
-		internal Object selectedObject;
+		Object selectedObject;
+		Dictionary<Object, TreeNode> nodeDict;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			modelTree = new ModelTreeForm(this);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			EditorOptions.InitializeDefaultLights(d3ddevice);
@@ -193,10 +192,21 @@ namespace SonicRetro.SAModel.SAMDL
 				if (models[i].Attach != null)
 					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
 					catch { }
-			modelTree.Repopulate(model);
+			treeView1.Nodes.Clear();
+			nodeDict = new Dictionary<Object, TreeNode>();
+			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
 			selectedObject = model;
 			SelectedItemChanged();
+		}
+
+		private void AddTreeNode(Object model, TreeNodeCollection nodes)
+		{
+			TreeNode node = nodes.Add(model.Name);
+			node.Tag = model;
+			nodeDict[model] = node;
+			foreach (Object child in model.Children)
+				AddTreeNode(child, node.Nodes);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -502,15 +512,6 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
-		private void modelTreeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (modelTree.Visible)
-				modelTree.Hide();
-			else
-				modelTree.Show(this);
-			modelTreeToolStripMenuItem.Checked = modelTree.Visible;
-		}
-
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C Files|*.c" })
@@ -599,9 +600,12 @@ namespace SonicRetro.SAModel.SAMDL
 			return outfmt == ModelFormat.Chunk ? typeof(ChunkAttach) : typeof(BasicAttach);
 		}
 
+		bool suppressTreeEvent;
 		internal void SelectedItemChanged()
 		{
-			modelTree.SelectNode(selectedObject);
+			suppressTreeEvent = true;
+			treeView1.SelectedNode = nodeDict[selectedObject];
+			suppressTreeEvent = false;
 			propertyGrid1.SelectedObject = selectedObject;
 			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
@@ -707,6 +711,18 @@ namespace SonicRetro.SAModel.SAMDL
 				dlg.FormUpdated += new MaterialEditor.FormUpdatedHandler((s, ev) => DrawLevel());
 				dlg.ShowDialog(this);
 			}
+		}
+
+		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+		{
+			DrawLevel();
+		}
+
+		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+			if (suppressTreeEvent) return;
+			selectedObject = (Object)e.Node.Tag;
+			SelectedItemChanged();
 		}
 	}
 }
