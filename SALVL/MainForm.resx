@@ -171,6 +171,17 @@
         /ZQQ+Ib+pgH4oRB+9fVfDSMaP8e4pn5ljG7MAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="rotateMode.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAYAAADgKtSgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEASURBVEhLY2CgE7AH2jOTChhkDgoACfwHYW5ubrIxzAwg
+        jWJBJkgiNibmf1dXF9kYpB9qAcg8OAAbXlVZ+X/tmjVkY5D+UcMxgm/gggUpKcEiBivt7u6ONdJxuXwe
+        yGBdXd3/4WFheLGSkhLYwr6+PqKDBWx4aWkpwWSYlpo6GA0vKSHo8vT0dJJdDiqw/hcXFRE0PDMzE2x4
+        R0cH0WE+FaShsKCAoOHZWVlgw1taWkgzvCA/n7Dh2dmD0PB8IlyeQ4bL+0DhGBgQQLAsDwoKAgdLcnIy
+        hlpc5XkUsTURTB0nJydGjYWrJgLVGslAfI1IvAaoDld9i1GHotaoVOIBAObTetr4kBCLAAAAAElFTkSu
+        QmCC
+</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAEBAAAAEAIABoBAAAZgAAABgYAAABACAAiAkAAM4EAAAgIAAAAQAgAKgQAABWDgAAMDAAAAEA

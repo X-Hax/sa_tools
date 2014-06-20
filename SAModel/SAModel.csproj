@@ -49,6 +49,7 @@
     <Compile Include="GeoAnimData.cs" />
     <Compile Include="LandTable.cs" />
     <Compile Include="Material.cs" />
+    <Compile Include="MathHelper.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ModelFile.cs" />

@@ -69,6 +69,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\Gizmo.cs" />
+    <Compile Include="UI\PointHelper.cs" />
     <Compile Include="UI\TransformGizmo.cs" />
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
@@ -160,14 +162,23 @@
     <None Include="Resources\x_move.x" />
     <None Include="Resources\x_null.x" />
     <None Include="Resources\x_rotation.x" />
+    <None Include="Resources\x_scale.x" />
     <None Include="Resources\y_move.x" />
     <None Include="Resources\y_null.x" />
     <None Include="Resources\y_rotation.x" />
+    <None Include="Resources\y_scale.x" />
     <None Include="Resources\zx_move.x" />
     <None Include="Resources\zy_move.x" />
     <None Include="Resources\z_move.x" />
     <None Include="Resources\z_null.x" />
     <None Include="Resources\z_rotation.x" />
+    <None Include="Resources\z_scale.x" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PointBTexture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PointATexture.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

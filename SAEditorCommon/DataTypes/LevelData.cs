@@ -15,165 +15,175 @@ using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-    public static class LevelData
-    {
-        #region Events
-        public delegate void LevelStateChangeHandler();
-        public static event LevelStateChangeHandler StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
-        #endregion
+	public static class LevelData
+	{
+		#region Events
+		public delegate void LevelStateChangeHandler();
+		public static event LevelStateChangeHandler StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
+		#endregion
 
-        public static LandTable geo;
-        public static string leveltexs;
-        public static Dictionary<string, BMPInfo[]> TextureBitmaps;
-        public static Dictionary<string, Texture[]> Textures;
-        public static List<LevelItem> LevelItems;
-        public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
-        public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
-        public static int Character;
-        public static StartPosItem[] StartPositions;
-        public static string LevelName;
-        public static string SETName;
-        public static string CAMName;
-        public static List<ObjectDefinition> ObjDefs;
-        public static List<SETItem>[] SETItems;
-        public static List<CAMItem>[] CAMItems;
-        public static List<DeathZoneItem> DeathZones;
-        public static LevelDefinition leveleff;
+		public static LandTable geo;
+		public static string leveltexs;
+		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
+		public static Dictionary<string, Texture[]> Textures;
+		public static List<LevelItem> LevelItems;
+		public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
+		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
+		public static int Character;
+		public static StartPosItem[] StartPositions;
+		public static string LevelName;
+		public static string SETName;
+		public static string CAMName;
+		public static List<ObjectDefinition> ObjDefs;
+		public static List<SETItem>[] SETItems;
+		public static List<CAMItem>[] CAMItems;
+		public static List<DeathZoneItem> DeathZones;
+		public static LevelDefinition leveleff;
 
-        /// <summary>
-        /// This invokes the StateChanged event. Call this any time an outside form or control modifies the level data.
-        /// </summary>
-        public static void InvalidateRenderState()
-        {
-            if (StateChanged != null)
-            {
-                StateChanged();
-            }
-        }
+		/// <summary>
+		/// This invokes the StateChanged event. Call this any time an outside form or control modifies the level data.
+		/// </summary>
+		public static void InvalidateRenderState()
+		{
+			if (StateChanged != null)
+			{
+				StateChanged();
+			}
+		}
 
-        /// <summary>
-        /// This will clear the level's geometry, letting the user start fresh.
-        /// </summary>
-        public static void ClearLevelGeometry()
-        {
-            LevelItems.Clear();
-            geo.COL.Clear();
-            if(StateChanged != null) StateChanged();
-        }
+		/// <summary>
+		/// This will clear the level's geometry, letting the user start fresh.
+		/// </summary>
+		public static void ClearLevelGeometry()
+		{
+			LevelItems.Clear();
+			geo.COL.Clear();
+			if (StateChanged != null) StateChanged();
+		}
 
-        /// <summary>
-        /// This will clear all animated level models.
-        /// </summary>
-        public static void ClearLevelGeoAnims()
-        {
-            geo.Anim.Clear();
-            if (StateChanged != null) StateChanged();
-        }
+		/// <summary>
+		/// This will clear all animated level models.
+		/// </summary>
+		public static void ClearLevelGeoAnims()
+		{
+			geo.Anim.Clear();
+			if (StateChanged != null) StateChanged();
+		}
 
-        public static string GetStats()
-        {
-            int landtableItems = LevelData.geo.COL.Count;
-            int textureArcCount = LevelData.Textures.Count;
-            int setItems = 0;
-            int animatedItems = LevelData.geo.Anim.Count;
+		public static string GetStats()
+		{
+			int landtableItems = LevelData.geo.COL.Count;
+			int textureArcCount = LevelData.Textures.Count;
+			int setItems = 0;
+			int animatedItems = LevelData.geo.Anim.Count;
+			int cameraItems = 0;
 
-            if (LevelData.SETItems != null) setItems = LevelData.SETItems.Length;
+			if (LevelData.SETItems != null) setItems = LevelData.SETItems[LevelData.Character].Count;
+			if (LevelData.CAMItems != null) cameraItems = LevelData.CAMItems[LevelData.Character].Count;
 
-            //return String.Format("Landtable items: {0}\nTextures: {1}\nSET Items: {2}", landtableItems, textureCount, setItems);
-            return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}", landtableItems, textureArcCount, animatedItems);
-        }
+			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
+		}
 
-        public static void DuplicateSelection(Device d3ddevice, ref List<Item> SelectedItems, out bool errorFlag, out string errorMsg)
-        {
-            if (SelectedItems == null) 
-            {
-                SelectedItems = null;
-                errorFlag = false;
-                errorMsg = "";
-                return;
-            }
-            if (SelectedItems.Count > 1)
-            {
-                errorFlag = true;
-                errorMsg = "Multi-duplicate is currently not supported, because gizmos have not yet been implemented.";
-                return;
-            }
-            else if (SelectedItems.Count > 0)
-            {
-                // duplicate goes here
-                if (SelectedItems[0] is SETItem)
-                {
-                    SETItem originalItem = (SETItem)SelectedItems[0];
-                    SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+		public static void DuplicateSelection(Device d3ddevice, ref List<Item> SelectedItems, out bool errorFlag, out string errorMsg)
+		{
+			if (SelectedItems == null)
+			{
+				SelectedItems = null;
+				errorFlag = false;
+				errorMsg = "";
+				return;
+			}
+			if (SelectedItems.Count > 1)
+			{
+				errorFlag = true;
+				errorMsg = "Multi-duplicate is currently not supported.";
+				return;
+			}
+			else if (SelectedItems.Count > 0)
+			{
+				// duplicate goes here
+				if (SelectedItems[0] is SETItem)
+				{
+					SETItem originalItem = (SETItem)SelectedItems[0];
+					SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
 
-                    LevelData.SETItems[LevelData.Character].Add(newItem);
-                    SelectedItems = new List<Item>() { newItem };
-                    InvalidateRenderState();
-                }
-                else if (SelectedItems[0] is LevelItem)
-                {
-                    LevelItem originalItem = (LevelItem)SelectedItems[0];
-                    LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+					LevelData.SETItems[LevelData.Character].Add(newItem);
+					SelectedItems = new List<Item>() { newItem };
+					InvalidateRenderState();
+				}
+				else if (SelectedItems[0] is LevelItem)
+				{
+					LevelItem originalItem = (LevelItem)SelectedItems[0];
+					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
 
-                    newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
-                    SelectedItems.Clear();
-                    SelectedItems = new List<Item>() { newItem };
-                    InvalidateRenderState();
-                }
-            }
-            else
-            {
-                errorFlag = true;
-                errorMsg = "Selection must have a single item for duplicate operation to succeed.";
-                return;
-            }
+					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
+					SelectedItems.Clear();
+					SelectedItems = new List<Item>() { newItem };
+					InvalidateRenderState();
+				}
+				else if (SelectedItems[0] is CAMItem)
+				{
+					CAMItem originalItem = (CAMItem)SelectedItems[0];
+					CAMItem newItem = new CAMItem(d3ddevice, originalItem.GetBytes(), 0);
 
-            errorFlag = false;
-            errorMsg = "";
-        }
+					LevelData.CAMItems[LevelData.Character].Add(newItem);
+					SelectedItems = new List<Item>() { newItem };
+					InvalidateRenderState();
+				}
+			}
+			else
+			{
+				errorFlag = true;
+				errorMsg = "Selection must have a single item for duplicate operation to succeed.";
+				return;
+			}
 
-        public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg)
-        {
-            List<Item> createdItems = new List<Item>();
+			errorFlag = false;
+			errorMsg = "";
+		}
 
-            if (!File.Exists(filePath))
-            {
-                errorFlag = true;
-                errorMsg = "File does not exist!";
-                return null;
-            }
+		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg)
+		{
+			List<Item> createdItems = new List<Item>();
 
-            DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
+			if (!File.Exists(filePath))
+			{
+				errorFlag = true;
+				errorMsg = "File does not exist!";
+				return null;
+			}
 
-            bool importError = false;
-            string importErrorMsg = "";
+			DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
 
-            switch (filePathInfo.Extension)
-            {
-                case (".obj"):
-                    Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
-                    LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
+			bool importError = false;
+			string importErrorMsg = "";
 
-                    item.Visible = true;
-                    createdItems.Add(item);
-                    break;
+			switch (filePathInfo.Extension)
+			{
+				case (".obj"):
+					Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
+					LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
 
-                case (".txt"):
-                    SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
-                    break;
+					item.Visible = true;
+					createdItems.Add(item);
+					break;
 
-                default:
-                    errorFlag = true;
-                    errorMsg = "Invalid file format!";
-                    return null;
-            }
+				case (".txt"):
+					SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
+					break;
 
-            StateChanged();
+				default:
+					errorFlag = true;
+					errorMsg = "Invalid file format!";
+					return null;
+			}
 
-            errorFlag = importError;
-            errorMsg = importErrorMsg;
+			StateChanged();
 
-            return createdItems;
-        }
-    }
+			errorFlag = importError;
+			errorMsg = importErrorMsg;
+
+			return createdItems;
+		}
+	}
 }

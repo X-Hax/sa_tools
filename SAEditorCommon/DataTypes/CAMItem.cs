@@ -21,7 +21,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public byte PanSpeed { get; set; }
         public byte Priority { get; set; }
         public short Unknown_2 { get; set; } // possibly a x or z rotation
-        //public short YRotation { get; set; }
         public Vertex Scale { get; set; }
         public Int32 NotUsed { get; set; }
         public Vertex PointA { get; set; }
@@ -29,17 +28,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public float Variable { get; set; }
 
         public override Vertex Position { get; set; }
-        /*public override Rotation Rotation
-        {
-            get
-            {
-                return new Rotation(0, YRotation, 0);
-            }
-            set
-            {
-                YRotation = (short)value.Y;
-            }
-        }*/
         public override Rotation Rotation { get; set; }
         #endregion
 
@@ -53,10 +41,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         ///  Create a new CAM Item from within the editor.
         /// </summary>
         /// <param name="dev">An active Direct3D device for meshing/material/rendering purposes.</param>
-        public CAMItem(Device dev)
+        public CAMItem(Device dev, Vertex position)
         {
-            Position = new Vertex();
+            CamType = 0x23;
+
+            Position = position;
             Rotation = new Rotation();
+            Scale = new Vertex(1, 1, 1);
+            Priority = 2;
+            PanSpeed = 0x14;
+
+            PointA = new Vertex(position.X + 25, position.Y - 38, position.Z);
+            PointB = new Vertex(position.X - 40 , position.Y - 38, position.Z);
+
+            Variable = 45f;
 
             Init(dev);
         }
@@ -86,14 +84,43 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         private void Init(Device dev)
         {
-            volumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 1.5f, 1.5f, 1.5f);
+            volumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 2f, 2f, 2f);
             material = new Material();
             material.DiffuseColor = System.Drawing.Color.FromArgb(200, System.Drawing.Color.Purple);
             material.SpecularColor = System.Drawing.Color.Black;
+			material.UseAlpha = true;
             material.DoubleSided = false;
             material.Exponent = 10;
             material.IgnoreSpecular = false;
             material.UseTexture = false;
+        }
+        #endregion
+
+        #region Saving
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>(0x40);
+            bytes.Add(CamType);
+            bytes.Add(Unknown);
+            bytes.Add(PanSpeed);
+            bytes.Add(Priority);
+
+            unchecked
+            {
+                bytes.AddRange(BitConverter.GetBytes((ushort)Unknown_2));
+                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Y));
+            }
+
+            bytes.AddRange(Position.GetBytes());
+            bytes.AddRange(Scale.GetBytes());
+
+            bytes.AddRange(BitConverter.GetBytes(NotUsed));
+
+            bytes.AddRange(PointA.GetBytes());
+            bytes.AddRange(PointB.GetBytes());
+            bytes.AddRange(BitConverter.GetBytes(Variable));
+
+            return bytes.ToArray();
         }
         #endregion
 
@@ -148,6 +175,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
         {
+            if (this.Scale.X == 0 || this.Scale.Y == 0 || this.Scale.Z == 0)
+            {
+                return HitResult.NoHit;
+            }
+
             MatrixStack transform = new MatrixStack();
 
             transform.Push();

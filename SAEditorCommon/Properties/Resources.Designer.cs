@@ -61,6 +61,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap PointATexture {
+            get {
+                object obj = ResourceManager.GetObject("PointATexture", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap PointBTexture {
+            get {
+                object obj = ResourceManager.GetObject("PointBTexture", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         public static byte[] x_move {
@@ -86,6 +106,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         public static byte[] x_rotation {
             get {
                 object obj = ResourceManager.GetObject("x_rotation", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] x_scale {
+            get {
+                object obj = ResourceManager.GetObject("x_scale", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -133,6 +163,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] y_scale {
+            get {
+                object obj = ResourceManager.GetObject("y_scale", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] z_move {
             get {
                 object obj = ResourceManager.GetObject("z_move", resourceCulture);
@@ -156,6 +196,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.Properties {
         public static byte[] z_rotation {
             get {
                 object obj = ResourceManager.GetObject("z_rotation", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] z_scale {
+            get {
+                object obj = ResourceManager.GetObject("z_scale", resourceCulture);
                 return ((byte[])(obj));
             }
         }

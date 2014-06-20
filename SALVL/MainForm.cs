@@ -50,6 +50,7 @@ namespace SonicRetro.SAModel.SALVL
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
             d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
             EditorOptions.InitializeDefaultLights(d3ddevice);
+			Gizmo.InitGizmo(d3ddevice);
             if (Program.Arguments.Length > 0)
                 LoadFile(Program.Arguments[0]);
 
@@ -123,9 +124,9 @@ namespace SonicRetro.SAModel.SALVL
                 }
             }
             loaded = true;
-            /*transformGizmo = new TransformGizmo(d3ddevice);
+            transformGizmo = new TransformGizmo();
             gizmoSpaceComboBox.Enabled = false;
-            gizmoSpaceComboBox.SelectedIndex = 0;*/
+            gizmoSpaceComboBox.SelectedIndex = 0;
 
             clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
             statsToolStripMenuItem.Enabled = LevelData.geo != null;
@@ -206,7 +207,7 @@ namespace SonicRetro.SAModel.SALVL
 
             d3ddevice.EndScene(); // scene drawings go before this line
 
-            if(gizmodebugToolStripMenuItem.Checked) transformGizmo.Draw(d3ddevice, cam);
+            transformGizmo.Draw(d3ddevice, cam);
             d3ddevice.Present();
         }
 
@@ -457,7 +458,7 @@ namespace SonicRetro.SAModel.SALVL
             }
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if(transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+                if(transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
                 DrawLevel();
 
                 Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
@@ -895,23 +896,20 @@ namespace SonicRetro.SAModel.SALVL
                 DrawLevel();
             }
         }
+
+		private void rotateMode_Click(object sender, EventArgs e)
+		{
+			if (transformGizmo != null)
+			{
+				transformGizmo.Mode = TransformMode.TRANSFORM_SCALE;
+				transformGizmo.LocalTransform = true;
+				gizmoSpaceComboBox.SelectedIndex = 1;
+				gizmoSpaceComboBox.Enabled = false;
+				selectModeButton.Checked = false;
+				moveModeButton.Checked = false;
+				DrawLevel();
+			}
+		}
         #endregion
-
-        private void gizmodebugToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (transformGizmo == null)
-            {
-                transformGizmo = new TransformGizmo(d3ddevice);
-                transformGizmo.Enabled = gizmodebugToolStripMenuItem.Checked;
-                gizmoSpaceComboBox.Enabled = gizmodebugToolStripMenuItem.Checked;
-                gizmoSpaceComboBox.SelectedIndex = 0;
-
-                transformGizmo.AffectedItems = SelectedItems;
-            }
-
-            transformGizmo.Enabled = gizmodebugToolStripMenuItem.Checked;
-
-            DrawLevel();
-        }
     }
 }

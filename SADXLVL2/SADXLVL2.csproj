@@ -129,6 +129,7 @@
     <None Include="Resources\SelectIcon.png" />
     <None Include="Resources\MoveIcon.png" />
     <None Include="Resources\RotateIcon.png" />
+    <None Include="Resources\ScaleIcon.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <ItemGroup>
