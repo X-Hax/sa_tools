@@ -546,8 +546,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			transformGizmo = new TransformGizmo();
-			gizmoSpaceComboBox.Enabled = true;
-			gizmoSpaceComboBox.SelectedIndex = 0;
 
 			cameraPointA = new PointHelper(); cameraPointA.BoxTexture = Gizmo.ATexture; cameraPointA.DrawCube = true;
 			cameraPointB = new PointHelper(); cameraPointB.BoxTexture = Gizmo.BTexture; cameraPointB.DrawCube = true;
@@ -584,6 +582,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SelectedItems = new List<Item>();
 			UseWaitCursor = false;
 			Enabled = true;
+
+			gizmoSpaceComboBox.Enabled = true;
+			gizmoSpaceComboBox.SelectedIndex = 0;
+
 			DrawLevel();
 		}
 
