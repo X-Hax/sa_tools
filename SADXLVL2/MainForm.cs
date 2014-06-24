@@ -482,6 +482,69 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
+			#region Loading Splines
+			if (group.ContainsKey("Paths"))
+			{
+				LevelData.LevelSplines = new List<SplineData>();
+				String splineDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, group["Paths"]);
+
+				List<Dictionary<string, Dictionary<string, string>>> pathFiles = new List<Dictionary<string, Dictionary<string, string>>>();
+
+				for(int i=0; i < int.MaxValue; i++)
+				{
+					string path = string.Concat(splineDirectory, string.Format("/{0}.ini", i));
+					if (File.Exists(path))
+					{
+						pathFiles.Add(IniFile.Load(path));
+					}
+					else break;
+				}
+
+				foreach (Dictionary<string, Dictionary<string, string>> pathFile in pathFiles) // looping through path files
+				{
+					SplineData newSpline = new SplineData();
+
+					for (int iniEntryIndx = 0; iniEntryIndx < pathFile.Count - 1; iniEntryIndx++)
+					{
+						Vertex knotPosition = new Vertex();
+						ushort XRot = 0, YRot = 0;
+						float knotDistance = 0;
+
+						if (pathFile[iniEntryIndx.ToString()].ContainsKey("XRotation"))
+						{
+							XRot = ushort.Parse(pathFile[iniEntryIndx.ToString()]["XRotation"], System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture);
+						}
+
+						if (pathFile[iniEntryIndx.ToString()].ContainsKey("YRotation"))
+						{
+							YRot = ushort.Parse(pathFile[iniEntryIndx.ToString()]["YRotation"], System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture);
+						}
+
+						if (pathFile[iniEntryIndx.ToString()].ContainsKey("Position"))
+						{
+							string[] vertexComponents = pathFile[iniEntryIndx.ToString()]["Position"].Split(',');
+
+							if (vertexComponents.Length == 3)
+							{
+								knotPosition.X = float.Parse(vertexComponents[0]);
+								knotPosition.Y = float.Parse(vertexComponents[1]);
+								knotPosition.Z = float.Parse(vertexComponents[2]);
+							}
+						}
+
+						if (pathFile[iniEntryIndx.ToString()].ContainsKey("Distance"))
+						{
+							knotDistance = float.Parse(pathFile[iniEntryIndx.ToString()]["Distance"]);
+						}
+
+						newSpline.AddKnot(new Knot(knotPosition, new Rotation(XRot, YRot, 0), knotDistance));
+					}
+
+					LevelData.LevelSplines.Add(newSpline);
+				}
+			}
+			#endregion
+
 			transformGizmo = new TransformGizmo();
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
@@ -686,6 +749,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
+
+			if (splinesToolStripMenuItem.Checked)
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+				{
+					spline.Draw(d3ddevice);
+				}
+			}
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 			d3ddevice.Present();

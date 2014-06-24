@@ -39,6 +39,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static List<CAMItem>[] CAMItems;
 		public static List<DeathZoneItem> DeathZones;
 		public static LevelDefinition leveleff;
+		public static List<SplineData> LevelSplines;
 
 		/// <summary>
 		/// This invokes the StateChanged event. Call this any time an outside form or control modifies the level data.
