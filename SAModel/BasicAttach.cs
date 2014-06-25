@@ -403,51 +403,51 @@ namespace SonicRetro.SAModel
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[0]],
                                 Normal[poly.Indexes[0]],
-                                hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal] : new UV()));
+                                hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+                                hasUV ? mesh.UV[currentstriptotal] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[1]],
                                 Normal[poly.Indexes[1]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 1] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 1] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[2]],
                                 Normal[poly.Indexes[2]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 2] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 2] : null));
                             currentstriptotal += 3;
                             break;
                         case Basic_PolyType.Quads:
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[0]],
                                 Normal[poly.Indexes[0]],
-                                hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+                                hasUV ? mesh.UV[currentstriptotal] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[1]],
                                 Normal[poly.Indexes[1]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 1] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 1] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[2]],
                                 Normal[poly.Indexes[2]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 2] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 2] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[2]],
                                 Normal[poly.Indexes[2]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 2] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 2] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[1]],
                                 Normal[poly.Indexes[1]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 1] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 1] : null));
                             verts.Add(new VertexData(
                                 Vertex[poly.Indexes[3]],
                                 Normal[poly.Indexes[3]],
-                                hasVColor ? mesh.VColor[currentstriptotal + 3] : Color.White,
-                                hasUV ? mesh.UV[currentstriptotal + 3] : new UV()));
+								hasVColor ? (Color?)mesh.VColor[currentstriptotal + 3] : null,
+                                hasUV ? mesh.UV[currentstriptotal + 3] : null));
                             currentstriptotal += 4;
                             break;
                         case Basic_PolyType.NPoly:
@@ -461,36 +461,36 @@ namespace SonicRetro.SAModel
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k]],
                                         Normal[poly.Indexes[k]],
-                                        hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+                                        hasUV ? mesh.UV[currentstriptotal] : null));
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k + 1]],
                                         Normal[poly.Indexes[k + 1]],
-                                        hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal + 1] : null,
+                                        hasUV ? mesh.UV[currentstriptotal + 1] : null));
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k + 2]],
                                         Normal[poly.Indexes[k + 2]],
-                                        hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal + 2] : null,
+                                        hasUV ? mesh.UV[currentstriptotal + 2] : null));
                                 }
                                 else
                                 {
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k + 1]],
                                         Normal[poly.Indexes[k + 1]],
-                                        hasVColor ? mesh.VColor[currentstriptotal + 1] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal + 1] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal + 1] : null,
+                                        hasUV ? mesh.UV[currentstriptotal + 1] : null));
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k]],
                                         Normal[poly.Indexes[k]],
-                                        hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+                                        hasUV ? mesh.UV[currentstriptotal] : null));
                                     verts.Add(new VertexData(
                                         Vertex[poly.Indexes[k + 2]],
                                         Normal[poly.Indexes[k + 2]],
-                                        hasVColor ? mesh.VColor[currentstriptotal + 2] : Color.White,
-                                        hasUV ? mesh.UV[currentstriptotal + 2] : new UV()));
+										hasVColor ? (Color?)mesh.VColor[currentstriptotal + 2] : null,
+                                        hasUV ? mesh.UV[currentstriptotal + 2] : null));
                                 }
                                 currentstriptotal += 1;
                             }
@@ -501,7 +501,7 @@ namespace SonicRetro.SAModel
                 Material mat = null;
                 if (Material != null && mesh.MaterialID < Material.Count)
                     mat = Material[mesh.MaterialID];
-                result.Add(new MeshInfo(mat, verts.ToArray()));
+                result.Add(new MeshInfo(mat, verts.ToArray(), hasUV, hasVColor));
             }
             MeshInfo = result.ToArray();
         }

@@ -330,40 +330,40 @@ namespace SonicRetro.SAModel
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k]],
                                             NormalBuffer[strip.Indexes[k]],
-                                            hasVColor ? strip.VColors[k] : Color.White,
-                                            hasUV ? strip.UVs[k] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k] : null,
+                                            hasUV ? strip.UVs[k] : null));
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k + 1]],
                                             NormalBuffer[strip.Indexes[k + 1]],
-                                            hasVColor ? strip.VColors[k + 1] : Color.White,
-                                            hasUV ? strip.UVs[k + 1] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k + 1] : null,
+                                            hasUV ? strip.UVs[k + 1] : null));
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k + 2]],
                                             NormalBuffer[strip.Indexes[k + 2]],
-                                            hasVColor ? strip.VColors[k + 2] : Color.White,
-                                            hasUV ? strip.UVs[k + 2] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k + 2] : null,
+                                            hasUV ? strip.UVs[k + 2] : null));
                                     }
                                     else
                                     {
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k + 1]],
                                             NormalBuffer[strip.Indexes[k + 1]],
-                                            hasVColor ? strip.VColors[k + 1] : Color.White,
-                                            hasUV ? strip.UVs[k + 1] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k + 1] : null,
+                                            hasUV ? strip.UVs[k + 1] : null));
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k]],
                                             NormalBuffer[strip.Indexes[k]],
-                                            hasVColor ? strip.VColors[k] : Color.White,
-                                            hasUV ? strip.UVs[k] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k] : null,
+                                            hasUV ? strip.UVs[k] : null));
                                         verts.Add(new VertexData(
                                             VertexBuffer[strip.Indexes[k + 2]],
                                             NormalBuffer[strip.Indexes[k + 2]],
-                                            hasVColor ? strip.VColors[k + 2] : Color.White,
-                                            hasUV ? strip.UVs[k + 2] : new UV()));
+											hasVColor ? (Color?)strip.VColors[k + 2] : null,
+                                            hasUV ? strip.UVs[k + 2] : null));
                                     }
                                 }
                             }
-                            result.Add(new MeshInfo(MaterialBuffer, verts.ToArray()));
+                            result.Add(new MeshInfo(MaterialBuffer, verts.ToArray(), hasUV, hasVColor));
                             MaterialBuffer = new Material(MaterialBuffer.GetBytes(), 0);
                         }
                         break;

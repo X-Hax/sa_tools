@@ -58,11 +58,35 @@ namespace SonicRetro.SAModel.Direct3D
 		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Microsoft.DirectX.Direct3D.Device dev)
 		{
 			int numverts = 0;
+			byte data = 0;
 			foreach (MeshInfo item in attach.MeshInfo)
+			{
 				numverts += item.Vertices.Length;
+				if (item.HasUV)
+					data |= 1;
+				if (item.HasVC)
+					data |= 2;
+			}
 			if (numverts == 0) return null;
-			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts, MeshFlags.Managed, FVF_PositionNormalTexturedColored.Elements, dev);
-			List<FVF_PositionNormalTexturedColored> vb = new List<FVF_PositionNormalTexturedColored>();
+			switch (data)
+			{
+				case 3:
+					return CreateD3DMesh<FVF_PositionNormalTexturedColored>(attach, dev, numverts);
+				case 2:
+					return CreateD3DMesh<FVF_PositionNormalColored>(attach, dev, numverts);
+				case 1:
+					return CreateD3DMesh<FVF_PositionNormalTextured>(attach, dev, numverts);
+				default:
+					return CreateD3DMesh<FVF_PositionNormal>(attach, dev, numverts);
+			}
+		}
+		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
+		{
+			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts,
+				MeshFlags.Managed, (VertexElement[])typeof(T).InvokeMember("Elements",
+				System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+				null, null, null), dev);
+			List<T> vb = new List<T>();
 			List<short> ib = new List<short>();
 			int[] at = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
 			int vind;
@@ -71,7 +95,7 @@ namespace SonicRetro.SAModel.Direct3D
 				vind = vb.Count;
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
 				{
-					vb.Add(new FVF_PositionNormalTexturedColored(attach.MeshInfo[i].Vertices[j], attach.MeshInfo[i].Material));
+					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j], attach.MeshInfo[i].Material));
 					ib.Add((short)(vind + j));
 				}
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
@@ -84,8 +108,8 @@ namespace SonicRetro.SAModel.Direct3D
 			int[] adjacency = new int[functionReturnValue.NumberFaces * 3];
 			functionReturnValue.GenerateAdjacency(0.0001f, adjacency);
 			functionReturnValue.Optimize(MeshFlags.OptimizeCompact, adjacency);
-            /*float[] texCoordEps = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }; // TODO: make d3d mesh only for picking, ruthlessly weld things. Draw models with d3dDrawPrimitive
-            functionReturnValue.WeldVertices(WeldEpsilonsFlags.WeldAll, new WeldEpsilons { Position = 0.001f, TextureCoordinate = texCoordEps }, adjacency);*/
+			/*float[] texCoordEps = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }; // TODO: make d3d mesh only for picking, ruthlessly weld things. Draw models with d3dDrawPrimitive
+			functionReturnValue.WeldVertices(WeldEpsilonsFlags.WeldAll, new WeldEpsilons { Position = 0.001f, TextureCoordinate = texCoordEps }, adjacency);*/
 
 			return functionReturnValue;
 		}

@@ -13,11 +13,15 @@ namespace SonicRetro.SAModel
     {
         public Material Material { get; private set; }
         public VertexData[] Vertices { get; private set; }
+		public bool HasUV { get; private set; }
+		public bool HasVC { get; private set; }
 
-        public MeshInfo(Material material, VertexData[] vertices)
+        public MeshInfo(Material material, VertexData[] vertices, bool hasUV, bool hasVC)
         {
             Material = material;
             Vertices = vertices;
+			HasUV = hasUV;
+			HasVC = hasVC;
         }
     }
 
@@ -25,7 +29,7 @@ namespace SonicRetro.SAModel
     {
         public Vertex Position;
         public Vertex Normal;
-        public Color Color;
+        public Color? Color;
         public UV UV;
 
         public VertexData(Vertex position)
@@ -40,8 +44,8 @@ namespace SonicRetro.SAModel
         {
             Position = position;
             Normal = normal ?? Vertex.UpNormal;
-            Color = color ?? Color.White;
-            UV = uv ?? new UV();
+            Color = color;
+            UV = uv;
         }
     }
 }
