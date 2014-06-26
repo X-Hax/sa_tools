@@ -43,6 +43,7 @@
 			this.copyModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editMaterialsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1 = new System.Windows.Forms.UserControl();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -52,8 +53,6 @@
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.treeView1 = new System.Windows.Forms.TreeView();
-			this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.stripsRendererToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -153,8 +152,7 @@
             this.copyModelToolStripMenuItem,
             this.pasteModelToolStripMenuItem,
             this.editMaterialsToolStripMenuItem,
-            this.preferencesToolStripMenuItem,
-            this.stripsRendererToolStripMenuItem});
+            this.preferencesToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -163,7 +161,7 @@
 			// 
 			this.copyModelToolStripMenuItem.Enabled = false;
 			this.copyModelToolStripMenuItem.Name = "copyModelToolStripMenuItem";
-			this.copyModelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.copyModelToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.copyModelToolStripMenuItem.Text = "&Copy Model";
 			this.copyModelToolStripMenuItem.Click += new System.EventHandler(this.copyModelToolStripMenuItem_Click);
 			// 
@@ -171,7 +169,7 @@
 			// 
 			this.pasteModelToolStripMenuItem.Enabled = false;
 			this.pasteModelToolStripMenuItem.Name = "pasteModelToolStripMenuItem";
-			this.pasteModelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.pasteModelToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.pasteModelToolStripMenuItem.Text = "&Paste Model";
 			this.pasteModelToolStripMenuItem.Click += new System.EventHandler(this.pasteModelToolStripMenuItem_Click);
 			// 
@@ -179,9 +177,16 @@
 			// 
 			this.editMaterialsToolStripMenuItem.Enabled = false;
 			this.editMaterialsToolStripMenuItem.Name = "editMaterialsToolStripMenuItem";
-			this.editMaterialsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.editMaterialsToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.editMaterialsToolStripMenuItem.Text = "Edit &Materials...";
 			this.editMaterialsToolStripMenuItem.Click += new System.EventHandler(this.editMaterialsToolStripMenuItem_Click);
+			// 
+			// preferencesToolStripMenuItem
+			// 
+			this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+			this.preferencesToolStripMenuItem.Text = "Preferences";
+			this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
 			// 
 			// panel1
 			// 
@@ -271,21 +276,6 @@
 			this.treeView1.TabIndex = 1;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
-			// preferencesToolStripMenuItem
-			// 
-			this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.preferencesToolStripMenuItem.Text = "Preferences";
-			this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
-			// 
-			// stripsRendererToolStripMenuItem
-			// 
-			this.stripsRendererToolStripMenuItem.CheckOnClick = true;
-			this.stripsRendererToolStripMenuItem.Name = "stripsRendererToolStripMenuItem";
-			this.stripsRendererToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.stripsRendererToolStripMenuItem.Text = "StripsRenderer";
-			this.stripsRendererToolStripMenuItem.Click += new System.EventHandler(this.stripsRendererToolStripMenuItem_Click);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -339,7 +329,6 @@
 		private System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem stripsRendererToolStripMenuItem;
     }
 }
 

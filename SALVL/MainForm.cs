@@ -189,21 +189,21 @@ namespace SonicRetro.SAModel.SALVL
             EditorOptions.RenderStateCommonSetup(d3ddevice);
 
             MatrixStack transform = new MatrixStack();
-            List<RenderInfo> renderlist = new List<RenderInfo>();
-            if (LevelData.LevelItems != null)
-                for (int i = 0; i < LevelData.LevelItems.Count; i++)
-                {
-                    bool display = false;
-                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
-                        display = true;
-                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
-                        display = true;
-                    else if (allToolStripMenuItem.Checked)
-                        display = true;
-                    if (display)
-                        renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
-                }
-            RenderInfo.Draw(renderlist, d3ddevice, cam);
+			List<RenderInfo> renderlist = new List<RenderInfo>();
+			if (LevelData.LevelItems != null)
+				for (int i = 0; i < LevelData.LevelItems.Count; i++)
+				{
+					bool display = false;
+					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+						display = true;
+					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+						display = true;
+					else if (allToolStripMenuItem.Checked)
+						display = true;
+					if (display)
+						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+				}
+			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
             d3ddevice.EndScene(); // scene drawings go before this line
 

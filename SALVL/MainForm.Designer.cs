@@ -65,8 +65,8 @@
 			this.selectModeButton = new System.Windows.Forms.ToolStripButton();
 			this.moveModeButton = new System.Windows.Forms.ToolStripButton();
 			this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
-			this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
 			this.rotateMode = new System.Windows.Forms.ToolStripButton();
+			this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -177,7 +177,7 @@
 			// 
 			this.clearLevelToolStripMenuItem.Enabled = false;
 			this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
-			this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.clearLevelToolStripMenuItem.Text = "Clear Level";
 			this.clearLevelToolStripMenuItem.Click += new System.EventHandler(this.clearLevelToolStripMenuItem_Click);
 			// 
@@ -185,7 +185,7 @@
 			// 
 			this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
 			this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-			this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.duplicateToolStripMenuItem.Text = "&Duplicate";
 			this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
 			// 
@@ -193,14 +193,14 @@
 			// 
 			this.debugLightingToolStripMenuItem.Enabled = false;
 			this.debugLightingToolStripMenuItem.Name = "debugLightingToolStripMenuItem";
-			this.debugLightingToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.debugLightingToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.debugLightingToolStripMenuItem.Text = "Debug Lighting";
 			this.debugLightingToolStripMenuItem.Click += new System.EventHandler(this.debugLightingToolStripMenuItem_Click);
 			// 
 			// preferencesToolStripMenuItem
 			// 
 			this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
 			this.preferencesToolStripMenuItem.Text = "&Preferences";
 			this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
 			// 
@@ -220,7 +220,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
 			this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-			this.levelToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.levelToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
 			this.levelToolStripMenuItem.Text = "&Level";
 			this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -248,7 +248,7 @@
 			// 
 			this.statsToolStripMenuItem.Enabled = false;
 			this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-			this.statsToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.statsToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
 			this.statsToolStripMenuItem.Text = "Stats";
 			this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click_1);
 			// 
@@ -405,6 +405,16 @@
 			this.rotateModeButton.ToolTipText = "Rotate Mode";
 			this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
 			// 
+			// rotateMode
+			// 
+			this.rotateMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.rotateMode.Image = ((System.Drawing.Image)(resources.GetObject("rotateMode.Image")));
+			this.rotateMode.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.rotateMode.Name = "rotateMode";
+			this.rotateMode.Size = new System.Drawing.Size(23, 22);
+			this.rotateMode.Text = "toolStripButton1";
+			this.rotateMode.Click += new System.EventHandler(this.rotateMode_Click);
+			// 
 			// gizmoSpaceComboBox
 			// 
 			this.gizmoSpaceComboBox.Enabled = false;
@@ -415,16 +425,6 @@
 			this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
 			this.gizmoSpaceComboBox.Text = "Gizmo Space";
 			this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
-			// 
-			// rotateMode
-			// 
-			this.rotateMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.rotateMode.Image = ((System.Drawing.Image)(resources.GetObject("rotateMode.Image")));
-			this.rotateMode.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.rotateMode.Name = "rotateMode";
-			this.rotateMode.Size = new System.Drawing.Size(23, 22);
-			this.rotateMode.Text = "toolStripButton1";
-			this.rotateMode.Click += new System.EventHandler(this.rotateMode_Click);
 			// 
 			// MainForm
 			// 
