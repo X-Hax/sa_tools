@@ -31,6 +31,79 @@ namespace SonicRetro.SAModel.Direct3D
 			attach.Bounds.Center.Z = center.Z;
 		}
 
+		public static void SetDeviceStates(this Material material, Device device, Texture texture, Matrix transform, FillMode fillMode)
+		{
+			if (!material.SuperSample)
+			{
+				device.SamplerState[0].MagFilter = TextureFilter.None;
+				device.SamplerState[0].MinFilter = TextureFilter.None;
+				device.SamplerState[0].MipFilter = TextureFilter.None;
+			}
+			device.RenderState.FillMode = fillMode;
+			device.SetTransform(TransformType.World, transform);
+			device.Material = new Microsoft.DirectX.Direct3D.Material
+			{
+				Diffuse = material.DiffuseColor,
+				Ambient = material.DiffuseColor,
+				Specular = material.IgnoreSpecular ? System.Drawing.Color.Transparent : material.SpecularColor,
+				SpecularSharpness = material.Exponent * material.Exponent
+			};
+			device.SetTexture(0, material.UseTexture ? texture : null);
+			device.RenderState.Ambient = (material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+			device.RenderState.AlphaBlendEnable = material.UseAlpha; if (material.UseAlpha) device.RenderState.Ambient = material.DiffuseColor;
+			switch (material.DestinationAlpha)
+			{
+				case AlphaInstruction.Zero:
+					device.RenderState.AlphaDestinationBlend = Blend.Zero;
+					break;
+				case AlphaInstruction.One:
+					device.RenderState.AlphaDestinationBlend = Blend.One;
+					break;
+				case AlphaInstruction.OtherColor:
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					break;
+				case AlphaInstruction.SourceAlpha:
+					device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
+					break;
+			}
+			switch (material.SourceAlpha)
+			{
+				case AlphaInstruction.Zero:
+					device.RenderState.AlphaSourceBlend = Blend.Zero;
+					break;
+				case AlphaInstruction.One:
+					device.RenderState.AlphaSourceBlend = Blend.One;
+					break;
+				case AlphaInstruction.OtherColor:
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					break;
+				case AlphaInstruction.SourceAlpha:
+					device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
+					break;
+			}
+			device.TextureState[0].TextureCoordinateIndex = material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
+		}
+
 		public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
 		{
 			List<Vector3> verts = new List<Vector3>();
@@ -53,6 +126,101 @@ namespace SonicRetro.SAModel.Direct3D
 			col.Bounds.Center.X = center.X;
 			col.Bounds.Center.Y = center.Y;
 			col.Bounds.Center.Z = center.Z;
+		}
+
+		private static void RenderBasicAttach(BasicAttach attach, Device device, MatrixStack transform, Texture[] textures, bool useMat)
+		{
+			CustomVertex.PositionOnly[] vertexData = new CustomVertex.PositionOnly[attach.Vertex.Length];
+
+			for (int v = 0; v < attach.Vertex.Length; v++)
+			{
+				vertexData[v].Position = attach.Vertex[v].ToVector3();
+
+				/*if (attach.Normal != null) vertexData[v].Normal = attach.Normal[v].ToVector3();
+				else vertexData[v].Normal = new Vector3();*/
+			}
+
+			foreach (SAModel.Mesh mesh in attach.Mesh)
+			{
+				bool hasNormal = (attach.Normal != null);
+				bool hasUV = (mesh.UV != null);
+				bool hasVColor = (mesh.VColor != null);
+
+				Material meshMaterial = attach.Material[mesh.MaterialID];
+				Texture texture;
+
+				if (textures == null)
+				{
+					texture = new Texture(device, new Bitmap(2,2), Usage.None, Pool.Managed);
+				}
+				else
+				{
+					texture = textures[meshMaterial.TextureID];
+				}
+
+				meshMaterial.SetDeviceStates(device, texture, transform.Top, device.RenderState.FillMode);
+
+				foreach (Poly poly in mesh.Poly)
+				{
+					switch (poly.PolyType)
+					{
+						case(Basic_PolyType.Strips):
+							Strip strip = (Strip)poly;
+							UInt16[] polyIndeces = new UInt16[poly.Indexes.Length];
+
+							for (int i = 0; i < poly.Indexes.Length; i++) // we need to write to the vertex buffer properly
+							{
+								polyIndeces[i] = strip.Indexes[i];
+
+								// writing to vertexData
+								if (hasUV)
+								{
+									//vertexData[poly.Indexes[i]].UV = new Vector2(mesh.UV[i].U, mesh.UV[i].V);
+								}
+
+								if (hasVColor)
+								{
+									//vertexData[poly.Indexes[i]].Color = mesh.VColor[i].ToArgb();
+								}
+							}
+
+							if (strip.Reversed)
+							{
+								Array.Reverse(polyIndeces);
+							}
+
+							device.RenderState.Ambient = System.Drawing.Color.White;
+							device.RenderState.Lighting = false;
+							device.Transform.World = Matrix.Identity;
+							device.VertexFormat = CustomVertex.PositionOnly.Format;
+
+							device.DrawIndexedUserPrimitives(PrimitiveType.TriangleStrip, 0, polyIndeces.Length - 1, polyIndeces.Length - 2, polyIndeces, true, vertexData);
+							break;
+
+						default:
+							break;
+					}
+				}
+			}
+		}
+
+		public static void RenderModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, bool useMat)
+		{
+			transform.Push();
+			obj.ProcessTransforms(transform);
+
+			if (obj.Attach != null)
+			{
+				if (obj.Attach is BasicAttach)
+				{
+					RenderBasicAttach((BasicAttach)obj.Attach, device, transform, textures, useMat);
+				}
+				else if (obj.Attach is ChunkAttach)
+				{
+					throw new NotImplementedException();
+				}
+			}
+			transform.Pop();
 		}
 
 		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Microsoft.DirectX.Direct3D.Device dev)

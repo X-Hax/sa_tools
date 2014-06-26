@@ -34,7 +34,8 @@ namespace SonicRetro.SAModel.Direct3D
             TextureFilter magfilter = device.SamplerState[0].MagFilter;
             TextureFilter minfilter = device.SamplerState[0].MinFilter;
             TextureFilter mipfilter = device.SamplerState[0].MipFilter;
-            if (!Material.SuperSample)
+
+            /*if (!Material.SuperSample)
             {
                 device.SamplerState[0].MagFilter = TextureFilter.None;
                 device.SamplerState[0].MinFilter = TextureFilter.None;
@@ -102,7 +103,10 @@ namespace SonicRetro.SAModel.Direct3D
                     device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
                     break;
             }
-            device.TextureState[0].TextureCoordinateIndex = Material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
+            device.TextureState[0].TextureCoordinateIndex = Material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;*/
+
+			Material.SetDeviceStates(device, Texture, Transform, FillMode);
+
             if (Mesh != null)
                 Mesh.DrawSubset(Subset);
             device.RenderState.Ambient = System.Drawing.Color.Black;

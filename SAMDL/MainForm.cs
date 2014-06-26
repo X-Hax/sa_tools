@@ -264,9 +264,13 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animation != null)
 				RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
 			else
-				RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
+			{
+				if(stripsRendererToolStripMenuItem.Checked) model.RenderModel(d3ddevice, transform, Textures, true);
+				else RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
+			}
 			if (selectedObject != null)
 				DrawSelectedObject(model, transform);
+
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -723,6 +727,28 @@ namespace SonicRetro.SAModel.SAMDL
 			if (suppressTreeEvent) return;
 			selectedObject = (Object)e.Node.Tag;
 			SelectedItemChanged();
+		}
+
+		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DrawLevel();
+		}
+
+		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor.FormUpdated += new EditorOptionsEditor.FormUpdatedHandler(optionsEditor_FormUpdated);
+			optionsEditor.Show();
+		}
+
+		void optionsEditor_FormUpdated()
+		{
+			DrawLevel();
+		}
+
+		private void stripsRendererToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DrawLevel();
 		}
 	}
 }
