@@ -94,13 +94,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				errorMsg = "";
 				return;
 			}
-			if (SelectedItems.Count > 1)
-			{
-				errorFlag = true;
-				errorMsg = "Multi-duplicate is currently not supported.";
-				return;
-			}
-			else if (SelectedItems.Count > 0)
+
+			if (SelectedItems.Count < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; } 
+
+			if (SelectedItems.Count == 1)
 			{
 				// duplicate goes here
 				if (SelectedItems[0] is SETItem)
@@ -134,9 +131,41 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 			else
 			{
-				errorFlag = true;
-				errorMsg = "Selection must have a single item for duplicate operation to succeed.";
-				return;
+				List<Item> newItems = new List<Item>();
+
+				// duplicate goes here
+				for (int i = 0; i < SelectedItems.Count; i++)
+				{
+					if (SelectedItems[i] is SETItem)
+					{
+						SETItem originalItem = (SETItem)SelectedItems[i];
+						SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+
+						LevelData.SETItems[LevelData.Character].Add(newItem);
+						newItems.Add(newItem);
+					}
+					else if (SelectedItems[i] is LevelItem)
+					{
+						LevelItem originalItem = (LevelItem)SelectedItems[0];
+						LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+
+						newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
+						newItems.Add(newItem);
+					}
+					else if (SelectedItems[i] is CAMItem)
+					{
+						CAMItem originalItem = (CAMItem)SelectedItems[i];
+						CAMItem newItem = new CAMItem(d3ddevice, originalItem.GetBytes(), 0);
+
+						LevelData.CAMItems[LevelData.Character].Add(newItem);
+						newItems.Add(newItem);
+					}
+				}
+
+				SelectedItems.Clear();
+				SelectedItems = newItems;
+
+				InvalidateRenderState();
 			}
 
 			errorFlag = false;

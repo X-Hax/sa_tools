@@ -799,7 +799,8 @@ namespace SonicRetro.SAModel.SALVL
 
         void LevelData_StateChanged()
         {
-            DrawLevel();
+			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
+			DrawLevel();
         }
 
         private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
