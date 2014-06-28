@@ -149,14 +149,19 @@ namespace PVMEditSharp
 							if (tlevels == 2)
 								break;
 						}
-						tex.PixelFormat = PvrPixelFormat.Rgb565;
-						if (tlevels == 1)
+						if (tlevels == 0)
+							tex.PixelFormat = PvrPixelFormat.Rgb565;
+						else if (tlevels == 1)
 							tex.PixelFormat = PvrPixelFormat.Argb1555;
 						else if (tlevels == 2)
 							tex.PixelFormat = PvrPixelFormat.Argb4444;
-						tex.DataFormat = PvrDataFormat.Rectangle;
 						if (tex.Image.Width == tex.Image.Height)
-							tex.DataFormat = PvrDataFormat.SquareTwiddled;
+							if (tex.Mipmap)
+								tex.DataFormat = PvrDataFormat.SquareTwiddledMipmaps;
+							else
+								tex.DataFormat = PvrDataFormat.SquareTwiddled;
+						else
+							tex.DataFormat = PvrDataFormat.Rectangle;
 					}
 					PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
 					encoder.GlobalIndex = tex.GlobalIndex;
@@ -186,11 +191,18 @@ namespace PVMEditSharp
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.prs" })
+			{
+				if (filename != null)
+				{
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.GetFileName(filename);
+				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
+			}
 		}
 
 		private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -223,8 +235,17 @@ namespace PVMEditSharp
 			{
 				textureName.Text = textures[listBox1.SelectedIndex].Name;
 				globalIndex.Value = textures[listBox1.SelectedIndex].GlobalIndex;
+				if (textures[listBox1.SelectedIndex].CheckMipmap())
+				{
+					mipmapCheckBox.Enabled = true;
+					mipmapCheckBox.Checked = textures[listBox1.SelectedIndex].Mipmap;
+				}
+				else
+					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				textureImage.Image = textures[listBox1.SelectedIndex].Image;
 			}
+			else
+				mipmapCheckBox.Enabled = false;
 		}
 
 		private KeyValuePair<string, Bitmap>? BrowseForTexture()
@@ -279,11 +300,25 @@ namespace PVMEditSharp
 			textures[listBox1.SelectedIndex].GlobalIndex = (uint)globalIndex.Value;
 		}
 
+		private void mipmapCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
+		}
+
 		private void importButton_Click(object sender, EventArgs e)
 		{
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture();
 			if (tex.HasValue)
+			{
 				textureImage.Image = textures[listBox1.SelectedIndex].Image = tex.Value.Value;
+				if (textures[listBox1.SelectedIndex].CheckMipmap())
+				{
+					mipmapCheckBox.Enabled = true;
+					mipmapCheckBox.Checked = textures[listBox1.SelectedIndex].Mipmap;
+				}
+				else
+					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+			}
 		}
 
 		private void exportButton_Click(object sender, EventArgs e)
@@ -305,6 +340,7 @@ namespace PVMEditSharp
 		public uint GlobalIndex { get; set; }
 		public PvrDataFormat DataFormat { get; set; }
 		public PvrPixelFormat PixelFormat { get; set; }
+		public bool Mipmap { get; set; }
 		public Bitmap Image { get; set; }
 
 		public TextureInfo() { }
@@ -323,8 +359,14 @@ namespace PVMEditSharp
 			Name = name;
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DataFormat;
+			Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
 			PixelFormat = texture.PixelFormat;
 			Image = texture.ToBitmap();
+		}
+
+		public bool CheckMipmap()
+		{
+			return DataFormat != PvrDataFormat.Index4 && DataFormat != PvrDataFormat.Index8 && Image.Width == Image.Height;
 		}
 	}
 }

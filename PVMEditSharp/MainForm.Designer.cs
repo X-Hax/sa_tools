@@ -46,6 +46,7 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.removeTextureButton = new System.Windows.Forms.Button();
 			this.addTextureButton = new System.Windows.Forms.Button();
+			this.mipmapCheckBox = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.textureImage = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
@@ -191,6 +192,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.AutoScroll = true;
+			this.splitContainer1.Panel2.Controls.Add(this.mipmapCheckBox);
 			this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
 			this.splitContainer1.Panel2.Controls.Add(this.globalIndex);
 			this.splitContainer1.Panel2.Controls.Add(label2);
@@ -246,6 +248,18 @@
 			this.addTextureButton.Text = "Add...";
 			this.addTextureButton.UseVisualStyleBackColor = true;
 			this.addTextureButton.Click += new System.EventHandler(this.addTextureButton_Click);
+			// 
+			// mipmapCheckBox
+			// 
+			this.mipmapCheckBox.AutoSize = true;
+			this.mipmapCheckBox.Enabled = false;
+			this.mipmapCheckBox.Location = new System.Drawing.Point(204, 29);
+			this.mipmapCheckBox.Name = "mipmapCheckBox";
+			this.mipmapCheckBox.Size = new System.Drawing.Size(63, 17);
+			this.mipmapCheckBox.TabIndex = 7;
+			this.mipmapCheckBox.Text = "Mipmap";
+			this.mipmapCheckBox.UseVisualStyleBackColor = true;
+			this.mipmapCheckBox.CheckedChanged += new System.EventHandler(this.mipmapCheckBox_CheckedChanged);
 			// 
 			// tableLayoutPanel1
 			// 
@@ -391,6 +405,7 @@
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.CheckBox mipmapCheckBox;
 	}
 }
 
