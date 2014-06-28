@@ -54,6 +54,8 @@
 			this.importButton = new System.Windows.Forms.Button();
 			this.globalIndex = new System.Windows.Forms.NumericUpDown();
 			this.textureName = new System.Windows.Forms.TextBox();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.addMipmapsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			this.menuStrip1.SuspendLayout();
@@ -88,7 +90,8 @@
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(584, 24);
@@ -348,6 +351,21 @@
 			this.textureName.TabIndex = 1;
 			this.textureName.TextChanged += new System.EventHandler(this.textureName_TextChanged);
 			// 
+			// editToolStripMenuItem
+			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addMipmapsToAllToolStripMenuItem});
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+			this.editToolStripMenuItem.Text = "&Edit";
+			// 
+			// addMipmapsToAllToolStripMenuItem
+			// 
+			this.addMipmapsToAllToolStripMenuItem.Name = "addMipmapsToAllToolStripMenuItem";
+			this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.addMipmapsToAllToolStripMenuItem.Text = "Add &Mipmaps to All";
+			this.addMipmapsToAllToolStripMenuItem.Click += new System.EventHandler(this.addMipmapsToAllToolStripMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -406,6 +424,8 @@
 		private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.CheckBox mipmapCheckBox;
+		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addMipmapsToAllToolStripMenuItem;
 	}
 }
 

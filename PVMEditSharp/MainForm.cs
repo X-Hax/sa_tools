@@ -328,6 +328,15 @@ namespace PVMEditSharp
 					textures[listBox1.SelectedIndex].Image.Save(dlg.FileName);
 		}
 
+		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			foreach (TextureInfo info in textures)
+				if (info.CheckMipmap())
+					info.Mipmap = true;
+			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].CheckMipmap())
+				mipmapCheckBox.Checked = true;
+		}
+
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			Settings.Save();
