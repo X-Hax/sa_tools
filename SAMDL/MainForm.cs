@@ -225,10 +225,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
-				DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl",
-				Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*"
+				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
+				Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					if (modelFile != null)
