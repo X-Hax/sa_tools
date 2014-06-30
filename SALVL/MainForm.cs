@@ -800,6 +800,7 @@ namespace SonicRetro.SAModel.SALVL
         void LevelData_StateChanged()
         {
 			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
+			SelectedItemChanged();
 			DrawLevel();
         }
 
@@ -828,7 +829,7 @@ namespace SonicRetro.SAModel.SALVL
             string errorMsg = "";
             LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
 
-            if (errorFlag) MessageBox.Show(errorMsg);
+			if (errorFlag) MessageBox.Show(errorMsg);
         }
 
         private void debugLightingToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1448,6 +1448,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void LevelData_StateChanged()
 		{
 			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
+			SelectedItemChanged();
 			DrawLevel();
 		}
 
