@@ -29,7 +29,7 @@ namespace SADXObjectDefinitions.Common
         {
             transform.Push();
             transform.NJTranslate(item.Position);
-            transform.NJRotateY(item.Rotation.Y);
+			transform.NJRotateY(item.Rotation.Y - 0x5772);
             transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
             HitResult result = mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
             
@@ -42,7 +42,7 @@ namespace SADXObjectDefinitions.Common
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.NJTranslate(item.Position);
-            transform.NJRotateY(item.Rotation.Y);
+			transform.NJRotateY(item.Rotation.Y - 0x5772);
             transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
 
             float largestScale = item.Scale.X;

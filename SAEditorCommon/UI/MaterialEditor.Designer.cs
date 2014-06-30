@@ -63,10 +63,12 @@
 			this.specColorLabel = new System.Windows.Forms.Label();
 			this.diffuseLabel = new System.Windows.Forms.Label();
 			this.doneButton = new System.Windows.Forms.Button();
+			this.alphaDiffuseNumeric = new System.Windows.Forms.NumericUpDown();
 			this.flagsGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
 			this.generalSettingBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.textureBox)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// comboBox1
@@ -286,6 +288,7 @@
 			// 
 			// generalSettingBox
 			// 
+			this.generalSettingBox.Controls.Add(this.alphaDiffuseNumeric);
 			this.generalSettingBox.Controls.Add(this.dstAlphaCombo);
 			this.generalSettingBox.Controls.Add(this.destinationAlphaLabel);
 			this.generalSettingBox.Controls.Add(this.srcAlphaCombo);
@@ -470,19 +473,32 @@
 			this.doneButton.UseVisualStyleBackColor = true;
 			this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
 			// 
+			// alphaDiffuseNumeric
+			// 
+			this.alphaDiffuseNumeric.Location = new System.Drawing.Point(131, 13);
+			this.alphaDiffuseNumeric.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+			this.alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
+			this.alphaDiffuseNumeric.Size = new System.Drawing.Size(50, 20);
+			this.alphaDiffuseNumeric.TabIndex = 5;
+			this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
+			// 
 			// MaterialEditor
 			// 
 			this.AcceptButton = this.doneButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(526, 241);
+			this.ClientSize = new System.Drawing.Size(536, 255);
 			this.ControlBox = false;
 			this.Controls.Add(this.doneButton);
 			this.Controls.Add(this.generalSettingBox);
 			this.Controls.Add(this.flagsGroupBox);
 			this.Controls.Add(this.currentMaterialLabel);
 			this.Controls.Add(this.comboBox1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "MaterialEditor";
@@ -498,6 +514,7 @@
 			this.generalSettingBox.ResumeLayout(false);
 			this.generalSettingBox.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.textureBox)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -540,5 +557,6 @@
         private System.Windows.Forms.Label userFlagsLabel;
         private System.Windows.Forms.NumericUpDown userFlagsNumeric;
         private System.Windows.Forms.Button doneButton;
+		private System.Windows.Forms.NumericUpDown alphaDiffuseNumeric;
     }
 }

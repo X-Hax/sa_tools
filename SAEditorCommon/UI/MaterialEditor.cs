@@ -63,6 +63,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			// setting general
 			diffuseColorBox.BackColor = materials[index].DiffuseColor;
+			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
 			specColorBox.BackColor = materials[index].SpecularColor;
 			textureBox.Image = textures[materials[index].TextureID].Image;
 			exponentTextBox.Text = materials[index].Exponent.ToString();
@@ -162,6 +163,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				materials[comboBox1.SelectedIndex].Exponent = expParse;
 			}
+		}
+
+		private void alphaDiffuseNumeric_ValueChanged(object sender, EventArgs e)
+		{
+			materials[comboBox1.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, materials[comboBox1.SelectedIndex].DiffuseColor);
 		}
 		#endregion
 

@@ -1112,128 +1112,137 @@ namespace SonicRetro.SAModel.Direct3D
 			obj.ProcessTransforms(transform);
 
 			// add obj writing here
-			if ((obj.Attach != null))
+			if (obj.Attach != null)
 			{
 				ChunkAttach chunkAttach = (ChunkAttach)obj.Attach;
-				bool wroteNormals = false;
-				int outputVertCount = 0;
-				int outputNormalCount = 0;
 
-				objstream.WriteLine("g " + obj.Name);
+				if ((chunkAttach.Vertex != null) && (chunkAttach.Poly != null))
+				{
+					bool wroteNormals = false;
+					int outputVertCount = 0;
+					int outputNormalCount = 0;
 
-				#region Outputting Verts and Normals
-				int vertexChunkCount = chunkAttach.Vertex.Count;
-				int polyChunkCount = chunkAttach.Poly.Count;
+					objstream.WriteLine("g " + obj.Name);
 
-				if (vertexChunkCount != 1)
+					#region Outputting Verts and Normals
+					int vertexChunkCount = chunkAttach.Vertex.Count;
+					int polyChunkCount = chunkAttach.Poly.Count;
+
+					if (vertexChunkCount != 1)
+					{
+						errorFlag = true;
+						objstream.WriteLine("#A chunk model with more than one vertex chunk was found. Output is probably corrupt.");
+					}
+
+					for (int vc = 0; vc < vertexChunkCount; vc++)
+					{
+						for (int vIndx = 0; vIndx < chunkAttach.Vertex[vc].VertexCount; vIndx++)
+						{
+							if (chunkAttach.Vertex[vc].Flags == 0)
+							{
+								Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
+								Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+								objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+
+								outputVertCount++;
+							}
+						}
+
+						if (chunkAttach.Vertex[vc].Normals.Count > 0)
+						{
+							if (chunkAttach.Vertex[vc].Flags == 0)
+							{
+								for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
+								{
+									objstream.WriteLine(String.Format("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z));
+									outputNormalCount++;
+								}
+								wroteNormals = true;
+							}
+						}
+					}
+					#endregion
+
+					#region Outputting Polys
+					for (int pc = 0; pc < polyChunkCount; pc++)
+					{
+						PolyChunk polyChunk = (PolyChunk)chunkAttach.Poly[pc];
+
+						if (polyChunk is PolyChunkStrip)
+						{
+							PolyChunkStrip chunkStrip = (PolyChunkStrip)polyChunk;
+
+							for (int stripNum = 0; stripNum < chunkStrip.StripCount; stripNum++)
+							{
+								// output texture verts before use, if necessary
+								bool uvsAreValid = false;
+								if (chunkStrip.Strips[stripNum].UVs != null)
+								{
+									if (chunkStrip.Strips[stripNum].UVs.Length > 0)
+									{
+										uvsAreValid = true;
+										for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
+										{
+											objstream.WriteLine(String.Format("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V));
+										}
+									}
+								}
+
+								bool windingReversed = chunkStrip.Strips[stripNum].Reversed;
+								for (int currentStripIndx = 0; currentStripIndx < chunkStrip.Strips[stripNum].Indexes.Length - 2; currentStripIndx++)
+								{
+									if (windingReversed)
+									{
+										if (uvsAreValid)
+										{
+											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
+											objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1));
+										}
+										else
+										{
+											objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+										}
+									}
+									else
+									{
+										if (uvsAreValid)
+										{
+											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
+											objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1));
+										}
+										else
+										{
+											objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+										}
+									}
+
+									windingReversed = !windingReversed;
+								}
+
+								// increment output verts
+								if (uvsAreValid) totalUVs += chunkStrip.Strips[stripNum].UVs.Length;
+							}
+						}
+						else if (polyChunk is PolyChunkMaterial)
+						{
+							// no behavior defined yet.
+						}
+						else if (polyChunk is PolyChunkTinyTextureID)
+						{
+							PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
+							objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID));
+						}
+					}
+					#endregion
+
+					totalVerts += outputVertCount;
+					totalNorms += outputNormalCount;
+				}
+				else
 				{
 					errorFlag = true;
-					objstream.WriteLine("#A chunk model with more than one vertex chunk was found. Output is probably corrupt.");
+					objstream.WriteLine("#A chunk model with no vertex or no poly was found. Output is definitely corrupt.");
 				}
-
-				for (int vc = 0; vc < vertexChunkCount; vc++)
-				{
-					for (int vIndx = 0; vIndx < chunkAttach.Vertex[vc].VertexCount; vIndx++)
-					{
-						if (chunkAttach.Vertex[vc].Flags == 0)
-						{
-							Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
-							Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
-							objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
-
-							outputVertCount++;
-						}
-					}
-
-					if (chunkAttach.Vertex[vc].Normals.Count > 0)
-					{
-						if (chunkAttach.Vertex[vc].Flags == 0)
-						{
-							for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
-							{
-								objstream.WriteLine(String.Format("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z));
-								outputNormalCount++;
-							}
-							wroteNormals = true;
-						}
-					}
-				}
-				#endregion
-
-				#region Outputting Polys
-				for (int pc = 0; pc < polyChunkCount; pc++)
-				{
-					PolyChunk polyChunk = (PolyChunk)chunkAttach.Poly[pc];
-
-					if (polyChunk is PolyChunkStrip)
-					{
-						PolyChunkStrip chunkStrip = (PolyChunkStrip)polyChunk;
-
-						for (int stripNum = 0; stripNum < chunkStrip.StripCount; stripNum++)
-						{
-							// output texture verts before use, if necessary
-							bool uvsAreValid = false;
-							if (chunkStrip.Strips[stripNum].UVs != null)
-							{
-								if (chunkStrip.Strips[stripNum].UVs.Length > 0)
-								{
-									uvsAreValid = true;
-									for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
-									{
-										objstream.WriteLine(String.Format("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V));
-									}
-								}
-							}
-
-							bool windingReversed = chunkStrip.Strips[stripNum].Reversed;
-							for (int currentStripIndx = 0; currentStripIndx < chunkStrip.Strips[stripNum].Indexes.Length - 2; currentStripIndx++)
-							{
-								if (windingReversed)
-								{
-									if (uvsAreValid)
-									{
-										// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-										objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1));
-									}
-									else
-									{
-										objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
-									}
-								}
-								else
-								{
-									if (uvsAreValid)
-									{
-										// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-										objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1));
-									}
-									else
-									{
-										objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
-									}
-								}
-
-								windingReversed = !windingReversed;
-							}
-
-							// increment output verts
-							if (uvsAreValid) totalUVs += chunkStrip.Strips[stripNum].UVs.Length;
-						}
-					}
-					else if (polyChunk is PolyChunkMaterial)
-					{
-						// no behavior defined yet.
-					}
-					else if (polyChunk is PolyChunkTinyTextureID)
-					{
-						PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
-						objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID));
-					}
-				}
-				#endregion
-
-				totalVerts += outputVertCount;
-				totalNorms += outputNormalCount;
 			}
 
 			// handle child nodes should they exist.
