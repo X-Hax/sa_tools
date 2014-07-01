@@ -187,7 +187,7 @@ namespace DLLModGenerator
 										labels.Add(ani.Name);
 										break;
 								}
-						writer.WriteLine("void __cdecl Init(const char *path)");
+						writer.WriteLine("void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
 						foreach (KeyValuePair<string, string> item in IniData.ItemTypes.Items)
@@ -196,7 +196,7 @@ namespace DLLModGenerator
 							writer.WriteLine("\t{0} = &{1};", item.Key, item.Value);
 						writer.WriteLine("}");
 						writer.WriteLine();
-						writer.WriteLine("extern \"C\" __declspec(dllexport) ModInfo {0}ModInfo = {{ ModLoaderVer, Init, NULL, 0, NULL, 0, NULL, 0, NULL, 0 }};", SA2 ? "SA2" : "SADX");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer, Init, NULL, 0, NULL, 0, NULL, 0, NULL, 0 }};", SA2 ? "SA2" : "SADX");
 					}
 		}
 	}

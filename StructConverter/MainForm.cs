@@ -828,7 +828,7 @@ namespace StructConverter
                         writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", ptrs.ToArray()));
                         writer.WriteLine("};");
                         writer.WriteLine();
-                        writer.WriteLine("extern \"C\" __declspec(dllexport) ModInfo {0}ModInfo = {{ ModLoaderVer, NULL, NULL, 0, NULL, 0, NULL, 0, arrayptrandlength(pointers) }};", SA2 ? "SA2" : "SADX");
+                        writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer, NULL, NULL, 0, NULL, 0, NULL, 0, arrayptrandlength(pointers) }};", SA2 ? "SA2" : "SADX");
                     }
         }
     }
