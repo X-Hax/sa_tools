@@ -1255,6 +1255,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach (ToolStripMenuItem item in characterToolStripMenuItem.DropDownItems)
 				item.Checked = false;
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+			transformGizmo.Enabled = false;
+			transformGizmo.AffectedItems.Clear();
 			DrawLevel();
 		}
 
@@ -1263,6 +1265,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach (ToolStripMenuItem item in levelToolStripMenuItem.DropDownItems)
 				item.Checked = false;
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+			transformGizmo.Enabled = false;
+			transformGizmo.AffectedItems.Clear();
 			DrawLevel();
 		}
 
@@ -1583,5 +1587,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 		#endregion
+
+		private void duplicateToToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if ((SelectedItems == null) || (SelectedItems.Count == 0))
+			{
+				MessageBox.Show("To use this feature you must have a selection!");
+				return;
+			}
+
+			DuplicateTo duplicateToWindow = new DuplicateTo(SelectedItems);
+			duplicateToWindow.ShowDialog();
+		}
 	}
 }

@@ -89,15 +89,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         {
             MatrixStack transform = new MatrixStack();
 
+			transform.Push();
+			transform.RotateXYZLocal(Rotation.X, Rotation.Y, Rotation.Z);
+
             Up = new Vector3(0, 1, 0);
             Look = new Vector3(0, 0, 1);
             Right = new Vector3(1, 0, 0);
-            Matrix yawm = Matrix.RotationAxis(Up, SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(Rotation.X));
-            Look = Vector3.TransformCoordinate(Look, yawm);
-            Right = Vector3.TransformCoordinate(Right, yawm);
-            Matrix pitchm = Matrix.RotationAxis(Right, SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(Rotation.Z));
-            Look = Vector3.TransformCoordinate(Look, pitchm);
-            Up = Vector3.TransformCoordinate(Up, pitchm);
+
+			Up = Vector3.TransformCoordinate(Up, transform.Top);
+			Look = Vector3.TransformCoordinate(Look, transform.Top);
+			Right = Vector3.TransformCoordinate(Right, transform.Top);
 
             return transform.Top;
         }

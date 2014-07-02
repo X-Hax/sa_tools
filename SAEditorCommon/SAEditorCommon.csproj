@@ -71,6 +71,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\DuplicateTo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\DuplicateTo.Designer.cs">
+      <DependentUpon>DuplicateTo.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Gizmo.cs" />
     <Compile Include="UI\PointHelper.cs" />
     <Compile Include="UI\TransformGizmo.cs" />
@@ -123,6 +129,9 @@
   <ItemGroup>
     <EmbeddedResource Include="UI\DefaultLightEditor.resx">
       <DependentUpon>DefaultLightEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\DuplicateTo.resx">
+      <DependentUpon>DuplicateTo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\EditorOptionsEditor.resx">
       <DependentUpon>EditorOptionsEditor.cs</DependentUpon>

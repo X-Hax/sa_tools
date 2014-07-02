@@ -288,9 +288,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 						Vector3 currentPosition = currentItem.Position.ToVector3();
 						Vector3 destination = new Vector3();
 
-						if (selectedAxes == GizmoSelectedAxes.X_AXIS) destination = (currentPosition + Look * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
-						else if (selectedAxes == GizmoSelectedAxes.Y_AXIS) destination = (currentPosition + Right * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
-						else if (selectedAxes == GizmoSelectedAxes.Z_AXIS) destination = (currentPosition + Up * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+						if (selectedAxes == GizmoSelectedAxes.X_AXIS) destination = (currentPosition + Right * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+						else if (selectedAxes == GizmoSelectedAxes.Y_AXIS) destination = (currentPosition + Up * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+						else if (selectedAxes == GizmoSelectedAxes.Z_AXIS) destination = (currentPosition + Look * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
 
 						currentItem.Position = SonicRetro.SAModel.Direct3D.Extensions.ToVertex(destination);
 					}
