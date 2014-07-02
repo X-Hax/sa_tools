@@ -33,7 +33,7 @@ namespace SonicRetro.SAModel.Direct3D
             Normal = Nor;
         }
 
-        public FVF_PositionNormal(VertexData data, Material mat)
+        public FVF_PositionNormal(VertexData data)
         {
             Position = data.Position.ToVector3();
             Normal = data.Normal.ToVector3();
@@ -72,20 +72,12 @@ namespace SonicRetro.SAModel.Direct3D
 			this.UV = UV;
 		}
 
-		public FVF_PositionNormalTextured(VertexData data, Material mat)
+		public FVF_PositionNormalTextured(VertexData data)
 		{
 			Position = data.Position.ToVector3();
 			Normal = data.Normal.ToVector3();
 			if (data.UV != null)
-			{
-				float U = data.UV.U;
-				if (mat != null && mat.FlipU)
-					U = -U;
-				float V = data.UV.V;
-				if (mat != null && mat.FlipV)
-					V = -V;
-				UV = new Vector2(U, V);
-			}
+				UV = new Vector2(data.UV.U, data.UV.V);
 			else
 				UV = new Vector2();
 		}
@@ -123,7 +115,7 @@ namespace SonicRetro.SAModel.Direct3D
 			Color = Col.ToArgb();
 		}
 
-		public FVF_PositionNormalColored(VertexData data, Material mat)
+		public FVF_PositionNormalColored(VertexData data)
 		{
 			Position = data.Position.ToVector3();
 			Normal = data.Normal.ToVector3();
@@ -167,21 +159,13 @@ namespace SonicRetro.SAModel.Direct3D
 			this.UV = UV;
 		}
 
-		public FVF_PositionNormalTexturedColored(VertexData data, Material mat)
+		public FVF_PositionNormalTexturedColored(VertexData data)
 		{
 			Position = data.Position.ToVector3();
 			Normal = data.Normal.ToVector3();
 			Color = (data.Color ?? System.Drawing.Color.White).ToArgb();
 			if (data.UV != null)
-			{
-				float U = data.UV.U;
-				if (mat != null && mat.FlipU)
-					U = -U;
-				float V = data.UV.V;
-				if (mat != null && mat.FlipV)
-					V = -V;
-				UV = new Vector2(U, V);
-			}
+				UV = new Vector2(data.UV.U, data.UV.V);
 			else
 				UV = new Vector2();
 		}

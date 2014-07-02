@@ -102,6 +102,18 @@ namespace SonicRetro.SAModel.Direct3D
 					break;
 			}
 			device.TextureState[0].TextureCoordinateIndex = material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
+			if (material.ClampU)
+				device.SamplerState[0].AddressU = TextureAddress.Clamp;
+			else if (material.FlipU)
+				device.SamplerState[0].AddressU = TextureAddress.Mirror;
+			else
+				device.SamplerState[0].AddressU = TextureAddress.Wrap;
+			if (material.ClampV)
+				device.SamplerState[0].AddressV = TextureAddress.Clamp;
+			else if (material.FlipV)
+				device.SamplerState[0].AddressV = TextureAddress.Mirror;
+			else
+				device.SamplerState[0].AddressV = TextureAddress.Wrap;
 		}
 
 		public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
@@ -153,6 +165,7 @@ namespace SonicRetro.SAModel.Direct3D
 					return CreateD3DMesh<FVF_PositionNormal>(attach, dev, numverts);
 			}
 		}
+
 		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
 		{
 			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts,
@@ -168,7 +181,7 @@ namespace SonicRetro.SAModel.Direct3D
 				vind = vb.Count;
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
 				{
-					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j], attach.MeshInfo[i].Material));
+					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j]));
 					ib.Add((short)(vind + j));
 				}
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
