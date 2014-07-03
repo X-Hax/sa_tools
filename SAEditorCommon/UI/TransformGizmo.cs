@@ -283,7 +283,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					if (isTransformLocal) // then check operant space.
 					{
 						Vector3 Up = new Vector3(), Look = new Vector3(), Right = new Vector3();
-						Matrix itemMatrix = affectedItems[i].Transform(out Up, out Right, out Look);
+						affectedItems[i].GetLocalAxes(out Up, out Right, out Look);
 
 						Vector3 currentPosition = currentItem.Position.ToVector3();
 						Vector3 destination = new Vector3();

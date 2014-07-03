@@ -55,7 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera.cs" />
+    <Compile Include="EditorCamera.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FVF_PositionNormalTexturedColored.cs" />
     <Compile Include="HitResult.cs" />

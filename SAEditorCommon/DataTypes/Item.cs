@@ -85,22 +85,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return center;
         }
 
-        public Matrix Transform(out Vector3 Up, out Vector3 Right, out Vector3 Look)
+        public Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
         {
-            MatrixStack transform = new MatrixStack();
-
-			transform.Push();
-			transform.RotateXYZLocal(Rotation.X, Rotation.Y, Rotation.Z);
+			Matrix transform = Matrix.Identity;
+			SAModel.Direct3D.MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
 
             Up = new Vector3(0, 1, 0);
             Look = new Vector3(0, 0, 1);
             Right = new Vector3(1, 0, 0);
 
-			Up = Vector3.TransformCoordinate(Up, transform.Top);
-			Look = Vector3.TransformCoordinate(Look, transform.Top);
-			Right = Vector3.TransformCoordinate(Right, transform.Top);
+			Up = Vector3.TransformCoordinate(Up, transform);
+			Look = Vector3.TransformCoordinate(Look, transform);
+			Right = Vector3.TransformCoordinate(Right, transform);
 
-            return transform.Top;
+            return transform;
         }
     }
 }

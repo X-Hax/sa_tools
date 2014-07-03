@@ -438,7 +438,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						int address = 0x40;
 						for (int j = 0; j < count; j++)
 						{
-							CAMItem ent = new CAMItem(d3ddevice, camfile, address);
+							CAMItem ent = new CAMItem(camfile, address);
 							list.Add(ent);
 							address += 0x40;
 						}
@@ -446,6 +446,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					LevelData.CAMItems[i] = list;
 				}
+
+				CAMItem.Init(d3ddevice);
 
 				#endregion
 
@@ -715,7 +717,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		internal void DrawLevel()
 		{
 			if (!loaded) return;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			cam.FOV = (float)(Math.PI / 4);
+			cam.Aspect = panel1.Width / (float)panel1.Height;
+			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
@@ -733,7 +737,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 
 			#region Adding Level Geometry
+			int renderedLevelItems = 0;
 			if (LevelData.LevelItems != null)
+			{
 				for (int i = 0; i < LevelData.LevelItems.Count; i++)
 				{
 					bool display = false;
@@ -744,8 +750,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
+					{
+						if (LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])).Length > 0) renderedLevelItems++;
 						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+					}
 				}
+			}
 			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
 			#endregion
 
@@ -1353,7 +1363,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Vector3 pos = cam.Position + (-20 * cam.Look);
-			CAMItem item = new CAMItem(d3ddevice, new Vertex(pos.X, pos.Y, pos.Z));
+			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z));
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
 			SelectedItemChanged();

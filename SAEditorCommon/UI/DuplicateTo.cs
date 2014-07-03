@@ -137,6 +137,40 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 						LevelData.SETItems[5].Add(new SETItem(itemConv.GetBytes(), 0));
 					}
 				}
+				else if (item is CAMItem)
+				{
+					CAMItem itemConv = (CAMItem)item;
+
+					if ((sonicCheckBox.Checked) && (LevelData.CAMItems[0] != null))
+					{
+						LevelData.CAMItems[0].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+
+					if (tailsCheckBox.Checked)
+					{
+						LevelData.CAMItems[1].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+
+					if (knucklesCheckBox.Checked)
+					{
+						LevelData.CAMItems[2].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+
+					if (amyCheckBox.Checked)
+					{
+						LevelData.CAMItems[3].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+
+					if (gammaCheckBox.Checked)
+					{
+						LevelData.CAMItems[4].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+
+					if (bigCheckBox.Checked)
+					{
+						LevelData.CAMItems[5].Add(new CAMItem(itemConv.GetBytes(), 0));
+					}
+				}
 			}
 
 			this.Close();

@@ -122,7 +122,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				else if (SelectedItems[0] is CAMItem)
 				{
 					CAMItem originalItem = (CAMItem)SelectedItems[0];
-					CAMItem newItem = new CAMItem(d3ddevice, originalItem.GetBytes(), 0);
+					CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0);
 
 					LevelData.CAMItems[LevelData.Character].Add(newItem);
 					SelectedItems = new List<Item>() { newItem };
@@ -155,7 +155,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					else if (SelectedItems[i] is CAMItem)
 					{
 						CAMItem originalItem = (CAMItem)SelectedItems[i];
-						CAMItem newItem = new CAMItem(d3ddevice, originalItem.GetBytes(), 0);
+						CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0);
 
 						LevelData.CAMItems[LevelData.Character].Add(newItem);
 						newItems.Add(newItem);

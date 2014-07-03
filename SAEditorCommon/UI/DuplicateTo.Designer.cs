@@ -54,9 +54,9 @@
 			this.label1.AutoSize = true;
 			this.label1.Location = new System.Drawing.Point(12, 11);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(287, 13);
+			this.label1.Size = new System.Drawing.Size(297, 13);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "This clones the selected SET Items to the following layouts.";
+			this.label1.Text = "This clones selected SET/CAM Items to the following layouts.";
 			// 
 			// tailsCheckBox
 			// 
@@ -112,7 +112,7 @@
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(215, 169);
+			this.cancelButton.Location = new System.Drawing.Point(221, 169);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 7;
@@ -123,7 +123,7 @@
 			// okButton
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.okButton.Location = new System.Drawing.Point(134, 169);
+			this.okButton.Location = new System.Drawing.Point(140, 169);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 8;
@@ -137,7 +137,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(306, 204);
+			this.ClientSize = new System.Drawing.Size(312, 204);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.bigCheckBox);

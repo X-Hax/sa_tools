@@ -83,8 +83,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
-            float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.CollisionData.Bounds.Center.ToVector3());
-            if (dist > camera.DrawDistance) return Item.EmptyRenderInfo;
+			if (!camera.SphereInFrustum(this.CollisionData.Bounds)) return Item.EmptyRenderInfo;
             
             List<RenderInfo> result = new List<RenderInfo>();
             if (!string.IsNullOrEmpty(LevelData.leveltexs))

@@ -32,8 +32,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         #endregion
 
         #region Render / Volume Vars
-        Microsoft.DirectX.Direct3D.Mesh volumeMesh;
-        SonicRetro.SAModel.Material material;
+		public static Microsoft.DirectX.Direct3D.Mesh VolumeMesh { get; set; }
+		public static SonicRetro.SAModel.Material Material { get; set; }
         #endregion
 
         #region Construction / Initialization
@@ -41,7 +41,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         ///  Create a new CAM Item from within the editor.
         /// </summary>
         /// <param name="dev">An active Direct3D device for meshing/material/rendering purposes.</param>
-        public CAMItem(Device dev, Vertex position)
+        public CAMItem(Vertex position)
         {
             CamType = 0x23;
 
@@ -55,8 +55,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             PointB = new Vertex(position.X - 40 , position.Y - 38, position.Z);
 
             Variable = 45f;
-
-            Init(dev);
         }
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         /// </summary>
         /// <param name="file"></param>
         /// <param name="address"></param>
-        public CAMItem(Device dev, byte[] file, int address)
+        public CAMItem(byte[] file, int address)
         {
             CamType = file[address];
             Unknown = file[address + 1];
@@ -78,21 +76,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             PointA = new Vertex(file, address + 36);
             PointB = new Vertex(file, address + 48);
             Variable = BitConverter.ToSingle(file, address + 60);
-
-            Init(dev);
         }
 
-        private void Init(Device dev)
+        public static void Init(Device dev)
         {
-            volumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 2f, 2f, 2f);
-            material = new Material();
-            material.DiffuseColor = System.Drawing.Color.FromArgb(200, System.Drawing.Color.Purple);
-            material.SpecularColor = System.Drawing.Color.Black;
-			material.UseAlpha = true;
-            material.DoubleSided = false;
-            material.Exponent = 10;
-            material.IgnoreSpecular = false;
-            material.UseTexture = false;
+            VolumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 2f, 2f, 2f);
+            Material = new Material();
+            Material.DiffuseColor = System.Drawing.Color.FromArgb(200, System.Drawing.Color.Purple);
+            Material.SpecularColor = System.Drawing.Color.Black;
+			Material.UseAlpha = true;
+            Material.DoubleSided = false;
+            Material.Exponent = 10;
+            Material.IgnoreSpecular = false;
+            Material.UseTexture = false;
         }
         #endregion
 
@@ -145,8 +141,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
             SonicRetro.SAModel.BoundingSphere boxSphere = new SonicRetro.SAModel.BoundingSphere() { Center = new SonicRetro.SAModel.Vertex(this.Position.X, this.Position.Y, this.Position.Z), Radius = (1.5f * largestScale) };
 
-            float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, boxSphere.Center.ToVector3());
-            if (dist > camera.DrawDistance) return Item.EmptyRenderInfo;
+			if (!camera.SphereInFrustum(boxSphere)) return Item.EmptyRenderInfo;
 
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -154,7 +149,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             transform.NJRotateY(this.Rotation.Y);
             transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
 
-            RenderInfo outputInfo = new RenderInfo(volumeMesh, 0, transform.Top, material, null, FillMode.Solid, boxSphere);
+            RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, boxSphere);
 
             if (selected)
             {
@@ -164,7 +159,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                     IgnoreLighting = true,
                     UseAlpha = false
                 };
-                result.Add(new RenderInfo(volumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, boxSphere));
+                result.Add(new RenderInfo(VolumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, boxSphere));
             }
 
             result.Add(outputInfo);
@@ -187,7 +182,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             transform.NJRotateY(this.Rotation.Y);
             transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
 
-            HitResult result = volumeMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
+            HitResult result = VolumeMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 
             transform.Pop();
             return result;
