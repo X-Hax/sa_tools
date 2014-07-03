@@ -125,7 +125,7 @@ namespace SonicRetro.SAModel.Direct3D
 
                 if (dist > camera.DrawDistance) continue;
 
-                if (item.Material.UseAlpha)
+                if (item.Material != null && item.Material.UseAlpha)
                 {
                     bool ins = false;
                     for (int i = 0; i < drawList.Count; i++)

@@ -295,7 +295,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (obj.Attach != null)
 					for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 					{
-						System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
+						System.Drawing.Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
 						col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
 						Material mat = new Material
 						{

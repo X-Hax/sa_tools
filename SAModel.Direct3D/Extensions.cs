@@ -33,75 +33,108 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static void SetDeviceStates(this Material material, Device device, Texture texture, Matrix transform, FillMode fillMode)
 		{
-			if (!material.SuperSample)
+			device.RenderState.FillMode = fillMode;
+			device.SetTransform(TransformType.World, transform);
+			if (material != null)
 			{
+				device.Material = new Microsoft.DirectX.Direct3D.Material
+				{
+					Diffuse = material.DiffuseColor,
+					Ambient = material.DiffuseColor,
+					Specular = material.IgnoreSpecular ? System.Drawing.Color.Transparent : material.SpecularColor,
+					SpecularSharpness = material.Exponent * material.Exponent
+				};
+				if (!material.SuperSample)
+				{
+					device.SamplerState[0].MagFilter = TextureFilter.None;
+					device.SamplerState[0].MinFilter = TextureFilter.None;
+					device.SamplerState[0].MipFilter = TextureFilter.None;
+				}
+				device.SetTexture(0, material.UseTexture ? texture : null);
+				device.RenderState.Ambient = (material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+				device.RenderState.AlphaBlendEnable = material.UseAlpha; if (material.UseAlpha) device.RenderState.Ambient = material.DiffuseColor;
+				switch (material.DestinationAlpha)
+				{
+					case AlphaInstruction.Zero:
+						device.RenderState.AlphaDestinationBlend = Blend.Zero;
+						break;
+					case AlphaInstruction.One:
+						device.RenderState.AlphaDestinationBlend = Blend.One;
+						break;
+					case AlphaInstruction.OtherColor:
+						break;
+					case AlphaInstruction.InverseOtherColor:
+						break;
+					case AlphaInstruction.SourceAlpha:
+						device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
+						break;
+					case AlphaInstruction.InverseSourceAlpha:
+						device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
+						break;
+					case AlphaInstruction.DestinationAlpha:
+						device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
+						break;
+					case AlphaInstruction.InverseDestinationAlpha:
+						device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
+						break;
+				}
+				switch (material.SourceAlpha)
+				{
+					case AlphaInstruction.Zero:
+						device.RenderState.AlphaSourceBlend = Blend.Zero;
+						break;
+					case AlphaInstruction.One:
+						device.RenderState.AlphaSourceBlend = Blend.One;
+						break;
+					case AlphaInstruction.OtherColor:
+						break;
+					case AlphaInstruction.InverseOtherColor:
+						break;
+					case AlphaInstruction.SourceAlpha:
+						device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
+						break;
+					case AlphaInstruction.InverseSourceAlpha:
+						device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
+						break;
+					case AlphaInstruction.DestinationAlpha:
+						device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
+						break;
+					case AlphaInstruction.InverseDestinationAlpha:
+						device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
+						break;
+				}
+				device.TextureState[0].TextureCoordinateIndex = material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
+				if (material.ClampU)
+					device.SamplerState[0].AddressU = TextureAddress.Clamp;
+				else if (material.FlipU)
+					device.SamplerState[0].AddressU = TextureAddress.Mirror;
+				else
+					device.SamplerState[0].AddressU = TextureAddress.Wrap;
+				if (material.ClampV)
+					device.SamplerState[0].AddressV = TextureAddress.Clamp;
+				else if (material.FlipV)
+					device.SamplerState[0].AddressV = TextureAddress.Mirror;
+				else
+					device.SamplerState[0].AddressV = TextureAddress.Wrap;
+			}
+			else
+			{
+				device.Material = new Microsoft.DirectX.Direct3D.Material
+				{
+					Diffuse = Color.White,
+					Ambient = Color.White,
+					Specular = System.Drawing.Color.Transparent
+				};
 				device.SamplerState[0].MagFilter = TextureFilter.None;
 				device.SamplerState[0].MinFilter = TextureFilter.None;
 				device.SamplerState[0].MipFilter = TextureFilter.None;
+				device.SetTexture(0, null);
+				device.RenderState.Ambient = System.Drawing.Color.White;
+				device.RenderState.AlphaBlendEnable = false;
+				device.TextureState[0].TextureCoordinateIndex = 0;
+				device.SamplerState[0].AddressU = TextureAddress.Wrap;
+				device.SamplerState[0].AddressV = TextureAddress.Wrap;
 			}
-			device.RenderState.FillMode = fillMode;
-			device.SetTransform(TransformType.World, transform);
-			device.Material = new Microsoft.DirectX.Direct3D.Material
-			{
-				Diffuse = material.DiffuseColor,
-				Ambient = material.DiffuseColor,
-				Specular = material.IgnoreSpecular ? System.Drawing.Color.Transparent : material.SpecularColor,
-				SpecularSharpness = material.Exponent * material.Exponent
-			};
-			device.SetTexture(0, material.UseTexture ? texture : null);
-			device.RenderState.Ambient = (material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-			device.RenderState.AlphaBlendEnable = material.UseAlpha; if (material.UseAlpha) device.RenderState.Ambient = material.DiffuseColor;
-			switch (material.DestinationAlpha)
-			{
-				case AlphaInstruction.Zero:
-					device.RenderState.AlphaDestinationBlend = Blend.Zero;
-					break;
-				case AlphaInstruction.One:
-					device.RenderState.AlphaDestinationBlend = Blend.One;
-					break;
-				case AlphaInstruction.OtherColor:
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					break;
-				case AlphaInstruction.SourceAlpha:
-					device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
-					break;
-			}
-			switch (material.SourceAlpha)
-			{
-				case AlphaInstruction.Zero:
-					device.RenderState.AlphaSourceBlend = Blend.Zero;
-					break;
-				case AlphaInstruction.One:
-					device.RenderState.AlphaSourceBlend = Blend.One;
-					break;
-				case AlphaInstruction.OtherColor:
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					break;
-				case AlphaInstruction.SourceAlpha:
-					device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
-					break;
-			}
-			device.TextureState[0].TextureCoordinateIndex = material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
 		}
 
 		public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
@@ -153,6 +186,7 @@ namespace SonicRetro.SAModel.Direct3D
 					return CreateD3DMesh<FVF_PositionNormal>(attach, dev, numverts);
 			}
 		}
+
 		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
 		{
 			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts,
@@ -168,7 +202,7 @@ namespace SonicRetro.SAModel.Direct3D
 				vind = vb.Count;
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
 				{
-					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j], attach.MeshInfo[i].Material));
+					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j]));
 					ib.Add((short)(vind + j));
 				}
 				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
