@@ -21,6 +21,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
 	public partial class MainForm : Form
 	{
+		Properties.Settings Settings = Properties.Settings.Default;
+
 		public MainForm()
 		{
 			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
@@ -58,16 +60,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			EditorOptions.InitializeDefaultLights(d3ddevice);
 			Gizmo.InitGizmo(d3ddevice);
 			ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
-			if (Properties.Settings.Default.MRUList == null)
-				Properties.Settings.Default.MRUList = new System.Collections.Specialized.StringCollection();
+			if (Settings.MRUList == null)
+				Settings.MRUList = new System.Collections.Specialized.StringCollection();
 			System.Collections.Specialized.StringCollection mru = new System.Collections.Specialized.StringCollection();
-			foreach (string item in Properties.Settings.Default.MRUList)
+			foreach (string item in Settings.MRUList)
 				if (File.Exists(item))
 				{
 					mru.Add(item);
 					recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
 				}
-			Properties.Settings.Default.MRUList = mru;
+			Settings.MRUList = mru;
+			if (mru.Count > 0) recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
 			if (Program.args.Length > 0)
 				LoadINI(Program.args[0]);
 
@@ -130,10 +133,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 					levelMenuItems.Add(item.Key, ts);
 					parent.DropDownItems.Add(ts);
 				}
+			if (Settings.MRUList.Count == 0)
+				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
+			if (Settings.MRUList.Contains(filename))
+			{
+				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
+				Settings.MRUList.Remove(filename);
+			}
+			Settings.MRUList.Insert(0, filename);
+			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 		}
 
 		private void LevelToolStripMenuItem_Clicked(object sender, EventArgs e)
 		{
+			fileToolStripMenuItem.HideDropDown();
 			if (loaded)
 				switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
@@ -146,10 +159,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			loaded = false;
 			SelectedItems = new List<Item>();
 			SelectedItemChanged();
-			foreach (ToolStripMenuItem item in changeLevelToolStripMenuItem.DropDownItems)
+			foreach (ToolStripMenuItem item in levelMenuItems.Values)
 				item.Checked = false;
 			((ToolStripMenuItem)sender).Checked = true;
-			fileToolStripMenuItem.HideDropDown();
 			levelID = (string)((ToolStripMenuItem)sender).Tag;
 			UseWaitCursor = true;
 			Enabled = false;
@@ -618,6 +630,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
+			Settings.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1478,7 +1491,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
-			LoadINI(Properties.Settings.Default.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+			LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
 		}
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
