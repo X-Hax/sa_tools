@@ -46,6 +46,7 @@
 			this.character = new System.Windows.Forms.ComboBox();
 			this.level = new System.Windows.Forms.ComboBox();
 			this.panel3 = new System.Windows.Forms.Panel();
+			this.dummyPanel = new System.Windows.Forms.Panel();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -63,7 +64,7 @@
 			label1.Location = new System.Drawing.Point(6, 6);
 			label1.Name = "label1";
 			label1.Size = new System.Drawing.Size(36, 13);
-			label1.TabIndex = 0;
+			label1.TabIndex = 4;
 			label1.Text = "Level:";
 			// 
 			// label2
@@ -72,7 +73,7 @@
 			label2.Location = new System.Drawing.Point(6, 33);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(56, 13);
-			label2.TabIndex = 0;
+			label2.TabIndex = 5;
 			label2.Text = "Character:";
 			// 
 			// label3
@@ -81,7 +82,7 @@
 			label3.Location = new System.Drawing.Point(6, 59);
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(45, 13);
-			label3.TabIndex = 0;
+			label3.TabIndex = 6;
 			label3.Text = "Column:";
 			// 
 			// label4
@@ -90,7 +91,7 @@
 			label4.Location = new System.Drawing.Point(6, 85);
 			label4.Name = "label4";
 			label4.Size = new System.Drawing.Size(32, 13);
-			label4.TabIndex = 0;
+			label4.TabIndex = 7;
 			label4.Text = "Row:";
 			// 
 			// menuStrip1
@@ -179,7 +180,7 @@
             0});
 			this.row.Name = "row";
 			this.row.Size = new System.Drawing.Size(96, 20);
-			this.row.TabIndex = 2;
+			this.row.TabIndex = 3;
 			this.row.ValueChanged += new System.EventHandler(this.row_ValueChanged);
 			// 
 			// column
@@ -192,7 +193,7 @@
             0});
 			this.column.Name = "column";
 			this.column.Size = new System.Drawing.Size(96, 20);
-			this.column.TabIndex = 0;
+			this.column.TabIndex = 2;
 			this.column.ValueChanged += new System.EventHandler(this.column_ValueChanged);
 			// 
 			// character
@@ -211,7 +212,7 @@
 			this.character.Location = new System.Drawing.Point(68, 30);
 			this.character.Name = "character";
 			this.character.Size = new System.Drawing.Size(120, 21);
-			this.character.TabIndex = 0;
+			this.character.TabIndex = 1;
 			this.character.SelectedIndexChanged += new System.EventHandler(this.character_SelectedIndexChanged);
 			// 
 			// level
@@ -313,7 +314,7 @@
 			this.level.Location = new System.Drawing.Point(48, 3);
 			this.level.Name = "level";
 			this.level.Size = new System.Drawing.Size(140, 21);
-			this.level.TabIndex = 1;
+			this.level.TabIndex = 0;
 			this.level.SelectedIndexChanged += new System.EventHandler(this.level_SelectedIndexChanged);
 			// 
 			// panel3
@@ -326,6 +327,15 @@
 			this.panel3.Size = new System.Drawing.Size(384, 538);
 			this.panel3.TabIndex = 2;
 			// 
+			// dummyPanel
+			// 
+			this.dummyPanel.Enabled = false;
+			this.dummyPanel.Location = new System.Drawing.Point(0, 0);
+			this.dummyPanel.Name = "dummyPanel";
+			this.dummyPanel.Size = new System.Drawing.Size(200, 100);
+			this.dummyPanel.TabIndex = 0;
+			this.dummyPanel.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,6 +344,7 @@
 			this.Controls.Add(this.panel3);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.menuStrip1);
+			this.Controls.Add(this.dummyPanel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
@@ -367,6 +378,7 @@
         private System.Windows.Forms.ComboBox character;
         private System.Windows.Forms.NumericUpDown column;
         private System.Windows.Forms.NumericUpDown row;
+		private System.Windows.Forms.Panel dummyPanel;
     }
 }
 
