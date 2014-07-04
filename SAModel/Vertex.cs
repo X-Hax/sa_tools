@@ -6,7 +6,7 @@ namespace SonicRetro.SAModel
 {
 	[Serializable]
     [TypeConverter(typeof(VertexConverter))]
-    public class Vertex
+    public class Vertex : IEquatable<Vertex>
     {
         public float X { get; set; }
         public float Y { get; set; }
@@ -147,6 +147,23 @@ namespace SonicRetro.SAModel
 
 		[Browsable(false)]
 		public bool IsEmpty { get { return X == 0 && Y == 0 && Z == 0; } }
+
+		public override bool Equals(object obj)
+		{
+			if (obj is Vertex)
+				return Equals((Vertex)obj);
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
+		}
+
+		public bool Equals(Vertex other)
+		{
+			return X == other.X && Y == other.Y && Z == other.Z;
+		}
 	}
 
     public class VertexConverter : ExpandableObjectConverter

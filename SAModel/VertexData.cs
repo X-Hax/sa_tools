@@ -25,7 +25,7 @@ namespace SonicRetro.SAModel
         }
     }
 
-    public struct VertexData
+    public struct VertexData : IEquatable<VertexData>
     {
         public Vertex Position;
         public Vertex Normal;
@@ -47,5 +47,22 @@ namespace SonicRetro.SAModel
             Color = color;
             UV = uv;
         }
-    }
+
+		public override bool Equals(object obj)
+		{
+			if (obj is VertexData)
+				return Equals((VertexData)obj);
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return Position.GetHashCode() ^ Normal.GetHashCode() ^ Color.GetHashCode() ^ (UV == null ? 0 : UV.GetHashCode());
+		}
+
+		public bool Equals(VertexData other)
+		{
+			return Position.Equals(other.Position) && Normal.Equals(other.Normal) && Color == other.Color && (UV == null ? other.UV == null : UV.Equals(other.UV));
+		}
+	}
 }

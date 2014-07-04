@@ -214,28 +214,35 @@ namespace SonicRetro.SAModel.Direct3D
 
 		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
 		{
-			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, numverts,
+			List<VertexData> usedverts = new List<VertexData>(numverts);
+			List<T> vb = new List<T>(numverts);
+			List<short> ib = new List<short>(numverts);
+			List<int> at = new List<int>(numverts / 3);
+			for (int i = 0; i < attach.MeshInfo.Length; i++)
+			{
+				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
+				{
+					if (usedverts.Contains(attach.MeshInfo[i].Vertices[j]))
+						ib.Add((short)usedverts.IndexOf(attach.MeshInfo[i].Vertices[j]));
+					else
+					{
+						ib.Add((short)vb.Count);
+						vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j]));
+						usedverts.Add(attach.MeshInfo[i].Vertices[j]);
+					}
+				}
+				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
+					at.Add(i);
+			}
+			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, vb.Count,
 				MeshFlags.Managed, (VertexElement[])typeof(T).InvokeMember("Elements",
 				System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
 				null, null, null), dev);
-			List<T> vb = new List<T>();
-			List<short> ib = new List<short>();
-			int[] at = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
-			int vind;
-			for (int i = 0; i < attach.MeshInfo.Length; i++)
-			{
-				vind = vb.Count;
-				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
-				{
-					vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j]));
-					ib.Add((short)(vind + j));
-				}
-				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
-					at[(vind / 3) + j] = i;
-			}
+			int[] atb = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
+			at.CopyTo(atb);
 			functionReturnValue.SetVertexBufferData(vb.ToArray(), LockFlags.None);
 			functionReturnValue.SetIndexBufferData(ib.ToArray(), LockFlags.None);
-			functionReturnValue.UnlockAttributeBuffer(at);
+			functionReturnValue.UnlockAttributeBuffer(atb);
 
 			int[] adjacency = new int[functionReturnValue.NumberFaces * 3];
 			functionReturnValue.GenerateAdjacency(0.0001f, adjacency);

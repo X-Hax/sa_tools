@@ -7,7 +7,7 @@ namespace SonicRetro.SAModel
 {
     [TypeConverter(typeof(UVConverter))]
 	[Serializable]
-    public class UV
+    public class UV : IEquatable<UV>
     {
         public float U { get; set; }
         public float V { get; set; }
@@ -54,7 +54,26 @@ namespace SonicRetro.SAModel
             else
                 return "{ " + (short)(U * 255f) + ", " + (short)(V * 255f) + " }";
         }
-    }
+
+		public override bool Equals(object obj)
+		{
+			if (obj is UV)
+				return Equals((UV)obj);
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return U.GetHashCode() ^ V.GetHashCode();
+		}
+
+		public bool Equals(UV other)
+		{
+			if (other == null)
+				return false;
+			return U == other.U && V == other.V;
+		}
+	}
 
     public class UVConverter : ExpandableObjectConverter
     {
