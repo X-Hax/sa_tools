@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVMEditSharp", "PVMEditShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAKEdit", "PAKEdit\PAKEdit.csproj", "{152D3816-CF71-425D-AAB0-9A900436D2DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA2StageSelEdit", "SA2StageSelEdit\SA2StageSelEdit.csproj", "{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -383,6 +385,16 @@ Global
 		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|Mixed Platforms.Build.0 = Release|x86
 		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|x86.ActiveCfg = Release|x86
 		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|x86.Build.0 = Release|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|x86.ActiveCfg = Debug|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|x86.Build.0 = Debug|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Release|Any CPU.ActiveCfg = Release|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Release|x86.ActiveCfg = Release|x86
+		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
