@@ -719,7 +719,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!loaded) return;
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
-			cam.DrawDistance = 10000;
+			cam.DrawDistance = 100000;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
