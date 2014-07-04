@@ -719,6 +719,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!loaded) return;
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
+			cam.DrawDistance = 10000;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
@@ -734,10 +735,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 			MatrixStack transform = new MatrixStack();
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
+
+			cam.DrawDistance = EditorOptions.RenderDrawDistance;
+			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
+
+			#if DEBUG 
+			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
+			#endif
+
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 
 			#region Adding Level Geometry
-			int renderedLevelItems = 0;
 			if (LevelData.LevelItems != null)
 			{
 				for (int i = 0; i < LevelData.LevelItems.Count; i++)
@@ -751,7 +760,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 					if (display)
 					{
-						if (LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])).Length > 0) renderedLevelItems++;
 						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
 					}
 				}
@@ -761,8 +769,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			#region Adding SET Layout
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
+			{
 				foreach (SETItem item in LevelData.SETItems[LevelData.Character])
+				{
 					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+				}
+			}
 			#endregion
 
 			#region Adding Death Zones

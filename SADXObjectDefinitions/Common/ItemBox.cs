@@ -24,7 +24,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			((SonicRetro.SAModel.BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
@@ -57,6 +57,11 @@ namespace SADXObjectDefinitions.Common
 			childindex = 2;
         }
 
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
+		}
+
         public override string Name { get { return "Item Box"; } }
 	}
 
@@ -68,6 +73,11 @@ namespace SADXObjectDefinitions.Common
             meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 1;
         }
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
+		}
 
 		public override string Name { get { return "Floating Item Box"; } }
     }

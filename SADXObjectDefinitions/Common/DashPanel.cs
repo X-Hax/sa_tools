@@ -28,7 +28,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();

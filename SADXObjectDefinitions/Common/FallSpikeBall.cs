@@ -50,7 +50,7 @@ namespace SADXObjectDefinitions.Common
             return result;
         }
 
-        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -84,6 +84,12 @@ namespace SADXObjectDefinitions.Common
 			new PropertySpec("Distance", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
 		};
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, item.Scale.X);
+			return bounds;
+		}
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 	}

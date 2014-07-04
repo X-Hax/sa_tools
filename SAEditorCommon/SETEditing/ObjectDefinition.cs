@@ -14,9 +14,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
     {
         public abstract void Init(ObjectData data, string name, Device dev);
         public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
-        public abstract RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected);
+        public abstract RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected);
         public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
+		/// <summary>
+		/// Returns a bounding sphere for the supplied SET Item.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public virtual BoundingSphere GetBounds(SETItem item)
+		{
+			return new BoundingSphere(item.Position, 20);
+		}
 	}
 
 	/// <summary>

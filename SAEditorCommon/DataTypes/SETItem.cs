@@ -15,11 +15,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
     [Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
     {
+		public BoundingSphere Bounds { get; set; }
+		private ObjectDefinition objdef;
         public SETItem()
         {
             Position = new Vertex();
             Rotation = new Rotation();
             Scale = new Vertex();
+			objdef = LevelData.ObjDefs[id];
+			Bounds = objdef.GetBounds(this);
         }
 
         public SETItem(byte[] file, int address)
@@ -32,6 +36,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             Position = new Vertex(file, address + 8);
             Scale = new Vertex(file, address + 0x14);
             isLoaded = true;
+			objdef = LevelData.ObjDefs[id];
+			Bounds = objdef.GetBounds(this);
         }
 
         [ParenthesizePropertyName(true)]
@@ -46,7 +52,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { id = (ushort)(value & 0xFFF); }
         }
 
-        public override Vertex Position { get; set; }
+		private Vertex position;
+
+		public override Vertex Position
+		{
+			get { return position; }
+			set
+			{
+				position = value;
+				if (objdef != null) Bounds = objdef.GetBounds(this);
+			}
+		}
 
         public override Rotation Rotation { get; set; }
 
@@ -69,10 +85,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
-            float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.Position.ToVector3());
-            if (dist > camera.DrawDistance) return Item.EmptyRenderInfo;
+			if (!camera.SphereInFrustum(Bounds)) return Item.EmptyRenderInfo;
 
-            return LevelData.ObjDefs[ID].Render(this, dev, transform, selected);
+            return LevelData.ObjDefs[ID].Render(this, dev, camera, transform, selected);
         }
 
         public byte[] GetBytes()
@@ -144,7 +159,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(this, attributes, true);
 
-			ObjectDefinition objdef = LevelData.ObjDefs[ID];
+			objdef = LevelData.ObjDefs[ID];
 			if (objdef.CustomProperties == null || objdef.CustomProperties.Length == 0) return result;
 			List<PropertyDescriptor> props = new List<PropertyDescriptor>(result.Count);
 			foreach (PropertyDescriptor item in result)

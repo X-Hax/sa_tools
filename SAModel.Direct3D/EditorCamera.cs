@@ -79,8 +79,10 @@ namespace SonicRetro.SAModel.Direct3D
 		/// Calculates the near and far plane dimensions, as well as the vertices for the entire frustum.
 		/// </summary>
 		/// <param name="viewMatrix"></param>
-		private void CalcNearFarDimensions(Matrix viewMatrix)
+		public void BuildFrustum(Matrix view, Matrix projection)
 		{
+			Matrix viewMatrix = Matrix.Multiply(view, projection);
+
 			#region Calculating vertex representation of Frustum
 			// This might not even match the planes below, since these weren't used to calculate them. 
 			// in fact, this code probably isn't even necessary. MainMemory if you see this, yes you can ask me to remove it.

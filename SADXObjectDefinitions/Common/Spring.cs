@@ -22,7 +22,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -51,6 +51,11 @@ namespace SADXObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
+		}
+
 		public override string Name { get { return "Ground Spring"; } }
 	}
 
@@ -60,6 +65,11 @@ namespace SADXObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("Objects/Spring/Air Model.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
 		}
 
 		public override string Name { get { return "Air Spring"; } }

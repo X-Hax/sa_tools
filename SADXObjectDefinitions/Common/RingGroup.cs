@@ -61,7 +61,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
@@ -104,6 +104,11 @@ namespace SADXObjectDefinitions.Common
 				transform.Pop();
 			}
 			return result.ToArray();
+		}
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
 		}
 
 		public override string Name { get { return "Ring Group"; } }

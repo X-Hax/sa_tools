@@ -54,7 +54,7 @@ namespace SADXObjectDefinitions.Common
             return result;
         }
 
-        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -148,6 +148,11 @@ namespace SADXObjectDefinitions.Common
 		public static void SetVerticalSpeed(SETItem item, object value)
 		{
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
+		}
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			return base.GetBounds(item);
 		}
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

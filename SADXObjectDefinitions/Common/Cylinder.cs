@@ -31,7 +31,7 @@ namespace SADXObjectDefinitions.Common
             return result;
         }
 
-        public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
@@ -44,6 +44,17 @@ namespace SADXObjectDefinitions.Common
             transform.Pop();
             return result.ToArray();
         }
+
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			float largestScale = (item.Scale.X + 10) / 5f;
+			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
+			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
+
+			SonicRetro.SAModel.BoundingSphere boxSphere = new SonicRetro.SAModel.BoundingSphere() { Center = new SonicRetro.SAModel.Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (largestScale / 2) };
+
+			return boxSphere;
+		}
 
         public override string Name { get { return "Solid Cylinder"; } }
     }

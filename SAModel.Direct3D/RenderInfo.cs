@@ -35,76 +35,6 @@ namespace SonicRetro.SAModel.Direct3D
             TextureFilter minfilter = device.SamplerState[0].MinFilter;
             TextureFilter mipfilter = device.SamplerState[0].MipFilter;
 
-            /*if (!Material.SuperSample)
-            {
-                device.SamplerState[0].MagFilter = TextureFilter.None;
-                device.SamplerState[0].MinFilter = TextureFilter.None;
-                device.SamplerState[0].MipFilter = TextureFilter.None;
-            }
-            device.RenderState.FillMode = FillMode;
-            device.SetTransform(TransformType.World, Transform);
-            device.Material = new Microsoft.DirectX.Direct3D.Material
-            {
-                Diffuse = Material.DiffuseColor,
-                Ambient = Material.DiffuseColor,
-                Specular = Material.IgnoreSpecular ? System.Drawing.Color.Transparent : Material.SpecularColor,
-                SpecularSharpness = Material.Exponent * Material.Exponent
-            };
-            device.SetTexture(0, Material.UseTexture ? Texture : null);
-            device.RenderState.Ambient = (Material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-            device.RenderState.AlphaBlendEnable = Material.UseAlpha; if(Material.UseAlpha) device.RenderState.Ambient = Material.DiffuseColor;
-            switch (Material.DestinationAlpha)
-            {
-                case AlphaInstruction.Zero:
-                    device.RenderState.AlphaDestinationBlend = Blend.Zero;
-                    break;
-                case AlphaInstruction.One:
-                    device.RenderState.AlphaDestinationBlend = Blend.One;
-                    break;
-                case AlphaInstruction.OtherColor:
-                    break;
-                case AlphaInstruction.InverseOtherColor:
-                    break;
-                case AlphaInstruction.SourceAlpha:
-                    device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
-                    break;
-                case AlphaInstruction.InverseSourceAlpha:
-                    device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
-                    break;
-                case AlphaInstruction.DestinationAlpha:
-                    device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
-                    break;
-                case AlphaInstruction.InverseDestinationAlpha:
-                    device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
-                    break;
-            }
-            switch (Material.SourceAlpha)
-            {
-                case AlphaInstruction.Zero:
-                    device.RenderState.AlphaSourceBlend = Blend.Zero;
-                    break;
-                case AlphaInstruction.One:
-                    device.RenderState.AlphaSourceBlend = Blend.One;
-                    break;
-                case AlphaInstruction.OtherColor:
-                    break;
-                case AlphaInstruction.InverseOtherColor:
-                    break;
-                case AlphaInstruction.SourceAlpha:
-                    device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
-                    break;
-                case AlphaInstruction.InverseSourceAlpha:
-                    device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
-                    break;
-                case AlphaInstruction.DestinationAlpha:
-                    device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
-                    break;
-                case AlphaInstruction.InverseDestinationAlpha:
-                    device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
-                    break;
-            }
-            device.TextureState[0].TextureCoordinateIndex = Material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;*/
-
 			Material.SetDeviceStates(device, Texture, Transform, FillMode);
 
             if (Mesh != null)
@@ -121,9 +51,8 @@ namespace SonicRetro.SAModel.Direct3D
             List<KeyValuePair<float, RenderInfo>> drawList = new List<KeyValuePair<float, RenderInfo>>();
             foreach (RenderInfo item in items)
             {
-                float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3());
-
-                if (dist > camera.DrawDistance) continue;
+                float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+				if (dist > camera.DrawDistance) continue;
 
                 if (item.Material != null && item.Material.UseAlpha)
                 {

@@ -21,7 +21,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         [ParenthesizePropertyName(true)]
         public string Type { get { return GetType().Name; } }
 
-        public abstract Vertex Position { get; set; }
+		public virtual Vertex Position { get; set; }
         public abstract Rotation Rotation { get; set; }
 
         [Browsable(false)]

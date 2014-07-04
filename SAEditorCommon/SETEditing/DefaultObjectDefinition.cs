@@ -56,7 +56,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, MatrixStack transform, bool selected)
+		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -73,6 +73,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			}
 			transform.Pop();
 			return result.ToArray();
+		}
+
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			BoundingSphere bounds = new BoundingSphere(item.Position, 5);
+			return bounds;
 		}
 
 		public override string Name { get { return name; } }
