@@ -31,6 +31,31 @@ namespace SonicRetro.SAModel.Direct3D
 			attach.Bounds.Center.Z = center.Z;
 		}
 
+		public static float GetLargestRadius(Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		{
+			float fvr = 0f;
+
+			for (int i = 0; i < meshes.Length; i++)
+			{
+				float objectRadius = 0.0f;
+				Vector3 objectCenter = new Vector3();
+
+				using (VertexBuffer vb = meshes[i].VertexBuffer)
+				{
+					GraphicsStream vertexData = vb.Lock(0, 0, LockFlags.None);
+					objectRadius = Geometry.ComputeBoundingSphere(vertexData,
+																  meshes[i].NumberVertices,
+																  meshes[i].VertexFormat,
+																  out objectCenter);
+					vb.Unlock();
+				}
+
+				if (objectRadius > fvr) fvr = objectRadius;
+			}
+
+			return fvr;
+		}
+
 		public static void SetDeviceStates(this Material material, Device device, Texture texture, Matrix transform, FillMode fillMode)
 		{
 			device.RenderState.FillMode = fillMode;

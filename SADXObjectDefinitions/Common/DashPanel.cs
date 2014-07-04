@@ -41,6 +41,13 @@ namespace SADXObjectDefinitions.Common
 			return result.ToArray();
 		}
 
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(meshes));
+
+			return bounds;
+		}
+
 		public override string Name { get { return "Dash Panel"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

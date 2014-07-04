@@ -739,10 +739,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.DrawDistance = EditorOptions.RenderDrawDistance;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-
-			#if DEBUG 
 			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
-			#endif
 
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 

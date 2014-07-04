@@ -44,7 +44,9 @@ namespace SADXObjectDefinitions.Common
 
 		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
 		{
-			return base.GetBounds(item);
+			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(meshes));
+
+			return bounds;
 		}
 
         public override string Name { get { return "Jump Panel"; } }

@@ -116,29 +116,29 @@ namespace SonicRetro.SAModel.Direct3D
 			#endregion
 
 			#region Building Frustum Planes
-			// left plane
+			// Left plane
 			frustumPlanes[0].A = viewMatrix.M14 + viewMatrix.M11;
 			frustumPlanes[0].B = viewMatrix.M24 + viewMatrix.M21;
 			frustumPlanes[0].C = viewMatrix.M34 + viewMatrix.M31;
 			frustumPlanes[0].D = viewMatrix.M44 + viewMatrix.M41;
 
-			// right plane
+			// Right plane
 			frustumPlanes[1].A = viewMatrix.M14 - viewMatrix.M11;
 			frustumPlanes[1].B = viewMatrix.M24 - viewMatrix.M21;
 			frustumPlanes[1].C = viewMatrix.M34 - viewMatrix.M31;
 			frustumPlanes[1].D = viewMatrix.M44 - viewMatrix.M41;
 
-			// top plane
+			// Top plane
 			frustumPlanes[2].A = viewMatrix.M14 - viewMatrix.M12;
 			frustumPlanes[2].B = viewMatrix.M24 - viewMatrix.M22;
 			frustumPlanes[2].C = viewMatrix.M34 - viewMatrix.M32;
-			frustumPlanes[2].C = viewMatrix.M44 - viewMatrix.M42;
+			frustumPlanes[2].D = viewMatrix.M44 - viewMatrix.M42;
 
-			// bottom plane
-			frustumPlanes[2].A = viewMatrix.M14 + viewMatrix.M12;
-			frustumPlanes[2].B = viewMatrix.M24 + viewMatrix.M22;
-			frustumPlanes[2].C = viewMatrix.M34 + viewMatrix.M32;
-			frustumPlanes[2].C = viewMatrix.M44 + viewMatrix.M42;
+			// Bottom plane
+			frustumPlanes[3].A = viewMatrix.M14 + viewMatrix.M12;
+			frustumPlanes[3].B = viewMatrix.M24 + viewMatrix.M22;
+			frustumPlanes[3].C = viewMatrix.M34 + viewMatrix.M32;
+			frustumPlanes[3].D = viewMatrix.M44 + viewMatrix.M42;
 
 			// Near plane
 			frustumPlanes[4].A = viewMatrix.M13;

@@ -78,18 +78,19 @@ namespace SADXObjectDefinitions.Common
             return result.ToArray();
         }
 
+		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		{
+			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(ballmeshes));
+
+			return bounds;
+		}
+
         public override string Name { get { return "Falling Spike Ball"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Distance", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
 		};
-
-		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
-		{
-			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, item.Scale.X);
-			return bounds;
-		}
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 	}

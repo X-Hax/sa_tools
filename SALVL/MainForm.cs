@@ -176,8 +176,11 @@ namespace SonicRetro.SAModel.SALVL
         internal void DrawLevel()
         {
             if (!loaded) return;
-            d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
-            d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
+			cam.FOV = (float)(Math.PI / 4);
+			cam.Aspect = panel1.Width / (float)panel1.Height;
+			cam.DrawDistance = 10000;
+			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
             Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
             d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
             d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
@@ -186,6 +189,11 @@ namespace SonicRetro.SAModel.SALVL
             d3ddevice.RenderState.ZBufferEnable = true;
             d3ddevice.BeginScene();
             //all drawings after this line
+			cam.DrawDistance = EditorOptions.RenderDrawDistance;
+			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
+			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
+
             EditorOptions.RenderStateCommonSetup(d3ddevice);
 
             MatrixStack transform = new MatrixStack();
