@@ -160,5 +160,17 @@ namespace SonicRetro.SAModel
 		{
 			return DateTime.Now.Ticks.ToString("X") + rand.Next(0, 65536).ToString("X4");
 		}
+
+		public static int AddUnique<T>(this List<T> list, T item)
+		{
+			if (list.Contains(item))
+				return list.IndexOf(item);
+			else
+			{
+				int val = list.Count;
+				list.Add(item);
+				return val;
+			}
+		}
 	}
 }

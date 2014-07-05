@@ -318,53 +318,21 @@ namespace SonicRetro.SAModel
                                     hasUV = true;
                                     break;
                             }
+							List<Poly> polys = new List<Poly>();
                             List<VertexData> verts = new List<VertexData>();
-                            foreach (PolyChunkStrip.Strip strip in c2.Strips)
-                            {
-                                bool flip = !strip.Reversed;
-                                for (int k = 0; k < strip.Indexes.Length - 2; k++)
-                                {
-                                    flip = !flip;
-                                    if (!flip)
-                                    {
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k]],
-                                            NormalBuffer[strip.Indexes[k]],
-											hasVColor ? (Color?)strip.VColors[k] : null,
-                                            hasUV ? strip.UVs[k] : null));
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k + 1]],
-                                            NormalBuffer[strip.Indexes[k + 1]],
-											hasVColor ? (Color?)strip.VColors[k + 1] : null,
-                                            hasUV ? strip.UVs[k + 1] : null));
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k + 2]],
-                                            NormalBuffer[strip.Indexes[k + 2]],
-											hasVColor ? (Color?)strip.VColors[k + 2] : null,
-                                            hasUV ? strip.UVs[k + 2] : null));
-                                    }
-                                    else
-                                    {
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k + 1]],
-                                            NormalBuffer[strip.Indexes[k + 1]],
-											hasVColor ? (Color?)strip.VColors[k + 1] : null,
-                                            hasUV ? strip.UVs[k + 1] : null));
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k]],
-                                            NormalBuffer[strip.Indexes[k]],
-											hasVColor ? (Color?)strip.VColors[k] : null,
-                                            hasUV ? strip.UVs[k] : null));
-                                        verts.Add(new VertexData(
-                                            VertexBuffer[strip.Indexes[k + 2]],
-                                            NormalBuffer[strip.Indexes[k + 2]],
-											hasVColor ? (Color?)strip.VColors[k + 2] : null,
-                                            hasUV ? strip.UVs[k + 2] : null));
-                                    }
-                                }
-                            }
-                            result.Add(new MeshInfo(MaterialBuffer, verts.ToArray(), hasUV, hasVColor));
-                            MaterialBuffer = new Material(MaterialBuffer.GetBytes(), 0);
+							foreach (PolyChunkStrip.Strip strip in c2.Strips)
+							{
+								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+								for (int k = 0; k < strip.Indexes.Length; k++)
+									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
+										  VertexBuffer[strip.Indexes[k]],
+										  NormalBuffer[strip.Indexes[k]],
+										  hasVColor ? (Color?)strip.VColors[k] : null,
+										  hasUV ? strip.UVs[k] : null));
+								polys.Add(str);
+							}
+                            result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+                            MaterialBuffer = new Material(MaterialBuffer);
                         }
                         break;
                 }

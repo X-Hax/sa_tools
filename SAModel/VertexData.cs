@@ -9,21 +9,61 @@ namespace SonicRetro.SAModel
     /// <summary>
     /// This is a standard tri mesh representation of a BasicAttach or ChunkAttach.
     /// </summary>
-    public class MeshInfo
-    {
-        public Material Material { get; private set; }
-        public VertexData[] Vertices { get; private set; }
+	public class MeshInfo
+	{
+		public Material Material { get; private set; }
+		public Poly[] Polys { get; private set; }
+		public VertexData[] Vertices { get; private set; }
 		public bool HasUV { get; private set; }
 		public bool HasVC { get; private set; }
 
-        public MeshInfo(Material material, VertexData[] vertices, bool hasUV, bool hasVC)
-        {
-            Material = material;
-            Vertices = vertices;
+		public MeshInfo(Material material, Poly[] polys, VertexData[] vertices, bool hasUV, bool hasVC)
+		{
+			Material = material;
+			Polys = polys;
+			Vertices = vertices;
 			HasUV = hasUV;
 			HasVC = hasVC;
-        }
-    }
+		}
+
+		public ushort[] ToTriangles()
+		{
+			List<ushort> tris = new List<ushort>();
+			foreach (Poly poly in Polys)
+				if (poly is Triangle)
+					tris.AddRange(poly.Indexes);
+				else if (poly is Quad)
+				{
+					tris.Add(poly.Indexes[0]);
+					tris.Add(poly.Indexes[1]);
+					tris.Add(poly.Indexes[2]);
+					tris.Add(poly.Indexes[2]);
+					tris.Add(poly.Indexes[1]);
+					tris.Add(poly.Indexes[3]);
+				}
+				else if (poly is Strip)
+				{
+					bool flip = !((Strip)poly).Reversed;
+					for (int k = 0; k < poly.Indexes.Length - 2; k++)
+					{
+						flip = !flip;
+						if (!flip)
+						{
+							tris.Add(poly.Indexes[k]);
+							tris.Add(poly.Indexes[k + 1]);
+							tris.Add(poly.Indexes[k + 2]);
+						}
+						else
+						{
+							tris.Add(poly.Indexes[k + 1]);
+							tris.Add(poly.Indexes[k]);
+							tris.Add(poly.Indexes[k + 2]);
+						}
+					}
+				}
+			return tris.ToArray();
+		}
+	}
 
     public struct VertexData : IEquatable<VertexData>
     {

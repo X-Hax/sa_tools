@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
@@ -214,27 +215,19 @@ namespace SonicRetro.SAModel.Direct3D
 
 		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
 		{
-			List<VertexData> usedverts = new List<VertexData>(numverts);
 			List<T> vb = new List<T>(numverts);
 			List<short> ib = new List<short>(numverts);
 			List<int> at = new List<int>(numverts / 3);
 			for (int i = 0; i < attach.MeshInfo.Length; i++)
 			{
-				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length; j++)
-				{
-					if (usedverts.Contains(attach.MeshInfo[i].Vertices[j]))
-						ib.Add((short)usedverts.IndexOf(attach.MeshInfo[i].Vertices[j]));
-					else
-					{
-						ib.Add((short)vb.Count);
-						vb.Add((T)Activator.CreateInstance(typeof(T), attach.MeshInfo[i].Vertices[j]));
-						usedverts.Add(attach.MeshInfo[i].Vertices[j]);
-					}
-				}
-				for (int j = 0; j < attach.MeshInfo[i].Vertices.Length / 3; j++)
+				int off = vb.Count;
+				vb.AddRange(attach.MeshInfo[i].Vertices.Select(v => (T)Activator.CreateInstance(typeof(T), v)));
+				ushort[] tris = attach.MeshInfo[i].ToTriangles();
+				ib.AddRange(tris.Select(t => (short)(t + off)));
+				for (int j = 0; j < tris.Length / 3; j++)
 					at.Add(i);
 			}
-			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(numverts / 3, vb.Count,
+			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(ib.Count / 3, vb.Count,
 				MeshFlags.Managed, (VertexElement[])typeof(T).InvokeMember("Elements",
 				System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
 				null, null, null), dev);
