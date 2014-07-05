@@ -27,7 +27,7 @@ namespace SADXObjectDefinitions.Common
             int cols = (int)Math.Max(item.Scale.Z, 1);
             transform.Push();
             transform.NJTranslate(item.Position);
-            transform.NJRotateXYZ(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+            transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
             double v4 = (1 - cols) * 7.5;
             double v5 = (1 - rows) * 7.5;
             transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
@@ -53,7 +53,7 @@ namespace SADXObjectDefinitions.Common
             int cols = (int)Math.Max(item.Scale.Z, 1);
             transform.Push();
             transform.NJTranslate(item.Position);
-            transform.NJRotateXYZ(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+            transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
             double v4 = (1 - cols) * 7.5;
             double v5 = (1 - rows) * 7.5;
             transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);

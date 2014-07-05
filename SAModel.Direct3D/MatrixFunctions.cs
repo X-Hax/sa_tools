@@ -168,6 +168,33 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.NJRotateZYX(rotation.X, rotation.Y, rotation.Z);
 		}
 
+		public static void RotateObject(ref Matrix matrix, int x, int y, int z)
+		{
+			if (z != 0)
+				RotateZ(ref matrix, z);
+			if (x != 0)
+				RotateX(ref matrix, x);
+			if (y != 0)
+				RotateY(ref matrix, y);
+		}
+
+		public static void RotateObject(ref Matrix matrix, Rotation rotation)
+		{
+			RotateObject(ref matrix, rotation.X, rotation.Y, rotation.Z);
+		}
+
+		public static void NJRotateObject(this MatrixStack transform, int x, int y, int z)
+		{
+			Matrix m = transform.Top;
+			RotateObject(ref m, x, y, z);
+			transform.LoadMatrix(m);
+		}
+
+		public static void NJRotateObject(this MatrixStack transform, Rotation rotation)
+		{
+			transform.NJRotateObject(rotation.X, rotation.Y, rotation.Z);
+		}
+
 		public static void Scale(ref Matrix matrix, float x, float y, float z)
 		{
 			matrix.M11 *= x;

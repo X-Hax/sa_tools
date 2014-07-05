@@ -35,7 +35,7 @@ namespace SADXObjectDefinitions.Common
 						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
-					transform.NJRotateXYZ(item.Rotation);
+					transform.NJRotateObject(item.Rotation);
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
@@ -45,7 +45,7 @@ namespace SADXObjectDefinitions.Common
 				{
 					transform.Push();
 					transform.NJTranslate(item.Position);
-					transform.NJRotateXYZ(item.Rotation);
+					transform.NJRotateObject(item.Rotation);
 					double v5;
 					if (i % 2 == 1)
 						v5 = i * item.Scale.Y * -0.5;
@@ -76,7 +76,7 @@ namespace SADXObjectDefinitions.Common
 						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
-					transform.NJRotateXYZ(item.Rotation);
+					transform.NJRotateObject(item.Rotation);
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
@@ -88,7 +88,7 @@ namespace SADXObjectDefinitions.Common
 				{
 					transform.Push();
 					transform.NJTranslate(item.Position);
-					transform.NJRotateXYZ(item.Rotation);
+					transform.NJRotateObject(item.Rotation);
 					double v5;
 					if (i % 2 == 1)
 						v5 = i * item.Scale.Y * -0.5;

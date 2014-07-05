@@ -33,7 +33,7 @@ namespace SADXObjectDefinitions.Common
             HitResult result = HitResult.NoHit;
             transform.Push();
             transform.NJTranslate(item.Position.ToVector3());
-            transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+            transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             result = HitResult.Min(result, centermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, centermeshes));
             transform.Pop();
             /*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
@@ -59,7 +59,7 @@ namespace SADXObjectDefinitions.Common
             List<RenderInfo> result = new List<RenderInfo>();
             transform.Push();
             transform.NJTranslate(item.Position.ToVector3());
-            transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+            transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
             result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
             if (selected)
                 result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));

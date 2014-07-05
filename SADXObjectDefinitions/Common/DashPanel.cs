@@ -22,7 +22,7 @@ namespace SADXObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -33,7 +33,7 @@ namespace SADXObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
