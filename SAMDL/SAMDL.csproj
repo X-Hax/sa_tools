@@ -57,6 +57,12 @@
     <Compile Include="FileTypeDialog.Designer.cs">
       <DependentUpon>FileTypeDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="FindDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FindDialog.Designer.cs">
+      <DependentUpon>FindDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +112,9 @@
   <ItemGroup>
     <EmbeddedResource Include="FileTypeDialog.resx">
       <DependentUpon>FileTypeDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FindDialog.resx">
+      <DependentUpon>FindDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

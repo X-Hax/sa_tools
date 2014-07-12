@@ -195,7 +195,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<Object, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = true;
+			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			selectedObject = model;
 			SelectedItemChanged();
 		}
@@ -743,6 +743,22 @@ namespace SonicRetro.SAModel.SAMDL
 		void optionsEditor_FormUpdated()
 		{
 			DrawLevel();
+		}
+
+		private void findToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (FindDialog dlg = new FindDialog())
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					Object obj = model.GetObjects().SingleOrDefault(o => o.Name == dlg.SearchText || (o.Attach != null && o.Attach.Name == dlg.SearchText));
+					if (obj != null)
+					{
+						selectedObject = obj;
+						SelectedItemChanged();
+					}
+					else
+						MessageBox.Show(this, "Not found.", "SAMDL");
+				}
 		}
 	}
 }
