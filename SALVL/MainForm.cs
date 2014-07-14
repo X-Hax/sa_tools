@@ -530,27 +530,29 @@ namespace SonicRetro.SAModel.SALVL
         }
         #endregion
 
-        internal void SelectedItemChanged()
-        {
-            propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+		internal void SelectedItemChanged()
+		{
+			propertyGrid1.SelectedObjects = SelectedItems.ToArray();
 
-            if (cam.mode == 1)
-            {
-                cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
-            }
+			if (cam.mode == 1)
+			{
+				cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+			}
 
-            if (SelectedItems.Count > 0) // set up gizmo
-            {
-                transformGizmo.AffectedItems = SelectedItems;
-            }
-            else
-            {
-                if (transformGizmo != null)
-                {
-                    transformGizmo.AffectedItems = new List<Item>();
-                }
-            }
-        }
+			if (SelectedItems.Count > 0) // set up gizmo
+			{
+				transformGizmo.AffectedItems = SelectedItems;
+				if (!transformGizmo.Enabled) { transformGizmo.Enabled = true; }
+			}
+			else
+			{
+				if (transformGizmo != null)
+				{
+					transformGizmo.AffectedItems = new List<Item>();
+					transformGizmo.Enabled = false;
+				}
+			}
+		}
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {

@@ -50,8 +50,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	public class TransformGizmo
 	{
 		#region Private Variables
-		private Vector3 position;
-		private Rotation rotation;
+		private Vector3 position = new Vector3();
+		private Rotation rotation = new Rotation();
 
 		private bool enabled = false;
 		private bool isTransformLocal = false; // if TRUE,  the gizmo is in Local mode.
