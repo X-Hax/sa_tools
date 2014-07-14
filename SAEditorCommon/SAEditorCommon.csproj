@@ -79,6 +79,12 @@
     </Compile>
     <Compile Include="UI\Gizmo.cs" />
     <Compile Include="UI\PointHelper.cs" />
+    <Compile Include="UI\SETDeleteType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SETDeleteType.Designer.cs">
+      <DependentUpon>SETDeleteType.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\TransformGizmo.cs" />
     <Compile Include="DataTypes\SETItem.cs" />
     <Compile Include="DataTypes\StartPosItem.cs" />
@@ -145,6 +151,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SETDeleteType.resx">
+      <DependentUpon>SETDeleteType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETFindReplace.resx">
       <DependentUpon>SETFindReplace.cs</DependentUpon>

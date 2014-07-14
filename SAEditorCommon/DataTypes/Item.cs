@@ -63,6 +63,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public static Vertex CenterFromSelection(List<Item> SelectedItems)
         {
+			if (SelectedItems == null) return new Vertex();
+
             Vertex center = new Vertex();
 
             List<Vertex> vertList = new List<Vertex>();

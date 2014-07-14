@@ -1307,7 +1307,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				item.Checked = false;
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 			transformGizmo.Enabled = false;
-			transformGizmo.AffectedItems.Clear();
+			if(transformGizmo.AffectedItems != null) transformGizmo.AffectedItems.Clear();
 			DrawLevel();
 		}
 
@@ -1649,6 +1649,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			DuplicateTo duplicateToWindow = new DuplicateTo(SelectedItems);
 			duplicateToWindow.ShowDialog();
+		}
+
+		private void deleteAllOfTypeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			transformGizmo.Enabled = false;
+			transformGizmo.AffectedItems = null; // just in case we wind up deleting our selection
+
+			SETDeleteType typeDeleter = new SETDeleteType();
+
+			typeDeleter.ShowDialog();
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[NonSerialized]
 		private Microsoft.DirectX.Direct3D.Mesh mesh;
         [Browsable(false)]
-		private Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		public Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
         /// <summary>
         /// Creates a Levelitem from an external file.
@@ -107,13 +107,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             LevelData.LevelItems.Remove(this);
         }
 
+		public void RegenerateMesh(Device dev)
+		{
+			mesh = COL.Model.Attach.CreateD3DMesh(dev);
+		}
+
         public void ImportModel(string filePath, Device dev)
         {
             COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
             Visible = true;
             Solid = true;
 
-            Mesh = COL.Model.Attach.CreateD3DMesh(dev);
+            mesh = COL.Model.Attach.CreateD3DMesh(dev);
         }
 
         //[Browsable(true)]

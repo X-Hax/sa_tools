@@ -188,7 +188,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bool importError = false;
 			string importErrorMsg = "";
 
-			switch (filePathInfo.Extension)
+			if ((filePathInfo.Extension == ".obj") || (filePathInfo.Extension == ".objf"))
+			{
+				Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
+				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
+
+				item.Visible = true;
+				createdItems.Add(item);
+			}
+			else if (filePathInfo.Extension == ".txt")
+			{
+				SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
+			}
+			else
+			{
+				errorFlag = true;
+				errorMsg = "Invalid file format!";
+				return null;
+			}
+
+			/*switch (filePathInfo.Extension)
 			{
 				case (".obj"):
 					Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
@@ -206,7 +225,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					errorFlag = true;
 					errorMsg = "Invalid file format!";
 					return null;
-			}
+			}*/
 
 			StateChanged();
 

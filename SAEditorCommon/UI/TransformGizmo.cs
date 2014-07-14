@@ -253,6 +253,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// </summary>
 		private void SetGizmo()
 		{
+			if (!enabled) return;
 			position = Item.CenterFromSelection(affectedItems).ToVector3();
 			if ((affectedItems.Count == 1) && isTransformLocal) rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
 			else rotation = new Rotation();

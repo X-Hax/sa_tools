@@ -275,26 +275,26 @@
             this.pasteToolStripMenuItem,
             this.deleteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(106, 114);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(153, 136);
 			// 
 			// addToolStripMenuItem
 			// 
 			this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-			this.addToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+			this.addToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.addToolStripMenuItem.Text = "&Add...";
 			this.addToolStripMenuItem.Click += new System.EventHandler(this.levelPieceToolStripMenuItem_Click);
 			// 
 			// cutToolStripMenuItem
 			// 
 			this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-			this.cutToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+			this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.cutToolStripMenuItem.Text = "Cu&t";
 			this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
 			// 
 			// copyToolStripMenuItem
 			// 
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			this.copyToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+			this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.copyToolStripMenuItem.Text = "&Copy";
 			this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
 			// 
@@ -302,14 +302,14 @@
 			// 
 			this.pasteToolStripMenuItem.Enabled = false;
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.pasteToolStripMenuItem.Text = "&Paste";
 			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
 			// 
 			// deleteToolStripMenuItem
 			// 
 			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.deleteToolStripMenuItem.Text = "&Delete";
 			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
 			// 
