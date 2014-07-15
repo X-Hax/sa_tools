@@ -635,6 +635,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (!loaded) return;
+
 			Dictionary<string, string> group = ini[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
 			string modpath = null;
