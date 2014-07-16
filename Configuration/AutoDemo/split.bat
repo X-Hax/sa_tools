@@ -28,5 +28,5 @@ split AL_GARDEN00.prs AL_GARDEN00.ini
 split AL_GARDEN01.prs AL_GARDEN01.ini
 split AL_GARDEN02.prs AL_GARDEN02.ini
 split AL_RACE.prs AL_RACE.ini
-split LAND1800.prs LAND1800.ini
+split LAND1800.bin LAND1800.ini
 split S_MOT.prs S_MOT.ini
