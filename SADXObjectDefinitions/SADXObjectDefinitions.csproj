@@ -60,6 +60,7 @@
     <Compile Include="Common\SwingSpikeBall.cs" />
     <Compile Include="Common\Wall.cs" />
     <Compile Include="Level Effects\EmeraldCoast.cs" />
+    <Compile Include="Level Effects\SkyChase.cs" />
     <Compile Include="Level Effects\TwinklePark.cs" />
     <Compile Include="Level Effects\WindyValley1.cs" />
     <Compile Include="Level Effects\WindyValley2.cs" />
