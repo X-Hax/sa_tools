@@ -268,7 +268,7 @@ namespace PVMEditSharp
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture();
 			if (tex.HasValue)
 			{
-				uint gbix = textures.Max((item) => item.GlobalIndex);
+				uint gbix = textures.Count == 0 ? 0 : textures.Max((item) => item.GlobalIndex);
 				if (gbix != uint.MaxValue)
 					gbix++;
 				textures.Add(new TextureInfo(tex.Value.Key, gbix, tex.Value.Value));
