@@ -1312,12 +1312,86 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			LevelData.Character = characterToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
+
+			// Character view buttons
+			toolSonic.Checked = false;
+			toolTails.Checked = false;
+			toolKnuckles.Checked = false;
+			toolAmy.Checked = false;
+			toolBig.Checked = false;
+			toolGamma.Checked = false;
+
 			foreach (ToolStripMenuItem item in characterToolStripMenuItem.DropDownItems)
 				item.Checked = false;
+
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+			
+			switch (LevelData.Character)
+			{
+				default:
+					toolSonic.Checked = true;
+					break;
+
+				case 1:
+					toolTails.Checked = true;
+					break;
+
+				case 2:
+					toolKnuckles.Checked = true;
+					break;
+
+				case 3:
+					toolAmy.Checked = true;
+					break;
+
+				case 4:
+					toolGamma.Checked = true;
+					break;
+
+				case 5:
+					toolBig.Checked = true;
+					break;
+			}
+
 			transformGizmo.Enabled = false;
-			if(transformGizmo.AffectedItems != null) transformGizmo.AffectedItems.Clear();
+			
+			if (transformGizmo.AffectedItems != null)
+				transformGizmo.AffectedItems.Clear();
+			
 			DrawLevel();
+		}
+
+		private void onClickCharacterButton(object sender, EventArgs e)
+		{
+			// I had a little bit of a cleaner solution for this,
+			// but then I realized that the character menu still exists,
+			// so that does most of the work thanks to PerformClick.
+			switch (((ToolStripButton)sender).Text)
+			{
+				default: // "S"
+					sonicToolStripMenuItem.PerformClick();
+					break;
+				
+				case "M":
+					tailsToolStripMenuItem.PerformClick();
+					break;
+
+				case "K":
+					knucklesToolStripMenuItem.PerformClick();
+					break;
+
+				case "A":
+					amyToolStripMenuItem.PerformClick();
+					break;
+
+				case "E":
+					gammaToolStripMenuItem.PerformClick();
+					break;
+
+				case "B":
+					bigToolStripMenuItem.PerformClick();
+					break;
+			}
 		}
 
 		private void levelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)

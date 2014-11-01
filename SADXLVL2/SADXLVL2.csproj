@@ -130,6 +130,12 @@
     <None Include="Resources\MoveIcon.png" />
     <None Include="Resources\RotateIcon.png" />
     <None Include="Resources\ScaleIcon.png" />
+    <None Include="Resources\hyoji_zanki_a.png" />
+    <None Include="Resources\hyoji_zanki_e.png" />
+    <None Include="Resources\hyoji_zanki_k.png" />
+    <None Include="Resources\hyoji_zanki_s.png" />
+    <None Include="Resources\hyoji_zanki_t.png" />
+    <None Include="Resources\hyoji_zankib.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
