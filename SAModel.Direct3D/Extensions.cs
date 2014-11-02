@@ -266,7 +266,8 @@ namespace SonicRetro.SAModel.Direct3D
 					{
                         mat = obj.Attach.MeshInfo[j].Material;
 
-						if (textures != null && mat.TextureID < textures.Length)
+						// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
+						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
 					}
 					else
