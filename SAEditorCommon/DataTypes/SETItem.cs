@@ -12,7 +12,7 @@ using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-    [Serializable]
+	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
     {
 		public BoundingSphere Bounds { get; set; }
@@ -28,7 +28,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public SETItem(byte[] file, int address)
         {
-            ID = BitConverter.ToUInt16(file, address);
+			ushort _id = ByteConverter.ToUInt16(file, address);
+			ID = _id;
+			ClipLevel = (byte)(_id >> 12);
             ushort xrot = BitConverter.ToUInt16(file, address + 2);
             ushort yrot = BitConverter.ToUInt16(file, address + 4);
             ushort zrot = BitConverter.ToUInt16(file, address + 6);
@@ -42,15 +44,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         [ParenthesizePropertyName(true)]
         public string Name { get { return LevelData.ObjDefs[id].Name; } }
-
-        protected bool isLoaded = false;
-        private ushort id;
+		protected bool isLoaded = false;
+        
+		private ushort id;
         [Editor(typeof(IDEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ushort ID
         {
 			get { return id; }
 			set { id = (ushort)(value & 0xFFF); }
         }
+		
+		private ushort cliplevel;
+		[Browsable(false)]
+		public ushort ClipLevel
+		{
+			get { return cliplevel; }
+			set { cliplevel = (byte)(value & 0xF); }
+		}
+
+		[DisplayName("Clip Level")]
+		public ClipSetting ClipSetting
+		{
+			get { return (ClipSetting)ClipLevel; }
+			set { ClipLevel = (ushort)value; }
+		}
 
 		private Vertex position;
 
@@ -93,7 +110,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public byte[] GetBytes()
         {
             List<byte> bytes = new List<byte>(0x20);
-            bytes.AddRange(BitConverter.GetBytes(ID));
+			bytes.AddRange(BitConverter.GetBytes((ushort)(id | (cliplevel << 12))));
             unchecked
             {
                 bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.X));
@@ -188,5 +205,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return this;
 		}
+	}
+
+	public enum ClipSetting : ushort
+	{
+		All,
+		HighOnly,
+		MediumAndHigh
 	}
 }
