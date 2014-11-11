@@ -44,6 +44,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         [ParenthesizePropertyName(true)]
         public string Name { get { return LevelData.ObjDefs[id].Name; } }
+		[ParenthesizePropertyName(true)]
+		public string InternalName { get { return LevelData.ObjDefs[id].InternalName; } }
 		protected bool isLoaded = false;
         
 		private ushort id;

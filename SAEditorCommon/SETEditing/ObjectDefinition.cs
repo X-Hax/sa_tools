@@ -26,6 +26,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		{
 			return new BoundingSphere(item.Position, 20);
 		}
+		public string InternalName { get; protected set; }
+		public void SetInternalName(string name)
+		{
+			InternalName = name;
+		}
 	}
 
 	/// <summary>

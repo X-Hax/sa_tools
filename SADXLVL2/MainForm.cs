@@ -394,6 +394,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						def = new DefaultObjectDefinition();
 					LevelData.ObjDefs.Add(def);
 					def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+					def.SetInternalName(objlstini[ID].Name);
 				}
 
 				// Loading SET Layout
