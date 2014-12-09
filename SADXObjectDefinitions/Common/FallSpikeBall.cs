@@ -22,9 +22,9 @@ namespace SADXObjectDefinitions.Common
         {
             ballmodel = ObjectHelper.LoadModel("Objects/Common/Spike Ball/Spike Ball.sa1mdl");
             ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
-            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder Model.sa1mdl");
+            cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder.sa1mdl");
             cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
-            spheremodel = ObjectHelper.LoadModel("Objects/Collision/Sphere Model.sa1mdl");
+            spheremodel = ObjectHelper.LoadModel("Objects/Collision/Sphere.sa1mdl");
             spheremeshes = ObjectHelper.GetMeshes(spheremodel, dev);
         }
 

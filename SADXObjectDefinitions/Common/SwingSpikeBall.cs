@@ -20,7 +20,7 @@ namespace SADXObjectDefinitions.Common
 
         public override void Init(ObjectData data, string name, Device dev)
         {
-			centermodel = ObjectHelper.LoadModel("Objects/Common/Spike Ball/Chain/Center.sa1mdl");
+			centermodel = ObjectHelper.LoadModel("Objects/Common/Spike Ball/Center.sa1mdl");
             centermeshes = ObjectHelper.GetMeshes(centermodel, dev);
             cylindermodel = ObjectHelper.LoadModel("Objects/Collision/Cylinder.sa1mdl");
             cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
