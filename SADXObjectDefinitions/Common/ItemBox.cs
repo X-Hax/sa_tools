@@ -52,7 +52,7 @@ namespace SADXObjectDefinitions.Common
     {
         public override void Init(ObjectData data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Item Box/Normal Model.sa1mdl");
+            model = ObjectHelper.LoadModel("Objects/Common/Item Box/Ground.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 2;
         }
@@ -71,7 +71,7 @@ namespace SADXObjectDefinitions.Common
     {
         public override void Init(ObjectData data, string name, Device dev)
         {
-            model = ObjectHelper.LoadModel("Objects/Item Box/Floating Model.sa1mdl");
+            model = ObjectHelper.LoadModel("Objects/Common/Item Box/Air.sa1mdl");
             meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 1;
         }

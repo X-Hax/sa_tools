@@ -47,7 +47,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Spring/Model.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/Spring/Ground.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
@@ -65,7 +65,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Spring/Air Model.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/Spring/Air.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
