@@ -16,7 +16,7 @@ namespace SADXObjectDefinitions.Windy_Valley
 
 		public override void  Init(ObjectData data, string name, Device dev)
 		{
- 			model = ObjectHelper.LoadModel("Objects/Windy Valley/O_HANEA.sa1mdl");
+ 			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_HANEA.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
