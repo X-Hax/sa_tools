@@ -406,17 +406,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 						
 					LevelData.ObjDefs.Add(def);
 
-					if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model) && !File.Exists(defgroup.Model))
+					// The only reason .Model is checked for null is for objects that don't yet have any
+					// models defined for them. It would be annoying seeing that error all the time!
+					if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
 					{
-						ObjectData error = new ObjectData();
+						// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+						// load the "default object" instead ("?").
+						// TODO: Check if the texture file exists
+						if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture))
+						{
+							ObjectData error = new ObjectData();
 
-						error.Name = defgroup.Name;
-						error.Model = defgroup.Model;
-						error.Texture = defgroup.Texture;
+							error.Name = defgroup.Name;
+							error.Model = defgroup.Model;
+							error.Texture = defgroup.Texture;
 
-						objectErrors.Add(error);
+							objectErrors.Add(error);
 
-						defgroup.Model = null;
+							defgroup.Model = null;
+						}
 					}
 
 					def.Init(defgroup, objlstini[ID].Name, d3ddevice);
@@ -463,13 +471,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					foreach (ObjectData o in objectErrors)
 					{
+						bool empty = string.IsNullOrEmpty(o.Texture);
 						errorStrings.Add("");
-						errorStrings.Add("Name:\t" + o.Name);
-						errorStrings.Add("Model:\t" + o.Model);
+						errorStrings.Add("Name:\t\t" + o.Name);
+						errorStrings.Add("Model:\t\t" + o.Model);
+						errorStrings.Add("Texture:\t" + ((empty) ? "(N/A)" : o.Texture));
 					}
 
-					// TODO: Change to SADXLVL2.log after modularizing that a bit.
-					File.WriteAllLines("fail.log", errorStrings.ToArray());
+					// TODO: Proper logging. Who knows where this file may end up
+					File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
 
 					MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
 					+ "\nThe level will still display, but the objects in question will not display their proper models." + "\n\nPlease check the log for details.",
