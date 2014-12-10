@@ -339,19 +339,27 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#region Object Definitions / SET Layout
 			LevelData.ObjDefs = new List<ObjectDefinition>();
 			Dictionary<string, ObjectData> objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini[string.Empty]["objdefs"]);
+
 			if (File.Exists(group.GetValueOrDefault("ObjList", string.Empty)))
 			{
+				List<ObjectData> objectErrors = new List<ObjectData>();
 				ObjectListEntry[] objlstini = ObjectList.Load(group["ObjList"], false);
 				Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+
 				for (int ID = 0; ID < objlstini.Length; ID++)
 				{
 					string codeaddr = objlstini[ID].CodeString;
+
 					if (!objdefini.ContainsKey(codeaddr))
 						codeaddr = "0";
+
 					ObjectData defgroup = objdefini[codeaddr];
 					ObjectDefinition def = null;
+
 					if (!string.IsNullOrEmpty(defgroup.CodeFile))
 					{
+						#region Compile object code files
+
 						string ty = defgroup.CodeType;
 						string dllfile = System.IO.Path.Combine("dllcache", ty + ".dll");
 						DateTime modDate = DateTime.MinValue;
@@ -389,10 +397,28 @@ namespace SonicRetro.SAModel.SADXLVL2
 							else
 								def = new DefaultObjectDefinition();
 						}
+
+
+						#endregion
 					}
 					else
 						def = new DefaultObjectDefinition();
+						
 					LevelData.ObjDefs.Add(def);
+
+					if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model) && !File.Exists(defgroup.Model))
+					{
+						ObjectData error = new ObjectData();
+
+						error.Name = defgroup.Name;
+						error.Model = defgroup.Model;
+						error.Texture = defgroup.Texture;
+
+						objectErrors.Add(error);
+
+						defgroup.Model = null;
+					}
+
 					def.Init(defgroup, objlstini[ID].Name, d3ddevice);
 					def.SetInternalName(objlstini[ID].Name);
 				}
@@ -427,9 +453,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				else
 					LevelData.SETItems = null;
+				
+				// Checks if there have been any errors added to the error list and does its thing
+				if (objectErrors.Count > 0)
+				{
+					int count = objectErrors.Count;
+					List<string> errorStrings = new List<string>();
+					errorStrings.Add("The following objects failed to load:");
+
+					foreach (ObjectData o in objectErrors)
+					{
+						errorStrings.Add("");
+						errorStrings.Add("Name:\t" + o.Name);
+						errorStrings.Add("Model:\t" + o.Model);
+					}
+
+					// TODO: Change to SADXLVL2.log after modularizing that a bit.
+					File.WriteAllLines("fail.log", errorStrings.ToArray());
+
+					MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+					+ "\nThe level will still display, but the objects in question will not display their proper models." + "\n\nPlease check the log for details.",
+					"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
 			}
 			else
 				LevelData.SETItems = null;
+
 			#endregion
 
 			#region CAM Layout
