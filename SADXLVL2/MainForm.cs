@@ -412,8 +412,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						// Otherwise, if the model file doesn't exist and/or no texture file is defined,
 						// load the "default object" instead ("?").
-						// TODO: Check if the texture file exists
-						if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture))
+						if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) || !LevelData.Textures.ContainsKey(defgroup.Texture))
 						{
 							ObjectData error = new ObjectData();
 
@@ -471,11 +470,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					foreach (ObjectData o in objectErrors)
 					{
-						bool empty = string.IsNullOrEmpty(o.Texture);
+						bool texEmpty = string.IsNullOrEmpty(o.Texture);
+						bool texExists = LevelData.Textures.ContainsKey(o.Texture);
 						errorStrings.Add("");
 						errorStrings.Add("Name:\t\t" + o.Name);
 						errorStrings.Add("Model:\t\t" + o.Model);
-						errorStrings.Add("Texture:\t" + ((empty) ? "(N/A)" : o.Texture));
+						errorStrings.Add("Texture:");
+						errorStrings.Add("\tExists:\t" + texExists);
+						errorStrings.Add("\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
 					}
 
 					// TODO: Proper logging. Who knows where this file may end up
