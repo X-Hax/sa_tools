@@ -471,7 +471,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					foreach (ObjectData o in objectErrors)
 					{
 						bool texEmpty = string.IsNullOrEmpty(o.Texture);
-						bool texExists = LevelData.Textures.ContainsKey(o.Texture);
+						bool texExists = (string.IsNullOrEmpty(o.Texture)) ? false : LevelData.Textures.ContainsKey(o.Texture);
 						errorStrings.Add("");
 						errorStrings.Add("Name:\t\t" + o.Name);
 						errorStrings.Add("Model:\t\t" + o.Model);
