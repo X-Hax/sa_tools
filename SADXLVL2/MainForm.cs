@@ -833,16 +833,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 				for (int i = 0; i < LevelData.LevelItems.Count; i++)
 				{
 					bool display = false;
+
 					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
 						display = true;
 					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
 						display = true;
 					else if (allToolStripMenuItem.Checked)
 						display = true;
+
 					if (display)
-					{
 						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
-					}
 				}
 			}
 			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
@@ -852,23 +852,26 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
 			{
 				foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-				{
 					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
-				}
 			}
 			#endregion
 
 			#region Adding Death Zones
 			if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
+			{
 				foreach (DeathZoneItem item in LevelData.DeathZones)
+				{
 					if (item.Visible)
 						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+				}
+			}
 			#endregion
 
 			#region Adding CAM Layout
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
-				foreach (CAMItem item in LevelData.CAMItems[LevelData.Character]) renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+				foreach (CAMItem item in LevelData.CAMItems[LevelData.Character])
+					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
 			}
 			#endregion
 
@@ -877,9 +880,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (splinesToolStripMenuItem.Checked)
 			{
 				foreach (SplineData spline in LevelData.LevelSplines)
-				{
 					spline.Draw(d3ddevice);
-				}
 			}
 
 			d3ddevice.EndScene(); // scene drawings go before this line
