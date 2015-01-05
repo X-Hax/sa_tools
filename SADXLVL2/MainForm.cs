@@ -462,6 +462,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.SETItems = null;
 				
 				// Checks if there have been any errors added to the error list and does its thing
+				// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
 				if (objectErrors.Count > 0)
 				{
 					int count = objectErrors.Count;
@@ -473,11 +474,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 						bool texEmpty = string.IsNullOrEmpty(o.Texture);
 						bool texExists = (string.IsNullOrEmpty(o.Texture)) ? false : LevelData.Textures.ContainsKey(o.Texture);
 						errorStrings.Add("");
-						errorStrings.Add("Name:\t\t" + o.Name);
-						errorStrings.Add("Model:\t\t" + o.Model);
-						errorStrings.Add("Texture:");
-						errorStrings.Add("\tExists:\t" + texExists);
-						errorStrings.Add("\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+						errorStrings.Add("Object:\t\t" + o.Name);
+						errorStrings.Add("\tModel:");
+						errorStrings.Add("\t\tName:\t" + o.Model);
+						errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+						errorStrings.Add("\tTexture:");
+						errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+						errorStrings.Add("\t\tExists:\t" + texExists);
 					}
 
 					// TODO: Proper logging. Who knows where this file may end up
