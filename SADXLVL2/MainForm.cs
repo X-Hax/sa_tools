@@ -17,13 +17,6 @@ using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
-// TODO: Find a better way to call DrawLevel. Ideas below.
-/*
- * How about a request system? Set a bool to true, and then once the "cycle"
- * of function calls is complete, call DrawLevel which will then check if
- * a request to redraw has been made.
- */
-
 namespace SonicRetro.SAModel.SADXLVL2
 {
 	public partial class MainForm : Form
@@ -687,7 +680,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -807,9 +800,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!loaded)
-				return;
-
+			if (!loaded) return;
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
 			cam.DrawDistance = 100000;
@@ -906,7 +897,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		#region User Keyboard / Mouse Methods
@@ -1072,7 +1063,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1102,14 +1093,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (e.KeyCode == Keys.E)
 				{
 					cam.Position = new Vector3();
-					//DrawLevel();
+					DrawLevel();
 				}
 
 				if (e.KeyCode == Keys.R)
 				{
 					cam.Pitch = 0;
 					cam.Yaw = 0;
-					//DrawLevel();
+					DrawLevel();
 				}
 			}
 
@@ -1129,7 +1120,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 				}
 
-				//DrawLevel();
+				DrawLevel();
 			}
 			if (e.KeyCode == Keys.N)
 			{
@@ -1138,7 +1129,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				else
 					EditorOptions.RenderFillMode += 1;
 
-				//DrawLevel();
+				DrawLevel();
 			}
 			if (e.KeyCode == Keys.Delete)
 			{
@@ -1146,7 +1137,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					item.Delete();
 				SelectedItems.Clear();
 				SelectedItemChanged();
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 
@@ -1199,14 +1190,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 				}
 
-				//DrawLevel();
+				DrawLevel();
 			}
 			if (e.Button == System.Windows.Forms.MouseButtons.Left)
 			{
 				cameraPointA.TransformAffected(chg.X / 2, chg.Y / 2);
 				cameraPointB.TransformAffected(chg.X / 2, chg.Y / 2);
 				transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
-				//DrawLevel();
+				DrawLevel();
 
 				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
 				if (Cursor.Position.X == scrbnds.Left)
@@ -1274,7 +1265,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (cam.mode == 0) cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
 			else if (cam.mode == 1) cam.Distance += (detentValue * cam.MoveSpeed);
-			//DrawLevel();
+			DrawLevel();
 		}
 		#endregion
 
@@ -1290,11 +1281,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (SelectedItems.Count > 0) // set up gizmo
 			{
 				transformGizmo.AffectedItems = SelectedItems;
-				if (!transformGizmo.Enabled)
-				{
-					transformGizmo.Enabled = true;
-					//DrawLevel();
-				}
+				if (!transformGizmo.Enabled) { transformGizmo.Enabled = true; DrawLevel(); }
 
 				if (SelectedItems.Count == 1) // single-select only cases
 				{
@@ -1317,7 +1304,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					transformGizmo.AffectedItems = new List<Item>();
 					transformGizmo.Enabled = false;
-					//DrawLevel();
+					DrawLevel();
 				}
 
 				if ((cameraPointA != null) && (cameraPointB != null))
@@ -1339,7 +1326,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			SelectedItems.Clear();
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
 		}
@@ -1375,7 +1362,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			SelectedItems = new List<Item>(objs);
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1385,7 +1372,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					item.Delete();
 			SelectedItems.Clear();
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -1437,7 +1424,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (transformGizmo.AffectedItems != null)
 				transformGizmo.AffectedItems.Clear();
 
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void onClickCharacterButton(object sender, EventArgs e)
@@ -1463,7 +1450,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 			transformGizmo.Enabled = false;
 			transformGizmo.AffectedItems.Clear();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1524,7 +1511,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.SETItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1534,7 +1521,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1621,17 +1608,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			SelectedItems = new List<Item>() { item };
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -1649,7 +1636,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
 			SelectedItemChanged();
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1673,16 +1660,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void cAMItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1694,7 +1681,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (findReplaceResult == System.Windows.Forms.DialogResult.OK)
 			{
 				SelectedItemChanged();
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 
@@ -1716,7 +1703,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void optionsEditor_FormUpdated()
 		{
-			//DrawLevel();
+			DrawLevel();
 		}
 
 		#region Gizmo Button Event Methods
@@ -1728,7 +1715,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				gizmoSpaceComboBox.Enabled = true;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				//DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+				DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
 
@@ -1741,7 +1728,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				selectModeButton.Checked = false;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 
@@ -1756,7 +1743,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 
@@ -1765,7 +1752,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (transformGizmo != null)
 			{
 				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex == 0) ? false : true;
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 
@@ -1779,7 +1766,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				gizmoSpaceComboBox.Enabled = false;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
-				//DrawLevel();
+				DrawLevel();
 			}
 		}
 		#endregion
