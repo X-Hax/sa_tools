@@ -174,13 +174,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
                         if (nodeDescriptorSplit[0] == "node")
                         {
-                            LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation);
+							LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count);
                             instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
                         }
                         else if (nodeDescriptorSplit[0] == "instance")
                         {
                             Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-                            LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation);
+							LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count);
                         }
                         #endregion
 
@@ -288,14 +288,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
                         if (nodeDescriptorSplit[0] == "node")
                         {
-                            LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation);
+							LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count);
                             levelItem.Flags = surfaceFlags;
                             instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
                         }
                         else if (nodeDescriptorSplit[0] == "instance")
                         {
                             Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-                            LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation);
+							LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count);
                             levelItem.Flags = surfaceFlags;
                         }
                         #endregion

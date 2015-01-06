@@ -199,8 +199,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				LevelData.geo = LandTable.LoadFromFile(group["LevelGeo"]);
 				LevelData.LevelItems = new List<LevelItem>();
-				foreach (COL item in LevelData.geo.COL)
-					LevelData.LevelItems.Add(new LevelItem(item, d3ddevice));
+				for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i));
 			}
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -403,7 +403,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 					else
 						def = new DefaultObjectDefinition();
-						
+
 					LevelData.ObjDefs.Add(def);
 
 					// The only reason .Model is checked for null is for objects that don't yet have any
@@ -460,7 +460,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				else
 					LevelData.SETItems = null;
-				
+
 				// Checks if there have been any errors added to the error list and does its thing
 				// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
 				if (objectErrors.Count > 0)

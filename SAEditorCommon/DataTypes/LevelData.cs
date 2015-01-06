@@ -95,7 +95,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return;
 			}
 
-			if (SelectedItems.Count < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; } 
+			if (SelectedItems.Count < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; }
 
 			if (SelectedItems.Count == 1)
 			{
@@ -112,7 +112,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				else if (SelectedItems[0] is LevelItem)
 				{
 					LevelItem originalItem = (LevelItem)SelectedItems[0];
-					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, LevelItems.Count);
 
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
 					SelectedItems.Clear();
@@ -147,7 +147,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					else if (SelectedItems[i] is LevelItem)
 					{
 						LevelItem originalItem = (LevelItem)SelectedItems[0];
-						LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation);
+						LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, LevelItems.Count);
 
 						newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
 						newItems.Add(newItem);
@@ -191,7 +191,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if ((filePathInfo.Extension == ".obj") || (filePathInfo.Extension == ".objf"))
 			{
 				Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
-				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
+				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), LevelItems.Count);
 
 				item.Visible = true;
 				createdItems.Add(item);
