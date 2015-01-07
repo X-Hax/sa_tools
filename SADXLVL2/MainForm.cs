@@ -1185,19 +1185,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 				DrawLevel();
 		}
 
-		Point lastmouse;
+		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded)
 				return;
 
-			Point evloc = e.Location;
-			if (lastmouse == Point.Empty)
+			Point mouseEvent = e.Location;
+			if (mouseLast == Point.Empty)
 			{
-				lastmouse = evloc;
+				mouseLast = mouseEvent;
 				return;
 			}
-			Point chg = evloc - (Size)lastmouse;
+			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			switch (e.Button)
 			{
 				default:
@@ -1209,67 +1209,73 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						if (zoomKeyDown)
 						{
-							cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+							cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
 						}
 						else if (lookKeyDown)
 						{
-							cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-							cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+							cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+							cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 						}
 						else if (!lookKeyDown && !zoomKeyDown) // pan
 						{
-							cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
-							cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+							cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+							cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 						}
 					}
 					else if (cam.mode == 1)
 					{
 						if (zoomKeyDown)
 						{
-							cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+							cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
 						}
 						else if (lookKeyDown)
 						{
-							cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-							cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+							cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+							cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 						}
 						else if (!lookKeyDown && !zoomKeyDown) // pan
 						{
-							cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
-							cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+							cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+							cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 						}
 					}
 
+					mouseLast = mouseEvent;
 					DrawLevel();
 
 					break;
 
 				case MouseButtons.Left:
-					cameraPointA.TransformAffected(chg.X / 2, chg.Y / 2);
-					cameraPointB.TransformAffected(chg.X / 2, chg.Y / 2);
-					transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
+					if (Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+						mouseLast = mouseEvent;
+					else
+						break;
+
+					cameraPointA.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
+					cameraPointB.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
+					transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 					DrawLevel();
 
-					Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
-					if (Cursor.Position.X == scrbnds.Left)
+					Rectangle screenBounds = Screen.GetBounds(Cursor.Position);
+					if (Cursor.Position.X == screenBounds.Left)
 					{
-						Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
-						evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
+						Cursor.Position = new Point(screenBounds.Right - 2, Cursor.Position.Y);
+						mouseEvent = new Point(mouseEvent.X + screenBounds.Width - 2, mouseEvent.Y);
 					}
-					else if (Cursor.Position.X == scrbnds.Right - 1)
+					else if (Cursor.Position.X == screenBounds.Right - 1)
 					{
-						Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
-						evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
+						Cursor.Position = new Point(screenBounds.Left + 1, Cursor.Position.Y);
+						mouseEvent = new Point(mouseEvent.X - screenBounds.Width + 1, mouseEvent.Y);
 					}
-					if (Cursor.Position.Y == scrbnds.Top)
+					if (Cursor.Position.Y == screenBounds.Top)
 					{
-						Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
-						evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
+						Cursor.Position = new Point(Cursor.Position.X, screenBounds.Bottom - 2);
+						mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + screenBounds.Height - 2);
 					}
-					else if (Cursor.Position.Y == scrbnds.Bottom - 1)
+					else if (Cursor.Position.Y == screenBounds.Bottom - 1)
 					{
-						Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
-						evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
+						Cursor.Position = new Point(Cursor.Position.X, screenBounds.Top + 1);
+						mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - screenBounds.Height + 1);
 					}
 
 					break;
@@ -1301,10 +1307,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if (oldCamB != cameraPointB.SelectedAxes) { cameraPointB.Draw(d3ddevice, cam); break; }
 					}
 
+					mouseLast = mouseEvent;
 					break;
 			}
 
-			lastmouse = evloc;
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
