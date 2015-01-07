@@ -1179,7 +1179,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Point lastmouse;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!loaded) return;
+			if (!loaded)
+				return;
+
 			Point evloc = e.Location;
 			if (lastmouse == Point.Empty)
 			{
@@ -1187,105 +1189,109 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 			}
 			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+			switch (e.Button)
 			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
+				case MouseButtons.Middle:
+					// all cam controls are now bound to the middle mouse button
+					if (cam.mode == 0)
 					{
-						cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+						if (zoomKeyDown)
+						{
+							cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+						}
+						else if (lookKeyDown)
+						{
+							cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+							cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						}
+						else if (!lookKeyDown && !zoomKeyDown) // pan
+						{
+							cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
+							cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						}
 					}
-					else if (lookKeyDown)
+					else if (cam.mode == 1)
 					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						if (zoomKeyDown)
+						{
+							cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+						}
+						else if (lookKeyDown)
+						{
+							cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
+							cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						}
+						else if (!lookKeyDown && !zoomKeyDown) // pan
+						{
+							cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
+							cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						}
 					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
-					}
-				}
 
-				DrawLevel();
+					DrawLevel();
+
+					break;
+
+				case MouseButtons.Left:
+					cameraPointA.TransformAffected(chg.X / 2, chg.Y / 2);
+					cameraPointB.TransformAffected(chg.X / 2, chg.Y / 2);
+					transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
+					DrawLevel();
+
+					Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
+					if (Cursor.Position.X == scrbnds.Left)
+					{
+						Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
+						evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
+					}
+					else if (Cursor.Position.X == scrbnds.Right - 1)
+					{
+						Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
+						evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
+					}
+					if (Cursor.Position.Y == scrbnds.Top)
+					{
+						Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
+						evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
+					}
+					else if (Cursor.Position.Y == scrbnds.Bottom - 1)
+					{
+						Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
+						evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
+					}
+
+					break;
+
+				case MouseButtons.None:
+					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
+					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+					Viewport viewport = d3ddevice.Viewport;
+					Matrix proj = d3ddevice.Transform.Projection;
+					Matrix view = d3ddevice.Transform.View;
+					Vector3 Near, Far;
+					Near = mousepos;
+					Near.Z = 0;
+					Far = Near;
+					Far.Z = -1;
+
+					GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
+					transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
+					if (oldSelection != transformGizmo.SelectedAxes) { transformGizmo.Draw(d3ddevice, cam); break; }
+
+					GizmoSelectedAxes oldCamA = cameraPointA.SelectedAxes;
+					cameraPointA.SelectedAxes = cameraPointA.CheckHit(Near, Far, viewport, proj, view, cam);
+					if (oldCamA != cameraPointA.SelectedAxes) { cameraPointA.Draw(d3ddevice, cam); break; }
+
+					if (cameraPointA.SelectedAxes == GizmoSelectedAxes.NONE)
+					{
+						GizmoSelectedAxes oldCamB = cameraPointB.SelectedAxes;
+						cameraPointB.SelectedAxes = cameraPointB.CheckHit(Near, Far, viewport, proj, view, cam);
+						if (oldCamB != cameraPointB.SelectedAxes) { cameraPointB.Draw(d3ddevice, cam); break; }
+					}
+
+					break;
 			}
-			if (e.Button == System.Windows.Forms.MouseButtons.Left)
-			{
-				cameraPointA.TransformAffected(chg.X / 2, chg.Y / 2);
-				cameraPointB.TransformAffected(chg.X / 2, chg.Y / 2);
-				transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
-				DrawLevel();
 
-				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
-				if (Cursor.Position.X == scrbnds.Left)
-				{
-					Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
-					evloc = new Point(evloc.X + scrbnds.Width - 2, evloc.Y);
-				}
-				else if (Cursor.Position.X == scrbnds.Right - 1)
-				{
-					Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
-					evloc = new Point(evloc.X - scrbnds.Width + 1, evloc.Y);
-				}
-				if (Cursor.Position.Y == scrbnds.Top)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
-					evloc = new Point(evloc.X, evloc.Y + scrbnds.Height - 2);
-				}
-				else if (Cursor.Position.Y == scrbnds.Bottom - 1)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
-					evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
-				}
-			}
-			else if (e.Button == System.Windows.Forms.MouseButtons.None)
-			{
-				float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
-				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-				Viewport viewport = d3ddevice.Viewport;
-				Matrix proj = d3ddevice.Transform.Projection;
-				Matrix view = d3ddevice.Transform.View;
-				Vector3 Near, Far;
-				Near = mousepos;
-				Near.Z = 0;
-				Far = Near;
-				Far.Z = -1;
-
-				GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
-				transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
-				if (oldSelection != transformGizmo.SelectedAxes) { transformGizmo.Draw(d3ddevice, cam); goto done_processing; }
-
-				GizmoSelectedAxes oldCamA = cameraPointA.SelectedAxes;
-				cameraPointA.SelectedAxes = cameraPointA.CheckHit(Near, Far, viewport, proj, view, cam);
-				if (oldCamA != cameraPointA.SelectedAxes) { cameraPointA.Draw(d3ddevice, cam); goto done_processing; }
-
-				if (cameraPointA.SelectedAxes == GizmoSelectedAxes.NONE)
-				{
-					GizmoSelectedAxes oldCamB = cameraPointB.SelectedAxes;
-					cameraPointB.SelectedAxes = cameraPointB.CheckHit(Near, Far, viewport, proj, view, cam);
-					if (oldCamB != cameraPointB.SelectedAxes) { cameraPointB.Draw(d3ddevice, cam); goto done_processing; }
-				}
-			}
-
-		done_processing:
 			lastmouse = evloc;
 		}
 
