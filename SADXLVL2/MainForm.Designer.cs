@@ -296,7 +296,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
 			this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-			this.characterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.characterToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.characterToolStripMenuItem.Text = "&Character";
 			this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -345,7 +345,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
 			this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-			this.levelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.levelToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.levelToolStripMenuItem.Text = "&Level";
 			this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -373,7 +373,7 @@
 			// 
 			this.deathZonesToolStripMenuItem.CheckOnClick = true;
 			this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
-			this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.deathZonesToolStripMenuItem.Text = "&Death Zones";
 			this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
 			// 
@@ -383,7 +383,7 @@
 			this.backgroundToolStripMenuItem.CheckOnClick = true;
 			this.backgroundToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-			this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.backgroundToolStripMenuItem.Text = "&Background";
 			this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
 			// 
@@ -393,7 +393,7 @@
 			this.sETITemsToolStripMenuItem.CheckOnClick = true;
 			this.sETITemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.sETITemsToolStripMenuItem.Name = "sETITemsToolStripMenuItem";
-			this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.sETITemsToolStripMenuItem.Text = "SET Items";
 			this.sETITemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
 			// 
@@ -401,7 +401,7 @@
 			// 
 			this.cAMItemsToolStripMenuItem.CheckOnClick = true;
 			this.cAMItemsToolStripMenuItem.Name = "cAMItemsToolStripMenuItem";
-			this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.cAMItemsToolStripMenuItem.Text = "CAM Items";
 			this.cAMItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.cAMItemsToolStripMenuItem_CheckedChanged);
 			// 
@@ -409,7 +409,7 @@
 			// 
 			this.splinesToolStripMenuItem.CheckOnClick = true;
 			this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
-			this.splinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.splinesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.splinesToolStripMenuItem.Text = "Splines";
 			this.splinesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.splinesToolStripMenuItem_CheckedChanged);
 			// 
@@ -417,7 +417,7 @@
 			// 
 			this.statsToolStripMenuItem.Enabled = false;
 			this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-			this.statsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.statsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.statsToolStripMenuItem.Text = "Stats";
 			this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
 			// 

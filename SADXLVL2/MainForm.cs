@@ -56,7 +56,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			
+			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
+			
 			EditorOptions.InitializeDefaultLights(d3ddevice);
 			Gizmo.InitGizmo(d3ddevice);
 			ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
@@ -77,6 +80,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
 
 			panel1.MouseWheel += new MouseEventHandler(panel1_MouseWheel);
+		}
+
+		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
+		{
+			// HACK: Not so sure we should have to re-initialize this every time...
+			EditorOptions.InitializeDefaultLights(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
