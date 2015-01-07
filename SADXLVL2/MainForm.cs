@@ -1191,6 +1191,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Point chg = evloc - (Size)lastmouse;
 			switch (e.Button)
 			{
+				default:
+					break;
+
 				case MouseButtons.Middle:
 					// all cam controls are now bound to the middle mouse button
 					if (cam.mode == 0)
