@@ -800,13 +800,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!loaded) return;
+			if (!loaded)
+				return;
+
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
 			cam.DrawDistance = 100000;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
+			UpdateTitlebar();
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
@@ -893,6 +895,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			transformGizmo.Draw(d3ddevice, cam);
 			cameraPointA.Draw(d3ddevice, cam);
 			cameraPointB.Draw(d3ddevice, cam);
+		}
+
+		private void UpdateTitlebar()
+		{
+			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
 		}
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
@@ -1087,58 +1094,86 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
-			if (!loaded) return;
+			if (!loaded)
+				return;
+
+			bool draw = false;
+
 			if (cam.mode == 0)
 			{
 				if (e.KeyCode == Keys.E)
 				{
 					cam.Position = new Vector3();
-					DrawLevel();
+					draw = true;
 				}
 
 				if (e.KeyCode == Keys.R)
 				{
 					cam.Pitch = 0;
 					cam.Yaw = 0;
-					DrawLevel();
+					draw = true;
 				}
 			}
 
-			if (e.Alt) { lookKeyDown = true; if (panel1.ContainsFocus) e.Handled = false; }
-			if (e.Control) zoomKeyDown = true;
+			if ((lookKeyDown = e.Alt) && panel1.ContainsFocus)
+				e.Handled = false;
+			zoomKeyDown = e.Control;
 
-			if (e.KeyCode == Keys.X)
+			switch (e.KeyCode)
 			{
-				cam.mode = (cam.mode + 1) % 2;
+				default:
+					break;
 
-				if (cam.mode == 1)
-				{
-					if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
-					else
+				case Keys.X:
+					cam.mode = (cam.mode + 1) % 2;
+
+					if (cam.mode == 1)
 					{
-						cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+						if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+						else
+						{
+							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+						}
 					}
-				}
 
-				DrawLevel();
-			}
-			if (e.KeyCode == Keys.N)
-			{
-				if (EditorOptions.RenderFillMode == FillMode.Solid)
-					EditorOptions.RenderFillMode = FillMode.Point;
-				else
-					EditorOptions.RenderFillMode += 1;
+					draw = true;
+					break;
 
-				DrawLevel();
+				case Keys.N:
+					if (EditorOptions.RenderFillMode == FillMode.Solid)
+						EditorOptions.RenderFillMode = FillMode.Point;
+					else
+						EditorOptions.RenderFillMode += 1;
+
+					draw = true;
+					break;
+
+				case Keys.Delete:
+					foreach (Item item in SelectedItems)
+						item.Delete();
+					SelectedItems.Clear();
+					SelectedItemChanged();
+					draw = true;
+					break;
+
+				case Keys.Add:
+					cam.MoveSpeed += 0.0625f;
+					UpdateTitlebar();
+					break;
+
+				case Keys.Subtract:
+					cam.MoveSpeed -= 0.0625f;
+					UpdateTitlebar();
+					break;
+
+				case Keys.Enter:
+					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					UpdateTitlebar();
+					break;
 			}
-			if (e.KeyCode == Keys.Delete)
-			{
-				foreach (Item item in SelectedItems)
-					item.Delete();
-				SelectedItems.Clear();
-				SelectedItemChanged();
+
+			if (draw)
 				DrawLevel();
-			}
 		}
 
 		Point lastmouse;

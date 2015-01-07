@@ -32,7 +32,15 @@ namespace SonicRetro.SAModel.Direct3D
 		Plane[] frustumPlanes = new Plane[6];
 		#endregion
 
-		public EditorCamera(float drawDistance) { RotateSpeed = 1.5f; MoveSpeed = 1.125f; Distance = 20; DrawDistance = drawDistance; }
+		public static float DefaultMoveSpeed = 1.125f;
+
+		public EditorCamera(float drawDistance)
+		{
+			RotateSpeed = 1.5f;
+			MoveSpeed = 1.125f;
+			Distance = 20;
+			DrawDistance = drawDistance;
+		}
 
         public Matrix ToMatrix()
         {
