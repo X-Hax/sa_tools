@@ -1315,8 +1315,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (SelectedItems.Count > 0) // set up gizmo
 			{
+				transformGizmo.Enabled = true;
 				transformGizmo.AffectedItems = SelectedItems;
-				if (!transformGizmo.Enabled) { transformGizmo.Enabled = true; DrawLevel(); }
 
 				if (SelectedItems.Count == 1) // single-select only cases
 				{
@@ -1339,7 +1339,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					transformGizmo.AffectedItems = new List<Item>();
 					transformGizmo.Enabled = false;
-					DrawLevel();
 				}
 
 				if ((cameraPointA != null) && (cameraPointB != null))
