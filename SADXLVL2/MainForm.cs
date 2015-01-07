@@ -1827,5 +1827,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			typeDeleter.ShowDialog();
 		}
+
+		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawLevel();
+		}
 	}
 }
