@@ -257,16 +257,19 @@ namespace SonicRetro.SAModel.Direct3D
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Material mat;
 					Texture texture = null;
-					if (useMat)
+					// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
+					// If it is in fact null, it applies a placeholder so that the editor doesn't crash.
+					if (useMat && obj.Attach.MeshInfo[j].Material != null)
 					{
-                        mat = obj.Attach.MeshInfo[j].Material;
+						mat = obj.Attach.MeshInfo[j].Material;
 
-						// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
 					}
@@ -278,9 +281,17 @@ namespace SonicRetro.SAModel.Direct3D
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
+						
+						if (obj.Attach.MeshInfo[j].Material == null)
+						{
+							MeshInfo old = obj.Attach.MeshInfo[j];
+							obj.Attach.MeshInfo[j] = new MeshInfo(mat, old.Polys, old.Vertices, old.HasUV, old.HasVC);
+						}
 					}
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			transform.Pop();
 			return result.ToArray();
 		}
@@ -321,16 +332,21 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Material mat;
 					Texture texture = null;
 					mat = obj.Attach.MeshInfo[j].Material;
-					if (textures != null && mat.TextureID < textures.Length)
+					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
+					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
 			transform.Pop();
@@ -349,19 +365,28 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					Color color = Color.Black;
+
+					// HACK: Null material hack 3: Fixes selecting objects in SADXLVL2, Twinkle Park 1.
+					if (obj.Attach.MeshInfo[j].Material != null)
+						color = obj.Attach.MeshInfo[j].Material.DiffuseColor;
+
+					color = System.Drawing.Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
 					Material mat = new Material
 					{
-						DiffuseColor = col,
+						DiffuseColor = color,
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
 			transform.Pop();
