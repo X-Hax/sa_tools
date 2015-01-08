@@ -28,122 +28,126 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.centiseconds = new System.Windows.Forms.NumericUpDown();
-            this.label2 = new System.Windows.Forms.Label();
-            this.seconds = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
-            this.minutes = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.hours = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.centiseconds)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.seconds)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minutes)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hours)).BeginInit();
-            this.SuspendLayout();
-            // 
-            // centiseconds
-            // 
-            this.centiseconds.Location = new System.Drawing.Point(163, 3);
-            this.centiseconds.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-            this.centiseconds.Maximum = new decimal(new int[] {
+			this.centiseconds = new System.Windows.Forms.NumericUpDown();
+			this.label2 = new System.Windows.Forms.Label();
+			this.seconds = new System.Windows.Forms.NumericUpDown();
+			this.label1 = new System.Windows.Forms.Label();
+			this.minutes = new System.Windows.Forms.NumericUpDown();
+			this.label3 = new System.Windows.Forms.Label();
+			this.hours = new System.Windows.Forms.NumericUpDown();
+			((System.ComponentModel.ISupportInitialize)(this.centiseconds)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.seconds)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.minutes)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.hours)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// centiseconds
+			// 
+			this.centiseconds.Location = new System.Drawing.Point(163, 3);
+			this.centiseconds.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.centiseconds.Maximum = new decimal(new int[] {
             99,
             0,
             0,
             0});
-            this.centiseconds.Name = "centiseconds";
-            this.centiseconds.Size = new System.Drawing.Size(39, 20);
-            this.centiseconds.TabIndex = 7;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(153, 5);
-            this.label2.Margin = new System.Windows.Forms.Padding(0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(10, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = ":";
-            // 
-            // seconds
-            // 
-            this.seconds.Location = new System.Drawing.Point(114, 3);
-            this.seconds.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.seconds.Maximum = new decimal(new int[] {
+			this.centiseconds.Name = "centiseconds";
+			this.centiseconds.Size = new System.Drawing.Size(39, 20);
+			this.centiseconds.TabIndex = 7;
+			this.centiseconds.ValueChanged += new System.EventHandler(this.hours_ValueChanged);
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(153, 5);
+			this.label2.Margin = new System.Windows.Forms.Padding(0);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(10, 13);
+			this.label2.TabIndex = 6;
+			this.label2.Text = ":";
+			// 
+			// seconds
+			// 
+			this.seconds.Location = new System.Drawing.Point(114, 3);
+			this.seconds.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.seconds.Maximum = new decimal(new int[] {
             59,
             0,
             0,
             0});
-            this.seconds.Name = "seconds";
-            this.seconds.Size = new System.Drawing.Size(39, 20);
-            this.seconds.TabIndex = 5;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(104, 5);
-            this.label1.Margin = new System.Windows.Forms.Padding(0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(10, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = ":";
-            // 
-            // minutes
-            // 
-            this.minutes.Location = new System.Drawing.Point(65, 3);
-            this.minutes.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.minutes.Maximum = new decimal(new int[] {
+			this.seconds.Name = "seconds";
+			this.seconds.Size = new System.Drawing.Size(39, 20);
+			this.seconds.TabIndex = 5;
+			this.seconds.ValueChanged += new System.EventHandler(this.hours_ValueChanged);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(104, 5);
+			this.label1.Margin = new System.Windows.Forms.Padding(0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(10, 13);
+			this.label1.TabIndex = 4;
+			this.label1.Text = ":";
+			// 
+			// minutes
+			// 
+			this.minutes.Location = new System.Drawing.Point(65, 3);
+			this.minutes.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.minutes.Maximum = new decimal(new int[] {
             59,
             0,
             0,
             0});
-            this.minutes.Name = "minutes";
-            this.minutes.Size = new System.Drawing.Size(39, 20);
-            this.minutes.TabIndex = 3;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(55, 5);
-            this.label3.Margin = new System.Windows.Forms.Padding(0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(10, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = ":";
-            // 
-            // hours
-            // 
-            this.hours.Location = new System.Drawing.Point(3, 3);
-            this.hours.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
-            this.hours.Maximum = new decimal(new int[] {
+			this.minutes.Name = "minutes";
+			this.minutes.Size = new System.Drawing.Size(39, 20);
+			this.minutes.TabIndex = 3;
+			this.minutes.ValueChanged += new System.EventHandler(this.hours_ValueChanged);
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(55, 5);
+			this.label3.Margin = new System.Windows.Forms.Padding(0);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(10, 13);
+			this.label3.TabIndex = 2;
+			this.label3.Text = ":";
+			// 
+			// hours
+			// 
+			this.hours.Location = new System.Drawing.Point(3, 3);
+			this.hours.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+			this.hours.Maximum = new decimal(new int[] {
             11930,
             0,
             0,
             0});
-            this.hours.Name = "hours";
-            this.hours.Size = new System.Drawing.Size(52, 20);
-            this.hours.TabIndex = 1;
-            // 
-            // HourControl
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.hours);
-            this.Controls.Add(this.centiseconds);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.seconds);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.minutes);
-            this.Name = "HourControl";
-            this.Size = new System.Drawing.Size(205, 26);
-            ((System.ComponentModel.ISupportInitialize)(this.centiseconds)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.seconds)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minutes)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hours)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+			this.hours.Name = "hours";
+			this.hours.Size = new System.Drawing.Size(52, 20);
+			this.hours.TabIndex = 1;
+			this.hours.ValueChanged += new System.EventHandler(this.hours_ValueChanged);
+			// 
+			// HourControl
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoSize = true;
+			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.hours);
+			this.Controls.Add(this.centiseconds);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.seconds);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.minutes);
+			this.Name = "HourControl";
+			this.Size = new System.Drawing.Size(205, 26);
+			((System.ComponentModel.ISupportInitialize)(this.centiseconds)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.seconds)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.minutes)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.hours)).EndInit();
+			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
 

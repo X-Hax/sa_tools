@@ -16,6 +16,7 @@ namespace SASave
             InitializeComponent();
         }
 
+		bool updating = false;
         public event EventHandler ValueChanged = delegate { };
 
         public int Hours { get { return (int)hours.Value; } set { hours.Value = value; ValueChanged(this, EventArgs.Empty); } }
@@ -32,10 +33,12 @@ namespace SASave
             }
             set
             {
+				updating = true;
                 Centiseconds = (int)Math.Round(value.Milliseconds / 10.0, MidpointRounding.AwayFromZero);
                 Seconds = value.Seconds;
                 Minutes = value.Minutes;
                 Hours = (int)value.TotalHours;
+				updating = false;
             }
         }
 
@@ -66,6 +69,11 @@ namespace SASave
                 TotalCentiseconds = (uint)Math.Round(value * Frame, MidpointRounding.AwayFromZero);
             }
         }
+
+		private void hours_ValueChanged(object sender, EventArgs e)
+		{
+			if (!updating) ValueChanged(this, EventArgs.Empty);
+		}
     }
 
     public class HourControlDesigner : ControlDesigner

@@ -12,6 +12,7 @@ namespace SASave
             InitializeComponent();
         }
 
+		bool updating = false;
         public event EventHandler ValueChanged = delegate { };
 
         private WeightControlModes mode;
@@ -22,17 +23,8 @@ namespace SASave
             {
                 mode = value;
                 SuspendLayout();
-                switch (mode)
-                {
-                    case WeightControlModes.Time:
-                        panel1.Visible = false;
-                        panel2.Visible = true;
-                        break;
-                    case WeightControlModes.Weight:
-                        panel1.Visible = true;
-                        panel2.Visible = false;
-                        break;
-                }
+				panel1.Visible = mode == WeightControlModes.Weight;
+				panel2.Visible = mode == WeightControlModes.Time;
                 ResumeLayout();
             }
         }
@@ -58,7 +50,14 @@ namespace SASave
         public ushort[] Weights
         {
             get { return new ushort[] { Weight1, Weight2, Weight3 }; }
-            set { Weight1 = value[0]; Weight2 = value[1]; Weight3 = value[2]; }
+            set
+			{
+				updating = true;
+				Weight1 = value[0];
+				Weight2 = value[1];
+				Weight3 = value[2];
+				updating = false;
+			}
         }
 
         public LevelTime Time
@@ -69,7 +68,7 @@ namespace SASave
 
         private void Time_ValueChanged(object sender, EventArgs e)
         {
-            ValueChanged(this, EventArgs.Empty);
+			if (!updating) ValueChanged(this, EventArgs.Empty);
         }
     }
 
