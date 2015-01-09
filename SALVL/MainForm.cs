@@ -543,8 +543,8 @@ namespace SonicRetro.SAModel.SALVL
 
 			if (SelectedItems.Count > 0) // set up gizmo
 			{
+				transformGizmo.Enabled = true;
 				transformGizmo.AffectedItems = SelectedItems;
-				if (!transformGizmo.Enabled) { transformGizmo.Enabled = true; }
 			}
 			else
 			{
