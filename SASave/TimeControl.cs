@@ -15,6 +15,8 @@ namespace SASave
 
         public event EventHandler ValueChanged = delegate { };
 
+		bool updating = false;
+
         public int Minutes { get { return (int)minutes.Value; } set { minutes.Value = value; ValueChanged(this, EventArgs.Empty); } }
         public int Seconds { get { return (int)seconds.Value; } set { seconds.Value = value; ValueChanged(this, EventArgs.Empty); } }
         public int Centiseconds { get { return (int)centiseconds.Value; } set { centiseconds.Value = value; ValueChanged(this, EventArgs.Empty); } }
@@ -28,9 +30,11 @@ namespace SASave
             }
             set
             {
+				updating = true;
                 Centiseconds = (int)Math.Round(value.Milliseconds / 10.0, MidpointRounding.AwayFromZero);
                 Seconds = value.Seconds;
                 Minutes = (int)value.TotalMinutes;
+				updating = false;
             }
         }
 
@@ -79,14 +83,33 @@ namespace SASave
         public LevelTime LevelTime
         {
             get { return new LevelTime((byte)Minutes, (byte)Seconds, (byte)Frames); }
-            set { Minutes = value.Minutes; Seconds = value.Seconds; Frames = value.Frames; }
+            set
+			{
+				updating = true;
+				Minutes = value.Minutes;
+				Seconds = value.Seconds;
+				Frames = value.Frames;
+				updating = false;
+			}
         }
 
         [Browsable(false)]
         public CircuitTime CircuitTime
         {
             get { return new CircuitTime((byte)Minutes, (byte)Seconds, (byte)Centiseconds); }
-            set { Minutes = value.Minutes; Seconds = value.Seconds; Centiseconds = value.Centiseconds; }
+            set
+			{
+				updating = true;
+				Minutes = value.Minutes;
+				Seconds = value.Seconds;
+				Centiseconds = value.Centiseconds;
+				updating = false;
+			}
         }
+
+		private void minutes_ValueChanged(object sender, EventArgs e)
+		{
+			if (!updating) ValueChanged(this, EventArgs.Empty);
+		}
     }
 }
