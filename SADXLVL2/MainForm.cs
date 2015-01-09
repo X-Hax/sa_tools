@@ -935,10 +935,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (!loaded) return;
+			if (!loaded)
+				return;
 
 			switch (e.Button)
 			{
+				// If the mouse button pressed is not one we're looking for,
+				// we can avoid re-drawing the scene by bailing out.
+				default:
+					return;
+
 				case MouseButtons.Left:
 					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 					HitResult dist;
@@ -1315,15 +1321,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (!loaded) return;
-			if (!panel1.Focused) return;
+			if (!loaded || !panel1.Focused)
+				return;
 
 			float detentValue = -1;
 
-			if (e.Delta < 0) detentValue = 1;
+			if (e.Delta < 0)
+				detentValue = 1;
 
-			if (cam.mode == 0) cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
-			else if (cam.mode == 1) cam.Distance += (detentValue * cam.MoveSpeed);
+			if (cam.mode == 0)
+				cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
+			else if (cam.mode == 1)
+				cam.Distance += (detentValue * cam.MoveSpeed);
+
 			DrawLevel();
 		}
 		#endregion
@@ -1505,9 +1515,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			foreach (ToolStripMenuItem item in levelToolStripMenuItem.DropDownItems)
 				item.Checked = false;
+
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 			transformGizmo.Enabled = false;
 			transformGizmo.AffectedItems.Clear();
+
 			DrawLevel();
 		}
 
@@ -1692,7 +1704,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
+			if (transformGizmo != null)
+				transformGizmo.AffectedItems = SelectedItems;
+
 			SelectedItemChanged();
 			DrawLevel();
 		}
@@ -1773,7 +1787,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				gizmoSpaceComboBox.Enabled = true;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+				DrawLevel(); // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
 
