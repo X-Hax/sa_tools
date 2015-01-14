@@ -48,7 +48,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			EditorOptions.InitializeDefaultLights(d3ddevice);
 			Gizmo.InitGizmo(d3ddevice);
 			if (Program.Arguments.Length > 0)
@@ -116,7 +116,7 @@ namespace SonicRetro.SAModel.SALVL
 					BMPInfo[] TexBmps = TextureArchive.GetTextures(a.FileName);
 					Texture[] texs = new Texture[TexBmps.Length];
 					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 					string texname = Path.GetFileNameWithoutExtension(a.FileName);
 					if (!LevelData.TextureBitmaps.ContainsKey(texname))
 						LevelData.TextureBitmaps.Add(texname, TexBmps);

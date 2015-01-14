@@ -31,11 +31,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
             if (unknownBitmap != null)
             {
-                QuestionMark = new Texture(device, unknownBitmap, Usage.SoftwareProcessing, Pool.Managed);
+                QuestionMark = new Texture(device, unknownBitmap, Usage.None, Pool.Managed);
             }
             else
             {
-                QuestionMark = new Texture(device, 16, 16, 0, Usage.SoftwareProcessing, Format.A16B16G16R16, Pool.Managed);
+				QuestionMark = new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);
             }
         }
 

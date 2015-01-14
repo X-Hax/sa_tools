@@ -57,7 +57,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 			
 			EditorOptions.InitializeDefaultLights(d3ddevice);
@@ -218,7 +218,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
 				Texture[] texs = new Texture[TexBmps.Length];
 				for (int j = 0; j < TexBmps.Length; j++)
-					texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+					texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 				if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
 					LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
 				if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
@@ -251,7 +251,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 						LevelData.TextureBitmaps.Add(texname, TexBmps);
 						LevelData.Textures.Add(texname, texs);
 					}
@@ -288,7 +288,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
 					Texture[] texs = new Texture[TexBmps.Length];
 					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 					LevelData.TextureBitmaps.Add(texname, TexBmps);
 					LevelData.Textures.Add(texname, texs);
 				}
@@ -305,7 +305,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 						LevelData.TextureBitmaps.Add(texname, TexBmps);
 						LevelData.Textures.Add(texname, texs);
 					}
@@ -320,7 +320,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, texname) + ".PVM");
 					Texture[] texs = new Texture[TexBmps.Length];
 					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 					LevelData.TextureBitmaps.Add(texname, TexBmps);
 					LevelData.Textures.Add(texname, texs);
 				}
@@ -335,7 +335,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						BMPInfo[] TexBmps = TextureArchive.GetTextures(System.IO.Path.Combine(syspath, tex) + ".PVM");
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
 						LevelData.TextureBitmaps.Add(tex, TexBmps);
 						LevelData.Textures.Add(tex, texs);
 					}
