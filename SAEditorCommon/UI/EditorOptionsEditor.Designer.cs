@@ -154,6 +154,8 @@
 			this.ClientSize = new System.Drawing.Size(274, 287);
 			this.Controls.Add(this.doneButton);
 			this.Controls.Add(this.groupBox1);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.MaximizeBox = false;
 			this.Name = "EditorOptionsEditor";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Editor Options / Preferences";
