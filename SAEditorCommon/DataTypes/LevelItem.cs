@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
@@ -139,7 +140,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public void ImportModel(string filePath, Device dev)
 		{
-			COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath);
+			COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
 			Visible = true;
 			Solid = true;
 

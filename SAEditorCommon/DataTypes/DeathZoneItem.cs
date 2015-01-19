@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Linq;
 
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
@@ -79,7 +80,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             System.Windows.Forms.OpenFileDialog dlg = new System.Windows.Forms.OpenFileDialog() { DefaultExt = "obj", Filter = "OBJ Files|*.obj;*.objf", RestoreDirectory = true };
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(dlg.FileName);
+                Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
                 Mesh = Model.Attach.CreateD3DMesh(dev);
             }
         }

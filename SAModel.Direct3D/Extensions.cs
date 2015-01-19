@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.IO;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -558,7 +559,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static Attach obj2nj(string objfile)
+		public static Attach obj2nj(string objfile, string[] textures = null)
 		{
 			string[] obj = System.IO.File.ReadAllLines(objfile);
 			Attach model;
@@ -591,7 +592,9 @@ namespace SonicRetro.SAModel.Direct3D
 							if (mlin.Length == 0)
 								continue;
 							#region Parsing Material Properties
-							switch (mlin[0].ToLowerInvariant())
+							// Calling trim on this to be compatible with 3ds Max mtl files.
+							// It likes to indent them with tabs (\t)
+							switch (mlin[0].ToLowerInvariant().Trim())
 							{
 								case "newmtl":
 									lastmtl = new Material();
@@ -606,10 +609,34 @@ namespace SonicRetro.SAModel.Direct3D
 
 								case "map_ka":
 									lastmtl.UseAlpha = true;
+									if (textures != null && mlin.Length > 1)
+									{
+										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
+										for (int tid = 0; tid < textures.Length; tid++)
+										{
+											if (textures[tid] == baseName)
+											{
+												lastmtl.TextureID = tid;
+												break;
+											}
+										}
+									}
 									break;
 
 								case "map_kd":
 									lastmtl.UseTexture = true;
+									if (textures != null && mlin.Length > 1)
+									{
+										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
+										for (int tid = 0; tid < textures.Length; tid++)
+										{
+											if (textures[tid] == baseName)
+											{
+												lastmtl.TextureID = tid;
+												break;
+											}
+										}
+									}
 									break;
 
 								case "ke":
@@ -626,44 +653,40 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "texid":
-									lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+									// This breaks everything.
+									//lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
 									break;
 
 								case "-u_mirror":
 									bool uMirror = false;
 
 									if (bool.TryParse(mlin[1], out uMirror))
-									{
 										lastmtl.FlipU = uMirror;
-									}
+
 									break;
 
 								case "-v_mirror":
 									bool vMirror = false;
 
 									if (bool.TryParse(mlin[1], out vMirror))
-									{
 										lastmtl.FlipV = vMirror;
-									}
-									break;
 
+									break;
 
 								case "-u_tile":
 									bool uTile = true;
 
 									if (bool.TryParse(mlin[1], out uTile))
-									{
 										lastmtl.ClampU = !uTile;
-									}
+
 									break;
 
 								case "-v_tile":
 									bool vTile = true;
 
 									if (bool.TryParse(mlin[1], out vTile))
-									{
 										lastmtl.ClampV = !vTile;
-									}
+
 									break;
 
 								case "-enviromap":
@@ -854,7 +877,8 @@ namespace SonicRetro.SAModel.Direct3D
 				model_Mesh[i].MaterialID = model_Mesh_MaterialID[i];
 				if (model_Mesh[i].UV != null)
 				{
-					for (int j = 0; j < model_Mesh[i].UV.Length; j++)
+					// HACK: Checking if j < model_Mesh_UV[i].Count prevents an out-of-range exception with SADXLVL2 when importing a whole stage export of Emerald Coast 1.
+					for (int j = 0; j < model_Mesh[i].UV.Length && j < model_Mesh_UV[i].Count; j++)
 						model_Mesh[i].UV[j] = model_Mesh_UV[i][j];
 				}
 				if (model_Mesh[i].VColor != null)
