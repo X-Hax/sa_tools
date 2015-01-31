@@ -81,7 +81,7 @@
 			this.comboMaterial.Location = new System.Drawing.Point(102, 12);
 			this.comboMaterial.Name = "comboMaterial";
 			this.comboMaterial.Size = new System.Drawing.Size(164, 21);
-			this.comboMaterial.TabIndex = 0;
+			this.comboMaterial.TabIndex = 1;
 			this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
 			// 
 			// currentMaterialLabel
@@ -90,7 +90,7 @@
 			this.currentMaterialLabel.Location = new System.Drawing.Point(12, 15);
 			this.currentMaterialLabel.Name = "currentMaterialLabel";
 			this.currentMaterialLabel.Size = new System.Drawing.Size(84, 13);
-			this.currentMaterialLabel.TabIndex = 1;
+			this.currentMaterialLabel.TabIndex = 0;
 			this.currentMaterialLabel.Text = "Current Material:";
 			// 
 			// colorDialog
@@ -119,7 +119,7 @@
 			this.flagsGroupBox.Location = new System.Drawing.Point(278, 39);
 			this.flagsGroupBox.Name = "flagsGroupBox";
 			this.flagsGroupBox.Size = new System.Drawing.Size(246, 172);
-			this.flagsGroupBox.TabIndex = 2;
+			this.flagsGroupBox.TabIndex = 4;
 			this.flagsGroupBox.TabStop = false;
 			this.flagsGroupBox.Text = "Flags";
 			// 
@@ -129,7 +129,7 @@
 			this.userFlagsLabel.Location = new System.Drawing.Point(111, 134);
 			this.userFlagsLabel.Name = "userFlagsLabel";
 			this.userFlagsLabel.Size = new System.Drawing.Size(60, 13);
-			this.userFlagsLabel.TabIndex = 11;
+			this.userFlagsLabel.TabIndex = 13;
 			this.userFlagsLabel.Text = "User Flags:";
 			// 
 			// userFlagsNumeric
@@ -143,7 +143,7 @@
             0});
 			this.userFlagsNumeric.Name = "userFlagsNumeric";
 			this.userFlagsNumeric.Size = new System.Drawing.Size(59, 20);
-			this.userFlagsNumeric.TabIndex = 10;
+			this.userFlagsNumeric.TabIndex = 14;
 			this.userFlagsNumeric.ValueChanged += new System.EventHandler(this.userFlagsNumeric_ValueChanged);
 			// 
 			// ignoreLightCheck
@@ -152,7 +152,7 @@
 			this.ignoreLightCheck.Location = new System.Drawing.Point(104, 112);
 			this.ignoreLightCheck.Name = "ignoreLightCheck";
 			this.ignoreLightCheck.Size = new System.Drawing.Size(96, 17);
-			this.ignoreLightCheck.TabIndex = 3;
+			this.ignoreLightCheck.TabIndex = 12;
 			this.ignoreLightCheck.Text = "Ignore Lighting";
 			this.toolTip.SetToolTip(this.ignoreLightCheck, "If checked, the model will not have any lighting applied.");
 			this.ignoreLightCheck.UseVisualStyleBackColor = true;
@@ -164,7 +164,7 @@
 			this.flatShadeCheck.Location = new System.Drawing.Point(104, 93);
 			this.flatShadeCheck.Name = "flatShadeCheck";
 			this.flatShadeCheck.Size = new System.Drawing.Size(83, 17);
-			this.flatShadeCheck.TabIndex = 3;
+			this.flatShadeCheck.TabIndex = 11;
 			this.flatShadeCheck.Text = "Flat Shaded";
 			this.toolTip.SetToolTip(this.flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted," +
         " like a cut gem or die.");
@@ -177,7 +177,7 @@
 			this.doubleSideCheck.Location = new System.Drawing.Point(104, 75);
 			this.doubleSideCheck.Name = "doubleSideCheck";
 			this.doubleSideCheck.Size = new System.Drawing.Size(90, 17);
-			this.doubleSideCheck.TabIndex = 9;
+			this.doubleSideCheck.TabIndex = 10;
 			this.doubleSideCheck.Text = "Double Sided";
 			this.toolTip.SetToolTip(this.doubleSideCheck, "Doesn\'t do anything, since Sonic Adventure does not support backface cull.");
 			this.doubleSideCheck.UseVisualStyleBackColor = true;
@@ -189,7 +189,7 @@
 			this.envMapCheck.Location = new System.Drawing.Point(104, 56);
 			this.envMapCheck.Name = "envMapCheck";
 			this.envMapCheck.Size = new System.Drawing.Size(129, 17);
-			this.envMapCheck.TabIndex = 8;
+			this.envMapCheck.TabIndex = 9;
 			this.envMapCheck.Text = "Environment Mapping";
 			this.toolTip.SetToolTip(this.envMapCheck, "If checked, the texture\'s uv maps will be mapped to the environment and the model" +
         " will appear \'shiny\'.");
@@ -202,7 +202,7 @@
 			this.useTextureCheck.Location = new System.Drawing.Point(104, 37);
 			this.useTextureCheck.Name = "useTextureCheck";
 			this.useTextureCheck.Size = new System.Drawing.Size(84, 17);
-			this.useTextureCheck.TabIndex = 7;
+			this.useTextureCheck.TabIndex = 8;
 			this.useTextureCheck.Text = "Use Texture";
 			this.toolTip.SetToolTip(this.useTextureCheck, "If checked, the texture map displayed to the left will be used. Otherwise the mod" +
         "el will be a solid color.");
@@ -215,7 +215,7 @@
 			this.useAlphaCheck.Location = new System.Drawing.Point(104, 19);
 			this.useAlphaCheck.Name = "useAlphaCheck";
 			this.useAlphaCheck.Size = new System.Drawing.Size(75, 17);
-			this.useAlphaCheck.TabIndex = 6;
+			this.useAlphaCheck.TabIndex = 7;
 			this.useAlphaCheck.Text = "Use Alpha";
 			this.toolTip.SetToolTip(this.useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transp" +
         "arency). ");
@@ -228,7 +228,7 @@
 			this.ignoreSpecCheck.Location = new System.Drawing.Point(6, 130);
 			this.ignoreSpecCheck.Name = "ignoreSpecCheck";
 			this.ignoreSpecCheck.Size = new System.Drawing.Size(101, 17);
-			this.ignoreSpecCheck.TabIndex = 5;
+			this.ignoreSpecCheck.TabIndex = 6;
 			this.ignoreSpecCheck.Text = "Ignore Specular";
 			this.toolTip.SetToolTip(this.ignoreSpecCheck, "If checked, no specular (commonly mis-identified as \"gloss\") will be present.");
 			this.ignoreSpecCheck.UseVisualStyleBackColor = true;
@@ -240,7 +240,7 @@
 			this.flipVCheck.Location = new System.Drawing.Point(6, 112);
 			this.flipVCheck.Name = "flipVCheck";
 			this.flipVCheck.Size = new System.Drawing.Size(62, 17);
-			this.flipVCheck.TabIndex = 4;
+			this.flipVCheck.TabIndex = 5;
 			this.flipVCheck.Text = "Mirror V";
 			this.toolTip.SetToolTip(this.flipVCheck, "If checked, tiling on the V Axis is mirrored.");
 			this.flipVCheck.UseVisualStyleBackColor = true;
@@ -252,7 +252,7 @@
 			this.flipUCheck.Location = new System.Drawing.Point(6, 93);
 			this.flipUCheck.Name = "flipUCheck";
 			this.flipUCheck.Size = new System.Drawing.Size(63, 17);
-			this.flipUCheck.TabIndex = 3;
+			this.flipUCheck.TabIndex = 4;
 			this.flipUCheck.Text = "Mirror U";
 			this.toolTip.SetToolTip(this.flipUCheck, "If checked, tiling on the U Axis is mirrored.");
 			this.flipUCheck.UseVisualStyleBackColor = true;
@@ -335,7 +335,7 @@
 			this.labelAlpha.Location = new System.Drawing.Point(151, 17);
 			this.labelAlpha.Name = "labelAlpha";
 			this.labelAlpha.Size = new System.Drawing.Size(37, 13);
-			this.labelAlpha.TabIndex = 12;
+			this.labelAlpha.TabIndex = 2;
 			this.labelAlpha.Text = "Alpha:";
 			// 
 			// alphaDiffuseNumeric
@@ -348,7 +348,7 @@
             0});
 			this.alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
 			this.alphaDiffuseNumeric.Size = new System.Drawing.Size(54, 20);
-			this.alphaDiffuseNumeric.TabIndex = 5;
+			this.alphaDiffuseNumeric.TabIndex = 3;
 			this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
 			// 
 			// dstAlphaCombo
@@ -367,7 +367,7 @@
 			this.dstAlphaCombo.Location = new System.Drawing.Point(101, 166);
 			this.dstAlphaCombo.Name = "dstAlphaCombo";
 			this.dstAlphaCombo.Size = new System.Drawing.Size(147, 21);
-			this.dstAlphaCombo.TabIndex = 11;
+			this.dstAlphaCombo.TabIndex = 14;
 			this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
 			// 
 			// destinationAlphaLabel
@@ -376,7 +376,7 @@
 			this.destinationAlphaLabel.Location = new System.Drawing.Point(101, 150);
 			this.destinationAlphaLabel.Name = "destinationAlphaLabel";
 			this.destinationAlphaLabel.Size = new System.Drawing.Size(93, 13);
-			this.destinationAlphaLabel.TabIndex = 10;
+			this.destinationAlphaLabel.TabIndex = 13;
 			this.destinationAlphaLabel.Text = "Destination Alpha:";
 			// 
 			// srcAlphaCombo
@@ -395,7 +395,7 @@
 			this.srcAlphaCombo.Location = new System.Drawing.Point(101, 126);
 			this.srcAlphaCombo.Name = "srcAlphaCombo";
 			this.srcAlphaCombo.Size = new System.Drawing.Size(147, 21);
-			this.srcAlphaCombo.TabIndex = 9;
+			this.srcAlphaCombo.TabIndex = 12;
 			this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
 			// 
 			// srcAlphaLabel
@@ -404,7 +404,7 @@
 			this.srcAlphaLabel.Location = new System.Drawing.Point(101, 110);
 			this.srcAlphaLabel.Name = "srcAlphaLabel";
 			this.srcAlphaLabel.Size = new System.Drawing.Size(74, 13);
-			this.srcAlphaLabel.TabIndex = 4;
+			this.srcAlphaLabel.TabIndex = 11;
 			this.srcAlphaLabel.Text = "Source Alpha:";
 			// 
 			// filterModeDropDown
@@ -419,7 +419,7 @@
 			this.filterModeDropDown.Location = new System.Drawing.Point(101, 86);
 			this.filterModeDropDown.Name = "filterModeDropDown";
 			this.filterModeDropDown.Size = new System.Drawing.Size(147, 21);
-			this.filterModeDropDown.TabIndex = 8;
+			this.filterModeDropDown.TabIndex = 10;
 			this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
 			// 
 			// filterModeLabel
@@ -428,7 +428,7 @@
 			this.filterModeLabel.Location = new System.Drawing.Point(101, 70);
 			this.filterModeLabel.Name = "filterModeLabel";
 			this.filterModeLabel.Size = new System.Drawing.Size(62, 13);
-			this.filterModeLabel.TabIndex = 7;
+			this.filterModeLabel.TabIndex = 9;
 			this.filterModeLabel.Text = "Filter Mode:";
 			// 
 			// specColorBox
@@ -437,7 +437,7 @@
 			this.specColorBox.Location = new System.Drawing.Point(88, 40);
 			this.specColorBox.Name = "specColorBox";
 			this.specColorBox.Size = new System.Drawing.Size(37, 19);
-			this.specColorBox.TabIndex = 6;
+			this.specColorBox.TabIndex = 5;
 			this.toolTip.SetToolTip(this.specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This s" +
         "pecular color will tint the apparent highlights on the model.");
 			this.specColorBox.Click += new System.EventHandler(this.specColorBox_Click);
@@ -448,7 +448,7 @@
 			this.diffuseColorBox.Location = new System.Drawing.Point(88, 15);
 			this.diffuseColorBox.Name = "diffuseColorBox";
 			this.diffuseColorBox.Size = new System.Drawing.Size(37, 19);
-			this.diffuseColorBox.TabIndex = 4;
+			this.diffuseColorBox.TabIndex = 1;
 			this.toolTip.SetToolTip(this.diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this \'diffuse c" +
         "olor\' will act as a tint to the model.");
 			this.diffuseColorBox.Click += new System.EventHandler(this.diffuseColorBox_Click);
@@ -458,7 +458,7 @@
 			this.exponentTextBox.Location = new System.Drawing.Point(194, 39);
 			this.exponentTextBox.Name = "exponentTextBox";
 			this.exponentTextBox.Size = new System.Drawing.Size(54, 20);
-			this.exponentTextBox.TabIndex = 4;
+			this.exponentTextBox.TabIndex = 7;
 			this.exponentTextBox.Leave += new System.EventHandler(this.exponentTextBox_Leave);
 			// 
 			// label1
@@ -467,7 +467,7 @@
 			this.label1.Location = new System.Drawing.Point(6, 70);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(67, 13);
-			this.label1.TabIndex = 5;
+			this.label1.TabIndex = 8;
 			this.label1.Text = "Diffuse Map:";
 			// 
 			// textureBox
@@ -487,7 +487,7 @@
 			this.exponentLabel.Location = new System.Drawing.Point(133, 43);
 			this.exponentLabel.Name = "exponentLabel";
 			this.exponentLabel.Size = new System.Drawing.Size(55, 13);
-			this.exponentLabel.TabIndex = 2;
+			this.exponentLabel.TabIndex = 6;
 			this.exponentLabel.Text = "Exponent:";
 			// 
 			// specColorLabel
@@ -496,7 +496,7 @@
 			this.specColorLabel.Location = new System.Drawing.Point(6, 43);
 			this.specColorLabel.Name = "specColorLabel";
 			this.specColorLabel.Size = new System.Drawing.Size(79, 13);
-			this.specColorLabel.TabIndex = 1;
+			this.specColorLabel.TabIndex = 4;
 			this.specColorLabel.Text = "Specular Color:";
 			// 
 			// diffuseLabel
@@ -513,7 +513,7 @@
 			this.doneButton.Location = new System.Drawing.Point(443, 217);
 			this.doneButton.Name = "doneButton";
 			this.doneButton.Size = new System.Drawing.Size(75, 23);
-			this.doneButton.TabIndex = 4;
+			this.doneButton.TabIndex = 0;
 			this.doneButton.Text = "Done";
 			this.doneButton.UseVisualStyleBackColor = true;
 			this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
