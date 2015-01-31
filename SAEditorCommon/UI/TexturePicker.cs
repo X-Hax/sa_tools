@@ -9,8 +9,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	public partial class TexturePicker : Form
 	{
 		public int SelectedValue { get { return listView.SelectedIndices[0]; } }
-		private int initialSelection = 0;
-		BMPInfo[] textureInfo;
+		private readonly int initialSelection;
+		private readonly BMPInfo[] textureInfo;
 
 		public TexturePicker(BMPInfo[] textureInfo, int initialSelection)
 		{

@@ -12,8 +12,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public event FormUpdatedHandler FormUpdated;
 		#endregion
 
-		private Material[] materials;
-		private BMPInfo[] textures;
+		private readonly Material[] materials;
+		private readonly BMPInfo[] textures;
 
 		public MaterialEditor(Material[] mats, BMPInfo[] textures)
 		{
@@ -22,10 +22,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			InitializeComponent();
 		}
 
+/*
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			FormUpdated(this, null);
 		}
+*/
 
 		private void MaterialEditor_Load(object sender, EventArgs e)
 		{
@@ -126,7 +128,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				materials[comboMaterial.SelectedIndex].Exponent = expParse;
 			}
 
-			this.Close();
+			Close();
 		}
 
 		private void exponentTextBox_Leave(object sender, EventArgs e)
