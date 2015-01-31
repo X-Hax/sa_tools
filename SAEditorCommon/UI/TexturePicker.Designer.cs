@@ -29,25 +29,25 @@
         private void InitializeComponent()
         {
 			this.components = new System.ComponentModel.Container();
-			this.listView1 = new System.Windows.Forms.ListView();
+			this.listView = new System.Windows.Forms.ListView();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.okButton = new System.Windows.Forms.Button();
-			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.SuspendLayout();
 			// 
-			// listView1
+			// listView
 			// 
-			this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.listView1.LargeImageList = this.imageList1;
-			this.listView1.Location = new System.Drawing.Point(0, 0);
-			this.listView1.MultiSelect = false;
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(453, 429);
-			this.listView1.TabIndex = 0;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+			this.listView.LargeImageList = this.imageList;
+			this.listView.Location = new System.Drawing.Point(0, 0);
+			this.listView.MultiSelect = false;
+			this.listView.Name = "listView";
+			this.listView.Size = new System.Drawing.Size(453, 429);
+			this.listView.TabIndex = 0;
+			this.listView.UseCompatibleStateImageBehavior = false;
+			this.listView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
 			// 
 			// cancelButton
 			// 
@@ -72,11 +72,11 @@
 			this.okButton.UseVisualStyleBackColor = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
 			// 
-			// imageList1
+			// imageList
 			// 
-			this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageList1.ImageSize = new System.Drawing.Size(128, 128);
-			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imageList.ImageSize = new System.Drawing.Size(128, 128);
+			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// TexturePicker
 			// 
@@ -88,7 +88,7 @@
 			this.ControlBox = false;
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
-			this.Controls.Add(this.listView1);
+			this.Controls.Add(this.listView);
 			this.MaximizeBox = false;
 			this.Name = "TexturePicker";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -100,9 +100,9 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView listView;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.ImageList imageList1;
+		private System.Windows.Forms.ImageList imageList;
     }
 }

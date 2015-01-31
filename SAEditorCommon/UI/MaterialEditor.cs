@@ -82,8 +82,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				if (texPicker.ShowDialog(this) == DialogResult.OK)
 				{
 					materials[comboMaterial.SelectedIndex].TextureID = texPicker.SelectedValue;
-					textureBox.BackgroundImage = textures[materials[comboMaterial.SelectedIndex].TextureID].Image;
-
+					textureBox.Image = textures[materials[comboMaterial.SelectedIndex].TextureID].Image;
+					
 					FormUpdated(this, null);
 				}
 			}

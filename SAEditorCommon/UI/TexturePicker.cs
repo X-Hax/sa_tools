@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
 	public partial class TexturePicker : Form
 	{
-		public int SelectedValue { get { return listView1.SelectedIndices[0]; } }
+		public int SelectedValue { get { return listView.SelectedIndices[0]; } }
 		private int initialSelection = 0;
 		BMPInfo[] textureInfo;
 
@@ -24,11 +24,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void TexturePicker_Load(object sender, EventArgs e)
 		{
-			for (int texid = 0; texid < textureInfo.Length; texid++)
+			for (int i = 0; i < textureInfo.Length; i++)
 			{
-				imageList1.Images.Add(ResizeImage(textureInfo[texid].Image, imageList1.ImageSize));
-				listView1.Items.Add(texid + ": " + textureInfo[texid].Name, texid);
+				imageList.Images.Add(ResizeImage(textureInfo[i].Image, imageList.ImageSize));
+				listView.Items.Add(i + ": " + textureInfo[i].Name, i);
 			}
+
+			// Selects the desired texture and then esures its visiblity (by scrolling)
+			listView.Items[initialSelection].Selected = true;
+			listView.EnsureVisible(initialSelection);
 		}
 
 		/// <summary>
@@ -70,7 +74,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			if (listView1.SelectedIndices[0] > -1)
+			if (listView.SelectedIndices[0] > -1)
 			{
 				this.DialogResult = System.Windows.Forms.DialogResult.OK;
 				this.Close();
@@ -79,7 +83,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void okButton_Click(object sender, EventArgs e)
 		{
-			if (listView1.SelectedIndices.Count > 0)
+			if (listView.SelectedIndices.Count > 0)
 			{
 				this.DialogResult = System.Windows.Forms.DialogResult.OK;
 				this.Close();
