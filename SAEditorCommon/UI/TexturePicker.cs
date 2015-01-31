@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Windows.Forms;
-
-using SonicRetro.SAModel.Direct3D.TextureSystem;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
+using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -66,32 +64,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			return bmp;
 		}
 
-		private void cancelButton_Click(object sender, EventArgs e)
-		{
-			this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.Close();
-		}
-
 		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			if (listView.SelectedIndices[0] > -1)
-			{
-				this.DialogResult = System.Windows.Forms.DialogResult.OK;
-				this.Close();
-			}
+			if (listView.SelectedIndices.Count > 0)
+				okButton.PerformClick();
 		}
 
-		private void okButton_Click(object sender, EventArgs e)
+		private void listView_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (listView.SelectedIndices.Count > 0)
-			{
-				this.DialogResult = System.Windows.Forms.DialogResult.OK;
-				this.Close();
-			}
-			else
-			{
-				MessageBox.Show("Please select a texture!");
-			}
+			okButton.Enabled = listView.SelectedIndices.Count > 0;
 		}
 	}
 }

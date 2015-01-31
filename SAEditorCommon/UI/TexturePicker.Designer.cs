@@ -30,9 +30,9 @@
         {
 			this.components = new System.ComponentModel.Container();
 			this.listView = new System.Windows.Forms.ListView();
+			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.okButton = new System.Windows.Forms.Button();
-			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.SuspendLayout();
 			// 
 			// listView
@@ -47,7 +47,14 @@
 			this.listView.Size = new System.Drawing.Size(453, 429);
 			this.listView.TabIndex = 0;
 			this.listView.UseCompatibleStateImageBehavior = false;
+			this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
 			this.listView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+			// 
+			// imageList
+			// 
+			this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imageList.ImageSize = new System.Drawing.Size(128, 128);
+			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// cancelButton
 			// 
@@ -56,31 +63,25 @@
 			this.cancelButton.Location = new System.Drawing.Point(366, 435);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 1;
-			this.cancelButton.Text = "Cancel";
+			this.cancelButton.TabIndex = 2;
+			this.cancelButton.Text = "&Cancel";
 			this.cancelButton.UseVisualStyleBackColor = true;
-			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
 			// 
 			// okButton
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.okButton.Enabled = false;
 			this.okButton.Location = new System.Drawing.Point(285, 435);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 2;
-			this.okButton.Text = "OK";
+			this.okButton.TabIndex = 1;
+			this.okButton.Text = "&OK";
 			this.okButton.UseVisualStyleBackColor = true;
-			this.okButton.Click += new System.EventHandler(this.okButton_Click);
-			// 
-			// imageList
-			// 
-			this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageList.ImageSize = new System.Drawing.Size(128, 128);
-			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// TexturePicker
 			// 
-			this.AcceptButton = this.cancelButton;
+			this.AcceptButton = this.okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
