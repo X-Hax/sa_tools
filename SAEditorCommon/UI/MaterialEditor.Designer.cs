@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-			this.comboBox1 = new System.Windows.Forms.ComboBox();
+			this.components = new System.ComponentModel.Container();
+			this.comboMaterial = new System.Windows.Forms.ComboBox();
 			this.currentMaterialLabel = new System.Windows.Forms.Label();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
 			this.flagsGroupBox = new System.Windows.Forms.GroupBox();
@@ -48,6 +49,8 @@
 			this.superSampleCheck = new System.Windows.Forms.CheckBox();
 			this.pickStatusCheck = new System.Windows.Forms.CheckBox();
 			this.generalSettingBox = new System.Windows.Forms.GroupBox();
+			this.labelAlpha = new System.Windows.Forms.Label();
+			this.alphaDiffuseNumeric = new System.Windows.Forms.NumericUpDown();
 			this.dstAlphaCombo = new System.Windows.Forms.ComboBox();
 			this.destinationAlphaLabel = new System.Windows.Forms.Label();
 			this.srcAlphaCombo = new System.Windows.Forms.ComboBox();
@@ -63,28 +66,28 @@
 			this.specColorLabel = new System.Windows.Forms.Label();
 			this.diffuseLabel = new System.Windows.Forms.Label();
 			this.doneButton = new System.Windows.Forms.Button();
-			this.alphaDiffuseNumeric = new System.Windows.Forms.NumericUpDown();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.flagsGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
 			this.generalSettingBox.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.textureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.textureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// comboBox1
+			// comboMaterial
 			// 
-			this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox1.FormattingEnabled = true;
-			this.comboBox1.Location = new System.Drawing.Point(102, 6);
-			this.comboBox1.Name = "comboBox1";
-			this.comboBox1.Size = new System.Drawing.Size(171, 21);
-			this.comboBox1.TabIndex = 0;
-			this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+			this.comboMaterial.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboMaterial.FormattingEnabled = true;
+			this.comboMaterial.Location = new System.Drawing.Point(102, 12);
+			this.comboMaterial.Name = "comboMaterial";
+			this.comboMaterial.Size = new System.Drawing.Size(164, 21);
+			this.comboMaterial.TabIndex = 0;
+			this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
 			// 
 			// currentMaterialLabel
 			// 
 			this.currentMaterialLabel.AutoSize = true;
-			this.currentMaterialLabel.Location = new System.Drawing.Point(12, 9);
+			this.currentMaterialLabel.Location = new System.Drawing.Point(12, 15);
 			this.currentMaterialLabel.Name = "currentMaterialLabel";
 			this.currentMaterialLabel.Size = new System.Drawing.Size(84, 13);
 			this.currentMaterialLabel.TabIndex = 1;
@@ -113,9 +116,9 @@
 			this.flagsGroupBox.Controls.Add(this.clampUCheck);
 			this.flagsGroupBox.Controls.Add(this.superSampleCheck);
 			this.flagsGroupBox.Controls.Add(this.pickStatusCheck);
-			this.flagsGroupBox.Location = new System.Drawing.Point(277, 46);
+			this.flagsGroupBox.Location = new System.Drawing.Point(278, 39);
 			this.flagsGroupBox.Name = "flagsGroupBox";
-			this.flagsGroupBox.Size = new System.Drawing.Size(246, 159);
+			this.flagsGroupBox.Size = new System.Drawing.Size(246, 172);
 			this.flagsGroupBox.TabIndex = 2;
 			this.flagsGroupBox.TabStop = false;
 			this.flagsGroupBox.Text = "Flags";
@@ -151,6 +154,7 @@
 			this.ignoreLightCheck.Size = new System.Drawing.Size(96, 17);
 			this.ignoreLightCheck.TabIndex = 3;
 			this.ignoreLightCheck.Text = "Ignore Lighting";
+			this.toolTip.SetToolTip(this.ignoreLightCheck, "If checked, the model will not have any lighting applied.");
 			this.ignoreLightCheck.UseVisualStyleBackColor = true;
 			this.ignoreLightCheck.Click += new System.EventHandler(this.ignoreLightCheck_Click);
 			// 
@@ -162,6 +166,8 @@
 			this.flatShadeCheck.Size = new System.Drawing.Size(83, 17);
 			this.flatShadeCheck.TabIndex = 3;
 			this.flatShadeCheck.Text = "Flat Shaded";
+			this.toolTip.SetToolTip(this.flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted," +
+        " like a cut gem or die.");
 			this.flatShadeCheck.UseVisualStyleBackColor = true;
 			this.flatShadeCheck.Click += new System.EventHandler(this.flatShadeCheck_Click);
 			// 
@@ -173,6 +179,7 @@
 			this.doubleSideCheck.Size = new System.Drawing.Size(90, 17);
 			this.doubleSideCheck.TabIndex = 9;
 			this.doubleSideCheck.Text = "Double Sided";
+			this.toolTip.SetToolTip(this.doubleSideCheck, "Doesn\'t do anything, since Sonic Adventure does not support backface cull.");
 			this.doubleSideCheck.UseVisualStyleBackColor = true;
 			this.doubleSideCheck.Click += new System.EventHandler(this.doubleSideCheck_Click);
 			// 
@@ -184,6 +191,8 @@
 			this.envMapCheck.Size = new System.Drawing.Size(129, 17);
 			this.envMapCheck.TabIndex = 8;
 			this.envMapCheck.Text = "Environment Mapping";
+			this.toolTip.SetToolTip(this.envMapCheck, "If checked, the texture\'s uv maps will be mapped to the environment and the model" +
+        " will appear \'shiny\'.");
 			this.envMapCheck.UseVisualStyleBackColor = true;
 			this.envMapCheck.Click += new System.EventHandler(this.envMapCheck_Click);
 			// 
@@ -195,6 +204,8 @@
 			this.useTextureCheck.Size = new System.Drawing.Size(84, 17);
 			this.useTextureCheck.TabIndex = 7;
 			this.useTextureCheck.Text = "Use Texture";
+			this.toolTip.SetToolTip(this.useTextureCheck, "If checked, the texture map displayed to the left will be used. Otherwise the mod" +
+        "el will be a solid color.");
 			this.useTextureCheck.UseVisualStyleBackColor = true;
 			this.useTextureCheck.Click += new System.EventHandler(this.useTextureCheck_Click);
 			// 
@@ -206,6 +217,8 @@
 			this.useAlphaCheck.Size = new System.Drawing.Size(75, 17);
 			this.useAlphaCheck.TabIndex = 6;
 			this.useAlphaCheck.Text = "Use Alpha";
+			this.toolTip.SetToolTip(this.useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transp" +
+        "arency). ");
 			this.useAlphaCheck.UseVisualStyleBackColor = true;
 			this.useAlphaCheck.Click += new System.EventHandler(this.useAlphaCheck_Click);
 			// 
@@ -217,6 +230,7 @@
 			this.ignoreSpecCheck.Size = new System.Drawing.Size(101, 17);
 			this.ignoreSpecCheck.TabIndex = 5;
 			this.ignoreSpecCheck.Text = "Ignore Specular";
+			this.toolTip.SetToolTip(this.ignoreSpecCheck, "If checked, no specular (commonly mis-identified as \"gloss\") will be present.");
 			this.ignoreSpecCheck.UseVisualStyleBackColor = true;
 			this.ignoreSpecCheck.Click += new System.EventHandler(this.ignoreSpecCheck_Click);
 			// 
@@ -228,6 +242,7 @@
 			this.flipVCheck.Size = new System.Drawing.Size(62, 17);
 			this.flipVCheck.TabIndex = 4;
 			this.flipVCheck.Text = "Mirror V";
+			this.toolTip.SetToolTip(this.flipVCheck, "If checked, tiling on the V Axis is mirrored.");
 			this.flipVCheck.UseVisualStyleBackColor = true;
 			this.flipVCheck.Click += new System.EventHandler(this.flipVCheck_Click);
 			// 
@@ -239,6 +254,7 @@
 			this.flipUCheck.Size = new System.Drawing.Size(63, 17);
 			this.flipUCheck.TabIndex = 3;
 			this.flipUCheck.Text = "Mirror U";
+			this.toolTip.SetToolTip(this.flipUCheck, "If checked, tiling on the U Axis is mirrored.");
 			this.flipUCheck.UseVisualStyleBackColor = true;
 			this.flipUCheck.Click += new System.EventHandler(this.flipUCheck_Click);
 			// 
@@ -250,6 +266,7 @@
 			this.clampVCheck.Size = new System.Drawing.Size(65, 17);
 			this.clampVCheck.TabIndex = 3;
 			this.clampVCheck.Text = "Clamp V";
+			this.toolTip.SetToolTip(this.clampVCheck, "Enable/Disable tiling on the V Axis.");
 			this.clampVCheck.UseVisualStyleBackColor = true;
 			this.clampVCheck.Click += new System.EventHandler(this.clampVCheck_Click);
 			// 
@@ -261,6 +278,7 @@
 			this.clampUCheck.Size = new System.Drawing.Size(66, 17);
 			this.clampUCheck.TabIndex = 2;
 			this.clampUCheck.Text = "Clamp U";
+			this.toolTip.SetToolTip(this.clampUCheck, "Enable/Disable tiling on the U Axis.");
 			this.clampUCheck.UseVisualStyleBackColor = true;
 			this.clampUCheck.Click += new System.EventHandler(this.clampUCheck_Click);
 			// 
@@ -288,6 +306,7 @@
 			// 
 			// generalSettingBox
 			// 
+			this.generalSettingBox.Controls.Add(this.labelAlpha);
 			this.generalSettingBox.Controls.Add(this.alphaDiffuseNumeric);
 			this.generalSettingBox.Controls.Add(this.dstAlphaCombo);
 			this.generalSettingBox.Controls.Add(this.destinationAlphaLabel);
@@ -303,12 +322,34 @@
 			this.generalSettingBox.Controls.Add(this.exponentLabel);
 			this.generalSettingBox.Controls.Add(this.specColorLabel);
 			this.generalSettingBox.Controls.Add(this.diffuseLabel);
-			this.generalSettingBox.Location = new System.Drawing.Point(12, 47);
+			this.generalSettingBox.Location = new System.Drawing.Point(12, 39);
 			this.generalSettingBox.Name = "generalSettingBox";
 			this.generalSettingBox.Size = new System.Drawing.Size(254, 193);
 			this.generalSettingBox.TabIndex = 3;
 			this.generalSettingBox.TabStop = false;
 			this.generalSettingBox.Text = "General";
+			// 
+			// labelAlpha
+			// 
+			this.labelAlpha.AutoSize = true;
+			this.labelAlpha.Location = new System.Drawing.Point(151, 17);
+			this.labelAlpha.Name = "labelAlpha";
+			this.labelAlpha.Size = new System.Drawing.Size(37, 13);
+			this.labelAlpha.TabIndex = 12;
+			this.labelAlpha.Text = "Alpha:";
+			// 
+			// alphaDiffuseNumeric
+			// 
+			this.alphaDiffuseNumeric.Location = new System.Drawing.Point(194, 13);
+			this.alphaDiffuseNumeric.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+			this.alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
+			this.alphaDiffuseNumeric.Size = new System.Drawing.Size(54, 20);
+			this.alphaDiffuseNumeric.TabIndex = 5;
+			this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
 			// 
 			// dstAlphaCombo
 			// 
@@ -323,16 +364,16 @@
             "InverseSourceAlpha",
             "DestinationAlpha",
             "InverseDestinationAlpha"});
-			this.dstAlphaCombo.Location = new System.Drawing.Point(113, 157);
+			this.dstAlphaCombo.Location = new System.Drawing.Point(101, 166);
 			this.dstAlphaCombo.Name = "dstAlphaCombo";
-			this.dstAlphaCombo.Size = new System.Drawing.Size(121, 21);
+			this.dstAlphaCombo.Size = new System.Drawing.Size(147, 21);
 			this.dstAlphaCombo.TabIndex = 11;
 			this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
 			// 
 			// destinationAlphaLabel
 			// 
 			this.destinationAlphaLabel.AutoSize = true;
-			this.destinationAlphaLabel.Location = new System.Drawing.Point(110, 141);
+			this.destinationAlphaLabel.Location = new System.Drawing.Point(101, 150);
 			this.destinationAlphaLabel.Name = "destinationAlphaLabel";
 			this.destinationAlphaLabel.Size = new System.Drawing.Size(93, 13);
 			this.destinationAlphaLabel.TabIndex = 10;
@@ -351,16 +392,16 @@
             "InverseSourceAlpha",
             "DestinationAlpha",
             "InverseDestinationAlpha"});
-			this.srcAlphaCombo.Location = new System.Drawing.Point(113, 117);
+			this.srcAlphaCombo.Location = new System.Drawing.Point(101, 126);
 			this.srcAlphaCombo.Name = "srcAlphaCombo";
-			this.srcAlphaCombo.Size = new System.Drawing.Size(121, 21);
+			this.srcAlphaCombo.Size = new System.Drawing.Size(147, 21);
 			this.srcAlphaCombo.TabIndex = 9;
 			this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
 			// 
 			// srcAlphaLabel
 			// 
 			this.srcAlphaLabel.AutoSize = true;
-			this.srcAlphaLabel.Location = new System.Drawing.Point(110, 101);
+			this.srcAlphaLabel.Location = new System.Drawing.Point(101, 110);
 			this.srcAlphaLabel.Name = "srcAlphaLabel";
 			this.srcAlphaLabel.Size = new System.Drawing.Size(74, 13);
 			this.srcAlphaLabel.TabIndex = 4;
@@ -375,16 +416,16 @@
             "Bilinear",
             "Trilinear",
             "Reserved"});
-			this.filterModeDropDown.Location = new System.Drawing.Point(113, 77);
+			this.filterModeDropDown.Location = new System.Drawing.Point(101, 86);
 			this.filterModeDropDown.Name = "filterModeDropDown";
-			this.filterModeDropDown.Size = new System.Drawing.Size(121, 21);
+			this.filterModeDropDown.Size = new System.Drawing.Size(147, 21);
 			this.filterModeDropDown.TabIndex = 8;
 			this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
 			// 
 			// filterModeLabel
 			// 
 			this.filterModeLabel.AutoSize = true;
-			this.filterModeLabel.Location = new System.Drawing.Point(110, 61);
+			this.filterModeLabel.Location = new System.Drawing.Point(101, 70);
 			this.filterModeLabel.Name = "filterModeLabel";
 			this.filterModeLabel.Size = new System.Drawing.Size(62, 13);
 			this.filterModeLabel.TabIndex = 7;
@@ -393,24 +434,28 @@
 			// specColorBox
 			// 
 			this.specColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.specColorBox.Location = new System.Drawing.Point(88, 35);
+			this.specColorBox.Location = new System.Drawing.Point(88, 40);
 			this.specColorBox.Name = "specColorBox";
 			this.specColorBox.Size = new System.Drawing.Size(37, 19);
 			this.specColorBox.TabIndex = 6;
+			this.toolTip.SetToolTip(this.specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This s" +
+        "pecular color will tint the apparent highlights on the model.");
 			this.specColorBox.Click += new System.EventHandler(this.specColorBox_Click);
 			// 
 			// diffuseColorBox
 			// 
 			this.diffuseColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.diffuseColorBox.Location = new System.Drawing.Point(88, 11);
+			this.diffuseColorBox.Location = new System.Drawing.Point(88, 15);
 			this.diffuseColorBox.Name = "diffuseColorBox";
 			this.diffuseColorBox.Size = new System.Drawing.Size(37, 19);
 			this.diffuseColorBox.TabIndex = 4;
+			this.toolTip.SetToolTip(this.diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this \'diffuse c" +
+        "olor\' will act as a tint to the model.");
 			this.diffuseColorBox.Click += new System.EventHandler(this.diffuseColorBox_Click);
 			// 
 			// exponentTextBox
 			// 
-			this.exponentTextBox.Location = new System.Drawing.Point(165, 35);
+			this.exponentTextBox.Location = new System.Drawing.Point(194, 39);
 			this.exponentTextBox.Name = "exponentTextBox";
 			this.exponentTextBox.Size = new System.Drawing.Size(54, 20);
 			this.exponentTextBox.TabIndex = 4;
@@ -419,7 +464,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(6, 74);
+			this.label1.Location = new System.Drawing.Point(6, 70);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(67, 13);
 			this.label1.TabIndex = 5;
@@ -428,7 +473,7 @@
 			// textureBox
 			// 
 			this.textureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.textureBox.Location = new System.Drawing.Point(9, 90);
+			this.textureBox.Location = new System.Drawing.Point(9, 86);
 			this.textureBox.Name = "textureBox";
 			this.textureBox.Size = new System.Drawing.Size(86, 86);
 			this.textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -439,16 +484,16 @@
 			// exponentLabel
 			// 
 			this.exponentLabel.AutoSize = true;
-			this.exponentLabel.Location = new System.Drawing.Point(131, 38);
+			this.exponentLabel.Location = new System.Drawing.Point(133, 43);
 			this.exponentLabel.Name = "exponentLabel";
-			this.exponentLabel.Size = new System.Drawing.Size(28, 13);
+			this.exponentLabel.Size = new System.Drawing.Size(55, 13);
 			this.exponentLabel.TabIndex = 2;
-			this.exponentLabel.Text = "Exp:";
+			this.exponentLabel.Text = "Exponent:";
 			// 
 			// specColorLabel
 			// 
 			this.specColorLabel.AutoSize = true;
-			this.specColorLabel.Location = new System.Drawing.Point(6, 37);
+			this.specColorLabel.Location = new System.Drawing.Point(6, 43);
 			this.specColorLabel.Name = "specColorLabel";
 			this.specColorLabel.Size = new System.Drawing.Size(79, 13);
 			this.specColorLabel.TabIndex = 1;
@@ -457,7 +502,7 @@
 			// diffuseLabel
 			// 
 			this.diffuseLabel.AutoSize = true;
-			this.diffuseLabel.Location = new System.Drawing.Point(6, 17);
+			this.diffuseLabel.Location = new System.Drawing.Point(12, 18);
 			this.diffuseLabel.Name = "diffuseLabel";
 			this.diffuseLabel.Size = new System.Drawing.Size(70, 13);
 			this.diffuseLabel.TabIndex = 0;
@@ -473,18 +518,11 @@
 			this.doneButton.UseVisualStyleBackColor = true;
 			this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
 			// 
-			// alphaDiffuseNumeric
+			// toolTip
 			// 
-			this.alphaDiffuseNumeric.Location = new System.Drawing.Point(131, 13);
-			this.alphaDiffuseNumeric.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-			this.alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
-			this.alphaDiffuseNumeric.Size = new System.Drawing.Size(50, 20);
-			this.alphaDiffuseNumeric.TabIndex = 5;
-			this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
+			this.toolTip.AutoPopDelay = 30000;
+			this.toolTip.InitialDelay = 500;
+			this.toolTip.ReshowDelay = 100;
 			// 
 			// MaterialEditor
 			// 
@@ -497,7 +535,7 @@
 			this.Controls.Add(this.generalSettingBox);
 			this.Controls.Add(this.flagsGroupBox);
 			this.Controls.Add(this.currentMaterialLabel);
-			this.Controls.Add(this.comboBox1);
+			this.Controls.Add(this.comboMaterial);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -513,8 +551,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).EndInit();
 			this.generalSettingBox.ResumeLayout(false);
 			this.generalSettingBox.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.textureBox)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.textureBox)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -522,7 +560,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboMaterial;
         private System.Windows.Forms.Label currentMaterialLabel;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.GroupBox flagsGroupBox;
@@ -558,5 +596,7 @@
         private System.Windows.Forms.NumericUpDown userFlagsNumeric;
         private System.Windows.Forms.Button doneButton;
 		private System.Windows.Forms.NumericUpDown alphaDiffuseNumeric;
+		private System.Windows.Forms.Label labelAlpha;
+		private System.Windows.Forms.ToolTip toolTip;
     }
 }

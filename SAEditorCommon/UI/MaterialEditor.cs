@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
-using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
-
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -20,28 +15,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private Material[] materials;
 		private BMPInfo[] textures;
 
-		private ToolTip clampToolTip = new ToolTip();
-
 		public MaterialEditor(Material[] mats, BMPInfo[] textures)
 		{
 			materials = mats;
 			this.textures = textures;
 			InitializeComponent();
-
-			clampToolTip.SetToolTip(clampUCheck, "Enable/Disable tiling on the U Axis.");
-			clampToolTip.SetToolTip(clampVCheck, "Enable/Disable tiling on the V Axis.");
-			clampToolTip.SetToolTip(flipUCheck, "If checked, tiling on the U Axis is mirrored.");
-			clampToolTip.SetToolTip(flipVCheck, "If checked, tiling on the V Axis is mirrored.");
-			clampToolTip.SetToolTip(ignoreSpecCheck, "If checked, no specular (commonly mis-identified as 'gloss' will be present.");
-			clampToolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
-			clampToolTip.SetToolTip(useTextureCheck, "If checked, the texture map displayed to the left will be used. Otherwise the model will be a solid color.");
-			clampToolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
-			clampToolTip.SetToolTip(doubleSideCheck, "Doesn't do anything, since Sonic Adventure does not support backface cull.");
-			clampToolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die.");
-			clampToolTip.SetToolTip(ignoreLightCheck, "If checked, the model will not have any lighting applied.");
-
-			clampToolTip.SetToolTip(diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this 'diffuse color' will act as a tint to the model.");
-			clampToolTip.SetToolTip(specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This specular color will tint the apparent highlights on the model.");
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -52,11 +30,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private void MaterialEditor_Load(object sender, EventArgs e)
 		{
 			for (int i = 0; i < materials.Length; i++)
-				comboBox1.Items.Add(i);
-			if (comboBox1.Items.Count > 0)
-				comboBox1.SelectedIndex = 0;
+				comboMaterial.Items.Add(i);
+			if (comboMaterial.Items.Count > 0)
+				comboMaterial.SelectedIndex = 0;
 
-			SetControls(comboBox1.SelectedIndex);
+			SetControls(comboMaterial.SelectedIndex);
 		}
 
 		private void SetControls(int index)
@@ -88,45 +66,47 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			userFlagsNumeric.Value = materials[index].UserFlags;
 		}
 
-		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+		private void comboMaterial_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (comboBox1.SelectedIndex > -1)
+			if (comboMaterial.SelectedIndex > -1)
 			{
-				SetControls(comboBox1.SelectedIndex);
+				SetControls(comboMaterial.SelectedIndex);
 			}
 		}
 
 		#region General Control Event Methods
 		private void textureBox_Click(object sender, EventArgs e)
 		{
-			using (TexturePicker texPicker = new TexturePicker(textures, materials[comboBox1.SelectedIndex].TextureID))
-				if (texPicker.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			using (TexturePicker texPicker = new TexturePicker(textures, materials[comboMaterial.SelectedIndex].TextureID))
+			{
+				if (texPicker.ShowDialog(this) == DialogResult.OK)
 				{
-					materials[comboBox1.SelectedIndex].TextureID = texPicker.SelectedValue;
-					textureBox.BackgroundImage = textures[materials[comboBox1.SelectedIndex].TextureID].Image;
+					materials[comboMaterial.SelectedIndex].TextureID = texPicker.SelectedValue;
+					textureBox.BackgroundImage = textures[materials[comboMaterial.SelectedIndex].TextureID].Image;
 
 					FormUpdated(this, null);
 				}
+			}
 		}
 
 		private void diffuseColorBox_Click(object sender, EventArgs e)
 		{
-			colorDialog.Color = materials[comboBox1.SelectedIndex].DiffuseColor;
-			if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			colorDialog.Color = materials[comboMaterial.SelectedIndex].DiffuseColor;
+			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
 				diffuseColorBox.BackColor = colorDialog.Color;
-				materials[comboBox1.SelectedIndex].DiffuseColor = colorDialog.Color;
+				materials[comboMaterial.SelectedIndex].DiffuseColor = colorDialog.Color;
 				FormUpdated(this, null);
 			}
 		}
 
 		private void specColorBox_Click(object sender, EventArgs e)
 		{
-			colorDialog.Color = materials[comboBox1.SelectedIndex].SpecularColor;
-			if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			colorDialog.Color = materials[comboMaterial.SelectedIndex].SpecularColor;
+			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
 				specColorBox.BackColor = colorDialog.Color;
-				materials[comboBox1.SelectedIndex].SpecularColor = colorDialog.Color;
+				materials[comboMaterial.SelectedIndex].SpecularColor = colorDialog.Color;
 				FormUpdated(this, null);
 			}
 		}
@@ -139,11 +119,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (!float.TryParse(exponentTextBox.Text, out expParse))
 			{
 				MessageBox.Show("Specular exponent was invalid - setting to 10");
-				materials[comboBox1.SelectedIndex].Exponent = 10;
+				materials[comboMaterial.SelectedIndex].Exponent = 10;
 			}
 			else
 			{
-				materials[comboBox1.SelectedIndex].Exponent = expParse;
+				materials[comboMaterial.SelectedIndex].Exponent = expParse;
 			}
 
 			this.Close();
@@ -157,104 +137,123 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (!float.TryParse(exponentTextBox.Text, out expParse))
 			{
 				MessageBox.Show("Specular exponent was invalid - setting to 10");
-				materials[comboBox1.SelectedIndex].Exponent = 10;
+				materials[comboMaterial.SelectedIndex].Exponent = 10;
 			}
 			else
 			{
-				materials[comboBox1.SelectedIndex].Exponent = expParse;
+				materials[comboMaterial.SelectedIndex].Exponent = expParse;
 			}
+			FormUpdated(this, null);
 		}
 
 		private void alphaDiffuseNumeric_ValueChanged(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, materials[comboBox1.SelectedIndex].DiffuseColor);
+			materials[comboMaterial.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, materials[comboMaterial.SelectedIndex].DiffuseColor);
+			FormUpdated(this, null);
 		}
 		#endregion
 
 		#region Flag Check Event Methods
 		private void pickStatusCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].PickStatus = pickStatusCheck.Checked;
+			materials[comboMaterial.SelectedIndex].PickStatus = pickStatusCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void superSampleCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].SuperSample = superSampleCheck.Checked;
+			materials[comboMaterial.SelectedIndex].SuperSample = superSampleCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void clampUCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].ClampU = clampUCheck.Checked;
+			materials[comboMaterial.SelectedIndex].ClampU = clampUCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void clampVCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].ClampV = clampVCheck.Checked;
+			materials[comboMaterial.SelectedIndex].ClampV = clampVCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void flipUCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].FlipU = flipUCheck.Checked;
+			materials[comboMaterial.SelectedIndex].FlipU = flipUCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void flipVCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].FlipV = flipVCheck.Checked;
+			materials[comboMaterial.SelectedIndex].FlipV = flipVCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void ignoreSpecCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].IgnoreSpecular = ignoreSpecCheck.Checked;
+			materials[comboMaterial.SelectedIndex].IgnoreSpecular = ignoreSpecCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void useAlphaCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].UseAlpha = useAlphaCheck.Checked;
+			materials[comboMaterial.SelectedIndex].UseAlpha = useAlphaCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void useTextureCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].UseTexture = useTextureCheck.Checked;
+			materials[comboMaterial.SelectedIndex].UseTexture = useTextureCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void envMapCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].EnvironmentMap = envMapCheck.Checked;
+			materials[comboMaterial.SelectedIndex].EnvironmentMap = envMapCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void doubleSideCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].DoubleSided = doubleSideCheck.Checked;
+			materials[comboMaterial.SelectedIndex].DoubleSided = doubleSideCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void flatShadeCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].FlatShading = flatShadeCheck.Checked;
+			materials[comboMaterial.SelectedIndex].FlatShading = flatShadeCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void ignoreLightCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].IgnoreLighting = ignoreLightCheck.Checked;
+			materials[comboMaterial.SelectedIndex].IgnoreLighting = ignoreLightCheck.Checked;
+			FormUpdated(this, null);
 		}
 
 		private void userFlagsNumeric_ValueChanged(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].UserFlags = (byte)userFlagsNumeric.Value;
+			materials[comboMaterial.SelectedIndex].UserFlags = (byte)userFlagsNumeric.Value;
+			FormUpdated(this, null);
 		}
 
 		private void filterModeDropDown_SelectionChangeCommitted(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].FilterMode = (FilterMode)filterModeDropDown.SelectedIndex;
+			materials[comboMaterial.SelectedIndex].FilterMode = (FilterMode)filterModeDropDown.SelectedIndex;
+			FormUpdated(this, null);
 		}
 
 		private void srcAlphaCombo_SelectionChangeCommitted(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].SourceAlpha = (AlphaInstruction)srcAlphaCombo.SelectedIndex;
+			materials[comboMaterial.SelectedIndex].SourceAlpha = (AlphaInstruction)srcAlphaCombo.SelectedIndex;
+			FormUpdated(this, null);
 		}
 
 		private void dstAlphaCombo_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			materials[comboBox1.SelectedIndex].DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
+			materials[comboMaterial.SelectedIndex].DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
+			FormUpdated(this, null);
 		}
 		#endregion
 	}
