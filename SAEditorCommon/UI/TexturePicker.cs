@@ -8,6 +8,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
 	public partial class TexturePicker : Form
 	{
+		// TODO: Consider caching the resized bitmaps
+		// TODO: Consider caching imageList somehow for a substantial performance gain
+
 		public int SelectedValue { get { return listView.SelectedIndices[0]; } }
 		private readonly int initialSelection;
 		private readonly BMPInfo[] textureInfo;
