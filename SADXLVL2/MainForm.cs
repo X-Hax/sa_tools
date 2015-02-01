@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -56,30 +57,61 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+			LevelData.StateChanged += LevelData_StateChanged;
+			panel1.MouseWheel += panel1_MouseWheel;
 
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
+			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
+			{
+				DialogResult result = dialog.ShowDialog();
+				if (result == DialogResult.OK)
+					LoadINI(dialog.SelectedItem);
+			}
+		}
 
-			EditorOptions.InitializeDefaultLights(d3ddevice);
-			Gizmo.InitGizmo(d3ddevice);
-			ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
+		private void InitializeDirect3D()
+		{
+			if (d3ddevice == null)
+			{
+				d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
+					new PresentParameters
+					{
+						Windowed = true,
+						SwapEffect = SwapEffect.Discard,
+						EnableAutoDepthStencil = true,
+						AutoDepthStencilFormat = DepthFormat.D24X8
+					});
+				d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
+
+				EditorOptions.InitializeDefaultLights(d3ddevice);
+				Gizmo.InitGizmo(d3ddevice);
+				ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
+			}
+		}
+
+		private StringCollection GetRecentFiles()
+		{
 			if (Settings.MRUList == null)
-				Settings.MRUList = new System.Collections.Specialized.StringCollection();
-			System.Collections.Specialized.StringCollection mru = new System.Collections.Specialized.StringCollection();
+				Settings.MRUList = new StringCollection();
+
+			StringCollection mru = new StringCollection();
+
 			foreach (string item in Settings.MRUList)
+			{
 				if (File.Exists(item))
 				{
 					mru.Add(item);
 					recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
 				}
+			}
+
 			Settings.MRUList = mru;
-			if (mru.Count > 0) recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
+			if (mru.Count > 0)
+				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
+
 			if (Program.args.Length > 0)
 				LoadINI(Program.args[0]);
 
-			LevelData.StateChanged += LevelData_StateChanged;
-
-			panel1.MouseWheel += panel1_MouseWheel;
+			return mru;
 		}
 
 		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
@@ -90,8 +122,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			OpenFile();
+		}
+
+		public void OpenFile()
+		{
 			if (loaded)
-				switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+			{
+				DialogResult result = MessageBox.Show(this, "Do you want to save?", "SADXLVL2",
+					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+				switch (result)
 				{
 					case DialogResult.Yes:
 						saveToolStripMenuItem_Click(this, EventArgs.Empty);
@@ -99,11 +140,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 					case DialogResult.Cancel:
 						return;
 				}
+			}
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "ini",
 				Filter = "INI Files|*.ini|All Files|*.*"
 			};
+
 			if (a.ShowDialog(this) == DialogResult.OK)
 				LoadINI(a.FileName);
 		}
@@ -116,6 +159,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			changeLevelToolStripMenuItem.DropDownItems.Clear();
 			levelMenuItems = new Dictionary<string, ToolStripMenuItem>();
 			foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
+			{
 				if (!string.IsNullOrEmpty(item.Key))
 				{
 					string[] itempath = item.Key.Split('\\');
@@ -130,7 +174,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						curpath += itempath[i];
 						if (!levelMenuItems.ContainsKey(curpath))
 						{
-							ToolStripMenuItem it = new ToolStripMenuItem(itempath[i].Replace("&", "&&")) { Tag = curpath };
+							ToolStripMenuItem it = new ToolStripMenuItem(itempath[i].Replace("&", "&&")) {Tag = curpath};
 							levelMenuItems.Add(curpath, it);
 							parent.DropDownItems.Add(it);
 							parent = it;
@@ -138,17 +182,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 						else
 							parent = levelMenuItems[curpath];
 					}
-					ToolStripMenuItem ts = new ToolStripMenuItem(itempath[itempath.Length - 1], null, LevelToolStripMenuItem_Clicked) { Tag = item.Key };
+					ToolStripMenuItem ts = new ToolStripMenuItem(itempath[itempath.Length - 1], null, LevelToolStripMenuItem_Clicked)
+					{
+						Tag = item.Key
+					};
 					levelMenuItems.Add(item.Key, ts);
 					parent.DropDownItems.Add(ts);
 				}
+			}
+
 			if (Settings.MRUList.Count == 0)
 				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
+
 			if (Settings.MRUList.Contains(filename))
 			{
 				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
 				Settings.MRUList.Remove(filename);
 			}
+
 			Settings.MRUList.Insert(0, filename);
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 		}
@@ -193,9 +244,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-			using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, 1, 8))
+			int steps = (d3ddevice != null) ? 8 : 9;
+			toolStrip1.Enabled = false;
+
+			using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, 1, steps))
 			{
 				Invoke((Action<IWin32Window>)progress.Show, this);
+
+				if (d3ddevice == null)
+				{
+					progress.SetTask("Initializing Direct3D...");
+					Invoke((Action)InitializeDirect3D);
+					progress.StepProgress();
+				}
+
 				progress.SetTask("Geometry:");
 				progress.SetStep("I don't even know.");
 
@@ -817,6 +879,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				Close();
 				return;
 			}
+			
 			levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
@@ -824,8 +887,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			exportOBJToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
 			deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
+			
 			if (LevelData.DeathZones == null)
 				deathZonesToolStripMenuItem.Checked = false;
+
 			loaded = true;
 			SelectedItems = new List<Item>();
 			UseWaitCursor = false;
@@ -834,6 +899,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
+			toolStrip1.Enabled = loaded;
 			DrawLevel();
 		}
 

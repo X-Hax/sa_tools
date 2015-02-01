@@ -580,6 +580,7 @@
 			// 
 			// toolStrip1
 			// 
+			this.toolStrip1.Enabled = false;
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectModeButton,
             this.moveModeButton,
@@ -650,7 +651,6 @@
 			// gizmoSpaceComboBox
 			// 
 			this.gizmoSpaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.gizmoSpaceComboBox.Enabled = false;
 			this.gizmoSpaceComboBox.Items.AddRange(new object[] {
             "Global",
             "Local"});
