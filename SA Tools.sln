@@ -1,8 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA Tools", "SA Tools\SA Tools.csproj", "{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweaker2", "SADXTweaker2\SADXTweaker2.csproj", "{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3}"
@@ -191,16 +189,16 @@ Global
 		{5997DC6A-DA95-487E-BB19-2D8890684A54}.Release|Mixed Platforms.Build.0 = Release|x86
 		{5997DC6A-DA95-487E-BB19-2D8890684A54}.Release|x86.ActiveCfg = Release|x86
 		{5997DC6A-DA95-487E-BB19-2D8890684A54}.Release|x86.Build.0 = Release|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|x86.ActiveCfg = Debug|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|x86.Build.0 = Debug|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|Any CPU.ActiveCfg = Release|x86
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|Mixed Platforms.Build.0 = Release|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|x86.ActiveCfg = Release|x86
-		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|x86.Build.0 = Release|x86
+		{7AEE531B-8DD5-4F39-AE25-9A47E797C9C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{64CD7AA3-BD30-4F90-9C62-09871B0E8B2B}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{64CD7AA3-BD30-4F90-9C62-09871B0E8B2B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{64CD7AA3-BD30-4F90-9C62-09871B0E8B2B}.Debug|Mixed Platforms.Build.0 = Debug|x86
