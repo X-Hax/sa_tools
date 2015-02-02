@@ -37,7 +37,6 @@
 			// buttonOpen
 			// 
 			this.buttonOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOpen.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonOpen.Location = new System.Drawing.Point(297, 26);
 			this.buttonOpen.Name = "buttonOpen";
 			this.buttonOpen.Size = new System.Drawing.Size(75, 23);

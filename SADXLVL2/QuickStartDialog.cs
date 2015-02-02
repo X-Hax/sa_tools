@@ -36,8 +36,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void buttonOpen_Click(object sender, EventArgs e)
 		{
-			parent.OpenFile();
-			Close();
+			if (parent.OpenFile())
+				Close();
 		}
 	}
 }

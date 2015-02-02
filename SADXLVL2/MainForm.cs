@@ -125,7 +125,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			OpenFile();
 		}
 
-		public void OpenFile()
+		public bool OpenFile()
 		{
 			if (loaded)
 			{
@@ -138,7 +138,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						saveToolStripMenuItem_Click(this, EventArgs.Empty);
 						break;
 					case DialogResult.Cancel:
-						return;
+						return false;
 				}
 			}
 			OpenFileDialog a = new OpenFileDialog()
@@ -148,7 +148,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			};
 
 			if (a.ShowDialog(this) == DialogResult.OK)
+			{
 				LoadINI(a.FileName);
+				return true;
+			}
+
+			return false;
 		}
 
 		private void LoadINI(string filename)
@@ -174,7 +179,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						curpath += itempath[i];
 						if (!levelMenuItems.ContainsKey(curpath))
 						{
-							ToolStripMenuItem it = new ToolStripMenuItem(itempath[i].Replace("&", "&&")) {Tag = curpath};
+							ToolStripMenuItem it = new ToolStripMenuItem(itempath[i].Replace("&", "&&")) { Tag = curpath };
 							levelMenuItems.Add(curpath, it);
 							parent.DropDownItems.Add(it);
 							parent = it;
@@ -509,10 +514,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 								switch (ext.ToLowerInvariant())
 								{
 									case ".cs":
-										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() {{"CompilerVersion", "v3.5"}});
+										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
 										break;
 									case ".vb":
-										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() {{"CompilerVersion", "v3.5"}});
+										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
 										break;
 								}
 								if (pr != null)
@@ -558,7 +563,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
 							// load the "default object" instead ("?").
 							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-							    !LevelData.Textures.ContainsKey(defgroup.Texture))
+								!LevelData.Textures.ContainsKey(defgroup.Texture))
 							{
 								ObjectData error = new ObjectData();
 
@@ -624,7 +629,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> {"The following objects failed to load:"};
+						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -644,9 +649,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
 
 						MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-						                +
-						                "\nThe level will still display, but the objects in question will not display their proper models." +
-						                "\n\nPlease check the log for details.",
+										+
+										"\nThe level will still display, but the objects in question will not display their proper models." +
+										"\n\nPlease check the log for details.",
 							"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
 					}
 				}
@@ -734,10 +739,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						switch (ext.ToLowerInvariant())
 						{
 							case ".cs":
-								pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() {{"CompilerVersion", "v3.5"}});
+								pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
 								break;
 							case ".vb":
-								pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() {{"CompilerVersion", "v3.5"}});
+								pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
 								break;
 						}
 						if (pr != null)
@@ -879,7 +884,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				Close();
 				return;
 			}
-			
+
 			levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
@@ -887,7 +892,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			exportOBJToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
 			deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
-			
+
 			if (LevelData.DeathZones == null)
 				deathZonesToolStripMenuItem.Checked = false;
 
