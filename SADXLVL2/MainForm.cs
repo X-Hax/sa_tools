@@ -42,9 +42,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		string levelID;
 		internal string levelName;
-		bool loaded;
+		bool isStageLoaded;
 		internal List<Item> SelectedItems;
-		Dictionary<string, ToolStripMenuItem> levelMenuItems;
+		Dictionary<string, List<string>> levelNames; 
 		bool lookKeyDown;
 		bool zoomKeyDown;
 
@@ -61,12 +61,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 			panel1.MouseWheel += panel1_MouseWheel;
 
 			bool showLevelDialog;
-			DialogResult result;
 			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
 			{
-				result = dialog.ShowDialog();
-				if (showLevelDialog = (result == DialogResult.OK))
+				if (showLevelDialog = (dialog.ShowDialog() == DialogResult.OK))
 					LoadINI(dialog.SelectedItem);
+			}
+
+			if (showLevelDialog)
+			{
+				// TODO: Check the level selected by this dialog in changeLevelToolStripMenuItem
+				string stageToLoad = string.Empty;
+				using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
+				{
+					if (dialog.ShowDialog() == DialogResult.OK)
+						stageToLoad = dialog.SelectedStage;
+				}
+
+				if (!string.IsNullOrEmpty(stageToLoad))
+					LoadStage(stageToLoad);
 			}
 		}
 
@@ -129,7 +141,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		public bool OpenFile()
 		{
-			if (loaded)
+			if (isStageLoaded)
 			{
 				if (SavePrompt() == DialogResult.Cancel)
 					return false;
@@ -152,55 +164,89 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LoadINI(string filename)
 		{
-			loaded = false;
+			isStageLoaded = false;
 			ini = IniFile.Load(filename);
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-			changeLevelToolStripMenuItem.DropDownItems.Clear();
-			levelMenuItems = new Dictionary<string, ToolStripMenuItem>();
+			levelNames = new Dictionary<string, List<string>>();
+
 			foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
 			{
-				if (!string.IsNullOrEmpty(item.Key))
+				if (string.IsNullOrEmpty(item.Key))
+					continue;
+
+				string[] split = item.Key.Split('\\');
+
+				for (int i = 0; i < split.Length; i++)
 				{
-					string[] itempath = item.Key.Split('\\');
-					ToolStripMenuItem parent = changeLevelToolStripMenuItem;
-					for (int i = 0; i < itempath.Length - 1; i++)
-					{
-						string curpath = string.Empty;
-						if (i - 1 >= 0)
-							curpath = string.Join(@"\", itempath, 0, i - 1);
-						if (!string.IsNullOrEmpty(curpath))
-							parent = levelMenuItems[curpath];
-						curpath += itempath[i];
-						if (!levelMenuItems.ContainsKey(curpath))
-						{
-							ToolStripMenuItem it = new ToolStripMenuItem(itempath[i].Replace("&", "&&")) { Tag = curpath };
-							levelMenuItems.Add(curpath, it);
-							parent.DropDownItems.Add(it);
-							parent = it;
-						}
-						else
-							parent = levelMenuItems[curpath];
-					}
-					ToolStripMenuItem ts = new ToolStripMenuItem(itempath[itempath.Length - 1], null, LevelToolStripMenuItem_Clicked)
-					{
-						Tag = item.Key
-					};
-					levelMenuItems.Add(item.Key, ts);
-					parent.DropDownItems.Add(ts);
+					// If the key doesn't exist (e.g Action Stages), initialize the list
+					if (!levelNames.ContainsKey(split[0]))
+						levelNames[split[0]] = new List<string>();
+
+					// Then add the stage name (e.g Emerald Coast 1)
+					if (i > 0)
+						levelNames[split[0]].Add(split[i]);
 				}
 			}
 
-			if (Settings.MRUList.Count == 0)
-				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
+			// Set up the Change Level menu...
+			PopulateLevelMenu(changeLevelToolStripMenuItem, levelNames);
 
+			// If no projects have been recently used, clear the list to remove the "(none)" entry.
+			if (Settings.MRUList.Count == 0)
+				recentProjectsToolStripMenuItem.DropDownItems.Clear();
+
+			// If this project has been loaded before, remove it...
 			if (Settings.MRUList.Contains(filename))
 			{
 				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
 				Settings.MRUList.Remove(filename);
 			}
 
+			// ...so that it can be re-inserted at the top of the Recent Projects list.
 			Settings.MRUList.Insert(0, filename);
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
+		}
+
+		private void PopulateLevelMenu(ToolStripMenuItem targetMenu, Dictionary<string, List<string>> levels)
+		{
+			// Used for keeping track of menu items
+			Dictionary<string, ToolStripMenuItem> levelMenuItems = new Dictionary<string, ToolStripMenuItem>();
+			targetMenu.DropDownItems.Clear();
+
+			foreach (KeyValuePair<string, List<string>> item in levels)
+			{
+				// For every section (e.g Adventure Fields) in levels, reset the parent menu.
+				// It gets changed later if necessary.
+				ToolStripMenuItem parent = targetMenu;
+				foreach (string stage in item.Value)
+				{
+					// If a menu item for this section has not already been initialized...
+					if (!levelMenuItems.ContainsKey(item.Key))
+					{
+						// Create it
+						ToolStripMenuItem i = new ToolStripMenuItem(item.Key.Replace("&", "&&"));
+
+						// Add it to the list to keep track of it
+						levelMenuItems.Add(item.Key, i);
+						// Add the new menu item to the parent menu
+						parent.DropDownItems.Add(i);
+						// and set the parent so we know where to put the stage
+						parent = i;
+					}
+					else
+					{
+						// Otherwise, set the parent to the existing reference
+						parent = levelMenuItems[item.Key];
+					}
+
+					// And finally, create the menu item for the stage name itself and hook it up to the Clicked event.
+					// The Tag member here is vital. The code later on uses this to determine what assets to load.
+					parent.DropDownItems.Add(new ToolStripMenuItem(stage, null, LevelToolStripMenuItem_Clicked)
+					{
+						Tag = item.Key + '\\' + stage
+					});
+				}
+			}
 		}
 
 		// Iterates recursively through "menu" and unchecks all sub-items.
@@ -233,22 +279,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void LevelToolStripMenuItem_Clicked(object sender, EventArgs e)
 		{
 			fileToolStripMenuItem.HideDropDown();
-			if (loaded)
-			{
-				if (SavePrompt() == DialogResult.Cancel)
-					return;
-			}
 
-			loaded = false;
+			if (!isStageLoaded || SavePrompt() != DialogResult.Cancel)
+			{
+				UncheckMenuItems(changeLevelToolStripMenuItem);
+				((ToolStripMenuItem)sender).Checked = true;
+				LoadStage(((ToolStripMenuItem)sender).Tag.ToString());
+			}
+		}
+
+		private void LoadStage(string id)
+		{
+			isStageLoaded = false;
 			SelectedItems = new List<Item>();
 			SelectedItemChanged();
 			UseWaitCursor = true;
 			Enabled = false;
 
-			UncheckMenuItems(changeLevelToolStripMenuItem);
-			((ToolStripMenuItem)sender).Checked = true;
-
-			levelID = (string)((ToolStripMenuItem)sender).Tag;
+			levelID = id;
 			string[] itempath = levelID.Split('\\');
 			levelName = itempath[itempath.Length - 1];
 			LevelData.LevelName = levelName;
@@ -914,7 +962,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.DeathZones == null)
 				deathZonesToolStripMenuItem.Checked = false;
 
-			loaded = true;
+			isStageLoaded = true;
 			SelectedItems = new List<Item>();
 			UseWaitCursor = false;
 			Enabled = true;
@@ -922,13 +970,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
-			toolStrip1.Enabled = loaded;
+			toolStrip1.Enabled = isStageLoaded;
 			DrawLevel();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (loaded)
+			if (isStageLoaded)
 			{
 				if (SavePrompt() == DialogResult.Cancel)
 					e.Cancel = true;
@@ -940,7 +988,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!loaded) return;
+			if (!isStageLoaded) return;
 
 			Dictionary<string, string> group = ini[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
@@ -1036,7 +1084,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!loaded)
+			if (!isStageLoaded)
 				return;
 
 			cam.FOV = (float)(Math.PI / 4);
@@ -1153,7 +1201,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						openToolStripMenuItem_Click(sender, EventArgs.Empty);
 					break;
 				case Keys.S:
-					if (!loaded) return;
+					if (!isStageLoaded) return;
 					if (e.Control)
 						saveToolStripMenuItem_Click(sender, EventArgs.Empty);
 					break;
@@ -1162,7 +1210,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (!loaded)
+			if (!isStageLoaded)
 				return;
 
 			switch (e.Button)
@@ -1336,7 +1384,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (!loaded)
+			if (!isStageLoaded)
 				return;
 
 			bool draw = false;
@@ -1418,7 +1466,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!loaded)
+			if (!isStageLoaded)
 				return;
 
 			Point mouseEvent = e.Location;
@@ -1542,7 +1590,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (!loaded || !panel1.Focused)
+			if (!isStageLoaded || !panel1.Focused)
 				return;
 
 			float detentValue = -1;
@@ -2125,6 +2173,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawLevel();
+		}
+
+		private void LevelToolStripMenuItem_Clicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+
 		}
 	}
 }

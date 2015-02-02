@@ -152,7 +152,7 @@
 			// 
 			this.noneToolStripMenuItem.Enabled = false;
 			this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-			this.noneToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+			this.noneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.noneToolStripMenuItem.Text = "(none)";
 			// 
 			// saveToolStripMenuItem

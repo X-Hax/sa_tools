@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace SonicRetro.SAModel.SADXLVL2
+{
+	public partial class LevelSelectDialog : Form
+	{
+		public string SelectedStage { get; private set; }
+		
+		private readonly Dictionary<string, List<string>> levels;
+
+
+		public LevelSelectDialog(Dictionary<string, List<string>> levels)
+		{
+			InitializeComponent();
+
+			this.levels = levels;
+			
+			foreach (var i in this.levels)
+				comboCategories.Items.Add(i.Key);
+			
+			comboCategories.SelectedIndex = 0;
+
+		}
+
+		private void listStages_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			buttonOK.Enabled = (listStages.SelectedIndices.Count > 0);
+		}
+
+		private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ComboBox combo = (ComboBox)sender;
+			string selectedText = combo.GetItemText(combo.SelectedItem);
+
+			listStages.BeginUpdate();
+
+			if (levels.ContainsKey(selectedText))
+			{
+				listStages.Items.Clear();
+				foreach (string s in levels[selectedText])
+					listStages.Items.Add(s);
+			}
+
+			listStages.EndUpdate();
+		}
+
+		private void listStages_DoubleClick(object sender, EventArgs e)
+		{
+			if (listStages.SelectedIndices.Count > 0)
+				buttonOK.PerformClick();
+		}
+
+		private void buttonOK_Click(object sender, EventArgs e)
+		{
+			SelectedStage = comboCategories.GetItemText(comboCategories.SelectedItem) + '\\' + listStages.GetItemText(listStages.SelectedItem);
+		}
+	}
+}
