@@ -17,24 +17,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			set { labelStep.Text = value; }
 		}
 
-		public int StepIncrement
-		{
-			get { return progressBar.Step; }
-			set { progressBar.Step = value; }
-		}
-
 		public string Title
 		{
 			get { return Text; }
 			set { Text = value; }
 		}
 
-		public ProgressDialog(string title, int stepIncrement, int max = 100)
+		public ProgressDialog(string title, int max = 100)
 		{
 			InitializeComponent();
 
 			Text = title;
-			progressBar.Step = stepIncrement;
 			progressBar.Maximum = max;
 			labelTask.Text = "";
 			labelStep.Text = "";

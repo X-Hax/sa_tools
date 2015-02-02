@@ -52,7 +52,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		TransformGizmo transformGizmo;
 		PointHelper cameraPointA;
 		PointHelper cameraPointB;
-		PointHelper miscHelper; // use this for anything you like, maybe for SET things like rocket / dash ring destinations?
+		//PointHelper miscHelper; // use this for anything you like, maybe for SET things like rocket / dash ring destinations?
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -60,10 +60,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.StateChanged += LevelData_StateChanged;
 			panel1.MouseWheel += panel1_MouseWheel;
 
+			bool showLevelDialog;
+			DialogResult result;
 			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
 			{
-				DialogResult result = dialog.ShowDialog();
-				if (result == DialogResult.OK)
+				result = dialog.ShowDialog();
+				if (showLevelDialog = (result == DialogResult.OK))
 					LoadINI(dialog.SelectedItem);
 			}
 		}
@@ -129,18 +131,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (loaded)
 			{
-				DialogResult result = MessageBox.Show(this, "Do you want to save?", "SADXLVL2",
-					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-				switch (result)
-				{
-					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
-						break;
-					case DialogResult.Cancel:
-						return false;
-				}
+				if (SavePrompt() == DialogResult.Cancel)
+					return false;
 			}
+			
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "ini",
@@ -209,31 +203,57 @@ namespace SonicRetro.SAModel.SADXLVL2
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 		}
 
+		// Iterates recursively through "menu" and unchecks all sub-items.
+		private static void UncheckMenuItems(ToolStripDropDownItem menu)
+		{
+			foreach (ToolStripMenuItem i in menu.DropDownItems)
+			{
+				if (i.HasDropDownItems)
+					UncheckMenuItems(i);
+				else
+					i.Checked = false;
+			}
+		}
+
+		private DialogResult SavePrompt()
+		{
+			DialogResult result = MessageBox.Show(this, "Do you want to save?", "SADXLVL2",
+				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+			switch (result)
+			{
+				case DialogResult.Yes:
+					saveToolStripMenuItem_Click(this, EventArgs.Empty);
+					break;
+			}
+
+			return result;
+		}
+
 		private void LevelToolStripMenuItem_Clicked(object sender, EventArgs e)
 		{
 			fileToolStripMenuItem.HideDropDown();
 			if (loaded)
-				switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-				{
-					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
-						break;
-					case DialogResult.Cancel:
-						return;
-				}
+			{
+				if (SavePrompt() == DialogResult.Cancel)
+					return;
+			}
+
 			loaded = false;
 			SelectedItems = new List<Item>();
 			SelectedItemChanged();
-			foreach (ToolStripMenuItem item in levelMenuItems.Values)
-				item.Checked = false;
-			((ToolStripMenuItem)sender).Checked = true;
-			levelID = (string)((ToolStripMenuItem)sender).Tag;
 			UseWaitCursor = true;
 			Enabled = false;
+
+			UncheckMenuItems(changeLevelToolStripMenuItem);
+			((ToolStripMenuItem)sender).Checked = true;
+
+			levelID = (string)((ToolStripMenuItem)sender).Tag;
 			string[] itempath = levelID.Split('\\');
 			levelName = itempath[itempath.Length - 1];
 			LevelData.LevelName = levelName;
 			Text = "SADXLVL2 - Loading " + levelName + "...";
+
 #if !DEBUG
 			backgroundWorker1.RunWorkerAsync();
 #else
@@ -252,7 +272,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			int steps = (d3ddevice != null) ? 8 : 9;
 			toolStrip1.Enabled = false;
 
-			using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, 1, steps))
+			using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, steps))
 			{
 				Invoke((Action<IWin32Window>)progress.Show, this);
 
@@ -372,7 +392,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.DeathZones = new List<DeathZoneItem>();
 					DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(group["DeathZones"]);
 					string path = Path.GetDirectoryName(group["DeathZones"]);
-					int cnt = 0;
 					for (int i = 0; i < dzini.Length; i++)
 					{
 						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
@@ -380,7 +399,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 							new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
 								.Model,
 							dzini[i].Flags, d3ddevice));
-						cnt++;
 					}
 				}
 
@@ -869,7 +887,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			catch (Exception ex)
 			{
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + System.IO.Path.Combine(Environment.CurrentDirectory, "SADXLVL2.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + Path.Combine(Environment.CurrentDirectory, "SADXLVL2.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				File.WriteAllText("SADXLVL2.log", ex.ToString());
 				initerror = true;
@@ -912,15 +930,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (loaded)
 			{
-				switch (MessageBox.Show(this, "Do you want to save?", "SADXLVL2", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-				{
-					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
-						break;
-					case DialogResult.Cancel:
-						e.Cancel = true;
-						break;
-				}
+				if (SavePrompt() == DialogResult.Cancel)
+					e.Cancel = true;
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
@@ -1352,9 +1363,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			switch (e.KeyCode)
 			{
-				default:
-					break;
-
 				case Keys.X:
 					cam.mode = (cam.mode + 1) % 2;
 
@@ -1422,9 +1430,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			switch (e.Button)
 			{
-				default:
-					break;
-
 				case MouseButtons.Middle:
 					// all cam controls are now bound to the middle mouse button
 					if (cam.mode == 0)
@@ -1764,8 +1769,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				string filePath = importFileDialog.FileName;
 				DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
 
-				if (userClearLevelResult == DialogResult.Cancel) return;
-				else if (userClearLevelResult == DialogResult.Yes)
+				if (userClearLevelResult == DialogResult.Cancel)
+					return;
+				
+				if (userClearLevelResult == DialogResult.Yes)
 				{
 					DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
 
@@ -1831,7 +1838,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
-					ProgressDialog progress = new ProgressDialog("Exporting stage...", 1, stepCount);
+					ProgressDialog progress = new ProgressDialog("Exporting stage...", stepCount);
 					progress.Show();
 					progress.Task = "Exporting:";
 
@@ -1839,7 +1846,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
 					for (int i = 0; i < LevelData.TextureBitmaps[LevelData.leveltexs].Length; i++)
 					{
-						mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, i));
+						mtlstream.WriteLine("newmtl {0}_material_{1}", materialPrefix, i);
 						mtlstream.WriteLine("Ka 1 1 1");
 						mtlstream.WriteLine("Kd 1 1 1");
 						mtlstream.WriteLine("Ks 0 0 0");
