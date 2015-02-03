@@ -777,7 +777,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver, verind + 1);
 							}
 							if (verind > -1)
@@ -819,7 +819,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor2)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver2, verind + 1);
 							}
 							if (verind > -1)
@@ -851,7 +851,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor3)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver3, verind + 1);
 							}
 							if (verind > -1)
