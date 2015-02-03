@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Drawing;
 using System.IO;
-
 using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX;
+using SonicRetro.SAModel.SAEditorCommon.Properties;
 
 //using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 //using SonicRetro.SAModel.Direct3D;
@@ -59,30 +54,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public static void InitGizmo(Device d3dDevice)
 		{
 			#region Creating Streams From Resources
-			MemoryStream x_NullStream = new MemoryStream(Properties.Resources.x_null);
-			MemoryStream y_NullStream = new MemoryStream(Properties.Resources.y_null);
-			MemoryStream z_NullStream = new MemoryStream(Properties.Resources.z_null);
-			MemoryStream x_MoveStream = new MemoryStream(Properties.Resources.x_move);
-			MemoryStream y_MoveStream = new MemoryStream(Properties.Resources.y_move);
-			MemoryStream z_MoveStream = new MemoryStream(Properties.Resources.z_move);
-			MemoryStream xy_MoveStream = new MemoryStream(Properties.Resources.xy_move);
-			MemoryStream zx_MoveStream = new MemoryStream(Properties.Resources.zx_move);
-			MemoryStream zy_MoveStream = new MemoryStream(Properties.Resources.zy_move);
+			MemoryStream x_NullStream = new MemoryStream(Resources.x_null);
+			MemoryStream y_NullStream = new MemoryStream(Resources.y_null);
+			MemoryStream z_NullStream = new MemoryStream(Resources.z_null);
+			MemoryStream x_MoveStream = new MemoryStream(Resources.x_move);
+			MemoryStream y_MoveStream = new MemoryStream(Resources.y_move);
+			MemoryStream z_MoveStream = new MemoryStream(Resources.z_move);
+			MemoryStream xy_MoveStream = new MemoryStream(Resources.xy_move);
+			MemoryStream zx_MoveStream = new MemoryStream(Resources.zx_move);
+			MemoryStream zy_MoveStream = new MemoryStream(Resources.zy_move);
 
-			MemoryStream x_RotationStream = new MemoryStream(Properties.Resources.x_rotation);
-			MemoryStream y_RotationStream = new MemoryStream(Properties.Resources.y_rotation);
-			MemoryStream z_RotationStream = new MemoryStream(Properties.Resources.z_rotation);
+			MemoryStream x_RotationStream = new MemoryStream(Resources.x_rotation);
+			MemoryStream y_RotationStream = new MemoryStream(Resources.y_rotation);
+			MemoryStream z_RotationStream = new MemoryStream(Resources.z_rotation);
 
-			MemoryStream x_ScaleStream = new MemoryStream(Properties.Resources.x_scale);
-			MemoryStream y_ScaleStream = new MemoryStream(Properties.Resources.y_scale);
-			MemoryStream z_ScaleStream = new MemoryStream(Properties.Resources.z_scale);
+			MemoryStream x_ScaleStream = new MemoryStream(Resources.x_scale);
+			MemoryStream y_ScaleStream = new MemoryStream(Resources.y_scale);
+			MemoryStream z_ScaleStream = new MemoryStream(Resources.z_scale);
 			#endregion
 
 			#region Temporary ExtendedMaterials
-			Microsoft.DirectX.Direct3D.ExtendedMaterial[] xMaterials;
-			Microsoft.DirectX.Direct3D.ExtendedMaterial[] yMaterials;
-			Microsoft.DirectX.Direct3D.ExtendedMaterial[] zMaterials;
-			Microsoft.DirectX.Direct3D.ExtendedMaterial[] doubleAxisMaterials;
+			ExtendedMaterial[] xMaterials;
+			ExtendedMaterial[] yMaterials;
+			ExtendedMaterial[] zMaterials;
+			ExtendedMaterial[] doubleAxisMaterials;
 			#endregion
 
 			#region Loading Meshes and Materials from Streams
@@ -142,15 +137,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			BoxMesh = TexturedBox;
 
-			XMaterial = new SAModel.Material() { DiffuseColor = xMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			YMaterial = new SAModel.Material() { DiffuseColor = yMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			ZMaterial = new SAModel.Material() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			DoubleAxisMaterial = new SAModel.Material() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			HighlightMaterial = new Material() { DiffuseColor = System.Drawing.Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			XMaterial = new Material() { DiffuseColor = xMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			YMaterial = new Material() { DiffuseColor = yMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			ZMaterial = new Material() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			DoubleAxisMaterial = new Material() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			HighlightMaterial = new Material() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 
-			ATexture = Texture.FromBitmap(d3dDevice, Properties.Resources.PointATexture, Usage.AutoGenerateMipMap, Pool.Managed);
-			BTexture = Texture.FromBitmap(d3dDevice, Properties.Resources.PointBTexture, Usage.AutoGenerateMipMap, Pool.Managed);
-			StandardMaterial = new Material() { DiffuseColor = System.Drawing.Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
+			ATexture = Texture.FromBitmap(d3dDevice, Resources.PointATexture, Usage.AutoGenerateMipMap, Pool.Managed);
+			BTexture = Texture.FromBitmap(d3dDevice, Resources.PointBTexture, Usage.AutoGenerateMipMap, Pool.Managed);
+			StandardMaterial = new Material() { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
 			#endregion
 
 			#region Cleanup

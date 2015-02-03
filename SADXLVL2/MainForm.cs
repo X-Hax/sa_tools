@@ -1556,30 +1556,43 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.None:
-					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
 					Matrix proj = d3ddevice.Transform.Projection;
 					Matrix view = d3ddevice.Transform.View;
-					Vector3 Near, Far;
-					Near = mousepos;
+					Vector3 Near = mousepos;
 					Near.Z = 0;
-					Far = Near;
+					Vector3 Far = Near;
 					Far.Z = -1;
 
 					GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
 					transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
-					if (oldSelection != transformGizmo.SelectedAxes) { transformGizmo.Draw(d3ddevice, cam); break; }
+					if (oldSelection != transformGizmo.SelectedAxes)
+					{
+						transformGizmo.Draw(d3ddevice, cam);
+						d3ddevice.Present();
+						break;
+					}
 
 					GizmoSelectedAxes oldCamA = cameraPointA.SelectedAxes;
 					cameraPointA.SelectedAxes = cameraPointA.CheckHit(Near, Far, viewport, proj, view, cam);
-					if (oldCamA != cameraPointA.SelectedAxes) { cameraPointA.Draw(d3ddevice, cam); break; }
+					if (oldCamA != cameraPointA.SelectedAxes)
+					{
+						cameraPointA.Draw(d3ddevice, cam);
+						d3ddevice.Present();
+						break;
+					}
 
 					if (cameraPointA.SelectedAxes == GizmoSelectedAxes.NONE)
 					{
 						GizmoSelectedAxes oldCamB = cameraPointB.SelectedAxes;
 						cameraPointB.SelectedAxes = cameraPointB.CheckHit(Near, Far, viewport, proj, view, cam);
-						if (oldCamB != cameraPointB.SelectedAxes) { cameraPointB.Draw(d3ddevice, cam); break; }
+						if (oldCamB != cameraPointB.SelectedAxes)
+						{
+							cameraPointB.Draw(d3ddevice, cam);
+							d3ddevice.Present();
+							break;
+						}
 					}
 
 					mouseLast = mouseEvent;
