@@ -1170,8 +1170,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			d3ddevice.EndScene(); // scene drawings go before this line
-			d3ddevice.Present();
-
 			// draw helper cubes before clearing depth buffer
 			cameraPointA.DrawBox(d3ddevice, cam);
 			cameraPointB.DrawBox(d3ddevice, cam);
@@ -1179,6 +1177,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			transformGizmo.Draw(d3ddevice, cam);
 			cameraPointA.Draw(d3ddevice, cam);
 			cameraPointB.Draw(d3ddevice, cam);
+
+			d3ddevice.Present();
 		}
 
 		private void UpdateTitlebar()

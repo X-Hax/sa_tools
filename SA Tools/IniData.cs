@@ -2494,8 +2494,11 @@ namespace SA_Tools
 			address += Vertex.Size;
 		}
 
+		[IniAlwaysInclude]
 		public SA1LevelIDs Level { get; set; }
+		[IniAlwaysInclude]
 		public byte Act { get; set; }
+		[IniAlwaysInclude]
 		public byte LightNum { get; set; }
 		public bool UseDirection { get; set; }
 		public Vertex Direction { get; set; }
