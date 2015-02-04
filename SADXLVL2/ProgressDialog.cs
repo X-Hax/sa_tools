@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		/// <summary>
 		/// Gets or sets the enabled state of the close options.
-		/// If true, the auto-close checkbox and OK buttons will be disabled.
+		/// If true, the auto-close checkbox and OK button will be disabled.
 		/// </summary>
 		public bool EnableCloseOptions
 		{
@@ -90,7 +90,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		/// <summary>
 		/// Increments the progress bar by one step.
-		/// If 
 		/// </summary>
 		public void StepProgress()
 		{
