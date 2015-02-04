@@ -21,6 +21,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 namespace SonicRetro.SAModel.SADXLVL2
 {
 	// TODO: Organize this whole class.
+	// TODO: Unify as much SET/CAM load and save code as possible. They're practically identical.
 	public partial class MainForm : Form
 	{
 		Properties.Settings Settings = Properties.Settings.Default;
@@ -267,7 +268,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		// TODO: Move this stuff somewhere that it can be accessed by all projects
 		
-		// Iterates recursively through "menu" and unchecks all sub-items.
+		/// <summary>
+		/// Iterates recursively through menu items and unchecks all sub-items.
+		/// </summary>
+		/// <param name="menu">The parent menu of the items to be unchecked.</param>
 		private static void UncheckMenuItems(ToolStripDropDownItem menu)
 		{
 			foreach (ToolStripMenuItem i in menu.DropDownItems)
@@ -279,8 +283,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		// Unchecks all children of parent and checks target.
-		// If parent is null (default), it uses target.OwnerItem instead.
+		/// <summary>
+		/// Unchecks all children of the parent object and checks the target.
+		/// </summary>
+		/// <param name="target">The item to check</param>
+		/// <param name="parent">The parent menu containing the target.</param>
 		private static void CheckMenuItem(ToolStripMenuItem target, ToolStripItem parent = null)
 		{
 			if (target == null)
@@ -293,8 +300,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			target.Checked = true;
 		}
 
-		// Iterates recursively through parent and checks the first item it finds with a matching Tag.
-		// If firstOf is true, recursion stops after the first match.
+		/// <summary>
+		/// Iterates recursively through the parent and checks the first item it finds with a matching Tag.
+		/// If firstOf is true, recursion stops after the first match.
+		/// </summary>
+		/// <param name="parent">The parent menu.</param>
+		/// <param name="tag">The tag to search for.</param>
+		/// <param name="firstOf">If true, recursion stops after the first match.</param>
+		/// <returns></returns>
 		private static bool CheckMenuItemByTag(ToolStripDropDownItem parent, string tag, bool firstOf = true)
 		{
 			foreach (ToolStripMenuItem i in parent.DropDownItems)
@@ -369,11 +382,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 #endif
 		}
 
-		void LoadTextureList(string keyA, string keyB, string systemPath)
+		/// <summary>
+		/// Loads all of the textures from the two keys in the INI into the scene.
+		/// </summary>
+		/// <param name="iniSection">The section in the INI (usually string.Empty).</param>
+		/// <param name="iniKey">The key in the INI.</param>
+		/// <param name="systemPath">The game's system path.</param>
+		void LoadTextureList(string iniSection, string iniKey, string systemPath)
 		{
-			LoadTextureList(TextureList.Load(ini[keyA][keyB]), systemPath);
+			LoadTextureList(TextureList.Load(ini[iniSection][iniKey]), systemPath);
 		}
-
+		/// <summary>
+		/// Loads all of the textures specified into the scene.
+		/// </summary>
+		/// <param name="textureEntries">The texture entries to load.</param>
+		/// <param name="systemPath">The game's system path.</param>
 		private void LoadTextureList(TextureListEntry[] textureEntries, string systemPath)
 		{
 			foreach (TextureListEntry entry in textureEntries)
@@ -384,19 +407,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LoadPVM(entry.Name, systemPath);
 			}
 		}
-
-		void LoadPVM(string pvmPath, string systemPath)
+		/// <summary>
+		/// Loads textures from a PVM into the scene.
+		/// </summary>
+		/// <param name="pvmName">The PVM name (name only; no path or extension).</param>
+		/// <param name="systemPath">The game's system path.</param>
+		void LoadPVM(string pvmName, string systemPath)
 		{
-			if (!LevelData.TextureBitmaps.ContainsKey(pvmPath))
+			if (!LevelData.TextureBitmaps.ContainsKey(pvmName))
 			{
-				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmPath) + ".PVM");
+				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmName) + ".PVM");
 				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
 
 				for (int i = 0; i < textureBitmaps.Length; i++)
 					d3dTextures[i] = new Texture(d3ddevice, textureBitmaps[i].Image, Usage.None, Pool.Managed);
 
-				LevelData.TextureBitmaps.Add(pvmPath, textureBitmaps);
-				LevelData.Textures.Add(pvmPath, d3dTextures);
+				LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
+				LevelData.Textures.Add(pvmName, d3dTextures);
 			}
 		}
 
@@ -415,7 +442,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
 				{
-					LevelData.Character = 0;
+					//LevelData.Character = 0;
 					Dictionary<string, string> group = ini[levelID];
 					string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
 					string modpath = null;
@@ -1061,8 +1088,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+
 				if (posini.ContainsKey(levelact))
 					posini.Remove(levelact);
+
 				if (LevelData.StartPositions[i].Position.X != 0 | LevelData.StartPositions[i].Position.Y != 0 | LevelData.StartPositions[i].Position.Z != 0 | LevelData.StartPositions[i].Rotation.Y != 0)
 				{
 					posini.Add(levelact,
@@ -1104,15 +1133,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (modpath != null)
 						setstr = Path.Combine(modpath, setstr);
 
+					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
 					if (File.Exists(setstr))
 						File.Delete(setstr);
 					if (LevelData.SETItems[i].Count == 0)
 						continue;
+
 					List<byte> file = new List<byte>(LevelData.SETItems[i].Count * 0x20 + 0x20);
 					file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
 					file.Align(0x20);
+
 					foreach (SETItem item in LevelData.SETItems[i])
 						file.AddRange(item.GetBytes());
+
 					File.WriteAllBytes(setstr, file.ToArray());
 				}
 			}
@@ -1131,6 +1164,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					string camString = Path.Combine(syspath, "CAM" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
 					if (modpath != null)
 						camString = Path.Combine(modpath, camString);
+
+					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
 					if (File.Exists(camString))
 						File.Delete(camString);
 
@@ -1170,14 +1205,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
 			cam.DrawDistance = 100000;
+			UpdateTitlebar();
+
+			#region D3D Parameters
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			UpdateTitlebar();
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
+			#endregion
+
 			d3ddevice.BeginScene();
 			//all drawings after this line
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
@@ -1196,23 +1235,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#region Adding Level Geometry
 			if (LevelData.LevelItems != null)
 			{
-				for (int i = 0; i < LevelData.LevelItems.Count; i++)
+				foreach (LevelItem item in LevelData.LevelItems)
 				{
 					bool display = false;
 
-					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+					if (visibleToolStripMenuItem.Checked && item.Visible)
 						display = true;
-					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+					else if (invisibleToolStripMenuItem.Checked && !item.Visible)
 						display = true;
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 
 					if (display)
-						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
 				}
 			}
-			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
 			#endregion
+
+			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
 
 			#region Adding SET Layout
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
@@ -1301,6 +1341,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return;
 
 				case MouseButtons.Left:
+					if ((cameraPointA.SelectedAxes != GizmoSelectedAxes.NONE)
+					    || (cameraPointB.SelectedAxes != GizmoSelectedAxes.NONE)
+					    || (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
+					{
+						return;
+					}
+
 					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 					HitResult dist;
 					Item item = null;
@@ -1314,9 +1361,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 					Far = Near;
 					Far.Z = -1;
 
-					if (cameraPointA.SelectedAxes != GizmoSelectedAxes.NONE) return;
-					if (cameraPointB.SelectedAxes != GizmoSelectedAxes.NONE) return;
-					if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
 					#region Picking Level Items
 					if (LevelData.LevelItems != null)
@@ -1381,8 +1425,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					#endregion
 
 					#region Picking Death Zones
+
 					if (LevelData.DeathZones != null)
+					{
 						foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+						{
 							if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
 							{
 								dist = dzitem.CheckHit(Near, Far, viewport, proj, view);
@@ -1392,6 +1439,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 									item = dzitem;
 								}
 							}
+						}
+					}
+
 					#endregion
 
 					if (item != null)
@@ -1418,8 +1468,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.Right:
 					bool cancopy = false;
 					foreach (Item obj in SelectedItems)
+					{
 						if (obj.CanCopy)
 							cancopy = true;
+					}
 					if (cancopy)
 					{
 						/*cutToolStripMenuItem.Enabled = true;
@@ -1458,8 +1510,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (!e.Alt) lookKeyDown = false;
-			if (!e.Control) zoomKeyDown = false;
+			lookKeyDown = e.Alt;
+			zoomKeyDown = e.Control;
 		}
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
@@ -1496,11 +1548,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					if (cam.mode == 1)
 					{
-						if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+						if (SelectedItems.Count > 0)
+							cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
 						else
-						{
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
-						}
 					}
 
 					draw = true;
@@ -1749,11 +1800,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			List<Item> selitems = new List<Item>();
 			foreach (Item item in SelectedItems)
+			{
 				if (item.CanCopy)
 				{
 					item.Delete();
 					selitems.Add(item);
 				}
+			}
 			SelectedItems.Clear();
 			SelectedItemChanged();
 			DrawLevel();
@@ -1765,9 +1818,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			List<Item> selitems = new List<Item>();
 			foreach (Item item in SelectedItems)
+			{
 				if (item.CanCopy)
 					selitems.Add(item);
-			if (selitems.Count == 0) return;
+			}
+
+			if (selitems.Count == 0)
+				return;
+
 			Clipboard.SetData("SADXLVLObjectList", selitems);
 		}
 
@@ -1780,16 +1838,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				MessageBox.Show("Paste operation failed - this is a known issue and is being worked on.");
 				return; // todo: finish implementing proper copy/paste
 			}
+
 			List<Item> objs = (List<Item>)obj;
 			Vector3 center = new Vector3();
+
 			foreach (Item item in objs)
 				center.Add(item.Position.ToVector3());
+
 			center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
 			foreach (Item item in objs)
 			{
 				item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
 				item.Paste();
 			}
+
 			SelectedItems = new List<Item>(objs);
 			SelectedItemChanged();
 			DrawLevel();
@@ -1798,8 +1860,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			foreach (Item item in SelectedItems)
+			{
 				if (item.CanCopy)
 					item.Delete();
+			}
+
 			SelectedItems.Clear();
 			SelectedItemChanged();
 			DrawLevel();
