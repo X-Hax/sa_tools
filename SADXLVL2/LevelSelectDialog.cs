@@ -6,11 +6,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
 	public partial class LevelSelectDialog : Form
 	{
+		/// <summary>
+		/// Gets the "tag" for the selected stage. (e.g "Action Stages\Emerald Coast")
+		/// </summary>
 		public string SelectedStage { get; private set; }
 		
 		private readonly Dictionary<string, List<string>> levels;
 
 		// TODO: Add parameter to select last loaded stage on open.
+
+		/// <summary>
+		/// Initializes a LevelSelect dialog with a dropdown list of categories and a list of levels below.
+		/// </summary>
+		/// <param name="levels">A dictionary containing the list of levels to populate the dialog with.</param>
 		public LevelSelectDialog(Dictionary<string, List<string>> levels)
 		{
 			InitializeComponent();

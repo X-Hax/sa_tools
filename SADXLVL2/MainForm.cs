@@ -413,7 +413,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				toolStrip1.Enabled = false;
 
-				using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, steps))
+				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
 				{
 					LevelData.Character = 0;
 					Dictionary<string, string> group = ini[levelID];
@@ -1032,7 +1032,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!isStageLoaded) return;
+			if (!isStageLoaded)
+				return;
+
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 5, true, false);
+			progress.Show(this); Application.DoEvents();
 
 			Dictionary<string, string> group = ini[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
@@ -1040,11 +1044,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (ini[string.Empty].ContainsKey("modpath"))
 				modpath = ini[string.Empty]["modpath"];
 			SA1LevelAct levelact = new SA1LevelAct(group.GetValueOrDefault("LevelID", "0000"));
+
+			progress.SetTaskAndStep("Saving:", "Geometry...");
+
 			if (LevelData.geo != null)
 			{
 				LevelData.geo.Tool = "SADXLVL2";
 				LevelData.geo.SaveToFile(group["LevelGeo"], LandTableFormat.SA1);
 			}
+
+			progress.StepProgress();
+
+			progress.Step = "Start positions...";
+			Application.DoEvents();
+
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
@@ -1061,6 +1074,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				posini.Save(ini[string.Empty][LevelData.Characters[i] + "start"]);
 			}
+
+			progress.StepProgress();
+
+			progress.Step = "Death zones...";
+			Application.DoEvents();
+
 			if (LevelData.DeathZones != null)
 			{
 				DeathZoneFlags[] dzini = new DeathZoneFlags[LevelData.DeathZones.Count];
@@ -1070,7 +1089,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 				dzini.Save(group["DeathZones"]);
 			}
 
+			progress.StepProgress();
+
 			#region Saving SET Items
+
+			progress.Step = "SET items...";
+			Application.DoEvents();
+
 			if (LevelData.SETItems != null)
 			{
 				for (int i = 0; i < LevelData.SETItems.Length; i++)
@@ -1091,9 +1116,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					File.WriteAllBytes(setstr, file.ToArray());
 				}
 			}
+
+			progress.StepProgress();
 			#endregion
 
 			#region Saving CAM Items
+			progress.Step = "CAM items...";
+			Application.DoEvents();
+
 			if (LevelData.CAMItems != null)
 			{
 				for (int i = 0; i < LevelData.CAMItems.Length; i++)
@@ -1118,8 +1148,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					File.WriteAllBytes(camString, file.ToArray());
 				}
 			}
+
+			progress.StepProgress();
+			progress.SetTaskAndStep("Save complete!");
+			Application.DoEvents();
+
 			#endregion
 		}
+
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -1940,9 +1976,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
-					ProgressDialog progress = new ProgressDialog("Exporting stage...", stepCount);
-					progress.Show();
-					progress.Task = "Exporting:";
+					ProgressDialog progress = new ProgressDialog("Exporting stage: " + levelName, stepCount, true, false);
+					progress.Show(this);
+					progress.SetTaskAndStep("Exporting...");
 
 					// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
 					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
@@ -2004,8 +2040,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
 
-					progress.Close();
-					MessageBox.Show("Export complete!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					progress.SetTaskAndStep("Export complete!");
 				}
 			}
 		}

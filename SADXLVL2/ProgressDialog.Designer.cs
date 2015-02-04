@@ -31,6 +31,8 @@
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.labelTask = new System.Windows.Forms.Label();
 			this.labelStep = new System.Windows.Forms.Label();
+			this.checkAutoClose = new System.Windows.Forms.CheckBox();
+			this.buttonOK = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// progressBar
@@ -62,12 +64,37 @@
 			this.labelStep.TabIndex = 2;
 			this.labelStep.Text = "labelStep";
 			// 
+			// checkAutoClose
+			// 
+			this.checkAutoClose.AutoSize = true;
+			this.checkAutoClose.Location = new System.Drawing.Point(12, 72);
+			this.checkAutoClose.Name = "checkAutoClose";
+			this.checkAutoClose.Size = new System.Drawing.Size(127, 17);
+			this.checkAutoClose.TabIndex = 3;
+			this.checkAutoClose.Text = "&Close when complete";
+			this.checkAutoClose.UseVisualStyleBackColor = true;
+			this.checkAutoClose.CheckedChanged += new System.EventHandler(this.checkAutoClose_CheckedChanged);
+			// 
+			// buttonOK
+			// 
+			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOK.Location = new System.Drawing.Point(281, 68);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(75, 23);
+			this.buttonOK.TabIndex = 4;
+			this.buttonOK.Text = "&OK";
+			this.buttonOK.UseVisualStyleBackColor = true;
+			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+			// 
 			// ProgressDialog
 			// 
+			this.AcceptButton = this.buttonOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(368, 74);
+			this.ClientSize = new System.Drawing.Size(368, 103);
 			this.ControlBox = false;
+			this.Controls.Add(this.buttonOK);
+			this.Controls.Add(this.checkAutoClose);
 			this.Controls.Add(this.labelStep);
 			this.Controls.Add(this.labelTask);
 			this.Controls.Add(this.progressBar);
@@ -78,8 +105,7 @@
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "ProgressDialog";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgressDialog_FormClosing);
-			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
+			this.Load += new System.EventHandler(this.ProgressDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -90,5 +116,7 @@
 		private System.Windows.Forms.ProgressBar progressBar;
 		private System.Windows.Forms.Label labelTask;
 		private System.Windows.Forms.Label labelStep;
+		private System.Windows.Forms.CheckBox checkAutoClose;
+		private System.Windows.Forms.Button buttonOK;
 	}
 }
