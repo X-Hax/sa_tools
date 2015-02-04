@@ -22,6 +22,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 {
 	// TODO: Organize this whole class.
 	// TODO: Unify as much SET/CAM load and save code as possible. They're practically identical.
+	// TODO: Rename controls to be more distinguishable.
+	// (Example: sETItemsToolStripMenuItem1 is a dropdown menu. sETITemsToolStripMenuItem is a toggle.)
 	public partial class MainForm : Form
 	{
 		Properties.Settings Settings = Properties.Settings.Default;
@@ -222,6 +224,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// ...so that it can be re-inserted at the top of the Recent Projects list.
 			Settings.MRUList.Insert(0, filename);
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
+
+			// File menu -> Change Level
+			changeLevelToolStripMenuItem.Enabled = true;
 		}
 
 		private void PopulateLevelMenu(ToolStripMenuItem targetMenu, Dictionary<string, List<string>> levels)
@@ -1021,16 +1026,40 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 			}
 
-			levelPieceToolStripMenuItem.Enabled = LevelData.geo != null;
-			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
-			objectToolStripMenuItem.Enabled = LevelData.SETItems != null;
-			importToolStripMenuItem.Enabled = LevelData.geo != null;
-			exportOBJToolStripMenuItem.Enabled = LevelData.geo != null;
-			statsToolStripMenuItem.Enabled = LevelData.geo != null;
-			deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
+			bool isGeometryPresent = LevelData.geo != null;
+			bool isSETPreset = LevelData.SETItems != null;
+			bool isDeathZonePresent = LevelData.DeathZones != null;
 
-			if (LevelData.DeathZones == null)
-				deathZonesToolStripMenuItem.Checked = false;
+			// Context menu
+			// Add -> Level Piece
+			// Does this even make sense? This thing prompts the user to import a model,
+			// not select an existing one...
+			levelPieceToolStripMenuItem.Enabled = isGeometryPresent;
+			// Add -> Object
+			objectToolStripMenuItem.Enabled = isSETPreset;
+
+			// File menu
+			// Save
+			saveToolStripMenuItem.Enabled = true;
+			// Import
+			importToolStripMenuItem.Enabled = isGeometryPresent;
+			// Export
+			exportOBJToolStripMenuItem.Enabled = isGeometryPresent;
+
+			// Edit menu
+			// Clear Level
+			clearLevelToolStripMenuItem.Enabled = isGeometryPresent;
+			// SET Items submenu
+			// Gotta clear up these names at some point...
+			// Drop the 1, and you get the dropdown menu under View.
+			sETItemsToolStripMenuItem1.Enabled = true;
+			// Duplicate
+			duplicateToolStripMenuItem.Enabled = true;
+
+			// The whole view menu!
+			viewToolStripMenuItem.Enabled = true;
+			statsToolStripMenuItem.Enabled = isGeometryPresent;
+			deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 
 			isStageLoaded = true;
 			SelectedItems = new List<Item>();
@@ -1059,25 +1088,31 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			SaveStage();
+		}
+
+		private void SaveStage()
+		{
 			if (!isStageLoaded)
 				return;
 
 			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 5, true, false);
-			progress.Show(this); Application.DoEvents();
+			progress.Show(this);
+			Application.DoEvents();
 
 			Dictionary<string, string> group = ini[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
 			string modpath = null;
 			if (ini[string.Empty].ContainsKey("modpath"))
 				modpath = ini[string.Empty]["modpath"];
-			SA1LevelAct levelact = new SA1LevelAct(group.GetValueOrDefault("LevelID", "0000"));
+			SA1LevelAct levelact = new SA1LevelAct(@group.GetValueOrDefault("LevelID", "0000"));
 
 			progress.SetTaskAndStep("Saving:", "Geometry...");
 
 			if (LevelData.geo != null)
 			{
 				LevelData.geo.Tool = "SADXLVL2";
-				LevelData.geo.SaveToFile(group["LevelGeo"], LandTableFormat.SA1);
+				LevelData.geo.SaveToFile(@group["LevelGeo"], LandTableFormat.SA1);
 			}
 
 			progress.StepProgress();
@@ -1087,12 +1122,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
-				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+				Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
+					SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
 
 				if (posini.ContainsKey(levelact))
 					posini.Remove(levelact);
 
-				if (LevelData.StartPositions[i].Position.X != 0 | LevelData.StartPositions[i].Position.Y != 0 | LevelData.StartPositions[i].Position.Z != 0 | LevelData.StartPositions[i].Rotation.Y != 0)
+				if (LevelData.StartPositions[i].Position.X != 0 | LevelData.StartPositions[i].Position.Y != 0 |
+				    LevelData.StartPositions[i].Position.Z != 0 | LevelData.StartPositions[i].Rotation.Y != 0)
 				{
 					posini.Add(levelact,
 						new SA1StartPosInfo()
@@ -1112,10 +1149,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.DeathZones != null)
 			{
 				DeathZoneFlags[] dzini = new DeathZoneFlags[LevelData.DeathZones.Count];
-				string path = Path.GetDirectoryName(group["DeathZones"]);
+				string path = Path.GetDirectoryName(@group["DeathZones"]);
 				for (int i = 0; i < LevelData.DeathZones.Count; i++)
 					dzini[i] = LevelData.DeathZones[i].Save(path, i);
-				dzini.Save(group["DeathZones"]);
+				dzini.Save(@group["DeathZones"]);
 			}
 
 			progress.StepProgress();
@@ -1139,7 +1176,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (LevelData.SETItems[i].Count == 0)
 						continue;
 
-					List<byte> file = new List<byte>(LevelData.SETItems[i].Count * 0x20 + 0x20);
+					List<byte> file = new List<byte>(LevelData.SETItems[i].Count*0x20 + 0x20);
 					file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
 					file.Align(0x20);
 
@@ -1151,9 +1188,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			progress.StepProgress();
+
 			#endregion
 
 			#region Saving CAM Items
+
 			progress.Step = "CAM items...";
 			Application.DoEvents();
 
@@ -1172,7 +1211,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (LevelData.CAMItems[i].Count == 0)
 						continue;
 
-					List<byte> file = new List<byte>(LevelData.CAMItems[i].Count * 0x40 + 0x40); // setting up file size and header
+					List<byte> file = new List<byte>(LevelData.CAMItems[i].Count*0x40 + 0x40); // setting up file size and header
 					file.AddRange(BitConverter.GetBytes(LevelData.CAMItems[i].Count));
 					file.Align(0x40);
 
@@ -1303,7 +1342,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void UpdateTitlebar()
 		{
-			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
+			Text = "SADXLVL2 - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z
+				+ " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X")
+				+ " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
 		}
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
@@ -1312,22 +1353,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		#region User Keyboard / Mouse Methods
-		private void MainForm_KeyDown(object sender, KeyEventArgs e)
-		{
-			switch (e.KeyCode)
-			{
-				case Keys.O:
-					if (e.Control)
-						openToolStripMenuItem_Click(sender, EventArgs.Empty);
-					break;
-				case Keys.S:
-					if (!isStageLoaded) return;
-					if (e.Control)
-						saveToolStripMenuItem_Click(sender, EventArgs.Empty);
-					break;
-			}
-		}
-
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (!isStageLoaded)
@@ -1588,6 +1613,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					UpdateTitlebar();
 					break;
+
+				case Keys.Tab:
+					if (isStageLoaded && e.Control)
+					{
+						if (e.Shift)
+							LevelData.Character = LevelData.Character - 1;
+						else
+							LevelData.Character = (LevelData.Character + 1)%6;
+
+						if (LevelData.Character < 0)
+							LevelData.Character = 5;
+
+						characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
+					}
+					break;
+
 			}
 
 			if (draw)
