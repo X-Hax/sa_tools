@@ -20,6 +20,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
+	// TODO: Organize this whole class.
 	public partial class MainForm : Form
 	{
 		Properties.Settings Settings = Properties.Settings.Default;
@@ -60,25 +61,40 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.StateChanged += LevelData_StateChanged;
 			panel1.MouseWheel += panel1_MouseWheel;
 
-			bool showLevelDialog;
+			if (ShowQuickStart())
+				ShowLevelSelect();
+		}
+
+		private bool ShowQuickStart()
+		{
+			bool result;
 			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
 			{
-				if (showLevelDialog = (dialog.ShowDialog() == DialogResult.OK))
+				if (result = (dialog.ShowDialog() == DialogResult.OK))
 					LoadINI(dialog.SelectedItem);
 			}
+			return result;
+		}
 
-			if (showLevelDialog)
+		private void ShowLevelSelect()
+		{
+			string stageToLoad = string.Empty;
+			using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
 			{
-				// TODO: Check the level selected by this dialog in changeLevelToolStripMenuItem
-				string stageToLoad = string.Empty;
-				using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
+				if (dialog.ShowDialog() == DialogResult.OK)
+					stageToLoad = dialog.SelectedStage;
+			}
+
+			if (!string.IsNullOrEmpty(stageToLoad))
+			{
+				if (isStageLoaded)
 				{
-					if (dialog.ShowDialog() == DialogResult.OK)
-						stageToLoad = dialog.SelectedStage;
+					if (SavePrompt() == DialogResult.Cancel)
+						return;
 				}
 
-				if (!string.IsNullOrEmpty(stageToLoad))
-					LoadStage(stageToLoad);
+				CheckMenuItemByTag(changeLevelToolStripMenuItem, stageToLoad);
+				LoadStage(stageToLoad);
 			}
 		}
 
@@ -249,8 +265,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
+		// TODO: Move this stuff somewhere that it can be accessed by all projects
+		
 		// Iterates recursively through "menu" and unchecks all sub-items.
-		// TODO: Move this somewhere that it can be accessed by all projects
 		private static void UncheckMenuItems(ToolStripDropDownItem menu)
 		{
 			foreach (ToolStripMenuItem i in menu.DropDownItems)
@@ -260,6 +277,48 @@ namespace SonicRetro.SAModel.SADXLVL2
 				else
 					i.Checked = false;
 			}
+		}
+
+		// Unchecks all children of parent and checks target.
+		// If parent is null (default), it uses target.OwnerItem instead.
+		private static void CheckMenuItem(ToolStripMenuItem target, ToolStripItem parent = null)
+		{
+			if (target == null)
+				return;
+
+			if (parent == null)
+				parent = target.OwnerItem;
+
+			UncheckMenuItems((ToolStripDropDownItem)parent);
+			target.Checked = true;
+		}
+
+		// Iterates recursively through parent and checks the first item it finds with a matching Tag.
+		// If firstOf is true, recursion stops after the first match.
+		private static bool CheckMenuItemByTag(ToolStripDropDownItem parent, string tag, bool firstOf = true)
+		{
+			foreach (ToolStripMenuItem i in parent.DropDownItems)
+			{
+				if (i.HasDropDownItems)
+				{
+					if (CheckMenuItemByTag(i, tag, firstOf))
+						return true;
+				}
+				else if ((string)i.Tag == tag)
+				{
+					if (firstOf)
+					{
+						CheckMenuItem(i, parent);
+						return true;
+					}
+					else
+					{
+						i.Checked = true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		private DialogResult SavePrompt()
@@ -317,23 +376,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-				int steps = (d3ddevice != null) ? 8 : 9;
+				int steps = 9;
+				if (d3ddevice == null)
+					++steps;
+
 				toolStrip1.Enabled = false;
 
 				using (ProgressDialog progress = new ProgressDialog("Loading " + levelName, steps))
 				{
-					Invoke((Action<IWin32Window>)progress.Show, this);
-
-					if (d3ddevice == null)
-					{
-						progress.SetTask("Initializing Direct3D...");
-						Invoke((Action)InitializeDirect3D);
-						progress.StepProgress();
-					}
-
-					progress.SetTask("Geometry:");
-					progress.SetStep("I don't even know.");
-
 					LevelData.Character = 0;
 					Dictionary<string, string> group = ini[levelID];
 					string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
@@ -346,6 +396,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.leveltexs = null;
 					cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
+					Invoke((Action<IWin32Window>)progress.Show, this);
+
+					if (d3ddevice == null)
+					{
+						progress.SetTask("Initializing Direct3D...");
+						Invoke((Action)InitializeDirect3D);
+						progress.StepProgress();
+					}
+
+					progress.SetTaskAndStep("Loading level data:", "Geometry");
+
 					if (!group.ContainsKey("LevelGeo"))
 						LevelData.geo = null;
 					else
@@ -355,6 +416,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
 							LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i));
 					}
+
+					progress.StepProgress();
+					progress.SetStep("Textures");
 
 					LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 					LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -376,11 +440,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#region Start Positions
 
-					progress.SetTask("Start positions:");
+					progress.SetTaskAndStep("Setting up start positions...");
 
 					LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
 					for (int i = 0; i < LevelData.StartPositions.Length; i++)
 					{
+						progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
+
 						Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
 							SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
 
@@ -430,8 +496,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#region Death Zones
 
-					progress.SetTask("Death Zones:");
-					progress.SetStep("Initializing...");
+					progress.SetTaskAndStep("Death Zones:", "Initializing...");
 
 					if (!group.ContainsKey("DeathZones"))
 						LevelData.DeathZones = null;
@@ -443,6 +508,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						for (int i = 0; i < dzini.Length; i++)
 						{
 							progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+
 							LevelData.DeathZones.Add(new DeathZoneItem(
 								new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
 									.Model,
@@ -450,15 +516,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 					}
 
-					progress.SetStep("I don't even know.");
 					progress.StepProgress();
 
 					#endregion
 
 					#region Textures and Texture Lists
 
-					progress.SetTask("Loading textures for:");
-					progress.SetStep("I don't even know.");
+					progress.SetTaskAndStep("Loading textures for:", "I don't even know");
+
+					// TODO: Can somebody comment this stuff so I know what's going on? (cont)
+					// If so, I'll go ahead and split some of this duplicate stuff out to a method to reduce code size.
 
 					TextureListEntry[] objtexini = TextureList.Load(ini[string.Empty]["objtexlist"]);
 					for (int oti = 0; oti < objtexini.Length; oti++)
@@ -468,12 +535,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 						{
 							BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
 							Texture[] texs = new Texture[TexBmps.Length];
+
 							for (int j = 0; j < TexBmps.Length; j++)
 								texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
+
 							LevelData.TextureBitmaps.Add(texname, TexBmps);
 							LevelData.Textures.Add(texname, texs);
 						}
 					}
+
 					foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
 					{
 						LevelTextureList texini = LevelTextureList.Load(file);
@@ -486,13 +556,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 							{
 								BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
 								Texture[] texs = new Texture[TexBmps.Length];
+
 								for (int j = 0; j < TexBmps.Length; j++)
 									texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
+
 								LevelData.TextureBitmaps.Add(texname, TexBmps);
 								LevelData.Textures.Add(texname, texs);
 							}
 						}
 					}
+
 					objtexini = TextureList.Load(group["ObjTexs"]);
 					for (int oti = 0; oti < objtexini.Length; oti++)
 					{
@@ -501,12 +574,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 						{
 							BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
 							Texture[] texs = new Texture[TexBmps.Length];
+
 							for (int j = 0; j < TexBmps.Length; j++)
 								texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
+
 							LevelData.TextureBitmaps.Add(texname, TexBmps);
 							LevelData.Textures.Add(texname, texs);
 						}
 					}
+
 					if (group.ContainsKey("Textures"))
 					{
 						string[] textures = group["Textures"].Split(',');
@@ -532,8 +608,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#region Object Definitions / SET Layout
 
-					progress.SetTask("Loading Object Definitions:");
-					progress.SetStep("Parsing...");
+					progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 					LevelData.ObjDefs = new List<ObjectDefinition>();
 					Dictionary<string, ObjectData> objdefini =
@@ -559,6 +634,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							{
 								progress.SetStep("Compiling: " + defgroup.CodeFile);
 
+								// TODO: Split this out to a function
 								#region Compile object code files
 
 								string ty = defgroup.CodeType;
@@ -631,14 +707,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
 									!LevelData.Textures.ContainsKey(defgroup.Texture))
 								{
-									ObjectData error = new ObjectData();
-
-									error.Name = defgroup.Name;
-									error.Model = defgroup.Model;
-									error.Texture = defgroup.Texture;
-
+									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
 									objectErrors.Add(error);
-
 									defgroup.Model = null;
 								}
 							}
@@ -648,8 +718,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 
 						// Loading SET Layout
-						progress.SetTask("Loading SET:");
-						progress.SetStep("Initializing...");
+						progress.SetTaskAndStep("Loading SET items", "Initializing...");
 
 						if (LevelData.ObjDefs.Count > 0)
 						{
@@ -671,12 +740,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 								if (setfile != null)
 								{
-									progress.SetStep(formatted);
+									progress.SetTask("SET: " + formatted.Replace(Environment.CurrentDirectory, ""));
 
 									int count = BitConverter.ToInt32(setfile, 0);
 									int address = 0x20;
 									for (int j = 0; j < count; j++)
 									{
+										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
 										SETItem ent = new SETItem(setfile, address);
 										list.Add(ent);
 										address += 0x20;
@@ -700,7 +771,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							foreach (ObjectData o in objectErrors)
 							{
 								bool texEmpty = string.IsNullOrEmpty(o.Texture);
-								bool texExists = (string.IsNullOrEmpty(o.Texture)) ? false : LevelData.Textures.ContainsKey(o.Texture);
+								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
 								errorStrings.Add("");
 								errorStrings.Add("Object:\t\t" + o.Name);
 								errorStrings.Add("\tModel:");
@@ -732,8 +803,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#region CAM Layout
 
-					progress.SetTask("Loading CAM:");
-					progress.SetStep("Initializing...");
+					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
 					LevelData.CAMName = ((int)levelact.Level).ToString("00") + levelact.Act.ToString("00");
 					string camstr = Path.Combine(syspath, "CAM" + LevelData.CAMName + "{0}.bin");
@@ -753,12 +823,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (camfile != null)
 						{
-							progress.SetStep(formatted);
+							progress.SetTask("CAM: " + formatted.Replace(Environment.CurrentDirectory, ""));
 
 							int count = BitConverter.ToInt32(camfile, 0);
 							int address = 0x40;
 							for (int j = 0; j < count; j++)
 							{
+								progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
 								CAMItem ent = new CAMItem(camfile, address);
 								list.Add(ent);
 								address += 0x40;
@@ -779,8 +851,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.leveleff = null;
 					if (group.ContainsKey("Effects"))
 					{
-						progress.SetTask("Loading Level Effects:");
-						progress.SetStep("");
+						progress.SetTaskAndStep("Loading Level Effects...");
 
 						LevelDefinition def = null;
 						string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(group["Effects"]);
@@ -850,8 +921,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					if (ini[string.Empty].ContainsKey("paths"))
 					{
-						progress.SetTask("Loading Splines:");
-						progress.SetStep("Reticulating Splines");
+						progress.SetTaskAndStep("Reticulating splines...", null);
 
 						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["paths"]),
 							levelact.ToString());
@@ -2184,6 +2254,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawLevel();
+		}
+
+		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowLevelSelect();
+		}
+
+		private void recentProjectsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowQuickStart();
 		}
 	}
 }

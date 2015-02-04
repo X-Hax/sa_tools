@@ -147,6 +147,7 @@
 			this.changeLevelToolStripMenuItem.Name = "changeLevelToolStripMenuItem";
 			this.changeLevelToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.changeLevelToolStripMenuItem.Text = "&Change Level...";
+			this.changeLevelToolStripMenuItem.Click += new System.EventHandler(this.changeLevelToolStripMenuItem_Click);
 			// 
 			// noneToolStripMenuItem
 			// 
@@ -186,12 +187,13 @@
 			this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.recentProjectsToolStripMenuItem.Text = "&Recent Projects";
 			this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProjectsToolStripMenuItem_DropDownItemClicked);
+			this.recentProjectsToolStripMenuItem.Click += new System.EventHandler(this.recentProjectsToolStripMenuItem_Click);
 			// 
 			// noneToolStripMenuItem2
 			// 
 			this.noneToolStripMenuItem2.Enabled = false;
 			this.noneToolStripMenuItem2.Name = "noneToolStripMenuItem2";
-			this.noneToolStripMenuItem2.Size = new System.Drawing.Size(109, 22);
+			this.noneToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
 			this.noneToolStripMenuItem2.Text = "(none)";
 			// 
 			// toolStripSeparator1

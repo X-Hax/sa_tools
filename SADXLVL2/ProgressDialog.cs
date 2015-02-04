@@ -62,6 +62,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 				labelStep.Text = str;
 		}
 
+		public void SetTaskAndStep(string task = null, string step = null)
+		{
+			if (InvokeRequired)
+			{
+				Invoke((Action<string, string>)SetTaskAndStep, task, step);
+			}
+			else
+			{
+				labelTask.Text = task;
+				labelStep.Text = step;
+			}
+		}
+
 		public void Complete()
 		{
 			if (InvokeRequired)
