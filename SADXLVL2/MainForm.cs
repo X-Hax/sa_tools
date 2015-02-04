@@ -369,6 +369,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 #endif
 		}
 
+		void LoadTextureList(string keyA, string keyB, string systemPath)
+		{
+			LoadTextureList(TextureList.Load(ini[keyA][keyB]), systemPath);
+		}
+
+		private void LoadTextureList(TextureListEntry[] textureEntries, string systemPath)
+		{
+			foreach (TextureListEntry entry in textureEntries)
+			{
+				if (string.IsNullOrEmpty(entry.Name))
+					continue;
+
+				LoadPVM(entry.Name, systemPath);
+			}
+		}
+
+		void LoadPVM(string pvmPath, string systemPath)
+		{
+			if (!LevelData.TextureBitmaps.ContainsKey(pvmPath))
+			{
+				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmPath) + ".PVM");
+				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
+
+				for (int i = 0; i < textureBitmaps.Length; i++)
+					d3dTextures[i] = new Texture(d3ddevice, textureBitmaps[i].Image, Usage.None, Pool.Managed);
+
+				LevelData.TextureBitmaps.Add(pvmPath, textureBitmaps);
+				LevelData.Textures.Add(pvmPath, d3dTextures);
+			}
+		}
+
 		bool initerror = false;
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
@@ -474,20 +505,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 										System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
 						}
 
-						TextureListEntry[] texini = TextureList.Load(ini[string.Empty][LevelData.Characters[i] + "texlist"]);
-						for (int ti = 0; ti < texini.Length; ti++)
-						{
-							string texname = texini[ti].Name;
-							if (!string.IsNullOrEmpty(texname) && !LevelData.TextureBitmaps.ContainsKey(texname))
-							{
-								BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
-								Texture[] texs = new Texture[TexBmps.Length];
-								for (int j = 0; j < TexBmps.Length; j++)
-									texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
-								LevelData.TextureBitmaps.Add(texname, TexBmps);
-								LevelData.Textures.Add(texname, texs);
-							}
-						}
+
+						LoadTextureList(string.Empty, LevelData.Characters[i] + "texlist", syspath);
 					}
 
 					progress.StepProgress();
@@ -522,81 +541,35 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#region Textures and Texture Lists
 
-					progress.SetTaskAndStep("Loading textures for:", "I don't even know");
+					progress.SetTaskAndStep("Loading textures for:");
 
 					// TODO: Can somebody comment this stuff so I know what's going on? (cont)
 					// If so, I'll go ahead and split some of this duplicate stuff out to a method to reduce code size.
 
-					TextureListEntry[] objtexini = TextureList.Load(ini[string.Empty]["objtexlist"]);
-					for (int oti = 0; oti < objtexini.Length; oti++)
-					{
-						string texname = objtexini[oti].Name;
-						if (!string.IsNullOrEmpty(texname) & !LevelData.TextureBitmaps.ContainsKey(texname))
-						{
-							BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
-							Texture[] texs = new Texture[TexBmps.Length];
+					progress.SetStep("Common objects");
+					LoadTextureList(string.Empty, "objtexlist", syspath);
 
-							for (int j = 0; j < TexBmps.Length; j++)
-								texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
-
-							LevelData.TextureBitmaps.Add(texname, TexBmps);
-							LevelData.Textures.Add(texname, texs);
-						}
-					}
-
+					progress.SetTaskAndStep("Loading stage texture lists...");
 					foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
 					{
 						LevelTextureList texini = LevelTextureList.Load(file);
 						if (texini.Level != levelact)
 							continue;
-						for (int ti = 0; ti < texini.TextureList.Length; ti++)
-						{
-							string texname = texini.TextureList[ti].Name;
-							if (!string.IsNullOrEmpty(texname) && !LevelData.TextureBitmaps.ContainsKey(texname))
-							{
-								BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
-								Texture[] texs = new Texture[TexBmps.Length];
-
-								for (int j = 0; j < TexBmps.Length; j++)
-									texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
-
-								LevelData.TextureBitmaps.Add(texname, TexBmps);
-								LevelData.Textures.Add(texname, texs);
-							}
-						}
+						
+						LoadTextureList(texini.TextureList, syspath);
 					}
 
-					objtexini = TextureList.Load(group["ObjTexs"]);
-					for (int oti = 0; oti < objtexini.Length; oti++)
-					{
-						string texname = objtexini[oti].Name;
-						if (!string.IsNullOrEmpty(texname) & !LevelData.TextureBitmaps.ContainsKey(texname))
-						{
-							BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, texname) + ".PVM");
-							Texture[] texs = new Texture[TexBmps.Length];
+					progress.SetTaskAndStep("Loading textures for:", "Objects");
+					LoadTextureList(TextureList.Load(group["ObjTexs"]), syspath);
 
-							for (int j = 0; j < TexBmps.Length; j++)
-								texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
-
-							LevelData.TextureBitmaps.Add(texname, TexBmps);
-							LevelData.Textures.Add(texname, texs);
-						}
-					}
-
+					progress.SetStep("Stage");
 					if (group.ContainsKey("Textures"))
 					{
 						string[] textures = group["Textures"].Split(',');
 						foreach (string tex in textures)
 						{
-							if (!LevelData.TextureBitmaps.ContainsKey(tex))
-							{
-								BMPInfo[] TexBmps = TextureArchive.GetTextures(Path.Combine(syspath, tex) + ".PVM");
-								Texture[] texs = new Texture[TexBmps.Length];
-								for (int j = 0; j < TexBmps.Length; j++)
-									texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
-								LevelData.TextureBitmaps.Add(tex, TexBmps);
-								LevelData.Textures.Add(tex, texs);
-							}
+							LoadPVM(tex, syspath);
+
 							if (string.IsNullOrEmpty(LevelData.leveltexs))
 								LevelData.leveltexs = tex;
 						}

@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		
 		private readonly Dictionary<string, List<string>> levels;
 
-
+		// TODO: Add parameter to select last loaded stage on open.
 		public LevelSelectDialog(Dictionary<string, List<string>> levels)
 		{
 			InitializeComponent();
