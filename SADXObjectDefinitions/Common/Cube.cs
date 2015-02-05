@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SADXLVL2;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
 	public class Cube : ObjectDefinition
 	{
-		private SonicRetro.SAModel.Object model;
-		private Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		private Object model;
+		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
@@ -31,7 +31,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -42,18 +42,18 @@ namespace SADXObjectDefinitions.Common
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
 		public override string Name { get { return "Solid Cube"; } }
 
-		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
 			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
 
-			SonicRetro.SAModel.BoundingSphere boxSphere = new SonicRetro.SAModel.BoundingSphere() { Center = new SonicRetro.SAModel.Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (largestScale / 2) };
+			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (largestScale / 2) };
 
 			return boxSphere;
 		}

@@ -14,48 +14,48 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
-    {
+	{
 		public BoundingSphere Bounds { get; set; }
 		private ObjectDefinition objdef;
-        public SETItem()
-        {
-            Position = new Vertex();
-            Rotation = new Rotation();
-            Scale = new Vertex();
+		public SETItem()
+		{
+			Position = new Vertex();
+			Rotation = new Rotation();
+			Scale = new Vertex();
 			objdef = LevelData.ObjDefs[id];
 			Bounds = objdef.GetBounds(this);
-        }
+		}
 
-        public SETItem(byte[] file, int address)
-        {
+		public SETItem(byte[] file, int address)
+		{
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
 			ClipLevel = (byte)(_id >> 12);
-            ushort xrot = BitConverter.ToUInt16(file, address + 2);
-            ushort yrot = BitConverter.ToUInt16(file, address + 4);
-            ushort zrot = BitConverter.ToUInt16(file, address + 6);
-            Rotation = new Rotation(xrot, yrot, zrot);
-            Position = new Vertex(file, address + 8);
-            Scale = new Vertex(file, address + 0x14);
-            isLoaded = true;
+			ushort xrot = BitConverter.ToUInt16(file, address + 2);
+			ushort yrot = BitConverter.ToUInt16(file, address + 4);
+			ushort zrot = BitConverter.ToUInt16(file, address + 6);
+			Rotation = new Rotation(xrot, yrot, zrot);
+			Position = new Vertex(file, address + 8);
+			Scale = new Vertex(file, address + 0x14);
+			isLoaded = true;
 			objdef = LevelData.ObjDefs[id];
 			Bounds = objdef.GetBounds(this);
-        }
+		}
 
-        [ParenthesizePropertyName(true)]
-        public string Name { get { return LevelData.ObjDefs[id].Name; } }
+		[ParenthesizePropertyName(true)]
+		public string Name { get { return LevelData.ObjDefs[id].Name; } }
 		[ParenthesizePropertyName(true)]
 		public string InternalName { get { return LevelData.ObjDefs[id].InternalName; } }
 		protected bool isLoaded = false;
-        
+
 		private ushort id;
-        [Editor(typeof(IDEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public ushort ID
-        {
+		[Editor(typeof(IDEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public ushort ID
+		{
 			get { return id; }
 			set { id = (ushort)(value & 0xFFF); }
-        }
-		
+		}
+
 		private ushort cliplevel;
 		[Browsable(false)]
 		public ushort ClipLevel
@@ -83,46 +83,47 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-        public override Rotation Rotation { get; set; }
+		public override Rotation Rotation { get; set; }
 
-        public Vertex Scale { get; set; }
+		public Vertex Scale { get; set; }
 
-        public override void Paste()
-        {
-            LevelData.SETItems[LevelData.Character].Add(this);
-        }
+		public override void Paste()
+		{
+			LevelData.SETItems[LevelData.Character].Add(this);
+		}
 
-        public override void Delete()
-        {
-            LevelData.SETItems[LevelData.Character].Remove(this);
-        }
+		public override void Delete()
+		{
+			LevelData.SETItems[LevelData.Character].Remove(this);
+		}
 
-        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
-        {
-            return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
-        }
+		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+		{
+			return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
+		}
 
-        public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
-        {
-			if (!camera.SphereInFrustum(Bounds)) return Item.EmptyRenderInfo;
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		{
+			if (!camera.SphereInFrustum(Bounds))
+				return EmptyRenderInfo;
 
-            return LevelData.ObjDefs[ID].Render(this, dev, camera, transform, selected);
-        }
+			return LevelData.ObjDefs[ID].Render(this, dev, camera, transform, selected);
+		}
 
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>(0x20);
+		public byte[] GetBytes()
+		{
+			List<byte> bytes = new List<byte>(0x20);
 			bytes.AddRange(BitConverter.GetBytes((ushort)(id | (cliplevel << 12))));
-            unchecked
-            {
-                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.X));
-                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Y));
-                bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Z));
-            }
-            bytes.AddRange(Position.GetBytes());
-            bytes.AddRange(Scale.GetBytes());
-            return bytes.ToArray();
-        }
+			unchecked
+			{
+				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.X));
+				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Y));
+				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Z));
+			}
+			bytes.AddRange(Position.GetBytes());
+			bytes.AddRange(Scale.GetBytes());
+			return bytes.ToArray();
+		}
 
 		AttributeCollection ICustomTypeDescriptor.GetAttributes()
 		{

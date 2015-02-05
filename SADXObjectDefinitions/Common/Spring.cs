@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using Extensions = SonicRetro.SAModel.Direct3D.Extensions;
+using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
 	public abstract class SpringBase : ObjectDefinition
 	{
-		protected SonicRetro.SAModel.Object model;
-		protected Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		protected Object model;
+		protected Mesh[] meshes;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -22,7 +25,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -32,7 +35,7 @@ namespace SADXObjectDefinitions.Common
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
@@ -51,9 +54,9 @@ namespace SADXObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
-		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(meshes));
+			BoundingSphere bounds = new BoundingSphere(item.Position, Extensions.GetLargestRadius(meshes));
 
 			return bounds;
 		}
@@ -69,9 +72,9 @@ namespace SADXObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
-		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(meshes));
+			BoundingSphere bounds = new BoundingSphere(item.Position, Extensions.GetLargestRadius(meshes));
 
 			return bounds;
 		}

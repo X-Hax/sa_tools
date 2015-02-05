@@ -6,7 +6,6 @@ using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
-using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
@@ -24,7 +23,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
 		private int index = 0;
-		
+
 		/// <summary>
 		/// Creates a Levelitem from an external file.
 		/// </summary>
@@ -107,7 +106,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override RenderInfo[] Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			if (!camera.SphereInFrustum(this.CollisionData.Bounds)) return Item.EmptyRenderInfo;
 
@@ -118,7 +117,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				result.AddRange(COL.Model.DrawModel(dev, transform, null, Mesh, Visible));
 			if (selected)
 				result.AddRange(COL.Model.DrawModelInvert(dev, transform, Mesh, Visible));
-			return result.ToArray();
+			return result;
 		}
 
 		public override void Paste()

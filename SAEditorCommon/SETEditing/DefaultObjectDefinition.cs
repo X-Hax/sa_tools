@@ -56,7 +56,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -72,7 +72,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 					result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			}
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
