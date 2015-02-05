@@ -402,7 +402,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		/// </summary>
 		/// <param name="textureEntries">The texture entries to load.</param>
 		/// <param name="systemPath">The game's system path.</param>
-		private void LoadTextureList(TextureListEntry[] textureEntries, string systemPath)
+		private void LoadTextureList(IEnumerable<TextureListEntry> textureEntries, string systemPath)
 		{
 			foreach (TextureListEntry entry in textureEntries)
 			{
@@ -575,13 +575,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading textures for:");
 
-					// TODO: Can somebody comment this stuff so I know what's going on? (cont)
-					// If so, I'll go ahead and split some of this duplicate stuff out to a method to reduce code size.
-
 					progress.SetStep("Common objects");
+					// Loads common object textures (e.g OBJ_REGULAR)
 					LoadTextureList(string.Empty, "objtexlist", syspath);
 
 					progress.SetTaskAndStep("Loading stage texture lists...");
+
+					// Loads the textures in the texture list for this stage (e.g BEACH01)
 					foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
 					{
 						LevelTextureList texini = LevelTextureList.Load(file);
@@ -592,9 +592,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 
 					progress.SetTaskAndStep("Loading textures for:", "Objects");
+					// Object texture list(s)
 					LoadTextureList(TextureList.Load(group["ObjTexs"]), syspath);
 
 					progress.SetStep("Stage");
+					// The stage textures... again? "Extra"?
 					if (group.ContainsKey("Textures"))
 					{
 						string[] textures = group["Textures"].Split(',');
