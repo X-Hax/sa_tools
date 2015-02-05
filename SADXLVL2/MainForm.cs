@@ -347,7 +347,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			switch (result)
 			{
 				case DialogResult.Yes:
-					saveToolStripMenuItem_Click(this, EventArgs.Empty);
+					SaveStage();
 					break;
 			}
 
