@@ -709,7 +709,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material.ToArray(), TextureInfo))
+			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material, TextureInfo))
 			{
 				dlg.FormUpdated += new MaterialEditor.FormUpdatedHandler((s, ev) => DrawLevel());
 				dlg.ShowDialog(this);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
@@ -12,10 +13,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public event FormUpdatedHandler FormUpdated;
 		#endregion
 
-		private readonly Material[] materials;
+		private readonly List<Material> materials;
 		private readonly BMPInfo[] textures;
 
-		public MaterialEditor(Material[] mats, BMPInfo[] textures)
+		public MaterialEditor(List<Material> mats, BMPInfo[] textures)
 		{
 			materials = mats;
 			this.textures = textures;
@@ -31,7 +32,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void MaterialEditor_Load(object sender, EventArgs e)
 		{
-			for (int i = 0; i < materials.Length; i++)
+			for (int i = 0; i < materials.Count; i++)
 				comboMaterial.Items.Add(i);
 			if (comboMaterial.Items.Count > 0)
 				comboMaterial.SelectedIndex = 0;

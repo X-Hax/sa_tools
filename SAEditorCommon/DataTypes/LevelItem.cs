@@ -160,7 +160,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			if (COL.Model.Attach is BasicAttach)
 			{
-				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material.ToArray(), LevelData.TextureBitmaps[LevelData.leveltexs]))
+				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
 				{
 					pw.FormUpdated += new MaterialEditor.FormUpdatedHandler(pw_FormUpdated);
 					pw.ShowDialog();
