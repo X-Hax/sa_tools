@@ -44,7 +44,7 @@
 			this.progressBar.Size = new System.Drawing.Size(344, 23);
 			this.progressBar.Step = 1;
 			this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-			this.progressBar.TabIndex = 0;
+			this.progressBar.TabIndex = 3;
 			// 
 			// labelTask
 			// 
@@ -70,7 +70,7 @@
 			this.checkAutoClose.Location = new System.Drawing.Point(12, 72);
 			this.checkAutoClose.Name = "checkAutoClose";
 			this.checkAutoClose.Size = new System.Drawing.Size(127, 17);
-			this.checkAutoClose.TabIndex = 3;
+			this.checkAutoClose.TabIndex = 4;
 			this.checkAutoClose.Text = "&Close when complete";
 			this.checkAutoClose.UseVisualStyleBackColor = true;
 			this.checkAutoClose.CheckedChanged += new System.EventHandler(this.checkAutoClose_CheckedChanged);
@@ -81,7 +81,7 @@
 			this.buttonOK.Location = new System.Drawing.Point(281, 68);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(75, 23);
-			this.buttonOK.TabIndex = 4;
+			this.buttonOK.TabIndex = 5;
 			this.buttonOK.Text = "&OK";
 			this.buttonOK.UseVisualStyleBackColor = true;
 			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);

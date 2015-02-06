@@ -83,6 +83,7 @@
 			this.comboMaterial.Size = new System.Drawing.Size(164, 21);
 			this.comboMaterial.TabIndex = 1;
 			this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
+			this.comboMaterial.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// currentMaterialLabel
 			// 
@@ -145,6 +146,7 @@
 			this.userFlagsNumeric.Size = new System.Drawing.Size(59, 20);
 			this.userFlagsNumeric.TabIndex = 14;
 			this.userFlagsNumeric.ValueChanged += new System.EventHandler(this.userFlagsNumeric_ValueChanged);
+			this.userFlagsNumeric.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// ignoreLightCheck
 			// 
@@ -157,6 +159,7 @@
 			this.toolTip.SetToolTip(this.ignoreLightCheck, "If checked, the model will not have any lighting applied.");
 			this.ignoreLightCheck.UseVisualStyleBackColor = true;
 			this.ignoreLightCheck.Click += new System.EventHandler(this.ignoreLightCheck_Click);
+			this.ignoreLightCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// flatShadeCheck
 			// 
@@ -170,6 +173,7 @@
         " like a cut gem or die.");
 			this.flatShadeCheck.UseVisualStyleBackColor = true;
 			this.flatShadeCheck.Click += new System.EventHandler(this.flatShadeCheck_Click);
+			this.flatShadeCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// doubleSideCheck
 			// 
@@ -182,6 +186,7 @@
 			this.toolTip.SetToolTip(this.doubleSideCheck, "Doesn\'t do anything, since Sonic Adventure does not support backface cull.");
 			this.doubleSideCheck.UseVisualStyleBackColor = true;
 			this.doubleSideCheck.Click += new System.EventHandler(this.doubleSideCheck_Click);
+			this.doubleSideCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// envMapCheck
 			// 
@@ -195,6 +200,7 @@
         " will appear \'shiny\'.");
 			this.envMapCheck.UseVisualStyleBackColor = true;
 			this.envMapCheck.Click += new System.EventHandler(this.envMapCheck_Click);
+			this.envMapCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// useTextureCheck
 			// 
@@ -208,6 +214,7 @@
         "el will be a solid color.");
 			this.useTextureCheck.UseVisualStyleBackColor = true;
 			this.useTextureCheck.Click += new System.EventHandler(this.useTextureCheck_Click);
+			this.useTextureCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// useAlphaCheck
 			// 
@@ -221,6 +228,7 @@
         "arency). ");
 			this.useAlphaCheck.UseVisualStyleBackColor = true;
 			this.useAlphaCheck.Click += new System.EventHandler(this.useAlphaCheck_Click);
+			this.useAlphaCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// ignoreSpecCheck
 			// 
@@ -233,6 +241,7 @@
 			this.toolTip.SetToolTip(this.ignoreSpecCheck, "If checked, no specular (commonly mis-identified as \"gloss\") will be present.");
 			this.ignoreSpecCheck.UseVisualStyleBackColor = true;
 			this.ignoreSpecCheck.Click += new System.EventHandler(this.ignoreSpecCheck_Click);
+			this.ignoreSpecCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// flipVCheck
 			// 
@@ -245,6 +254,7 @@
 			this.toolTip.SetToolTip(this.flipVCheck, "If checked, tiling on the V Axis is mirrored.");
 			this.flipVCheck.UseVisualStyleBackColor = true;
 			this.flipVCheck.Click += new System.EventHandler(this.flipVCheck_Click);
+			this.flipVCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// flipUCheck
 			// 
@@ -257,6 +267,7 @@
 			this.toolTip.SetToolTip(this.flipUCheck, "If checked, tiling on the U Axis is mirrored.");
 			this.flipUCheck.UseVisualStyleBackColor = true;
 			this.flipUCheck.Click += new System.EventHandler(this.flipUCheck_Click);
+			this.flipUCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// clampVCheck
 			// 
@@ -269,6 +280,7 @@
 			this.toolTip.SetToolTip(this.clampVCheck, "Enable/Disable tiling on the V Axis.");
 			this.clampVCheck.UseVisualStyleBackColor = true;
 			this.clampVCheck.Click += new System.EventHandler(this.clampVCheck_Click);
+			this.clampVCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// clampUCheck
 			// 
@@ -281,6 +293,7 @@
 			this.toolTip.SetToolTip(this.clampUCheck, "Enable/Disable tiling on the U Axis.");
 			this.clampUCheck.UseVisualStyleBackColor = true;
 			this.clampUCheck.Click += new System.EventHandler(this.clampUCheck_Click);
+			this.clampUCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// superSampleCheck
 			// 
@@ -292,6 +305,7 @@
 			this.superSampleCheck.Text = "Super Sample";
 			this.superSampleCheck.UseVisualStyleBackColor = true;
 			this.superSampleCheck.Click += new System.EventHandler(this.superSampleCheck_Click);
+			this.superSampleCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// pickStatusCheck
 			// 
@@ -303,6 +317,7 @@
 			this.pickStatusCheck.Text = "Pick Status";
 			this.pickStatusCheck.UseVisualStyleBackColor = true;
 			this.pickStatusCheck.Click += new System.EventHandler(this.pickStatusCheck_Click);
+			this.pickStatusCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// generalSettingBox
 			// 
@@ -350,6 +365,7 @@
 			this.alphaDiffuseNumeric.Size = new System.Drawing.Size(54, 20);
 			this.alphaDiffuseNumeric.TabIndex = 3;
 			this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
+			this.alphaDiffuseNumeric.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// dstAlphaCombo
 			// 
@@ -369,6 +385,7 @@
 			this.dstAlphaCombo.Size = new System.Drawing.Size(147, 21);
 			this.dstAlphaCombo.TabIndex = 14;
 			this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
+			this.dstAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// destinationAlphaLabel
 			// 
@@ -397,6 +414,7 @@
 			this.srcAlphaCombo.Size = new System.Drawing.Size(147, 21);
 			this.srcAlphaCombo.TabIndex = 12;
 			this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
+			this.srcAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// srcAlphaLabel
 			// 
@@ -421,6 +439,7 @@
 			this.filterModeDropDown.Size = new System.Drawing.Size(147, 21);
 			this.filterModeDropDown.TabIndex = 10;
 			this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
+			this.filterModeDropDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// filterModeLabel
 			// 
@@ -459,6 +478,7 @@
 			this.exponentTextBox.Name = "exponentTextBox";
 			this.exponentTextBox.Size = new System.Drawing.Size(54, 20);
 			this.exponentTextBox.TabIndex = 7;
+			this.exponentTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			this.exponentTextBox.Leave += new System.EventHandler(this.exponentTextBox_Leave);
 			// 
 			// label1
@@ -517,6 +537,7 @@
 			this.doneButton.Text = "Done";
 			this.doneButton.UseVisualStyleBackColor = true;
 			this.doneButton.Click += new System.EventHandler(this.doneButton_Click);
+			this.doneButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			// 
 			// toolTip
 			// 
@@ -546,6 +567,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Material Editor";
 			this.Load += new System.EventHandler(this.MaterialEditor_Load);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
 			this.flagsGroupBox.ResumeLayout(false);
 			this.flagsGroupBox.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).EndInit();

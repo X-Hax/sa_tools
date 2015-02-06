@@ -259,5 +259,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		}
 
 		#endregion
+
+		private void onKeyDown(object sender, KeyEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Tab:
+					if (e.Control)
+					{
+						int index = comboMaterial.SelectedIndex;
+						int count = comboMaterial.Items.Count;
+						
+						if (e.Shift)
+							--index;
+						else
+							++index;
+
+						index = (index < 0) ? (index + count) : (index % count);
+						comboMaterial.SelectedIndex = index;
+					}
+					break;
+			}
+		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
+	// TODO: Move to SAEditorCommon
 	public partial class ProgressDialog : Form
 	{
 		#region Accessors
@@ -172,6 +173,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void ProgressDialog_Load(object sender, EventArgs e)
 		{
 			CenterToParent();
+			buttonOK.Select();
 		}
 		private void buttonOK_Click(object sender, EventArgs e)
 		{
