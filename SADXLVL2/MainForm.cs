@@ -92,7 +92,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				if (isStageLoaded)
 				{
-					if (SavePrompt() == DialogResult.Cancel)
+					if (SavePrompt(true) == DialogResult.Cancel)
 						return;
 				}
 
@@ -338,8 +338,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			return false;
 		}
-
-		private DialogResult SavePrompt()
+		/// <summary>
+		/// Displays a dialog asking if the user would like to save.
+		/// </summary>
+		/// <param name="autoCloseDialog">Defines whether or not the save progress dialog should close on completion.</param>
+		/// <returns></returns>
+		private DialogResult SavePrompt(bool autoCloseDialog = false)
 		{
 			DialogResult result = MessageBox.Show(this, "Do you want to save?", "SADXLVL2",
 				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
@@ -347,7 +351,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			switch (result)
 			{
 				case DialogResult.Yes:
-					SaveStage();
+					SaveStage(autoCloseDialog);
 					break;
 			}
 
@@ -358,7 +362,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			fileToolStripMenuItem.HideDropDown();
 
-			if (!isStageLoaded || SavePrompt() != DialogResult.Cancel)
+			if (!isStageLoaded || SavePrompt(true) != DialogResult.Cancel)
 			{
 				UncheckMenuItems(changeLevelToolStripMenuItem);
 				((ToolStripMenuItem)sender).Checked = true;
@@ -1080,7 +1084,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (isStageLoaded)
 			{
-				if (SavePrompt() == DialogResult.Cancel)
+				if (SavePrompt(true) == DialogResult.Cancel)
 					e.Cancel = true;
 
 				LevelData.StateChanged -= LevelData_StateChanged;
@@ -1090,15 +1094,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveStage();
+			SaveStage(false);
 		}
 
-		private void SaveStage()
+		/// <summary>
+		/// Saves changes made to the currently loaded stage.
+		/// </summary>
+		/// <param name="autoCloseDialog">Defines whether or not the progress dialog should close on completion.</param>
+		private void SaveStage(bool autoCloseDialog)
 		{
 			if (!isStageLoaded)
 				return;
 
-			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 5, true, false);
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 5, true, autoCloseDialog);
 			progress.Show(this);
 			Application.DoEvents();
 
