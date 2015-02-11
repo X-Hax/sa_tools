@@ -2002,16 +2002,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (importFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				string filePath = importFileDialog.FileName;
-
-				bool errorFlag = false;
-				string errorMsg = "";
-
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
-
-				if (errorFlag)
+				foreach (string s in importFileDialog.FileNames)
 				{
-					MessageBox.Show(errorMsg);
+					bool errorFlag = false;
+					string errorMsg = "";
+
+					LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg);
+
+					if (errorFlag)
+						MessageBox.Show(errorMsg);
 				}
 			}
 		}
@@ -2038,14 +2037,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 				}
 
-				bool errorFlag = false;
-				string errorMsg = "";
-
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
-
-				if (errorFlag)
+				foreach (string s in importFileDialog.FileNames)
 				{
-					MessageBox.Show(errorMsg);
+					bool errorFlag = false;
+					string errorMsg = "";
+
+					LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+
+					if (errorFlag)
+						MessageBox.Show(errorMsg);
 				}
 			}
 		}
