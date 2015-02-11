@@ -2019,7 +2019,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (importFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				string filePath = importFileDialog.FileName;
 				DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
 
 				if (userClearLevelResult == DialogResult.Cancel)
@@ -2042,7 +2041,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					bool errorFlag = false;
 					string errorMsg = "";
 
-					LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+					LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg);
 
 					if (errorFlag)
 						MessageBox.Show(errorMsg);
