@@ -1268,8 +1268,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			d3ddevice.BeginScene();
 			//all drawings after this line
-			EditorOptions.RenderStateCommonSetup(d3ddevice);
-
 			MatrixStack transform = new MatrixStack();
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
@@ -1278,6 +1276,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
+
+			if (splinesToolStripMenuItem.Checked)
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+					spline.Draw(d3ddevice);
+			}
+
+			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 
@@ -1331,12 +1337,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
-
-			if (splinesToolStripMenuItem.Checked)
-			{
-				foreach (SplineData spline in LevelData.LevelSplines)
-					spline.Draw(d3ddevice);
-			}
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 			// draw helper cubes before clearing depth buffer
