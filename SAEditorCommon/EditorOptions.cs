@@ -82,8 +82,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3ddevice.SamplerState[0].MipFilter = TextureFilter.Anisotropic;
 			d3ddevice.RenderState.Lighting = true;
 			d3ddevice.RenderState.SpecularEnable = true;
-            if (!OverrideLighting) d3ddevice.RenderState.Ambient = Color.Black;
-            else d3ddevice.RenderState.Ambient = Color.White;
+			d3ddevice.RenderState.Ambient = (OverrideLighting) ? Color.White : Color.Black;
 			d3ddevice.RenderState.AlphaBlendEnable = false;
 			d3ddevice.RenderState.BlendOperation = BlendOperation.Add;
 			d3ddevice.RenderState.DestinationBlend = Blend.InvSourceAlpha;

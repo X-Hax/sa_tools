@@ -40,13 +40,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	/// </summary>
 	public class SplineData
 	{
-		public List<Knot> KnotList { get; set; }
+		#region Local Vars
+		private CustomVertex.PositionColored[] vertices;
+		private BoundingSphere bounds;
+		private Vector3 center;
+		private bool selected = false;
+		private List<Knot> knotList;
+		#endregion
+
+		#region Accessors
+		public bool Selected { get { return selected; } set { selected = value; } }
+		public List<Knot> KnotList { get { return knotList; } set { knotList = value; } }
 		public float TotalDistance { get { float d = 0; foreach (Knot knot in KnotList) d += knot.Distance; return d; } }
 		public int CodeAddress { get; set; }
+		#endregion
 
 		public SplineData()
 		{
-			KnotList = new List<Knot>();
+			knotList = new List<Knot>();
+			center = new Vector3();
 		}
 
 		/// <summary>
@@ -74,6 +86,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Knot newKnot = new Knot(new Vertex(KnotList[KnotList.Count - 1].Position.X + 10, KnotList[KnotList.Count - 1].Position.Y, KnotList[KnotList.Count - 1].Position.Z));
 			KnotList.Add(newKnot);
 			CalcDistance(KnotList.Count - 1);
+
+			BuildVerts();
 		}
 
 		/// <summary>
@@ -89,23 +103,32 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <summary>
 		/// Draws the spline in the scene.
 		/// </summary>
-		/// <param name="d3dDevice"></param>
-		public void Draw(Device d3dDevice)
+		/// <param name="d3dDevice">Direct 3d rendering device to use.</param>
+		/// <param name="cam">EditorCamera to use.</param>
+		public void Draw(Device d3dDevice, EditorCamera cam, Matrix worldMatrix)
 		{
-			CustomVertex.PositionColored[] vertices = new CustomVertex.PositionColored[KnotList.Count];
+			if (!cam.SphereInFrustum(bounds)) return;
+
+			d3dDevice.VertexFormat = CustomVertex.PositionColored.Format;
+			d3dDevice.RenderState.Ambient = (selected) ? System.Drawing.Color.White : System.Drawing.Color.Red;
+
+			d3dDevice.SetTransform(TransformType.World, worldMatrix);
+
+			d3dDevice.DrawUserPrimitives(PrimitiveType.LineStrip, KnotList.Count - 1, vertices);
+		}
+
+		public void BuildVerts()
+		{
+			vertices = new CustomVertex.PositionColored[KnotList.Count];
 
 			for (int i = 0; i < KnotList.Count; i++)
 			{
 				vertices[i].Position = KnotList[i].Position.ToVector3();
-				vertices[i].Color = System.Drawing.Color.Turquoise.ToArgb();
+				vertices[i].Color = System.Drawing.Color.White.ToArgb();
 			}
 
-			d3dDevice.VertexFormat = CustomVertex.PositionColored.Format;
-			d3dDevice.RenderState.Ambient = System.Drawing.Color.White;
-			d3dDevice.RenderState.Lighting = false;
-			d3dDevice.Transform.World = Matrix.Identity;
-
-			d3dDevice.DrawUserPrimitives(PrimitiveType.LineStrip, KnotList.Count - 1, vertices);
+			float size = Geometry.ComputeBoundingSphere(vertices, 1, out center);
+			bounds = new BoundingSphere(center.X, center.Y, center.Z, size);
 		}
 	}
 }
