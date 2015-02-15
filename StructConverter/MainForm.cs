@@ -263,7 +263,7 @@ namespace StructConverter
 
         private void button4_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "c", Filter = "C source files|*.c;*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
+            using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
                 if (fd.ShowDialog(this) == DialogResult.OK)
                     using (TextWriter writer = File.CreateText(fd.FileName))
                     {

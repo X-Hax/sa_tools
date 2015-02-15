@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.IO;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -67,7 +68,7 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Diffuse = material.DiffuseColor,
 					Ambient = material.DiffuseColor,
-					Specular = material.IgnoreSpecular ? System.Drawing.Color.Transparent : material.SpecularColor,
+					Specular = material.IgnoreSpecular ? Color.Transparent : material.SpecularColor,
 					SpecularSharpness = material.Exponent * material.Exponent
 				};
 				if (!material.SuperSample)
@@ -77,7 +78,7 @@ namespace SonicRetro.SAModel.Direct3D
 					device.SamplerState[0].MipFilter = TextureFilter.None;
 				}
 				device.SetTexture(0, material.UseTexture ? texture : null);
-				device.RenderState.Ambient = (material.IgnoreLighting) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+				device.RenderState.Ambient = (material.IgnoreLighting) ? Color.White : Color.Black;
 				device.RenderState.AlphaBlendEnable = material.UseAlpha; if (material.UseAlpha) device.RenderState.Ambient = material.DiffuseColor;
 				switch (material.DestinationAlpha)
 				{
@@ -149,13 +150,13 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Diffuse = Color.White,
 					Ambient = Color.White,
-					Specular = System.Drawing.Color.Transparent
+					Specular = Color.Transparent
 				};
 				device.SamplerState[0].MagFilter = TextureFilter.None;
 				device.SamplerState[0].MinFilter = TextureFilter.None;
 				device.SamplerState[0].MipFilter = TextureFilter.None;
 				device.SetTexture(0, null);
-				device.RenderState.Ambient = System.Drawing.Color.White;
+				device.RenderState.Ambient = Color.White;
 				device.RenderState.AlphaBlendEnable = false;
 				device.TextureState[0].TextureCoordinateIndex = 0;
 				device.SamplerState[0].AddressU = TextureAddress.Wrap;
@@ -187,7 +188,7 @@ namespace SonicRetro.SAModel.Direct3D
 			col.Bounds.Center.Z = center.Z;
 		}
 
-		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Microsoft.DirectX.Direct3D.Device dev)
+		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Device dev)
 		{
 			int numverts = 0;
 			byte data = 0;
@@ -213,7 +214,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Microsoft.DirectX.Direct3D.Device dev, int numverts)
+		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Device dev, int numverts)
 		{
 			List<T> vb = new List<T>(numverts);
 			List<short> ib = new List<short>(numverts);
@@ -251,22 +252,28 @@ namespace SonicRetro.SAModel.Direct3D
 			return (float)(BAMS / (65536 / (2 * Math.PI)));
 		}
 
-		public static RenderInfo[] DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
 		{
-			if (mesh == null) return new RenderInfo[0];
 			List<RenderInfo> result = new List<RenderInfo>();
+
+			if (mesh == null)
+				return result;
+
 			transform.Push();
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Material mat;
 					Texture texture = null;
-					if (useMat)
+					// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
+					// If it is in fact null, it applies a placeholder so that the editor doesn't crash.
+					if (useMat && obj.Attach.MeshInfo[j].Material != null)
 					{
-                        mat = obj.Attach.MeshInfo[j].Material;
+						mat = obj.Attach.MeshInfo[j].Material;
 
-						// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
 					}
@@ -278,25 +285,36 @@ namespace SonicRetro.SAModel.Direct3D
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
+						
+						if (obj.Attach.MeshInfo[j].Material == null)
+						{
+							MeshInfo old = obj.Attach.MeshInfo[j];
+							obj.Attach.MeshInfo[j] = new MeshInfo(mat, old.Polys, old.Vertices, old.HasUV, old.HasVC);
+						}
 					}
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public static RenderInfo[] DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
 		{
-			if (mesh == null) return new RenderInfo[0];
 			List<RenderInfo> result = new List<RenderInfo>();
+
+			if (mesh == null)
+				return result;
+
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					System.Drawing.Color col = Color.White;
+					Color col = Color.White;
 					if (useMat) col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
 					Material mat = new Material
 					{
 						DiffuseColor = col,
@@ -306,76 +324,90 @@ namespace SonicRetro.SAModel.Direct3D
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
 		}
 
-		private static RenderInfo[] DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Material mat;
 					Texture texture = null;
 					mat = obj.Attach.MeshInfo[j].Material;
-					if (textures != null && mat.TextureID < textures.Length)
+					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
+					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
 		}
 
-		private static RenderInfo[] DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
+			
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					Color color = Color.Black;
+
+					// HACK: Null material hack 3: Fixes selecting objects in SADXLVL2, Twinkle Park 1.
+					if (obj.Attach.MeshInfo[j].Material != null)
+						color = obj.Attach.MeshInfo[j].Material.DiffuseColor;
+
+					color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
 					Material mat = new Material
 					{
-						DiffuseColor = col,
+						DiffuseColor = color,
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
+			}
+
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static RenderInfo[] DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -400,17 +432,17 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static RenderInfo[] DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -425,8 +457,8 @@ namespace SonicRetro.SAModel.Direct3D
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					System.Drawing.Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
+					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
 					Material mat = new Material
 					{
 						DiffuseColor = col,
@@ -438,7 +470,7 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (Object child in obj.Children)
 				result.AddRange(DrawModelTreeAnimatedInvert(child, device, transform, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
         public static HitResult CheckHit(this Microsoft.DirectX.Direct3D.Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -533,9 +565,9 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static Attach obj2nj(string objfile)
+		public static Attach obj2nj(string objfile, string[] textures = null)
 		{
-			string[] obj = System.IO.File.ReadAllLines(objfile);
+			string[] obj = File.ReadAllLines(objfile);
 			Attach model;
 			List<UV> uvs = new List<UV>();
 			List<Color> vcolors = new List<Color>();
@@ -559,14 +591,16 @@ namespace SonicRetro.SAModel.Direct3D
 				switch (lin[0].ToLowerInvariant())
 				{
 					case "mtllib":
-						string[] mtlfile = System.IO.File.ReadAllLines(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(objfile), lin[1]));
+						string[] mtlfile = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(objfile), lin[1]));
 						foreach (string mln in mtlfile)
 						{
 							string[] mlin = mln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 							if (mlin.Length == 0)
 								continue;
 							#region Parsing Material Properties
-							switch (mlin[0].ToLowerInvariant())
+							// Calling trim on this to be compatible with 3ds Max mtl files.
+							// It likes to indent them with tabs (\t)
+							switch (mlin[0].ToLowerInvariant().Trim())
 							{
 								case "newmtl":
 									lastmtl = new Material();
@@ -581,10 +615,34 @@ namespace SonicRetro.SAModel.Direct3D
 
 								case "map_ka":
 									lastmtl.UseAlpha = true;
+									if (textures != null && mlin.Length > 1)
+									{
+										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
+										for (int tid = 0; tid < textures.Length; tid++)
+										{
+											if (textures[tid] == baseName)
+											{
+												lastmtl.TextureID = tid;
+												break;
+											}
+										}
+									}
 									break;
 
 								case "map_kd":
 									lastmtl.UseTexture = true;
+									if (textures != null && mlin.Length > 1)
+									{
+										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
+										for (int tid = 0; tid < textures.Length; tid++)
+										{
+											if (textures[tid] == baseName)
+											{
+												lastmtl.TextureID = tid;
+												break;
+											}
+										}
+									}
 									break;
 
 								case "ke":
@@ -601,44 +659,40 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "texid":
-									lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+									// This breaks everything.
+									//lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
 									break;
 
 								case "-u_mirror":
 									bool uMirror = false;
 
 									if (bool.TryParse(mlin[1], out uMirror))
-									{
 										lastmtl.FlipU = uMirror;
-									}
+
 									break;
 
 								case "-v_mirror":
 									bool vMirror = false;
 
 									if (bool.TryParse(mlin[1], out vMirror))
-									{
 										lastmtl.FlipV = vMirror;
-									}
-									break;
 
+									break;
 
 								case "-u_tile":
 									bool uTile = true;
 
 									if (bool.TryParse(mlin[1], out uTile))
-									{
 										lastmtl.ClampU = !uTile;
-									}
+
 									break;
 
 								case "-v_tile":
 									bool vTile = true;
 
 									if (bool.TryParse(mlin[1], out vTile))
-									{
 										lastmtl.ClampV = !vTile;
-									}
+
 									break;
 
 								case "-enviromap":
@@ -729,7 +783,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver, verind + 1);
 							}
 							if (verind > -1)
@@ -771,7 +825,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor2)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver2, verind + 1);
 							}
 							if (verind > -1)
@@ -803,7 +857,7 @@ namespace SonicRetro.SAModel.Direct3D
 							while (verind > -1)
 							{
 								if (model_Normal[verind] == nor3)
-									break; // TODO: might not be correct. Was : Exit While
+									break;
 								verind = model_Vertex.IndexOf(ver3, verind + 1);
 							}
 							if (verind > -1)
@@ -829,7 +883,8 @@ namespace SonicRetro.SAModel.Direct3D
 				model_Mesh[i].MaterialID = model_Mesh_MaterialID[i];
 				if (model_Mesh[i].UV != null)
 				{
-					for (int j = 0; j < model_Mesh[i].UV.Length; j++)
+					// HACK: Checking if j < model_Mesh_UV[i].Count prevents an out-of-range exception with SADXLVL2 when importing a whole stage export of Emerald Coast 1.
+					for (int j = 0; j < model_Mesh[i].UV.Length && j < model_Mesh_UV[i].Count; j++)
 						model_Mesh[i].UV[j] = model_Mesh_UV[i][j];
 				}
 				if (model_Mesh[i].VColor != null)
@@ -913,9 +968,9 @@ namespace SonicRetro.SAModel.Direct3D
 				rfYAngle = fRpY - rfRAngle;
 			}
 
-			eulerRotationZXY.X = Extensions.RadToBAMS(rfRAngle);
-			eulerRotationZXY.Y = Extensions.RadToBAMS(rfPAngle);
-			eulerRotationZXY.Z = Extensions.RadToBAMS(rfYAngle);
+			eulerRotationZXY.X = RadToBAMS(rfRAngle);
+			eulerRotationZXY.Y = RadToBAMS(rfPAngle);
+			eulerRotationZXY.Z = RadToBAMS(rfYAngle);
 
 			return eulerRotationZXY;
 		}
@@ -930,7 +985,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromBasicAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromBasicAttach(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
@@ -958,14 +1013,14 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
 					Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
-					objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+					objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
 				}
 
 				if (basicAttach.Vertex.Length == basicAttach.Normal.Length)
 				{
 					for (int vnIndx = 0; vnIndx < basicAttach.Normal.Length; vnIndx++)
 					{
-						objstream.WriteLine(String.Format("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X, basicAttach.Normal[vnIndx].Y, basicAttach.Normal[vnIndx].Z));
+						objstream.WriteLine("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X, basicAttach.Normal[vnIndx].Y, basicAttach.Normal[vnIndx].Z);
 					}
 					wroteNormals = true;
 				}
@@ -978,7 +1033,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						if (basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].UseTexture)
 						{
-							objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID));
+							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID);
 						}
 					}
 
@@ -986,7 +1041,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						for (int uvIndx = 0; uvIndx < basicAttach.Mesh[meshIndx].UV.Length; uvIndx++)
 						{
-							objstream.WriteLine(String.Format("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U, basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1));
+							objstream.WriteLine("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U, basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1);
 						}
 					}
 
@@ -1013,13 +1068,13 @@ namespace SonicRetro.SAModel.Direct3D
 										uv2 = (stripIndx) + processedUVStripCount + 1;
 										uv3 = (stripIndx + 2) + processedUVStripCount + 1;
 
-										if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
-										else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+										if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+										else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
 									}
 									else
 									{
-										if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
-										else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+										if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+										else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
 									}
 								}
 								else
@@ -1034,13 +1089,13 @@ namespace SonicRetro.SAModel.Direct3D
 										uv2 = stripIndx + 1 + processedUVStripCount + 1;
 										uv3 = stripIndx + 2 + processedUVStripCount + 1;
 
-										if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
-										else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+										if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+										else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
 									}
 									else
 									{
-										if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
-										else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+										if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+										else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
 									}
 								}
 
@@ -1050,7 +1105,7 @@ namespace SonicRetro.SAModel.Direct3D
 							if (basicAttach.Mesh[meshIndx].UV != null)
 							{
 								processedUVStripCount += polyStrip.Indexes.Length;
-								objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+								objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
 							}
 						}
 						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Triangles)
@@ -1067,19 +1122,19 @@ namespace SonicRetro.SAModel.Direct3D
 									uv2 = faceVIndx + 1 + processedUVStripCount + 1;
 									uv3 = faceVIndx + 2 + processedUVStripCount + 1;
 
-									if (wroteNormals) objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
-									else objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
+									if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+									else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
 								}
 								else
 								{
-									if (wroteNormals) objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
-									else objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
+									if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+									else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
 								}
 
 								if (basicAttach.Mesh[meshIndx].UV != null)
 								{
 									processedUVStripCount += 3;
-									objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
 								}
 							}
 						}
@@ -1100,33 +1155,33 @@ namespace SonicRetro.SAModel.Direct3D
 
 									if (wroteNormals)
 									{
-										objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms));
-										objstream.WriteLine(String.Format("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms));
+										objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+										objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms);
 									}
 									else
 									{
-										objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs));
-										objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs));
+										objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
+										objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs);
 									}
 								}
 								else
 								{
 									if (wroteNormals)
 									{
-										objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms));
-										objstream.WriteLine(String.Format("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, (int)newFace.W + totalNorms));
+										objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+										objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, (int)newFace.W + totalNorms);
 									}
 									else
 									{
-										objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts));
-										objstream.WriteLine(String.Format("f {0} {1} {2}", (int)newFace.Z + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.W + totalVerts));
+										objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										objstream.WriteLine("f {0} {1} {2}", (int)newFace.Z + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.W + totalVerts);
 									}
 								}
 
 								if (basicAttach.Mesh[meshIndx].UV != null)
 								{
 									processedUVStripCount += 4;
-									objstream.WriteLine(String.Format("# processed UV strips this poly: {0}", processedUVStripCount));
+									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
 								}
 							}
 						}
@@ -1166,7 +1221,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromChunkAttach(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromChunkAttach(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
@@ -1178,7 +1233,6 @@ namespace SonicRetro.SAModel.Direct3D
 
 				if ((chunkAttach.Vertex != null) && (chunkAttach.Poly != null))
 				{
-					bool wroteNormals = false;
 					int outputVertCount = 0;
 					int outputNormalCount = 0;
 
@@ -1202,7 +1256,7 @@ namespace SonicRetro.SAModel.Direct3D
 							{
 								Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
 								Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
-								objstream.WriteLine(String.Format("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z));
+								objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
 
 								outputVertCount++;
 							}
@@ -1214,10 +1268,9 @@ namespace SonicRetro.SAModel.Direct3D
 							{
 								for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
 								{
-									objstream.WriteLine(String.Format("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z));
+									objstream.WriteLine("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z);
 									outputNormalCount++;
 								}
-								wroteNormals = true;
 							}
 						}
 					}
@@ -1243,7 +1296,7 @@ namespace SonicRetro.SAModel.Direct3D
 										uvsAreValid = true;
 										for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
 										{
-											objstream.WriteLine(String.Format("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V));
+											objstream.WriteLine("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V);
 										}
 									}
 								}
@@ -1256,11 +1309,11 @@ namespace SonicRetro.SAModel.Direct3D
 										if (uvsAreValid)
 										{
 											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-											objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1));
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1);
 										}
 										else
 										{
-											objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+											objstream.WriteLine("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
 										}
 									}
 									else
@@ -1268,11 +1321,11 @@ namespace SonicRetro.SAModel.Direct3D
 										if (uvsAreValid)
 										{
 											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-											objstream.WriteLine(String.Format("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1));
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1);
 										}
 										else
 										{
-											objstream.WriteLine(String.Format("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1));
+											objstream.WriteLine("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
 										}
 									}
 
@@ -1290,7 +1343,7 @@ namespace SonicRetro.SAModel.Direct3D
 						else if (polyChunk is PolyChunkTinyTextureID)
 						{
 							PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
-							objstream.WriteLine(String.Format("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID));
+							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID);
 						}
 					}
 					#endregion
@@ -1323,7 +1376,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteModelAsObj(System.IO.StreamWriter objstream, SAModel.Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		public static void WriteModelAsObj(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			if (obj.Attach is BasicAttach)
 			{

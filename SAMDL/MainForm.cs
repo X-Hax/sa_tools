@@ -57,7 +57,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			EditorOptions.InitializeDefaultLights(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
@@ -489,7 +489,7 @@ namespace SonicRetro.SAModel.SAMDL
 					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
 					Textures = new Texture[TextureInfo.Length];
 					for (int j = 0; j < TextureInfo.Length; j++)
-						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.SoftwareProcessing, Pool.Managed);
+						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.None, Pool.Managed);
 				}
 			}
 		}
@@ -709,7 +709,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material.ToArray(), TextureInfo))
+			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material, TextureInfo))
 			{
 				dlg.FormUpdated += new MaterialEditor.FormUpdatedHandler((s, ev) => DrawLevel());
 				dlg.ShowDialog(this);

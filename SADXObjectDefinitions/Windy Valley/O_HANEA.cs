@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SADXLVL2;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using Extensions = SonicRetro.SAModel.Direct3D.Extensions;
+using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Windy_Valley
 {
 	class O_HANEA : ObjectDefinition
 	{
-		private SonicRetro.SAModel.Object model;
-		private Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		private Object model;
+		private Mesh[] meshes;
 
-		public override void  Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name, Device dev)
 		{
- 			model = ObjectHelper.LoadModel("Objects/Windy Valley/O_HANEA/O_HANEA.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_HANEA.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
@@ -30,7 +31,7 @@ namespace SADXObjectDefinitions.Windy_Valley
 			return result;
 		}
 
-		public override RenderInfo[] Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -40,12 +41,12 @@ namespace SADXObjectDefinitions.Windy_Valley
 			if (selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
-			return result.ToArray();
+			return result;
 		}
 
-		public override SonicRetro.SAModel.BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			SonicRetro.SAModel.BoundingSphere bounds = new SonicRetro.SAModel.BoundingSphere(item.Position, SonicRetro.SAModel.Direct3D.Extensions.GetLargestRadius(meshes));
+			BoundingSphere bounds = new BoundingSphere(item.Position, Extensions.GetLargestRadius(meshes));
 
 			return bounds;
 		}

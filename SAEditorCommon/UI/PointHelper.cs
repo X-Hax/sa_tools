@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
 
-using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
 
-using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
@@ -18,9 +16,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	{
 		#region Local Vars
 		bool enabled;
-		bool drawCube=false;
-		bool scaleHandlesToCam=false;
-		float handleSize=20f;
+		bool drawCube = false;
+		bool scaleHandlesToCam = false;
+		float handleSize = 20f;
 		Vertex affectedPoint;
 		GizmoSelectedAxes selectedAxes;
 		#endregion
@@ -39,13 +37,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// </summary>
 		public PointHelper()
 		{
-			this.enabled = false;
+			enabled = false;
 			selectedAxes = GizmoSelectedAxes.NONE;
 		}
 
-		public void SetPoint(Vertex affectedPoint)
+		public void SetPoint(Vertex point)
 		{
-			this.affectedPoint = affectedPoint;
+			affectedPoint = point;
 			enabled = true;
 			selectedAxes = GizmoSelectedAxes.NONE;
 		}
@@ -67,22 +65,24 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 
-			float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(cam.Position, affectedPoint.ToVector3()) * 0.0825f;
+			float dist = cam.Position.Distance(affectedPoint.ToVector3()) * 0.0825f;
 
 			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
-			if(scaleHandlesToCam) transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
-			else transform.ScaleLocal(handleSize, handleSize, handleSize);
+			if (scaleHandlesToCam)
+				transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+			else
+				transform.ScaleLocal(handleSize, handleSize, handleSize);
 
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
 			IntersectInformation info;
 
 			if (Gizmo.XMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.X_AXIS;
-			else if (Gizmo.YMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Y_AXIS;
-			else if (Gizmo.ZMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Z_AXIS;
-			else if (Gizmo.XYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XY_AXIS;
-			else if (Gizmo.ZXMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XZ_AXIS;
-			else if (Gizmo.ZYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.ZY_AXIS;
+			if (Gizmo.YMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Y_AXIS;
+			if (Gizmo.ZMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Z_AXIS;
+			if (Gizmo.XYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XY_AXIS;
+			if (Gizmo.ZXMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XZ_AXIS;
+			if (Gizmo.ZYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.ZY_AXIS;
 
 			return GizmoSelectedAxes.NONE;
 		}
@@ -94,43 +94,45 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// <param name="cam"></param>
 		public void Draw(Device d3ddevice, EditorCamera cam)
 		{
-			if ((affectedPoint == null) || (!enabled)) return;
+			if ((affectedPoint == null) || (!enabled))
+				return;
+
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
 
 			RenderInfo.Draw(Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
 
 			d3ddevice.EndScene(); //all drawings before this line
-			d3ddevice.Present();
+			//d3ddevice.Present();
 		}
 
 		public void DrawBox(Device d3ddevice, EditorCamera cam)
 		{
-			if (!enabled) return;
+			if (!enabled || !drawCube)
+				return;
 
-			if (drawCube)
-			{
-				BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(affectedPoint.X, affectedPoint.Y, affectedPoint.Z), Radius = handleSize };
+			BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(affectedPoint.X, affectedPoint.Y, affectedPoint.Z), Radius = handleSize };
 
-				MatrixStack transform = new MatrixStack();
+			MatrixStack transform = new MatrixStack();
 
-				transform.Push();
-				transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
-				transform.ScaleLocal(handleSize, handleSize, handleSize);
-				RenderInfo boxRenderInfo = new RenderInfo(Gizmo.BoxMesh, 0, transform.Top, Gizmo.StandardMaterial, BoxTexture, FillMode.Solid, gizmoSphere);
+			transform.Push();
+			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
+			transform.ScaleLocal(handleSize, handleSize, handleSize);
+			RenderInfo boxRenderInfo = new RenderInfo(Gizmo.BoxMesh, 0, transform.Top, Gizmo.StandardMaterial, BoxTexture, FillMode.Solid, gizmoSphere);
 
-				RenderInfo.Draw(new List<RenderInfo>() {boxRenderInfo}, d3ddevice, cam);
-				transform.Pop();
-			}
+			RenderInfo.Draw(new List<RenderInfo>() { boxRenderInfo }, d3ddevice, cam);
+			transform.Pop();
 		}
 
+		// TODO: Consider returning IEnumerable<RenderInfo>
 		private RenderInfo[] Render(Device dev, MatrixStack transform, EditorCamera cam)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
-			if (!enabled) return result.ToArray();
+			if (!enabled)
+				return result.ToArray();
 
-			float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(cam.Position, affectedPoint.ToVector3()) * 0.0825f;
+			float dist = cam.Position.Distance(affectedPoint.ToVector3()) * 0.0825f;
 			BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(affectedPoint.X, affectedPoint.Y, affectedPoint.Z), Radius = (1.0f * Math.Abs(dist)) };
 
 			#region Setting Render States
@@ -139,7 +141,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			dev.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
 			dev.SetRenderState(RenderStates.Lighting, true);
 			dev.SetRenderState(RenderStates.SpecularEnable, false);
-			dev.SetRenderState(RenderStates.Ambient, System.Drawing.Color.White.ToArgb());
+			dev.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
 			dev.SetRenderState(RenderStates.AlphaBlendEnable, false);
 			dev.SetRenderState(RenderStates.ColorVertex, false);
 			dev.Clear(ClearFlags.ZBuffer, 0, 1, 0);
@@ -147,7 +149,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			transform.Push();
 			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
-			if(scaleHandlesToCam) transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+			if (scaleHandlesToCam) transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 			else transform.ScaleLocal(handleSize, handleSize, handleSize);
 
 			#region Creating Render Info
@@ -178,19 +180,35 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public bool TransformAffected(float xChange, float yChange)
 		{
 			// don't operate with an invalid axis seleciton, or invalid mode
-			if ((selectedAxes == GizmoSelectedAxes.NONE) || (!this.enabled)) return false;
+			if ((selectedAxes == GizmoSelectedAxes.NONE) || (!enabled))
+				return false;
 
 			float yFlip = -1; // I don't think we'll ever need to mess with this
 			float xFlip = 1; // TODO: this though, should get flipped depending on the camera's orientation to the object.
 
 			float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f;
 
-			if (selectedAxes == GizmoSelectedAxes.X_AXIS) xOff = xChange;
-			else if (selectedAxes == GizmoSelectedAxes.Y_AXIS) yOff = yChange * yFlip;
-			else if (selectedAxes == GizmoSelectedAxes.Z_AXIS) zOff = xChange;
-			else if (selectedAxes == GizmoSelectedAxes.XY_AXIS) { xOff = xChange; yOff = yChange * yFlip; }
-			else if (selectedAxes == GizmoSelectedAxes.XZ_AXIS) { xOff = xChange; zOff = yChange; }
-			else if (selectedAxes == GizmoSelectedAxes.ZY_AXIS) { zOff = xChange; yOff = yChange * yFlip; }
+			switch (selectedAxes)
+			{
+				case GizmoSelectedAxes.X_AXIS:
+					xOff = xChange;
+					break;
+				case GizmoSelectedAxes.Y_AXIS:
+					yOff = yChange * yFlip;
+					break;
+				case GizmoSelectedAxes.Z_AXIS:
+					zOff = xChange;
+					break;
+				case GizmoSelectedAxes.XY_AXIS:
+					xOff = xChange; yOff = yChange * yFlip;
+					break;
+				case GizmoSelectedAxes.XZ_AXIS:
+					xOff = xChange; zOff = yChange;
+					break;
+				case GizmoSelectedAxes.ZY_AXIS:
+					zOff = xChange; yOff = yChange * yFlip;
+					break;
+			}
 
 			affectedPoint.X += xOff;
 			affectedPoint.Y += yOff;
