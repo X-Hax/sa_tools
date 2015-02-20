@@ -1660,6 +1660,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
+
+			if (e.Button != MouseButtons.None)
+			{
+				Rectangle screenBounds = Screen.GetBounds(Cursor.Position);
+				if (Cursor.Position.X < (screenBounds.Left + mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(screenBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X + screenBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+				}
+				else if (Cursor.Position.X > (screenBounds.Right - mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(screenBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X - screenBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+				}
+				if (Cursor.Position.Y < (screenBounds.Top + mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(Cursor.Position.X, screenBounds.Bottom - mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + screenBounds.Height - mouseWrapThreshold);
+				}
+				else if (Cursor.Position.Y > (screenBounds.Bottom - mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(Cursor.Position.X, screenBounds.Top + mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - screenBounds.Height + mouseWrapThreshold);
+				}
+			}
+
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -1707,29 +1733,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 					cameraPointB.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 					transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 					DrawLevel();
-
-					Rectangle screenBounds = Screen.GetBounds(Cursor.Position);
-					if (Cursor.Position.X < (screenBounds.Left + mouseWrapThreshold))
-					{
-						Cursor.Position = new Point(screenBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-						mouseEvent = new Point(mouseEvent.X + screenBounds.Width - mouseWrapThreshold, mouseEvent.Y);
-					}
-					else if (Cursor.Position.X > (screenBounds.Right - mouseWrapThreshold))
-					{
-						Cursor.Position = new Point(screenBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-						mouseEvent = new Point(mouseEvent.X - screenBounds.Width + mouseWrapThreshold, mouseEvent.Y);
-					}
-					if (Cursor.Position.Y < (screenBounds.Top + mouseWrapThreshold))
-					{
-						Cursor.Position = new Point(Cursor.Position.X, screenBounds.Bottom - mouseWrapThreshold);
-						mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + screenBounds.Height - mouseWrapThreshold);
-					}
-					else if (Cursor.Position.Y > (screenBounds.Bottom - mouseWrapThreshold))
-					{
-						Cursor.Position = new Point(Cursor.Position.X, screenBounds.Top + mouseWrapThreshold);
-						mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - screenBounds.Height + mouseWrapThreshold);
-					}
-
 					break;
 
 				case MouseButtons.None:
