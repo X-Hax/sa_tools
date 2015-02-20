@@ -248,9 +248,13 @@ namespace PVMEditSharp
 				mipmapCheckBox.Enabled = false;
 		}
 
-		private KeyValuePair<string, Bitmap>? BrowseForTexture()
+		private KeyValuePair<string, Bitmap>? BrowseForTexture(string textureName = null)
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp" })
+			{
+				if (!String.IsNullOrEmpty(textureName))
+					dlg.FileName = textureName;
+
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					string name = Path.GetFileNameWithoutExtension(dlg.FileName);
@@ -260,7 +264,10 @@ namespace PVMEditSharp
 						return new KeyValuePair<string, Bitmap>(name, new Bitmap(dlg.FileName));
 				}
 				else
+				{
 					return null;
+				}
+			}
 		}
 
 		private void addTextureButton_Click(object sender, EventArgs e)
@@ -307,7 +314,7 @@ namespace PVMEditSharp
 
 		private void importButton_Click(object sender, EventArgs e)
 		{
-			KeyValuePair<string, Bitmap>? tex = BrowseForTexture();
+			KeyValuePair<string, Bitmap>? tex = BrowseForTexture(listBox1.GetItemText(listBox1.SelectedItem));
 			if (tex.HasValue)
 			{
 				textureImage.Image = textures[listBox1.SelectedIndex].Image = tex.Value.Value;
