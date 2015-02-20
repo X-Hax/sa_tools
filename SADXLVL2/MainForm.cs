@@ -1657,6 +1657,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				mouseLast = mouseEvent;
 				return;
 			}
+
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			switch (e.Button)
 			{
@@ -1697,17 +1698,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 					}
 
-					mouseLast = mouseEvent;
 					DrawLevel();
-
 					break;
 
 				case MouseButtons.Left:
-					if (Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
-						mouseLast = mouseEvent;
-					else
-						break;
-
 					cameraPointA.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 					cameraPointB.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 					transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
@@ -1777,10 +1771,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 					}
 
-					mouseLast = mouseEvent;
 					break;
 			}
 
+			mouseLast = mouseEvent;
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
