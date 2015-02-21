@@ -51,6 +51,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Dictionary<string, List<string>> levelNames;
 		bool lookKeyDown;
 		bool zoomKeyDown;
+
+		// TODO: Make these both configurable.
+		bool mouseWrapScreen = false;
 		ushort mouseWrapThreshold = 16;
 
 		// helpers / ui stuff
@@ -1663,26 +1666,28 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (e.Button != MouseButtons.None)
 			{
-				Rectangle screenBounds = Screen.GetBounds(Cursor.Position);
-				if (Cursor.Position.X < (screenBounds.Left + mouseWrapThreshold))
+				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(Cursor.Position) : RectangleToScreen(panel1.ClientRectangle);
+				Console.WriteLine(mouseBounds);
+
+				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
 				{
-					Cursor.Position = new Point(screenBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + screenBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
 				}
-				else if (Cursor.Position.X > (screenBounds.Right - mouseWrapThreshold))
+				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
 				{
-					Cursor.Position = new Point(screenBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - screenBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
 				}
-				if (Cursor.Position.Y < (screenBounds.Top + mouseWrapThreshold))
+				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
 				{
-					Cursor.Position = new Point(Cursor.Position.X, screenBounds.Bottom - mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + screenBounds.Height - mouseWrapThreshold);
+					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
 				}
-				else if (Cursor.Position.Y > (screenBounds.Bottom - mouseWrapThreshold))
+				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
 				{
-					Cursor.Position = new Point(Cursor.Position.X, screenBounds.Top + mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - screenBounds.Height + mouseWrapThreshold);
+					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
 				}
 			}
 
