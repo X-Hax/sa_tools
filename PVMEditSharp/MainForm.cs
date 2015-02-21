@@ -326,6 +326,8 @@ namespace PVMEditSharp
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 			}
+
+			listBox1.Select();
 		}
 
 		private void exportButton_Click(object sender, EventArgs e)
@@ -333,6 +335,8 @@ namespace PVMEditSharp
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					textures[listBox1.SelectedIndex].Image.Save(dlg.FileName);
+
+			listBox1.Select();
 		}
 
 		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
