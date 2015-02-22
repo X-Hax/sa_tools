@@ -1783,7 +1783,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			mouseLast = mouseEvent;
+			if (Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+				mouseLast = mouseEvent;
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
