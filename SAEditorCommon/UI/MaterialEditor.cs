@@ -66,6 +66,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			flatShadeCheck.Checked = materials[index].FlatShading;
 			ignoreLightCheck.Checked = materials[index].IgnoreLighting;
 			userFlagsNumeric.Value = materials[index].UserFlags;
+
+			DisplayFlags(index);
 		}
 
 		private void comboMaterial_SelectedIndexChanged(object sender, EventArgs e)
@@ -251,14 +253,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			materials[comboMaterial.SelectedIndex].DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
 			RaiseFormUpdated();
 		}
+		
+		#endregion
 
 		private void RaiseFormUpdated()
 		{
 			if (FormUpdated != null)
 				FormUpdated(this, EventArgs.Empty);
+
+			DisplayFlags(comboMaterial.SelectedIndex);
 		}
 
-		#endregion
+		private void DisplayFlags(int index)
+		{
+			labelFlags.Text = String.Format("{0:X8}", materials[index].Flags);
+		}
 
 		private void onKeyDown(object sender, KeyEventArgs e)
 		{

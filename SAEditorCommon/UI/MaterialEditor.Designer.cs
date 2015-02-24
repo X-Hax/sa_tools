@@ -33,6 +33,8 @@
 			this.currentMaterialLabel = new System.Windows.Forms.Label();
 			this.colorDialog = new System.Windows.Forms.ColorDialog();
 			this.flagsGroupBox = new System.Windows.Forms.GroupBox();
+			this.labelFlags = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
 			this.userFlagsLabel = new System.Windows.Forms.Label();
 			this.userFlagsNumeric = new System.Windows.Forms.NumericUpDown();
 			this.ignoreLightCheck = new System.Windows.Forms.CheckBox();
@@ -102,6 +104,8 @@
 			// 
 			// flagsGroupBox
 			// 
+			this.flagsGroupBox.Controls.Add(this.labelFlags);
+			this.flagsGroupBox.Controls.Add(this.label2);
 			this.flagsGroupBox.Controls.Add(this.userFlagsLabel);
 			this.flagsGroupBox.Controls.Add(this.userFlagsNumeric);
 			this.flagsGroupBox.Controls.Add(this.ignoreLightCheck);
@@ -119,10 +123,28 @@
 			this.flagsGroupBox.Controls.Add(this.pickStatusCheck);
 			this.flagsGroupBox.Location = new System.Drawing.Point(278, 39);
 			this.flagsGroupBox.Name = "flagsGroupBox";
-			this.flagsGroupBox.Size = new System.Drawing.Size(246, 172);
+			this.flagsGroupBox.Size = new System.Drawing.Size(246, 193);
 			this.flagsGroupBox.TabIndex = 4;
 			this.flagsGroupBox.TabStop = false;
 			this.flagsGroupBox.Text = "Flags";
+			// 
+			// labelFlags
+			// 
+			this.labelFlags.AutoSize = true;
+			this.labelFlags.Location = new System.Drawing.Point(47, 174);
+			this.labelFlags.Name = "labelFlags";
+			this.labelFlags.Size = new System.Drawing.Size(35, 13);
+			this.labelFlags.TabIndex = 16;
+			this.labelFlags.Text = "[flags]";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(6, 174);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(35, 13);
+			this.label2.TabIndex = 15;
+			this.label2.Text = "Flags:";
 			// 
 			// userFlagsLabel
 			// 
@@ -530,7 +552,7 @@
 			// 
 			// doneButton
 			// 
-			this.doneButton.Location = new System.Drawing.Point(443, 217);
+			this.doneButton.Location = new System.Drawing.Point(449, 238);
 			this.doneButton.Name = "doneButton";
 			this.doneButton.Size = new System.Drawing.Size(75, 23);
 			this.doneButton.TabIndex = 0;
@@ -550,7 +572,7 @@
 			this.AcceptButton = this.doneButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(536, 255);
+			this.ClientSize = new System.Drawing.Size(536, 273);
 			this.ControlBox = false;
 			this.Controls.Add(this.doneButton);
 			this.Controls.Add(this.generalSettingBox);
@@ -620,5 +642,7 @@
 		private System.Windows.Forms.NumericUpDown alphaDiffuseNumeric;
 		private System.Windows.Forms.Label labelAlpha;
 		private System.Windows.Forms.ToolTip toolTip;
+		private System.Windows.Forms.Label labelFlags;
+		private System.Windows.Forms.Label label2;
     }
 }
