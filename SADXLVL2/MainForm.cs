@@ -53,8 +53,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool zoomKeyDown;
 
 		// TODO: Make these both configurable.
-		bool mouseWrapScreen = false;
-		ushort mouseWrapThreshold = 16;
+		bool mouseWrapScreen = true;
+		ushort mouseWrapThreshold = 2;
 
 		// helpers / ui stuff
 		TransformGizmo transformGizmo;
@@ -1666,7 +1666,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (e.Button != MouseButtons.None)
 			{
-				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(Cursor.Position) : RectangleToScreen(panel1.ClientRectangle);
+				// TODO: Figure out why RectangleToScreen gets offset values for panel1
+				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RectangleToScreen(ClientRectangle);
 				Console.WriteLine(mouseBounds);
 
 				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
