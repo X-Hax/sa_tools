@@ -53,7 +53,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool zoomKeyDown;
 
 		// TODO: Make these both configurable.
-		bool mouseWrapScreen = true;
+		bool mouseWrapScreen = false;
 		ushort mouseWrapThreshold = 2;
 
 		// helpers / ui stuff
@@ -1663,32 +1663,35 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
+			bool performedWrap = false;
 
 			if (e.Button != MouseButtons.None)
 			{
-				// TODO: Figure out why RectangleToScreen gets offset values for panel1
-				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RectangleToScreen(ClientRectangle);
-				Console.WriteLine(mouseBounds);
+				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
 
 				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
 				{
 					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
 					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
 				}
 				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
 				{
 					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
 					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
 				}
 				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
 				{
 					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
 					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
+					performedWrap = true;
 				}
 				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
 				{
 					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
 					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
+					performedWrap = true;
 				}
 			}
 
@@ -1784,7 +1787,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			if (Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
 				mouseLast = mouseEvent;
 		}
 
