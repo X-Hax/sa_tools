@@ -2015,7 +2015,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					bool errorFlag = false;
 					string errorMsg = "";
 
-					LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg);
+					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+					SelectedItemChanged();
 
 					if (errorFlag)
 						MessageBox.Show(errorMsg);
@@ -2049,7 +2050,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					bool errorFlag = false;
 					string errorMsg = "";
 
-					LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg);
+					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+					SelectedItemChanged();
 
 					if (errorFlag)
 						MessageBox.Show(errorMsg);
