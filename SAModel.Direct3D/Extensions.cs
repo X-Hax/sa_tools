@@ -40,11 +40,11 @@ namespace SonicRetro.SAModel.Direct3D
 			for (int i = 0; i < meshes.Length; i++)
 			{
 				float objectRadius = 0.0f;
-				Vector3 objectCenter = new Vector3();
 
 				using (VertexBuffer vb = meshes[i].VertexBuffer)
 				{
 					GraphicsStream vertexData = vb.Lock(0, 0, LockFlags.None);
+					Vector3 objectCenter;
 					objectRadius = Geometry.ComputeBoundingSphere(vertexData,
 																  meshes[i].NumberVertices,
 																  meshes[i].VertexFormat,
@@ -79,28 +79,39 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 				device.SetTexture(0, material.UseTexture ? texture : null);
 				device.RenderState.Ambient = (material.IgnoreLighting) ? Color.White : Color.Black;
-				device.RenderState.AlphaBlendEnable = material.UseAlpha; if (material.UseAlpha) device.RenderState.Ambient = material.DiffuseColor;
+				device.RenderState.AlphaBlendEnable = material.UseAlpha;
+
+				if (material.UseAlpha)
+					device.RenderState.Ambient = material.DiffuseColor;
+
 				switch (material.DestinationAlpha)
 				{
 					case AlphaInstruction.Zero:
 						device.RenderState.AlphaDestinationBlend = Blend.Zero;
 						break;
+
 					case AlphaInstruction.One:
 						device.RenderState.AlphaDestinationBlend = Blend.One;
 						break;
+
 					case AlphaInstruction.OtherColor:
 						break;
+
 					case AlphaInstruction.InverseOtherColor:
 						break;
+
 					case AlphaInstruction.SourceAlpha:
 						device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
 						break;
+
 					case AlphaInstruction.InverseSourceAlpha:
 						device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
 						break;
+
 					case AlphaInstruction.DestinationAlpha:
 						device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
 						break;
+
 					case AlphaInstruction.InverseDestinationAlpha:
 						device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
 						break;
@@ -110,22 +121,29 @@ namespace SonicRetro.SAModel.Direct3D
 					case AlphaInstruction.Zero:
 						device.RenderState.AlphaSourceBlend = Blend.Zero;
 						break;
+
 					case AlphaInstruction.One:
 						device.RenderState.AlphaSourceBlend = Blend.One;
 						break;
+
 					case AlphaInstruction.OtherColor:
 						break;
+
 					case AlphaInstruction.InverseOtherColor:
 						break;
+
 					case AlphaInstruction.SourceAlpha:
 						device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
 						break;
+
 					case AlphaInstruction.InverseSourceAlpha:
 						device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
 						break;
+
 					case AlphaInstruction.DestinationAlpha:
 						device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
 						break;
+
 					case AlphaInstruction.InverseDestinationAlpha:
 						device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
 						break;
@@ -181,7 +199,7 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in col.Model.Attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), matrix));
-			Vector3 center = new Vector3();
+			Vector3 center;
 			col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
 			col.Bounds.Center.X = center.X;
 			col.Bounds.Center.Y = center.Y;
@@ -261,7 +279,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 			transform.Push();
 			obj.ProcessTransforms(transform);
-			
+
 			if (obj.Attach != null)
 			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
@@ -285,7 +303,7 @@ namespace SonicRetro.SAModel.Direct3D
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
-						
+
 						if (obj.Attach.MeshInfo[j].Material == null)
 						{
 							MeshInfo old = obj.Attach.MeshInfo[j];
@@ -339,14 +357,13 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
-			
+
 			if (obj.Attach != null & meshes[modelindex] != null)
 			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					Material mat;
 					Texture texture = null;
-					mat = obj.Attach.MeshInfo[j].Material;
+					Material mat = obj.Attach.MeshInfo[j].Material;
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
@@ -372,7 +389,7 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Push();
 			modelindex++;
 			obj.ProcessTransforms(transform);
-			
+
 			if (obj.Attach != null & meshes[modelindex] != null)
 			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
@@ -422,9 +439,8 @@ namespace SonicRetro.SAModel.Direct3D
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					Material mat;
 					Texture texture = null;
-					mat = obj.Attach.MeshInfo[j].Material;
+					Material mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
@@ -473,15 +489,15 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-        public static HitResult CheckHit(this Microsoft.DirectX.Direct3D.Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
-        {
-            if (mesh == null) return HitResult.NoHit;
-            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-            IntersectInformation info;
-            if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
-            return new HitResult(null, info.Dist);
-        }
+		public static HitResult CheckHit(this Microsoft.DirectX.Direct3D.Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+		{
+			if (mesh == null) return HitResult.NoHit;
+			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
+			IntersectInformation info;
+			if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
+			return new HitResult(null, info.Dist);
+		}
 
 		public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
 		{
@@ -567,14 +583,14 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Attach obj2nj(string objfile, string[] textures = null)
 		{
-			string[] obj = File.ReadAllLines(objfile);
-			Attach model;
+			string[] objFile = File.ReadAllLines(objfile);
 			List<UV> uvs = new List<UV>();
 			List<Color> vcolors = new List<Color>();
 			List<Vertex> verts = new List<Vertex>();
 			List<Vertex> norms = new List<Vertex>();
-			Dictionary<string, Material> mtls = new Dictionary<string, Material>();
-			Material lastmtl = null;
+			Dictionary<string, Material> materials = new Dictionary<string, Material>();
+			Material lastMaterial = null;
+
 			List<Vertex> model_Vertex = new List<Vertex>();
 			List<Vertex> model_Normal = new List<Vertex>();
 			List<Material> model_Material = new List<Material>();
@@ -583,38 +599,44 @@ namespace SonicRetro.SAModel.Direct3D
 			List<List<Poly>> model_Mesh_Poly = new List<List<Poly>>();
 			List<List<UV>> model_Mesh_UV = new List<List<UV>>();
 			List<List<Color>> model_Mesh_VColor = new List<List<Color>>();
-			foreach (string ln in obj)
+
+			foreach (string objLine in objFile)
 			{
-				string[] lin = ln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+				string[] lin = objLine.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
 				if (lin.Length == 0)
 					continue;
+
 				switch (lin[0].ToLowerInvariant())
 				{
 					case "mtllib":
-						string[] mtlfile = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(objfile), lin[1]));
-						foreach (string mln in mtlfile)
+						string[] mtlFile = File.ReadAllLines(Path.Combine(Path.GetDirectoryName(objfile), lin[1]));
+						foreach (string mtlLine in mtlFile)
 						{
-							string[] mlin = mln.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+							string[] mlin = mtlLine.Split('#')[0].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
 							if (mlin.Length == 0)
 								continue;
+
 							#region Parsing Material Properties
 							// Calling trim on this to be compatible with 3ds Max mtl files.
 							// It likes to indent them with tabs (\t)
 							switch (mlin[0].ToLowerInvariant().Trim())
 							{
 								case "newmtl":
-									lastmtl = new Material();
-									lastmtl.UseAlpha = false;
-									lastmtl.UseTexture = false;
-									mtls.Add(mlin[1], lastmtl);
+									lastMaterial = new Material { UseAlpha = false, UseTexture = false };
+									materials.Add(mlin[1], lastMaterial);
 									break;
 
 								case "kd":
-									lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+									lastMaterial.DiffuseColor = Color.FromArgb(
+										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
 									break;
 
 								case "map_ka":
-									lastmtl.UseAlpha = true;
+									lastMaterial.UseAlpha = true;
 									if (textures != null && mlin.Length > 1)
 									{
 										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
@@ -622,7 +644,7 @@ namespace SonicRetro.SAModel.Direct3D
 										{
 											if (textures[tid] == baseName)
 											{
-												lastmtl.TextureID = tid;
+												lastMaterial.TextureID = tid;
 												break;
 											}
 										}
@@ -630,7 +652,7 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "map_kd":
-									lastmtl.UseTexture = true;
+									lastMaterial.UseTexture = true;
 									if (textures != null && mlin.Length > 1)
 									{
 										string baseName = Path.GetFileNameWithoutExtension(mlin[1]);
@@ -638,7 +660,7 @@ namespace SonicRetro.SAModel.Direct3D
 										{
 											if (textures[tid] == baseName)
 											{
-												lastmtl.TextureID = tid;
+												lastMaterial.TextureID = tid;
 												break;
 											}
 										}
@@ -646,16 +668,21 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "ke":
-									lastmtl.Exponent = float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+									lastMaterial.Exponent = float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
 									break;
 
 								case "d":
 								case "tr":
-									lastmtl.DiffuseColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), lastmtl.DiffuseColor);
+									lastMaterial.DiffuseColor = Color.FromArgb(
+										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										lastMaterial.DiffuseColor);
 									break;
 
 								case "ks":
-									lastmtl.SpecularColor = Color.FromArgb((int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255), (int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+									lastMaterial.SpecularColor = Color.FromArgb(
+										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
 									break;
 
 								case "texid":
@@ -667,7 +694,7 @@ namespace SonicRetro.SAModel.Direct3D
 									bool uMirror = false;
 
 									if (bool.TryParse(mlin[1], out uMirror))
-										lastmtl.FlipU = uMirror;
+										lastMaterial.FlipU = uMirror;
 
 									break;
 
@@ -675,7 +702,7 @@ namespace SonicRetro.SAModel.Direct3D
 									bool vMirror = false;
 
 									if (bool.TryParse(mlin[1], out vMirror))
-										lastmtl.FlipV = vMirror;
+										lastMaterial.FlipV = vMirror;
 
 									break;
 
@@ -683,7 +710,7 @@ namespace SonicRetro.SAModel.Direct3D
 									bool uTile = true;
 
 									if (bool.TryParse(mlin[1], out uTile))
-										lastmtl.ClampU = !uTile;
+										lastMaterial.ClampU = !uTile;
 
 									break;
 
@@ -691,49 +718,65 @@ namespace SonicRetro.SAModel.Direct3D
 									bool vTile = true;
 
 									if (bool.TryParse(mlin[1], out vTile))
-										lastmtl.ClampV = !vTile;
+										lastMaterial.ClampV = !vTile;
 
 									break;
 
 								case "-enviromap":
-									lastmtl.EnvironmentMap = true;
+									lastMaterial.EnvironmentMap = true;
 									break;
 
 								case "-doublesided":
-									lastmtl.DoubleSided = true;
+									lastMaterial.DoubleSided = true;
 									break;
 
 								case "-ignorelighting":
-									lastmtl.IgnoreLighting = bool.Parse(mlin[1]);
+									lastMaterial.IgnoreLighting = bool.Parse(mlin[1]);
 									break;
 
 								case "-flatshaded":
-									lastmtl.FlatShading = bool.Parse(mlin[1]);
+									lastMaterial.FlatShading = bool.Parse(mlin[1]);
 									break;
 							}
 							#endregion
 						}
 
 						break;
+
 					case "v":
-						verts.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+						verts.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture),
+							float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture),
+							float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
 						break;
+
 					case "vn":
-						norms.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+						norms.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture),
+							float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture),
+							float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
 						break;
+
 					case "vt":
-						uvs.Add(new UV() { U = float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * -1, V = float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * -1 });
+						uvs.Add(new UV
+						{
+							U = float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * -1,
+							V = float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * -1
+						});
 						break;
+
 					case "vc":
-						vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)), (int)Math.Round(float.Parse(lin[4], System.Globalization.CultureInfo.InvariantCulture))));
+						vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[4], System.Globalization.CultureInfo.InvariantCulture))));
 						break;
+
 					case "usemtl":
 						model_Mesh_Poly.Add(new List<Poly>());
 						model_Mesh_UV.Add(new List<UV>());
 						model_Mesh_VColor.Add(new List<Color>());
-						if (mtls.ContainsKey(lin[1]))
+						if (materials.ContainsKey(lin[1]))
 						{
-							Material mtl = mtls[lin[1]];
+							Material mtl = materials[lin[1]];
 							if (model_Material.Contains(mtl))
 								model_Mesh_MaterialID.Add((ushort)model_Material.IndexOf(mtl));
 							else
@@ -745,6 +788,7 @@ namespace SonicRetro.SAModel.Direct3D
 						else
 							model_Mesh_MaterialID.Add(0);
 						break;
+
 					case "f":
 						if (model_Mesh_MaterialID.Count == 0)
 						{
@@ -753,14 +797,12 @@ namespace SonicRetro.SAModel.Direct3D
 							model_Mesh_UV.Add(new List<UV>());
 							model_Mesh_VColor.Add(new List<Color>());
 						}
-						Vertex ver = default(Vertex);
-						Vertex nor = default(Vertex);
 						ushort[] pol = new ushort[3];
 						for (int i = 1; i <= 3; i++)
 						{
 							string[] lne = lin[i].Split('/');
-							ver = verts.GetItemNeg(int.Parse(lne[0]));
-							nor = norms.GetItemNeg(int.Parse(lne[2]));
+							Vertex ver = verts.GetItemNeg(int.Parse(lne[0]));
+							Vertex nor = norms.GetItemNeg(int.Parse(lne[2]));
 							if (uvs.Count > 0)
 							{
 								if (!string.IsNullOrEmpty(lne[1]))
@@ -802,6 +844,7 @@ namespace SonicRetro.SAModel.Direct3D
 							tri.Indexes[i] = pol[i];
 						model_Mesh_Poly[model_Mesh_Poly.Count - 1].Add(tri);
 						break;
+
 					case "t":
 						if (model_Mesh_MaterialID.Count == 0)
 						{
@@ -810,13 +853,11 @@ namespace SonicRetro.SAModel.Direct3D
 							model_Mesh_UV.Add(new List<UV>());
 							model_Mesh_VColor.Add(new List<Color>());
 						}
-						Vertex ver2 = default(Vertex);
-						Vertex nor2 = default(Vertex);
 						List<ushort> str = new List<ushort>();
 						for (int i = 1; i <= lin.Length - 1; i++)
 						{
-							ver2 = verts.GetItemNeg(int.Parse(lin[i]));
-							nor2 = norms.GetItemNeg(int.Parse(lin[i]));
+							Vertex ver2 = verts.GetItemNeg(int.Parse(lin[i]));
+							Vertex nor2 = norms.GetItemNeg(int.Parse(lin[i]));
 							if (uvs.Count > 0)
 								model_Mesh_UV[model_Mesh_UV.Count - 1].Add(uvs.GetItemNeg(int.Parse(lin[i])));
 							if (vcolors.Count > 0)
@@ -841,14 +882,13 @@ namespace SonicRetro.SAModel.Direct3D
 						}
 						model_Mesh_Poly[model_Mesh_Poly.Count - 1].Add(new Strip(str.ToArray(), false));
 						break;
+
 					case "q":
-						Vertex ver3 = default(Vertex);
-						Vertex nor3 = default(Vertex);
 						List<ushort> str2 = new List<ushort>(model_Mesh_Poly[model_Mesh_Poly.Count - 1][model_Mesh_Poly[model_Mesh_Poly.Count - 1].Count - 1].Indexes);
 						for (int i = 1; i <= lin.Length - 1; i++)
 						{
-							ver3 = verts.GetItemNeg(int.Parse(lin[i]));
-							nor3 = norms.GetItemNeg(int.Parse(lin[i]));
+							Vertex ver3 = verts.GetItemNeg(int.Parse(lin[i]));
+							Vertex nor3 = norms.GetItemNeg(int.Parse(lin[i]));
 							if (uvs.Count > 0)
 								model_Mesh_UV[model_Mesh_UV.Count - 1].Add(uvs.GetItemNeg(int.Parse(lin[i])));
 							if (vcolors.Count > 0)
@@ -894,7 +934,7 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 			}
 
-			model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material);
+			Attach model = new BasicAttach(model_Vertex.ToArray(), model_Normal.ToArray(), model_Mesh, model_Material);
 			model.ProcessVertexData();
 			model.CalculateBounds();
 			return model;
@@ -1048,147 +1088,209 @@ namespace SonicRetro.SAModel.Direct3D
 					int processedUVStripCount = 0;
 					for (int polyIndx = 0; polyIndx < basicAttach.Mesh[meshIndx].Poly.Count; polyIndx++)
 					{
-						if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Strips)
+						switch (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType)
 						{
-							Strip polyStrip = (Strip)basicAttach.Mesh[meshIndx].Poly[polyIndx];
-							int expectedTrisCount = polyStrip.Indexes.Length - 2;
-							bool triangleWindReversed = polyStrip.Reversed;
+							case Basic_PolyType.Strips:
+								Strip polyStrip = (Strip)basicAttach.Mesh[meshIndx].Poly[polyIndx];
+								int expectedTrisCount = polyStrip.Indexes.Length - 2;
+								bool triangleWindReversed = polyStrip.Reversed;
 
-							for (int stripIndx = 0; stripIndx < polyStrip.Indexes.Length - 2; stripIndx++)
-							{
-								if (triangleWindReversed)
+								for (int stripIndx = 0; stripIndx < expectedTrisCount; stripIndx++)
 								{
-									Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+									if (triangleWindReversed)
+									{
+										Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+
+										if (basicAttach.Mesh[meshIndx].UV != null)
+										{
+											int uv1, uv2, uv3;
+
+											uv1 = (stripIndx + 1) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+											uv2 = (stripIndx) + processedUVStripCount + 1;
+											uv3 = (stripIndx + 2) + processedUVStripCount + 1;
+
+											if (wroteNormals)
+												objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
+													(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
+													(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
+													(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+											else
+												objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+													(int)newFace.X + totalVerts, uv1 + totalUVs,
+													(int)newFace.Y + totalVerts, uv2 + totalUVs,
+													(int)newFace.Z + totalVerts, uv3 + totalUVs);
+										}
+										else
+										{
+											if (wroteNormals)
+												objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+													(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
+													(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
+													(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+											else
+												objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										}
+									}
+									else
+									{
+										Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+
+										if (basicAttach.Mesh[meshIndx].UV != null)
+										{
+											int uv1, uv2, uv3;
+
+											uv1 = (stripIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+											uv2 = stripIndx + 1 + processedUVStripCount + 1;
+											uv3 = stripIndx + 2 + processedUVStripCount + 1;
+
+											if (wroteNormals)
+												objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
+													(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
+													(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
+													(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+											else
+												objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+													(int)newFace.X + totalVerts, uv1 + totalUVs,
+													(int)newFace.Y + totalVerts, uv2 + totalUVs,
+													(int)newFace.Z + totalVerts, uv3 + totalUVs);
+										}
+										else
+										{
+											if (wroteNormals)
+												objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+													(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
+													(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
+													(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+											else
+												objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										}
+									}
+
+									triangleWindReversed = !triangleWindReversed; // flip every other triangle or the output will be wrong
+								}
+
+								if (basicAttach.Mesh[meshIndx].UV != null)
+								{
+									processedUVStripCount += polyStrip.Indexes.Length;
+									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
+								}
+								break;
+
+							case Basic_PolyType.Triangles:
+								for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 3; faceVIndx++)
+								{
+									Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1),
+										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
 
 									if (basicAttach.Mesh[meshIndx].UV != null)
 									{
 										int uv1, uv2, uv3;
 
-										uv1 = (stripIndx + 1) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-										uv2 = (stripIndx) + processedUVStripCount + 1;
-										uv3 = (stripIndx + 2) + processedUVStripCount + 1;
+										uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+										uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+										uv3 = faceVIndx + 2 + processedUVStripCount + 1;
 
-										if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
-										else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
+										if (wroteNormals)
+											objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
+												(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
+												(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+										else
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+												(int)newFace.X + totalVerts, uv1 + totalUVs,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs,
+												(int)newFace.Z + totalVerts, uv3 + totalUVs);
 									}
 									else
 									{
-										if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
-										else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										if (wroteNormals)
+											objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+												(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
+												(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
+												(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+										else
+											objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
 									}
-								}
-								else
-								{
-									Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
 
 									if (basicAttach.Mesh[meshIndx].UV != null)
 									{
-										int uv1, uv2, uv3;
+										processedUVStripCount += 3;
+										objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
+									}
+								}
+								break;
 
-										uv1 = (stripIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-										uv2 = stripIndx + 1 + processedUVStripCount + 1;
-										uv3 = stripIndx + 2 + processedUVStripCount + 1;
+							case Basic_PolyType.Quads:
+								for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 4; faceVIndx++)
+								{
+									Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 0] + 1),
+										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1),
+										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1),
+										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
 
-										if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
-										else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
+									if (basicAttach.Mesh[meshIndx].UV != null)
+									{
+										int uv1, uv2, uv3, uv4;
+
+										uv1 = faceVIndx + 0 + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+										uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+										uv3 = faceVIndx + 2 + processedUVStripCount + 1;
+										uv4 = faceVIndx + 3 + processedUVStripCount + 1;
+
+										if (wroteNormals)
+										{
+											objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
+												(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
+												(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+											objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
+												(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
+												(int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms);
+										}
+										else
+										{
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+												(int)newFace.X + totalVerts, uv1 + totalUVs,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs,
+												(int)newFace.Z + totalVerts, uv3 + totalUVs);
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+												(int)newFace.Z + totalVerts, uv3 + totalUVs,
+												(int)newFace.Y + totalVerts, uv2 + totalUVs,
+												(int)newFace.W + totalVerts, uv4 + totalUVs);
+										}
 									}
 									else
 									{
-										if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
-										else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										if (wroteNormals)
+										{
+											objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+												(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
+												(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
+												(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+											objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+												(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms,
+												(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
+												(int)newFace.W + totalVerts, (int)newFace.W + totalNorms);
+										}
+										else
+										{
+											objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+											objstream.WriteLine("f {0} {1} {2}", (int)newFace.Z + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.W + totalVerts);
+										}
 									}
-								}
 
-								triangleWindReversed = !triangleWindReversed; // flip every other triangle or the output will be wrong
-							}
-
-							if (basicAttach.Mesh[meshIndx].UV != null)
-							{
-								processedUVStripCount += polyStrip.Indexes.Length;
-								objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
-							}
-						}
-						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Triangles)
-						{
-							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 3; faceVIndx++)
-							{
-								Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
-
-								if (basicAttach.Mesh[meshIndx].UV != null)
-								{
-									int uv1, uv2, uv3;
-
-									uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-									uv2 = faceVIndx + 1 + processedUVStripCount + 1;
-									uv3 = faceVIndx + 2 + processedUVStripCount + 1;
-
-									if (wroteNormals) objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
-									else objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
-								}
-								else
-								{
-									if (wroteNormals) objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
-									else objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
-								}
-
-								if (basicAttach.Mesh[meshIndx].UV != null)
-								{
-									processedUVStripCount += 3;
-									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
-								}
-							}
-						}
-						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.Quads)
-						{
-							for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 4; faceVIndx++)
-							{
-								Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 0] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
-
-								if (basicAttach.Mesh[meshIndx].UV != null)
-								{
-									int uv1, uv2, uv3, uv4;
-
-									uv1 = faceVIndx + 0 + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-									uv2 = faceVIndx + 1 + processedUVStripCount + 1;
-									uv3 = faceVIndx + 2 + processedUVStripCount + 1;
-									uv4 = faceVIndx + 3 + processedUVStripCount + 1;
-
-									if (wroteNormals)
+									if (basicAttach.Mesh[meshIndx].UV != null)
 									{
-										objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
-										objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, uv4 + totalUVs, (int)newFace.W + totalNorms);
-									}
-									else
-									{
-										objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Z + totalVerts, uv3 + totalUVs);
-										objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.W + totalVerts, uv4 + totalUVs);
+										processedUVStripCount += 4;
+										objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
 									}
 								}
-								else
-								{
-									if (wroteNormals)
-									{
-										objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.X + totalVerts, (int)newFace.X + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
-										objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}", (int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms, (int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms, (int)newFace.W + totalVerts, (int)newFace.W + totalNorms);
-									}
-									else
-									{
-										objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
-										objstream.WriteLine("f {0} {1} {2}", (int)newFace.Z + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.W + totalVerts);
-									}
-								}
+								break;
 
-								if (basicAttach.Mesh[meshIndx].UV != null)
-								{
-									processedUVStripCount += 4;
-									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
-								}
-							}
-						}
-						else if (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType == Basic_PolyType.NPoly)
-						{
-							objstream.WriteLine("# Error in WriteObjFromBasicAttach() - NPoly not supported yet!");
-							continue;
+							case Basic_PolyType.NPoly:
+								objstream.WriteLine("# Error in WriteObjFromBasicAttach() - NPoly not supported yet!");
+								continue;
 						}
 					}
 
@@ -1268,7 +1370,8 @@ namespace SonicRetro.SAModel.Direct3D
 							{
 								for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
 								{
-									objstream.WriteLine("vn {0} {1} {2}", chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z);
+									objstream.WriteLine("vn {0} {1} {2}",
+										chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z);
 									outputNormalCount++;
 								}
 							}
@@ -1279,7 +1382,7 @@ namespace SonicRetro.SAModel.Direct3D
 					#region Outputting Polys
 					for (int pc = 0; pc < polyChunkCount; pc++)
 					{
-						PolyChunk polyChunk = (PolyChunk)chunkAttach.Poly[pc];
+						PolyChunk polyChunk = chunkAttach.Poly[pc];
 
 						if (polyChunk is PolyChunkStrip)
 						{
@@ -1309,11 +1412,17 @@ namespace SonicRetro.SAModel.Direct3D
 										if (uvsAreValid)
 										{
 											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1);
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (currentStripIndx + 1 + totalUVs) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (currentStripIndx + totalUVs) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, (currentStripIndx + 2 + totalUVs) + 1);
 										}
 										else
 										{
-											objstream.WriteLine("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
+											objstream.WriteLine("f {0} {1} {2}",
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
 										}
 									}
 									else
@@ -1321,11 +1430,17 @@ namespace SonicRetro.SAModel.Direct3D
 										if (uvsAreValid)
 										{
 											// note to self - uvs.length will equal strip indeces length! They are directly linked, just like you remembered.
-											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1);
+											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, currentStripIndx + totalUVs + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, currentStripIndx + 1 + totalUVs + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1, currentStripIndx + 2 + totalUVs + 1);
 										}
 										else
 										{
-											objstream.WriteLine("f {0} {1} {2}", (chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1, (chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
+											objstream.WriteLine("f {0} {1} {2}",
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx] + totalVerts) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 1] + totalVerts) + 1,
+												(chunkStrip.Strips[stripNum].Indexes[currentStripIndx + 2] + totalVerts) + 1);
 										}
 									}
 
