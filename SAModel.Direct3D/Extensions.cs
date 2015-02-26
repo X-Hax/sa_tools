@@ -589,7 +589,12 @@ namespace SonicRetro.SAModel.Direct3D
 			List<Vertex> verts = new List<Vertex>();
 			List<Vertex> norms = new List<Vertex>();
 			Dictionary<string, Material> materials = new Dictionary<string, Material>();
+
 			Material lastMaterial = null;
+			// Determines whether or not the Texture ID for lastMaterial has been set.
+			bool textureIdAssigned = false;
+			// Used for materials that don't have a texid field.
+			int lastTextureId = 0;
 
 			List<Vertex> model_Vertex = new List<Vertex>();
 			List<Vertex> model_Normal = new List<Vertex>();
@@ -624,6 +629,11 @@ namespace SonicRetro.SAModel.Direct3D
 							switch (mlin[0].ToLowerInvariant().Trim())
 							{
 								case "newmtl":
+									// Texture ID failsafe
+									if (!textureIdAssigned && lastMaterial != null)
+										lastMaterial.TextureID = ++lastTextureId;
+
+									textureIdAssigned = false;
 									lastMaterial = new Material { UseAlpha = false, UseTexture = false };
 									materials.Add(mlin[1], lastMaterial);
 									break;
@@ -645,6 +655,8 @@ namespace SonicRetro.SAModel.Direct3D
 											if (textures[tid] == baseName)
 											{
 												lastMaterial.TextureID = tid;
+												lastTextureId = tid;
+												textureIdAssigned = true;
 												break;
 											}
 										}
@@ -661,6 +673,8 @@ namespace SonicRetro.SAModel.Direct3D
 											if (textures[tid] == baseName)
 											{
 												lastMaterial.TextureID = tid;
+												lastTextureId = tid;
+												textureIdAssigned = true;
 												break;
 											}
 										}
@@ -686,8 +700,13 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "texid":
-									// This breaks everything.
-									//lastmtl.TextureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+									if (!textureIdAssigned)
+									{
+										int textureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+										lastMaterial.TextureID = textureID;
+										lastTextureId = textureID;
+										textureIdAssigned = true;
+									}
 									break;
 
 								case "-u_mirror":
@@ -915,8 +934,11 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 				}
 			}
+
+			// Material failsafe
 			if (model_Material.Count == 0)
 				model_Material.Add(new Material());
+
 			for (int i = 0; i < model_Mesh_MaterialID.Count; i++)
 			{
 				model_Mesh.Add(new Mesh(model_Mesh_Poly[i].ToArray(), false, model_Mesh_UV[i].Count > 0, model_Mesh_VColor[i].Count > 0));
