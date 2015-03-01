@@ -177,7 +177,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			RenderInfo.Draw(Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
 
 			d3ddevice.EndScene(); //all drawings before this line
-			//d3ddevice.Present();
 		}
 
 		// TODO: Consider returning IEnumerable<RenderInfo>
@@ -291,7 +290,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// </summary>
 		/// <param name="xChange">Input for x axis.</param>
 		/// <param name="yChange">Input for y axis.</param>
-		public void TransformAffected(float xChange, float yChange)
+		public void TransformAffected(float xChange, float yChange, EditorCamera cam)
 		{
 			// don't operate with an invalid axis seleciton, or invalid mode
 			if (!enabled)
@@ -301,6 +300,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			float yFlip = -1; // I don't think we'll ever need to mess with this
 			float xFlip = 1; // TODO: this though, should get flipped depending on the camera's orientation to the object.
+			float axisDot = 0;
 
 			for (int i = 0; i < affectedItems.Count; i++) // loop through operands
 			{
@@ -319,13 +319,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 							switch (selectedAxes)
 							{
 								case GizmoSelectedAxes.X_AXIS:
-									destination = (currentPosition + Right * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+									axisDot = Vector3.Dot(cam.Look, Right);
+									xFlip = (axisDot > 0) ? 1 : -1;
+									destination = (currentPosition + Right * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange * xFlip : yChange));
 									break;
 								case GizmoSelectedAxes.Y_AXIS:
-									destination = (currentPosition + Up * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+									destination = (currentPosition + Up * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange * yFlip));
 									break;
 								case GizmoSelectedAxes.Z_AXIS:
-									destination = (currentPosition + Look * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange));
+									axisDot = Vector3.Dot(cam.Look, Right);
+									xFlip = (axisDot > 0) ? -1 : 1;
+									destination = (currentPosition + Look * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange * xFlip : yChange));
 									break;
 							}
 
@@ -334,17 +338,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 						else
 						{
 							float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f;
+							Vector3 axisDirection = new Vector3();
 
 							switch (selectedAxes)
 							{
 								case GizmoSelectedAxes.X_AXIS:
-									xOff = xChange;
+									axisDirection = new Vector3(1, 0, 0);
+									axisDot = Vector3.Dot(cam.Look, axisDirection);
+									xFlip = (axisDot > 0) ? 1 : -1;
+									xOff = xChange * xFlip;
 									break;
 								case GizmoSelectedAxes.Y_AXIS:
+									axisDirection = new Vector3(0, 1, 0);
+									axisDot = Vector3.Dot(cam.Look, axisDirection);
 									yOff = yChange * yFlip;
 									break;
 								case GizmoSelectedAxes.Z_AXIS:
-									zOff = xChange;
+									axisDirection = new Vector3(0, 0, 1);
+									axisDot = Vector3.Dot(cam.Look, axisDirection);
+									xFlip = (axisDot > 0) ? -1 : 1;
+									zOff = xChange * xFlip;
 									break;
 								case GizmoSelectedAxes.XY_AXIS:
 									xOff = xChange; yOff = yChange * yFlip;

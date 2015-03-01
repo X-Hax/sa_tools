@@ -177,27 +177,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// <param name="xChange">Input for x axis.</param>
 		/// <param name="yChange">Input for y axis.</param>
 		/// <returns>TRUE if an operation was performed, FALSE if nothing was done.</returns>
-		public bool TransformAffected(float xChange, float yChange)
+		public bool TransformAffected(float xChange, float yChange, EditorCamera cam)
 		{
 			// don't operate with an invalid axis seleciton, or invalid mode
 			if ((selectedAxes == GizmoSelectedAxes.NONE) || (!enabled))
 				return false;
 
 			float yFlip = -1; // I don't think we'll ever need to mess with this
-			float xFlip = 1; // TODO: this though, should get flipped depending on the camera's orientation to the object.
+			float xFlip = 1; // TODO: Depending on the orientation of the camera, this will need to be flipped.
+							// consider using the cross product of the camera's look vector and the handle's position to determine
+							// if the flip is needed.
 
-			float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f;
+			float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f, axisDot = 0.0f;
+
+			Vector3 axisDirection = new Vector3();
 
 			switch (selectedAxes)
 			{
 				case GizmoSelectedAxes.X_AXIS:
-					xOff = xChange;
+					axisDirection = new Vector3(1, 0, 0);
+					axisDot = Vector3.Dot(cam.Look, axisDirection);
+					xFlip = (axisDot > 0) ? 1 : -1;
+					xOff = xChange * xFlip;
 					break;
 				case GizmoSelectedAxes.Y_AXIS:
+					axisDirection = new Vector3(0, 1, 0);
+					axisDot = Vector3.Dot(cam.Look, axisDirection);
 					yOff = yChange * yFlip;
 					break;
 				case GizmoSelectedAxes.Z_AXIS:
-					zOff = xChange;
+					axisDirection = new Vector3(0, 0, 1);
+					axisDot = Vector3.Dot(cam.Look, axisDirection);
+					xFlip = (axisDot > 0) ? -1 : 1;
+					zOff = xChange * xFlip;
 					break;
 				case GizmoSelectedAxes.XY_AXIS:
 					xOff = xChange; yOff = yChange * yFlip;

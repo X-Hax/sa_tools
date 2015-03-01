@@ -468,7 +468,7 @@ namespace SonicRetro.SAModel.SALVL
 			}
 			if (e.Button == System.Windows.Forms.MouseButtons.Left)
 			{
-				if (transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2);
+				if (transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
 				DrawLevel();
 
 				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
