@@ -509,7 +509,7 @@ namespace StructConverter
                                     case "cutscenetext":
                                         {
                                             CutsceneText texts = new CutsceneText(data.Filename);
-                                            string[] langs = new string[5];
+											uint addr = (uint)(data.Address + imagebase);
                                             for (int j = 0; j < 5; j++)
                                             {
                                                 string[] strs = texts.Text[j];
@@ -518,9 +518,9 @@ namespace StructConverter
                                                 writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", strs.Select((a) => a.ToC(lang) + " " + a.ToComment()).ToArray()));
                                                 writer.WriteLine("};");
                                                 writer.WriteLine();
-                                                langs[j] = string.Format("{0}_{1}", name, lang);
+                                                pointers.Add(addr, string.Format("{0}_{1}", name, lang));
+												addr += 4;
                                             }
-                                            writer.WriteLine("char **{0}[] = {{ {1} }};", name, string.Join(", ", langs));
                                         }
                                         break;
                                     case "recapscreen":
