@@ -164,6 +164,8 @@ namespace StructConverter
                                 }
                         }
                         break;
+					case "deathzone":
+						break;
 					case "levelpathlist":
 						{
 							modified = false;
@@ -218,8 +220,8 @@ namespace StructConverter
 						}
 						break;
                     default:
-                        if (!item.Value.NoHash)
-                            modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
+						if (!string.IsNullOrEmpty(item.Value.MD5Hash))
+							modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
                         break;
                 }
                 listView1.Items.Add(new ListViewItem(new[] { item.Key, DataTypeList[item.Value.Type], modified.HasValue ? (modified.Value ? "Yes" : "No") : "Unknown" }) { Checked = modified ?? true });
@@ -525,7 +527,8 @@ namespace StructConverter
                                         break;
                                     case "recapscreen":
                                         {
-                                            RecapScreen[][] texts = RecapScreenList.Load(data.Filename, int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
+											uint addr = (uint)(data.Address + imagebase);
+											RecapScreen[][] texts = RecapScreenList.Load(data.Filename, int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
                                             for (int l = 0; l < 5; l++)
                                                 for (int j = 0; j < texts.Length; j++)
                                                 {
@@ -547,13 +550,9 @@ namespace StructConverter
                                                 writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
                                                 writer.WriteLine("};");
                                                 writer.WriteLine();
-                                            }
-                                            writer.WriteLine("RecapScreen *{0}[] = {{", name);
-                                            string[] t = new string[5];
-                                            for (int l = 0; l < 5; l++)
-                                                t[l] = string.Format("{0}_{1}", name, (Languages)l);
-                                            writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", t));
-                                            writer.WriteLine("};");
+												pointers.Add(addr, string.Format("{0}_{1}", name, (Languages)l));
+												addr += 4;
+											}
                                         }
                                         break;
                                     case "npctext":
