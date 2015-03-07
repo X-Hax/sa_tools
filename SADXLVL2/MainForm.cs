@@ -1184,7 +1184,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (modpath != null)
 						setstr = Path.Combine(modpath, setstr);
 
-					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
+					// TODO: Consider simply blanking the SET file instead of deleting it.
+					// Completely deleting it might be undesirable since Sonic's layout will be loaded
+					// in place of the missing file. And where mods are concerned, you could have conflicts
+					// with other mods if the file is deleted.
 					if (File.Exists(setstr))
 						File.Delete(setstr);
 					if (LevelData.SETItems[i].Count == 0)
@@ -1632,9 +1635,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (isStageLoaded && e.Control)
 					{
 						if (e.Shift)
-							LevelData.Character = LevelData.Character - 1;
+							--LevelData.Character;
 						else
-							LevelData.Character = (LevelData.Character + 1)%6;
+							LevelData.Character = (LevelData.Character + 1) % 6;
 
 						if (LevelData.Character < 0)
 							LevelData.Character = 5;
@@ -2231,19 +2234,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNoCancel);
-
-			if (clearAnimsResult == DialogResult.Cancel)
-				return;
-
-			LevelData.ClearLevelGeometry();
-
-			if (clearAnimsResult == DialogResult.Yes)
-				LevelData.ClearLevelGeoAnims();
-		}
-
 		private void statsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			MessageBox.Show(LevelData.GetStats());
@@ -2397,6 +2387,78 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void recentProjectsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowQuickStart();
+		}
+
+		private void toolClearGeometry_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all of the geometry from the stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearLevelGeometry();
+		}
+
+		private void toolClearAnimations_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all of the geometry animations from the stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearLevelGeoAnims();
+		}
+
+		private void toolClearSetItems_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all objects from the stage for the current character.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearSETItems(LevelData.Character);
+		}
+
+		private void toolClearCamItems_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all camera items from the stage for the current character.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearCAMItems(LevelData.Character);
+		}
+
+		private void toolClearAll_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will clear the entire stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+
+			if (result == DialogResult.Cancel)
+				return;
+
+			if (result == DialogResult.Yes)
+			{
+				LevelData.ClearSETItems();
+				LevelData.ClearCAMItems();
+			}
+			else
+			{
+				LevelData.ClearSETItems(LevelData.Character);
+				LevelData.ClearCAMItems(LevelData.Character);
+			}
+
+			LevelData.ClearLevelGeoAnims();
+			LevelData.ClearLevelGeometry();
 		}
 	}
 }
