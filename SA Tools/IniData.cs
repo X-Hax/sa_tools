@@ -56,8 +56,6 @@ namespace SA_Tools
         public string AddressString { get { return Address.ToString("X"); } set { Address = int.Parse(value, NumberStyles.HexNumber); } }
         [IniName("filename")]
         public string Filename { get; set; }
-        [IniName("nohash")]
-        public bool NoHash { get; set; }
         [IniName("md5")]
         public string MD5Hash { get; set; }
         [IniIgnore]
