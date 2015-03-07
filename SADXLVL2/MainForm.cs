@@ -1532,7 +1532,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
+
 			LevelData_StateChanged();
+		}
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			UpdatePropertyGrid();
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1789,7 +1794,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+			{
 				mouseLast = mouseEvent;
+				if (e.Button != MouseButtons.None && SelectedItems.Count > 0)
+					UpdatePropertyGrid();
+			}
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
@@ -1854,6 +1863,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					cameraPointB.Enabled = false;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Refreshes the properties for the currently selected items.
+		/// </summary>
+		private void UpdatePropertyGrid()
+		{
+			propertyGrid1.Refresh();
 		}
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
