@@ -1080,8 +1080,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
 			toolStrip1.Enabled = isStageLoaded;
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1533,8 +1532,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1870,8 +1868,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 			SelectedItems.Clear();
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
 		}
@@ -1915,8 +1912,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			SelectedItems = new List<Item>(objs);
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1928,8 +1924,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			SelectedItems.Clear();
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -2011,55 +2006,57 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == DialogResult.OK)
+			if (importFileDialog.ShowDialog() != DialogResult.OK)
+				return;
+			
+			foreach (string s in importFileDialog.FileNames)
 			{
-				foreach (string s in importFileDialog.FileNames)
-				{
-					bool errorFlag = false;
-					string errorMsg = "";
+				bool errorFlag = false;
+				string errorMsg = "";
 
-					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
-					SelectedItemChanged();
+				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
 
-					if (errorFlag)
-						MessageBox.Show(errorMsg);
-				}
+				if (errorFlag)
+					MessageBox.Show(errorMsg);
 			}
+
+			LevelData_StateChanged();
 		}
 
 		private void importToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == DialogResult.OK)
+			if (importFileDialog.ShowDialog() != DialogResult.OK)
+				return;
+			
+			DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+
+			if (userClearLevelResult == DialogResult.Cancel)
+				return;
+
+			if (userClearLevelResult == DialogResult.Yes)
 			{
-				DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+				DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
 
-				if (userClearLevelResult == DialogResult.Cancel)
-					return;
+				LevelData.ClearLevelGeometry();
 
-				if (userClearLevelResult == DialogResult.Yes)
+				if (clearAnimsResult == DialogResult.Yes)
 				{
-					DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
-
-					LevelData.ClearLevelGeometry();
-
-					if (clearAnimsResult == DialogResult.Yes)
-					{
-						LevelData.ClearLevelGeoAnims();
-					}
-				}
-
-				foreach (string s in importFileDialog.FileNames)
-				{
-					bool errorFlag = false;
-					string errorMsg = "";
-
-					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
-					SelectedItemChanged();
-
-					if (errorFlag)
-						MessageBox.Show(errorMsg);
+					LevelData.ClearLevelGeoAnims();
 				}
 			}
+
+			foreach (string s in importFileDialog.FileNames)
+			{
+				bool errorFlag = false;
+				string errorMsg = "";
+
+				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+
+				if (errorFlag)
+					MessageBox.Show(errorMsg);
+			}
+
+			LevelData_StateChanged();
 		}
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2069,8 +2066,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 			LevelData.SETItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2079,8 +2075,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z));
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2200,13 +2195,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2261,8 +2255,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (findReplaceResult == DialogResult.OK)
 			{
-				SelectedItemChanged();
-				DrawLevel();
+				LevelData_StateChanged();
 			}
 		}
 
