@@ -76,6 +76,7 @@ namespace splitDLL
 			return Items.ContainsKey(key);
 		}
 
+		[IniIgnore]
 		public ICollection<string> Keys
 		{
 			get { return Items.Keys; }
@@ -91,6 +92,7 @@ namespace splitDLL
 			return Items.TryGetValue(key, out value);
 		}
 
+		[IniIgnore]
 		public ICollection<T> Values
 		{
 			get { return Items.Values; }
@@ -113,6 +115,7 @@ namespace splitDLL
 			Items.Clear();
 		}
 
+		[IniIgnore]
 		public int Count
 		{
 			get { return Items.Count; }
