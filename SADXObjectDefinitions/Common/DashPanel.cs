@@ -46,7 +46,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, Extensions.GetLargestRadius(meshes));
+			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
 
 			return bounds;
 		}

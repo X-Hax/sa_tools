@@ -26,6 +26,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override Vertex Position { get; set; }
 		public override Rotation Rotation { get; set; }
+		public override BoundingSphere Bounds
+		{
+			get
+			{
+				float largestScale = this.Scale.X;
+				if (this.Scale.Y > largestScale) largestScale = this.Scale.Y;
+				if (this.Scale.Z > largestScale) largestScale = this.Scale.Z;
+
+				return new BoundingSphere() { Center = new Vertex(this.Position.X, this.Position.Y, this.Position.Z), Radius = (1.5f * largestScale) };
+			}
+		}
 		#endregion
 
 		#region Render / Volume Vars
@@ -132,13 +143,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Rendering / Picking
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
 		{
-			float largestScale = this.Scale.X;
-			if (this.Scale.Y > largestScale) largestScale = this.Scale.Y;
-			if (this.Scale.Z > largestScale) largestScale = this.Scale.Z;
-
-			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(this.Position.X, this.Position.Y, this.Position.Z), Radius = (1.5f * largestScale) };
-
-			if (!camera.SphereInFrustum(boxSphere))
+			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
@@ -147,7 +152,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.NJRotateY(this.Rotation.Y);
 			transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
 
-			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, boxSphere);
+			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, Bounds);
 
 			if (selected)
 			{
@@ -157,7 +162,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					IgnoreLighting = true,
 					UseAlpha = false
 				};
-				result.Add(new RenderInfo(VolumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, boxSphere));
+				result.Add(new RenderInfo(VolumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, Bounds));
 			}
 
 			result.Add(outputInfo);

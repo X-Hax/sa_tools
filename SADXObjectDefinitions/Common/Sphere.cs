@@ -51,7 +51,7 @@ namespace SADXObjectDefinitions.Common
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
 			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
 
-			BoundingSphere sphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (largestScale / 2) };
+			BoundingSphere sphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale };
 
 			return sphere;
 		}

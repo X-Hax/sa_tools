@@ -15,7 +15,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
 	{
-		public BoundingSphere Bounds { get; set; }
+		private BoundingSphere bounds;
+		public override BoundingSphere Bounds
+		{
+			get
+			{
+				return bounds;
+			}
+		}
+
 		private ObjectDefinition objdef;
 		public SETItem()
 		{
@@ -23,7 +31,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Rotation = new Rotation();
 			Scale = new Vertex();
 			objdef = LevelData.ObjDefs[id];
-			Bounds = objdef.GetBounds(this);
+			bounds = objdef.GetBounds(this);
 		}
 
 		public SETItem(byte[] file, int address)
@@ -39,7 +47,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = LevelData.ObjDefs[id];
-			Bounds = objdef.GetBounds(this);
+			bounds = objdef.GetBounds(this);
 		}
 
 		[ParenthesizePropertyName(true)]
@@ -79,7 +87,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set
 			{
 				position = value;
-				if (objdef != null) Bounds = objdef.GetBounds(this);
+				if (objdef != null) bounds = objdef.GetBounds(this);
 			}
 		}
 

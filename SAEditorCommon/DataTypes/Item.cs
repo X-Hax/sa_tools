@@ -19,6 +19,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public string Type { get { return GetType().Name; } }
 
 		public virtual Vertex Position { get; set; }
+
+		private BoundingSphere bounds;
+		public virtual BoundingSphere Bounds { get { return bounds; } }
 		public abstract Rotation Rotation { get; set; }
 
 		[Browsable(false)]

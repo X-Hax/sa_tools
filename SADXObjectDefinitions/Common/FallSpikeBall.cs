@@ -81,7 +81,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, Extensions.GetLargestRadius(ballmeshes));
+			BoundingSphere bounds = new BoundingSphere(item.Position, item.Scale.X);	
 
 			return bounds;
 		}
