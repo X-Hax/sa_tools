@@ -59,7 +59,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			LevelItems.Clear();
 			geo.COL.Clear();
-			if (StateChanged != null) StateChanged();
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -68,9 +68,63 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static void ClearLevelGeoAnims()
 		{
 			geo.Anim.Clear();
-			if (StateChanged != null) StateChanged();
+			InvalidateRenderState();
 		}
 
+		/// <summary>
+		/// Clears SET Items for all characters.
+		/// </summary>
+		public static void ClearSETItems()
+		{
+			if (LevelData.SETItems == null)
+				return;
+
+			for (uint i = 0; i < SETChars.Length; i++)
+				LevelData.SETItems[i] = new List<SETItem>();
+
+			InvalidateRenderState();
+		}
+
+		/// <summary>
+		/// Clears SET Items for the specified character.
+		/// </summary>
+		/// <param name="character">The ID of the character whose layout you want to clear.</param>
+		public static void ClearSETItems(int character)
+		{
+			if (LevelData.SETItems == null)
+				return;
+
+			LevelData.SETItems[character] = new List<SETItem>();
+			InvalidateRenderState();
+		}
+
+		/// <summary>
+		/// Clears CAM Items for all characters.
+		/// </summary>
+		public static void ClearCAMItems()
+		{
+			if (LevelData.CAMItems == null)
+				return;
+
+			for (uint i = 0; i < SETChars.Length; i++)
+				LevelData.CAMItems[i] = new List<CAMItem>();
+
+			InvalidateRenderState();
+		}
+
+		/// <summary>
+		/// Clears CAM Items for the specified character.
+		/// </summary>
+		/// <param name="character">The ID of the character whose layout you want to clear.</param>
+		public static void ClearCAMItems(int character)
+		{
+			if (LevelData.CAMItems == null)
+				return;
+
+			LevelData.CAMItems[character] = new List<CAMItem>();
+			InvalidateRenderState();
+		}
+		
 		public static string GetStats()
 		{
 			int landtableItems = LevelData.geo.COL.Count;

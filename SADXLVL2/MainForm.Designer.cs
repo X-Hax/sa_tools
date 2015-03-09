@@ -44,11 +44,17 @@
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.clearLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolClearGeometry = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolClearAnimations = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolClearSetItems = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolClearCamItems = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolClearAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.sETItemsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.deleteAllOfTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.duplicateToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -218,6 +224,7 @@
             this.clearLevelToolStripMenuItem,
             this.sETItemsToolStripMenuItem1,
             this.duplicateToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.preferencesToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -225,11 +232,50 @@
 			// 
 			// clearLevelToolStripMenuItem
 			// 
-			this.clearLevelToolStripMenuItem.Enabled = false;
+			this.clearLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolClearGeometry,
+            this.toolClearAnimations,
+            this.toolClearSetItems,
+            this.toolClearCamItems,
+            this.toolClearAll});
 			this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
 			this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.clearLevelToolStripMenuItem.Text = "Clear Level";
-			this.clearLevelToolStripMenuItem.Click += new System.EventHandler(this.clearLevelToolStripMenuItem_Click);
+			// 
+			// toolClearGeometry
+			// 
+			this.toolClearGeometry.Name = "toolClearGeometry";
+			this.toolClearGeometry.Size = new System.Drawing.Size(135, 22);
+			this.toolClearGeometry.Text = "Geometry";
+			this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
+			// 
+			// toolClearAnimations
+			// 
+			this.toolClearAnimations.Name = "toolClearAnimations";
+			this.toolClearAnimations.Size = new System.Drawing.Size(135, 22);
+			this.toolClearAnimations.Text = "Animations";
+			this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
+			// 
+			// toolClearSetItems
+			// 
+			this.toolClearSetItems.Name = "toolClearSetItems";
+			this.toolClearSetItems.Size = new System.Drawing.Size(135, 22);
+			this.toolClearSetItems.Text = "SET Items";
+			this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
+			// 
+			// toolClearCamItems
+			// 
+			this.toolClearCamItems.Name = "toolClearCamItems";
+			this.toolClearCamItems.Size = new System.Drawing.Size(135, 22);
+			this.toolClearCamItems.Text = "CAM Items";
+			this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
+			// 
+			// toolClearAll
+			// 
+			this.toolClearAll.Name = "toolClearAll";
+			this.toolClearAll.Size = new System.Drawing.Size(135, 22);
+			this.toolClearAll.Text = "All";
+			this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
 			// 
 			// sETItemsToolStripMenuItem1
 			// 
@@ -271,6 +317,11 @@
 			this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.duplicateToolStripMenuItem.Text = "&Duplicate";
 			this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(163, 6);
 			// 
 			// preferencesToolStripMenuItem
 			// 
@@ -458,6 +509,7 @@
 			this.panel1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyUp);
 			this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
 			this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseMove);
+			this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
 			this.panel1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panel1_PreviewKeyDown);
 			// 
 			// backgroundWorker1
@@ -840,6 +892,12 @@
 		private System.Windows.Forms.ToolStripButton toolKnuckles;
 		private System.Windows.Forms.ToolStripButton toolTails;
 		private System.Windows.Forms.ToolStripButton toolSonic;
+		private System.Windows.Forms.ToolStripMenuItem toolClearGeometry;
+		private System.Windows.Forms.ToolStripMenuItem toolClearAnimations;
+		private System.Windows.Forms.ToolStripMenuItem toolClearSetItems;
+		private System.Windows.Forms.ToolStripMenuItem toolClearAll;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem toolClearCamItems;
     }
 }
 

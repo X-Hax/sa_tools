@@ -1082,8 +1082,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
 			toolStrip1.Enabled = isStageLoaded;
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1186,7 +1185,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (modpath != null)
 						setstr = Path.Combine(modpath, setstr);
 
-					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
+					// TODO: Consider simply blanking the SET file instead of deleting it.
+					// Completely deleting it might be undesirable since Sonic's layout will be loaded
+					// in place of the missing file. And where mods are concerned, you could have conflicts
+					// with other mods if the file is deleted.
 					if (File.Exists(setstr))
 						File.Delete(setstr);
 					if (LevelData.SETItems[i].Count == 0)
@@ -1534,8 +1536,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
-			SelectedItemChanged();
-			DrawLevel();
+
+			LevelData_StateChanged();
+		}
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			UpdatePropertyGrid();
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1645,9 +1651,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (isStageLoaded && e.Control)
 					{
 						if (e.Shift)
-							LevelData.Character = LevelData.Character - 1;
+							--LevelData.Character;
 						else
-							LevelData.Character = (LevelData.Character + 1)%6;
+							LevelData.Character = (LevelData.Character + 1) % 6;
 
 						if (LevelData.Character < 0)
 							LevelData.Character = 5;
@@ -1801,7 +1807,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+			{
 				mouseLast = mouseEvent;
+				if (e.Button != MouseButtons.None && SelectedItems.Count > 0)
+					UpdatePropertyGrid();
+			}
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
@@ -1868,6 +1878,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
+		/// <summary>
+		/// Refreshes the properties for the currently selected items.
+		/// </summary>
+		private void UpdatePropertyGrid()
+		{
+			propertyGrid1.Refresh();
+		}
+
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			List<Item> selitems = new List<Item>();
@@ -1880,8 +1898,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 			SelectedItems.Clear();
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
 		}
@@ -1925,8 +1942,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			SelectedItems = new List<Item>(objs);
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1938,8 +1954,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			SelectedItems.Clear();
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -2021,55 +2036,57 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == DialogResult.OK)
+			if (importFileDialog.ShowDialog() != DialogResult.OK)
+				return;
+			
+			foreach (string s in importFileDialog.FileNames)
 			{
-				foreach (string s in importFileDialog.FileNames)
-				{
-					bool errorFlag = false;
-					string errorMsg = "";
+				bool errorFlag = false;
+				string errorMsg = "";
 
-					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
-					SelectedItemChanged();
+				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
 
-					if (errorFlag)
-						MessageBox.Show(errorMsg);
-				}
+				if (errorFlag)
+					MessageBox.Show(errorMsg);
 			}
+
+			LevelData_StateChanged();
 		}
 
 		private void importToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == DialogResult.OK)
+			if (importFileDialog.ShowDialog() != DialogResult.OK)
+				return;
+			
+			DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+
+			if (userClearLevelResult == DialogResult.Cancel)
+				return;
+
+			if (userClearLevelResult == DialogResult.Yes)
 			{
-				DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+				DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
 
-				if (userClearLevelResult == DialogResult.Cancel)
-					return;
+				LevelData.ClearLevelGeometry();
 
-				if (userClearLevelResult == DialogResult.Yes)
+				if (clearAnimsResult == DialogResult.Yes)
 				{
-					DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
-
-					LevelData.ClearLevelGeometry();
-
-					if (clearAnimsResult == DialogResult.Yes)
-					{
-						LevelData.ClearLevelGeoAnims();
-					}
-				}
-
-				foreach (string s in importFileDialog.FileNames)
-				{
-					bool errorFlag = false;
-					string errorMsg = "";
-
-					SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
-					SelectedItemChanged();
-
-					if (errorFlag)
-						MessageBox.Show(errorMsg);
+					LevelData.ClearLevelGeoAnims();
 				}
 			}
+
+			foreach (string s in importFileDialog.FileNames)
+			{
+				bool errorFlag = false;
+				string errorMsg = "";
+
+				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+
+				if (errorFlag)
+					MessageBox.Show(errorMsg);
+			}
+
+			LevelData_StateChanged();
 		}
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2079,8 +2096,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 			LevelData.SETItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2089,8 +2105,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z));
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2210,13 +2225,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 			SelectedItems = new List<Item>() { item };
-			SelectedItemChanged();
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			DrawLevel();
+			LevelData_StateChanged();
 		}
 
 		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2242,19 +2256,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			SelectedItemChanged();
 			DrawLevel();
-		}
-
-		private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNoCancel);
-
-			if (clearAnimsResult == DialogResult.Cancel)
-				return;
-
-			LevelData.ClearLevelGeometry();
-
-			if (clearAnimsResult == DialogResult.Yes)
-				LevelData.ClearLevelGeoAnims();
 		}
 
 		private void statsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2284,8 +2285,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (findReplaceResult == DialogResult.OK)
 			{
-				SelectedItemChanged();
-				DrawLevel();
+				LevelData_StateChanged();
 			}
 		}
 
@@ -2410,6 +2410,78 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void recentProjectsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowQuickStart();
+		}
+
+		private void toolClearGeometry_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all of the geometry from the stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearLevelGeometry();
+		}
+
+		private void toolClearAnimations_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all of the geometry animations from the stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearLevelGeoAnims();
+		}
+
+		private void toolClearSetItems_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all objects from the stage for the current character.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearSETItems(LevelData.Character);
+		}
+
+		private void toolClearCamItems_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all camera items from the stage for the current character.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearCAMItems(LevelData.Character);
+		}
+
+		private void toolClearAll_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will clear the entire stage.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+
+			if (result == DialogResult.Cancel)
+				return;
+
+			if (result == DialogResult.Yes)
+			{
+				LevelData.ClearSETItems();
+				LevelData.ClearCAMItems();
+			}
+			else
+			{
+				LevelData.ClearSETItems(LevelData.Character);
+				LevelData.ClearCAMItems(LevelData.Character);
+			}
+
+			LevelData.ClearLevelGeoAnims();
+			LevelData.ClearLevelGeometry();
 		}
 	}
 }

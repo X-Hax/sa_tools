@@ -32,7 +32,7 @@ namespace DLLModGenerator
 			{ "actionarray", "NJS_ACTION **" }
 		};
 
-		MyClass IniData;
+		DllIniData IniData;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -70,7 +70,7 @@ namespace DLLModGenerator
 
 		private void LoadINI(string filename)
 		{
-			IniData = IniSerializer.Deserialize<MyClass>(filename);
+			IniData = IniSerializer.Deserialize<DllIniData>(filename);
 			if (Settings.MRUList.Contains(filename))
 			{
 				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
@@ -80,7 +80,7 @@ namespace DLLModGenerator
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			listView1.BeginUpdate();
-			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Items)
+			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
 			{
 				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
 				listView1.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified });
@@ -128,20 +128,15 @@ namespace DLLModGenerator
 				if (fd.ShowDialog(this) == DialogResult.OK)
 					using (TextWriter writer = File.CreateText(fd.FileName))
 					{
-						bool SA2 = IniData.Game == Game.SA2 || IniData.Game == Game.SA2B;
+						bool SA2 = IniData.Game == Game.SA2B;
 						ModelFormat modelfmt = 0;
 						LandTableFormat landfmt = 0;
 						switch (IniData.Game)
 						{
-							case Game.SA1:
-								modelfmt = ModelFormat.Basic;
-								landfmt = LandTableFormat.SA1;
-								break;
 							case Game.SADX:
 								modelfmt = ModelFormat.BasicDX;
 								landfmt = LandTableFormat.SADX;
 								break;
-							case Game.SA2:
 							case Game.SA2B:
 								modelfmt = ModelFormat.Chunk;
 								landfmt = LandTableFormat.SA2;
@@ -156,7 +151,7 @@ namespace DLLModGenerator
 						writer.WriteLine();
 						List<string> labels = new List<string>();
 						int _i = 0;
-						foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Items)
+						foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
 							if (listView1.CheckedIndices.Contains(_i++))
 								switch (item.Value.Type)
 								{
@@ -190,69 +185,15 @@ namespace DLLModGenerator
 						writer.WriteLine("void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
-						foreach (KeyValuePair<string, string> item in IniData.ItemTypes.Items)
+						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export));
+						foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
 							writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
-						foreach (KeyValuePair<string, string> item in IniData.Labels.Items.Where((item) => labels.Contains(item.Value)))
-							writer.WriteLine("\t{0} = &{1};", item.Key, item.Value);
+						foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
+							writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
 						writer.WriteLine("}");
 						writer.WriteLine();
 						writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer, Init, NULL, 0, NULL, 0, NULL, 0, NULL, 0 }};", SA2 ? "SA2" : "SADX");
 					}
-		}
-	}
-
-	public class MyClass
-	{
-		[IniName("name")]
-		public string Name { get; set; }
-		[IniAlwaysInclude]
-		[IniName("game")]
-		public Game Game { get; set; }
-		public DictionaryContainer<string> ItemTypes { get; set; }
-		public DictionaryContainer<FileTypeHash> Files { get; set; }
-		public DictionaryContainer<string> Labels { get; set; }
-
-		public MyClass()
-		{
-			ItemTypes = new DictionaryContainer<string>();
-			Files = new DictionaryContainer<FileTypeHash>();
-			Labels = new DictionaryContainer<string>();
-		}
-	}
-
-	public class DictionaryContainer<T>
-	{
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, T> Items { get; set; }
-
-		public DictionaryContainer()
-		{
-			Items = new Dictionary<string, T>();
-		}
-	}
-
-	[System.ComponentModel.TypeConverter(typeof(StringConverter<FileTypeHash>))]
-	public class FileTypeHash
-	{
-		public string Type { get; set; }
-		public string Hash { get; set; }
-
-		public FileTypeHash(string type, string hash)
-		{
-			Type = type;
-			Hash = hash;
-		}
-
-		public FileTypeHash(string data)
-		{
-			string[] split = data.Split('|');
-			Type = split[0];
-			Hash = split[1];
-		}
-
-		public override string ToString()
-		{
-			return Type + "|" + Hash;
 		}
 	}
 

@@ -80,7 +80,7 @@ namespace splitDLL
 			int itemcount = 0;
 			List<string> labels = new List<string>();
 			ModelAnimationsDictionary models = new ModelAnimationsDictionary();
-			MyClass output = new MyClass();
+			DllIniData output = new DllIniData();
 			output.Name = inifile.ModuleName;
 			output.Game = inifile.Game;
 			Stopwatch timer = new Stopwatch();
@@ -91,7 +91,7 @@ namespace splitDLL
 				FileInfo data = item.Value;
 				string type = data.Type;
 				string name = item.Key;
-				output.ItemTypes.Items[name] = type;
+				output.Exports[name] = type;
 				int address = exports[name];
 				Console.WriteLine(name + " → " + data.Filename);
 				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
@@ -100,11 +100,14 @@ namespace splitDLL
 					case "landtable":
 						{
 							LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
-							output.Labels.Items[name] = land.Name;
+							DllItemInfo info = new DllItemInfo();
+							info.Export = name;
+							info.Label = land.Name;
+							output.Items.Add(info);
 							if (!labels.Contains(land.Name))
 							{
 								land.SaveToFile(data.Filename, landfmt);
-								output.Files.Items[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(data.Filename));
+								output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(data.Filename));
 								labels.AddRange(land.GetLabels());
 							}
 						}
@@ -118,12 +121,16 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
-								output.Labels.Items[idx] = land.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = land.Name;
+								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 									land.SaveToFile(fn, landfmt);
-									output.Files.Items[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
+									output.Files[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
 									labels.AddRange(land.GetLabels());
 								}
 							}
@@ -133,7 +140,10 @@ namespace splitDLL
 					case "model":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
-							output.Labels.Items[name] = mdl.Name;
+							DllItemInfo info = new DllItemInfo();
+							info.Export = name;
+							info.Label = mdl.Name;
+							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
@@ -150,7 +160,11 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx] = mdl.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = mdl.Name;
+								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
@@ -164,7 +178,10 @@ namespace splitDLL
 					case "basicmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
-							output.Labels.Items[name] = mdl.Name;
+							DllItemInfo info = new DllItemInfo();
+							info.Export = name;
+							info.Label = mdl.Name;
+							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
@@ -181,7 +198,11 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Basic);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx] = mdl.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = mdl.Name;
+								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
@@ -195,7 +216,10 @@ namespace splitDLL
 					case "basicdxmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
-							output.Labels.Items[name] = mdl.Name;
+							DllItemInfo info = new DllItemInfo();
+							info.Export = name;
+							info.Label = mdl.Name;
+							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
@@ -212,7 +236,11 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.BasicDX);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx] = mdl.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = mdl.Name;
+								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
@@ -226,7 +254,10 @@ namespace splitDLL
 					case "chunkmodel":
 						{
 							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
-							output.Labels.Items[name] = mdl.Name;
+							DllItemInfo info = new DllItemInfo();
+							info.Export = name;
+							info.Label = mdl.Name;
+							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
 								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
@@ -243,7 +274,11 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Chunk);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx] = mdl.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = mdl.Name;
+								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
@@ -263,11 +298,21 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								output.Labels.Items[idx + "->motion"] = ani.Animation.Name;
-								output.Labels.Items[idx + "->object"] = ani.Model.Name;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = ani.Animation.Name;
+								info.Field = "motion";
+								output.Items.Add(info);
+								info = new DllItemInfo();
+								info.Export = name;
+								info.Index = i;
+								info.Label = ani.Model.Name;
+								info.Field = "object";
+								output.Items.Add(info);
 								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 								ani.Animation.Save(fn);
-								output.Files.Items[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
+								output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
 								if (models.Contains(ani.Model.Name))
 								{
 									ModelAnimations mdl = models[ani.Model.Name];
@@ -280,7 +325,7 @@ namespace splitDLL
 									string mfn = Path.ChangeExtension(fn, modelext);
 									ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
 										idx + "->object", "splitDLL", null, modelfmt);
-									output.Files.Items[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
+									output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
 								}
 							}
 							address += 4;
@@ -306,7 +351,7 @@ namespace splitDLL
 						type = "chunkmodel";
 						break;
 				}
-				output.Files.Items[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
+				output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
 			}
 			IniSerializer.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
 				+ "_data.ini");
@@ -404,61 +449,6 @@ namespace splitDLL
 			Model = model;
 			Format = format;
 			Animations = new List<string>();
-		}
-	}
-
-	public class MyClass
-	{
-		[IniName("name")]
-		public string Name { get; set; }
-		[IniAlwaysInclude]
-		[IniName("game")]
-		public Game Game { get; set; }
-		public DictionaryContainer<string> ItemTypes { get; set; }
-		public DictionaryContainer<FileTypeHash> Files { get; set; }
-		public DictionaryContainer<string> Labels { get; set; }
-
-		public MyClass()
-		{
-			ItemTypes = new DictionaryContainer<string>();
-			Files = new DictionaryContainer<FileTypeHash>();
-			Labels = new DictionaryContainer<string>();
-		}
-	}
-
-	public class DictionaryContainer<T>
-	{
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, T> Items { get; set; }
-
-		public DictionaryContainer()
-		{
-			Items = new Dictionary<string, T>();
-		}
-	}
-
-	[System.ComponentModel.TypeConverter(typeof(StringConverter<FileTypeHash>))]
-	public class FileTypeHash
-	{
-		public string Type { get; set; }
-		public string Hash { get; set; }
-
-		public FileTypeHash(string type, string hash)
-		{
-			Type = type;
-			Hash = hash;
-		}
-
-		public FileTypeHash(string data)
-		{
-			string[] split = data.Split('|');
-			Type = split[0];
-			Hash = split[1];
-		}
-
-		public override string ToString()
-		{
-			return Type + "|" + Hash;
 		}
 	}
 

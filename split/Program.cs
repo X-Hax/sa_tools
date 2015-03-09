@@ -319,7 +319,6 @@ namespace split
 				}
 				if (!nohash)
 					data.MD5Hash = HelperFunctions.FileHash(data.Filename);
-				data.NoHash = nohash;
 				itemcount++;
 			}
 			if (inifile.MasterObjectList != null)
