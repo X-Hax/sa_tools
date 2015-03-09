@@ -180,5 +180,14 @@ namespace SonicRetro.SAModel.Direct3D
 
 			return true;
 		}
+
+		public void MoveToShowBounds(BoundingSphere itemVolume)
+		{
+			Vector3 finalPosition = itemVolume.Center.ToVector3();
+
+			finalPosition += (Look * (itemVolume.Radius + (itemVolume.Radius / 4)));
+
+			Position = finalPosition;
+		}
     }
 }

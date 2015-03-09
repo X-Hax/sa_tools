@@ -184,9 +184,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				return false;
 
 			float yFlip = -1; // I don't think we'll ever need to mess with this
-			float xFlip = 1; // TODO: Depending on the orientation of the camera, this will need to be flipped.
-							// consider using the cross product of the camera's look vector and the handle's position to determine
-							// if the flip is needed.
+			float xFlip = 1;
 
 			float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f, axisDot = 0.0f;
 

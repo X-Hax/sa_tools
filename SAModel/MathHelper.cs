@@ -30,5 +30,20 @@ namespace SonicRetro.SAModel
 		{
 			return (value < min) ? min : (value > max) ? max : value;
 		}
+
+		/// <summary>
+		/// Linear interpolation between two values
+		/// </summary>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <param name="tValue"></param>
+		/// <returns></returns>
+		public static float Lerp(float min, float max, float tValue)
+		{
+			if (tValue == 0) return min;
+			else if (tValue == 1) return max;
+
+			return min + (max - min) * tValue;
+		}
 	}
 }

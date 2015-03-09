@@ -20,17 +20,20 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		private static float renderDrawDistance = 3500f;
 		private static bool overrideLighting = false;
 		private static Device direct3DDevice;
+		private static Microsoft.DirectX.Direct3D.Font onscreenFont;		
 
 		public static FillMode RenderFillMode { get { return renderFillMode; } set { renderFillMode = value; } }
 		public static Cull RenderCullMode { get { return renderCullMode; } set { renderCullMode = value; } }
 		public static float RenderDrawDistance { get { return renderDrawDistance; } set { renderDrawDistance = value; } }
 		public static bool OverrideLighting { get { return overrideLighting; } set { overrideLighting = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }
+		public static Microsoft.DirectX.Direct3D.Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }
 		#endregion
 
-		public static void InitializeDefaultLights(Device d3dDevice)
+		public static void Initialize(Device d3dDevice)
 		{
 			direct3DDevice = d3dDevice;
+
 			#region Key Light
 			d3dDevice.Lights[0].Type = LightType.Directional;
 			d3dDevice.Lights[0].DiffuseColor = new ColorValue(180, 172, 172, 255);
@@ -62,6 +65,10 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3dDevice.Lights[2].Range = 0;
 			d3dDevice.Lights[2].Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f));
 			d3dDevice.Lights[2].Enabled = true;
+			#endregion
+
+			#region Font Setup
+			onscreenFont = new Microsoft.DirectX.Direct3D.Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
 

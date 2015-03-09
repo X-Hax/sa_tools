@@ -58,7 +58,7 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-			EditorOptions.InitializeDefaultLights(d3ddevice);
+			EditorOptions.Initialize(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}

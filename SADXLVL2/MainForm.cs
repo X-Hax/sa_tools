@@ -60,7 +60,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		TransformGizmo transformGizmo;
 		PointHelper cameraPointA;
 		PointHelper cameraPointB;
-		//PointHelper miscHelper; // use this for anything you like, maybe for SET things like rocket / dash ring destinations?
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -119,7 +118,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					});
 				d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
-				EditorOptions.InitializeDefaultLights(d3ddevice);
+				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
 				ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
 			}
@@ -154,7 +153,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
 		{
 			// HACK: Not so sure we should have to re-initialize this every time...
-			EditorOptions.InitializeDefaultLights(d3ddevice);
+			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -933,6 +932,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					#region Loading Splines
 
 					LevelData.LevelSplines = new List<SplineData>();
+					SplineData.Init();
 
 					if (ini[string.Empty].ContainsKey("paths"))
 					{
@@ -998,6 +998,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 									newSpline.AddKnot(new Knot(knotPosition, new Rotation(XRot, YRot, 0), knotDistance));
 								}
+
+								newSpline.RebuildMesh(d3ddevice);
 
 								LevelData.LevelSplines.Add(newSpline);
 							}
@@ -1281,12 +1283,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
 
-			if (splinesToolStripMenuItem.Checked)
-			{
-				foreach (SplineData spline in LevelData.LevelSplines)
-					spline.Draw(d3ddevice);
-			}
-
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			List<RenderInfo> renderlist = new List<RenderInfo>();
@@ -1312,6 +1308,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
+
+			#region Adding splines
+			if (splinesToolStripMenuItem.Checked)
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+					renderlist.AddRange(spline.Render(d3ddevice, cam, transform, false));
+			}
+			#endregion
 
 			#region Adding SET Layout
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
@@ -1591,6 +1595,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 							cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
 						else
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+					}
+
+					draw = true;
+					break;
+
+				case Keys.Z:
+					if(SelectedItems.Count == 1)
+					{
+						cam.MoveToShowBounds(SelectedItems[0].Bounds);
 					}
 
 					draw = true;
