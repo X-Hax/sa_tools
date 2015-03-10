@@ -425,7 +425,7 @@ namespace SA_Tools
                         setmethod.Invoke(result, new object[] { propval });
                         break;
                 }
-            ini.Remove(rootObject ? string.Empty : name);
+            ini.Remove(fullname);
             return result;
         }
 
