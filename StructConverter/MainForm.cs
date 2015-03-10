@@ -165,6 +165,29 @@ namespace StructConverter
                         }
                         break;
 					case "deathzone":
+                        {
+                            modified = false;
+                            string[] hashes = item.Value.MD5Hash.Split(',');
+							if (HelperFunctions.FileHash(item.Value.Filename) != hashes[0])
+							{
+								modified = true;
+								break;
+							}
+							DeathZoneFlags[] flags = DeathZoneFlagsList.Load(item.Value.Filename);
+							if (flags.Length != hashes.Length - 1)
+							{
+								modified = true;
+								break;
+							}
+							string path = Path.GetDirectoryName(item.Value.Filename);
+							for (int i = 0; i < flags.Length; i++)
+								if (HelperFunctions.FileHash(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + (IniData.Game == Game.SA2 || IniData.Game == Game.SA2B ? ".sa2mdl" : ".sa1mdl")))
+									!= hashes[i + 1])
+								{
+									modified = true;
+									break;
+								}
+						}
 						break;
 					case "levelpathlist":
 						{

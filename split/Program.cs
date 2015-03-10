@@ -245,14 +245,19 @@ namespace split
 						{
 							List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
 							string path = Path.GetDirectoryName(data.Filename);
+							List<string> hashes = new List<string>();
 							int num = 0;
 							while (SA_Tools.ByteConverter.ToUInt32(datafile, address + 4) != 0)
 							{
 								flags.Add(new DeathZoneFlags(datafile, address));
-								ModelFile.CreateFile(Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl")), new SonicRetro.SAModel.Object(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
+								string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
+								ModelFile.CreateFile(file, new SonicRetro.SAModel.Object(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
+								hashes.Add(HelperFunctions.FileHash(file));
 								address += 8;
 							}
 							flags.ToArray().Save(data.Filename);
+							hashes.Insert(0, HelperFunctions.FileHash(data.Filename));
+							data.MD5Hash = string.Join(",", hashes.ToArray());
 							nohash = true;
 						}
 						break;
