@@ -242,11 +242,14 @@ namespace SA_Tools
                                 }
                             break;
                         case IniCollectionMode.SingleLine:
-                            string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-                            Array _obj = Array.CreateInstance(valuetype, items.Length);
-                            for (int i = 0; i < items.Length; i++)
-                                _obj.SetValue(valuetype.ConvertFromString(items[i]), i);
-                            group.Remove(name);
+							if (group.ContainsKey(name))
+							{
+								string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+								Array _obj = Array.CreateInstance(valuetype, items.Length);
+								for (int i = 0; i < items.Length; i++)
+									_obj.SetValue(valuetype.ConvertFromString(items[i]), i);
+								group.Remove(name);
+							}
                             break;
                     }
                 }
@@ -584,10 +587,13 @@ namespace SA_Tools
                                 }
                             break;
                         case IniCollectionMode.SingleLine:
-                            string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-                            for (int i = 0; i < items.Length; i++)
-                                list.Add((T)valuetype.ConvertFromString(items[i]));
-                            group.Remove(name);
+							if (group.ContainsKey(name))
+							{
+								string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+								for (int i = 0; i < items.Length; i++)
+									list.Add((T)valuetype.ConvertFromString(items[i]));
+								group.Remove(name);
+							}
                             break;
                     }
                 }
