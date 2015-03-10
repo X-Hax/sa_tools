@@ -5,6 +5,7 @@ using SA_Tools;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SADXLVL2;
+using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
@@ -16,7 +17,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		Mesh[] mesh1, mesh2;
 		Vector3 Skybox_Scale;
 
-		public override void Init(Dictionary<string, string> data, byte act, Device dev)
+		public override void Init(IniLevelData data, byte act, Device dev)
 		{
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Emerald Coast/Skybox Data.ini");
 			if (skyboxdata.Length > act)

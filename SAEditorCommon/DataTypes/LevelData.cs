@@ -27,13 +27,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
 		public static Dictionary<string, Texture[]> Textures;
 		public static List<LevelItem> LevelItems;
-		public static readonly string[] Characters = { "sonic", "tails", "knuckles", "amy", "gamma", "big" };
+		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
 		public static int Character;
 		public static StartPosItem[] StartPositions;
 		public static string LevelName;
 		public static string SETName;
-		public static string CAMName;
 		public static List<ObjectDefinition> ObjDefs;
 		public static List<SETItem>[] SETItems;
 		public static List<CAMItem>[] CAMItems;

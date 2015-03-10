@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		internal Device d3ddevice;
-		Dictionary<string, Dictionary<string, string>> ini;
+		SonicRetro.SAModel.SAEditorCommon.IniData ini;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		string levelID;
 		internal string levelName;
@@ -187,11 +187,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void LoadINI(string filename)
 		{
 			isStageLoaded = false;
-			ini = IniFile.Load(filename);
+			ini = SonicRetro.SAModel.SAEditorCommon.IniData.Load(filename);
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			levelNames = new Dictionary<string, List<string>>();
 
-			foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
+			foreach (KeyValuePair<string, IniLevelData> item in ini.Levels)
 			{
 				if (string.IsNullOrEmpty(item.Key))
 					continue;
@@ -394,14 +394,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		/// <summary>
-		/// Loads all of the textures from the two keys in the INI into the scene.
+		/// Loads all of the textures from the file into the scene.
 		/// </summary>
-		/// <param name="iniSection">The section in the INI (usually string.Empty).</param>
-		/// <param name="iniKey">The key in the INI.</param>
+		/// <param name="file">The name of the file.</param>
 		/// <param name="systemPath">The game's system path.</param>
-		void LoadTextureList(string iniSection, string iniKey, string systemPath)
+		void LoadTextureList(string file, string systemPath)
 		{
-			LoadTextureList(TextureList.Load(ini[iniSection][iniKey]), systemPath);
+			LoadTextureList(TextureList.Load(file), systemPath);
 		}
 		/// <summary>
 		/// Loads all of the textures specified into the scene.
@@ -454,14 +453,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
 				{
 					//LevelData.Character = 0;
-					Dictionary<string, string> group = ini[levelID];
-					string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
-					string modpath = null;
+					IniLevelData level = ini.Levels[levelID];
+					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
+					string modpath = ini.ModPath;
 
-					if (ini[string.Empty].ContainsKey("modpath"))
-						modpath = ini[string.Empty]["modpath"];
-
-					SA1LevelAct levelact = new SA1LevelAct(group.GetValueOrDefault("LevelID", "0000"));
+					SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 					LevelData.leveltexs = null;
 					cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
@@ -476,11 +472,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading level data:", "Geometry");
 
-					if (!group.ContainsKey("LevelGeo"))
+					if (string.IsNullOrEmpty(level.LevelGeometry))
 						LevelData.geo = null;
 					else
 					{
-						LevelData.geo = LandTable.LoadFromFile(group["LevelGeo"]);
+						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
 						LevelData.LevelItems = new List<LevelItem>();
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
 							LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
@@ -516,8 +512,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
 
+						IniCharInfo character;
+						if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
+							character = ini.Characters["SuperSonic"];
+						else
+							character = ini.Characters[LevelData.Characters[i]];
+
 						Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
-							SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+							SA1StartPosList.Load(character.StartPositions);
 
 						Vertex pos = new Vertex();
 						int rot = 0;
@@ -527,24 +529,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 							pos = posini[levelact].Position.ToSAModel();
 							rot = posini[levelact].YRotation;
 						}
-						if (i == 0 & levelact.Level == SA1LevelIDs.PerfectChaos)
-						{
-							LevelData.StartPositions[i] = new StartPosItem(new ModelFile(ini[string.Empty]["supermdl"]).Model,
-								ini[string.Empty]["supertex"],
-								float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float,
-									System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice, selectedItems);
-						}
-						else
-						{
-							LevelData.StartPositions[i] =
-								new StartPosItem(new ModelFile(ini[string.Empty][LevelData.Characters[i] + "mdl"]).Model,
-									ini[string.Empty][LevelData.Characters[i] + "tex"],
-									float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float,
-										System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice, selectedItems);
-						}
+						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+							character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 
-
-						LoadTextureList(string.Empty, LevelData.Characters[i] + "texlist", syspath);
+						LoadTextureList(character.TextureList, syspath);
 					}
 
 					progress.StepProgress();
@@ -555,13 +543,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Death Zones:", "Initializing...");
 
-					if (!group.ContainsKey("DeathZones"))
+					if (string.IsNullOrEmpty(level.DeathZones))
 						LevelData.DeathZones = null;
 					else
 					{
 						LevelData.DeathZones = new List<DeathZoneItem>();
-						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(group["DeathZones"]);
-						string path = Path.GetDirectoryName(group["DeathZones"]);
+						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
+						string path = Path.GetDirectoryName(level.DeathZones);
 						for (int i = 0; i < dzini.Length; i++)
 						{
 							progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
@@ -583,12 +571,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetStep("Common objects");
 					// Loads common object textures (e.g OBJ_REGULAR)
-					LoadTextureList(string.Empty, "objtexlist", syspath);
+					LoadTextureList(ini.ObjectTextureList, syspath);
 
 					progress.SetTaskAndStep("Loading stage texture lists...");
 
 					// Loads the textures in the texture list for this stage (e.g BEACH01)
-					foreach (string file in Directory.GetFiles(ini[string.Empty]["leveltexlists"]))
+					foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
 					{
 						LevelTextureList texini = LevelTextureList.Load(file);
 						if (texini.Level != levelact)
@@ -599,21 +587,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading textures for:", "Objects");
 					// Object texture list(s)
-					LoadTextureList(TextureList.Load(group["ObjTexs"]), syspath);
+					LoadTextureList(level.ObjectTextureList, syspath);
 
 					progress.SetStep("Stage");
 					// The stage textures... again? "Extra"?
-					if (group.ContainsKey("Textures"))
-					{
-						string[] textures = group["Textures"].Split(',');
-						foreach (string tex in textures)
+					if (level.Textures != null && level.Textures.Length > 0)
+						foreach (string tex in level.Textures)
 						{
 							LoadPVM(tex, syspath);
 
 							if (string.IsNullOrEmpty(LevelData.leveltexs))
 								LevelData.leveltexs = tex;
 						}
-					}
 
 					progress.StepProgress();
 
@@ -625,12 +610,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					LevelData.ObjDefs = new List<ObjectDefinition>();
 					Dictionary<string, ObjectData> objdefini =
-						IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini[string.Empty]["objdefs"]);
+						IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
 
-					if (File.Exists(group.GetValueOrDefault("ObjList", string.Empty)))
+					if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
 					{
 						List<ObjectData> objectErrors = new List<ObjectData>();
-						ObjectListEntry[] objlstini = ObjectList.Load(group["ObjList"], false);
+						ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
 						Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
 
 						for (int ID = 0; ID < objlstini.Length; ID++)
@@ -735,8 +720,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (LevelData.ObjDefs.Count > 0)
 						{
-							LevelData.SETName = group.GetValueOrDefault("SETName",
-								((int)levelact.Level).ToString("00") + levelact.Act.ToString("00"));
+							LevelData.SETName = level.SETName ?? level.LevelID;
 							string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
 							LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
 							for (int i = 0; i < LevelData.SETChars.Length; i++)
@@ -818,8 +802,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-					LevelData.CAMName = ((int)levelact.Level).ToString("00") + levelact.Act.ToString("00");
-					string camstr = Path.Combine(syspath, "CAM" + LevelData.CAMName + "{0}.bin");
+					string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
 
 					LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
 					for (int i = 0; i < LevelData.SETChars.Length; i++)
@@ -862,19 +845,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 					#region Loading Level Effects
 
 					LevelData.leveleff = null;
-					if (group.ContainsKey("Effects"))
+					if (!string.IsNullOrEmpty(level.Effects))
 					{
 						progress.SetTaskAndStep("Loading Level Effects...");
 
 						LevelDefinition def = null;
-						string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(group["Effects"]);
+						string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
 						string dllfile = Path.Combine("dllcache", ty + ".dll");
 						DateTime modDate = DateTime.MinValue;
 
 						if (File.Exists(dllfile))
 							modDate = File.GetLastWriteTime(dllfile);
 
-						string fp = group["Effects"].Replace('/', Path.DirectorySeparatorChar);
+						string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
 						if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 						{
 							def =
@@ -919,7 +902,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 
 						if (def != null)
-							def.Init(group, levelact.Act, d3ddevice);
+							def.Init(level, levelact.Act, d3ddevice);
 
 						LevelData.leveleff = def;
 					}
@@ -933,11 +916,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.LevelSplines = new List<SplineData>();
 					SplineData.Init();
 
-					if (ini[string.Empty].ContainsKey("paths"))
+					if (!string.IsNullOrEmpty(ini.Paths))
 					{
 						progress.SetTaskAndStep("Reticulating splines...", null);
 
-						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["paths"]),
+						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
 							levelact.ToString());
 
 						if (Directory.Exists(splineDirectory))
@@ -1114,19 +1097,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			progress.Show(this);
 			Application.DoEvents();
 
-			Dictionary<string, string> group = ini[levelID];
-			string syspath = Path.Combine(Environment.CurrentDirectory, ini[string.Empty]["syspath"]);
-			string modpath = null;
-			if (ini[string.Empty].ContainsKey("modpath"))
-				modpath = ini[string.Empty]["modpath"];
-			SA1LevelAct levelact = new SA1LevelAct(@group.GetValueOrDefault("LevelID", "0000"));
+			IniLevelData level = ini.Levels[levelID];
+			string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
+			string modpath = ini.ModPath;
+			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 
 			progress.SetTaskAndStep("Saving:", "Geometry...");
 
 			if (LevelData.geo != null)
 			{
 				LevelData.geo.Tool = "SADXLVL2";
-				LevelData.geo.SaveToFile(@group["LevelGeo"], LandTableFormat.SA1);
+				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA1);
 			}
 
 			progress.StepProgress();
@@ -1137,13 +1118,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
-					SA1StartPosList.Load(ini[string.Empty][LevelData.Characters[i] + "start"]);
+					SA1StartPosList.Load(ini.Characters[LevelData.Characters[i]].StartPositions);
 
 				if (posini.ContainsKey(levelact))
 					posini.Remove(levelact);
 
-				if (LevelData.StartPositions[i].Position.X != 0 | LevelData.StartPositions[i].Position.Y != 0 |
-				    LevelData.StartPositions[i].Position.Z != 0 | LevelData.StartPositions[i].Rotation.Y != 0)
+				if (LevelData.StartPositions[i].Position.X != 0 || LevelData.StartPositions[i].Position.Y != 0 ||
+				    LevelData.StartPositions[i].Position.Z != 0 || LevelData.StartPositions[i].Rotation.Y != 0)
 				{
 					posini.Add(levelact,
 						new SA1StartPosInfo()
@@ -1152,7 +1133,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							YRotation = LevelData.StartPositions[i].Rotation.Y
 						});
 				}
-				posini.Save(ini[string.Empty][LevelData.Characters[i] + "start"]);
+				posini.Save(ini.Characters[LevelData.Characters[i]].StartPositions);
 			}
 
 			progress.StepProgress();
@@ -1163,10 +1144,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.DeathZones != null)
 			{
 				DeathZoneFlags[] dzini = new DeathZoneFlags[LevelData.DeathZones.Count];
-				string path = Path.GetDirectoryName(@group["DeathZones"]);
+				string path = Path.GetDirectoryName(level.DeathZones);
 				for (int i = 0; i < LevelData.DeathZones.Count; i++)
 					dzini[i] = LevelData.DeathZones[i].Save(path, i);
-				dzini.Save(@group["DeathZones"]);
+				dzini.Save(level.DeathZones);
 			}
 
 			progress.StepProgress();
