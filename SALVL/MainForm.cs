@@ -40,7 +40,7 @@ namespace SonicRetro.SAModel.SALVL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		bool loaded;
 		int interval = 20;
-		internal List<Item> SelectedItems;
+		EditorItemSelection selectedItems = new EditorItemSelection();
 		bool lookKeyDown;
 		bool zoomKeyDown;
 		TransformGizmo transformGizmo;
@@ -101,7 +101,7 @@ namespace SonicRetro.SAModel.SALVL
 			LevelData.LevelItems = new List<LevelItem>();
 
 			for (int i = 0; i < LevelData.geo.COL.Count; i++)
-				LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i));
+				LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
 
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -132,7 +132,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
-			SelectedItems = new List<Item>();
+			selectedItems.SelectionChanged += SelectionChanged;
 			UseWaitCursor = false;
 			Enabled = editInfoToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = true;
 
@@ -211,7 +211,7 @@ namespace SonicRetro.SAModel.SALVL
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
-						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.LevelItems[i])));
+						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform));
 				}
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
@@ -294,27 +294,27 @@ namespace SonicRetro.SAModel.SALVL
 							{
 								if (ModifierKeys == Keys.Control)
 								{
-									if (SelectedItems.Contains(item))
-										SelectedItems.Remove(item);
+									if (selectedItems.GetSelection().Contains(item))
+										selectedItems.Remove(item);
 									else
-										SelectedItems.Add(item);
+										selectedItems.Add(item);
 								}
-								else if (!SelectedItems.Contains(item))
+								else if (!selectedItems.GetSelection().Contains(item))
 								{
-									SelectedItems.Clear();
-									SelectedItems.Add(item);
+									selectedItems.Clear();
+									selectedItems.Add(item);
 								}
 							}
 							else if ((ModifierKeys & Keys.Control) == 0)
 							{
-								SelectedItems.Clear();
+								selectedItems.Clear();
 							}
 						}
 					}
 					break;
 				case MouseButtons.Right:
 					bool cancopy = false;
-					foreach (Item obj in SelectedItems)
+					foreach (Item obj in selectedItems.GetSelection())
 						if (obj.CanCopy)
 							cancopy = true;
 					if (cancopy)
@@ -336,7 +336,7 @@ namespace SonicRetro.SAModel.SALVL
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
-			SelectedItemChanged();
+
 			DrawLevel();
 		}
 
@@ -387,7 +387,7 @@ namespace SonicRetro.SAModel.SALVL
 
 				if (cam.mode == 1)
 				{
-					if (SelectedItems.Count > 0) cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+					if (selectedItems.ItemCount > 0) cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 					else
 					{
 						cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
@@ -407,10 +407,9 @@ namespace SonicRetro.SAModel.SALVL
 			}
 			if (e.KeyCode == Keys.Delete)
 			{
-				foreach (Item item in SelectedItems)
+				foreach (Item item in selectedItems.GetSelection())
 					item.Delete();
-				SelectedItems.Clear();
-				SelectedItemChanged();
+				selectedItems.Clear();
 				DrawLevel();
 			}
 		}
@@ -532,19 +531,19 @@ namespace SonicRetro.SAModel.SALVL
 		}
 		#endregion
 
-		internal void SelectedItemChanged()
+		void SelectionChanged(EditorItemSelection sender)
 		{
-			propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+			propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
 
 			if (cam.mode == 1)
 			{
-				cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+				cam.FocalPoint = Item.CenterFromSelection(sender.GetSelection()).ToVector3();
 			}
 
-			if (SelectedItems.Count > 0) // set up gizmo
+			if (sender.ItemCount > 0) // set up gizmo
 			{
 				transformGizmo.Enabled = true;
-				transformGizmo.AffectedItems = SelectedItems;
+				transformGizmo.AffectedItems = sender.GetSelection();
 			}
 			else
 			{
@@ -559,14 +558,13 @@ namespace SonicRetro.SAModel.SALVL
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			List<Item> selitems = new List<Item>();
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 				if (item.CanCopy)
 				{
 					item.Delete();
 					selitems.Add(item);
 				}
-			SelectedItems.Clear();
-			SelectedItemChanged();
+			selectedItems.Clear();
 			DrawLevel();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData("SADXLVLObjectList", selitems);
@@ -575,7 +573,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			List<Item> selitems = new List<Item>();
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 				if (item.CanCopy)
 					selitems.Add(item);
 			if (selitems.Count == 0) return;
@@ -601,18 +599,16 @@ namespace SonicRetro.SAModel.SALVL
 				item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
 				item.Paste();
 			}
-			SelectedItems = new List<Item>(objs);
-			SelectedItemChanged();
+			selectedItems.Add(new List<Item>(objs));
 			DrawLevel();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 				if (item.CanCopy)
 					item.Delete();
-			SelectedItems.Clear();
-			SelectedItemChanged();
+			selectedItems.Clear();
 			DrawLevel();
 		}
 
@@ -633,7 +629,7 @@ namespace SonicRetro.SAModel.SALVL
 				bool errorFlag = false;
 				string errorMsg = "";
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -665,7 +661,7 @@ namespace SonicRetro.SAModel.SALVL
 				bool errorFlag = false;
 				string errorMsg = "";
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg);
+				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -811,8 +807,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo != null) transformGizmo.AffectedItems = SelectedItems;
-			SelectedItemChanged();
+			if (transformGizmo != null) transformGizmo.AffectedItems = selectedItems.GetSelection();
 			DrawLevel();
 		}
 
@@ -839,7 +834,7 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			bool errorFlag = false;
 			string errorMsg = "";
-			LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
+			LevelData.DuplicateSelection(d3ddevice, selectedItems, out errorFlag, out errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}

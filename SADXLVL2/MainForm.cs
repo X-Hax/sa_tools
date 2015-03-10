@@ -47,7 +47,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		string levelID;
 		internal string levelName;
 		bool isStageLoaded;
-		internal List<Item> SelectedItems;
+		EditorItemSelection selectedItems = new EditorItemSelection();
 		Dictionary<string, List<string>> levelNames;
 		bool lookKeyDown;
 		bool zoomKeyDown;
@@ -376,7 +376,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void LoadStage(string id)
 		{
 			isStageLoaded = false;
-			SelectedItems = new List<Item>();
 			UseWaitCursor = true;
 			Enabled = false;
 
@@ -484,7 +483,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.geo = LandTable.LoadFromFile(group["LevelGeo"]);
 						LevelData.LevelItems = new List<LevelItem>();
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
-							LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i));
+							LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
 					}
 
 					progress.StepProgress();
@@ -533,7 +532,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.StartPositions[i] = new StartPosItem(new ModelFile(ini[string.Empty]["supermdl"]).Model,
 								ini[string.Empty]["supertex"],
 								float.Parse(ini[string.Empty]["superheight"], System.Globalization.NumberStyles.Float,
-									System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+									System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice, selectedItems);
 						}
 						else
 						{
@@ -541,7 +540,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								new StartPosItem(new ModelFile(ini[string.Empty][LevelData.Characters[i] + "mdl"]).Model,
 									ini[string.Empty][LevelData.Characters[i] + "tex"],
 									float.Parse(ini[string.Empty][LevelData.Characters[i] + "height"], System.Globalization.NumberStyles.Float,
-										System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice);
+										System.Globalization.NumberFormatInfo.InvariantInfo), pos, rot, d3ddevice, selectedItems);
 						}
 
 
@@ -570,7 +569,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.DeathZones.Add(new DeathZoneItem(
 								new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
 									.Model,
-								dzini[i].Flags, d3ddevice));
+								dzini[i].Flags, d3ddevice, selectedItems));
 						}
 					}
 
@@ -762,7 +761,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 									{
 										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
 
-										SETItem ent = new SETItem(setfile, address);
+										SETItem ent = new SETItem(setfile, address, selectedItems);
 										list.Add(ent);
 										address += 0x20;
 									}
@@ -845,7 +844,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							{
 								progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
 
-								CAMItem ent = new CAMItem(camfile, address);
+								CAMItem ent = new CAMItem(camfile, address, selectedItems);
 								list.Add(ent);
 								address += 0x40;
 							}
@@ -959,7 +958,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 							foreach (Dictionary<string, Dictionary<string, string>> pathFile in pathFiles) // looping through path files
 							{
-								SplineData newSpline = new SplineData();
+								SplineData newSpline = new SplineData(selectedItems);
 
 								for (int iniEntryIndx = 0; iniEntryIndx < pathFile.Count - 1; iniEntryIndx++)
 								{
@@ -1074,7 +1073,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 
 			isStageLoaded = true;
-			SelectedItems = new List<Item>();
+			selectedItems.SelectionChanged += SelectionChanged;
 			UseWaitCursor = false;
 			Enabled = true;
 
@@ -1304,18 +1303,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 
 					if (display)
-						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+						renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
 
-			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform, SelectedItems.Contains(LevelData.StartPositions[LevelData.Character])));
+			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
 
 			#region Adding splines
 			if (splinesToolStripMenuItem.Checked)
 			{
 				foreach (SplineData spline in LevelData.LevelSplines)
-					renderlist.AddRange(spline.Render(d3ddevice, cam, transform, false));
+					renderlist.AddRange(spline.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1323,7 +1322,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
 			{
 				foreach (SETItem item in LevelData.SETItems[LevelData.Character])
-					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1333,7 +1332,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				foreach (DeathZoneItem item in LevelData.DeathZones)
 				{
 					if (item.Visible)
-						renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+						renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
@@ -1342,7 +1341,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
 				foreach (CAMItem item in LevelData.CAMItems[LevelData.Character])
-					renderlist.AddRange(item.Render(d3ddevice, cam, transform, SelectedItems.Contains(item)));
+					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1493,26 +1492,26 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						if (ModifierKeys == Keys.Control)
 						{
-							if (SelectedItems.Contains(item))
-								SelectedItems.Remove(item);
+							if (selectedItems.GetSelection().Contains(item))
+								selectedItems.Remove(item);
 							else
-								SelectedItems.Add(item);
+								selectedItems.Add(item);
 						}
-						else if (!SelectedItems.Contains(item))
+						else if (!selectedItems.GetSelection().Contains(item))
 						{
-							SelectedItems.Clear();
-							SelectedItems.Add(item);
+							selectedItems.Clear();
+							selectedItems.Add(item);
 						}
 					}
 					else if ((ModifierKeys & Keys.Control) == 0)
 					{
-						SelectedItems.Clear();
+						selectedItems.Clear();
 					}
 					break;
 
 				case MouseButtons.Right:
 					bool cancopy = false;
-					foreach (Item obj in SelectedItems)
+					foreach (Item obj in selectedItems.GetSelection())
 					{
 						if (obj.CanCopy)
 							cancopy = true;
@@ -1597,8 +1596,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					if (cam.mode == 1)
 					{
-						if (SelectedItems.Count > 0)
-							cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+						if (selectedItems.GetSelection().Count > 0)
+							cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 						else
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
 					}
@@ -1607,9 +1606,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case Keys.Z:
-					if(SelectedItems.Count == 1)
+					if(selectedItems.ItemCount == 1)
 					{
-						cam.MoveToShowBounds(SelectedItems[0].Bounds);
+						cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
 					}
 
 					draw = true;
@@ -1625,10 +1624,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case Keys.Delete:
-					foreach (Item item in SelectedItems)
+					foreach (Item item in selectedItems.GetSelection())
 						item.Delete();
-					SelectedItems.Clear();
-					SelectedItemChanged();
+					selectedItems.Clear();
 					draw = true;
 					break;
 
@@ -1809,7 +1807,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
 			{
 				mouseLast = mouseEvent;
-				if (e.Button != MouseButtons.None && SelectedItems.Count > 0)
+				if (e.Button != MouseButtons.None && selectedItems.ItemCount > 0)
 					UpdatePropertyGrid();
 			}
 		}
@@ -1833,25 +1831,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 		#endregion
 
-		internal void SelectedItemChanged()
+		void SelectionChanged(EditorItemSelection sender)
 		{
-			propertyGrid1.SelectedObjects = SelectedItems.ToArray();
+			propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
 
 			if (cam.mode == 1)
 			{
-				cam.FocalPoint = Item.CenterFromSelection(SelectedItems).ToVector3();
+				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 			}
 
-			if (SelectedItems.Count > 0) // set up gizmo
+			if (sender.ItemCount > 0) // set up gizmo
 			{
 				transformGizmo.Enabled = true;
-				transformGizmo.AffectedItems = SelectedItems;
+				transformGizmo.AffectedItems = selectedItems.GetSelection();
 
-				if (SelectedItems.Count == 1) // single-select only cases
+				if (sender.ItemCount == 1) // single-select only cases
 				{
-					if (SelectedItems[0] is CAMItem)
+					if (sender.GetSelection()[0] is CAMItem)
 					{
-						CAMItem camItem = (CAMItem)SelectedItems[0];
+						CAMItem camItem = (CAMItem)selectedItems.GetSelection()[0];
 						cameraPointA.SetPoint(camItem.PointA);
 						cameraPointB.SetPoint(camItem.PointB);
 					}
@@ -1889,7 +1887,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			List<Item> selitems = new List<Item>();
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 			{
 				if (item.CanCopy)
 				{
@@ -1897,7 +1895,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					selitems.Add(item);
 				}
 			}
-			SelectedItems.Clear();
+			selectedItems.Clear();
 			LevelData_StateChanged();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
@@ -1906,7 +1904,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			List<Item> selitems = new List<Item>();
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 			{
 				if (item.CanCopy)
 					selitems.Add(item);
@@ -1941,19 +1939,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				item.Paste();
 			}
 
-			SelectedItems = new List<Item>(objs);
+			selectedItems.Clear();
+			selectedItems.Add(new List<Item>(objs));
 			LevelData_StateChanged();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			foreach (Item item in SelectedItems)
+			foreach (Item item in selectedItems.GetSelection())
 			{
 				if (item.CanCopy)
 					item.Delete();
 			}
 
-			SelectedItems.Clear();
+			selectedItems.Clear();
 			LevelData_StateChanged();
 		}
 
@@ -2044,7 +2043,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				bool errorFlag = false;
 				string errorMsg = "";
 
-				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
 
 				if (errorFlag)
 					MessageBox.Show(errorMsg);
@@ -2080,7 +2079,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				bool errorFlag = false;
 				string errorMsg = "";
 
-				SelectedItems.AddRange(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg));
+				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
 
 				if (errorFlag)
 					MessageBox.Show(errorMsg);
@@ -2091,20 +2090,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SETItem item = new SETItem();
+			SETItem item = new SETItem(selectedItems);
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 			LevelData.SETItems[LevelData.Character].Add(item);
-			SelectedItems = new List<Item>() { item };
+			selectedItems.Clear();
+			selectedItems.Add(item);
 			LevelData_StateChanged();
 		}
 
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Vector3 pos = cam.Position + (-20 * cam.Look);
-			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z));
+			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z), selectedItems);
 			LevelData.CAMItems[LevelData.Character].Add(item);
-			SelectedItems = new List<Item>() { item };
+			selectedItems.Clear();
+			selectedItems.Add(item);
 			LevelData_StateChanged();
 		}
 
@@ -2200,7 +2201,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DeathZoneItem item = new DeathZoneItem(d3ddevice);
+			DeathZoneItem item = new DeathZoneItem(d3ddevice, selectedItems);
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 			switch (LevelData.Character)
@@ -2224,7 +2225,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					item.Big = true;
 					break;
 			}
-			SelectedItems = new List<Item>() { item };
+
+			selectedItems.Clear();
+			selectedItems.Add(item);
 			LevelData_StateChanged();
 		}
 
@@ -2252,9 +2255,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void LevelData_StateChanged()
 		{
 			if (transformGizmo != null)
-				transformGizmo.AffectedItems = SelectedItems;
+				transformGizmo.AffectedItems = selectedItems.GetSelection();
 
-			SelectedItemChanged();
 			DrawLevel();
 		}
 
@@ -2293,7 +2295,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			bool errorFlag = false;
 			string errorMsg = "";
-			LevelData.DuplicateSelection(d3ddevice, ref SelectedItems, out errorFlag, out errorMsg);
+			LevelData.DuplicateSelection(d3ddevice, selectedItems, out errorFlag, out errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}
@@ -2377,13 +2379,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if ((SelectedItems == null) || (SelectedItems.Count == 0))
+			if (selectedItems.ItemCount > 0)
 			{
 				MessageBox.Show("To use this feature you must have a selection!");
 				return;
 			}
 
-			DuplicateTo duplicateToWindow = new DuplicateTo(SelectedItems);
+			DuplicateTo duplicateToWindow = new DuplicateTo(selectedItems);
 			duplicateToWindow.ShowDialog();
 		}
 

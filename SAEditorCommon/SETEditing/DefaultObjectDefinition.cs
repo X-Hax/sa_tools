@@ -62,19 +62,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
 			transform.NJRotateXYZ(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			if (model == null)
-				result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), selected));
+				result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			else
 			{
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
 				result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes));
-				if (selected)
+				if (item.Selected)
 					result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			}
 			transform.Pop();

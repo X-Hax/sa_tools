@@ -9,6 +9,8 @@ using SonicRetro.SAModel.Direct3D;
 
 using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
 
+using SonicRetro.SAModel.SAEditorCommon.UI;
+
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
@@ -20,6 +22,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public virtual Vertex Position { get; set; }
 
+		private bool selected;
+		public bool Selected { get { return selected; } }
 		private BoundingSphere bounds;
 		public virtual BoundingSphere Bounds { get { return bounds; } }
 		public abstract Rotation Rotation { get; set; }
@@ -29,7 +33,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public abstract void Paste();
 		public abstract void Delete();
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected);
+		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform);
+
+		public Item(EditorItemSelection selectionManager)
+		{
+			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+		}
+
+		void selectionManager_SelectionChanged(EditorItemSelection sender)
+		{
+			selected = (sender.GetSelection().Contains(this));
+		}
 
 		#region IComponent Members
 		// IComponent required by PropertyGrid control to discover IMenuCommandService supporting DesignerVerbs

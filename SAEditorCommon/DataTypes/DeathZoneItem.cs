@@ -23,7 +23,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[NonSerialized]
 		private Device dev;
 
-		public DeathZoneItem(Device dev)
+		public DeathZoneItem(Device dev, EditorItemSelection selectionManager)
+			: base (selectionManager)
 		{
 			this.dev = dev;
 			Model = new Object();
@@ -31,7 +32,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Paste();
 		}
 
-		public DeathZoneItem(Object model, SA_Tools.SA1CharacterFlags flags, Device dev)
+		public DeathZoneItem(Object model, SA_Tools.SA1CharacterFlags flags, Device dev, EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
@@ -49,11 +51,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
-			if (selected)
+			if (Selected)
 				result.AddRange(Model.DrawModelInvert(dev, transform, Mesh, false));
 			return result;
 		}

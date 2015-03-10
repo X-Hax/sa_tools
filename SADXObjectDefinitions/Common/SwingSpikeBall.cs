@@ -56,14 +56,14 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position.ToVector3());
 			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 			result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));
 			transform.Pop();
 			/*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;

@@ -51,7 +51,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -61,7 +61,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(0, 0, 10);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 2);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			transform.Push();
@@ -70,7 +70,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(0, 0, -3);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			transform.Push();
@@ -79,12 +79,12 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(0, 0, -3);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1000000014901161f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			return result;

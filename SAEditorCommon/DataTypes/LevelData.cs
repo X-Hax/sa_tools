@@ -139,94 +139,52 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
 		}
 
-		public static void DuplicateSelection(Device d3ddevice, ref List<Item> SelectedItems, out bool errorFlag, out string errorMsg)
+		public static void DuplicateSelection(Device d3ddevice, SAEditorCommon.UI.EditorItemSelection selection, out bool errorFlag, out string errorMsg)
 		{
-			if (SelectedItems == null)
-			{
-				SelectedItems = null;
-				errorFlag = false;
-				errorMsg = "";
-				return;
-			}
+			if (selection.ItemCount < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; }
 
-			if (SelectedItems.Count < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; }
+			List<Item> newItems = new List<Item>();
+			List<Item> currentItems = selection.GetSelection();
 
-			if (SelectedItems.Count == 1)
+			// duplicate goes here
+			for (int i = 0; i < selection.ItemCount; i++)
 			{
-				// duplicate goes here
-				if (SelectedItems[0] is SETItem)
+				if (currentItems[i] is SETItem)
 				{
-					SETItem originalItem = (SETItem)SelectedItems[0];
-					SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+					SETItem originalItem = (SETItem)currentItems[i];
+					SETItem newItem = new SETItem(originalItem.GetBytes(), 0, selection);
 
 					LevelData.SETItems[LevelData.Character].Add(newItem);
-					SelectedItems = new List<Item>() { newItem };
-					InvalidateRenderState();
+					newItems.Add(newItem);
 				}
-				else if (SelectedItems[0] is LevelItem)
+				else if (currentItems[i] is LevelItem)
 				{
-					LevelItem originalItem = (LevelItem)SelectedItems[0];
-					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, LevelItems.Count);
+					LevelItem originalItem = (LevelItem)currentItems[0];
+					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, LevelItems.Count, selection);
 
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
-					SelectedItems.Clear();
-					SelectedItems = new List<Item>() { newItem };
-					InvalidateRenderState();
+					newItems.Add(newItem);
 				}
-				else if (SelectedItems[0] is CAMItem)
+				else if (currentItems[i] is CAMItem)
 				{
-					CAMItem originalItem = (CAMItem)SelectedItems[0];
-					CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0);
+					CAMItem originalItem = (CAMItem)currentItems[i];
+					CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0, selection);
 
 					LevelData.CAMItems[LevelData.Character].Add(newItem);
-					SelectedItems = new List<Item>() { newItem };
-					InvalidateRenderState();
+					newItems.Add(newItem);
 				}
 			}
-			else
-			{
-				List<Item> newItems = new List<Item>();
 
-				// duplicate goes here
-				for (int i = 0; i < SelectedItems.Count; i++)
-				{
-					if (SelectedItems[i] is SETItem)
-					{
-						SETItem originalItem = (SETItem)SelectedItems[i];
-						SETItem newItem = new SETItem(originalItem.GetBytes(), 0);
+			selection.Clear();
+			selection.Add(newItems);
 
-						LevelData.SETItems[LevelData.Character].Add(newItem);
-						newItems.Add(newItem);
-					}
-					else if (SelectedItems[i] is LevelItem)
-					{
-						LevelItem originalItem = (LevelItem)SelectedItems[0];
-						LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, LevelItems.Count);
-
-						newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
-						newItems.Add(newItem);
-					}
-					else if (SelectedItems[i] is CAMItem)
-					{
-						CAMItem originalItem = (CAMItem)SelectedItems[i];
-						CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0);
-
-						LevelData.CAMItems[LevelData.Character].Add(newItem);
-						newItems.Add(newItem);
-					}
-				}
-
-				SelectedItems.Clear();
-				SelectedItems = newItems;
-
-				InvalidateRenderState();
-			}
+			InvalidateRenderState();
 
 			errorFlag = false;
 			errorMsg = "";
 		}
 
-		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg)
+		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg, UI.EditorItemSelection selectionManager)
 		{
 			List<Item> createdItems = new List<Item>();
 
@@ -245,14 +203,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if ((filePathInfo.Extension == ".obj") || (filePathInfo.Extension == ".objf"))
 			{
 				Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
-				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), LevelItems.Count);
+				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), LevelItems.Count, selectionManager);
 
 				item.Visible = true;
 				createdItems.Add(item);
 			}
 			else if (filePathInfo.Extension == ".txt")
 			{
-				SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
+				SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg, selectionManager);
 			}
 			else
 			{
@@ -260,26 +218,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				errorMsg = "Invalid file format!";
 				return null;
 			}
-
-			/*switch (filePathInfo.Extension)
-			{
-				case (".obj"):
-					Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
-					LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation());
-
-					item.Visible = true;
-					createdItems.Add(item);
-					break;
-
-				case (".txt"):
-					SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg);
-					break;
-
-				default:
-					errorFlag = true;
-					errorMsg = "Invalid file format!";
-					return null;
-			}*/
 
 			StateChanged();
 

@@ -9,6 +9,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel;
 
@@ -22,7 +23,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		/// <param name="filePath">full path to file (with extension) to import data from.</param>
 		/// <param name="errorFlag">Set to TRUE if an error occured.</param>
 		/// <param name="errorMsg">Suggested error message to show to the user.</param>
-		public static void ImportFromFile(Device dev, string filePath, out bool errorFlag, out string errorMsg)
+		public static void ImportFromFile(Device dev, string filePath, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
 		{
 			if (!File.Exists(filePath))
 			{
@@ -171,13 +172,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count);
+						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count, selectionManager);
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count);
+						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count, selectionManager);
 					}
 					#endregion
 
@@ -288,14 +289,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count);
+						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count, selectionManager);
 						levelItem.Flags = surfaceFlags;
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count);
+						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count, selectionManager);
 						levelItem.Flags = surfaceFlags;
 					}
 					#endregion

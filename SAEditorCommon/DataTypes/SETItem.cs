@@ -25,7 +25,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		private ObjectDefinition objdef;
-		public SETItem()
+		public SETItem(EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			Position = new Vertex();
 			Rotation = new Rotation();
@@ -34,7 +35,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bounds = objdef.GetBounds(this);
 		}
 
-		public SETItem(byte[] file, int address)
+		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
@@ -110,12 +112,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
 
-			return LevelData.ObjDefs[ID].Render(this, dev, camera, transform, selected);
+			return LevelData.ObjDefs[ID].Render(this, dev, camera, transform);
 		}
 
 		public byte[] GetBytes()

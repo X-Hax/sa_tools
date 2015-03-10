@@ -103,7 +103,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			RenderInfo.Draw(Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
 
 			d3ddevice.EndScene(); //all drawings before this line
-			//d3ddevice.Present();
 		}
 
 		public void DrawBox(Device d3ddevice, EditorCamera cam)

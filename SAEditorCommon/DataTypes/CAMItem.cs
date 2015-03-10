@@ -49,7 +49,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		///  Create a new CAM Item from within the editor.
 		/// </summary>
 		/// <param name="dev">An active Direct3D device for meshing/material/rendering purposes.</param>
-		public CAMItem(Vertex position)
+		public CAMItem(Vertex position, UI.EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			CamType = 0x23;
 
@@ -70,7 +71,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		/// <param name="file"></param>
 		/// <param name="address"></param>
-		public CAMItem(byte[] file, int address)
+		public CAMItem(byte[] file, int address, UI.EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			CamType = file[address];
 			Unknown = file[address + 1];
@@ -141,7 +143,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#endregion
 
 		#region Rendering / Picking
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
@@ -154,7 +156,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, Bounds);
 
-			if (selected)
+			if (Selected)
 			{
 				Material mat = new Material
 				{

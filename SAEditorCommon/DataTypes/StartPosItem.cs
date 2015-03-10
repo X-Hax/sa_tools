@@ -15,7 +15,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private string texture;
 		private float offset;
 
-		public StartPosItem(Object model, string textures, float offset, Vertex position, int yrot, Device dev)
+		public StartPosItem(Object model, string textures, float offset, Vertex position, int yrot, Device dev, UI.EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
@@ -67,7 +68,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.Position.ToVector3());
 			if (dist > camera.DrawDistance) return EmptyRenderInfo;
@@ -78,7 +79,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(Position);
 			transform.NJRotateY(YRotation);
 			result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
-			if (selected)
+			if (Selected)
 				result.AddRange(Model.DrawModelTreeInvert(dev, transform, Meshes));
 			transform.Pop();
 			return result;

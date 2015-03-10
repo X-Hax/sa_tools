@@ -51,14 +51,14 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(ballmodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), ballmeshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(ballmodel.DrawModelTreeInvert(dev, transform, ballmeshes));
 			transform.Pop();
 			double v24 = item.Scale.X * 0.05000000074505806;
@@ -67,13 +67,13 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position.X, (float)v22, item.Position.Z);
 			transform.NJScale(1.0f, (float)v24, 1.0f);
 			result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + item.Scale.Z, item.Position.Z);
 			result.AddRange(spheremodel.DrawModelTree(dev, transform, null, spheremeshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(spheremodel.DrawModelTreeInvert(dev, transform, spheremeshes));
 			transform.Pop();
 			return result;

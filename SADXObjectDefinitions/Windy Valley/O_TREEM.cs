@@ -31,14 +31,14 @@ namespace SADXObjectDefinitions.Windy_Valley
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			return result;

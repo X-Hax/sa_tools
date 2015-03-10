@@ -38,7 +38,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -54,6 +54,12 @@ namespace SADXObjectDefinitions.Common
 
 			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Solid, boxSphere);
 			result.Add(outputInfo);
+
+			if (item.Selected)
+			{
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.WireFrame, boxSphere);
+				result.Add(highlightInfo);
+			}
 
 			transform.Pop();
 			return result;

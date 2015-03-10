@@ -31,7 +31,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="filePath">location of the file to use.</param>
 		/// <param name="position">Position to place the resulting model (worldspace).</param>
 		/// <param name="rotation">Rotation to apply to the model.</param>
-		public LevelItem(Device dev, string filePath, Vertex position, Rotation rotation, int index)
+		public LevelItem(Device dev, string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			this.index = index;
 			COL = new COL();
@@ -48,7 +49,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		/// <param name="col"></param>
 		/// <param name="dev">Current Direct3d Device.</param>
-		public LevelItem(COL col, Device dev, int index)
+		public LevelItem(COL col, Device dev, int index, EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			this.index = index;
 			COL = col;
@@ -62,7 +64,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="attach">Attach to use for this levelItem</param>
 		/// <param name="position">Position in worldspace to place this LevelItem.</param>
 		/// <param name="rotation">Rotation.</param>
-		public LevelItem(Device dev, Attach attach, Vertex position, Rotation rotation, int index)
+		public LevelItem(Device dev, Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
 			this.index = index;
 			COL = new COL();
@@ -108,7 +111,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(this.CollisionData.Bounds)) return Item.EmptyRenderInfo;
 
@@ -117,7 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				result.AddRange(COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
 			else
 				result.AddRange(COL.Model.DrawModel(dev, transform, null, Mesh, Visible));
-			if (selected)
+			if (Selected)
 				result.AddRange(COL.Model.DrawModelInvert(dev, transform, Mesh, Visible));
 			return result;
 		}

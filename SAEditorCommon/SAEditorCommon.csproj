@@ -77,6 +77,7 @@
     <Compile Include="UI\DuplicateTo.Designer.cs">
       <DependentUpon>DuplicateTo.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\EditorItemSelection.cs" />
     <Compile Include="UI\Gizmo.cs" />
     <Compile Include="UI\PointHelper.cs" />
     <Compile Include="UI\SETDeleteType.cs">

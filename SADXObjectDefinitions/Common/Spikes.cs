@@ -49,7 +49,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			int rows = (int)Math.Max(item.Scale.X, 1);
@@ -66,7 +66,7 @@ namespace SADXObjectDefinitions.Common
 				for (int j = 0; j < cols; ++j)
 				{
 					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
-					if (selected)
+					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 					transform.NJTranslate(0, 0, 15);
 				}

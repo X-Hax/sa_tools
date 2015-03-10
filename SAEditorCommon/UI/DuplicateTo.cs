@@ -17,11 +17,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	/// </summary>
 	public partial class DuplicateTo : Form
 	{
-		List<Item> selectedItems;
-		public DuplicateTo(List<Item> selectedItems)
+		EditorItemSelection items;
+		public DuplicateTo(EditorItemSelection items)
 		{
 			InitializeComponent();
-			this.selectedItems = selectedItems;
+			this.items = items;
 		}
 
 		private void DuplicateTo_Load(object sender, EventArgs e)
@@ -101,7 +101,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void okButton_Click(object sender, EventArgs e)
 		{
-			foreach (Item item in selectedItems)
+			List<Item> selection = items.GetSelection();
+
+			foreach (Item item in selection)
 			{
 				if (item is SETItem)
 				{
@@ -109,32 +111,32 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 					if (sonicCheckBox.Checked)
 					{
-						LevelData.SETItems[0].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[0].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (tailsCheckBox.Checked)
 					{
-						LevelData.SETItems[1].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[1].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (knucklesCheckBox.Checked)
 					{
-						LevelData.SETItems[2].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[2].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (amyCheckBox.Checked)
 					{
-						LevelData.SETItems[3].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[3].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (gammaCheckBox.Checked)
 					{
-						LevelData.SETItems[4].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[4].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (bigCheckBox.Checked)
 					{
-						LevelData.SETItems[5].Add(new SETItem(itemConv.GetBytes(), 0));
+						LevelData.SETItems[5].Add(new SETItem(itemConv.GetBytes(), 0, items));
 					}
 				}
 				else if (item is CAMItem)
@@ -143,32 +145,32 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 					if ((sonicCheckBox.Checked) && (LevelData.CAMItems[0] != null))
 					{
-						LevelData.CAMItems[0].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[0].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (tailsCheckBox.Checked)
 					{
-						LevelData.CAMItems[1].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[1].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (knucklesCheckBox.Checked)
 					{
-						LevelData.CAMItems[2].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[2].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (amyCheckBox.Checked)
 					{
-						LevelData.CAMItems[3].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[3].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (gammaCheckBox.Checked)
 					{
-						LevelData.CAMItems[4].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[4].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (bigCheckBox.Checked)
 					{
-						LevelData.CAMItems[5].Add(new CAMItem(itemConv.GetBytes(), 0));
+						LevelData.CAMItems[5].Add(new CAMItem(itemConv.GetBytes(), 0, items));
 					}
 				}
 			}

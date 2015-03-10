@@ -36,7 +36,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -49,7 +49,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale(X, Y, X);
 
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
-			if (selected)
+			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			return result;

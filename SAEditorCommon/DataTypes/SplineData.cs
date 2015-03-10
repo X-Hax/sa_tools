@@ -196,7 +196,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			textSprite = new Sprite(device);
 		}
 
-		public SplineData()
+		public SplineData(UI.EditorItemSelection selectionManager)
+			: base (selectionManager)
 		{
 			KnotList = new List<Knot>();
 		}
@@ -247,14 +248,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
 
-			RenderInfo outputInfo = new RenderInfo(mesh, 0, Matrix.Identity, (selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, Bounds);
+			RenderInfo outputInfo = new RenderInfo(mesh, 0, Matrix.Identity, (Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, Bounds);
 			result.Add(outputInfo);
 
 			textSprite.Begin(SpriteFlags.AlphaBlend);

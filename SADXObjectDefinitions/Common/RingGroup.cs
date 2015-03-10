@@ -63,7 +63,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform, bool selected)
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
@@ -83,7 +83,7 @@ namespace SADXObjectDefinitions.Common
 					transform.Pop();
 					transform.NJTranslate(pos);
 					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
-					if (selected)
+					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 				}
 				else // line
@@ -100,7 +100,7 @@ namespace SADXObjectDefinitions.Common
 					transform.Pop();
 					transform.NJTranslate(pos);
 					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
-					if (selected)
+					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 				}
 				transform.Pop();
