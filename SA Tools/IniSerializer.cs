@@ -249,7 +249,10 @@ namespace SA_Tools
 								for (int i = 0; i < items.Length; i++)
 									_obj.SetValue(valuetype.ConvertFromString(items[i]), i);
 								group.Remove(name);
+								return _obj;
 							}
+							else
+								return null;
                             break;
                     }
                 }
