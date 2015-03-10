@@ -56,7 +56,7 @@ namespace splitDLL
 		}
 	}
 
-	public class DictionaryContainer<T> : IDictionary<string, T>
+	public class DictionaryContainer<T> : IEnumerable<KeyValuePair<string, T>>
 	{
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, T> Items { get; set; }
@@ -76,12 +76,6 @@ namespace splitDLL
 			return Items.ContainsKey(key);
 		}
 
-		[IniIgnore]
-		public ICollection<string> Keys
-		{
-			get { return Items.Keys; }
-		}
-
 		public bool Remove(string key)
 		{
 			return Items.Remove(key);
@@ -90,12 +84,6 @@ namespace splitDLL
 		public bool TryGetValue(string key, out T value)
 		{
 			return Items.TryGetValue(key, out value);
-		}
-
-		[IniIgnore]
-		public ICollection<T> Values
-		{
-			get { return Items.Values; }
 		}
 
 		public T this[string key]
@@ -121,39 +109,9 @@ namespace splitDLL
 			get { return Items.Count; }
 		}
 
-		bool ICollection<KeyValuePair<string, T>>.IsReadOnly
-		{
-			get { return false; }
-		}
-
 		public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
 		{
 			return Items.GetEnumerator();
-		}
-
-		void ICollection<KeyValuePair<string, T>>.Add(KeyValuePair<string, T> item)
-		{
-			throw new NotImplementedException();
-		}
-
-		void ICollection<KeyValuePair<string, T>>.Clear()
-		{
-			throw new NotImplementedException();
-		}
-
-		bool ICollection<KeyValuePair<string, T>>.Contains(KeyValuePair<string, T> item)
-		{
-			throw new NotImplementedException();
-		}
-
-		void ICollection<KeyValuePair<string, T>>.CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		bool ICollection<KeyValuePair<string, T>>.Remove(KeyValuePair<string, T> item)
-		{
-			throw new NotImplementedException();
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
