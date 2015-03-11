@@ -159,7 +159,7 @@ namespace DLLModGenerator
 		{
 			StringBuilder sb = new StringBuilder(Export);
 			if (Index.HasValue)
-				sb.Append(Index.Value);
+				sb.AppendFormat("[{0}]", Index.Value);
 			if (!string.IsNullOrEmpty(Field))
 				sb.AppendFormat("->{0}", Field);
 			return sb.ToString();
