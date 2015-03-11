@@ -197,10 +197,7 @@ namespace DLLModGenerator
 					{
 						bool SA2 = IniData.Game == Game.SA2B;
 						List<string> labels = ExportCPP(writer, SA2);
-						writer.WriteLine("extern \"C\"");
-						writer.WriteLine("{");
-						writer.WriteLine();
-						writer.WriteLine("__declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
 						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export));
@@ -210,9 +207,7 @@ namespace DLLModGenerator
 							writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
 						writer.WriteLine("}");
 						writer.WriteLine();
-						writer.WriteLine("__declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
-						writer.WriteLine();
-						writer.WriteLine("}");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
 					}
 		}
 

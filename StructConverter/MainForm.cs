@@ -865,14 +865,9 @@ namespace StructConverter
 					{
 						bool SA2 = IniData.Game == Game.SA2 || IniData.Game == Game.SA2B;
 						ExportCPP(writer, SA2);
-						writer.WriteLine("extern \"C\"");
-						writer.WriteLine("{");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) const PointerList Pointers = { arrayptrandlength(pointers) };");
 						writer.WriteLine();
-						writer.WriteLine("__declspec(dllexport) const PointerList Pointers = { arrayptrandlength(pointers) };");
-						writer.WriteLine();
-						writer.WriteLine("__declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
-						writer.WriteLine();
-						writer.WriteLine("}");
+						writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
 					}
 		}
 
