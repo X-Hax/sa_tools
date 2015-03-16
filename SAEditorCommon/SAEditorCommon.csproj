@@ -81,6 +81,12 @@
     <Compile Include="UI\EditorItemSelection.cs" />
     <Compile Include="UI\Gizmo.cs" />
     <Compile Include="UI\PointHelper.cs" />
+    <Compile Include="UI\ProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ProgressDialog.Designer.cs">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SETDeleteType.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -153,6 +159,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETDeleteType.resx">
       <DependentUpon>SETDeleteType.cs</DependentUpon>

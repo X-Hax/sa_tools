@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SADXLVL2
+﻿namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
 	partial class ProgressDialog
 	{
