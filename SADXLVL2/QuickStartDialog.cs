@@ -2,6 +2,8 @@
 using System.Collections.Specialized;
 using System.Windows.Forms;
 
+// TODO: Determine the best way to do away with the SADXLVL2.MainForm dependency.
+
 namespace SonicRetro.SAModel.SADXLVL2
 {
 	public partial class QuickStartDialog : Form
