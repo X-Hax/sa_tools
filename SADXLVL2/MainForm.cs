@@ -937,61 +937,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (Directory.Exists(splineDirectory))
 						{
-							List<Dictionary<string, Dictionary<string, string>>> pathFiles =
-								new List<Dictionary<string, Dictionary<string, string>>>();
+							List<string> pathFiles = new List<string>();
 
 							for (int i = 0; i < int.MaxValue; i++)
 							{
 								string path = string.Concat(splineDirectory, string.Format("/{0}.ini", i));
 								if (File.Exists(path))
 								{
-									pathFiles.Add(IniFile.Load(path));
+									pathFiles.Add(path);
 								}
 								else
 									break;
 							}
 
-							foreach (Dictionary<string, Dictionary<string, string>> pathFile in pathFiles) // looping through path files
+							foreach (string pathFile in pathFiles) // looping through path files
 							{
-								SplineData newSpline = new SplineData(selectedItems);
-
-								for (int iniEntryIndx = 0; iniEntryIndx < pathFile.Count - 1; iniEntryIndx++)
-								{
-									Vertex knotPosition = new Vertex();
-									ushort XRot = 0, YRot = 0;
-									float knotDistance = 0;
-
-									if (pathFile[iniEntryIndx.ToString()].ContainsKey("XRotation"))
-									{
-										XRot = ushort.Parse(pathFile[iniEntryIndx.ToString()]["XRotation"], System.Globalization.NumberStyles.HexNumber,
-											System.Globalization.CultureInfo.InvariantCulture);
-									}
-
-									if (pathFile[iniEntryIndx.ToString()].ContainsKey("YRotation"))
-									{
-										YRot = ushort.Parse(pathFile[iniEntryIndx.ToString()]["YRotation"], System.Globalization.NumberStyles.HexNumber,
-											System.Globalization.CultureInfo.InvariantCulture);
-									}
-
-									if (pathFile[iniEntryIndx.ToString()].ContainsKey("Position"))
-									{
-										string[] vertexComponents = pathFile[iniEntryIndx.ToString()]["Position"].Split(',');
-
-										if (vertexComponents.Length == 3)
-										{
-											knotPosition.X = float.Parse(vertexComponents[0]);
-											knotPosition.Y = float.Parse(vertexComponents[1]);
-											knotPosition.Z = float.Parse(vertexComponents[2]);
-										}
-									}
-
-									if (pathFile[iniEntryIndx.ToString()].ContainsKey("Distance"))
-									{
-										knotDistance = float.Parse(pathFile[iniEntryIndx.ToString()]["Distance"]);
-									}
-
-									newSpline.AddKnot(new Knot(knotPosition, new Rotation(XRot, YRot, 0), knotDistance));
-								}
+								SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
 
 								newSpline.RebuildMesh(d3ddevice);
 

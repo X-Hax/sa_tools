@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Drawing;
@@ -8,57 +9,38 @@ using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
 
 using SonicRetro.SAModel.Direct3D;
+using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	/// <summary>
-	/// A linear/corner spline knot.
-	/// </summary>
-	public class Knot
-	{
-		private Rotation direction;
-		public Rotation Direction { get { return direction; } set { Direction = new Rotation(value.X, value.Y, 0); } }
-		public Vertex Position { get; set; }
-		public float Distance { get; set; }
-
-		public Knot(Vertex Position)
-		{
-			this.Position = Position;
-			this.Distance = 0f;
-			this.Direction = new Rotation();
-		}
-
-		public Knot(Vertex Position, Rotation Direction, float Distance)
-		{
-			this.Position = Position;
-			this.direction = Direction;
-			this.Distance = Distance;
-		}
-	}
-
 	/// <summary>
 	/// A linear (non-bezier) spline object that contains a series of knots.
 	/// </summary>
 	[Serializable]
 	public class SplineData : Item
 	{
-		#region Data Vars
-		public List<Knot> KnotList { get; set; }
-		public float TotalDistance { get { float d = 0; foreach (Knot knot in KnotList) d += knot.Distance; return d; } }
-		public int CodeAddress { get; set; }
-		#endregion
+		PathData splineData;
 
 		#region Rendering Variables
+		[NonSerialized]
 		private CustomVertex.PositionColored[] vertices;
+		[NonSerialized]
 		private UInt16[] faceIndeces;
 
+		[NonSerialized]
 		private BoundingSphere bounds;
+		[Browsable(false)]
 		public override BoundingSphere Bounds { get	{ return bounds; }	}
+		[NonSerialized]
 		private Microsoft.DirectX.Direct3D.Mesh mesh;
+
 		public static Material SelectedMaterial { get; set; }
 		public static Material UnSelectedMaterial { get; set; }
-		Microsoft.DirectX.Direct3D.Mesh boxMesh;
-		Sprite textSprite;
+
+		[NonSerialized]
+		private Microsoft.DirectX.Direct3D.Mesh boxMesh;
+		[NonSerialized]
+		private Sprite textSprite;
 		#endregion
 
 		#region Editor Variables
@@ -100,10 +82,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			#region Segment vert/face creation
 			UInt16 highestFaceIndex = 0;
 
-			for (int i = 0; i < KnotList.Count - 1; i++) // don't process the last knot
+			for (int i = 0; i < splineData.Path.Count - 1; i++) // don't process the last knot
 			{
-				Vector3 thisKnot = KnotList[i].Position.ToVector3();
-				Vector3 nextKnot = KnotList[i+1].Position.ToVector3();
+				Vector3 thisKnot = new Vector3(splineData.Path[i].Position.X, splineData.Path[i].Position.Y, splineData.Path[i].Position.Z);
+				Vector3 nextKnot = new Vector3(splineData.Path[i + 1].Position.X, splineData.Path[i + 1].Position.Y, splineData.Path[i + 1].Position.Z);
 
 				Vector3 directionToNextKnot = Vector3.Normalize(nextKnot - thisKnot);
 				Vector3 perpendicularDirection = Vector3.Cross(directionToNextKnot, up);
@@ -199,7 +181,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public SplineData(UI.EditorItemSelection selectionManager)
 			: base (selectionManager)
 		{
-			KnotList = new List<Knot>();
+			splineData = new PathData();
+		}
+
+		public SplineData(PathData splineData, UI.EditorItemSelection selectionManager)
+			: base(selectionManager)
+		{
+			this.splineData = splineData;
 		}
 
 		/// <summary>
@@ -211,12 +199,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (knotID == 0) return;
 
 			// knot A is the previous knot, and the one we will be applying the distance value to
-			Vector3 knotAPos = KnotList[knotID - 1].Position.ToVector3();
-			Vector3 knotBPos = KnotList[knotID].Position.ToVector3();
+			Vector3 knotAPos = new Vector3(splineData.Path[knotID - 1].Position.X, splineData.Path[knotID - 1].Position.Y, splineData.Path[knotID - 1].Position.Z);
+			Vector3 knotBPos = new Vector3(splineData.Path[knotID].Position.X, splineData.Path[knotID].Position.Y, splineData.Path[knotID].Position.Z);
 
 			float distance = knotAPos.Distance(knotBPos);
 
-			KnotList[knotID - 1].Distance = distance;
+			splineData.Path[knotID - 1].Distance = distance;
 		}
 
 		/// <summary>
@@ -224,19 +212,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public void AddKnot()
 		{
-			Knot newKnot = new Knot(new Vertex(KnotList[KnotList.Count - 1].Position.X + 10, KnotList[KnotList.Count - 1].Position.Y, KnotList[KnotList.Count - 1].Position.Z));
-			KnotList.Add(newKnot);
-			CalcDistance(KnotList.Count - 1);
+			PathDataEntry newKnot = new PathDataEntry(splineData.Path[splineData.Path.Count - 1].Position.X + 10, splineData.Path[splineData.Path.Count - 1].Position.Y, splineData.Path[splineData.Path.Count - 1].Position.Z);
+			splineData.Path.Add(newKnot);
+			CalcDistance(splineData.Path.Count - 1);
 		}
 
 		/// <summary>
 		/// Add a pre-defined knot.
 		/// </summary>
 		/// <param name="knot"></param>
-		public void AddKnot(Knot knot)
+		public void AddKnot(PathDataEntry knot)
 		{
-			KnotList.Add(knot);
-			CalcDistance(KnotList.Count - 1);
+			splineData.Path.Add(knot);
+			CalcDistance(splineData.Path.Count - 1);
 		}
 
 		// override implementations go here!
@@ -265,10 +253,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			if (Selected)
 			{
-				for (int vIndx = 0; vIndx < KnotList.Count(); vIndx++)
+				for (int vIndx = 0; vIndx < splineData.Path.Count(); vIndx++)
 				{
-					Vector3 screenCoordinates = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, projection, view, Matrix.Identity);
-					Vector3 altScrCoord = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
+					Vector3 screenCoordinates = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
+						dev.Viewport, projection, view, Matrix.Identity);
+					Vector3 altScrCoord = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
+						dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
 
 					EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), new Point((int)(screenCoordinates.X), (int)(screenCoordinates.Y)), Color.White);
 				}
@@ -282,7 +272,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		// todo: yeah, might want to implement these
 		public override void Delete()
 		{
-			throw new NotImplementedException();
+			LevelData.LevelSplines.Remove(this);
 		}
 
 		public override void Paste()

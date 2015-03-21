@@ -2407,6 +2407,11 @@ namespace SA_Tools
 
 		public PathDataEntry() { Position = new Vertex(); }
 
+		public PathDataEntry(float x, float y, float z)
+		{
+			Position = new Vertex(x, y, z);
+		}
+
 		public PathDataEntry(byte[] file, int address)
 		{
 			XRotation = ByteConverter.ToUInt16(file, address);
