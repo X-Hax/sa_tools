@@ -181,6 +181,32 @@ namespace SonicRetro.SAModel.Direct3D
 			col.Bounds.Center.Z = center.Z;
 		}
 
+		public static BoundingSphere Merge(BoundingSphere sphereA, BoundingSphere sphereB)
+		{
+			// we'll merge our bounding spheres here. To do this, we'll take both bounding spheres,
+			// and cast 3 points from each one - center, radius + up, radius + down. Pooly all of them,
+			// and generate a new sphere from that and you've got a merged sphere
+
+			List<CustomVertex.PositionOnly> allPoints = new List<CustomVertex.PositionOnly>();
+
+			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3()));
+			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, 1 * sphereA.Radius, 0)));
+			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, -1 * sphereA.Radius, 0)));
+
+			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3()));
+			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, 1 * sphereB.Radius, 0)));
+			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, -1 * sphereB.Radius, 0)));
+
+			CustomVertex.PositionOnly[] pointsArray = allPoints.ToArray();
+
+			float finalRadius;
+			Vector3 center = new Vector3();
+
+			finalRadius = Geometry.ComputeBoundingSphere(pointsArray, VertexFormats.Position, out center);
+
+			return new BoundingSphere(center.ToVertex(), finalRadius);
+		}
+
 		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Device dev)
 		{
 			int numverts = 0;

@@ -79,7 +79,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item, Object model=null)
 		{
 			BoundingSphere bounds = new BoundingSphere(item.Position, item.Scale.X);	
 

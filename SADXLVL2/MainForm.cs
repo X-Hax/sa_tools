@@ -61,6 +61,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		PointHelper cameraPointA;
 		PointHelper cameraPointB;
 
+		// light list
+		List<SA1StageLightData> stageLightList;
+
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -230,6 +233,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			// File menu -> Change Level
 			changeLevelToolStripMenuItem.Enabled = true;
+
+			// load stage lights
+			string stageLightPath = string.Concat(Environment.CurrentDirectory, "\\Levels\\Stage Lights.ini");
+
+			if (File.Exists(stageLightPath))
+			{
+				stageLightList = SA1StageLightDataList.Load(stageLightPath);
+			}
 		}
 
 		private void PopulateLevelMenu(ToolStripMenuItem targetMenu, Dictionary<string, List<string>> levels)
@@ -452,8 +463,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
 				{
-					//LevelData.Character = 0;
+					
 					IniLevelData level = ini.Levels[levelID];
+
 					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
 					string modpath = ini.ModPath;
 
@@ -992,6 +1004,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#endregion
 
+					#region Stage Lights
+					if ((stageLightList != null) && (stageLightList.Count > 0))
+					{
+						List<SA1StageLightData> lightList = new List<SA1StageLightData>();
+
+						foreach (SA1StageLightData lightData in stageLightList)
+						{
+							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act)) lightList.Add(lightData);
+						}
+
+						for (int i = 0; i < d3ddevice.Lights.Count; i++) // clear all default lights
+						{
+							d3ddevice.Lights[i].Enabled = false;
+						}
+
+						for (int i = 0; i < lightList.Count; i++)
+						{
+							SA1StageLightData lightData = lightList[i];
+
+							d3ddevice.Lights[i].Enabled = true;
+							d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
+							d3ddevice.Lights[i].Diffuse = Color.FromArgb(255, (int)lightData.RGB.X, (int)lightData.RGB.Y, (int)lightData.RGB.Z);
+							d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 255f);
+							d3ddevice.Lights[i].Ambient = Color.Black;
+							d3ddevice.Lights[i].Specular = Color.Gray;
+							d3ddevice.Lights[i].Direction = lightData.Direction.ToVector3();
+							d3ddevice.Lights[i].Range = lightData.Dif; // guessing here
+						}
+					}
+					#endregion
+
 					transformGizmo = new TransformGizmo();
 
 					cameraPointA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
@@ -1469,6 +1512,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					#endregion
 
+					#region Picking Splines
+					if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
+					{
+						foreach (SplineData spline in LevelData.LevelSplines)
+						{
+							dist = spline.CheckHit(Near, Far, viewport, proj, view);
+
+							if (dist.IsHit & dist.Distance < mindist)
+							{
+								mindist = dist.Distance;
+								item = spline;
+							}
+						}
+					}
+					#endregion
+
 					if (item != null)
 					{
 						if (ModifierKeys == Keys.Control)
@@ -1587,7 +1646,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case Keys.Z:
-					if(selectedItems.ItemCount == 1)
+					if(selectedItems.ItemCount > 1)
+					{
+						BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
+
+						for (int i = 0; i < selectedItems.ItemCount; i++)
+						{
+							combinedBounds = SAModel.Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
+						}
+
+						cam.MoveToShowBounds(combinedBounds);
+					}
+					else if (selectedItems.ItemCount == 1)
 					{
 						cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
 					}

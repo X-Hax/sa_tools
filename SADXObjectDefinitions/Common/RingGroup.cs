@@ -108,7 +108,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item, Object model=null)
 		{
 			return base.GetBounds(item);
 		}

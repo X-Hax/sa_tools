@@ -35,11 +35,11 @@ namespace SonicRetro.SAModel
             Radius = radius;
         }
 
-        public BoundingSphere(float x, float y, float z, float radius)
-        {
-            Center = new Vertex(x, y, z);
-            Radius = radius;
-        }
+		public BoundingSphere(float x, float y, float z, float radius)
+		{
+			Center = new Vertex(x, y, z);
+			Radius = radius;
+		}
 
         public byte[] GetBytes()
         {

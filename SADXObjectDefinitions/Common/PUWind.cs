@@ -65,7 +65,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item, Object model=null)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;

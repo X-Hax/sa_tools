@@ -54,13 +54,6 @@ namespace SADXObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
-
-			return bounds;
-		}
-
 		public override string Name { get { return "Ground Spring"; } }
 	}
 
@@ -70,13 +63,6 @@ namespace SADXObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/Spring/Air.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
-
-			return bounds;
 		}
 
 		public override string Name { get { return "Air Spring"; } }

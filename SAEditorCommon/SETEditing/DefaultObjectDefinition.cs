@@ -17,7 +17,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		private string texture;
 		private float? xpos, ypos, zpos, xscl, yscl, zscl;
 		private int? xrot, yrot, zrot;
-		private float radius=5;
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
@@ -26,12 +25,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			{
 				model = ObjectHelper.LoadModel(data.Model);
 				meshes = ObjectHelper.GetMeshes(model, dev);
-
-				if (model != null)
-				{
-					if (model.Attach != null) radius = model.Attach.Bounds.Radius;
-				}
 			}
+
 			texture = data.Texture;
 			xpos = data.XPos;
 			ypos = data.YPos;
@@ -81,10 +76,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item, Object model = null)
 		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, radius);
-			return bounds;
+			return base.GetBounds(item, this.model);
 		}
 
 		public override string Name { get { return name; } }

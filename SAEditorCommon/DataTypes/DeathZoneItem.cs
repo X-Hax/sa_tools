@@ -20,6 +20,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[Browsable(false)]
 		private Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
+		[Browsable(false)]
+		public override BoundingSphere Bounds
+		{
+			get
+			{
+				return Model.Attach.Bounds;
+			}
+		}
+
 		[NonSerialized]
 		private Device dev;
 

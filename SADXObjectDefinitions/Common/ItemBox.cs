@@ -60,13 +60,6 @@ namespace SADXObjectDefinitions.Common
 			childindex = 2;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
-
-			return bounds;
-		}
-
 		public override string Name { get { return "Item Box"; } }
 	}
 
@@ -77,13 +70,6 @@ namespace SADXObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("Objects/Common/Item Box/Air.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 1;
-		}
-
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
-
-			return bounds;
 		}
 
 		public override string Name { get { return "Floating Item Box"; } }

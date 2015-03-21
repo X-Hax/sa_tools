@@ -263,12 +263,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Matrix view = camera.ToMatrix();
 			Matrix projection = Matrix.PerspectiveFovRH(camera.FOV, camera.Aspect, 1, camera.DrawDistance);
 
-			for (int vIndx = 0; vIndx < KnotList.Count(); vIndx++)
+			if (Selected)
 			{
-				Vector3 screenCoordinates = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, projection, view, Matrix.Identity);
-				Vector3 altScrCoord = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
+				for (int vIndx = 0; vIndx < KnotList.Count(); vIndx++)
+				{
+					Vector3 screenCoordinates = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, projection, view, Matrix.Identity);
+					Vector3 altScrCoord = Vector3.Project(KnotList[vIndx].Position.ToVector3(), dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
 
-				EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), new Point((int)(screenCoordinates.X), (int)(screenCoordinates.Y)), Color.White);
+					EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), new Point((int)(screenCoordinates.X), (int)(screenCoordinates.Y)), Color.White);
+				}
 			}
 
 			textSprite.End();
@@ -276,6 +279,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return result;
 		}
 
+		// todo: yeah, might want to implement these
 		public override void Delete()
 		{
 			throw new NotImplementedException();
@@ -290,7 +294,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return base.Position;
+				return bounds.Center;
 			}
 			set
 			{
@@ -298,7 +302,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		// todo 
 		public override Rotation Rotation
 		{
 			get

@@ -44,13 +44,6 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			BoundingSphere bounds = new BoundingSphere(item.Position, model.Attach.Bounds.Radius);
-
-			return bounds;
-		}
-
 		public override string Name { get { return "Dash Panel"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
