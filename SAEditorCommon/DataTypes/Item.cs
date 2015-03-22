@@ -104,7 +104,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
 		{
 			Matrix transform = Matrix.Identity;
-			SAModel.Direct3D.MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
+
+			try
+			{
+				SAModel.Direct3D.MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
+			}
+			catch (NotSupportedException)
+			{
+				Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
+			}
 
 			Up = new Vector3(0, 1, 0);
 			Look = new Vector3(0, 0, 1);

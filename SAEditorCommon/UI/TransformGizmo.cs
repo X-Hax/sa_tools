@@ -275,14 +275,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (!enabled)
 				return;
 
-			position = Item.CenterFromSelection(affectedItems).ToVector3();
+			try
+			{
+				position = Item.CenterFromSelection(affectedItems).ToVector3();
 
-			if ((affectedItems.Count == 1) && isTransformLocal)
-				rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
-			else
-				rotation = new Rotation();
+				if ((affectedItems.Count == 1) && isTransformLocal)
+					rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
+				else
+					rotation = new Rotation();
 
-			enabled = affectedItems.Count > 0;
+				enabled = affectedItems.Count > 0;
+			}
+			catch (NotSupportedException)
+			{
+				Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
+			}
 		}
 
 		/// <summary>
@@ -394,17 +401,24 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 						if (isTransformLocal) // then check operant space.
 						{
-							switch (selectedAxes)
+							try
 							{
-								case GizmoSelectedAxes.X_AXIS:
-									currentItem.Rotation.XDeg += (int)xChange;
-									break;
-								case GizmoSelectedAxes.Y_AXIS:
-									currentItem.Rotation.ZDeg += (int)xChange;
-									break;
-								case GizmoSelectedAxes.Z_AXIS:
-									currentItem.Rotation.YDeg += (int)xChange;
-									break;
+								switch (selectedAxes)
+								{
+									case GizmoSelectedAxes.X_AXIS:
+										currentItem.Rotation.XDeg += (int)xChange;
+										break;
+									case GizmoSelectedAxes.Y_AXIS:
+										currentItem.Rotation.ZDeg += (int)xChange;
+										break;
+									case GizmoSelectedAxes.Z_AXIS:
+										currentItem.Rotation.YDeg += (int)xChange;
+										break;
+								}
+							}
+							catch (NotSupportedException)
+							{
+								Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
 							}
 						}
 						else

@@ -38,13 +38,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static Material UnSelectedMaterial { get; set; }
 
 		[NonSerialized]
-		private Microsoft.DirectX.Direct3D.Mesh boxMesh;
+		private static Microsoft.DirectX.Direct3D.Mesh vertexHandleMesh;
 		[NonSerialized]
 		private Sprite textSprite;
 		#endregion
 
 		#region Editor Variables
 		private int selectedKnot = -1;
+		#endregion
+
+		#region Accessors
+		public uint Code { get { return splineData.Code; } set { splineData.Code = value; } }
 		#endregion
 
 		public static void Init()
@@ -170,12 +174,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			mesh.SetVertexBufferData(vertices, LockFlags.None);
 			mesh.IndexBuffer.SetData(faceIndeces, 0, LockFlags.None);
 
-			// TODO: this is locking up the program
-			/*int[] adjacency = new int[3 * mesh.NumberFaces];
-			mesh.GenerateAdjacency(0.01f, adjacency);
-			mesh = mesh.Optimize(MeshFlags.Managed,adjacency);*/
-			
-			textSprite = new Sprite(device);
+			// create a vertexHandle
+			if (vertexHandleMesh == null) vertexHandleMesh = Microsoft.DirectX.Direct3D.Mesh.Box(device, 1,1,1);
+		
+			textSprite = new Sprite(device); // todo: do we really have to create this so often? Look into storing a cache list statically?
 		}
 
 		public SplineData(UI.EditorItemSelection selectionManager)
@@ -232,6 +234,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			MatrixStack transform = new MatrixStack();
 
+			#region Checking Vertex Handles
+			if (Selected)
+			{
+				foreach (PathDataEntry splineVertex in splineData.Path)
+				{
+					transform.Push();
+
+					transform.Translate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
+
+					HitResult hitResult = vertexHandleMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
+
+					transform.Pop();
+
+					if (hitResult.IsHit)
+					{
+						selectedKnot = splineData.Path.FindIndex(item => item == splineVertex);
+						return hitResult;
+					}
+				}
+			}
+			#endregion
+
 			transform.Push();
 			return mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
@@ -255,12 +279,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			{
 				for (int vIndx = 0; vIndx < splineData.Path.Count(); vIndx++)
 				{
+					#region Draw Vertex IDs
 					Vector3 screenCoordinates = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
 						dev.Viewport, projection, view, Matrix.Identity);
 					Vector3 altScrCoord = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
 						dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
 
 					EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), new Point((int)(screenCoordinates.X), (int)(screenCoordinates.Y)), Color.White);
+					#endregion
+
+					#region Draw Vertex Handles
+					transform.Push();
+
+					transform.Translate(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z);
+
+					result.Add(new RenderInfo(vertexHandleMesh, 0, transform.Top, UnSelectedMaterial, null, FillMode.Solid, new BoundingSphere(splineData.Path[vIndx].Position.X,
+						splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z, 1f)));
+
+					if (vIndx == selectedKnot) result.Add(new RenderInfo(vertexHandleMesh, 0, transform.Top, SelectedMaterial, null, FillMode.WireFrame, new BoundingSphere(splineData.Path[vIndx].Position.X,
+	   splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z, 1f)));
+					transform.Pop();
+					#endregion
 				}
 			}
 
@@ -269,7 +308,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return result;
 		}
 
-		// todo: yeah, might want to implement these
 		public override void Delete()
 		{
 			LevelData.LevelSplines.Remove(this);
@@ -280,6 +318,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			throw new NotImplementedException();
 		}
 
+		[Browsable(false)]
 		public override Vertex Position
 		{
 			get
@@ -296,11 +335,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			set
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 	}
