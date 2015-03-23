@@ -152,9 +152,9 @@ namespace SADXObjectDefinitions.Common
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model=null)
+		public override BoundingSphere GetBounds(SETItem item, Object model)
 		{
-			return base.GetBounds(item);
+			return base.GetBounds(item, model);
 		}
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

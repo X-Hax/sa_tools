@@ -108,9 +108,9 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model=null)
+		public override BoundingSphere GetBounds(SETItem item, Object model)
 		{
-			return base.GetBounds(item);
+			return base.GetBounds(item, model);
 		}
 
 		public override string Name { get { return "Ring Group"; } }
