@@ -306,7 +306,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				return;
 
 			float yFlip = -1; // I don't think we'll ever need to mess with this
-			float xFlip = 1; // TODO: this though, should get flipped depending on the camera's orientation to the object.
+			float xFlip = 1;
 			float axisDot = 0;
 
 			for (int i = 0; i < affectedItems.Count; i++) // loop through operands

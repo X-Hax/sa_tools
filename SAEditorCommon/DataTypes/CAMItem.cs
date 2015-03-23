@@ -6,6 +6,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -42,6 +43,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Render / Volume Vars
 		public static Microsoft.DirectX.Direct3D.Mesh VolumeMesh { get; set; }
 		public static Material Material { get; set; }
+
+		public static PointHelper pointHelperA;
+		public static PointHelper pointHelperB;
 		#endregion
 
 		#region Construction / Initialization
@@ -64,6 +68,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			PointB = new Vertex(position.X - 40, position.Y - 38, position.Z);
 
 			Variable = 45f;
+
+			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
 		}
 
 		/// <summary>
@@ -86,6 +92,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			PointA = new Vertex(file, address + 36);
 			PointB = new Vertex(file, address + 48);
 			Variable = BitConverter.ToSingle(file, address + 60);
+
+			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+
 		}
 
 		public static void Init(Device dev)
@@ -99,6 +108,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Material.Exponent = 10;
 			Material.IgnoreSpecular = false;
 			Material.UseTexture = false;
+
+			pointHelperA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
+			pointHelperB = new PointHelper { BoxTexture = Gizmo.BTexture, DrawCube = true };
 		}
 		#endregion
 
@@ -191,6 +203,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			transform.Pop();
 			return result;
+		}
+		#endregion
+
+		#region Selection Changed Methods
+		void selectionManager_SelectionChanged(EditorItemSelection sender)
+		{
+			if (sender.ItemCount != 1)
+			{
+				pointHelperA.Enabled = false;
+				pointHelperB.Enabled = false;
+			}
+			else
+			{
+				if (Selected)
+				{
+					pointHelperA.SetPoint(PointA);
+					pointHelperB.SetPoint(PointB);
+
+					pointHelperA.Enabled = true;
+					pointHelperB.Enabled = true;
+				}
+			}
 		}
 		#endregion
 	}

@@ -5,6 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
+using SonicRetro.SAModel;
+
 namespace SA_Tools
 {
     public class IniData

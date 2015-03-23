@@ -14,6 +14,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	/// </summary>
 	public class PointHelper
 	{
+		#region Static Variables
+		private static List<PointHelper> instances = new List<PointHelper>();
+
+		public static List<PointHelper> Instances { get { return instances; } }
+		#endregion
+
+		#region Events
+		public delegate void PointChangedHandler(PointHelper sender);
+		public event PointChangedHandler PointChanged;
+		#endregion
+
 		#region Local Vars
 		bool enabled;
 		bool drawCube = false;
@@ -30,6 +41,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public bool DrawCube { get { return drawCube; } set { drawCube = value; } }
 		/// <summary>Texture to use if DrawCube is TRUE.</summary>
 		public Texture BoxTexture { get; set; }
+		public float HandleSize { get { return handleSize; } set { handleSize = value; } }
 		#endregion
 
 		/// <summary>
@@ -39,6 +51,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			enabled = false;
 			selectedAxes = GizmoSelectedAxes.NONE;
+
+			instances.Add(this);
 		}
 
 		public void SetPoint(Vertex point)
@@ -123,7 +137,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			transform.Pop();
 		}
 
-		// TODO: Consider returning IEnumerable<RenderInfo>
 		private RenderInfo[] Render(Device dev, MatrixStack transform, EditorCamera cam)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
@@ -182,6 +195,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if ((selectedAxes == GizmoSelectedAxes.NONE) || (!enabled))
 				return false;
 
+			if ((xChange == 0) && (yChange == 0)) return false;
+
 			float yFlip = -1; // I don't think we'll ever need to mess with this
 			float xFlip = 1;
 
@@ -222,6 +237,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			affectedPoint.X += xOff;
 			affectedPoint.Y += yOff;
 			affectedPoint.Z += zOff;
+
+
+			if (PointChanged != null) PointChanged(this);
 
 			return true;
 		}

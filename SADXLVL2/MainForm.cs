@@ -58,8 +58,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		// helpers / ui stuff
 		TransformGizmo transformGizmo;
-		PointHelper cameraPointA;
-		PointHelper cameraPointB;
 
 		// light list
 		List<SA1StageLightData> stageLightList;
@@ -538,7 +536,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (posini.ContainsKey(levelact))
 						{
-							pos = posini[levelact].Position.ToSAModel();
+							pos = posini[levelact].Position;
 							rot = posini[levelact].YRotation;
 						}
 						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
@@ -998,9 +996,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					transformGizmo = new TransformGizmo();
 
-					cameraPointA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
-					cameraPointB = new PointHelper { BoxTexture = Gizmo.BTexture, DrawCube = true };
-
 					Invoke((Action)progress.Close);
 				}
 #if !DEBUG
@@ -1133,7 +1128,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					posini.Add(levelact,
 						new SA1StartPosInfo()
 						{
-							Position = LevelData.StartPositions[i].Position.ToSA_Tools(),
+							Position = LevelData.StartPositions[i].Position,
 							YRotation = LevelData.StartPositions[i].Rotation.Y
 						});
 				}
@@ -1333,13 +1328,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
-			// draw helper cubes before clearing depth buffer
-			cameraPointA.DrawBox(d3ddevice, cam);
-			cameraPointB.DrawBox(d3ddevice, cam);
+
+			#region Draw Helper Objects
+			foreach (PointHelper pointHelper in PointHelper.Instances)
+			{
+				pointHelper.DrawBox(d3ddevice, cam);
+			}
 
 			transformGizmo.Draw(d3ddevice, cam);
-			cameraPointA.Draw(d3ddevice, cam);
-			cameraPointB.Draw(d3ddevice, cam);
+
+			foreach (PointHelper pointHelper in PointHelper.Instances)
+			{
+				pointHelper.Draw(d3ddevice, cam);
+			}
+			#endregion
 
 			d3ddevice.Present();
 		}
@@ -1370,12 +1372,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return;
 
 				case MouseButtons.Left:
-					if ((cameraPointA.SelectedAxes != GizmoSelectedAxes.NONE)
-					    || (cameraPointB.SelectedAxes != GizmoSelectedAxes.NONE)
-					    || (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
-					{
-						return;
-					}
+					// If we have any helpers selected, don't execute the rest of the method!
+					if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
+
+					foreach (PointHelper pointHelper in PointHelper.Instances) if (pointHelper.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
 					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 					HitResult dist;
@@ -1767,8 +1767,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.Left:
-					cameraPointA.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
-					cameraPointB.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+					foreach(PointHelper pointHelper in PointHelper.Instances)
+					{
+						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+					}
+
 					transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					DrawLevel();
 					break;
@@ -1792,25 +1795,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 						break;
 					}
 
-					GizmoSelectedAxes oldCamA = cameraPointA.SelectedAxes;
-					cameraPointA.SelectedAxes = cameraPointA.CheckHit(Near, Far, viewport, proj, view, cam);
-					if (oldCamA != cameraPointA.SelectedAxes)
+					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
-						cameraPointA.Draw(d3ddevice, cam);
+						GizmoSelectedAxes oldHelperAxes = pointHelper.SelectedAxes;
+						pointHelper.SelectedAxes = pointHelper.CheckHit(Near, Far, viewport, proj, view, cam);
+						if (oldHelperAxes != pointHelper.SelectedAxes) pointHelper.Draw(d3ddevice, cam);
 						d3ddevice.Present();
-						break;
-					}
-
-					if (cameraPointA.SelectedAxes == GizmoSelectedAxes.NONE)
-					{
-						GizmoSelectedAxes oldCamB = cameraPointB.SelectedAxes;
-						cameraPointB.SelectedAxes = cameraPointB.CheckHit(Near, Far, viewport, proj, view, cam);
-						if (oldCamB != cameraPointB.SelectedAxes)
-						{
-							cameraPointB.Draw(d3ddevice, cam);
-							d3ddevice.Present();
-							break;
-						}
 					}
 
 					break;
@@ -1856,21 +1846,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				transformGizmo.Enabled = true;
 				transformGizmo.AffectedItems = selectedItems.GetSelection();
-
-				if (sender.ItemCount == 1) // single-select only cases
-				{
-					if (sender.GetSelection()[0] is CAMItem)
-					{
-						CAMItem camItem = (CAMItem)selectedItems.GetSelection()[0];
-						cameraPointA.SetPoint(camItem.PointA);
-						cameraPointB.SetPoint(camItem.PointB);
-					}
-					else
-					{
-						cameraPointA.Enabled = false;
-						cameraPointB.Enabled = false;
-					}
-				}
 			}
 			else
 			{
@@ -1878,12 +1853,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					transformGizmo.AffectedItems = new List<Item>();
 					transformGizmo.Enabled = false;
-				}
-
-				if ((cameraPointA != null) && (cameraPointB != null))
-				{
-					cameraPointA.Enabled = false;
-					cameraPointB.Enabled = false;
 				}
 			}
 		}

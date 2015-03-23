@@ -24,7 +24,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		private bool selected;
 		public bool Selected { get { return selected; } }
-		private BoundingSphere bounds;
+		private BoundingSphere bounds = new BoundingSphere();
 		public virtual BoundingSphere Bounds { get { return bounds; } }
 		public abstract Rotation Rotation { get; set; }
 

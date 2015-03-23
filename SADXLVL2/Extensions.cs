@@ -13,19 +13,19 @@ namespace SonicRetro.SAModel.SADXLVL2
             return @default;
         }
 
-        public static Vector3 ToVector3(this SA_Tools.Vertex vertex)
+        public static Vector3 ToVector3(Vertex vertex)
         {
             return new Vector3(vertex.X, vertex.Y, vertex.Z);
         }
 
-        public static SA_Tools.Vertex ToSA_Tools(this Vertex vertex)
-        {
-            return new SA_Tools.Vertex(vertex.X, vertex.Y, vertex.Z);
-        }
-
-        public static Vertex ToSAModel(this SA_Tools.Vertex vertex)
+/*        public static Vertex ToSA_Tools(this Vertex vertex)
         {
             return new Vertex(vertex.X, vertex.Y, vertex.Z);
-        }
+        }*/
+
+        /*public static Vertex ToSAModel(Vertex vertex)
+        {
+            return new Vertex(vertex.X, vertex.Y, vertex.Z);
+        }*/
     }
 }

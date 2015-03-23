@@ -9,6 +9,7 @@ using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
 
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
@@ -51,6 +52,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public uint Code { get { return splineData.Code; } set { splineData.Code = value; } }
 		#endregion
 
+		#region Static and Const Variables
+		public static PointHelper vertexHelper;
+
+		private const float splineMeshRadius = 1f;
+		#endregion
+
+		#region Construction / Initialization
 		public static void Init()
 		{
 			SelectedMaterial = new Material();
@@ -72,16 +80,36 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			UnSelectedMaterial.IgnoreSpecular = false;
 			UnSelectedMaterial.UseTexture = false;
 			UnSelectedMaterial.IgnoreLighting = true;
+
+			vertexHelper = new PointHelper();
+			vertexHelper.HandleSize = 3f;
 		}
 
-		private const float splineMeshRadius = 1f;
+		public SplineData(UI.EditorItemSelection selectionManager)
+			: base (selectionManager)
+		{
+			splineData = new PathData();
+
+			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+			vertexHelper.PointChanged += new PointHelper.PointChangedHandler(vertexHelper_PointChanged);
+		}
+
+		public SplineData(PathData splineData, UI.EditorItemSelection selectionManager)
+			: base(selectionManager)
+		{
+			this.splineData = splineData;
+
+			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+			vertexHelper.PointChanged += new PointHelper.PointChangedHandler(vertexHelper_PointChanged);
+		}
+		#endregion
 
 		public void RebuildMesh(Device device)
 		{
 			List<CustomVertex.PositionColored> vertList = new List<CustomVertex.PositionColored>();
 			List<UInt16> faceIndexList = new List<UInt16>();
 
-			Vector3 up = new Vector3(0,1,0);
+			Vector3 up = new Vector3(0, 1, 0);
 
 			#region Segment vert/face creation
 			UInt16 highestFaceIndex = 0;
@@ -175,21 +203,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			mesh.IndexBuffer.SetData(faceIndeces, 0, LockFlags.None);
 
 			// create a vertexHandle
-			if (vertexHandleMesh == null) vertexHandleMesh = Microsoft.DirectX.Direct3D.Mesh.Box(device, 1,1,1);
-		
+			if (vertexHandleMesh == null) vertexHandleMesh = Microsoft.DirectX.Direct3D.Mesh.Box(device, 1, 1, 1);
+
 			textSprite = new Sprite(device); // todo: do we really have to create this so often? Look into storing a cache list statically?
-		}
-
-		public SplineData(UI.EditorItemSelection selectionManager)
-			: base (selectionManager)
-		{
-			splineData = new PathData();
-		}
-
-		public SplineData(PathData splineData, UI.EditorItemSelection selectionManager)
-			: base(selectionManager)
-		{
-			this.splineData = splineData;
 		}
 
 		/// <summary>
@@ -215,6 +231,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public void AddKnot()
 		{
 			PathDataEntry newKnot = new PathDataEntry(splineData.Path[splineData.Path.Count - 1].Position.X + 10, splineData.Path[splineData.Path.Count - 1].Position.Y, splineData.Path[splineData.Path.Count - 1].Position.Z);
+			splineData.Path.Add(newKnot);
+			CalcDistance(splineData.Path.Count - 1);
+		}
+
+		/// <summary>
+		/// Add a new knot (in-editor)
+		/// </summary>
+		public void AddKnot(Vertex position)
+		{
+			PathDataEntry newKnot = new PathDataEntry(position.X, position.Y, position.Z);
 			splineData.Path.Add(newKnot);
 			CalcDistance(splineData.Path.Count - 1);
 		}
@@ -250,6 +276,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					if (hitResult.IsHit)
 					{
 						selectedKnot = splineData.Path.FindIndex(item => item == splineVertex);
+						vertexHelper.SetPoint(splineData.Path[selectedKnot].Position);
 						return hitResult;
 					}
 				}
@@ -340,6 +367,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set
 			{
 				throw new NotSupportedException();
+			}
+		}
+
+		void selectionManager_SelectionChanged(EditorItemSelection sender)
+		{
+			if (sender.ItemCount != 1)
+			{
+				vertexHelper.Enabled = false;
+			}
+			else
+			{
+				if (Selected)
+				{
+					vertexHelper.Enabled = (selectedKnot != -1);
+				}
+			}
+		}
+
+		void vertexHelper_PointChanged(PointHelper sender)
+		{
+			if (Selected)
+			{
+				RebuildMesh(EditorOptions.Direct3DDevice);
 			}
 		}
 	}
