@@ -687,9 +687,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 										para.OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile);
 										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
 										if (res.Errors.HasErrors)
+										{
+											// TODO: Merge with existing object error handler. I add too many ToDos.
+											string errors = null;
+											foreach (CompilerError item in res.Errors)
+												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+
+											MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
+												"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
 											def = new DefaultObjectDefinition();
+										}
 										else
+										{
 											def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+										}
 									}
 									else
 										def = new DefaultObjectDefinition();
