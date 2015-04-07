@@ -453,7 +453,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-				int steps = 9;
+				int steps = 10;
 				if (d3ddevice == null)
 					++steps;
 
@@ -976,34 +976,47 @@ namespace SonicRetro.SAModel.SADXLVL2
 					#endregion
 
 					#region Stage Lights
+					progress.SetTaskAndStep("Loading lights...");
+
 					if ((stageLightList != null) && (stageLightList.Count > 0))
 					{
 						List<SA1StageLightData> lightList = new List<SA1StageLightData>();
 
 						foreach (SA1StageLightData lightData in stageLightList)
 						{
-							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act)) lightList.Add(lightData);
+							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act))
+								lightList.Add(lightData);
 						}
 
-						for (int i = 0; i < d3ddevice.Lights.Count; i++) // clear all default lights
+						if (lightList.Count > 0)
 						{
-							d3ddevice.Lights[i].Enabled = false;
+							for (int i = 0; i < d3ddevice.Lights.Count; i++) // clear all default lights
+							{
+								d3ddevice.Lights[i].Enabled = false;
+							}
+
+							for (int i = 0; i < lightList.Count; i++)
+							{
+								SA1StageLightData lightData = lightList[i];
+
+								d3ddevice.Lights[i].Enabled = true;
+								d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
+								d3ddevice.Lights[i].Diffuse = Color.FromArgb(255, (int)lightData.RGB.X, (int)lightData.RGB.Y, (int)lightData.RGB.Z);
+								d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 255f);
+								d3ddevice.Lights[i].Ambient = Color.Black;
+								d3ddevice.Lights[i].Specular = Color.Gray;
+								d3ddevice.Lights[i].Direction = lightData.Direction.ToVector3();
+								d3ddevice.Lights[i].Range = lightData.Dif; // guessing here
+							}
 						}
-
-						for (int i = 0; i < lightList.Count; i++)
+						else
 						{
-							SA1StageLightData lightData = lightList[i];
-
-							d3ddevice.Lights[i].Enabled = true;
-							d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
-							d3ddevice.Lights[i].Diffuse = Color.FromArgb(255, (int)lightData.RGB.X, (int)lightData.RGB.Y, (int)lightData.RGB.Z);
-							d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 255f);
-							d3ddevice.Lights[i].Ambient = Color.Black;
-							d3ddevice.Lights[i].Specular = Color.Gray;
-							d3ddevice.Lights[i].Direction = lightData.Direction.ToVector3();
-							d3ddevice.Lights[i].Range = lightData.Dif; // guessing here
+							MessageBox.Show("No lights were found for this stage. Using default lights instead.", "No lights found",
+								MessageBoxButtons.OK, MessageBoxIcon.Warning);
 						}
 					}
+
+					progress.StepProgress();
 					#endregion
 
 					transformGizmo = new TransformGizmo();
