@@ -15,6 +15,11 @@ namespace SonicRetro.SAModel.Direct3D
 			return new Vector3(vert.X, vert.Y, vert.Z);
 		}
 
+		public static Color ToColor(this Vertex vert)
+		{
+			return Color.FromArgb(255, (int)(vert.X * 255), (int)(vert.Y * 255), (int)(vert.Z * 255));
+		}
+
 		public static Vertex ToVertex(this Vector3 input)
 		{
 			return new Vertex(input.X, input.Y, input.Z);

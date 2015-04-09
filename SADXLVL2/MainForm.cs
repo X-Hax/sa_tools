@@ -1001,10 +1001,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 								d3ddevice.Lights[i].Enabled = true;
 								d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
-								d3ddevice.Lights[i].Diffuse = Color.FromArgb(255, (int)lightData.RGB.X, (int)lightData.RGB.Y, (int)lightData.RGB.Z);
-								d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 255f);
-								d3ddevice.Lights[i].Ambient = Color.Black;
-								d3ddevice.Lights[i].Specular = Color.Gray;
+								d3ddevice.Lights[i].Diffuse = lightData.RGB.ToColor();
+								d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 1.0f);
+								d3ddevice.Lights[i].Ambient = lightData.AmbientRGB.ToColor();
+								d3ddevice.Lights[i].Specular = Color.Black;
 								d3ddevice.Lights[i].Direction = lightData.Direction.ToVector3();
 								d3ddevice.Lights[i].Range = lightData.Dif; // guessing here
 							}
