@@ -37,7 +37,7 @@ namespace SonicRetro.SAModel.Direct3D
 		public EditorCamera(float drawDistance)
 		{
 			RotateSpeed = 1.5f;
-			MoveSpeed = 1.125f;
+			MoveSpeed = DefaultMoveSpeed;
 			Distance = 20;
 			DrawDistance = drawDistance;
 		}
