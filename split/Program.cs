@@ -74,7 +74,7 @@ namespace split
 				string type = data.Type;
 				int address = data.Address;
 				bool nohash = false;
-				Console.WriteLine(item.Key + ": " + data.AddressString + " → " + data.Filename);
+				Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " → " + data.Filename);
 				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
 				switch (type)
 				{

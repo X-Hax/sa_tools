@@ -6,6 +6,7 @@ using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 
 using SA_Tools;
+using System.ComponentModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
@@ -19,18 +20,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         public string Model;
         public string Texture;
         public float? XPos, YPos, ZPos, XScl, YScl, ZScl;
-        [IniName("XRot")]
-        public string XRotString;
-        [IniIgnore]
-        public int? XRot { get { return XRotString == null ? null : (int?)int.Parse(XRotString, System.Globalization.NumberStyles.HexNumber); } set { XRotString = value.HasValue ? null : value.Value.ToString("X"); } }
-        [IniName("YRot")]
-        public string YRotString;
-        [IniIgnore]
-        public int? YRot { get { return YRotString == null ? null : (int?)int.Parse(YRotString, System.Globalization.NumberStyles.HexNumber); } set { YRotString = value.HasValue ? null : value.Value.ToString("X"); } }
-        [IniName("ZRot")]
-        public string ZRotString;
-        [IniIgnore]
-        public int? ZRot { get { return ZRotString == null ? null : (int?)int.Parse(ZRotString, System.Globalization.NumberStyles.HexNumber); } set { ZRotString = value.HasValue ? null : value.Value.ToString("X"); } }
+		[TypeConverter(typeof(Int32HexConverter))]
+		public int? XRot, YRot, ZRot;
         public Dictionary<string, string> CustomProperties;
     }
 }

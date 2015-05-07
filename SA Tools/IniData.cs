@@ -11,7 +11,8 @@ namespace SA_Tools
 {
     public class IniData
     {
-        [IniIgnore]
+        [IniName("key")]
+		[TypeConverter(typeof(UInt32HexConverter))]
         public uint? ImageBase { get; set; }
         [IniName("compressed")]
         public bool Compressed { get; set; }
@@ -20,8 +21,6 @@ namespace SA_Tools
         [IniName("game")]
         [DefaultValue(Game.SADX)]
         public Game Game { get; set; }
-        [IniName("key")]
-        public string ImageBaseString { get { return ImageBase.HasValue ? ImageBase.Value.ToString("X") : null; } set { if (value != null) ImageBase = uint.Parse(value, NumberStyles.HexNumber); } }
 		[IniName("masterobjlist")]
 		public string MasterObjectList { get; set; }
         [IniName("systemfolder")]
@@ -52,40 +51,16 @@ namespace SA_Tools
     {
         [IniName("type")]
         public string Type { get; set; }
-        [IniIgnore]
-        public int Address { get; set; }
         [IniName("address")]
-        public string AddressString { get { return Address.ToString("X"); } set { Address = int.Parse(value, NumberStyles.HexNumber); } }
+		[TypeConverter(typeof(Int32HexConverter))]
+        public int Address { get; set; }
         [IniName("filename")]
         public string Filename { get; set; }
         [IniName("md5")]
         public string MD5Hash { get; set; }
-        [IniIgnore]
-        public int[] PointerList { get; set; }
         [IniName("pointer")]
-        public string PointerListString
-        {
-            get
-            {
-                if (PointerList.Length == 0) return null;
-                string[] result = new string[PointerList.Length];
-                for (int i = 0; i < PointerList.Length; i++)
-                    result[i] = PointerList[i].ToString("X");
-                return string.Join(",", result);
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    PointerList = new int[0];
-                    return;
-                }
-                string[] data = value.Split(',');
-                PointerList = new int[data.Length];
-                for (int i = 0; i < data.Length; i++)
-                    PointerList[i] = int.Parse(data[i], NumberStyles.HexNumber);
-            }
-        }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
+        public int[] PointerList { get; set; }
         [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, string> CustomProperties { get; set; }
     }
@@ -490,10 +465,8 @@ namespace SA_Tools
         }
 
         public Vertex Position { get; set; }
-        [IniIgnore]
+		[TypeConverter(typeof(Int32HexConverter))]
         public int YRotation { get; set; }
-        [IniName("YRotation")]
-        public string YRotationString { get { return YRotation.ToString("X8"); } set { YRotation = int.Parse(value, NumberStyles.HexNumber); } }
 
         public static int Size { get { return Vertex.Size + 4; } }
 
@@ -592,18 +565,12 @@ namespace SA_Tools
             address += Vertex.Size;
         }
 
-        [IniIgnore]
+        [TypeConverter(typeof(UInt16HexConverter))]
         public ushort YRotation { get; set; }
-        [IniName("YRotation")]
-        public string YRotationString { get { return YRotation.ToString("X4"); } set { YRotation = ushort.Parse(value, NumberStyles.HexNumber); } }
-        [IniIgnore]
-        public ushort P1YRotation { get; set; }
-        [IniName("P1YRotation")]
-        public string P1YRotationString { get { return P1YRotation.ToString("X4"); } set { P1YRotation = ushort.Parse(value, NumberStyles.HexNumber); } }
-        [IniIgnore]
-        public ushort P2YRotation { get; set; }
-        [IniName("P2YRotation")]
-        public string P2YRotationString { get { return P2YRotation.ToString("X4"); } set { P2YRotation = ushort.Parse(value, NumberStyles.HexNumber); } }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort P1YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort P2YRotation { get; set; }
         public Vertex Position { get; set; }
         public Vertex P1Position { get; set; }
         public Vertex P2Position { get; set; }
@@ -744,10 +711,8 @@ namespace SA_Tools
         }
 
         public string Name { get; set; }
-        [IniIgnore]
-        public uint Textures { get; set; }
-        [IniName("Textures")]
-        public string TexturesString { get { return Textures.ToString("X8"); } set { Textures = uint.Parse(value, NumberStyles.HexNumber); } }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Textures { get; set; }
         public int Count { get; set; }
 
         public static int Size { get { return 8; } }
@@ -931,10 +896,8 @@ namespace SA_Tools
         [IniAlwaysInclude]
         public SA1LevelIDs Field { get; set; }
         public Vertex Position { get; set; }
-        [IniIgnore]
-        public int YRotation { get; set; }
-        [IniName("YRotation")]
-        public string YRotationString { get { return YRotation.ToString("X8"); } set { YRotation = int.Parse(value, NumberStyles.HexNumber); } }
+		[TypeConverter(typeof(Int32HexConverter))]
+		public int YRotation { get; set; }
 
         public static int Size { get { return 0x12; } }
 
@@ -2141,18 +2104,12 @@ namespace SA_Tools
             address += Vertex.Size;
         }
 
-        [IniIgnore]
-        public ushort Mission2YRotation { get; set; }
-        [IniName("Mission2YRotation")]
-        public string Mission2YRotationString { get { return Mission2YRotation.ToString("X4"); } set { Mission2YRotation = ushort.Parse(value, NumberStyles.HexNumber); } }
-        [IniIgnore]
-        public ushort Mission3YRotation { get; set; }
-        [IniName("Mission3YRotation")]
-        public string Mission3YRotationString { get { return Mission3YRotation.ToString("X4"); } set { Mission3YRotation = ushort.Parse(value, NumberStyles.HexNumber); } }
-        [IniIgnore]
-        public ushort Unknown { get; set; }
-        [IniName("Unknown")]
-        public string UnknownString { get { return Unknown.ToString("X4"); } set { Unknown = ushort.Parse(value, NumberStyles.HexNumber); } }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Mission2YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Mission3YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Unknown { get; set; }
         public Vertex Mission2Position { get; set; }
         public Vertex Mission3Position { get; set; }
 
@@ -2324,14 +2281,8 @@ namespace SA_Tools
 		public float TotalDistance { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public List<PathDataEntry> Path { get; set; }
-		[IniIgnore]
+		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint Code { get; set; }
-		[IniName("Code")]
-		public string CodeString
-		{
-			get { return Code.ToString("X"); }
-			set { Code = value == null ? 0 : uint.Parse(value, NumberStyles.HexNumber); }
-		}
 
 		public PathData() { Path = new List<PathDataEntry>(); }
 
@@ -2386,22 +2337,10 @@ namespace SA_Tools
 	[Serializable]
 	public class PathDataEntry
 	{
-		[IniIgnore]
+		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort XRotation { get; set; }
-		[IniName("XRotation")]
-		public string XRotationString
-		{
-			get { return XRotation.ToString("X4"); }
-			set { XRotation = value == null ? (ushort)0 : ushort.Parse(value, NumberStyles.HexNumber); }
-		}
-		[IniIgnore]
+		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort YRotation { get; set; }
-		[IniName("YRotation")]
-		public string YRotationString
-		{
-			get { return YRotation.ToString("X4"); }
-			set { YRotation = value == null ? (ushort)0 : ushort.Parse(value, NumberStyles.HexNumber); }
-		}
 		public float Distance { get; set; }
 		public Vertex Position { get; set; }
 
@@ -2561,7 +2500,7 @@ namespace SA_Tools
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
-            if (destinationType == typeof(T))
+            if (destinationType == typeof(string))
                 return true;
             return base.CanConvertTo(context, destinationType);
         }
@@ -2587,4 +2526,127 @@ namespace SA_Tools
             return base.ConvertFrom(context, culture, value);
         }
     }
+
+	public class UInt32HexConverter : TypeConverter
+	{
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			if (destinationType == typeof(string))
+				return true;
+			return base.CanConvertTo(context, destinationType);
+		}
+
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			if (destinationType == typeof(string) && value is uint)
+				return ((uint)value).ToString("X");
+			return base.ConvertTo(context, culture, value, destinationType);
+		}
+
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			if (sourceType == typeof(string))
+				return true;
+			return base.CanConvertFrom(context, sourceType);
+		}
+
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (value is string)
+				return uint.Parse((string)value, NumberStyles.HexNumber);
+			return base.ConvertFrom(context, culture, value);
+		}
+
+		public override bool IsValid(ITypeDescriptorContext context, object value)
+		{
+			if (value is uint)
+				return true;
+			uint i;
+			if (value is string)
+				return uint.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+			return base.IsValid(context, value);
+		}
+	}
+
+	public class Int32HexConverter : TypeConverter
+	{
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			if (destinationType == typeof(string))
+				return true;
+			return base.CanConvertTo(context, destinationType);
+		}
+
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			if (destinationType == typeof(string) && value is int)
+				return ((int)value).ToString("X");
+			return base.ConvertTo(context, culture, value, destinationType);
+		}
+
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			if (sourceType == typeof(string))
+				return true;
+			return base.CanConvertFrom(context, sourceType);
+		}
+
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (value is string)
+				return int.Parse((string)value, NumberStyles.HexNumber);
+			return base.ConvertFrom(context, culture, value);
+		}
+
+		public override bool IsValid(ITypeDescriptorContext context, object value)
+		{
+			if (value is int)
+				return true;
+			int i;
+			if (value is string)
+				return int.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+			return base.IsValid(context, value);
+		}
+	}
+
+	public class UInt16HexConverter : TypeConverter
+	{
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			if (destinationType == typeof(string))
+				return true;
+			return base.CanConvertTo(context, destinationType);
+		}
+
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			if (destinationType == typeof(string) && value is uint)
+				return ((ushort)value).ToString("X");
+			return base.ConvertTo(context, culture, value, destinationType);
+		}
+
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			if (sourceType == typeof(string))
+				return true;
+			return base.CanConvertFrom(context, sourceType);
+		}
+
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (value is string)
+				return ushort.Parse((string)value, NumberStyles.HexNumber);
+			return base.ConvertFrom(context, culture, value);
+		}
+
+		public override bool IsValid(ITypeDescriptorContext context, object value)
+		{
+			if (value is ushort)
+				return true;
+			ushort i;
+			if (value is string)
+				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+			return base.IsValid(context, value);
+		}
+	}
 }
