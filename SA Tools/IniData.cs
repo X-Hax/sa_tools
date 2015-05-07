@@ -2620,7 +2620,7 @@ namespace SA_Tools
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if (destinationType == typeof(string) && value is uint)
+			if (destinationType == typeof(string) && value is ushort)
 				return ((ushort)value).ToString("X");
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
