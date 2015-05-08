@@ -56,8 +56,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void ClearLevelGeometry()
 		{
-			LevelItems.Clear();
-			geo.COL.Clear();
+			if (LevelItems != null)
+				LevelItems.Clear();
+			if (geo != null && geo.COL != null)
+				geo.COL.Clear();
+
 			InvalidateRenderState();
 		}
 
@@ -66,8 +69,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void ClearLevelGeoAnims()
 		{
-			geo.Anim.Clear();
-			InvalidateRenderState();
+			if (geo != null && geo.Anim != null)
+			{
+				geo.Anim.Clear();
+				InvalidateRenderState();
+			}
 		}
 
 		/// <summary>
@@ -75,11 +81,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void ClearSETItems()
 		{
-			if (LevelData.SETItems == null)
+			if (SETItems == null)
 				return;
 
 			for (uint i = 0; i < SETChars.Length; i++)
-				LevelData.SETItems[i] = new List<SETItem>();
+				SETItems[i] = new List<SETItem>();
 
 			InvalidateRenderState();
 		}
@@ -90,10 +96,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="character">The ID of the character whose layout you want to clear.</param>
 		public static void ClearSETItems(int character)
 		{
-			if (LevelData.SETItems == null)
+			if (SETItems == null)
 				return;
 
-			LevelData.SETItems[character] = new List<SETItem>();
+			SETItems[character] = new List<SETItem>();
 			InvalidateRenderState();
 		}
 
@@ -102,11 +108,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void ClearCAMItems()
 		{
-			if (LevelData.CAMItems == null)
+			if (CAMItems == null)
 				return;
 
 			for (uint i = 0; i < SETChars.Length; i++)
-				LevelData.CAMItems[i] = new List<CAMItem>();
+				CAMItems[i] = new List<CAMItem>();
 
 			InvalidateRenderState();
 		}
@@ -117,13 +123,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="character">The ID of the character whose layout you want to clear.</param>
 		public static void ClearCAMItems(int character)
 		{
-			if (LevelData.CAMItems == null)
+			if (CAMItems == null)
 				return;
 
-			LevelData.CAMItems[character] = new List<CAMItem>();
+			CAMItems[character] = new List<CAMItem>();
 			InvalidateRenderState();
 		}
-		
+		/// <summary>
+		/// Clears the entire stage.
+		/// </summary>
+		public static void Clear()
+		{
+			ClearCAMItems();
+			ClearSETItems();
+			ClearLevelGeoAnims();
+			ClearLevelGeometry();
+		}
+
 		public static string GetStats()
 		{
 			int landtableItems = LevelData.geo.COL.Count;

@@ -384,7 +384,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LoadStage(string id)
 		{
-			isStageLoaded = false;
 			UseWaitCursor = true;
 			Enabled = false;
 
@@ -459,9 +458,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				toolStrip1.Enabled = false;
 
+				// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
+				// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
+				if (isStageLoaded)
+					LevelData.Clear();
+
+				isStageLoaded = false;
+
 				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
 				{
-					
 					IniLevelData level = ini.Levels[levelID];
 
 					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
