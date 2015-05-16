@@ -7,6 +7,10 @@ namespace SonicRetro.SAModel
 {
 	public static class MathHelper
 	{
+		public static readonly float Pi = 3.14159265358979323846f;
+		public static readonly float Deg2Rad = (Pi / 180.0f);
+		public static readonly float Rad2Deg = (180.0f / Pi);
+
 		/// <summary>
 		/// Constrains a value to be within the specified range.
 		/// </summary>

@@ -58,5 +58,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			SelectionChanged(this);
 		}
+
+		// May be a better idea to overload [] instead.		
+		/// <summary>
+		/// Gets the item at the specified index in the current selection.
+		/// </summary>
+		/// <param name="index">The in the selection.</param>
+		/// <returns>The item at the specified index.</returns>
+		/// <exception cref="System.IndexOutOfRangeException"></exception>
+		public Item Get(int index)
+		{
+			if (index >= selection.Count())
+				throw new IndexOutOfRangeException();
+
+			return selection[index];
+		}
 	}
 }

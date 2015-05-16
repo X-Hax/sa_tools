@@ -2496,5 +2496,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
 		}
+
+		private void pointToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			for (int i = 1; i < selectedItems.ItemCount; i++)
+			{
+				Item a = selectedItems.Get(i - 1);
+				Item b = selectedItems.Get(i);
+
+				// TODO: Put somewhere else for use with other things, and configurable axis to point on (i.e Y for springs)
+				Matrix m = Matrix.LookAtLH(a.Position.ToVector3(), b.Position.ToVector3(), new Vector3(0, 1, 0));
+
+				a.Rotation.YDeg = (float)Math.Atan2(m.M13, m.M33) * MathHelper.Rad2Deg;
+				a.Rotation.XDeg = (float)Math.Asin(-m.M23) * MathHelper.Rad2Deg;
+				a.Rotation.ZDeg = (float)Math.Atan2(m.M21, m.M22) * MathHelper.Rad2Deg;
+
+				LevelData_StateChanged();
+			}
+		}
 	}
 }
