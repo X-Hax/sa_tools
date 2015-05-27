@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
 
 namespace SonicRetro.SAModel
@@ -15,7 +16,7 @@ namespace SonicRetro.SAModel
 		public const ulong SA2MDLVer = SA2MDL | (CurrentVersion << 56);
 
 		public ModelFormat Format { get; private set; }
-		public Object Model { get; private set; }
+		public NJS_OBJECT Model { get; private set; }
 		public ReadOnlyCollection<Animation> Animations { get; private set; }
 		public ReadOnlyCollection<Animation> Morphs { get; private set; }
 		public string Author { get; set; }
@@ -30,7 +31,7 @@ namespace SonicRetro.SAModel
 			int tmpaddr;
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			byte[] file = System.IO.File.ReadAllBytes(filename);
+			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
@@ -64,7 +65,7 @@ namespace SonicRetro.SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new Object(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
+				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
 				tmpaddr = ByteConverter.ToInt32(file, 0xC);
 				if (tmpaddr != 0)
 				{
@@ -80,10 +81,10 @@ namespace SonicRetro.SAModel
 				}
 				else
 					animationFiles = new string[0];
-				string path = System.IO.Path.GetDirectoryName(filename);
+				string path = Path.GetDirectoryName(filename);
 				List<Animation> anims = new List<Animation>();
 				foreach (string item in animationFiles)
-					anims.Add(Animation.Load(System.IO.Path.Combine(path, item), Model.CountAnimated()));
+					anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
 				Animations = anims.AsReadOnly();
 				if (version == 1)
 				{
@@ -104,7 +105,7 @@ namespace SonicRetro.SAModel
 						morphFiles = new string[0];
 					List<Animation> morphs = new List<Animation>();
 					foreach (string item in morphFiles)
-						morphs.Add(Animation.Load(System.IO.Path.Combine(path, item), Model.CountMorph()));
+						morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
 					Morphs = morphs.AsReadOnly();
 				}
 				else
@@ -182,7 +183,8 @@ namespace SonicRetro.SAModel
 								case ChunkTypes.Label:
 									while (ByteConverter.ToInt64(chunk, chunkaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr), chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
+										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr),
+											chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
 										chunkaddr += 8;
 									}
 									break;
@@ -235,15 +237,15 @@ namespace SonicRetro.SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new Object(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
-				string path = System.IO.Path.GetDirectoryName(filename);
+				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
+				string path = Path.GetDirectoryName(filename);
 				List<Animation> anims = new List<Animation>();
 				foreach (string item in animationFiles)
-					anims.Add(Animation.Load(System.IO.Path.Combine(path, item), Model.CountAnimated()));
+					anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
 				Animations = anims.AsReadOnly();
 				List<Animation> morphs = new List<Animation>();
 				foreach (string item in morphFiles)
-					morphs.Add(Animation.Load(System.IO.Path.Combine(path, item), Model.CountMorph()));
+					morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
 				Morphs = morphs.AsReadOnly();
 			}
 			ByteConverter.BigEndian = be;
@@ -253,7 +255,7 @@ namespace SonicRetro.SAModel
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			byte[] file = System.IO.File.ReadAllBytes(filename);
+			byte[] file = File.ReadAllBytes(filename);
 			ulong format = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			ByteConverter.BigEndian = be;
 			switch (format)
@@ -281,16 +283,16 @@ namespace SonicRetro.SAModel
 					magic = SA2MDLVer;
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "format");
+					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
-			uint addr = 0;
+			uint addr;
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			byte[] mdl = Model.GetBytes(0x10, false, labels, out addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
 			file.AddRange(mdl);
-			string path = System.IO.Path.GetDirectoryName(filename);
+			string path = Path.GetDirectoryName(filename);
 			if (labels.Count > 0)
 			{
 				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
@@ -317,7 +319,7 @@ namespace SonicRetro.SAModel
 				List<byte> strbytes = new List<byte>();
 				for (int i = 0; i < Animations.Count; i++)
 				{
-					Animations[i].Save(System.IO.Path.Combine(path, animationFiles[i]));
+					Animations[i].Save(Path.Combine(path, animationFiles[i]));
 					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
 					strbytes.AddRange(Encoding.UTF8.GetBytes(animationFiles[i]));
 					strbytes.Add(0);
@@ -336,7 +338,7 @@ namespace SonicRetro.SAModel
 				List<byte> strbytes = new List<byte>();
 				for (int i = 0; i < Morphs.Count; i++)
 				{
-					Morphs[i].Save(System.IO.Path.Combine(path, morphFiles[i]));
+					Morphs[i].Save(Path.Combine(path, morphFiles[i]));
 					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
 					strbytes.AddRange(Encoding.UTF8.GetBytes(morphFiles[i]));
 					strbytes.Add(0);
@@ -386,15 +388,17 @@ namespace SonicRetro.SAModel
 			}
 			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
-			System.IO.File.WriteAllBytes(filename, file.ToArray());
+			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
 		}
 
-		public static void CreateFile(string filename, Object model, string[] animationFiles, string[] morphFiles, string author, string description, string tool, Dictionary<uint, byte[]> metadata, ModelFormat format)
+		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string[] morphFiles,
+			string author, string description, string tool, Dictionary<uint, byte[]> metadata, ModelFormat format)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			if (format == ModelFormat.BasicDX) format = ModelFormat.Basic;
+			if (format == ModelFormat.BasicDX)
+				format = ModelFormat.Basic;
 			List<byte> file = new List<byte>();
 			ulong magic;
 			switch (format)
@@ -410,13 +414,13 @@ namespace SonicRetro.SAModel
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
-			uint addr = 0;
+			uint addr;
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			byte[] mdl = model.GetBytes(0x10, false, labels, out addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
 			file.AddRange(mdl);
-			string path = System.IO.Path.GetDirectoryName(filename);
+
 			if (labels.Count > 0)
 			{
 				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
@@ -503,15 +507,17 @@ namespace SonicRetro.SAModel
 				file.AddRange(chunk);
 			}
 			if (metadata != null)
+			{
 				foreach (KeyValuePair<uint, byte[]> item in metadata)
 				{
 					file.AddRange(ByteConverter.GetBytes(item.Key));
 					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
 					file.AddRange(item.Value);
 				}
+			}
 			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
-			System.IO.File.WriteAllBytes(filename, file.ToArray());
+			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
 		}
 

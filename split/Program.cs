@@ -83,7 +83,7 @@ namespace split
 						break;
 					case "model":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, modelfmt);
 							string[] mdlanis = new string[0];
 							if (customProperties.ContainsKey("animations"))
 								mdlanis = customProperties["animations"].Split(',');
@@ -95,7 +95,7 @@ namespace split
 						break;
 					case "basicmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
 							string[] mdlanis = new string[0];
 							if (customProperties.ContainsKey("animations"))
 								mdlanis = customProperties["animations"].Split(',');
@@ -107,7 +107,7 @@ namespace split
 						break;
 					case "basicdxmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
 							string[] mdlanis = new string[0];
 							if (customProperties.ContainsKey("animations"))
 								mdlanis = customProperties["animations"].Split(',');
@@ -119,7 +119,7 @@ namespace split
 						break;
 					case "chunkmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
 							string[] mdlanis = new string[0];
 							if (customProperties.ContainsKey("animations"))
 								mdlanis = customProperties["animations"].Split(',');
@@ -251,7 +251,7 @@ namespace split
 							{
 								flags.Add(new DeathZoneFlags(datafile, address));
 								string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-								ModelFile.CreateFile(file, new SonicRetro.SAModel.Object(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
+								ModelFile.CreateFile(file, new SonicRetro.SAModel.NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
 								hashes.Add(HelperFunctions.FileHash(file));
 								address += 8;
 							}

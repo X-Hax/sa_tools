@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using IniFile;
 using SonicRetro.SAModel;
-using ModelObject = SonicRetro.SAModel.Object;
 
 namespace replaceMDL
 {
@@ -39,7 +38,7 @@ namespace replaceMDL
 				mdlfilename = Console.ReadLine();
 			}
 			ModelFile model = new ModelFile(mdlfilename);
-			ModelObject[] objects = model.Model.GetObjects();
+			NJS_OBJECT[] objects = model.Model.GetObjects();
 			string repmdlfilename;
 			if (argq.Count > 0)
 			{
@@ -52,7 +51,7 @@ namespace replaceMDL
 				repmdlfilename = Console.ReadLine();
 			}
 			ModelFile repmodel = new ModelFile(repmdlfilename);
-			ModelObject[] repobjects = repmodel.Model.GetObjects();
+			NJS_OBJECT[] repobjects = repmodel.Model.GetObjects();
 			if (objects.Length != repobjects.Length)
 				Console.WriteLine("Models have different structures, the game may crash.");
 			foreach (KeyValuePair<int, string> item in modelnames.ToList())

@@ -41,15 +41,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
         internal static Texture QuestionMark;
 
-        public static Object LoadModel(string file)
+        public static NJS_OBJECT LoadModel(string file)
         {
             return new ModelFile(file).Model;
         }
 
-        public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(Object model, Device dev)
+        public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(NJS_OBJECT model, Device dev)
         {
             model.ProcessVertexData();
-            Object[] models = model.GetObjects();
+            NJS_OBJECT[] models = model.GetObjects();
             Microsoft.DirectX.Direct3D.Mesh[] Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
             for (int i = 0; i < models.Length; i++)
                 if (models[i].Attach != null)
@@ -76,7 +76,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         public static RenderInfo[] RenderSprite(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
         {
             List<RenderInfo> result = new List<RenderInfo>();
-            Material mat = new Material
+            NJS_MATERIAL mat = new NJS_MATERIAL
             {
                 DiffuseColor = Color.White
             };
@@ -85,7 +85,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
             result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, texture, dev.RenderState.FillMode, new BoundingSphere(center.X, center.Y, center.Z, 8)));
             if (selected)
             {
-                mat = new Material
+                mat = new NJS_MATERIAL
                 {
                     DiffuseColor = Color.Yellow,
                     UseAlpha = false

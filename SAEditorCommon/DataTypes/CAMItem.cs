@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		#region Render / Volume Vars
 		public static Microsoft.DirectX.Direct3D.Mesh VolumeMesh { get; set; }
-		public static Material Material { get; set; }
+		public static NJS_MATERIAL Material { get; set; }
 
 		public static PointHelper pointHelperA;
 		public static PointHelper pointHelperB;
@@ -100,7 +100,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static void Init(Device dev)
 		{
 			VolumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 2f, 2f, 2f);
-			Material = new Material();
+			Material = new NJS_MATERIAL();
 			Material.DiffuseColor = Color.FromArgb(200, Color.Purple);
 			Material.SpecularColor = Color.Black;
 			Material.UseAlpha = true;
@@ -170,7 +170,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			if (Selected)
 			{
-				Material mat = new Material
+				NJS_MATERIAL mat = new NJS_MATERIAL
 				{
 					DiffuseColor = Color.White,
 					IgnoreLighting = true,

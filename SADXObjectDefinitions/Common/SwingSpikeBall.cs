@@ -7,17 +7,16 @@ using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
-using Object = SonicRetro.SAModel.Object;
 
 namespace SADXObjectDefinitions.Common
 {
 	public class SwingSpikeBall : ObjectDefinition
 	{
-		private Object centermodel;
+		private NJS_OBJECT centermodel;
 		private Mesh[] centermeshes;
-		private Object cylindermodel;
+		private NJS_OBJECT cylindermodel;
 		private Mesh[] cylindermeshes;
-		private Object ballmodel;
+		private NJS_OBJECT ballmodel;
 		private Mesh[] ballmeshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
@@ -152,7 +151,7 @@ namespace SADXObjectDefinitions.Common
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
 		{
 			return base.GetBounds(item, model);
 		}

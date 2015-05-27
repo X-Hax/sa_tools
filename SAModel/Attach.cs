@@ -1,84 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SonicRetro.SAModel
 {
-    [Serializable]
-    public abstract class Attach
-    {
-        public string Name { get; set; }
-        public BoundingSphere Bounds { get; set; }
+	[Serializable]
+	public abstract class Attach
+	{
+		public string Name { get; set; }
+		public BoundingSphere Bounds { get; set; }
 		[NonSerialized]
 		private MeshInfo[] meshInfo;
-		public MeshInfo[] MeshInfo { get { return meshInfo; } protected set { meshInfo = value; } }
 
-        public static int Size(ModelFormat format)
-        {
-            switch (format)
-            {
-                case ModelFormat.Basic:
-                    return 0x28;
-                case ModelFormat.BasicDX:
-                    return 0x2C;
-                case ModelFormat.Chunk:
-                    return 0x18;
-            }
-            return -1;
-        }
+		public MeshInfo[] MeshInfo
+		{
+			get { return meshInfo; }
+			protected set { meshInfo = value; }
+		}
 
-        public static Attach Load(ModelFormat format)
-        {
-            switch (format)
-            {
-                case ModelFormat.Basic:
-                case ModelFormat.BasicDX:
-                    return new BasicAttach();
-                case ModelFormat.Chunk:
-                    return new ChunkAttach();
-            }
-            throw new ArgumentOutOfRangeException("format");
-        }
+		public static int Size(ModelFormat format)
+		{
+			switch (format)
+			{
+				case ModelFormat.Basic:
+					return 0x28;
+				case ModelFormat.BasicDX:
+					return 0x2C;
+				case ModelFormat.Chunk:
+					return 0x18;
+			}
+			return -1;
+		}
 
-        public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format) { return Load(file, address, imageBase, format, new Dictionary<int, string>()); }
+		public static Attach Load(ModelFormat format)
+		{
+			switch (format)
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					return new BasicAttach();
+				case ModelFormat.Chunk:
+					return new ChunkAttach();
+			}
+			throw new ArgumentOutOfRangeException("format");
+		}
 
-        public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
-        {
-            switch (format)
-            {
-                case ModelFormat.Basic:
-                case ModelFormat.BasicDX:
-                    return new BasicAttach(file, address, imageBase, format == ModelFormat.BasicDX, labels);
-                case ModelFormat.Chunk:
-                    return new ChunkAttach(file, address, imageBase, labels);
-            }
-            throw new ArgumentOutOfRangeException("format");
-        }
+		public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format)
+		{
+			return Load(file, address, imageBase, format, new Dictionary<int, string>());
+		}
 
-        public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address);
+		public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+		{
+			switch (format)
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					return new BasicAttach(file, address, imageBase, format == ModelFormat.BasicDX, labels);
+				case ModelFormat.Chunk:
+					return new ChunkAttach(file, address, imageBase, labels);
+			}
+			throw new ArgumentOutOfRangeException("format");
+		}
 
-        public byte[] GetBytes(uint imageBase, bool DX, out uint address)
-        {
-            return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
-        }
+		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address);
 
-        public byte[] GetBytes(uint imageBase, bool DX)
-        {
-            uint address;
-            return GetBytes(imageBase, DX, out address);
-        }
+		public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+		{
+			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
+		}
 
-        public abstract string ToStruct(bool DX);
+		public byte[] GetBytes(uint imageBase, bool DX)
+		{
+			uint address;
+			return GetBytes(imageBase, DX, out address);
+		}
 
-        public abstract string ToStructVariables(bool DX, List<string> labels, string[] textures);
+		public abstract string ToStruct(bool DX);
 
-		public string ToStructVariables(bool DX, List<string> labels) { return ToStructVariables(DX, labels, null); }
+		public abstract string ToStructVariables(bool DX, List<string> labels, string[] textures);
 
-        public abstract void ProcessVertexData();
+		public string ToStructVariables(bool DX, List<string> labels)
+		{
+			return ToStructVariables(DX, labels, null);
+		}
 
-        public abstract BasicAttach ToBasicModel();
+		public abstract void ProcessVertexData();
 
-        public abstract ChunkAttach ToChunkModel();
-    }
+		public abstract BasicAttach ToBasicModel();
+
+		public abstract ChunkAttach ToChunkModel();
+	}
 }

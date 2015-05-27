@@ -15,10 +15,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		#endregion
 
-		private readonly List<Material> materials;
+		private readonly List<NJS_MATERIAL> materials;
 		private readonly BMPInfo[] textures;
 
-		public MaterialEditor(List<Material> mats, BMPInfo[] textures)
+		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures)
 		{
 			materials = mats;
 			this.textures = textures;

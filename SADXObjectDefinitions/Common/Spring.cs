@@ -12,7 +12,7 @@ namespace SADXObjectDefinitions.Common
 {
 	public abstract class SpringBase : ObjectDefinition
 	{
-		protected Object model;
+		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)

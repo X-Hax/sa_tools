@@ -35,8 +35,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[NonSerialized]
 		private Microsoft.DirectX.Direct3D.Mesh mesh;
 
-		public static Material SelectedMaterial { get; set; }
-		public static Material UnSelectedMaterial { get; set; }
+		public static NJS_MATERIAL SelectedMaterial { get; set; }
+		public static NJS_MATERIAL UnSelectedMaterial { get; set; }
 
 		[NonSerialized]
 		private static Microsoft.DirectX.Direct3D.Mesh vertexHandleMesh;
@@ -61,7 +61,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Construction / Initialization
 		public static void Init()
 		{
-			SelectedMaterial = new Material();
+			SelectedMaterial = new NJS_MATERIAL();
 			SelectedMaterial.DiffuseColor = Color.White;
 			SelectedMaterial.SpecularColor = Color.Black;
 			SelectedMaterial.UseAlpha = false;
@@ -71,7 +71,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			SelectedMaterial.UseTexture = false;
 			SelectedMaterial.IgnoreLighting = true;
 
-			UnSelectedMaterial = new Material();
+			UnSelectedMaterial = new NJS_MATERIAL();
 			UnSelectedMaterial.DiffuseColor = Color.Maroon;
 			UnSelectedMaterial.SpecularColor = Color.Black;
 			UnSelectedMaterial.UseAlpha = false;

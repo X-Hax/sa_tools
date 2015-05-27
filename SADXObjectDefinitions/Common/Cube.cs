@@ -11,7 +11,7 @@ namespace SADXObjectDefinitions.Common
 {
 	public class Cube : ObjectDefinition
 	{
-		private Object model;
+		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
@@ -47,7 +47,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override string Name { get { return "Solid Cube"; } }
 
-		public override BoundingSphere GetBounds(SETItem item, Object model)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;

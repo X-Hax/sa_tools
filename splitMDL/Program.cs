@@ -53,12 +53,12 @@ namespace splitMDL
 					address += 8;
 					i = ByteConverter.ToInt32(mdlfile, address);
 				}
-				Dictionary<int, SonicRetro.SAModel.Object> models = new Dictionary<int, SonicRetro.SAModel.Object>();
+				Dictionary<int, SonicRetro.SAModel.NJS_OBJECT> models = new Dictionary<int, SonicRetro.SAModel.NJS_OBJECT>();
 				Dictionary<int, string> modelnames = new Dictionary<int, string>();
 				List<string> partnames = new List<string>();
                 foreach (KeyValuePair<int, int> item in modeladdrs)
                 {
-					SonicRetro.SAModel.Object obj = new SonicRetro.SAModel.Object(mdlfile, item.Value, 0, ModelFormat.Chunk);
+					SonicRetro.SAModel.NJS_OBJECT obj = new SonicRetro.SAModel.NJS_OBJECT(mdlfile, item.Value, 0, ModelFormat.Chunk);
 					modelnames[item.Key] = obj.Name;
 					if (!partnames.Contains(obj.Name))
 					{
@@ -84,7 +84,7 @@ namespace splitMDL
                         i = ByteConverter.ToInt16(anifile, address);
                     }
                 }
-                foreach (KeyValuePair<int, SonicRetro.SAModel.Object> model in models)
+                foreach (KeyValuePair<int, SonicRetro.SAModel.NJS_OBJECT> model in models)
                 {
                     List<string> animlist = new List<string>();
                     foreach (KeyValuePair<int, Animation> anim in anims)

@@ -87,7 +87,10 @@ namespace SonicRetro.SAModel
 	[Serializable]
 	public abstract class PolyChunkBits : PolyChunk
 	{
-		public override int ByteSize { get { return 2; } }
+		public override int ByteSize
+		{
+			get { return 2; }
+		}
 
 		public override byte[] GetBytes()
 		{
@@ -98,7 +101,10 @@ namespace SonicRetro.SAModel
 	[Serializable]
 	public class PolyChunkNull : PolyChunkBits
 	{
-		public PolyChunkNull() { Type = ChunkType.Null; }
+		public PolyChunkNull()
+		{
+			Type = ChunkType.Null;
+		}
 
 		public PolyChunkNull(byte[] file, int address)
 		{
@@ -109,7 +115,10 @@ namespace SonicRetro.SAModel
 	[Serializable]
 	internal class PolyChunkEnd : PolyChunkBits
 	{
-		public PolyChunkEnd() { Type = ChunkType.End; }
+		public PolyChunkEnd()
+		{
+			Type = ChunkType.End;
+		}
 
 		public PolyChunkEnd(byte[] file, int address)
 		{
@@ -132,7 +141,10 @@ namespace SonicRetro.SAModel
 			set { Flags = (byte)((Flags & ~7) | (byte)value); }
 		}
 
-		public PolyChunkBitsBlendAlpha() { Type = ChunkType.Bits_BlendAlpha; }
+		public PolyChunkBitsBlendAlpha()
+		{
+			Type = ChunkType.Bits_BlendAlpha;
+		}
 
 		public PolyChunkBitsBlendAlpha(byte[] file, int address)
 		{
@@ -146,10 +158,16 @@ namespace SonicRetro.SAModel
 		public float MipmapDAdjust
 		{
 			get { return (Flags & 0xF) * 0.25f; }
-			set { Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero)))); }
+			set
+			{
+				Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
+			}
 		}
 
-		public PolyChunkBitsMipmapDAdjust() { Type = ChunkType.Bits_MipmapDAdjust; }
+		public PolyChunkBitsMipmapDAdjust()
+		{
+			Type = ChunkType.Bits_MipmapDAdjust;
+		}
 
 		public PolyChunkBitsMipmapDAdjust(byte[] file, int address)
 		{
@@ -166,7 +184,10 @@ namespace SonicRetro.SAModel
 			set { Flags = (byte)((Flags & ~0x1F) | Math.Min(value, (byte)16)); }
 		}
 
-		public PolyChunkBitsSpecularExponent() { Type = ChunkType.Bits_SpecularExponent; }
+		public PolyChunkBitsSpecularExponent()
+		{
+			Type = ChunkType.Bits_SpecularExponent;
+		}
 
 		public PolyChunkBitsSpecularExponent(byte[] file, int address)
 		{
@@ -183,7 +204,10 @@ namespace SonicRetro.SAModel
 			set { Flags = value; }
 		}
 
-		public PolyChunkBitsCachePolygonList() { Type = ChunkType.Bits_CachePolygonList; }
+		public PolyChunkBitsCachePolygonList()
+		{
+			Type = ChunkType.Bits_CachePolygonList;
+		}
 
 		public PolyChunkBitsCachePolygonList(byte[] file, int address)
 		{
@@ -200,7 +224,10 @@ namespace SonicRetro.SAModel
 			set { Flags = value; }
 		}
 
-		public PolyChunkBitsDrawPolygonList() { Type = ChunkType.Bits_DrawPolygonList; }
+		public PolyChunkBitsDrawPolygonList()
+		{
+			Type = ChunkType.Bits_DrawPolygonList;
+		}
 
 		public PolyChunkBitsDrawPolygonList(byte[] file, int address)
 		{
@@ -216,7 +243,10 @@ namespace SonicRetro.SAModel
 		public float MipmapDAdjust
 		{
 			get { return (Flags & 0xF) * 0.25f; }
-			set { Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero)))); }
+			set
+			{
+				Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
+			}
 		}
 
 		public bool ClampV
@@ -259,13 +289,19 @@ namespace SonicRetro.SAModel
 
 		public FilterMode FilterMode
 		{
-			get { return (SAModel.FilterMode)(Data >> 14); }
+			get { return (FilterMode)(Data >> 14); }
 			set { Data = (ushort)((Data & ~0xC000) | ((ushort)value << 14)); }
 		}
 
-		public override int ByteSize { get { return 4; } }
+		public override int ByteSize
+		{
+			get { return 4; }
+		}
 
-		public PolyChunkTinyTextureID() { Type = ChunkType.Tiny_TextureID; }
+		public PolyChunkTinyTextureID()
+		{
+			Type = ChunkType.Tiny_TextureID;
+		}
 
 		public PolyChunkTinyTextureID(byte[] file, int address)
 		{
@@ -288,7 +324,10 @@ namespace SonicRetro.SAModel
 	{
 		public ushort Size { get; protected set; }
 
-		public override int ByteSize { get { return (Size * 2) + 4; } }
+		public override int ByteSize
+		{
+			get { return (Size * 2) + 4; }
+		}
 
 		public override byte[] GetBytes()
 		{
@@ -308,7 +347,11 @@ namespace SonicRetro.SAModel
 		public byte SpecularExponent { get; set; }
 		public bool Second { get; set; }
 
-		public PolyChunkMaterial() { Type = ChunkType.Material_Diffuse; Diffuse = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2); }
+		public PolyChunkMaterial()
+		{
+			Type = ChunkType.Material_Diffuse;
+			Diffuse = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+		}
 
 		public PolyChunkMaterial(byte[] file, int address)
 		{
@@ -420,7 +463,11 @@ namespace SonicRetro.SAModel
 		public ushort UY { get; set; }
 		public ushort UZ { get; set; }
 
-		public PolyChunkMaterialBump() { Type = ChunkType.Material_Bump; Size = 12; }
+		public PolyChunkMaterialBump()
+		{
+			Type = ChunkType.Material_Bump;
+			Size = 12;
+		}
 
 		public PolyChunkMaterialBump(byte[] file, int address)
 		{
@@ -675,12 +722,14 @@ namespace SonicRetro.SAModel
 			{
 				List<byte> result = new List<byte>();
 				int ind = Indexes.Length;
-				if (Reversed) ind = -ind;
+				if (Reversed)
+					ind = -ind;
 				result.AddRange(ByteConverter.GetBytes((short)(ind)));
 				for (int i = 0; i < Indexes.Length; i++)
 				{
 					result.AddRange(ByteConverter.GetBytes(Indexes[i]));
 					if (i > 1)
+					{
 						if (UserFlags1 != null)
 						{
 							result.AddRange(ByteConverter.GetBytes(UserFlags1[i - 2]));
@@ -691,6 +740,7 @@ namespace SonicRetro.SAModel
 									result.AddRange(ByteConverter.GetBytes(UserFlags3[i - 2]));
 							}
 						}
+					}
 				}
 				return result.ToArray();
 			}
@@ -701,7 +751,9 @@ namespace SonicRetro.SAModel
 		{
 			public ushort[] Indexes { get; protected set; }
 
-			internal Poly() { }
+			internal Poly()
+			{
+			}
 
 			public static Poly CreatePoly(ChunkType type)
 			{
@@ -712,7 +764,9 @@ namespace SonicRetro.SAModel
 					case ChunkType.Volume_Polygon4:
 						return new Quad();
 					case ChunkType.Volume_Strip:
-						throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", "type");
+						throw new ArgumentException(
+							"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
+							"type");
 				}
 				throw new ArgumentException("Unknown poly type!", "type");
 			}
@@ -882,7 +936,8 @@ namespace SonicRetro.SAModel
 			{
 				List<byte> result = new List<byte>();
 				int ind = Indexes.Length;
-				if (Reversed) ind = -ind;
+				if (Reversed)
+					ind = -ind;
 				result.AddRange(ByteConverter.GetBytes((short)(ind)));
 				for (int i = 0; i < Indexes.Length; i++)
 				{

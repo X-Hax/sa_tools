@@ -8,13 +8,12 @@ using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using Extensions = SonicRetro.SAModel.Direct3D.Extensions;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
-using Object = SonicRetro.SAModel.Object;
 
 namespace SADXObjectDefinitions.Common
 {
 	public class Spikes : ObjectDefinition
 	{
-		private Object model;
+		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)

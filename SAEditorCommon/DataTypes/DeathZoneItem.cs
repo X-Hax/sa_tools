@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	public class DeathZoneItem : Item
 	{
 		[Browsable(false)]
-		private Object Model { get; set; }
+		private NJS_OBJECT Model { get; set; }
 		[NonSerialized]
 		private Microsoft.DirectX.Direct3D.Mesh mesh;
 		[Browsable(false)]
@@ -36,12 +36,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			: base (selectionManager)
 		{
 			this.dev = dev;
-			Model = new Object();
+			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
 		}
 
-		public DeathZoneItem(Object model, SA_Tools.SA1CharacterFlags flags, Device dev, EditorItemSelection selectionManager)
+		public DeathZoneItem(NJS_OBJECT model, SA_Tools.SA1CharacterFlags flags, Device dev, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;

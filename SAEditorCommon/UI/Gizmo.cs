@@ -40,13 +40,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public static Microsoft.DirectX.Direct3D.Mesh BoxMesh { get; set; }
 
 		// materials for rendering the above meshes
-		public static Material XMaterial { get; set; }
-		public static Material YMaterial { get; set; }
-		public static Material ZMaterial { get; set; }
-		public static Material DoubleAxisMaterial { get; set; }
-		public static Material HighlightMaterial { get; set; }
+		public static NJS_MATERIAL XMaterial { get; set; }
+		public static NJS_MATERIAL YMaterial { get; set; }
+		public static NJS_MATERIAL ZMaterial { get; set; }
+		public static NJS_MATERIAL DoubleAxisMaterial { get; set; }
+		public static NJS_MATERIAL HighlightMaterial { get; set; }
 
-		public static Material StandardMaterial { get; set; }
+		public static NJS_MATERIAL StandardMaterial { get; set; }
 
 		public static Texture ATexture { get; set; }
 		public static Texture BTexture { get; set; }
@@ -137,15 +137,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			BoxMesh = TexturedBox;
 
-			XMaterial = new Material() { DiffuseColor = xMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			YMaterial = new Material() { DiffuseColor = yMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			ZMaterial = new Material() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			DoubleAxisMaterial = new Material() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			HighlightMaterial = new Material() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			XMaterial = new NJS_MATERIAL() { DiffuseColor = xMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			YMaterial = new NJS_MATERIAL() { DiffuseColor = yMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			ZMaterial = new NJS_MATERIAL() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			DoubleAxisMaterial = new NJS_MATERIAL() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			HighlightMaterial = new NJS_MATERIAL() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 
 			ATexture = Texture.FromBitmap(d3dDevice, Resources.PointATexture, Usage.AutoGenerateMipMap, Pool.Managed);
 			BTexture = Texture.FromBitmap(d3dDevice, Resources.PointBTexture, Usage.AutoGenerateMipMap, Pool.Managed);
-			StandardMaterial = new Material() { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
+			StandardMaterial = new NJS_MATERIAL() { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
 			#endregion
 
 			#region Cleanup

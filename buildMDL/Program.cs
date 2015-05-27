@@ -33,7 +33,7 @@ namespace buildMDL
                 }
                 mdlfilename = Path.GetFullPath(mdlfilename);
                 Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
-                SortedDictionary<int, SonicRetro.SAModel.Object> models = new SortedDictionary<int, SonicRetro.SAModel.Object>();
+                SortedDictionary<int, SonicRetro.SAModel.NJS_OBJECT> models = new SortedDictionary<int, SonicRetro.SAModel.NJS_OBJECT>();
                 int i;
                 foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
                     if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out i))
@@ -45,7 +45,7 @@ namespace buildMDL
                 List<byte> modelbytes = new List<byte>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
                 uint imageBase = (uint)(modelnames.Count * 8) + 8;
-				foreach (KeyValuePair<int, SonicRetro.SAModel.Object> item in models)
+				foreach (KeyValuePair<int, SonicRetro.SAModel.NJS_OBJECT> item in models)
 				{
 					uint address;
 					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out address);

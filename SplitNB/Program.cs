@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using MDLObject = SonicRetro.SAModel.Object;
+using SonicRetro.SAModel;
 
 namespace SplitNB
 {
@@ -57,7 +57,7 @@ namespace SplitNB
             }
         }
 
-        static MDLObject ProcessModel(byte[] file)
+        static NJS_OBJECT ProcessModel(byte[] file)
         {
             return null;
         }

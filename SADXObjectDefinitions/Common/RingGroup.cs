@@ -7,13 +7,12 @@ using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
-using Object = SonicRetro.SAModel.Object;
 
 namespace SADXObjectDefinitions.Common
 {
 	public class RingGroup : ObjectDefinition
 	{
-		private Object model;
+		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
@@ -108,7 +107,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
 		{
 			return base.GetBounds(item, model);
 		}

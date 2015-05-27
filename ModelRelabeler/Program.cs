@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SonicRetro.SAModel;
-using ModelObject = SonicRetro.SAModel.Object;
 
 namespace ModelRelabeler
 {
@@ -24,7 +23,7 @@ namespace ModelRelabeler
 				mdlfilename = Console.ReadLine();
 			}
 			ModelFile model = new ModelFile(mdlfilename);
-			ModelObject[] objects = model.Model.GetObjects();
+			NJS_OBJECT[] objects = model.Model.GetObjects();
 			string repmdlfilename;
 			if (argq.Count > 0)
 			{
@@ -37,7 +36,7 @@ namespace ModelRelabeler
 				repmdlfilename = Console.ReadLine();
 			}
 			ModelFile repmodel = new ModelFile(repmdlfilename);
-			ModelObject[] repobjects = repmodel.Model.GetObjects();
+			NJS_OBJECT[] repobjects = repmodel.Model.GetObjects();
 			if (model.Format != repmodel.Format)
 				Console.WriteLine("Format mismatch between files! Most data will be unable to be relabeled.");
 			if (objects.Length != repobjects.Length)

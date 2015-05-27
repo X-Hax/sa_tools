@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Level_Effects
 {
 	class WindyValley1 : LevelDefinition
 	{
-		Object[] models = new Object[5];
+		NJS_OBJECT[] models = new NJS_OBJECT[5];
 		Mesh[][] meshes = new Mesh[5][];
 		Vector3 Skybox_Scale;
 

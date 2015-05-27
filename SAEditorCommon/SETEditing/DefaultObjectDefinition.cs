@@ -12,7 +12,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 	public class DefaultObjectDefinition : ObjectDefinition
 	{
 		private string name = "Unknown";
-		private Object model;
+		private NJS_OBJECT model;
 		private Microsoft.DirectX.Direct3D.Mesh[] meshes;
 		private string texture;
 		private float? xpos, ypos, zpos, xscl, yscl, zscl;
@@ -76,7 +76,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model = null)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model = null)
 		{
 			return base.GetBounds(item, this.model);
 		}

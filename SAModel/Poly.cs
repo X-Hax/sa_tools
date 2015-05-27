@@ -1,155 +1,175 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-    public sealed class Triangle : Poly
-    {
-        public Triangle()
-        {
-            Indexes = new ushort[3];
-        }
+	public sealed class Triangle : Poly
+	{
+		public Triangle()
+		{
+			Indexes = new ushort[3];
+		}
 
-        public Triangle(byte[] file, int address)
-            : this()
-        {
-            Indexes[0] = ByteConverter.ToUInt16(file, address);
-            Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
-            Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
-        }
+		public Triangle(byte[] file, int address)
+			: this()
+		{
+			Indexes[0] = ByteConverter.ToUInt16(file, address);
+			Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
+			Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
+		}
 
-        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Triangles; } }
-    }
-
-	[Serializable]
-    public sealed class Quad : Poly
-    {
-        public Quad()
-        {
-            Indexes = new ushort[4];
-        }
-
-        public Quad(byte[] file, int address)
-            : this()
-        {
-            Indexes[0] = ByteConverter.ToUInt16(file, address);
-            Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
-            Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
-            Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
-        }
-
-        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Quads; } }
-    }
+		public override Basic_PolyType PolyType
+		{
+			get { return Basic_PolyType.Triangles; }
+		}
+	}
 
 	[Serializable]
-    public sealed class Strip : Poly
-    {
-        public bool Reversed { get; private set; }
+	public sealed class Quad : Poly
+	{
+		public Quad()
+		{
+			Indexes = new ushort[4];
+		}
 
-        public Strip(int NumVerts, bool Reverse)
-        {
-            Indexes = new ushort[NumVerts];
-            Reversed = Reverse;
-        }
+		public Quad(byte[] file, int address)
+			: this()
+		{
+			Indexes[0] = ByteConverter.ToUInt16(file, address);
+			Indexes[1] = ByteConverter.ToUInt16(file, address + 2);
+			Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
+			Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
+		}
 
-        public Strip(ushort[] Verts, bool Reverse)
-        {
-            Indexes = Verts;
-            Reversed = Reverse;
-        }
-
-        public Strip(byte[] file, int address)
-        {
-            Indexes = new ushort[ByteConverter.ToUInt16(file, address) & 0x7FFF];
-            Reversed = (ByteConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
-            address += 2;
-            for (int i = 0; i < Indexes.Length; i++)
-            {
-                Indexes[i] = ByteConverter.ToUInt16(file, address);
-                address += 2;
-            }
-        }
-
-        public override int Size { get { return base.Size + 2; } }
-
-        public override Basic_PolyType PolyType { get { return SAModel.Basic_PolyType.Strips; } }
-
-        public override byte[] GetBytes()
-        {
-            List<byte> result = new List<byte>();
-            result.AddRange(ByteConverter.GetBytes((ushort)(Indexes.Length | (Reversed ? 0x8000 : 0))));
-            result.AddRange(base.GetBytes());
-            return result.ToArray();
-        }
-
-        public override string ToStruct()
-        {
-            System.Text.StringBuilder result = new System.Text.StringBuilder();
-            if (Reversed)
-                result.Append("0x8000u | ");
-            result.Append(Indexes.Length & 0x7FFF);
-            result.Append(", ");
-            result.Append(base.ToStruct());
-            return result.ToString();
-        }
-    }
+		public override Basic_PolyType PolyType
+		{
+			get { return Basic_PolyType.Quads; }
+		}
+	}
 
 	[Serializable]
-    public abstract class Poly
-    {
-        public ushort[] Indexes { get; protected set; }
+	public sealed class Strip : Poly
+	{
+		public bool Reversed { get; private set; }
 
-        internal Poly() { }
+		public Strip(int NumVerts, bool Reverse)
+		{
+			Indexes = new ushort[NumVerts];
+			Reversed = Reverse;
+		}
 
-        public virtual int Size { get { return Indexes.Length * 2; } }
+		public Strip(ushort[] Verts, bool Reverse)
+		{
+			Indexes = Verts;
+			Reversed = Reverse;
+		}
 
-        public abstract Basic_PolyType PolyType { get; }
+		public Strip(byte[] file, int address)
+		{
+			Indexes = new ushort[ByteConverter.ToUInt16(file, address) & 0x7FFF];
+			Reversed = (ByteConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
+			address += 2;
+			for (int i = 0; i < Indexes.Length; i++)
+			{
+				Indexes[i] = ByteConverter.ToUInt16(file, address);
+				address += 2;
+			}
+		}
 
-        public virtual byte[] GetBytes()
-        {
-            List<byte> result = new List<byte>();
-            foreach (ushort item in Indexes)
-                result.AddRange(ByteConverter.GetBytes(item));
-            return result.ToArray();
-        }
+		public override int Size
+		{
+			get { return base.Size + 2; }
+		}
 
-        public virtual string ToStruct()
-        {
-            List<string> s = new List<string>(Indexes.Length);
-            for (int i = 0; i < Indexes.Length; i++)
-                s.Add(Indexes[i].ToString());
-            return string.Join(", ", s.ToArray());
-        }
+		public override Basic_PolyType PolyType
+		{
+			get { return Basic_PolyType.Strips; }
+		}
 
-        public static Poly CreatePoly(Basic_PolyType type)
-        {
-            switch (type)
-            {
-                case Basic_PolyType.Triangles:
-                    return new Triangle();
-                case Basic_PolyType.Quads:
-                    return new Quad();
-                case Basic_PolyType.NPoly:
-                case Basic_PolyType.Strips:
-                    throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", "type");
-            }
-            throw new ArgumentException("Unknown poly type!", "type");
-        }
+		public override byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes((ushort)(Indexes.Length | (Reversed ? 0x8000 : 0))));
+			result.AddRange(base.GetBytes());
+			return result.ToArray();
+		}
 
-        public static Poly CreatePoly(Basic_PolyType type, byte[] file, int address)
-        {
-            switch (type)
-            {
-                case Basic_PolyType.Triangles:
-                    return new Triangle(file, address);
-                case Basic_PolyType.Quads:
-                    return new Quad(file, address);
-                case Basic_PolyType.NPoly:
-                case Basic_PolyType.Strips:
-                    return new Strip(file, address);
-            }
-            throw new ArgumentException("Unknown poly type!", "type");
-        }
-    }
+		public override string ToStruct()
+		{
+			StringBuilder result = new StringBuilder();
+			if (Reversed)
+				result.Append("0x8000u | ");
+			result.Append(Indexes.Length & 0x7FFF);
+			result.Append(", ");
+			result.Append(base.ToStruct());
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public abstract class Poly
+	{
+		public ushort[] Indexes { get; protected set; }
+
+		internal Poly()
+		{
+		}
+
+		public virtual int Size
+		{
+			get { return Indexes.Length * 2; }
+		}
+
+		public abstract Basic_PolyType PolyType { get; }
+
+		public virtual byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			foreach (ushort item in Indexes)
+				result.AddRange(ByteConverter.GetBytes(item));
+			return result.ToArray();
+		}
+
+		public virtual string ToStruct()
+		{
+			List<string> s = new List<string>(Indexes.Length);
+			for (int i = 0; i < Indexes.Length; i++)
+				s.Add(Indexes[i].ToString());
+			return string.Join(", ", s.ToArray());
+		}
+
+		public static Poly CreatePoly(Basic_PolyType type)
+		{
+			switch (type)
+			{
+				case Basic_PolyType.Triangles:
+					return new Triangle();
+				case Basic_PolyType.Quads:
+					return new Quad();
+				case Basic_PolyType.NPoly:
+				case Basic_PolyType.Strips:
+					throw new ArgumentException(
+						"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
+						"type");
+			}
+			throw new ArgumentException("Unknown poly type!", "type");
+		}
+
+		public static Poly CreatePoly(Basic_PolyType type, byte[] file, int address)
+		{
+			switch (type)
+			{
+				case Basic_PolyType.Triangles:
+					return new Triangle(file, address);
+				case Basic_PolyType.Quads:
+					return new Quad(file, address);
+				case Basic_PolyType.NPoly:
+				case Basic_PolyType.Strips:
+					return new Strip(file, address);
+			}
+			throw new ArgumentException("Unknown poly type!", "type");
+		}
+	}
 }

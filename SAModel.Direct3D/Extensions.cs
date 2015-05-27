@@ -43,7 +43,7 @@ namespace SonicRetro.SAModel.Direct3D
 			attach.Bounds.Center.Z = center.Z;
 		}
 
-		public static void SetDeviceStates(this Material material, Device device, Texture texture, Matrix transform, FillMode fillMode)
+		public static void SetDeviceStates(this NJS_MATERIAL material, Device device, Texture texture, Matrix transform, FillMode fillMode)
 		{
 			device.RenderState.FillMode = fillMode;
 			device.SetTransform(TransformType.World, transform);
@@ -281,7 +281,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return (float)(BAMS / (65536 / (2 * Math.PI)));
 		}
 
-		public static List<RenderInfo> DrawModel(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -295,7 +295,7 @@ namespace SonicRetro.SAModel.Direct3D
 			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					Material mat;
+					NJS_MATERIAL mat;
 					Texture texture = null;
 					// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
 					// If it is in fact null, it applies a placeholder so that the editor doesn't crash.
@@ -308,7 +308,7 @@ namespace SonicRetro.SAModel.Direct3D
 					}
 					else
 					{
-						mat = new Material
+						mat = new NJS_MATERIAL
 						{
 							DiffuseColor = Color.White,
 							IgnoreLighting = true,
@@ -329,7 +329,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModelInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -344,7 +344,7 @@ namespace SonicRetro.SAModel.Direct3D
 					Color col = Color.White;
 					if (useMat) col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
 					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-					Material mat = new Material
+					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = col,
 						IgnoreLighting = true,
@@ -356,13 +356,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTree(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -374,7 +374,7 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
-					Material mat = obj.Attach.MeshInfo[j].Material;
+					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
@@ -382,19 +382,19 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 			}
 
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
 			transform.Pop();
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -412,7 +412,7 @@ namespace SonicRetro.SAModel.Direct3D
 						color = obj.Attach.MeshInfo[j].Material.DiffuseColor;
 
 					color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
-					Material mat = new Material
+					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = color,
 						IgnoreLighting = true,
@@ -422,20 +422,20 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 			}
 
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
 			transform.Pop();
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this Object obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -451,25 +451,25 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
-					Material mat = obj.Attach.MeshInfo[j].Material;
+					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this Object obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -486,7 +486,7 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
 					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-					Material mat = new Material
+					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = col,
 						IgnoreLighting = true,
@@ -494,7 +494,7 @@ namespace SonicRetro.SAModel.Direct3D
 					};
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimatedInvert(child, device, transform, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
 			return result;
@@ -510,7 +510,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return new HitResult(null, info.Dist);
 		}
 
-		public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
+		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
 			MatrixStack transform = new MatrixStack();
@@ -523,13 +523,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return new HitResult(obj, info.Dist);
 		}
 
-		public static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
+		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
 		{
 			int modelindex = -1;
 			return CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
 		}
 
-		private static HitResult CheckHit(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
+		private static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
 		{
 			transform.Push();
 			modelindex++;
@@ -548,20 +548,20 @@ namespace SonicRetro.SAModel.Direct3D
 						result = new HitResult(obj, info.Dist);
 				}
 			}
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
 			transform.Pop();
 			return result;
 		}
 
-		public static HitResult CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
+		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static HitResult CheckHitAnimated(this Object obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			transform.Push();
 			modelindex++;
@@ -586,7 +586,7 @@ namespace SonicRetro.SAModel.Direct3D
 						result = new HitResult(obj, info.Dist);
 				}
 			}
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
 			return result;
@@ -599,9 +599,9 @@ namespace SonicRetro.SAModel.Direct3D
 			List<Color> vcolors = new List<Color>();
 			List<Vertex> verts = new List<Vertex>();
 			List<Vertex> norms = new List<Vertex>();
-			Dictionary<string, Material> materials = new Dictionary<string, Material>();
+			Dictionary<string, NJS_MATERIAL> materials = new Dictionary<string, NJS_MATERIAL>();
 
-			Material lastMaterial = null;
+			NJS_MATERIAL lastMaterial = null;
 			// Determines whether or not the Texture ID for lastMaterial has been set.
 			bool textureIdAssigned = false;
 			// Used for materials that don't have a texid field.
@@ -609,8 +609,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 			List<Vertex> model_Vertex = new List<Vertex>();
 			List<Vertex> model_Normal = new List<Vertex>();
-			List<Material> model_Material = new List<Material>();
-			List<Mesh> model_Mesh = new List<Mesh>();
+			List<NJS_MATERIAL> model_Material = new List<NJS_MATERIAL>();
+			List<NJS_MESHSET> model_Mesh = new List<NJS_MESHSET>();
 			List<ushort> model_Mesh_MaterialID = new List<ushort>();
 			List<List<Poly>> model_Mesh_Poly = new List<List<Poly>>();
 			List<List<UV>> model_Mesh_UV = new List<List<UV>>();
@@ -645,7 +645,7 @@ namespace SonicRetro.SAModel.Direct3D
 										lastMaterial.TextureID = ++lastTextureId;
 
 									textureIdAssigned = false;
-									lastMaterial = new Material { UseAlpha = false, UseTexture = false };
+									lastMaterial = new NJS_MATERIAL { UseAlpha = false, UseTexture = false };
 									materials.Add(mlin[1], lastMaterial);
 									break;
 
@@ -806,7 +806,7 @@ namespace SonicRetro.SAModel.Direct3D
 						model_Mesh_VColor.Add(new List<Color>());
 						if (materials.ContainsKey(lin[1]))
 						{
-							Material mtl = materials[lin[1]];
+							NJS_MATERIAL mtl = materials[lin[1]];
 							if (model_Material.Contains(mtl))
 								model_Mesh_MaterialID.Add((ushort)model_Material.IndexOf(mtl));
 							else
@@ -948,11 +948,11 @@ namespace SonicRetro.SAModel.Direct3D
 
 			// Material failsafe
 			if (model_Material.Count == 0)
-				model_Material.Add(new Material());
+				model_Material.Add(new NJS_MATERIAL());
 
 			for (int i = 0; i < model_Mesh_MaterialID.Count; i++)
 			{
-				model_Mesh.Add(new Mesh(model_Mesh_Poly[i].ToArray(), false, model_Mesh_UV[i].Count > 0, model_Mesh_VColor[i].Count > 0));
+				model_Mesh.Add(new NJS_MESHSET(model_Mesh_Poly[i].ToArray(), false, model_Mesh_UV[i].Count > 0, model_Mesh_VColor[i].Count > 0));
 				model_Mesh[i].MaterialID = model_Mesh_MaterialID[i];
 				if (model_Mesh[i].UV != null)
 				{
@@ -1058,7 +1058,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromBasicAttach(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
@@ -1340,7 +1340,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		skip_processing:
 			// handle child nodes should they exist.
-			foreach (Object item in obj.Children)
+			foreach (NJS_OBJECT item in obj.Children)
 				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 			transform.Pop();
@@ -1356,7 +1356,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromChunkAttach(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromChunkAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
@@ -1507,7 +1507,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 
 			// handle child nodes should they exist.
-			foreach (Object item in obj.Children)
+			foreach (NJS_OBJECT item in obj.Children)
 				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 			transform.Pop();
@@ -1524,7 +1524,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteModelAsObj(StreamWriter objstream, Object obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			if (obj.Attach is BasicAttach)
 			{
@@ -1539,7 +1539,7 @@ namespace SonicRetro.SAModel.Direct3D
 				transform.Push();
 				obj.ProcessTransforms(transform);
 
-				foreach (Object child in obj.Children)
+				foreach (NJS_OBJECT child in obj.Children)
 					WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 				transform.Pop();
@@ -1551,7 +1551,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return Vector3.Length(Vector3.Subtract(vectorA, vectorB));
 		}
 
-		public static Matrix ProcessTransforms(this Object obj, Matrix matrix)
+		public static Matrix ProcessTransforms(this NJS_OBJECT obj, Matrix matrix)
 		{
 			if (!obj.Position.IsEmpty)
 				MatrixFunctions.Translate(ref matrix, obj.Position);
@@ -1564,12 +1564,12 @@ namespace SonicRetro.SAModel.Direct3D
 			return matrix;
 		}
 
-		public static void ProcessTransforms(this Object obj, MatrixStack transform)
+		public static void ProcessTransforms(this NJS_OBJECT obj, MatrixStack transform)
 		{
 			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
 		}
 
-		public static Matrix ProcessTransforms(this Object obj, AnimModelData anim, int animframe, Matrix matrix)
+		public static Matrix ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, int animframe, Matrix matrix)
 		{
 			if (anim == null)
 				return obj.ProcessTransforms(matrix);
@@ -1593,7 +1593,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return matrix;
 		}
 
-		public static void ProcessTransforms(this Object obj, AnimModelData anim, int animframe, MatrixStack transform)
+		public static void ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, int animframe, MatrixStack transform)
 		{
 			transform.LoadMatrix(obj.ProcessTransforms(anim, animframe, transform.Top));
 		}

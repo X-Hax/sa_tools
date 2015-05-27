@@ -34,7 +34,7 @@ namespace LevelConverter
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
 								newcol.SurfaceFlags = SurfaceFlags.Visible;
-								newcol.Model = new SonicRetro.SAModel.Object() { Name = col.Model.Name + "_cnk" };
+								newcol.Model = new SonicRetro.SAModel.NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
 								newcol.Model.Scale = col.Model.Scale;
@@ -52,14 +52,14 @@ namespace LevelConverter
 								vcnk.VertexCount = (ushort)basatt.Vertex.Length;
 								vcnk.Size = (ushort)((vcnk.Type == ChunkType.Vertex_VertexNormal ? vcnk.VertexCount * 6 : vcnk.VertexCount * 3) + 1);
 								cnkatt.Vertex.Add(vcnk);
-								foreach (Mesh mesh in basatt.Mesh)
+								foreach (NJS_MESHSET mesh in basatt.Mesh)
 								{
 									if (mesh.PolyType != Basic_PolyType.Strips)
 									{
 										Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
 										continue;
 									}
-									Material mat = null;
+									NJS_MATERIAL mat = null;
 									if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
 									{
 										mat = basatt.Material[mesh.MaterialID];
@@ -155,7 +155,7 @@ namespace LevelConverter
 								Array.Copy(chunk.Vertices.ToArray(), 0, VertexBuffer, chunk.IndexOffset, chunk.Vertices.Count);
 								Array.Copy(chunk.Normals.ToArray(), 0, NormalBuffer, chunk.IndexOffset, chunk.Normals.Count);
 							}
-						Material material = new Material() { UseTexture = true };
+						NJS_MATERIAL material = new NJS_MATERIAL() { UseTexture = true };
 						int minVtx = int.MaxValue;
 						int maxVtx = int.MinValue;
 						foreach (PolyChunk chunk in cnkatt.Poly)
@@ -265,7 +265,7 @@ namespace LevelConverter
 											if (hasVColor)
 												vcolors.AddRange(strip.VColors);
 										}
-										Mesh mesh = new Mesh(strips.ToArray(), false, hasUV, hasVColor);
+										NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
 										if (hasUV)
 											uvs.CopyTo(mesh.UV);
 										if (hasVColor)
@@ -273,7 +273,7 @@ namespace LevelConverter
 										mesh.MaterialID = (ushort)basatt.Material.Count;
 										basatt.Mesh.Add(mesh);
 										basatt.Material.Add(material);
-										material = new Material(material.GetBytes(), 0);
+										material = new NJS_MATERIAL(material.GetBytes(), 0);
 									}
 									break;
 							}
@@ -281,7 +281,7 @@ namespace LevelConverter
 						basatt.ResizeVertexes(numVtx);
 						Array.Copy(VertexBuffer, minVtx, basatt.Vertex, 0, numVtx);
 						Array.Copy(NormalBuffer, minVtx, basatt.Normal, 0, numVtx);
-						foreach (Mesh mesh in basatt.Mesh)
+						foreach (NJS_MESHSET mesh in basatt.Mesh)
 							foreach (Poly poly in mesh.Poly)
 								for (int i = 0; i < poly.Indexes.Length; i++)
 									poly.Indexes[i] = (ushort)(poly.Indexes[i] - minVtx);

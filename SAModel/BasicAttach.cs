@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 namespace SonicRetro.SAModel
 {
@@ -11,18 +12,18 @@ namespace SonicRetro.SAModel
 		public string VertexName { get; set; }
 		public Vertex[] Normal { get; private set; }
 		public string NormalName { get; set; }
-		public List<Mesh> Mesh { get; set; }
+		public List<NJS_MESHSET> Mesh { get; set; }
 		public string MeshName { get; set; }
-		public List<Material> Material { get; set; }
+		public List<NJS_MATERIAL> Material { get; set; }
 		public string MaterialName { get; set; }
 
 		public BasicAttach()
 		{
 			Name = "attach_" + Extensions.GenerateIdentifier();
 			Bounds = new BoundingSphere();
-			Material = new List<Material>();
+			Material = new List<NJS_MATERIAL>();
 			MaterialName = "matlist_" + Extensions.GenerateIdentifier();
-			Mesh = new List<Mesh>();
+			Mesh = new List<NJS_MESHSET>();
 			MeshName = "meshlist_" + Extensions.GenerateIdentifier();
 			Vertex = new Vertex[0];
 			VertexName = "vertex_" + Extensions.GenerateIdentifier();
@@ -31,7 +32,9 @@ namespace SonicRetro.SAModel
 		}
 
 		public BasicAttach(byte[] file, int address, uint imageBase, bool DX)
-			: this(file, address, imageBase, DX, new Dictionary<int, string>()) { }
+			: this(file, address, imageBase, DX, new Dictionary<int, string>())
+		{
+		}
 
 		public BasicAttach(byte[] file, int address, uint imageBase, bool DX, Dictionary<int, string> labels)
 			: this()
@@ -67,8 +70,10 @@ namespace SonicRetro.SAModel
 				}
 			}
 			else
+			{
 				for (int i = 0; i < Vertex.Length; i++)
 					Normal[i] = new Vertex(0, 1, 0);
+			}
 			int meshcnt = ByteConverter.ToInt16(file, address + 0x14);
 			tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
 			if (tmpaddr != 0)
@@ -80,8 +85,8 @@ namespace SonicRetro.SAModel
 					MeshName = "meshlist_" + tmpaddr.ToString("X8");
 				for (int i = 0; i < meshcnt; i++)
 				{
-					Mesh.Add(new Mesh(file, tmpaddr, imageBase, labels));
-					tmpaddr += SAModel.Mesh.Size(DX);
+					Mesh.Add(new NJS_MESHSET(file, tmpaddr, imageBase, labels));
+					tmpaddr += NJS_MESHSET.Size(DX);
 				}
 			}
 			int matcnt = ByteConverter.ToInt16(file, address + 0x16);
@@ -95,20 +100,20 @@ namespace SonicRetro.SAModel
 					MaterialName = "matlist_" + tmpaddr.ToString("X8");
 				for (int i = 0; i < matcnt; i++)
 				{
-					Material.Add(new Material(file, tmpaddr, labels));
-					tmpaddr += SAModel.Material.Size;
+					Material.Add(new NJS_MATERIAL(file, tmpaddr, labels));
+					tmpaddr += NJS_MATERIAL.Size;
 				}
 			}
 			Bounds = new BoundingSphere(file, address + 0x18);
 		}
 
-		public BasicAttach(Vertex[] vertex, Vertex[] normal, IEnumerable<Mesh> mesh, IEnumerable<Material> material)
+		public BasicAttach(Vertex[] vertex, Vertex[] normal, IEnumerable<NJS_MESHSET> mesh, IEnumerable<NJS_MATERIAL> material)
 			: this()
 		{
 			Vertex = vertex;
 			Normal = normal;
-			Mesh = new List<Mesh>(mesh);
-			Material = new List<Material>(material);
+			Mesh = new List<NJS_MESHSET>(mesh);
+			Material = new List<NJS_MATERIAL>(material);
 
 			Name = "attach_" + Extensions.GenerateIdentifier();
 		}
@@ -125,11 +130,11 @@ namespace SonicRetro.SAModel
 				{
 					materialAddress = imageBase;
 					labels.Add(MaterialName, materialAddress);
-					foreach (Material item in Material)
+					foreach (NJS_MATERIAL item in Material)
 						result.AddRange(item.GetBytes());
 				}
 			}
-			uint meshAddress = 0;
+			uint meshAddress;
 			if (labels.ContainsKey(MeshName))
 				meshAddress = labels[MeshName];
 			else
@@ -139,6 +144,7 @@ namespace SonicRetro.SAModel
 				uint[] vColorAddrs = new uint[Mesh.Count];
 				uint[] uVAddrs = new uint[Mesh.Count];
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (labels.ContainsKey(Mesh[i].PolyName))
 						polyAddrs[i] = labels[Mesh[i].PolyName];
 					else
@@ -149,7 +155,9 @@ namespace SonicRetro.SAModel
 						for (int j = 0; j < Mesh[i].Poly.Count; j++)
 							result.AddRange(Mesh[i].Poly[j].GetBytes());
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].PolyNormal != null)
 					{
 						if (labels.ContainsKey(Mesh[i].PolyNormalName))
@@ -163,7 +171,9 @@ namespace SonicRetro.SAModel
 								result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
 						}
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].VColor != null)
 					{
 						if (labels.ContainsKey(Mesh[i].VColorName))
@@ -177,7 +187,9 @@ namespace SonicRetro.SAModel
 								result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
 						}
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].UV != null)
 					{
 						if (labels.ContainsKey(Mesh[i].UVName))
@@ -191,6 +203,7 @@ namespace SonicRetro.SAModel
 								result.AddRange(Mesh[i].UV[j].GetBytes());
 						}
 					}
+				}
 				result.Align(4);
 				meshAddress = (uint)result.Count + imageBase;
 				labels.Add(MeshName, meshAddress);
@@ -206,10 +219,12 @@ namespace SonicRetro.SAModel
 				vertexAddress = (uint)result.Count + imageBase;
 				labels.Add(VertexName, vertexAddress);
 				foreach (Vertex item in Vertex)
+				{
 					if (item == null)
 						result.AddRange(new byte[SAModel.Vertex.Size]);
 					else
 						result.AddRange(item.GetBytes());
+				}
 			}
 			result.Align(4);
 			uint normalAddress;
@@ -220,10 +235,12 @@ namespace SonicRetro.SAModel
 				normalAddress = (uint)result.Count + imageBase;
 				labels.Add(NormalName, normalAddress);
 				foreach (Vertex item in Normal)
+				{
 					if (item == null)
 						result.AddRange(new byte[SAModel.Vertex.Size]);
 					else
 						result.AddRange(item.GetBytes());
+				}
 			}
 			result.Align(4);
 			address = (uint)result.Count;
@@ -235,14 +252,15 @@ namespace SonicRetro.SAModel
 			result.AddRange(ByteConverter.GetBytes((short)Mesh.Count));
 			result.AddRange(ByteConverter.GetBytes((short)Material.Count));
 			result.AddRange(Bounds.GetBytes());
-			if (DX) result.AddRange(new byte[4]);
+			if (DX)
+				result.AddRange(new byte[4]);
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}
 
 		public override string ToStruct(bool DX)
 		{
-			System.Text.StringBuilder result = new System.Text.StringBuilder("{ ");
+			StringBuilder result = new StringBuilder("{ ");
 			result.Append(Vertex != null ? VertexName : "NULL");
 			result.Append(", ");
 			result.Append(Normal != null ? NormalName : "NULL");
@@ -258,14 +276,15 @@ namespace SonicRetro.SAModel
 			result.Append(Material != null && Material.Count > 0 ? "LengthOfArray(" + MaterialName + ")" : "0");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
-			if (DX) result.Append(", NULL");
+			if (DX)
+				result.Append(", NULL");
 			result.Append(" }");
 			return result.ToString();
 		}
 
 		public override string ToStructVariables(bool DX, List<string> labels, string[] textures)
 		{
-			System.Text.StringBuilder result = new System.Text.StringBuilder();
+			StringBuilder result = new StringBuilder();
 			if (Material != null && Material.Count > 0 && !labels.Contains(MaterialName))
 			{
 				labels.Add(MaterialName);
@@ -273,7 +292,7 @@ namespace SonicRetro.SAModel
 				result.Append(MaterialName);
 				result.AppendLine("[] = {");
 				List<string> mtls = new List<string>(Material.Count);
-				foreach (Material item in Material)
+				foreach (NJS_MATERIAL item in Material)
 					mtls.Add(item.ToStruct(textures));
 				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
 				result.AppendLine("};");
@@ -282,6 +301,7 @@ namespace SonicRetro.SAModel
 			if (!labels.Contains(MeshName))
 			{
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (!labels.Contains(Mesh[i].PolyName))
 					{
 						labels.Add(Mesh[i].PolyName);
@@ -295,7 +315,9 @@ namespace SonicRetro.SAModel
 						result.AppendLine("};");
 						result.AppendLine();
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].PolyNormal != null && !labels.Contains(Mesh[i].PolyNormalName))
 					{
 						labels.Add(Mesh[i].PolyNormalName);
@@ -309,7 +331,9 @@ namespace SonicRetro.SAModel
 						result.AppendLine("};");
 						result.AppendLine();
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].VColor != null && !labels.Contains(Mesh[i].VColorName))
 					{
 						labels.Add(Mesh[i].VColorName);
@@ -323,7 +347,9 @@ namespace SonicRetro.SAModel
 						result.AppendLine("};");
 						result.AppendLine();
 					}
+				}
 				for (int i = 0; i < Mesh.Count; i++)
+				{
 					if (Mesh[i].UV != null && !labels.Contains(Mesh[i].UVName))
 					{
 						labels.Add(Mesh[i].UVName);
@@ -337,14 +363,16 @@ namespace SonicRetro.SAModel
 						result.AppendLine("};");
 						result.AppendLine();
 					}
+				}
 				labels.Add(MeshName);
 				result.Append("NJS_MESHSET");
-				if (DX) result.Append("_SADX");
+				if (DX)
+					result.Append("_SADX");
 				result.Append(" ");
 				result.Append(MeshName);
 				result.AppendLine("[] = {");
 				List<string> mshs = new List<string>(Mesh.Count);
-				foreach (Mesh item in Mesh)
+				foreach (NJS_MESHSET item in Mesh)
 					mshs.Add(item.ToStruct(DX));
 				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", mshs.ToArray()));
 				result.AppendLine("};");
@@ -377,7 +405,8 @@ namespace SonicRetro.SAModel
 				result.AppendLine();
 			}
 			result.Append("NJS_MODEL");
-			if (DX) result.Append("_SADX");
+			if (DX)
+				result.Append("_SADX");
 			result.Append(" ");
 			result.Append(Name);
 			result.Append(" = ");
@@ -389,7 +418,7 @@ namespace SonicRetro.SAModel
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
-			foreach (Mesh mesh in Mesh)
+			foreach (NJS_MESHSET mesh in Mesh)
 			{
 				bool hasVColor = mesh.VColor != null;
 				bool hasUV = mesh.UV != null;
@@ -413,14 +442,16 @@ namespace SonicRetro.SAModel
 							break;
 					}
 					for (int i = 0; i < poly.Indexes.Length; i++)
+					{
 						newpoly.Indexes[i] = (ushort)verts.AddUnique(new VertexData(
 							Vertex[poly.Indexes[i]],
 							Normal[poly.Indexes[i]],
 							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
 							hasUV ? mesh.UV[currentstriptotal++] : null));
+					}
 					polys.Add(newpoly);
 				}
-				Material mat = null;
+				NJS_MATERIAL mat = null;
 				if (Material != null && mesh.MaterialID < Material.Count)
 					mat = Material[mesh.MaterialID];
 				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));

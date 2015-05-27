@@ -7,13 +7,13 @@ namespace SonicRetro.SAModel.Direct3D
 {
     public class HitResult
     {
-        public Object Model { get; private set; }
+        public NJS_OBJECT Model { get; private set; }
         public float Distance { get; private set; }
         public bool IsHit { get; private set; }
 
         private HitResult() { }
 
-        public HitResult(Object model, float distance)
+        public HitResult(NJS_OBJECT model, float distance)
         {
             Model = model;
             Distance = distance;

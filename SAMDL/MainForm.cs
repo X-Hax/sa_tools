@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel.SAMDL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		bool loaded;
 		int interval = 1;
-		Object model;
+		NJS_OBJECT model;
 		Animation[] animations;
 		Animation animation;
 		ModelFile modelFile;
@@ -51,8 +51,8 @@ namespace SonicRetro.SAModel.SAMDL
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
 		ModelFileDialog modelinfo = new ModelFileDialog();
-		Object selectedObject;
-		Dictionary<Object, TreeNode> nodeDict;
+		NJS_OBJECT selectedObject;
+		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -115,7 +115,7 @@ namespace SonicRetro.SAModel.SAMDL
 						modelinfo.ShowDialog(this);
 						if (modelinfo.checkBox1.Checked)
 							animations = new Animation[] { Animation.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
-						model = new Object(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
+						model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
 						switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 						{
 							case ModelFormat.Basic:
@@ -134,19 +134,19 @@ namespace SonicRetro.SAModel.SAMDL
 						using (SA2MDLDialog dlg = new SA2MDLDialog())
 						{
 							int address = 0;
-							SortedDictionary<int, Object> sa2models = new SortedDictionary<int, Object>();
+							SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
 							int i = ByteConverter.ToInt32(file, address);
 							while (i != -1)
 							{
-								sa2models.Add(i, new Object(file, ByteConverter.ToInt32(file, address + 4), 0, fmt));
+								sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt));
 								address += 8;
 								i = ByteConverter.ToInt32(file, address);
 							}
-							foreach (KeyValuePair<int, Object> item in sa2models)
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
 								dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
 							dlg.ShowDialog(this);
 							i = 0;
-							foreach (KeyValuePair<int, Object> item in sa2models)
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
 							{
 								if (i == dlg.modelChoice.SelectedIndex)
 								{
@@ -186,26 +186,26 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			model.ProcessVertexData();
-			Object[] models = model.GetObjects();
+			NJS_OBJECT[] models = model.GetObjects();
 			meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
 					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
 					catch { }
 			treeView1.Nodes.Clear();
-			nodeDict = new Dictionary<Object, TreeNode>();
+			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			selectedObject = model;
 			SelectedItemChanged();
 		}
 
-		private void AddTreeNode(Object model, TreeNodeCollection nodes)
+		private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
 			TreeNode node = nodes.Add(model.Name);
 			node.Tag = model;
 			nodeDict[model] = node;
-			foreach (Object child in model.Children)
+			foreach (NJS_OBJECT child in model.Children)
 				AddTreeNode(child, node.Nodes);
 		}
 
@@ -274,14 +274,14 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.Present();
 		}
 
-		private void DrawSelectedObject(Object obj, MatrixStack transform)
+		private void DrawSelectedObject(NJS_OBJECT obj, MatrixStack transform)
 		{
 			int modelnum = -1;
 			int animindex = -1;
 			DrawSelectedObject(obj, transform, ref modelnum, ref animindex);
 		}
 
-		private bool DrawSelectedObject(Object obj, MatrixStack transform, ref int modelindex, ref int animindex)
+		private bool DrawSelectedObject(NJS_OBJECT obj, MatrixStack transform, ref int modelindex, ref int animindex)
 		{
 			transform.Push();
 			modelindex++;
@@ -297,7 +297,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						System.Drawing.Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
 						col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-						Material mat = new Material
+						NJS_MATERIAL mat = new NJS_MATERIAL
 						{
 							DiffuseColor = col,
 							IgnoreLighting = true,
@@ -308,7 +308,7 @@ namespace SonicRetro.SAModel.SAMDL
 				transform.Pop();
 				return true;
 			}
-			foreach (Object child in obj.Children)
+			foreach (NJS_OBJECT child in obj.Children)
 				if (DrawSelectedObject(child, transform, ref modelindex, ref animindex))
 				{
 					transform.Pop();
@@ -685,7 +685,7 @@ namespace SonicRetro.SAModel.SAMDL
 				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
 				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
 				batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
-				foreach (Mesh m in batt.Mesh)
+				foreach (NJS_MESHSET m in batt.Mesh)
 				{
 					m.PolyName = "poly_" + Extensions.GenerateIdentifier();
 					m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
@@ -701,7 +701,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			selectedObject.Attach = attach;
 			attach.ProcessVertexData();
-			Object[] models = model.GetObjects();
+			NJS_OBJECT[] models = model.GetObjects();
 			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
 			catch { }
 			DrawLevel();
@@ -724,7 +724,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (suppressTreeEvent) return;
-			selectedObject = (Object)e.Node.Tag;
+			selectedObject = (NJS_OBJECT)e.Node.Tag;
 			SelectedItemChanged();
 		}
 
@@ -750,7 +750,7 @@ namespace SonicRetro.SAModel.SAMDL
 			using (FindDialog dlg = new FindDialog())
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					Object obj = model.GetObjects().SingleOrDefault(o => o.Name == dlg.SearchText || (o.Attach != null && o.Attach.Name == dlg.SearchText));
+					NJS_OBJECT obj = model.GetObjects().SingleOrDefault(o => o.Name == dlg.SearchText || (o.Attach != null && o.Attach.Name == dlg.SearchText));
 					if (obj != null)
 					{
 						selectedObject = obj;

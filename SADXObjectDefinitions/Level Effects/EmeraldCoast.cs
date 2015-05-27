@@ -13,7 +13,7 @@ namespace SADXObjectDefinitions.Level_Effects
 {
 	class EmeraldCoast : LevelDefinition
 	{
-		Object model1, model2;
+		NJS_OBJECT model1, model2;
 		Mesh[] mesh1, mesh2;
 		Vector3 Skybox_Scale;
 

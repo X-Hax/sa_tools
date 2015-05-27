@@ -12,11 +12,11 @@ namespace SADXObjectDefinitions.Common
 {
 	public class FallSpikeBall : ObjectDefinition
 	{
-		private Object ballmodel;
+		private NJS_OBJECT ballmodel;
 		private Mesh[] ballmeshes;
-		private Object cylindermodel;
+		private NJS_OBJECT cylindermodel;
 		private Mesh[] cylindermeshes;
-		private Object spheremodel;
+		private NJS_OBJECT spheremodel;
 		private Mesh[] spheremeshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
@@ -79,7 +79,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
 		{
 			BoundingSphere bounds = new BoundingSphere(item.Position, item.Scale.X);	
 

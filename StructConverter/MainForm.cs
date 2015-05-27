@@ -328,7 +328,7 @@ namespace StructConverter
 						writer.WriteLine(tbl.ToStructVariables(landfmt, new List<string>()));
 						break;
 					case "model":
-						SonicRetro.SAModel.Object mdl = new ModelFile(data.Filename).Model;
+						SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(data.Filename).Model;
 						name = mdl.Name;
 						writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
 						models.Add(item.Key, mdl.Name);
@@ -692,7 +692,7 @@ namespace StructConverter
 							List<string> objs = new List<string>();
 							for (int j = 0; j < list.Length; j++)
 							{
-								SonicRetro.SAModel.Object obj = new ModelFile(Path.Combine(path,
+								SonicRetro.SAModel.NJS_OBJECT obj = new ModelFile(Path.Combine(path,
 									j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl")).Model;
 								writer.WriteLine(obj.ToStructVariables(modelfmt == ModelFormat.BasicDX, objs));
 								mdls.Add(obj.Name);

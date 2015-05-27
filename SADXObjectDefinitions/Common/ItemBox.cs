@@ -8,13 +8,12 @@ using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using Extensions = SonicRetro.SAModel.Direct3D.Extensions;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
-using Object = SonicRetro.SAModel.Object;
 
 namespace SADXObjectDefinitions.Common
 {
 	public abstract class ItemBoxBase : ObjectDefinition
 	{
-		protected Object model;
+		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
 		protected int childindex;
 

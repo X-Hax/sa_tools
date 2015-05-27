@@ -6,21 +6,20 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using Material = SonicRetro.SAModel.Material;
 using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
 	class PUWind : ObjectDefinition
 	{
-		Material material;
+		NJS_MATERIAL material;
 		Texture texture;
 		Mesh mesh;
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
 			mesh = Mesh.Box(dev, 1f, 1f, 1f);
-			material = new Material();
+			material = new NJS_MATERIAL();
 			material.DiffuseColor = Color.FromArgb(180, 180, 180, 180);
 			material.UseAlpha = true;
 			texture = new Texture(dev, new Bitmap(2, 2), 0, Pool.Managed);
@@ -65,7 +64,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, Object model)
+		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;

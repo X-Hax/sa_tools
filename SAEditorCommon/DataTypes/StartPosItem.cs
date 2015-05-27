@@ -10,17 +10,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	public class StartPosItem : Item
 	{
-		private Object Model;
+		private NJS_OBJECT Model;
 		private Microsoft.DirectX.Direct3D.Mesh[] Meshes;
 		private string texture;
 		private float offset;
 
-		public StartPosItem(Object model, string textures, float offset, Vertex position, int yrot, Device dev, UI.EditorItemSelection selectionManager)
+		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, UI.EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
-			Object[] models = model.GetObjects();
+			NJS_OBJECT[] models = model.GetObjects();
 			Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)

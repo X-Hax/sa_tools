@@ -12,7 +12,7 @@ namespace SADXObjectDefinitions.Common
 {
 	public class JumpPanel : ObjectDefinition
 	{
-		private Object model;
+		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)

@@ -10,7 +10,8 @@ namespace SonicRetro.SAModel
 		public static void Align(this List<byte> me, int alignment)
 		{
 			int off = me.Count % alignment;
-			if (off == 0) return;
+			if (off == 0)
+				return;
 			me.AddRange(new byte[alignment - off]);
 		}
 
@@ -37,7 +38,7 @@ namespace SonicRetro.SAModel
 
 		public static string ToLongString(this float input)
 		{
-			string str = input.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+			string str = input.ToString(NumberFormatInfo.InvariantInfo);
 			// if string representation was collapsed from scientific notation, just return it: 
 			if (!str.Contains("E") & !str.Contains("e"))
 				return str;
@@ -47,17 +48,18 @@ namespace SonicRetro.SAModel
 			string[] decimalParts = exponentParts[0].Split(decSeparator);
 			// fix missing decimal point: 
 			if (decimalParts.Length == 1)
-				decimalParts = new string[] {
-				exponentParts[0],
-				"0"
-			};
+			{
+				decimalParts = new[]
+				{
+					exponentParts[0],
+					"0"
+				};
+			}
 			int exponentValue = int.Parse(exponentParts[1]);
 			string newNumber = decimalParts[0] + decimalParts[1];
-			string result = null;
+			string result;
 			if (exponentValue > 0)
-			{
 				result = newNumber + GetZeros(exponentValue - decimalParts[1].Length);
-			}
 			else
 			{
 				// negative exponent 
@@ -76,7 +78,7 @@ namespace SonicRetro.SAModel
 		public static string GetZeros(int zeroCount)
 		{
 			if (zeroCount < 0)
-				zeroCount = System.Math.Abs(zeroCount);
+				zeroCount = Math.Abs(zeroCount);
 			return new string('0', zeroCount);
 		}
 
@@ -84,60 +86,75 @@ namespace SonicRetro.SAModel
 		{
 			if (i < 10 && i > -1)
 				return i.ToString(NumberFormatInfo.InvariantInfo);
-			else
-				return "0x" + i.ToString("X");
+			return "0x" + i.ToString("X");
 		}
 
 		public static string ToCHex(this uint i)
 		{
 			if (i < 10)
 				return i.ToString(NumberFormatInfo.InvariantInfo);
-			else
-				return "0x" + i.ToString("X");
+			return "0x" + i.ToString("X");
 		}
 
 		public static string ToCHex(this ulong i)
 		{
 			if (i < 10)
 				return i.ToString(NumberFormatInfo.InvariantInfo);
-			else
-				return "0x" + i.ToString("X");
+			return "0x" + i.ToString("X");
 		}
 
 		public static string ToC(this string str)
 		{
-			if (str == null) return "NULL";
-			Encoding enc = System.Text.Encoding.GetEncoding(932);
+			if (str == null)
+				return "NULL";
+			Encoding enc = Encoding.GetEncoding(932);
 			StringBuilder result = new StringBuilder("\"");
 			foreach (char item in str)
 			{
-				if (item == '\0')
-					result.Append(@"\0");
-				else if (item == '\a')
-					result.Append(@"\a");
-				else if (item == '\b')
-					result.Append(@"\b");
-				else if (item == '\f')
-					result.Append(@"\f");
-				else if (item == '\n')
-					result.Append(@"\n");
-				else if (item == '\r')
-					result.Append(@"\r");
-				else if (item == '\t')
-					result.Append(@"\t");
-				else if (item == '\v')
-					result.Append(@"\v");
-				else if (item == '"')
-					result.Append(@"\""");
-				else if (item == '\\')
-					result.Append(@"\\");
-				else if (item < ' ')
-					result.AppendFormat(@"\{0}", Convert.ToString((short)item, 8).PadLeft(3, '0'));
-				else if (item > '\x7F')
-					foreach (byte b in enc.GetBytes(item.ToString()))
-						result.AppendFormat(@"\{0}", Convert.ToString(b, 8).PadLeft(3, '0'));
-				else
-					result.Append(item);
+				switch (item)
+				{
+					case '\0':
+						result.Append(@"\0");
+						break;
+					case '\a':
+						result.Append(@"\a");
+						break;
+					case '\b':
+						result.Append(@"\b");
+						break;
+					case '\f':
+						result.Append(@"\f");
+						break;
+					case '\n':
+						result.Append(@"\n");
+						break;
+					case '\r':
+						result.Append(@"\r");
+						break;
+					case '\t':
+						result.Append(@"\t");
+						break;
+					case '\v':
+						result.Append(@"\v");
+						break;
+					case '"':
+						result.Append(@"\""");
+						break;
+					case '\\':
+						result.Append(@"\\");
+						break;
+					default:
+						if (item < ' ')
+							result.AppendFormat(@"\{0}", Convert.ToString((short)item, 8).PadLeft(3, '0'));
+						else if (item > '\x7F')
+						{
+							foreach (byte b in enc.GetBytes(item.ToString()))
+								result.AppendFormat(@"\{0}", Convert.ToString(b, 8).PadLeft(3, '0'));
+						}
+						else
+							result.Append(item);
+						break;
+				}
 			}
 			result.Append("\"");
 			return result.ToString();
@@ -147,14 +164,16 @@ namespace SonicRetro.SAModel
 		{
 			StringBuilder result = new StringBuilder(s.Length + 1);
 			foreach (char item in s)
+			{
 				if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
 					result.Append(item);
+			}
 			if (result[0] >= '0' & result[0] <= '9')
 				result.Insert(0, '_');
 			return result.ToString();
 		}
 
-		static readonly Random rand = new Random();
+		private static readonly Random rand = new Random();
 
 		public static string GenerateIdentifier()
 		{
@@ -165,12 +184,9 @@ namespace SonicRetro.SAModel
 		{
 			if (list.Contains(item))
 				return list.IndexOf(item);
-			else
-			{
-				int val = list.Count;
-				list.Add(item);
-				return val;
-			}
+			int val = list.Count;
+			list.Add(item);
+			return val;
 		}
 	}
 }

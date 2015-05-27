@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			this.index = index;
 			COL = new COL();
-			COL.Model = new SonicRetro.SAModel.Object();
+			COL.Model = new SonicRetro.SAModel.NJS_OBJECT();
 			COL.Model.Position = position;
 			COL.Model.Rotation = rotation;
 			ImportModel(filePath, dev);
@@ -69,7 +69,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			this.index = index;
 			COL = new COL();
-			COL.Model = new SonicRetro.SAModel.Object();
+			COL.Model = new SonicRetro.SAModel.NJS_OBJECT();
 			COL.Model.Attach = attach;
 			COL.Model.Position = position;
 			COL.Model.Rotation = rotation;

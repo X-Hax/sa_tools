@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Text;
 
 namespace SonicRetro.SAModel
@@ -26,7 +26,7 @@ namespace SonicRetro.SAModel
         {
             int i = data.LastIndexOf(',');
             Center = new Vertex(data.Substring(0, i));
-            Radius = float.Parse(data.Substring(i + 1), System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            Radius = float.Parse(data.Substring(i + 1), NumberStyles.Float, NumberFormatInfo.InvariantInfo);
         }
 
         public BoundingSphere(Vertex center, float radius)
@@ -51,12 +51,12 @@ namespace SonicRetro.SAModel
 
         public override string ToString()
         {
-            return Center.ToString() + ", " + Radius.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return Center.ToString() + ", " + Radius.ToString(NumberFormatInfo.InvariantInfo);
         }
 
         public string ToStruct()
         {
-            System.Text.StringBuilder result = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             result.Append(Center.ToStruct());
             result.Append(", ");
             result.Append(Radius.ToC());

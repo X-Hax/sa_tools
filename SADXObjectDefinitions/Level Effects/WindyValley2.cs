@@ -12,7 +12,7 @@ namespace SADXObjectDefinitions.Level_Effects
 {
 	class WindyValley2 : LevelDefinition
 	{
-		Object[] models = new Object[3];
+		NJS_OBJECT[] models = new NJS_OBJECT[3];
 		Mesh[][] meshes = new Mesh[3][];
 
 		public override void Init(IniLevelData data, byte act, Device dev)

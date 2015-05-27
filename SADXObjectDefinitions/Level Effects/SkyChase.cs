@@ -11,7 +11,7 @@ namespace SADXObjectDefinitions.Level_Effects
 {
 	class SkyChase : LevelDefinition
 	{
-		Object carriermdl;
+		NJS_OBJECT carriermdl;
 		Mesh[] carriermesh;
 
 		public override void Init(IniLevelData data, byte act, Device dev)

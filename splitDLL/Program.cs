@@ -139,7 +139,7 @@ namespace splitDLL
 						break;
 					case "model":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, modelfmt);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, modelfmt);
 							DllItemInfo info = new DllItemInfo();
 							info.Export = name;
 							info.Label = mdl.Name;
@@ -158,7 +158,7 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, modelfmt);
+								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								DllItemInfo info = new DllItemInfo();
 								info.Export = name;
@@ -177,7 +177,7 @@ namespace splitDLL
 						break;
 					case "basicmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Basic);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
 							DllItemInfo info = new DllItemInfo();
 							info.Export = name;
 							info.Label = mdl.Name;
@@ -196,7 +196,7 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Basic);
+								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								DllItemInfo info = new DllItemInfo();
 								info.Export = name;
@@ -215,7 +215,7 @@ namespace splitDLL
 						break;
 					case "basicdxmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.BasicDX);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
 							DllItemInfo info = new DllItemInfo();
 							info.Export = name;
 							info.Label = mdl.Name;
@@ -234,7 +234,7 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.BasicDX);
+								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								DllItemInfo info = new DllItemInfo();
 								info.Export = name;
@@ -253,7 +253,7 @@ namespace splitDLL
 						break;
 					case "chunkmodel":
 						{
-							SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, address, imageBase, ModelFormat.Chunk);
+							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
 							DllItemInfo info = new DllItemInfo();
 							info.Export = name;
 							info.Label = mdl.Name;
@@ -272,7 +272,7 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.Object mdl = new SonicRetro.SAModel.Object(datafile, ptr, imageBase, ModelFormat.Chunk);
+								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								DllItemInfo info = new DllItemInfo();
 								info.Export = name;
@@ -388,13 +388,13 @@ namespace splitDLL
 			return labels;
 		}
 
-		static List<string> GetLabels(this SonicRetro.SAModel.Object obj)
+		static List<string> GetLabels(this SonicRetro.SAModel.NJS_OBJECT obj)
 		{
 			List<string> labels = new List<string>() { obj.Name };
 			if (obj.Attach != null)
 				labels.AddRange(obj.Attach.GetLabels());
 			if (obj.Children != null)
-				foreach (SonicRetro.SAModel.Object o in obj.Children)
+				foreach (SonicRetro.SAModel.NJS_OBJECT o in obj.Children)
 					labels.AddRange(o.GetLabels());
 			return labels;
 		}
@@ -438,11 +438,11 @@ namespace splitDLL
 	{
 		public string Filename { get; private set; }
 		public string Name { get; private set; }
-		public SonicRetro.SAModel.Object Model { get; private set; }
+		public SonicRetro.SAModel.NJS_OBJECT Model { get; private set; }
 		public ModelFormat Format { get; private set; }
 		public List<string> Animations { get; private set; }
 
-		public ModelAnimations(string filename, string name, SonicRetro.SAModel.Object model, ModelFormat format)
+		public ModelAnimations(string filename, string name, SonicRetro.SAModel.NJS_OBJECT model, ModelFormat format)
 		{
 			Filename = filename;
 			Name = name;

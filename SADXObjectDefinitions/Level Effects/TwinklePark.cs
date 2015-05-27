@@ -12,7 +12,7 @@ namespace SADXObjectDefinitions.Level_Effects
 {
 	class TwinklePark : LevelDefinition
 	{
-		Object model;
+		NJS_OBJECT model;
 		Mesh[] meshes;
 		Vector3 Skybox_Scale;
 		bool NoRender;

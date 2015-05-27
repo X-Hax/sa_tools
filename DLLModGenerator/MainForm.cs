@@ -143,7 +143,7 @@ namespace DLLModGenerator
 						labels.AddRange(tbl.GetLabels());
 						break;
 					case "model":
-						SonicRetro.SAModel.Object mdl = new ModelFile(item.Key).Model;
+						SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(item.Key).Model;
 						writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
 						labels.AddRange(mdl.GetLabels());
 						break;
@@ -237,7 +237,7 @@ namespace DLLModGenerator
 							case "basicmodel":
 							case "chunkmodel":
 							case "basicdxmodel":
-								SonicRetro.SAModel.Object mdl = new ModelFile(item.Key).Model;
+								SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(item.Key).Model;
 								labels.AddRange(mdl.GetLabels());
 								break;
 							case "animation":
@@ -279,13 +279,13 @@ namespace DLLModGenerator
 			return labels;
 		}
 
-		internal static List<string> GetLabels(this SonicRetro.SAModel.Object obj)
+		internal static List<string> GetLabels(this SonicRetro.SAModel.NJS_OBJECT obj)
 		{
 			List<string> labels = new List<string>() { obj.Name };
 			if (obj.Attach != null)
 				labels.AddRange(obj.Attach.GetLabels());
 			if (obj.Children != null)
-				foreach (SonicRetro.SAModel.Object o in obj.Children)
+				foreach (SonicRetro.SAModel.NJS_OBJECT o in obj.Children)
 					labels.AddRange(o.GetLabels());
 			return labels;
 		}
