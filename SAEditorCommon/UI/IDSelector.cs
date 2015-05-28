@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 
@@ -25,25 +25,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void InitializeComponent()
         {
-            this.listBox1 = new ListBox();
-            this.SuspendLayout();
+            listBox1 = new ListBox();
+            SuspendLayout();
             // 
             // listView1
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.Location = new System.Drawing.Point(0, 0);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(150, 150);
-            this.listBox1.TabIndex = 1;
-            this.listBox1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            listBox1.Dock = DockStyle.Fill;
+            listBox1.Location = new Point(0, 0);
+            listBox1.Name = "listBox1";
+            listBox1.Size = new Size(150, 150);
+            listBox1.TabIndex = 1;
+            listBox1.DoubleClick += listView1_DoubleClick;
+            listBox1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             // 
             // BlockControl
             // 
-            this.Controls.Add(this.listBox1);
-            this.Name = "IDControl";
-            this.Load += new System.EventHandler(this.IDControl_Load);
-            this.ResumeLayout(false);
+            Controls.Add(listBox1);
+            Name = "IDControl";
+            Load += IDControl_Load;
+            ResumeLayout(false);
         }
 
         private void IDControl_Load(object sender, EventArgs e)
@@ -64,7 +64,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         }
     }
 
-    [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public class IDEditor : UITypeEditor
     {
         public IDEditor()

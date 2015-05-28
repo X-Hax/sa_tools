@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 
@@ -55,7 +48,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         private void doneButton_Click(object sender, EventArgs e)
         {
             FormUpdated();
-            this.Close();
+            Close();
         }
 
         private void fullBrightCheck_Click(object sender, EventArgs e)

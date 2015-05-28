@@ -1,17 +1,13 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-
+using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
-using VrSharp.PvrTexture;
-
-using SonicRetro.SAModel;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SonicRetro.SAModel.SAEditorCommon.Import;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -142,19 +138,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public static string GetStats()
 		{
-			int landtableItems = LevelData.geo.COL.Count;
-			int textureArcCount = LevelData.Textures.Count;
+			int landtableItems = geo.COL.Count;
+			int textureArcCount = Textures.Count;
 			int setItems = 0;
-			int animatedItems = LevelData.geo.Anim.Count;
+			int animatedItems = geo.Anim.Count;
 			int cameraItems = 0;
 
-			if (LevelData.SETItems != null) setItems = LevelData.SETItems[LevelData.Character].Count;
-			if (LevelData.CAMItems != null) cameraItems = LevelData.CAMItems[LevelData.Character].Count;
+			if (SETItems != null) setItems = SETItems[Character].Count;
+			if (CAMItems != null) cameraItems = CAMItems[Character].Count;
 
 			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
 		}
 
-		public static void DuplicateSelection(Device d3ddevice, SAEditorCommon.UI.EditorItemSelection selection, out bool errorFlag, out string errorMsg)
+		public static void DuplicateSelection(Device d3ddevice, EditorItemSelection selection, out bool errorFlag, out string errorMsg)
 		{
 			if (selection.ItemCount < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; }
 
@@ -169,7 +165,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					SETItem originalItem = (SETItem)currentItems[i];
 					SETItem newItem = new SETItem(originalItem.GetBytes(), 0, selection);
 
-					LevelData.SETItems[LevelData.Character].Add(newItem);
+					SETItems[Character].Add(newItem);
 					newItems.Add(newItem);
 				}
 				else if (currentItems[i] is LevelItem)
@@ -185,7 +181,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					CAMItem originalItem = (CAMItem)currentItems[i];
 					CAMItem newItem = new CAMItem(originalItem.GetBytes(), 0, selection);
 
-					LevelData.CAMItems[LevelData.Character].Add(newItem);
+					CAMItems[Character].Add(newItem);
 					newItems.Add(newItem);
 				}
 			}
@@ -199,7 +195,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			errorMsg = "";
 		}
 
-		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, SAModel.Direct3D.EditorCamera camera, out bool errorFlag, out string errorMsg, UI.EditorItemSelection selectionManager)
+		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
 		{
 			List<Item> createdItems = new List<Item>();
 
@@ -215,23 +211,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bool importError = false;
 			string importErrorMsg = "";
 
-			if ((filePathInfo.Extension == ".obj") || (filePathInfo.Extension == ".objf"))
+			switch (filePathInfo.Extension)
 			{
-				Microsoft.DirectX.Vector3 pos = camera.Position + (-20 * camera.Look);
-				LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), LevelItems.Count, selectionManager);
+				case ".obj":
+				case ".objf":
+					Vector3 pos = camera.Position + (-20 * camera.Look);
+					LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), LevelItems.Count, selectionManager)
+					{
+						Visible = true
+					};
 
-				item.Visible = true;
-				createdItems.Add(item);
-			}
-			else if (filePathInfo.Extension == ".txt")
-			{
-				SAEditorCommon.Import.NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg, selectionManager);
-			}
-			else
-			{
-				errorFlag = true;
-				errorMsg = "Invalid file format!";
-				return null;
+					createdItems.Add(item);
+					break;
+
+				case ".txt":
+					NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg, selectionManager);
+					break;
+
+				default:
+					errorFlag = true;
+					errorMsg = "Invalid file format!";
+					return null;
 			}
 
 			StateChanged();

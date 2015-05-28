@@ -1,10 +1,7 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-
-using SonicRetro.SAModel;
+using System.Globalization;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -44,9 +41,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public EditableRotation(string data)
         {
             string[] a = data.Split(',');
-            X = Rotation.DegToBAMS(float.Parse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
-            Y = Rotation.DegToBAMS(float.Parse(a[1], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
-            Z = Rotation.DegToBAMS(float.Parse(a[2], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo));
+            X = Rotation.DegToBAMS(float.Parse(a[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
+            Y = Rotation.DegToBAMS(float.Parse(a[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
+            Z = Rotation.DegToBAMS(float.Parse(a[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
         }
 
         public EditableRotation(int x, int y, int z)
@@ -67,7 +64,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override string ToString()
         {
-            return Rotation.BAMSToDeg(X).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Rotation.BAMSToDeg(Y).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Rotation.BAMSToDeg(Z).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return Rotation.BAMSToDeg(X).ToString(NumberFormatInfo.InvariantInfo) + ", " + Rotation.BAMSToDeg(Y).ToString(NumberFormatInfo.InvariantInfo) + ", " + Rotation.BAMSToDeg(Z).ToString(NumberFormatInfo.InvariantInfo);
         }
 
         public int[] ToArray()
@@ -129,7 +126,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return base.CanConvertTo(context, destinationType);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(string) && value is EditableRotation)
                 return ((EditableRotation)value).ToString();
@@ -143,7 +140,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is string)
                 return new EditableRotation(new Rotation((string)value));

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
 using SonicRetro.SAModel.Direct3D;
-
 using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
-
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
@@ -37,7 +33,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public Item(EditorItemSelection selectionManager)
 		{
-			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 		}
 
 		void selectionManager_SelectionChanged(EditorItemSelection sender)
@@ -79,8 +75,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			if (SelectedItems == null) return new Vertex();
 
-			Vertex center = new Vertex();
-
 			List<Vertex> vertList = new List<Vertex>();
 			foreach (Item item in SelectedItems)
 			{
@@ -96,9 +90,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				}
 			}
 
-			center = Vertex.CenterOfPoints(vertList);
-
-			return center;
+			return Vertex.CenterOfPoints(vertList);
 		}
 
 		public Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
@@ -107,7 +99,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			try
 			{
-				SAModel.Direct3D.MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
+				MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
 			}
 			catch (NotSupportedException)
 			{

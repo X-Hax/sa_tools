@@ -6,8 +6,6 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using Extensions = SonicRetro.SAModel.Direct3D.Extensions;
-using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -30,8 +28,6 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
-			double v4 = (1 - cols) * 7.5;
-			double v5 = (1 - rows) * 7.5;
 			transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
 			for (int i = 0; i < rows; ++i)
 			{
@@ -56,8 +52,6 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
-			double v4 = (1 - cols) * 7.5;
-			double v5 = (1 - rows) * 7.5;
 			transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
 			for (int i = 0; i < rows; ++i)
 			{

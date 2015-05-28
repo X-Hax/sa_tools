@@ -1,27 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	public class StartPosItem : Item
 	{
 		private NJS_OBJECT Model;
-		private Microsoft.DirectX.Direct3D.Mesh[] Meshes;
+		private Mesh[] Meshes;
 		private string texture;
 		private float offset;
 
-		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, UI.EditorItemSelection selectionManager)
+		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
-			Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
+			Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
 					Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
@@ -50,12 +50,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override void Paste()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public override void Delete()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -70,7 +70,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			float dist = SonicRetro.SAModel.Direct3D.Extensions.Distance(camera.Position, this.Position.ToVector3());
+			float dist = Direct3D.Extensions.Distance(camera.Position, Position.ToVector3());
 			if (dist > camera.DrawDistance) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();

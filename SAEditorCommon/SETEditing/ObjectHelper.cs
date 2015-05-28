@@ -4,7 +4,6 @@ using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
@@ -18,25 +17,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
         new CustomVertex.PositionTextured(8, -8, 0, 0, 1),
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0)};
-        internal static Microsoft.DirectX.Direct3D.Mesh SquareMesh;
+        internal static Mesh SquareMesh;
 
         public static void Init(Device device, Bitmap unknownBitmap)
         {
-            SquareMesh = new Microsoft.DirectX.Direct3D.Mesh(2, 6, MeshFlags.Managed, CustomVertex.PositionTextured.Format, device);
+            SquareMesh = new Mesh(2, 6, MeshFlags.Managed, CustomVertex.PositionTextured.Format, device);
             List<short> ib = new List<short>();
             for (int i = 0; i < SquareVerts.Length; i++)
                 ib.Add((short)(i));
             SquareMesh.SetVertexBufferData(SquareVerts, LockFlags.None);
             SquareMesh.SetIndexBufferData(ib.ToArray(), LockFlags.None);
 
-            if (unknownBitmap != null)
-            {
-                QuestionMark = new Texture(device, unknownBitmap, Usage.None, Pool.Managed);
-            }
-            else
-            {
-				QuestionMark = new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);
-            }
+            QuestionMark = unknownBitmap != null ? new Texture(device, unknownBitmap, Usage.None, Pool.Managed) : new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);
         }
 
         internal static Texture QuestionMark;
@@ -46,11 +38,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
             return new ModelFile(file).Model;
         }
 
-        public static Microsoft.DirectX.Direct3D.Mesh[] GetMeshes(NJS_OBJECT model, Device dev)
+        public static Mesh[] GetMeshes(NJS_OBJECT model, Device dev)
         {
             model.ProcessVertexData();
             NJS_OBJECT[] models = model.GetObjects();
-            Microsoft.DirectX.Direct3D.Mesh[] Meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
+            Mesh[] Meshes = new Mesh[models.Length];
             for (int i = 0; i < models.Length; i++)
                 if (models[i].Attach != null)
                     Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
@@ -97,7 +89,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
         public static float BAMSToRad(int BAMS)
         {
-            return SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(BAMS);
+            return Direct3D.Extensions.BAMSToRad(BAMS);
         }
 
         public static int RadToBAMS(float rad)
@@ -117,12 +109,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
         public static float ConvertBAMS(int BAMS)
         {
-            return SonicRetro.SAModel.Direct3D.Extensions.BAMSToFloat(BAMS);
+            return Direct3D.Extensions.BAMSToFloat(BAMS);
         }
 
         public static float ConvertBAMSInv(int BAMS)
         {
-			return SonicRetro.SAModel.Direct3D.Extensions.BAMSToFloatInv(BAMS);
+			return Direct3D.Extensions.BAMSToFloatInv(BAMS);
         }
     }
 }

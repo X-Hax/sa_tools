@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Reflection;
-
+using System.Globalization;
 using Microsoft.DirectX;
-
-using SonicRetro.SAModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -29,9 +25,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public EditableVertex(string data)
         {
             string[] a = data.Split(',');
-            X = float.Parse(a[0], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Y = float.Parse(a[1], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Z = float.Parse(a[2], System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+            X = float.Parse(a[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
+            Y = float.Parse(a[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
+            Z = float.Parse(a[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
         }
 
         public EditableVertex(Vertex data)
@@ -59,7 +55,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override string ToString()
         {
-            return X.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+            return X.ToString(NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(NumberFormatInfo.InvariantInfo) + ", " + Z.ToString(NumberFormatInfo.InvariantInfo);
         }
 
         public float[] ToArray()
@@ -126,7 +122,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return base.CanConvertTo(context, destinationType);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(string) && value is EditableVertex)
                 return ((EditableVertex)value).ToString();
@@ -140,7 +136,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is string)
                 return new EditableVertex(new Vertex((string)value));

@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		internal Device d3ddevice;
-		SonicRetro.SAModel.SAEditorCommon.IniData ini;
+		SAEditorCommon.IniData ini;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		string levelID;
 		internal string levelName;
@@ -188,7 +188,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void LoadINI(string filename)
 		{
 			isStageLoaded = false;
-			ini = SonicRetro.SAModel.SAEditorCommon.IniData.Load(filename);
+			ini = SAEditorCommon.IniData.Load(filename);
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			levelNames = new Dictionary<string, List<string>>();
 
@@ -641,7 +641,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								codeaddr = "0";
 
 							ObjectData defgroup = objdefini[codeaddr];
-							ObjectDefinition def = null;
+							ObjectDefinition def;
 
 							if (!string.IsNullOrEmpty(defgroup.CodeFile))
 							{
@@ -679,17 +679,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 									{
 										CompilerParameters para =
 											new CompilerParameters(new string[]
-										{
-											"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-											Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-											Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-											Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-											Assembly.GetAssembly(typeof (ObjectDefinition)).Location
-										});
-										para.GenerateExecutable = false;
-										para.GenerateInMemory = false;
-										para.IncludeDebugInformation = true;
-										para.OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile);
+											{
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
+												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
+												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
+											})
+											{
+												GenerateExecutable = false,
+												GenerateInMemory = false,
+												IncludeDebugInformation = true,
+												OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+											};
 										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
 										if (res.Errors.HasErrors)
 										{
@@ -945,7 +947,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					if (!string.IsNullOrEmpty(ini.Paths))
 					{
-						progress.SetTaskAndStep("Reticulating splines...", null);
+						progress.SetTaskAndStep("Reticulating splines...");
 
 						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
 							levelact.ToString());
@@ -1278,7 +1280,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
-			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
+			d3ddevice.Material = new Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
 			#endregion
@@ -1643,7 +1645,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						for (int i = 0; i < selectedItems.ItemCount; i++)
 						{
-							combinedBounds = SAModel.Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
+							combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
 						}
 
 						cam.MoveToShowBounds(combinedBounds);
@@ -2051,8 +2053,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			
 			foreach (string s in importFileDialog.FileNames)
 			{
-				bool errorFlag = false;
-				string errorMsg = "";
+				bool errorFlag;
+				string errorMsg;
 
 				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
 
@@ -2087,8 +2089,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				bool errorFlag = false;
-				string errorMsg = "";
+				bool errorFlag;
+				string errorMsg;
 
 				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
 
@@ -2304,8 +2306,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			bool errorFlag = false;
-			string errorMsg = "";
+			bool errorFlag;
+			string errorMsg;
 			LevelData.DuplicateSelection(d3ddevice, selectedItems, out errorFlag, out errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);

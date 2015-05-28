@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
-using Microsoft.DirectX.Direct3D;
+using System.Drawing.Design;
 using Microsoft.DirectX;
-
-using SonicRetro.SAModel;
+using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.UI;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -59,7 +57,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		protected bool isLoaded = false;
 
 		private ushort id;
-		[Editor(typeof(IDEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Editor(typeof(IDEditor), typeof(UITypeEditor))]
 		public ushort ID
 		{
 			get { return id; }

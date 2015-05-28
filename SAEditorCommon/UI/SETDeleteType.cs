@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 
@@ -28,7 +22,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void cancel_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
 		private void deleteButton_Click(object sender, EventArgs e)
@@ -49,8 +43,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				}
 			}
 
-			DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Close();
+			DialogResult = DialogResult.OK;
+			Close();
 		}
 	}
 }

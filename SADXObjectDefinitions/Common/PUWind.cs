@@ -6,7 +6,6 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using Mesh = Microsoft.DirectX.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -19,9 +18,11 @@ namespace SADXObjectDefinitions.Common
 		public override void Init(ObjectData data, string name, Device dev)
 		{
 			mesh = Mesh.Box(dev, 1f, 1f, 1f);
-			material = new NJS_MATERIAL();
-			material.DiffuseColor = Color.FromArgb(180, 180, 180, 180);
-			material.UseAlpha = true;
+			material = new NJS_MATERIAL
+			{
+				DiffuseColor = Color.FromArgb(180, 180, 180, 180),
+				UseAlpha = true
+			};
 			texture = new Texture(dev, new Bitmap(2, 2), 0, Pool.Managed);
 		}
 

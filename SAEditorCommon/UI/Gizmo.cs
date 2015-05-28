@@ -14,30 +14,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	public static class Gizmo
 	{
 		// 'null' meshes - for when no transforms are available, but users still want to know that something *is* selected
-		public static Microsoft.DirectX.Direct3D.Mesh XNullMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh YNullMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZNullMesh { get; set; }
+		public static Mesh XNullMesh { get; set; }
+		public static Mesh YNullMesh { get; set; }
+		public static Mesh ZNullMesh { get; set; }
 
 		// movement meshes - used for both display and mouse picking
-		public static Microsoft.DirectX.Direct3D.Mesh XMoveMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh YMoveMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZMoveMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh XYMoveMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZXMoveMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZYMoveMesh { get; set; }
+		public static Mesh XMoveMesh { get; set; }
+		public static Mesh YMoveMesh { get; set; }
+		public static Mesh ZMoveMesh { get; set; }
+		public static Mesh XYMoveMesh { get; set; }
+		public static Mesh ZXMoveMesh { get; set; }
+		public static Mesh ZYMoveMesh { get; set; }
 
 		// rotation meshes - used for both display and mouse picking
-		public static Microsoft.DirectX.Direct3D.Mesh XRotateMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh YRotateMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZRotateMesh { get; set; }
+		public static Mesh XRotateMesh { get; set; }
+		public static Mesh YRotateMesh { get; set; }
+		public static Mesh ZRotateMesh { get; set; }
 
 		// scale meshes - used for both display and mouse picking
-		public static Microsoft.DirectX.Direct3D.Mesh XScaleMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh YScaleMesh { get; set; }
-		public static Microsoft.DirectX.Direct3D.Mesh ZScaleMesh { get; set; }
+		public static Mesh XScaleMesh { get; set; }
+		public static Mesh YScaleMesh { get; set; }
+		public static Mesh ZScaleMesh { get; set; }
 
 		// box mesh - you know, just in case you need one.
-		public static Microsoft.DirectX.Direct3D.Mesh BoxMesh { get; set; }
+		public static Mesh BoxMesh { get; set; }
 
 		// materials for rendering the above meshes
 		public static NJS_MATERIAL XMaterial { get; set; }
@@ -81,29 +81,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			#endregion
 
 			#region Loading Meshes and Materials from Streams
-			XMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(x_MoveStream, MeshFlags.Managed, d3dDevice, out xMaterials);
-			YMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(y_MoveStream, MeshFlags.Managed, d3dDevice, out yMaterials);
-			ZMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(z_MoveStream, MeshFlags.Managed, d3dDevice, out zMaterials);
+			XMoveMesh = Mesh.FromStream(x_MoveStream, MeshFlags.Managed, d3dDevice, out xMaterials);
+			YMoveMesh = Mesh.FromStream(y_MoveStream, MeshFlags.Managed, d3dDevice, out yMaterials);
+			ZMoveMesh = Mesh.FromStream(z_MoveStream, MeshFlags.Managed, d3dDevice, out zMaterials);
 
-			XNullMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(x_NullStream, MeshFlags.Managed, d3dDevice);
-			YNullMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(y_NullStream, MeshFlags.Managed, d3dDevice);
-			ZNullMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(z_NullStream, MeshFlags.Managed, d3dDevice);
+			XNullMesh = Mesh.FromStream(x_NullStream, MeshFlags.Managed, d3dDevice);
+			YNullMesh = Mesh.FromStream(y_NullStream, MeshFlags.Managed, d3dDevice);
+			ZNullMesh = Mesh.FromStream(z_NullStream, MeshFlags.Managed, d3dDevice);
 
-			XYMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(xy_MoveStream, MeshFlags.Managed, d3dDevice, out doubleAxisMaterials);
-			ZXMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(zx_MoveStream, MeshFlags.Managed, d3dDevice);
-			ZYMoveMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(zy_MoveStream, MeshFlags.Managed, d3dDevice);
+			XYMoveMesh = Mesh.FromStream(xy_MoveStream, MeshFlags.Managed, d3dDevice, out doubleAxisMaterials);
+			ZXMoveMesh = Mesh.FromStream(zx_MoveStream, MeshFlags.Managed, d3dDevice);
+			ZYMoveMesh = Mesh.FromStream(zy_MoveStream, MeshFlags.Managed, d3dDevice);
 
-			XRotateMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(x_RotationStream, MeshFlags.Managed, d3dDevice);
-			YRotateMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(y_RotationStream, MeshFlags.Managed, d3dDevice);
-			ZRotateMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(z_RotationStream, MeshFlags.Managed, d3dDevice);
+			XRotateMesh = Mesh.FromStream(x_RotationStream, MeshFlags.Managed, d3dDevice);
+			YRotateMesh = Mesh.FromStream(y_RotationStream, MeshFlags.Managed, d3dDevice);
+			ZRotateMesh = Mesh.FromStream(z_RotationStream, MeshFlags.Managed, d3dDevice);
 
-			XScaleMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(x_ScaleStream, MeshFlags.Managed, d3dDevice);
-			YScaleMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(y_ScaleStream, MeshFlags.Managed, d3dDevice);
-			ZScaleMesh = Microsoft.DirectX.Direct3D.Mesh.FromStream(z_ScaleStream, MeshFlags.Managed, d3dDevice);
+			XScaleMesh = Mesh.FromStream(x_ScaleStream, MeshFlags.Managed, d3dDevice);
+			YScaleMesh = Mesh.FromStream(y_ScaleStream, MeshFlags.Managed, d3dDevice);
+			ZScaleMesh = Mesh.FromStream(z_ScaleStream, MeshFlags.Managed, d3dDevice);
 
-			BoxMesh = Microsoft.DirectX.Direct3D.Mesh.Box(d3dDevice, 1, 1, 1);
+			BoxMesh = Mesh.Box(d3dDevice, 1, 1, 1);
 
-			Microsoft.DirectX.Direct3D.Mesh TexturedBox = BoxMesh.Clone(BoxMesh.Options.Value,
+			Mesh TexturedBox = BoxMesh.Clone(BoxMesh.Options.Value,
 				VertexFormats.Position | VertexFormats.Normal | VertexFormats.Texture0 |
 				VertexFormats.Texture1, BoxMesh.Device);
 

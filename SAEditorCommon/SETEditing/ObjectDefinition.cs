@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using System.ComponentModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
@@ -105,7 +104,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			this.category = category;
 			this.description = description;
 			this.defaultValue = defaultValue;
-			this.attributes = null;
+			attributes = null;
 			this.getMethod = getMethod;
 			this.setMethod = setMethod;
 		}
@@ -377,7 +376,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			if (item.DefaultValue == null)
 				return false;
 			else
-				return !this.GetValue(component).Equals(item.DefaultValue);
+				return !GetValue(component).Equals(item.DefaultValue);
 		}
 
 		public override object GetValue(object component)
@@ -397,7 +396,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
 		public override bool ShouldSerializeValue(object component)
 		{
-			object val = this.GetValue(component);
+			object val = GetValue(component);
 
 			if (item.DefaultValue == null && val == null)
 				return false;

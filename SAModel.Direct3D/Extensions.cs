@@ -49,7 +49,7 @@ namespace SonicRetro.SAModel.Direct3D
 			device.SetTransform(TransformType.World, transform);
 			if (material != null)
 			{
-				device.Material = new Microsoft.DirectX.Direct3D.Material
+				device.Material = new Material
 				{
 					Diffuse = material.DiffuseColor,
 					Ambient = material.DiffuseColor,
@@ -149,7 +149,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 			else
 			{
-				device.Material = new Microsoft.DirectX.Direct3D.Material
+				device.Material = new Material
 				{
 					Diffuse = Color.White,
 					Ambient = Color.White,
@@ -197,27 +197,29 @@ namespace SonicRetro.SAModel.Direct3D
 			// and cast 3 points from each one - center, radius + up, radius + down. Pooly all of them,
 			// and generate a new sphere from that and you've got a merged sphere
 
-			List<CustomVertex.PositionOnly> allPoints = new List<CustomVertex.PositionOnly>();
+			List<CustomVertex.PositionOnly> allPoints = new List<CustomVertex.PositionOnly>
+			{
+				new CustomVertex.PositionOnly(sphereA.Center.ToVector3()),
+				new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, 1 * sphereA.Radius, 0)),
+				new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, -1 * sphereA.Radius, 0)),
+				new CustomVertex.PositionOnly(sphereB.Center.ToVector3()),
+				new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, 1 * sphereB.Radius, 0)),
+				new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, -1 * sphereB.Radius, 0))
+			};
 
-			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3()));
-			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, 1 * sphereA.Radius, 0)));
-			allPoints.Add(new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, -1 * sphereA.Radius, 0)));
 
-			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3()));
-			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, 1 * sphereB.Radius, 0)));
-			allPoints.Add(new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, -1 * sphereB.Radius, 0)));
 
 			CustomVertex.PositionOnly[] pointsArray = allPoints.ToArray();
 
 			float finalRadius;
-			Vector3 center = new Vector3();
+			Vector3 center;
 
 			finalRadius = Geometry.ComputeBoundingSphere(pointsArray, VertexFormats.Position, out center);
 
 			return new BoundingSphere(center.ToVertex(), finalRadius);
 		}
 
-		public static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh(this Attach attach, Device dev)
+		public static Mesh CreateD3DMesh(this Attach attach, Device dev)
 		{
 			int numverts = 0;
 			byte data = 0;
@@ -243,7 +245,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		private static Microsoft.DirectX.Direct3D.Mesh CreateD3DMesh<T>(Attach attach, Device dev, int numverts)
+		private static Mesh CreateD3DMesh<T>(Attach attach, Device dev, int numverts)
 		{
 			List<T> vb = new List<T>(numverts);
 			List<short> ib = new List<short>(numverts);
@@ -257,7 +259,7 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < tris.Length / 3; j++)
 					at.Add(i);
 			}
-			Microsoft.DirectX.Direct3D.Mesh functionReturnValue = new Microsoft.DirectX.Direct3D.Mesh(ib.Count / 3, vb.Count,
+			Mesh functionReturnValue = new Mesh(ib.Count / 3, vb.Count,
 				MeshFlags.Managed, (VertexElement[])typeof(T).InvokeMember("Elements",
 				System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
 				null, null, null), dev);
@@ -281,7 +283,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return (float)(BAMS / (65536 / (2 * Math.PI)));
 		}
 
-		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -329,7 +331,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModelInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -356,13 +358,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -388,13 +390,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -428,14 +430,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -462,14 +464,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -500,7 +502,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static HitResult CheckHit(this Microsoft.DirectX.Direct3D.Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+		public static HitResult CheckHit(this Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			if (mesh == null) return HitResult.NoHit;
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
@@ -510,7 +512,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return new HitResult(null, info.Dist);
 		}
 
-		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Microsoft.DirectX.Direct3D.Mesh mesh)
+		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
 			MatrixStack transform = new MatrixStack();
@@ -523,13 +525,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return new HitResult(obj, info.Dist);
 		}
 
-		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh)
+		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh)
 		{
 			int modelindex = -1;
 			return CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
 		}
 
-		private static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, ref int modelindex)
+		private static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, ref int modelindex)
 		{
 			transform.Push();
 			modelindex++;
@@ -554,14 +556,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe)
+		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Microsoft.DirectX.Direct3D.Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			transform.Push();
 			modelindex++;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-
-using Microsoft.DirectX.Direct3D;
+using System.Windows.Forms;
 using Microsoft.DirectX;
-
+using Microsoft.DirectX.Direct3D;
+using SA_Tools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
@@ -16,9 +18,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[Browsable(false)]
 		private NJS_OBJECT Model { get; set; }
 		[NonSerialized]
-		private Microsoft.DirectX.Direct3D.Mesh mesh;
+		private Mesh mesh;
 		[Browsable(false)]
-		private Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
 		[Browsable(false)]
 		public override BoundingSphere Bounds
@@ -30,25 +32,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[NonSerialized]
-		private Device dev;
+		private Device device;
 
-		public DeathZoneItem(Device dev, EditorItemSelection selectionManager)
+		public DeathZoneItem(Device device, EditorItemSelection selectionManager)
 			: base (selectionManager)
 		{
-			this.dev = dev;
+			this.device = device;
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
 		}
 
-		public DeathZoneItem(NJS_OBJECT model, SA_Tools.SA1CharacterFlags flags, Device dev, EditorItemSelection selectionManager)
+		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, Device device, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
 			Flags = flags;
-			Mesh = Model.Attach.CreateD3DMesh(dev);
-			this.dev = dev;
+			Mesh = Model.Attach.CreateD3DMesh(device);
+			this.device = device;
 		}
 
 		public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
@@ -84,11 +86,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Import Model")]
 		public void ImportModel()
 		{
-			System.Windows.Forms.OpenFileDialog dlg = new System.Windows.Forms.OpenFileDialog() { DefaultExt = "obj", Filter = "OBJ Files|*.obj;*.objf", RestoreDirectory = true };
-			if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "obj", Filter = "OBJ Files|*.obj;*.objf", RestoreDirectory = true };
+			if (dlg.ShowDialog() == DialogResult.OK)
 			{
 				Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
-				Mesh = Model.Attach.CreateD3DMesh(dev);
+				Mesh = Model.Attach.CreateD3DMesh(device);
 			}
 		}
 
@@ -107,13 +109,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			{
 				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)Model.Attach).Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
 				{
-					pw.FormUpdated += new MaterialEditor.FormUpdatedHandler(pw_FormUpdated);
+					pw.FormUpdated += pw_FormUpdated;
 					pw.ShowDialog();
 				}
 			}
 		}
 
-		public SA_Tools.SA1CharacterFlags Flags { get; set; }
+		public SA1CharacterFlags Flags { get; set; }
 
 		[Browsable(false)]
 		public bool Visible
@@ -123,17 +125,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				switch (LevelData.Character)
 				{
 					case 0:
-						return (Flags & SA_Tools.SA1CharacterFlags.Sonic) == SA_Tools.SA1CharacterFlags.Sonic;
+						return (Flags & SA1CharacterFlags.Sonic) == SA1CharacterFlags.Sonic;
 					case 1:
-						return (Flags & SA_Tools.SA1CharacterFlags.Tails) == SA_Tools.SA1CharacterFlags.Tails;
+						return (Flags & SA1CharacterFlags.Tails) == SA1CharacterFlags.Tails;
 					case 2:
-						return (Flags & SA_Tools.SA1CharacterFlags.Knuckles) == SA_Tools.SA1CharacterFlags.Knuckles;
+						return (Flags & SA1CharacterFlags.Knuckles) == SA1CharacterFlags.Knuckles;
 					case 3:
-						return (Flags & SA_Tools.SA1CharacterFlags.Amy) == SA_Tools.SA1CharacterFlags.Amy;
+						return (Flags & SA1CharacterFlags.Amy) == SA1CharacterFlags.Amy;
 					case 4:
-						return (Flags & SA_Tools.SA1CharacterFlags.Gamma) == SA_Tools.SA1CharacterFlags.Gamma;
+						return (Flags & SA1CharacterFlags.Gamma) == SA1CharacterFlags.Gamma;
 					case 5:
-						return (Flags & SA_Tools.SA1CharacterFlags.Big) == SA_Tools.SA1CharacterFlags.Big;
+						return (Flags & SA1CharacterFlags.Big) == SA1CharacterFlags.Big;
 				}
 				return false;
 			}
@@ -143,11 +145,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Sonic) == SA_Tools.SA1CharacterFlags.Sonic;
+				return (Flags & SA1CharacterFlags.Sonic) == SA1CharacterFlags.Sonic;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Sonic) | (value ? SA_Tools.SA1CharacterFlags.Sonic : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Sonic) | (value ? SA1CharacterFlags.Sonic : 0);
 			}
 		}
 
@@ -155,11 +157,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Tails) == SA_Tools.SA1CharacterFlags.Tails;
+				return (Flags & SA1CharacterFlags.Tails) == SA1CharacterFlags.Tails;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Tails) | (value ? SA_Tools.SA1CharacterFlags.Tails : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Tails) | (value ? SA1CharacterFlags.Tails : 0);
 			}
 		}
 
@@ -167,11 +169,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Knuckles) == SA_Tools.SA1CharacterFlags.Knuckles;
+				return (Flags & SA1CharacterFlags.Knuckles) == SA1CharacterFlags.Knuckles;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Knuckles) | (value ? SA_Tools.SA1CharacterFlags.Knuckles : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Knuckles) | (value ? SA1CharacterFlags.Knuckles : 0);
 			}
 		}
 
@@ -179,11 +181,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Amy) == SA_Tools.SA1CharacterFlags.Amy;
+				return (Flags & SA1CharacterFlags.Amy) == SA1CharacterFlags.Amy;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Amy) | (value ? SA_Tools.SA1CharacterFlags.Amy : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Amy) | (value ? SA1CharacterFlags.Amy : 0);
 			}
 		}
 
@@ -191,11 +193,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Gamma) == SA_Tools.SA1CharacterFlags.Gamma;
+				return (Flags & SA1CharacterFlags.Gamma) == SA1CharacterFlags.Gamma;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Gamma) | (value ? SA_Tools.SA1CharacterFlags.Gamma : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Gamma) | (value ? SA1CharacterFlags.Gamma : 0);
 			}
 		}
 
@@ -203,18 +205,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return (Flags & SA_Tools.SA1CharacterFlags.Big) == SA_Tools.SA1CharacterFlags.Big;
+				return (Flags & SA1CharacterFlags.Big) == SA1CharacterFlags.Big;
 			}
 			set
 			{
-				Flags = (Flags & ~SA_Tools.SA1CharacterFlags.Big) | (value ? SA_Tools.SA1CharacterFlags.Big : 0);
+				Flags = (Flags & ~SA1CharacterFlags.Big) | (value ? SA1CharacterFlags.Big : 0);
 			}
 		}
 
-		public SA_Tools.DeathZoneFlags Save(string path, int i)
+		public DeathZoneFlags Save(string path, int i)
 		{
-			ModelFile.CreateFile(System.IO.Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
-			return new SA_Tools.DeathZoneFlags() { Flags = Flags };
+			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
+			return new DeathZoneFlags() { Flags = Flags };
 		}
 
 		// Form property update event method

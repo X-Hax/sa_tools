@@ -9,7 +9,7 @@ namespace SonicRetro.SAModel.Direct3D
 {
     public class RenderInfo
     {
-        public Microsoft.DirectX.Direct3D.Mesh Mesh { get; private set; }
+        public Mesh Mesh { get; private set; }
         public int Subset { get; private set; }
         public Matrix Transform { get; private set; }
         public NJS_MATERIAL Material { get; private set; }
@@ -17,7 +17,7 @@ namespace SonicRetro.SAModel.Direct3D
         public FillMode FillMode { get; private set; }
         public BoundingSphere Bounds { get; private set; }
 
-        public RenderInfo(Microsoft.DirectX.Direct3D.Mesh mesh, int subset, Matrix transform, NJS_MATERIAL material, Texture texture, FillMode fillMode, BoundingSphere bounds)
+        public RenderInfo(Mesh mesh, int subset, Matrix transform, NJS_MATERIAL material, Texture texture, FillMode fillMode, BoundingSphere bounds)
         {
             Mesh = mesh;
             Subset = subset;

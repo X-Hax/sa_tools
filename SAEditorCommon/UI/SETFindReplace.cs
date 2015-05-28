@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 
@@ -33,8 +26,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void ReplaceTypesButton_Click(object sender, EventArgs e)
@@ -57,13 +50,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             if (!changed)
             {
                 MessageBox.Show("No items found, no replacements made.");
-                DialogResult = System.Windows.Forms.DialogResult.No;
-                this.Close();
+                DialogResult = DialogResult.No;
+                Close();
                 return;
             }
 
-            DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

@@ -19,14 +19,14 @@ namespace SonicRetro.SAModel.SALVL
 		public MainForm()
 		{
 			InitializeComponent();
-			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			Application.ThreadException += Application_ThreadException;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
 			File.WriteAllText("SALVL.log", e.Exception.ToString());
-			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SALVL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
+			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SALVL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
@@ -54,8 +54,8 @@ namespace SonicRetro.SAModel.SALVL
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 
-			LevelData.StateChanged += new LevelData.LevelStateChangeHandler(LevelData_StateChanged);
-			panel1.MouseWheel += new MouseEventHandler(panel1_MouseWheel);
+			LevelData.StateChanged += LevelData_StateChanged;
+			panel1.MouseWheel += panel1_MouseWheel;
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -163,7 +163,7 @@ namespace SonicRetro.SAModel.SALVL
 				DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl",
 				Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*"
 			})
-				if (a.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				if (a.ShowDialog(this) == DialogResult.OK)
 				{
 					LevelData.geo.Tool = "SALVL";
 					LevelData.geo.SaveToFile(a.FileName, outfmt);
@@ -186,7 +186,7 @@ namespace SonicRetro.SAModel.SALVL
 			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
 			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
-			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
+			d3ddevice.Material = new Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
@@ -359,7 +359,7 @@ namespace SonicRetro.SAModel.SALVL
 			if (!e.Control) zoomKeyDown = false;
 		}
 
-		private void panel1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!loaded) return;
 			if (cam.mode == 0)
@@ -415,7 +415,7 @@ namespace SonicRetro.SAModel.SALVL
 		}
 
 		Point lastmouse;
-		private void Panel1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
 			Point evloc = e.Location;
@@ -425,7 +425,7 @@ namespace SonicRetro.SAModel.SALVL
 				return;
 			}
 			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+			if (e.Button == MouseButtons.Middle)
 			{
 				// all cam controls are now bound to the middle mouse button
 				if (cam.mode == 0)
@@ -465,7 +465,7 @@ namespace SonicRetro.SAModel.SALVL
 
 				DrawLevel();
 			}
-			if (e.Button == System.Windows.Forms.MouseButtons.Left)
+			if (e.Button == MouseButtons.Left)
 			{
 				if (transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
 				DrawLevel();
@@ -492,7 +492,7 @@ namespace SonicRetro.SAModel.SALVL
 					evloc = new Point(evloc.X, evloc.Y - scrbnds.Height + 1);
 				}
 			}
-			else if (e.Button == System.Windows.Forms.MouseButtons.None)
+			else if (e.Button == MouseButtons.None)
 			{
 				float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
@@ -622,7 +622,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (importFileDialog.ShowDialog() == DialogResult.OK)
 			{
 				string filePath = importFileDialog.FileName;
 
@@ -640,19 +640,19 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void importToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (importFileDialog.ShowDialog() == DialogResult.OK)
 			{
 				string filePath = importFileDialog.FileName;
 				DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
 
-				if (userClearLevelResult == System.Windows.Forms.DialogResult.Cancel) return;
+				if (userClearLevelResult == DialogResult.Cancel) return;
 				else if (userClearLevelResult == DialogResult.Yes)
 				{
 					DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
 
 					LevelData.ClearLevelGeometry();
 
-					if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+					if (clearAnimsResult == DialogResult.Yes)
 					{
 						LevelData.ClearLevelGeoAnims();
 					}
@@ -677,7 +677,7 @@ namespace SonicRetro.SAModel.SALVL
 				DefaultExt = "obj",
 				Filter = "OBJ Files|*.obj"
 			};
-			if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (a.ShowDialog() == DialogResult.OK)
 			{
 				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
 				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
@@ -702,7 +702,7 @@ namespace SonicRetro.SAModel.SALVL
 							mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][texIndx].Name + ".png");
 
 							// save texture
-							string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+							string mypath = Path.GetDirectoryName(a.FileName);
 							BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][texIndx];
 							item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
 						}
@@ -716,10 +716,10 @@ namespace SonicRetro.SAModel.SALVL
 					bool errorFlag = false;
 
 					for (int i = 0; i < LevelData.geo.COL.Count; i++)
-						SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 					if (LevelData.geo.Anim != null)
 						for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-							SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+							Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 				}
@@ -740,7 +740,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C Files|*.c" })
-				if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
 					LandTableFormat fmt = LevelData.geo.Format;
 					switch (fmt)
@@ -748,7 +748,7 @@ namespace SonicRetro.SAModel.SALVL
 						case LandTableFormat.SA1:
 						case LandTableFormat.SADX:
 							using (StructExportDialog ed = new StructExportDialog() { Format = LevelData.geo.Format })
-								if (ed.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+								if (ed.ShowDialog(this) == DialogResult.OK)
 									fmt = ed.Format;
 								else
 									return;
@@ -815,11 +815,11 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNoCancel);
 
-			if (clearAnimsResult == System.Windows.Forms.DialogResult.Cancel) return;
+			if (clearAnimsResult == DialogResult.Cancel) return;
 
 			LevelData.ClearLevelGeometry();
 
-			if (clearAnimsResult == System.Windows.Forms.DialogResult.Yes)
+			if (clearAnimsResult == DialogResult.Yes)
 			{
 				LevelData.ClearLevelGeoAnims();
 			}
@@ -849,7 +849,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += new EditorOptionsEditor.FormUpdatedHandler(optionsEditor_FormUpdated);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
 		}
 

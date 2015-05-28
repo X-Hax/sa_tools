@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
@@ -13,7 +10,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 	{
 		private string name = "Unknown";
 		private NJS_OBJECT model;
-		private Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		private Mesh[] meshes;
 		private string texture;
 		private float? xpos, ypos, zpos, xscl, yscl, zscl;
 		private int? xrot, yrot, zrot;

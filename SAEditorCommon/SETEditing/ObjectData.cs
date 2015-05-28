@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SonicRetro.SAModel.Direct3D;
-
-using SA_Tools;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {

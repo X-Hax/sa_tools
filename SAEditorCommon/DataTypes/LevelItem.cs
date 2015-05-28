@@ -1,11 +1,10 @@
-﻿using System.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
@@ -18,9 +17,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private COL COL { get; set; }
 		public COL CollisionData { get { return COL; } }
 		[NonSerialized]
-		private Microsoft.DirectX.Direct3D.Mesh mesh;
+		private Mesh mesh;
 		[Browsable(false)]
-		public Microsoft.DirectX.Direct3D.Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		public Mesh Mesh { get { return mesh; } set { mesh = value; } }
 
 		private int index = 0;
 
@@ -35,10 +34,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			: base(selectionManager)
 		{
 			this.index = index;
-			COL = new COL();
-			COL.Model = new SonicRetro.SAModel.NJS_OBJECT();
-			COL.Model.Position = position;
-			COL.Model.Rotation = rotation;
+			COL = new COL
+			{
+				Model = new NJS_OBJECT
+				{
+					Position = position,
+					Rotation = rotation
+				}
+			};
 			ImportModel(filePath, dev);
 			COL.CalculateBounds();
 			Paste();
@@ -68,11 +71,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			: base(selectionManager)
 		{
 			this.index = index;
-			COL = new COL();
-			COL.Model = new SonicRetro.SAModel.NJS_OBJECT();
-			COL.Model.Attach = attach;
-			COL.Model.Position = position;
-			COL.Model.Rotation = rotation;
+			COL = new COL
+			{
+				Model = new NJS_OBJECT
+				{
+					Attach = attach,
+					Position = position,
+					Rotation = rotation
+				}
+			};
 			Visible = true;
 			Solid = true;
 			COL.CalculateBounds();
@@ -113,7 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			if (!camera.SphereInFrustum(this.CollisionData.Bounds)) return Item.EmptyRenderInfo;
+			if (!camera.SphereInFrustum(CollisionData.Bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (!string.IsNullOrEmpty(LevelData.leveltexs))
@@ -144,7 +151,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public void ImportModel(string filePath, Device dev)
 		{
-			COL.Model.Attach = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
+			COL.Model.Attach = Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
 			Visible = true;
 			Solid = true;
 
@@ -166,7 +173,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			{
 				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
 				{
-					pw.FormUpdated += new MaterialEditor.FormUpdatedHandler(pw_FormUpdated);
+					pw.FormUpdated += pw_FormUpdated;
 					pw.ShowDialog();
 				}
 			}
@@ -180,7 +187,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 			set
 			{
-				COL.Flags = int.Parse(value, System.Globalization.NumberStyles.HexNumber);
+				COL.Flags = int.Parse(value, NumberStyles.HexNumber);
 			}
 		}
 

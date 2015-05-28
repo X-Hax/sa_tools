@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
-using SA_Tools;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
@@ -175,12 +168,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				}
 			}
 
-			this.Close();
+			Close();
 		}
 
 		private void cancelButton_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 	}
 }

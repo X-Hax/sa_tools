@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-
-using Microsoft.DirectX.Direct3D;
+using System.Linq;
 using Microsoft.DirectX;
-
+using Microsoft.DirectX.Direct3D;
+using SA_Tools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
-using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -33,13 +30,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[Browsable(false)]
 		public override BoundingSphere Bounds { get	{ return bounds; }	}
 		[NonSerialized]
-		private Microsoft.DirectX.Direct3D.Mesh mesh;
+		private Mesh mesh;
 
 		public static NJS_MATERIAL SelectedMaterial { get; set; }
 		public static NJS_MATERIAL UnSelectedMaterial { get; set; }
 
 		[NonSerialized]
-		private static Microsoft.DirectX.Direct3D.Mesh vertexHandleMesh;
+		private static Mesh vertexHandleMesh;
 		[NonSerialized]
 		private Sprite textSprite;
 		#endregion
@@ -61,46 +58,49 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Construction / Initialization
 		public static void Init()
 		{
-			SelectedMaterial = new NJS_MATERIAL();
-			SelectedMaterial.DiffuseColor = Color.White;
-			SelectedMaterial.SpecularColor = Color.Black;
-			SelectedMaterial.UseAlpha = false;
-			SelectedMaterial.DoubleSided = true;
-			SelectedMaterial.Exponent = 10;
-			SelectedMaterial.IgnoreSpecular = false;
-			SelectedMaterial.UseTexture = false;
-			SelectedMaterial.IgnoreLighting = true;
+			SelectedMaterial = new NJS_MATERIAL
+			{
+				DiffuseColor = Color.White,
+				SpecularColor = Color.Black,
+				UseAlpha = false,
+				DoubleSided = true,
+				Exponent = 10,
+				IgnoreSpecular = false,
+				UseTexture = false,
+				IgnoreLighting = true
+			};
 
-			UnSelectedMaterial = new NJS_MATERIAL();
-			UnSelectedMaterial.DiffuseColor = Color.Maroon;
-			UnSelectedMaterial.SpecularColor = Color.Black;
-			UnSelectedMaterial.UseAlpha = false;
-			UnSelectedMaterial.DoubleSided = true;
-			UnSelectedMaterial.Exponent = 10;
-			UnSelectedMaterial.IgnoreSpecular = false;
-			UnSelectedMaterial.UseTexture = false;
-			UnSelectedMaterial.IgnoreLighting = true;
+			UnSelectedMaterial = new NJS_MATERIAL
+			{
+				DiffuseColor = Color.Maroon,
+				SpecularColor = Color.Black,
+				UseAlpha = false,
+				DoubleSided = true,
+				Exponent = 10,
+				IgnoreSpecular = false,
+				UseTexture = false,
+				IgnoreLighting = true
+			};
 
-			vertexHelper = new PointHelper();
-			vertexHelper.HandleSize = 3f;
+			vertexHelper = new PointHelper { HandleSize = 3f };
 		}
 
-		public SplineData(UI.EditorItemSelection selectionManager)
+		public SplineData(EditorItemSelection selectionManager)
 			: base (selectionManager)
 		{
 			splineData = new PathData();
 
-			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
-			vertexHelper.PointChanged += new PointHelper.PointChangedHandler(vertexHelper_PointChanged);
+			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
+			vertexHelper.PointChanged += vertexHelper_PointChanged;
 		}
 
-		public SplineData(PathData splineData, UI.EditorItemSelection selectionManager)
+		public SplineData(PathData splineData, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			this.splineData = splineData;
 
-			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
-			vertexHelper.PointChanged += new PointHelper.PointChangedHandler(vertexHelper_PointChanged);
+			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
+			vertexHelper.PointChanged += vertexHelper_PointChanged;
 		}
 		#endregion
 
@@ -196,14 +196,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bounds = new BoundingSphere(center.ToVertex(), radius);
 
 			// build actual mesh from face index array and vbuf
-			mesh = new Microsoft.DirectX.Direct3D.Mesh(faceIndexList.Count() / 3, vertList.Count(), MeshFlags.Managed, CustomVertex.PositionColored.Format, device);
+			mesh = new Mesh(faceIndexList.Count() / 3, vertList.Count(), MeshFlags.Managed, CustomVertex.PositionColored.Format, device);
 
 			// Apply the buffers
 			mesh.SetVertexBufferData(vertices, LockFlags.None);
 			mesh.IndexBuffer.SetData(faceIndeces, 0, LockFlags.None);
 
 			// create a vertexHandle
-			if (vertexHandleMesh == null) vertexHandleMesh = Microsoft.DirectX.Direct3D.Mesh.Box(device, 1, 1, 1);
+			if (vertexHandleMesh == null) vertexHandleMesh = Mesh.Box(device, 1, 1, 1);
 
 			textSprite = new Sprite(device); // todo: do we really have to create this so often? Look into storing a cache list statically?
 		}

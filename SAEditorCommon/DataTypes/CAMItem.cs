@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
@@ -31,17 +29,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				float largestScale = this.Scale.X;
-				if (this.Scale.Y > largestScale) largestScale = this.Scale.Y;
-				if (this.Scale.Z > largestScale) largestScale = this.Scale.Z;
+				float largestScale = Scale.X;
+				if (Scale.Y > largestScale) largestScale = Scale.Y;
+				if (Scale.Z > largestScale) largestScale = Scale.Z;
 
-				return new BoundingSphere() { Center = new Vertex(this.Position.X, this.Position.Y, this.Position.Z), Radius = (1.5f * largestScale) };
+				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = (1.5f * largestScale) };
 			}
 		}
 		#endregion
 
 		#region Render / Volume Vars
-		public static Microsoft.DirectX.Direct3D.Mesh VolumeMesh { get; set; }
+		public static Mesh VolumeMesh { get; set; }
 		public static NJS_MATERIAL Material { get; set; }
 
 		public static PointHelper pointHelperA;
@@ -53,7 +51,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		///  Create a new CAM Item from within the editor.
 		/// </summary>
 		/// <param name="dev">An active Direct3D device for meshing/material/rendering purposes.</param>
-		public CAMItem(Vertex position, UI.EditorItemSelection selectionManager)
+		public CAMItem(Vertex position, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			CamType = 0x23;
@@ -69,7 +67,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			Variable = 45f;
 
-			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 		}
 
 		/// <summary>
@@ -77,7 +75,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		/// <param name="file"></param>
 		/// <param name="address"></param>
-		public CAMItem(byte[] file, int address, UI.EditorItemSelection selectionManager)
+		public CAMItem(byte[] file, int address, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			CamType = file[address];
@@ -93,21 +91,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			PointB = new Vertex(file, address + 48);
 			Variable = BitConverter.ToSingle(file, address + 60);
 
-			selectionManager.SelectionChanged += new EditorItemSelection.SelectionChangeHandler(selectionManager_SelectionChanged);
+			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 
 		}
 
 		public static void Init(Device dev)
 		{
-			VolumeMesh = Microsoft.DirectX.Direct3D.Mesh.Box(dev, 2f, 2f, 2f);
-			Material = new NJS_MATERIAL();
-			Material.DiffuseColor = Color.FromArgb(200, Color.Purple);
-			Material.SpecularColor = Color.Black;
-			Material.UseAlpha = true;
-			Material.DoubleSided = false;
-			Material.Exponent = 10;
-			Material.IgnoreSpecular = false;
-			Material.UseTexture = false;
+			VolumeMesh = Mesh.Box(dev, 2f, 2f, 2f);
+			Material = new NJS_MATERIAL
+			{
+				DiffuseColor = Color.FromArgb(200, Color.Purple),
+				SpecularColor = Color.Black,
+				UseAlpha = true,
+				DoubleSided = false,
+				Exponent = 10,
+				IgnoreSpecular = false,
+				UseTexture = false
+			};
 
 			pointHelperA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
 			pointHelperB = new PointHelper { BoxTexture = Gizmo.BTexture, DrawCube = true };
@@ -117,11 +117,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Saving
 		public byte[] GetBytes()
 		{
-			List<byte> bytes = new List<byte>(0x40);
-			bytes.Add(CamType);
-			bytes.Add(Unknown);
-			bytes.Add(PanSpeed);
-			bytes.Add(Priority);
+			List<byte> bytes = new List<byte>(0x40) { CamType, Unknown, PanSpeed, Priority };
 
 			unchecked
 			{
@@ -162,9 +158,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.NJTranslate(this.Position);
-			transform.NJRotateY(this.Rotation.Y);
-			transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
+			transform.NJTranslate(Position);
+			transform.NJRotateY(Rotation.Y);
+			transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
 
 			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, Bounds);
 
@@ -187,7 +183,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
-			if (this.Scale.X == 0 || this.Scale.Y == 0 || this.Scale.Z == 0)
+			if (Scale.X == 0 || Scale.Y == 0 || Scale.Z == 0)
 			{
 				return HitResult.NoHit;
 			}
@@ -195,9 +191,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			MatrixStack transform = new MatrixStack();
 
 			transform.Push();
-			transform.NJTranslate(this.Position);
-			transform.NJRotateY(this.Rotation.Y);
-			transform.NJScale((this.Scale.X), (this.Scale.Y), (this.Scale.Z));
+			transform.NJTranslate(Position);
+			transform.NJRotateY(Rotation.Y);
+			transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
 
 			HitResult result = VolumeMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 

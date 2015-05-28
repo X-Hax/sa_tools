@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SA_Tools;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon
 {

@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using System.IO;
-using System.Text;
-
-using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.UI;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.Import
 {

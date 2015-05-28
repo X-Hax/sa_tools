@@ -18,14 +18,14 @@ namespace SonicRetro.SAModel.SAMDL
 		public MainForm()
 		{
 			InitializeComponent();
-			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			Application.ThreadException += Application_ThreadException;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
 			File.WriteAllText("SAMDL.log", e.Exception.ToString());
-			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SAMDL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
+			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SAMDL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
@@ -46,7 +46,7 @@ namespace SonicRetro.SAModel.SAMDL
 		ModelFormat outfmt;
 		int animnum = -1;
 		int animframe = 0;
-		Microsoft.DirectX.Direct3D.Mesh[] meshes;
+		Mesh[] meshes;
 		string TexturePackName;
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
@@ -105,7 +105,7 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				using (FileTypeDialog ftd = new FileTypeDialog())
 				{
-					if (ftd.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+					if (ftd.ShowDialog(this) != DialogResult.OK)
 						return;
 					byte[] file = File.ReadAllBytes(filename);
 					if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -163,7 +163,7 @@ namespace SonicRetro.SAModel.SAMDL
 									Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
 								})
 								{
-									if (anidlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+									if (anidlg.ShowDialog(this) == DialogResult.OK)
 									{
 										byte[] anifile = File.ReadAllBytes(anidlg.FileName);
 										if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -187,7 +187,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
-			meshes = new Microsoft.DirectX.Direct3D.Mesh[models.Length];
+			meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
 					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
@@ -254,7 +254,7 @@ namespace SonicRetro.SAModel.SAMDL
 			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
 			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
 			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
-			d3ddevice.Material = new Microsoft.DirectX.Direct3D.Material { Ambient = Color.White };
+			d3ddevice.Material = new Material { Ambient = Color.White };
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
 			d3ddevice.RenderState.ZBufferEnable = true;
 			d3ddevice.BeginScene();
@@ -295,8 +295,8 @@ namespace SonicRetro.SAModel.SAMDL
 				if (obj.Attach != null)
 					for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 					{
-						System.Drawing.Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
-						col = System.Drawing.Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+						Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
+						col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
 						NJS_MATERIAL mat = new NJS_MATERIAL
 						{
 							DiffuseColor = col,
@@ -459,7 +459,7 @@ namespace SonicRetro.SAModel.SAMDL
 		}
 
 		Point lastmouse;
-		private void Panel1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
 			Point evloc = e.Location;
@@ -469,7 +469,7 @@ namespace SonicRetro.SAModel.SAMDL
 				return;
 			}
 			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+			if (e.Button == MouseButtons.Middle)
 			{
 				cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
 				cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
@@ -482,7 +482,7 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
 			{
-				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				if (a.ShowDialog() == DialogResult.OK)
 				{
 					TextureInfo = TextureArchive.GetTextures(a.FileName);
 
@@ -505,7 +505,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
-				if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
 					model.ToCollada(TextureInfo == null ? null : TextureInfo.Select((item) => item.Name).ToArray()).Save(sd.FileName);
 					string p = Path.GetDirectoryName(sd.FileName);
@@ -518,11 +518,11 @@ namespace SonicRetro.SAModel.SAMDL
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C Files|*.c" })
-				if (sd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
 					bool dx = false;
 					if (outfmt == ModelFormat.Basic)
-						dx = MessageBox.Show(this, "Do you want to export in SADX format?", "SAMDL", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes;
+						dx = MessageBox.Show(this, "Do you want to export in SADX format?", "SAMDL", MessageBoxButtons.YesNo) == DialogResult.Yes;
 					List<string> labels = new List<string>() { model.Name };
 					System.Text.StringBuilder result = new System.Text.StringBuilder("/* NINJA ");
 					switch (outfmt)
@@ -623,7 +623,7 @@ namespace SonicRetro.SAModel.SAMDL
 				DefaultExt = "obj",
 				Filter = "OBJ Files|*.obj"
 			};
-			if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (a.ShowDialog() == DialogResult.OK)
 			{
 				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
 				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
@@ -648,7 +648,7 @@ namespace SonicRetro.SAModel.SAMDL
 							mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
 
 							// save texture
-							string mypath = System.IO.Path.GetDirectoryName(a.FileName);
+							string mypath = Path.GetDirectoryName(a.FileName);
 							TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
 						}
 					}
@@ -660,7 +660,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 					bool errorFlag = false;
 
-					SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+					Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 				}
@@ -711,7 +711,7 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material, TextureInfo))
 			{
-				dlg.FormUpdated += new MaterialEditor.FormUpdatedHandler((s, ev) => DrawLevel());
+				dlg.FormUpdated += (s, ev) => DrawLevel();
 				dlg.ShowDialog(this);
 			}
 		}
@@ -736,7 +736,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += new EditorOptionsEditor.FormUpdatedHandler(optionsEditor_FormUpdated);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
 		}
 
