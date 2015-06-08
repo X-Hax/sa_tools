@@ -37,10 +37,13 @@
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportTexturePackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.addMipmapsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listBox1 = new System.Windows.Forms.ListBox();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -54,8 +57,6 @@
 			this.importButton = new System.Windows.Forms.Button();
 			this.globalIndex = new System.Windows.Forms.NumericUpDown();
 			this.textureName = new System.Windows.Forms.TextBox();
-			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.addMipmapsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			this.menuStrip1.SuspendLayout();
@@ -106,6 +107,7 @@
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.exportAllToolStripMenuItem,
+            this.exportTexturePackToolStripMenuItem,
             this.toolStripSeparator1,
             this.recentFilesToolStripMenuItem,
             this.toolStripSeparator2,
@@ -118,7 +120,7 @@
 			// 
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
 			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.newToolStripMenuItem.Text = "&New";
 			this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
 			// 
@@ -126,7 +128,7 @@
 			// 
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.openToolStripMenuItem.Text = "&Open...";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -134,7 +136,7 @@
 			// 
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -143,7 +145,7 @@
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.saveAsToolStripMenuItem.Text = "Save &As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
@@ -151,34 +153,58 @@
 			// 
 			this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
 			this.exportAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-			this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.exportAllToolStripMenuItem.Text = "&Export All...";
 			this.exportAllToolStripMenuItem.Click += new System.EventHandler(this.exportAllToolStripMenuItem_Click);
+			// 
+			// exportTexturePackToolStripMenuItem
+			// 
+			this.exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
+			this.exportTexturePackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.E)));
+			this.exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+			this.exportTexturePackToolStripMenuItem.Text = "Export Texture Pack...";
+			this.exportTexturePackToolStripMenuItem.Click += new System.EventHandler(this.exportTexturePackToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(255, 6);
 			// 
 			// recentFilesToolStripMenuItem
 			// 
 			this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.recentFilesToolStripMenuItem.Text = "&Recent Files";
 			this.recentFilesToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentFilesToolStripMenuItem_DropDownItemClicked);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(255, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
+			// editToolStripMenuItem
+			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addMipmapsToAllToolStripMenuItem});
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+			this.editToolStripMenuItem.Text = "&Edit";
+			// 
+			// addMipmapsToAllToolStripMenuItem
+			// 
+			this.addMipmapsToAllToolStripMenuItem.Name = "addMipmapsToAllToolStripMenuItem";
+			this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.addMipmapsToAllToolStripMenuItem.Text = "Add &Mipmaps to All";
+			this.addMipmapsToAllToolStripMenuItem.Click += new System.EventHandler(this.addMipmapsToAllToolStripMenuItem_Click);
 			// 
 			// splitContainer1
 			// 
@@ -351,21 +377,6 @@
 			this.textureName.TabIndex = 1;
 			this.textureName.TextChanged += new System.EventHandler(this.textureName_TextChanged);
 			// 
-			// editToolStripMenuItem
-			// 
-			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addMipmapsToAllToolStripMenuItem});
-			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-			this.editToolStripMenuItem.Text = "&Edit";
-			// 
-			// addMipmapsToAllToolStripMenuItem
-			// 
-			this.addMipmapsToAllToolStripMenuItem.Name = "addMipmapsToAllToolStripMenuItem";
-			this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.addMipmapsToAllToolStripMenuItem.Text = "Add &Mipmaps to All";
-			this.addMipmapsToAllToolStripMenuItem.Click += new System.EventHandler(this.addMipmapsToAllToolStripMenuItem_Click);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -426,6 +437,7 @@
 		private System.Windows.Forms.CheckBox mipmapCheckBox;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addMipmapsToAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportTexturePackToolStripMenuItem;
 	}
 }
 
