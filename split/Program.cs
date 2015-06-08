@@ -13,7 +13,7 @@ namespace split
 	{
 		static void Main(string[] args)
 		{
-			string datafilename, inifilename;
+			string datafilename, inifilename, projectFolderName;
 			if (args.Length > 0)
 			{
 				datafilename = args[0];
@@ -34,6 +34,17 @@ namespace split
 				Console.Write("INI File: ");
 				inifilename = Console.ReadLine();
 			}
+			if (args.Length > 2)
+			{
+				projectFolderName = string.Format("/Projects/{0}/", args[2]);
+				Console.Write("Project Folder: {0}", projectFolderName);
+			}
+			else
+			{
+				projectFolderName = "/Projects/UntitledMod/";
+				Console.Write("No project folder supplied. using UntitledMod");
+			}
+
 			byte[] datafile = File.ReadAllBytes(datafilename);
 			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 			SA_Tools.ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
@@ -74,12 +85,13 @@ namespace split
 				string type = data.Type;
 				int address = data.Address;
 				bool nohash = false;
-				Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " → " + data.Filename);
-				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
+				string fileOutputPath = string.Concat(Environment.CurrentDirectory, projectFolderName, data.Filename);
+				Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " → " + fileOutputPath);
+				Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 				switch (type)
 				{
 					case "landtable":
-						new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key, Tool = "split" }.SaveToFile(data.Filename, landfmt);
+						new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key, Tool = "split" }.SaveToFile(fileOutputPath, landfmt);
 						break;
 					case "model":
 						{
@@ -90,7 +102,7 @@ namespace split
 							string[] mdlmorphs = new string[0];
 							if (customProperties.ContainsKey("morphs"))
 								mdlmorphs = customProperties["morphs"].Split(',');
-							ModelFile.CreateFile(data.Filename, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, modelfmt);
+							ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, modelfmt);
 						}
 						break;
 					case "basicmodel":
@@ -102,7 +114,7 @@ namespace split
 							string[] mdlmorphs = new string[0];
 							if (customProperties.ContainsKey("morphs"))
 								mdlmorphs = customProperties["morphs"].Split(',');
-							ModelFile.CreateFile(data.Filename, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Basic);
+							ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Basic);
 						}
 						break;
 					case "basicdxmodel":
@@ -114,7 +126,7 @@ namespace split
 							string[] mdlmorphs = new string[0];
 							if (customProperties.ContainsKey("morphs"))
 								mdlmorphs = customProperties["morphs"].Split(',');
-							ModelFile.CreateFile(data.Filename, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.BasicDX);
+							ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.BasicDX);
 						}
 						break;
 					case "chunkmodel":
@@ -126,19 +138,19 @@ namespace split
 							string[] mdlmorphs = new string[0];
 							if (customProperties.ContainsKey("morphs"))
 								mdlmorphs = customProperties["morphs"].Split(',');
-							ModelFile.CreateFile(data.Filename, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Chunk);
+							ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Chunk);
 						}
 						break;
 					case "action":
 						{
 							AnimationHeader ani = new AnimationHeader(datafile, address, imageBase, modelfmt);
 							ani.Animation.Name = filedesc;
-							ani.Animation.Save(data.Filename);
+							ani.Animation.Save(fileOutputPath);
 						}
 						break;
 					case "animation":
 						new Animation(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
-							.Save(data.Filename);
+							.Save(fileOutputPath);
 						break;
 					case "objlist":
 						{
@@ -155,41 +167,41 @@ namespace split
 									else
 										objnamecounts[obj.CodeString][obj.Name]++;
 								}
-							objs.Save(data.Filename);
+							objs.Save(fileOutputPath);
 						}
 						break;
 					case "startpos":
 						if (SA2)
-							SA2StartPosList.Load(datafile, address).Save(data.Filename);
+							SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
 						else
-							SA1StartPosList.Load(datafile, address).Save(data.Filename);
+							SA1StartPosList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "texlist":
-						TextureList.Load(datafile, address, imageBase).Save(data.Filename);
+						TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
 						break;
 					case "leveltexlist":
-						new LevelTextureList(datafile, address, imageBase).Save(data.Filename);
+						new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
 						break;
 					case "triallevellist":
-						TrialLevelList.Save(TrialLevelList.Load(datafile, address, imageBase), data.Filename);
+						TrialLevelList.Save(TrialLevelList.Load(datafile, address, imageBase), fileOutputPath);
 						break;
 					case "bosslevellist":
-						BossLevelList.Save(BossLevelList.Load(datafile, address), data.Filename);
+						BossLevelList.Save(BossLevelList.Load(datafile, address), fileOutputPath);
 						break;
 					case "fieldstartpos":
-						FieldStartPosList.Load(datafile, address).Save(data.Filename);
+						FieldStartPosList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "soundtestlist":
-						SoundTestList.Load(datafile, address, imageBase).Save(data.Filename);
+						SoundTestList.Load(datafile, address, imageBase).Save(fileOutputPath);
 						break;
 					case "musiclist":
 						{
 							int muscnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							MusicList.Load(datafile, address, imageBase, muscnt).Save(data.Filename);
+							MusicList.Load(datafile, address, imageBase, muscnt).Save(fileOutputPath);
 						}
 						break;
 					case "soundlist":
-						SoundList.Load(datafile, address, imageBase).Save(data.Filename);
+						SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
 						break;
 					case "stringarray":
 						{
@@ -197,17 +209,17 @@ namespace split
 							Languages lang = Languages.Japanese;
 							if (data.CustomProperties.ContainsKey("language"))
 								lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
-							StringArray.Load(datafile, address, imageBase, cnt, lang).Save(data.Filename);
+							StringArray.Load(datafile, address, imageBase, cnt, lang).Save(fileOutputPath);
 						}
 						break;
 					case "nextlevellist":
-						NextLevelList.Load(datafile, address).Save(data.Filename);
+						NextLevelList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "cutscenetext":
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 							string[] hashes;
-							new CutsceneText(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							new CutsceneText(datafile, address, imageBase, cnt).Save(fileOutputPath, out hashes);
 							data.MD5Hash = string.Join(",", hashes);
 							nohash = true;
 						}
@@ -216,7 +228,7 @@ namespace split
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 							string[][] hashes;
-							RecapScreenList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							RecapScreenList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath, out hashes);
 							string[] hash2 = new string[hashes.Length];
 							for (int i = 0; i < hashes.Length; i++)
 							{
@@ -230,7 +242,7 @@ namespace split
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 							string[][] hashes;
-							NPCTextList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							NPCTextList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath, out hashes);
 							string[] hash2 = new string[hashes.Length];
 							for (int i = 0; i < hashes.Length; i++)
 								hash2[i] = string.Join(",", hashes[i]);
@@ -239,12 +251,12 @@ namespace split
 						}
 						break;
 					case "levelclearflags":
-						LevelClearFlagList.Save(LevelClearFlagList.Load(datafile, address), data.Filename);
+						LevelClearFlagList.Save(LevelClearFlagList.Load(datafile, address), fileOutputPath);
 						break;
 					case "deathzone":
 						{
 							List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
-							string path = Path.GetDirectoryName(data.Filename);
+							string path = Path.GetDirectoryName(fileOutputPath);
 							List<string> hashes = new List<string>();
 							int num = 0;
 							while (SA_Tools.ByteConverter.ToUInt32(datafile, address + 4) != 0)
@@ -255,8 +267,8 @@ namespace split
 								hashes.Add(HelperFunctions.FileHash(file));
 								address += 8;
 							}
-							flags.ToArray().Save(data.Filename);
-							hashes.Insert(0, HelperFunctions.FileHash(data.Filename));
+							flags.ToArray().Save(fileOutputPath);
+							hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
 							data.MD5Hash = string.Join(",", hashes.ToArray());
 							nohash = true;
 						}
@@ -264,28 +276,28 @@ namespace split
 					case "skyboxscale":
 						{
 							int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							SkyboxScaleList.Load(datafile, address, imageBase, cnt).Save(data.Filename);
+							SkyboxScaleList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
 						}
 						break;
 					case "stageselectlist":
 						{
 							int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							StageSelectLevelList.Load(datafile, address, cnt).Save(data.Filename);
+							StageSelectLevelList.Load(datafile, address, cnt).Save(fileOutputPath);
 						}
 						break;
 					case "levelrankscores":
-						LevelRankScoresList.Load(datafile, address).Save(data.Filename);
+						LevelRankScoresList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "levelranktimes":
-						LevelRankTimesList.Load(datafile, address).Save(data.Filename);
+						LevelRankTimesList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "endpos":
-						SA2EndPosList.Load(datafile, address).Save(data.Filename);
+						SA2EndPosList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					case "animationlist":
 						{
 							int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							SA2AnimationInfoList.Load(datafile, address, cnt).Save(data.Filename);
+							SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
 						}
 						break;
 					case "levelpathlist":
@@ -299,7 +311,7 @@ namespace split
 								{
 									ptr = (int)((uint)ptr - imageBase);
 									SA1LevelAct level = new SA1LevelAct(lvlnum);
-									string lvldir = Path.Combine(data.Filename, level.ToString());
+									string lvldir = Path.Combine(fileOutputPath, level.ToString());
 									string[] lvlhashes;
 									PathList.Load(datafile, ptr, imageBase).Save(lvldir, out lvlhashes);
 									hashes.Add(level.ToString() + ":" + string.Join(",", lvlhashes));
@@ -312,18 +324,18 @@ namespace split
 						}
 						break;
 					case "stagelightdatalist":
-						SA1StageLightDataList.Load(datafile, address).Save(data.Filename);
+						SA1StageLightDataList.Load(datafile, address).Save(fileOutputPath);
 						break;
 					default: // raw binary
 						{
 							byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
 							Array.Copy(datafile, address, bin, 0, bin.Length);
-							File.WriteAllBytes(data.Filename, bin);
+							File.WriteAllBytes(fileOutputPath, bin);
 						}
 						break;
 				}
 				if (!nohash)
-					data.MD5Hash = HelperFunctions.FileHash(data.Filename);
+					data.MD5Hash = HelperFunctions.FileHash(fileOutputPath);
 				itemcount++;
 			}
 			if (inifile.MasterObjectList != null)
@@ -337,7 +349,7 @@ namespace split
 					obj.Value.Name = name.Key;
 					obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
 				}
-				IniSerializer.Serialize(masterobjlist, inifile.MasterObjectList);
+				IniSerializer.Serialize(masterobjlist, string.Concat(Environment.CurrentDirectory, projectFolderName, inifile.MasterObjectList));
 			}
 			IniSerializer.Serialize(inifile, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename)) + "_data.ini");
 			timer.Stop();

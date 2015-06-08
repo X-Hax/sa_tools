@@ -13,7 +13,7 @@ namespace splitDLL
 	{
 		static void Main(string[] args)
 		{
-			string datafilename, inifilename;
+			string datafilename, inifilename, projectFolderName;
 			if (args.Length > 0)
 			{
 				datafilename = args[0];
@@ -34,7 +34,19 @@ namespace splitDLL
 				Console.Write("INI File: ");
 				inifilename = Console.ReadLine();
 			}
+			if (args.Length > 2)
+			{
+				projectFolderName = string.Format("\\Projects\\{0}\\", args[2]);
+				Console.Write("Project Folder: {0}", projectFolderName);
+			}
+			else
+			{
+				projectFolderName = "\\Projects\\UntitledMod\\";
+				Console.Write("No project folder supplied. using UntitledMod");
+			}
+
 			byte[] datafile = File.ReadAllBytes(datafilename);
+			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(inifilename));
 			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 			uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
 			Dictionary<string, int> exports;
@@ -93,8 +105,9 @@ namespace splitDLL
 				string name = item.Key;
 				output.Exports[name] = type;
 				int address = exports[name];
-				Console.WriteLine(name + " → " + data.Filename);
-				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
+				string fileOutputPath = string.Concat(Environment.CurrentDirectory, projectFolderName, data.Filename);
+				Console.WriteLine(name + " → " + fileOutputPath);
+				Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 				switch (type)
 				{
 					case "landtable":
@@ -106,8 +119,8 @@ namespace splitDLL
 							output.Items.Add(info);
 							if (!labels.Contains(land.Name))
 							{
-								land.SaveToFile(data.Filename, landfmt);
-								output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(data.Filename));
+								land.SaveToFile(fileOutputPath, landfmt);
+								output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 								labels.AddRange(land.GetLabels());
 							}
 						}
@@ -128,7 +141,7 @@ namespace splitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
+									string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 									land.SaveToFile(fn, landfmt);
 									output.Files[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
 									labels.AddRange(land.GetLabels());
@@ -146,7 +159,7 @@ namespace splitDLL
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+								models.Add(new ModelAnimations(fileOutputPath, name, mdl, modelfmt));
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -167,7 +180,7 @@ namespace splitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+									string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
 									models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
 									labels.AddRange(mdl.GetLabels());
 								}
@@ -184,7 +197,7 @@ namespace splitDLL
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
+								models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Basic));
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -205,7 +218,7 @@ namespace splitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+									string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
 									labels.AddRange(mdl.GetLabels());
 								}
@@ -222,7 +235,7 @@ namespace splitDLL
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
+								models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.BasicDX));
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -243,7 +256,7 @@ namespace splitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+									string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
 									labels.AddRange(mdl.GetLabels());
 								}
@@ -260,7 +273,7 @@ namespace splitDLL
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
+								models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Chunk));
 								labels.AddRange(mdl.GetLabels());
 							}
 						}
@@ -281,7 +294,7 @@ namespace splitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
+									string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
 									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
 									labels.AddRange(mdl.GetLabels());
 								}
@@ -310,7 +323,7 @@ namespace splitDLL
 								info.Label = ani.Model.Name;
 								info.Field = "object";
 								output.Items.Add(info);
-								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+								string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 								ani.Animation.Save(fn);
 								output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
 								if (models.Contains(ani.Model.Name))
