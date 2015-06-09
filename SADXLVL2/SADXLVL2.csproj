@@ -85,6 +85,12 @@
     <Compile Include="QuickStartDialog.Designer.cs">
       <DependentUpon>QuickStartDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\EditorDataViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\EditorDataViewer.Designer.cs">
+      <DependentUpon>EditorDataViewer.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +115,9 @@
     </Compile>
     <EmbeddedResource Include="QuickStartDialog.resx">
       <DependentUpon>QuickStartDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\EditorDataViewer.resx">
+      <DependentUpon>EditorDataViewer.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
