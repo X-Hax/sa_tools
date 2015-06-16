@@ -217,6 +217,32 @@ namespace PVMEditSharp
 			}
 		}
 
+		private void exportTexturePackToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+			{
+				if (filename != null)
+					dlg.SelectedPath = Path.GetDirectoryName(filename);
+
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					string path = Path.Combine(dlg.SelectedPath, Path.GetFileNameWithoutExtension(filename));
+
+					if (!Directory.Exists(path))
+						Directory.CreateDirectory(path);
+
+					using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+					{
+						foreach (TextureInfo tex in textures)
+						{
+							tex.Image.Save(Path.Combine(path, tex.Name + ".png"));
+							texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
+						}
+					}
+				}
+			}
+		}
+
 		private void recentFilesToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			GetTextures(Settings.MRUList[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
