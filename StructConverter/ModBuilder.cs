@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace StructConverter
+namespace ModGenerator
 {
     public partial class ModBuilder : Form
     {
@@ -57,23 +57,18 @@ namespace StructConverter
         }
 
         IniData IniData;
+        string gameFolder;
+        string projectName;
 		string projectFolder;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             Settings = Properties.Settings.Default;
-            if (Settings.MRUList == null)
-                Settings.MRUList = new StringCollection();
-            StringCollection mru = new StringCollection();
-            foreach (string item in Settings.MRUList)
-                if (File.Exists(item))
-                {
-                    mru.Add(item);
-                    recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
-                }
-            Settings.MRUList = mru;
-            if (Program.Arguments.Length > 0)
-                LoadINI(Program.Arguments[0]);
+
+            sA2ToolStripMenuItem.Checked = !Settings.ModBuilderSADX;
+            sADXToolStripMenuItem.Checked = Settings.ModBuilderSADX;
+
+            SetGameFolder();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -87,33 +82,44 @@ namespace StructConverter
                     LoadINI(a.FileName);
         }
 
-        private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void PickProject()
         {
-            fileToolStripMenuItem.DropDown.Close();
-            LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+            using (ProjectSelector projectSelector = new ProjectSelector(gameFolder))
+            {
+                if (projectSelector.NoProjects)
+                {
+                    MessageBox.Show("No projects found. You can create a new project in the Mod Generator main menu, by clicking the \"Start a new project\" button.");
+                    return;
+                }
+                else
+                {
+                    projectSelector.ShowDialog();
+                    projectName = projectSelector.SelectedProjectName;
+                    projectFolder = string.Concat(gameFolder, "\\Projects\\", projectName, "\\");
+                }
+            }
+
+            // add all the files from the DataMappings folder
+            string dataMappingsFolder = string.Concat(projectFolder, "\\DataMappings\\");
+
+            string[] dataMappingFiles = Directory.GetFiles(dataMappingsFolder, "*.ini");
+
+            foreach(string iniFile in dataMappingFiles)
+            {
+                if (Path.GetFileName(iniFile) == "sonic_data.ini") LoadINI(iniFile);
+                else MessageBox.Show("Couldn't load DLL data mapping ini - it uses a different format.");
+            }
         }
 
         private void LoadINI(string filename)
         {
-			using (FolderBrowserDialog browser = new FolderBrowserDialog() { Description = "Select a Project Folder.", SelectedPath = Path.GetDirectoryName(filename) }) // get our folder browser
-			{
-				if (browser.ShowDialog(this) == DialogResult.OK)
-					projectFolder = browser.SelectedPath;
-				else
-				{
-					return; // nothing to be done.
-				}
-			}
-
             IniData = IniSerializer.Deserialize<IniData>(filename);
-            if (Settings.MRUList.Contains(filename))
-            {
-                recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
-                Settings.MRUList.Remove(filename);
-            }
-            Settings.MRUList.Insert(0, filename);
-            recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
+
             Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+
+            string groupName = Path.GetFileName(filename);
+            listView1.Groups.Add(groupName, groupName);
+
             listView1.BeginUpdate();
             foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files)
             {
@@ -260,7 +266,9 @@ namespace StructConverter
 							modified = HelperFunctions.FileHash(projectRelativeFileLocation) != item.Value.MD5Hash;
                         break;
                 }
-                listView1.Items.Add(new ListViewItem(new[] { item.Key, DataTypeList[item.Value.Type], modified.HasValue ? (modified.Value ? "Yes" : "No") : "Unknown" }) { Checked = modified ?? true });
+                ListViewItem newItem = new ListViewItem(new[] { item.Key, DataTypeList[item.Value.Type], modified.HasValue ? (modified.Value ? "Yes" : "No") : "Unknown" }) { Checked = modified ?? true };
+                newItem.Group = listView1.Groups[groupName];
+                listView1.Items.Add(newItem);
             }
             listView1.EndUpdate();
         }
@@ -938,6 +946,70 @@ namespace StructConverter
 					IniSerializer.Serialize(output, fd.FileName);
 				}
 		}
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("This program allows you to convert split data into C code, that can be compiled into a DLL file for ModLoader.\nTo switch games, use the checkboxes in the File->Game menu.");
+        }
+
+        private void sADXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            sA2ToolStripMenuItem.CheckState = CheckState.Unchecked;
+
+            // todo: switch our game mode, then bring up the projects pop-up so the user can select.
+            string errorMessage = "None supplied";
+            DialogResult lookForNewPath = System.Windows.Forms.DialogResult.None;
+            if (Properties.Settings.Default.SADXPath == "" || (!MainForm.VerifyGamePath(SA_Tools.Game.SADX, Properties.Settings.Default.SADXPath, out errorMessage)))
+            {
+                // show an error message that the sadx path is invalid, ask for a new one.
+                lookForNewPath = MessageBox.Show(string.Format("The on-record SADX game directory doesn't appear to be valid because: {0}\nOK to supply one, Cancel to ignore.", errorMessage), "Directory Warning", MessageBoxButtons.OKCancel);
+                if (lookForNewPath == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK) Properties.Settings.Default.SADXPath = folderBrowser.SelectedPath;
+                }
+            }
+
+            Properties.Settings.Default.ModBuilderSADX = true; 
+
+            Properties.Settings.Default.Save();
+            SetGameFolder();
+        }
+
+        private void sA2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            sADXToolStripMenuItem.CheckState = CheckState.Unchecked;
+
+            // todo: switch our game mode, then bring up the projects pop-up so the user can select.
+            string errorMessage = "None supplied";
+            DialogResult lookForNewPath = System.Windows.Forms.DialogResult.None;
+            if (Properties.Settings.Default.SA2Path == "" || (!MainForm.VerifyGamePath(SA_Tools.Game.SA2B, Properties.Settings.Default.SA2Path, out errorMessage)))
+            {
+                // show an error message that the sadx path is invalid, ask for a new one.
+                lookForNewPath = MessageBox.Show(string.Format("The on-record SA2PC game directory doesn't appear to be valid because: {0}\nOK to supply one, Cancel to ignore.", errorMessage), "Directory Warning", MessageBoxButtons.OKCancel);
+                if (lookForNewPath == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK) Properties.Settings.Default.SA2Path = folderBrowser.SelectedPath;
+                }
+            }
+
+            Properties.Settings.Default.ModBuilderSADX = false; 
+
+            Properties.Settings.Default.Save();
+            SetGameFolder();
+        }
+
+        private void SetGameFolder()
+        {
+            if (sADXToolStripMenuItem.Checked) gameFolder = Properties.Settings.Default.SADXPath;
+            else if (sA2ToolStripMenuItem.Checked) gameFolder = Properties.Settings.Default.SA2Path;
+
+            PickProject();
+        }
+
+        private void projectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PickProject();
+        }
     }
 
     static class Extensions

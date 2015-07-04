@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace StructConverter
+namespace ModGenerator
 {
     static class Program
     {
@@ -18,7 +18,8 @@ namespace StructConverter
             Arguments = args;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new MainForm()); // Our exception catcher is dumping us here for some reason instead of giving us a more in-depth exception. Find out why.
+            Console.WriteLine("Check this for multiple hits."); // this actually isn't getting called at all.
         }
     }
 }
