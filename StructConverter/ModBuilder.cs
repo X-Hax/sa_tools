@@ -84,7 +84,7 @@ namespace ModGenerator
 
         private void PickProject()
         {
-            using (ProjectSelector projectSelector = new ProjectSelector(gameFolder))
+            using (SonicRetro.SAModel.SAEditorCommon.UI.ProjectSelector projectSelector = new SonicRetro.SAModel.SAEditorCommon.UI.ProjectSelector(gameFolder))
             {
                 if (projectSelector.NoProjects)
                 {
@@ -959,7 +959,7 @@ namespace ModGenerator
             // todo: switch our game mode, then bring up the projects pop-up so the user can select.
             string errorMessage = "None supplied";
             DialogResult lookForNewPath = System.Windows.Forms.DialogResult.None;
-            if (Properties.Settings.Default.SADXPath == "" || (!MainForm.VerifyGamePath(SA_Tools.Game.SADX, Properties.Settings.Default.SADXPath, out errorMessage)))
+            if (Properties.Settings.Default.SADXPath == "" || (!SonicRetro.SAModel.SAEditorCommon.UI.ProjectSelector.VerifyGamePath(SA_Tools.Game.SADX, Properties.Settings.Default.SADXPath, out errorMessage)))
             {
                 // show an error message that the sadx path is invalid, ask for a new one.
                 lookForNewPath = MessageBox.Show(string.Format("The on-record SADX game directory doesn't appear to be valid because: {0}\nOK to supply one, Cancel to ignore.", errorMessage), "Directory Warning", MessageBoxButtons.OKCancel);
@@ -982,7 +982,7 @@ namespace ModGenerator
             // todo: switch our game mode, then bring up the projects pop-up so the user can select.
             string errorMessage = "None supplied";
             DialogResult lookForNewPath = System.Windows.Forms.DialogResult.None;
-            if (Properties.Settings.Default.SA2Path == "" || (!MainForm.VerifyGamePath(SA_Tools.Game.SA2B, Properties.Settings.Default.SA2Path, out errorMessage)))
+            if (Properties.Settings.Default.SA2Path == "" || (!SonicRetro.SAModel.SAEditorCommon.UI.ProjectSelector.VerifyGamePath(SA_Tools.Game.SA2B, Properties.Settings.Default.SA2Path, out errorMessage)))
             {
                 // show an error message that the sadx path is invalid, ask for a new one.
                 lookForNewPath = MessageBox.Show(string.Format("The on-record SA2PC game directory doesn't appear to be valid because: {0}\nOK to supply one, Cancel to ignore.", errorMessage), "Directory Warning", MessageBoxButtons.OKCancel);

@@ -40,13 +40,15 @@
             this.SADXRadioButton = new System.Windows.Forms.RadioButton();
             this.SA2PCButton = new System.Windows.Forms.RadioButton();
             this.splitBackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.advancedSettingsButton = new System.Windows.Forms.Button();
+            this.helpButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cancelButton
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(12, 169);
+            this.cancelButton.Location = new System.Drawing.Point(179, 169);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -106,7 +108,7 @@
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(75, 23);
             this.browseButton.TabIndex = 6;
-            this.browseButton.Text = "Browse";
+            this.browseButton.Text = "&Browse";
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
@@ -152,6 +154,26 @@
             this.splitBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.splitBackgroundWorker_ProgressChanged);
             this.splitBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.splitBackgroundWorker_RunWorkerCompleted);
             // 
+            // advancedSettingsButton
+            // 
+            this.advancedSettingsButton.Location = new System.Drawing.Point(8, 169);
+            this.advancedSettingsButton.Name = "advancedSettingsButton";
+            this.advancedSettingsButton.Size = new System.Drawing.Size(73, 23);
+            this.advancedSettingsButton.TabIndex = 10;
+            this.advancedSettingsButton.Text = "&Advanced";
+            this.advancedSettingsButton.UseVisualStyleBackColor = true;
+            this.advancedSettingsButton.Click += new System.EventHandler(this.advancedSettingsButton_Click);
+            // 
+            // helpButton
+            // 
+            this.helpButton.Location = new System.Drawing.Point(87, 169);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(75, 23);
+            this.helpButton.TabIndex = 11;
+            this.helpButton.Text = "&Help";
+            this.helpButton.UseVisualStyleBackColor = true;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
+            // 
             // NewProject
             // 
             this.AcceptButton = this.acceptButton;
@@ -159,6 +181,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(349, 204);
+            this.Controls.Add(this.helpButton);
+            this.Controls.Add(this.advancedSettingsButton);
             this.Controls.Add(this.SA2PCButton);
             this.Controls.Add(this.SADXRadioButton);
             this.Controls.Add(this.GameTypeLabel);
@@ -189,9 +213,11 @@
 		private System.Windows.Forms.TextBox ProjectNameText;
 		private System.Windows.Forms.Button browseButton;
 		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-		private System.Windows.Forms.Label GameTypeLabel;
-		private System.Windows.Forms.RadioButton SADXRadioButton;
-		private System.Windows.Forms.RadioButton SA2PCButton;
+        private System.Windows.Forms.Label GameTypeLabel;
         private System.ComponentModel.BackgroundWorker splitBackgroundWorker;
+        public System.Windows.Forms.RadioButton SADXRadioButton;
+        public System.Windows.Forms.RadioButton SA2PCButton;
+        private System.Windows.Forms.Button advancedSettingsButton;
+        private System.Windows.Forms.Button helpButton;
 	}
 }
