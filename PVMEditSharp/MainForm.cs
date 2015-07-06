@@ -38,7 +38,7 @@ namespace PVMEditSharp
 			Text = "PVM Editor - " + filename;
 		}
 
-		private void GetTextures(string filename)
+		private bool GetTextures(string filename)
 		{
 			byte[] pvmdata = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -47,7 +47,7 @@ namespace PVMEditSharp
 			if (!pvmfile.Is(pvmdata, filename))
 			{
 				MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				return;
+				return false;
 			}
 			PvpPalette pvp = null;
 			ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
@@ -70,7 +70,7 @@ namespace PVMEditSharp
 							else
 							{
 								MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-								return;
+								return false;
 							}
 					vrfile.SetPalette(pvp);
 				}
@@ -81,21 +81,29 @@ namespace PVMEditSharp
 			listBox1.Items.Clear();
 			listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
 			SetFilename(Path.GetFullPath(filename));
+			return true;
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+		private void MainForm_Shown(object sender, EventArgs e)
 		{
 			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+
 			if (Settings.MRUList != null)
+			{
 				foreach (string file in Settings.MRUList)
+				{
 					if (File.Exists(file))
 					{
 						newlist.Add(file);
 						recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
 					}
+				}
+			}
+
 			Settings.MRUList = newlist;
-			if (Program.Arguments.Length > 0)
-				GetTextures(Program.Arguments[0]);
+
+			if (Program.Arguments.Length > 0 && !GetTextures(Program.Arguments[0]))
+				this.Close();
 		}
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
