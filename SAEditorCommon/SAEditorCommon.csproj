@@ -87,12 +87,6 @@
     <Compile Include="UI\ProgressDialog.Designer.cs">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ProjectSelector.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ProjectSelector.Designer.cs">
-      <DependentUpon>ProjectSelector.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\SETDeleteType.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,9 +162,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ProjectSelector.resx">
-      <DependentUpon>ProjectSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETDeleteType.resx">
       <DependentUpon>SETDeleteType.cs</DependentUpon>
