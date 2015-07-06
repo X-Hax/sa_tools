@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using Microsoft.DirectX;
@@ -35,6 +36,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
         public static NJS_OBJECT LoadModel(string file)
         {
+            if(!Path.IsPathRooted(file)) // if our path is relative and not absolute, we can do our fallback detection
+            {
+                // look in our game path first.
+                Environment.CurrentDirectory = EditorOptions.ProjectPath;
+
+                if(!File.Exists(file))
+                {
+                    // look for a fallback
+                    Environment.CurrentDirectory = EditorOptions.GamePath;
+
+                    if (!File.Exists(file)) return new NJS_OBJECT(); // todo: add some kind of error logging here.
+                }
+            }
+
             return new ModelFile(file).Model;
         }
 

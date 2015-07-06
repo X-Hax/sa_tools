@@ -27,6 +27,16 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public static Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }
 		#endregion
 
+        #region Paths
+        private static string gamePath;
+        private static string projectName;
+        private static string projectPath;
+
+        public static string GamePath { get { return EditorOptions.gamePath; } set { EditorOptions.gamePath = value; } }
+        public static string ProjectName { get { return EditorOptions.projectName; } set { EditorOptions.projectName = value; } }
+        public static string ProjectPath { get { return EditorOptions.projectPath; } set { EditorOptions.projectPath = value; } }
+        #endregion
+
 		public static void Initialize(Device d3dDevice)
 		{
 			direct3DDevice = d3dDevice;

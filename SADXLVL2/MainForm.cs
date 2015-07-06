@@ -77,24 +77,61 @@ namespace SonicRetro.SAModel.SADXLVL2
 			dataViewer = new UI.EditorDataViewer(this);
 #endif
 
-			if (ShowQuickStart())
-				ShowLevelSelect();
+            string errorMessage = "None supplied";
+            DialogResult lookForNewPath = System.Windows.Forms.DialogResult.None;
+            if (Properties.Settings.Default.GamePath == "" || (!ProjectSelector.VerifyGamePath(SA_Tools.Game.SADX, Properties.Settings.Default.GamePath, out errorMessage)))
+            {
+                // show an error message that the sadx path is invalid, ask for a new one.
+                lookForNewPath = MessageBox.Show(string.Format("The on-record SADX game directory doesn't appear to be valid because: {0}\nOK to supply one, Cancel to ignore.", errorMessage), "Directory Warning", MessageBoxButtons.OKCancel);
+                if (lookForNewPath == System.Windows.Forms.DialogResult.OK)
+                {
+                    using (FolderBrowserDialog folderBrowser = new FolderBrowserDialog() { Description = "Select the SADX root path (contains sonic.exe)" })
+                    {
+                        if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK) Properties.Settings.Default.GamePath = folderBrowser.SelectedPath;
+                        else
+                        {
+                            MessageBox.Show("Cannot operate without root folder, sorry. Closing SADXLVL2"); // this should be triggering on cancel, but it isn't. Find out why.
+                            Application.Exit();
+                        }
+                    }
+                }
+            }
+
+            SAEditorCommon.EditorOptions.GamePath = Properties.Settings.Default.GamePath;
+
+            // todo: implement a 'recent project' storage variable in the settings, then try loading it here.
+            if(Settings.RecentProject != "")
+            {
+                string projectINIFile = string.Concat(Settings.GamePath, "\\", Settings.RecentProject, "\\sadxlvl.ini");
+                if(File.Exists(projectINIFile))
+                {
+                    SAEditorCommon.EditorOptions.ProjectPath = string.Concat(Settings.GamePath, "\\", Settings.RecentProject, "\\");
+                    SAEditorCommon.EditorOptions.ProjectName = Settings.RecentProject;
+
+                    // open our current project.
+                    this.Shown += LoadProject_Shown;
+                }
+                else
+                {
+                    Properties.Settings.Default.RecentProject = "";
+                }
+            }
+
+            Properties.Settings.Default.Save();
+            Settings = Properties.Settings.Default;
 		}
+
+        void LoadProject_Shown(object sender, EventArgs e)
+        {
+            this.Shown -= LoadProject_Shown;
+            string projectINIFile = string.Concat(Settings.GamePath, "\\", Settings.RecentProject, "\\sadxlvl.ini");
+            LoadINI(projectINIFile);
+            ShowLevelSelect();
+        }
 
 		void editorDebugItem_Click(object sender, EventArgs e)
 		{
 			dataViewer.Show();
-		}
-
-		private bool ShowQuickStart()
-		{
-			bool result;
-			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
-			{
-				if (result = (dialog.ShowDialog() == DialogResult.OK))
-					LoadINI(dialog.SelectedItem);
-			}
-			return result;
 		}
 
 		private void ShowLevelSelect()
@@ -139,32 +176,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private StringCollection GetRecentFiles()
-		{
-			if (Settings.MRUList == null)
-				Settings.MRUList = new StringCollection();
-
-			StringCollection mru = new StringCollection();
-
-			foreach (string item in Settings.MRUList)
-			{
-				if (File.Exists(item))
-				{
-					mru.Add(item);
-					recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
-				}
-			}
-
-			Settings.MRUList = mru;
-			if (mru.Count > 0)
-				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
-
-			if (Program.args.Length > 0)
-				LoadINI(Program.args[0]);
-
-			return mru;
-		}
-
 		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
 		{
 			// HACK: Not so sure we should have to re-initialize this every time...
@@ -173,30 +184,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFile();
+            OpenProject();
 		}
 
-		public bool OpenFile()
+		public bool OpenProject()
 		{
 			if (isStageLoaded)
 			{
 				if (SavePrompt() == DialogResult.Cancel)
 					return false;
 			}
+            
+            using(ProjectSelector projectSelector = new ProjectSelector(Settings.GamePath))
+            {
+                projectSelector.ShowDialog();
 
-			OpenFileDialog a = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "INI Files|*.ini|All Files|*.*"
-			};
+                if(projectSelector.NoProjects)
+                {
+                    MessageBox.Show("No mod projects in this game folder! Check the game path setting.");
+                    return false;
+                }
 
-			if (a.ShowDialog(this) == DialogResult.OK)
-			{
-				LoadINI(a.FileName);
-				return true;
-			}
+                string projectRelativeININame = string.Concat(projectSelector.SelectedProjectPath, "\\sadxlvl.ini");
+                SAEditorCommon.EditorOptions.ProjectName = projectSelector.SelectedProjectName;
+                SAEditorCommon.EditorOptions.ProjectPath = projectSelector.SelectedProjectPath;
 
-			return false;
+                // open our ini file
+                LoadINI(projectRelativeININame);
+                ShowLevelSelect();
+            }
+
+            return true;
 		}
 
 		private void LoadINI(string filename)
@@ -228,31 +246,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// Set up the Change Level menu...
 			PopulateLevelMenu(changeLevelToolStripMenuItem, levelNames);
 
-			// If no projects have been recently used, clear the list to remove the "(none)" entry.
-			if (Settings.MRUList.Count == 0)
-				recentProjectsToolStripMenuItem.DropDownItems.Clear();
-
-			// If this project has been loaded before, remove it...
-			if (Settings.MRUList.Contains(filename))
-			{
-				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
-				Settings.MRUList.Remove(filename);
-			}
-
-			// ...so that it can be re-inserted at the top of the Recent Projects list.
-			Settings.MRUList.Insert(0, filename);
-			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
-
 			// File menu -> Change Level
 			changeLevelToolStripMenuItem.Enabled = true;
 
 			// load stage lights
-			string stageLightPath = string.Concat(Environment.CurrentDirectory, "\\Levels\\Stage Lights.ini");
+			string stageLightPath = string.Concat(EditorOptions.ProjectPath, "\\Levels\\Stage Lights.ini");
 
 			if (File.Exists(stageLightPath))
 			{
 				stageLightList = SA1StageLightDataList.Load(stageLightPath);
 			}
+
+            Properties.Settings.Default.RecentProject = SAEditorCommon.EditorOptions.ProjectName;
+            Properties.Settings.Default.Save();
+            Settings = Properties.Settings.Default;
 		}
 
 		private void PopulateLevelMenu(ToolStripMenuItem targetMenu, Dictionary<string, List<string>> levels)
@@ -420,23 +427,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 		/// </summary>
 		/// <param name="file">The name of the file.</param>
 		/// <param name="systemPath">The game's system path.</param>
-		void LoadTextureList(string file, string systemPath)
+		void LoadTextureList(string file, string systemPath, string systemFallbackPath)
 		{
-			LoadTextureList(TextureList.Load(file), systemPath);
+			LoadTextureList(TextureList.Load(file), systemPath, systemFallbackPath);
 		}
+
 		/// <summary>
 		/// Loads all of the textures specified into the scene.
 		/// </summary>
 		/// <param name="textureEntries">The texture entries to load.</param>
 		/// <param name="systemPath">The game's system path.</param>
-		private void LoadTextureList(IEnumerable<TextureListEntry> textureEntries, string systemPath)
+		private void LoadTextureList(IEnumerable<TextureListEntry> textureEntries, string systemPath, string systemFallbackPath)
 		{
 			foreach (TextureListEntry entry in textureEntries)
 			{
 				if (string.IsNullOrEmpty(entry.Name))
 					continue;
 
-				LoadPVM(entry.Name, systemPath);
+				LoadPVM(entry.Name, systemPath, systemFallbackPath);
 			}
 		}
 		/// <summary>
@@ -444,11 +452,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 		/// </summary>
 		/// <param name="pvmName">The PVM name (name only; no path or extension).</param>
 		/// <param name="systemPath">The game's system path.</param>
-		void LoadPVM(string pvmName, string systemPath)
+		void LoadPVM(string pvmName, string systemPath, string systemFallbackPath)
 		{
 			if (!LevelData.TextureBitmaps.ContainsKey(pvmName))
 			{
-				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmName) + ".PVM");
+				BMPInfo[] textureBitmaps;
+
+                if(File.Exists(Path.Combine(systemPath, pvmName) + ".PVM"))
+                {
+                    textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmName) + ".PVM");
+                }
+                else
+                {
+                    textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemFallbackPath, pvmName) + ".PVM");
+                }
+
 				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
 
 				for (int i = 0; i < textureBitmaps.Length; i++)
@@ -483,8 +501,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					IniLevelData level = ini.Levels[levelID];
 
-					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-					string modpath = ini.ModPath;
+                    string sysFallbackPath = Path.Combine(SAEditorCommon.EditorOptions.GamePath, ini.SystemPath);
+                    string syspath = Path.Combine(SAEditorCommon.EditorOptions.ProjectPath, ini.SystemPath);
 
 					SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 					LevelData.leveltexs = null;
@@ -518,8 +536,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.Textures = new Dictionary<string, Texture[]>();
 					if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					{
-						BMPInfo[] TexBmps =
-							TextureArchive.GetTextures(Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
+                        BMPInfo[] TexBmps;
+
+                        if (File.Exists(Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM")) // look in our mod's sytem folder first
+                        {
+                            TexBmps =
+                                TextureArchive.GetTextures(Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
+                        }
+                        else
+                        {
+                            // get our fallback path TexBmps
+                            TexBmps =
+                                TextureArchive.GetTextures(Path.Combine(sysFallbackPath, LevelData.geo.TextureFileName) + ".PVM");
+                        }
+
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
 							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
@@ -561,7 +591,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
 							character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 
-						LoadTextureList(character.TextureList, syspath);
+						LoadTextureList(character.TextureList, syspath, sysFallbackPath);
 					}
 
 					progress.StepProgress();
@@ -600,7 +630,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetStep("Common objects");
 					// Loads common object textures (e.g OBJ_REGULAR)
-					LoadTextureList(ini.ObjectTextureList, syspath);
+					LoadTextureList(ini.ObjectTextureList, syspath, sysFallbackPath);
 
 					progress.SetTaskAndStep("Loading stage texture lists...");
 
@@ -611,19 +641,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if (texini.Level != levelact)
 							continue;
 						
-						LoadTextureList(texini.TextureList, syspath);
+						LoadTextureList(texini.TextureList, syspath, sysFallbackPath);
 					}
 
 					progress.SetTaskAndStep("Loading textures for:", "Objects");
 					// Object texture list(s)
-					LoadTextureList(level.ObjectTextureList, syspath);
+					LoadTextureList(level.ObjectTextureList, syspath, sysFallbackPath);
 
 					progress.SetStep("Stage");
 					// The stage textures... again? "Extra"?
 					if (level.Textures != null && level.Textures.Length > 0)
 						foreach (string tex in level.Textures)
 						{
-							LoadPVM(tex, syspath);
+							LoadPVM(tex, syspath, sysFallbackPath);
 
 							if (string.IsNullOrEmpty(LevelData.leveltexs))
 								LevelData.leveltexs = tex;
@@ -645,7 +675,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						List<ObjectData> objectErrors = new List<ObjectData>();
 						ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
-						Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+
+                        // get our dll cache and objdefs folders, as well as the fallback locations if the mod doesn't specifically call for them.
+                        string projectRelativeObjDefsFolder, projectRelativeDLLCacheFolder, fallbackObjDefsFolder, fallbackDLLCacheFolder;
+                        projectRelativeObjDefsFolder = string.Concat(SAEditorCommon.EditorOptions.ProjectPath, "\\objdefs\\");
+                        projectRelativeDLLCacheFolder = string.Concat(SAEditorCommon.EditorOptions.ProjectPath, "\\dllcache\\");
+                        fallbackObjDefsFolder = string.Concat(Settings.GamePath, "\\objdefs\\");
+                        fallbackDLLCacheFolder = string.Concat(Settings.GamePath, "\\dllcache\\");
+
+                        Directory.CreateDirectory(fallbackDLLCacheFolder).Attributes |= FileAttributes.Hidden;
 
 						for (int ID = 0; ID < objlstini.Length; ID++)
 						{
@@ -655,88 +693,67 @@ namespace SonicRetro.SAModel.SADXLVL2
 								codeaddr = "0";
 
 							ObjectData defgroup = objdefini[codeaddr];
-							ObjectDefinition def;
+							ObjectDefinition objectDefinition;
 
 							if (!string.IsNullOrEmpty(defgroup.CodeFile))
 							{
 								progress.SetStep("Compiling: " + defgroup.CodeFile);
 
-								// TODO: Split this out to a function
 								#region Compile object code files
 
-								string ty = defgroup.CodeType;
-								string dllfile = Path.Combine("dllcache", ty + ".dll");
-								DateTime modDate = DateTime.MinValue;
-								if (File.Exists(dllfile))
-									modDate = File.GetLastWriteTime(dllfile);
-								string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
-								if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
-									def =
-										(ObjectDefinition)
-											Activator.CreateInstance(
-												Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-													.GetType(ty));
-								else
-								{
-									string ext = Path.GetExtension(fp);
-									CodeDomProvider pr = null;
-									switch (ext.ToLowerInvariant())
-									{
-										case ".cs":
-											pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-											break;
-										case ".vb":
-											pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-											break;
-									}
-									if (pr != null)
-									{
-										CompilerParameters para =
-											new CompilerParameters(new string[]
-											{
-												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
-											})
-											{
-												GenerateExecutable = false,
-												GenerateInMemory = false,
-												IncludeDebugInformation = true,
-												OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-											};
-										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-										if (res.Errors.HasErrors)
-										{
-											// TODO: Merge with existing object error handler. I add too many ToDos.
-											string errors = null;
-											foreach (CompilerError item in res.Errors)
-												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+                                // TODO: I think the logic below can be simplified by using Environment.CurrentDirectory, then doing some file checks.
+                                // if you see this message, bug CorvidDude about it.
+								string codeType = defgroup.CodeType;
 
-											MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
-												"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+								string codeFileRelative = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar); // get our relative path to the code file, then the 
+                                string codeFileProject = Path.Combine(SAEditorCommon.EditorOptions.ProjectPath, codeFileRelative); // project relative
+                                string codeFileFallback = Path.Combine(Settings.GamePath, codeFileRelative); // and game-folder relative versions
 
-											def = new DefaultObjectDefinition();
-										}
-										else
-										{
-											def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-										}
-									}
-									else
-										def = new DefaultObjectDefinition();
-								}
+                                // First we need to look for our project dll cache definition.
+                                if(File.Exists(codeFileProject))
+                                {
+                                    string dllfile = Path.Combine(projectRelativeDLLCacheFolder, codeType + ".dll");
+                                    DateTime modDate = DateTime.MinValue;
+                                    if (File.Exists(dllfile)) modDate = File.GetLastWriteTime(dllfile);
 
+                                    // If it exists and is dated properly, load it. If not, look for our project cs file, and compile it.
+                                    if (modDate >= File.GetLastWriteTime(codeFileProject) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+                                    {
+                                        // our object definition is fine to load, so just load it up
+                                        objectDefinition = (ObjectDefinition)Activator.CreateInstance(Assembly.LoadFile(dllfile).GetType(codeType));
+                                    }
+                                    else
+                                    {
+                                        objectDefinition = CompileDefinition(defgroup, codeType, codeFileProject, dllfile);
+                                    }
+                                }
+                                else // If it doesn't exist, look for our fallback dll cache definition
+                                {
+                                    string dllfile = Path.Combine(fallbackDLLCacheFolder, codeType + ".dll");
+                                    DateTime modDate = DateTime.MinValue;
+
+                                    if (File.Exists(dllfile)) modDate = File.GetLastWriteTime(dllfile);
+
+                                    // If it exists and is dated properly, load it. If not, look for our fallback cs file, and compile it.
+                                    if (modDate >= File.GetLastWriteTime(codeFileFallback) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+                                    {
+                                        // our object definition is fine to load, so just load it up
+                                        objectDefinition = (ObjectDefinition)Activator.CreateInstance(Assembly.LoadFile(dllfile).GetType(codeType));
+                                    }
+                                    else
+                                    {
+                                        objectDefinition = CompileDefinition(defgroup, codeType, codeFileFallback, dllfile);
+                                    }
+                                }
 
 								#endregion
 							}
 							else
 							{
-								def = new DefaultObjectDefinition();
+								objectDefinition = new DefaultObjectDefinition();
 							}
 
-							LevelData.ObjDefs.Add(def);
+							LevelData.ObjDefs.Add(objectDefinition);
 
 							// The only reason .Model is checked for null is for objects that don't yet have any
 							// models defined for them. It would be annoying seeing that error all the time!
@@ -754,8 +771,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 								}
 							}
 
-							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
-							def.SetInternalName(objlstini[ID].Name);
+							objectDefinition.Init(defgroup, objlstini[ID].Name, d3ddevice);
+							objectDefinition.SetInternalName(objlstini[ID].Name);
 						}
 
 						// Loading SET Layout
@@ -764,7 +781,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if (LevelData.ObjDefs.Count > 0)
 						{
 							LevelData.SETName = level.SETName ?? level.LevelID;
-							string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+							string setstr = "SET" + LevelData.SETName + "{0}.bin";
+                                
 							LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
 							for (int i = 0; i < LevelData.SETChars.Length; i++)
 							{
@@ -772,11 +790,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 								byte[] setfile = null;
 
 								string formatted = string.Format(setstr, LevelData.SETChars[i]);
+                                string setPath = string.Concat(syspath, "\\", formatted);
+                                string setFallbackPath = string.Concat(sysFallbackPath, "\\", formatted);
 
-								if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-									setfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-								else if (File.Exists(formatted))
-									setfile = File.ReadAllBytes(formatted);
+                                if (File.Exists(setPath))
+                                {
+                                    setfile = File.ReadAllBytes(setPath);
+                                }
+                                else if (File.Exists(setFallbackPath))
+                                {
+                                    setfile = File.ReadAllBytes(setFallbackPath);
+                                }
 
 								if (setfile != null)
 								{
@@ -801,6 +825,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.SETItems = null;
 						}
 
+                        // TODO: Consider making a single log file for all of sadxlvl2, and append this to the end of it.
 						// Checks if there have been any errors added to the error list and does its thing
 						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
 						if (objectErrors.Count > 0)
@@ -822,8 +847,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								errorStrings.Add("\t\tExists:\t" + texExists);
 							}
 
-							// TODO: Proper logging. Who knows where this file may end up
-							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+							File.WriteAllLines(string.Concat(Settings.GamePath, "SADXLVL2.log"), errorStrings.ToArray()); // save our error output to a log file in the game's root folder.
 
 							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
 											+
@@ -845,7 +869,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-					string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
+					string camstr = "CAM" + LevelData.SETName + "{0}.bin";
 
 					LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
 					for (int i = 0; i < LevelData.SETChars.Length; i++)
@@ -855,10 +879,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						string formatted = string.Format(camstr, LevelData.SETChars[i]);
 
-						if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-							camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-						else if (File.Exists(formatted))
-							camfile = File.ReadAllBytes(formatted);
+                        if (File.Exists(Path.Combine(syspath, formatted)))
+                        {
+                            camfile = File.ReadAllBytes(Path.Combine(syspath, formatted));
+                        }
+                        else if (File.Exists(Path.Combine(sysFallbackPath, formatted)))
+                        {
+                            camfile = File.ReadAllBytes(Path.Combine(sysFallbackPath, formatted));
+                        }
 
 						if (camfile != null)
 						{
@@ -893,24 +921,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 						progress.SetTaskAndStep("Loading Level Effects...");
 
 						LevelDefinition def = null;
-						string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
-						string dllfile = Path.Combine("dllcache", ty + ".dll");
+						string codeType = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+						string dllfile = Path.Combine("dllcache", codeType + ".dll");
 						DateTime modDate = DateTime.MinValue;
 
-						if (File.Exists(dllfile))
-							modDate = File.GetLastWriteTime(dllfile);
+                        Environment.CurrentDirectory = SAEditorCommon.EditorOptions.ProjectPath; // we'll look in our project folder first.
 
-						string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-						if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+                        if (File.Exists(dllfile)) // look for our dll
+                        {
+                            modDate = File.GetLastWriteTime(dllfile);
+                        }
+                        else
+                        {
+                            if(!File.Exists(Path.Combine(Environment.CurrentDirectory, dllfile))) // if the dll, doesn't exist, look for the code file.
+                            {
+                                Environment.CurrentDirectory = Settings.GamePath; // if it doesn't exist, go look for the fallback
+                            }
+                        }
+
+						string filePath = level.Effects.Replace('/', Path.DirectorySeparatorChar);
+						if (modDate >= File.GetLastWriteTime(filePath) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 						{
 							def =
 								(LevelDefinition)
 									Activator.CreateInstance(
-										Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
+										Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(codeType)); // our environment current directory is wrong.
+                                                                        // I don't know when it got messed up and set to the project directory, but this is exactly why we sould always
+                                                                       // use absolute paths for things.
 						}
 						else
 						{
-							string ext = Path.GetExtension(fp);
+							string ext = Path.GetExtension(filePath);
 							CodeDomProvider pr = null;
 							switch (ext.ToLowerInvariant())
 							{
@@ -938,9 +979,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 										IncludeDebugInformation = true,
 										OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
 									};
-								CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+								CompilerResults res = pr.CompileAssemblyFromFile(para, filePath);
 								if (!res.Errors.HasErrors)
-									def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+									def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(codeType));
 							}
 						}
 
@@ -963,7 +1004,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						progress.SetTaskAndStep("Reticulating splines...");
 
-						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
+						String splineDirectory = Path.Combine(Path.Combine(EditorOptions.ProjectPath, ini.Paths),
 							levelact.ToString());
 
 						if (Directory.Exists(splineDirectory))
@@ -1056,6 +1097,69 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 #endif
 		}
+        
+        /// <summary>
+        /// Get an object definition from a CS file.
+        /// </summary>
+        /// <param name="codeFilePath"></param>
+        /// <returns></returns>
+        private ObjectDefinition CompileDefinition(ObjectData defgroup, string codeType, string codeFilePath, string dllfile)
+        {
+            ObjectDefinition objectDefinition;
+
+            string ext = Path.GetExtension(codeFilePath);
+            CodeDomProvider pr = null;
+            switch (ext.ToLowerInvariant())
+            {
+                case ".cs":
+                    pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                    break;
+                case ".vb":
+                    pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                    break;
+            }
+            if (pr != null)
+            {
+                CompilerParameters para =
+                    new CompilerParameters(new string[]
+											{
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
+												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
+												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
+											})
+                    {
+                        GenerateExecutable = false,
+                        GenerateInMemory = false,
+                        IncludeDebugInformation = true,
+                        OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+                    };
+                CompilerResults results = pr.CompileAssemblyFromFile(para, codeFilePath);
+                if (results.Errors.HasErrors)
+                {
+                    // TODO: Merge with existing object error handler. I add too many ToDos.
+                    string errors = null;
+                    foreach (CompilerError item in results.Errors)
+                        errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+
+                    MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
+                        "Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    objectDefinition = new DefaultObjectDefinition();
+                }
+                else
+                {
+                    objectDefinition = (ObjectDefinition)Activator.CreateInstance(results.CompiledAssembly.GetType(codeType));
+                }
+            }
+            else
+            {
+                objectDefinition = new DefaultObjectDefinition();
+            }
+
+            return objectDefinition;
+        }
 
 		private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
@@ -1143,8 +1247,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Application.DoEvents();
 
 			IniLevelData level = ini.Levels[levelID];
-			string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-			string modpath = ini.ModPath;
+            string syspath = Path.Combine(SAEditorCommon.EditorOptions.ProjectPath, ini.SystemPath);
+            Environment.CurrentDirectory = EditorOptions.ProjectPath; // save everything to the project!
+
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 
 			progress.SetTaskAndStep("Saving:", "Geometry...");
@@ -1207,8 +1312,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				for (int i = 0; i < LevelData.SETItems.Length; i++)
 				{
 					string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-					if (modpath != null)
-						setstr = Path.Combine(modpath, setstr);
 
 					// TODO: Consider simply blanking the SET file instead of deleting it.
 					// Completely deleting it might be undesirable since Sonic's layout will be loaded
@@ -1244,8 +1347,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				for (int i = 0; i < LevelData.CAMItems.Length; i++)
 				{
 					string camString = Path.Combine(syspath, "CAM" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-					if (modpath != null)
-						camString = Path.Combine(modpath, camString);
 
 					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
 					if (File.Exists(camString))
@@ -2268,11 +2369,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-		{
-			LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
-		}
-
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (BugReportDialog dlg = new BugReportDialog())
@@ -2434,11 +2530,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowLevelSelect();
-		}
-
-		private void recentProjectsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ShowQuickStart();
 		}
 
 		private void toolClearGeometry_Click(object sender, EventArgs e)

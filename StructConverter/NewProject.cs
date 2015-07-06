@@ -216,7 +216,7 @@ namespace ModGenerator
                         }
                         #endregion
 
-                        #region Moving sadxlvl.ini
+                        #region Moving sadxlvl.ini & objdefs.ini
                         string applicationDirectory = Application.StartupPath;
                         string sadxlvlINIPath = string.Concat(applicationDirectory, "\\Config\\SADX\\sadxlvl.ini");
 
@@ -233,13 +233,29 @@ namespace ModGenerator
                             splitBackgroundWorker.CancelAsync();
                             return;
                         }
+
+                        string objdefsINIpath = string.Concat(applicationDirectory, "\\Config\\SADX\\objdefs.ini");
+
+                        splitBackgroundWorker.ReportProgress(95, "Moving objdefs.ini");
+
+                        if(File.Exists(objdefsINIpath))
+                        {
+                            // copy objdefs ini to project folder
+                            File.Copy(objdefsINIpath, string.Concat(gamePathTextBox.Text, "\\Projects\\", ProjectNameText.Text, "\\objdefs.ini"), true);
+                        }
+                        else
+                        {
+                            cancellationMessage = "Error - couldn't find objdefs.ini! Report this error at irc.badnik.net #x-hax";
+                            splitBackgroundWorker.CancelAsync();
+                            return;
+                        }
                         #endregion
 
-                        #region Creating System & Textures Folders
-                        string projectSystemFolder = string.Concat(projectFolder, "\\system\\");
-                        string projectTexturesFolder = string.Concat(projectFolder, "\\textures\\");
-                        if (!Directory.Exists(projectSystemFolder)) Directory.CreateDirectory(projectSystemFolder);
-                        if (!Directory.Exists(projectTexturesFolder)) Directory.CreateDirectory(projectTexturesFolder);
+                        #region Creating Template Sub-Folders
+                        Directory.CreateDirectory(string.Concat(projectFolder, "\\system\\"));
+                        Directory.CreateDirectory(string.Concat(projectFolder, "\\textures\\"));
+                        Directory.CreateDirectory(string.Concat(projectFolder, "\\objdefs\\"));
+                        Directory.CreateDirectory(string.Concat(projectFolder, "\\dllcache\\")).Attributes |= FileAttributes.Hidden;
                         #endregion
                     }
                     else // Cancel. Message should already be saved.
@@ -276,7 +292,7 @@ namespace ModGenerator
             }
             else
             {
-                if (SADXRadioButton.Checked) MessageBox.Show(string.Format("Your mod project has been created in <SADX Game Folder>/Projects/{0}\nsystem and textures folders were created. Files placed in system will override sadx's default system folder.\nThe textures folder is for HD override textures. You can use PVMSharp to convert a PVM file into a texture folder with individual PNG files, which you can then edit in any graphics.", ProjectNameText.Text));
+                if (SADXRadioButton.Checked) MessageBox.Show(string.Format("Your mod project has been created in <SADX Game Folder>/Projects/{0}.\nSystem and textures folders were created. Files placed in system will override sadx's default system folder.\nThe textures folder is for HD override textures. You can use PVMSharp to convert a PVM file into a texture folder with individual PNG files, which you can then edit in any graphics program.", ProjectNameText.Text));
                 if (SA2PCButton.Checked) MessageBox.Show("Success! Your mod project has been created!");
                 Application.Exit();
             }

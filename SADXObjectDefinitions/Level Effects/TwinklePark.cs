@@ -1,4 +1,6 @@
-﻿using Microsoft.DirectX;
+﻿using System;
+using System.IO;
+using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SA_Tools;
 using SonicRetro.SAModel;
@@ -17,7 +19,12 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act, Device dev)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Twinkle Park/Skybox Data.ini");
+            string filePath = "Levels/Twinkle Park/Skybox Data.ini";
+
+            Environment.CurrentDirectory = EditorOptions.ProjectPath; // look in our project folder first
+            if (!File.Exists(filePath)) Environment.CurrentDirectory = EditorOptions.GamePath; // look in our fallback if it doesn't exist (probably won't happen in these cases, though.)
+
+            SkyboxScale[] skyboxdata = SkyboxScaleList.Load(filePath);
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model = ObjectHelper.LoadModel("Levels/Twinkle Park/Skybox model.sa1mdl");

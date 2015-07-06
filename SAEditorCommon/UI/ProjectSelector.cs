@@ -18,6 +18,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         private string projectFolderPath; // we'll treat any immediate sub-folder of this one to be a selectable project.
         private string selectedProjectName;
         public string SelectedProjectName { get { return selectedProjectName; } set { selectedProjectName = value; } }
+        /// <summary>Full path version of the selected project name.</summary>
+        public string SelectedProjectPath { get { return string.Concat(projectFolderPath, selectedProjectName, "\\"); } }
         public bool NoProjects { get { return listBox1.Items.Count == 0; } }
 
         public ProjectSelector(string gameFolder)

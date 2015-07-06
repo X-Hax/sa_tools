@@ -95,7 +95,7 @@ namespace ModGenerator
                 {
                     projectSelector.ShowDialog();
                     projectName = projectSelector.SelectedProjectName;
-                    projectFolder = string.Concat(gameFolder, "\\Projects\\", projectName, "\\");
+                    projectFolder = projectSelector.SelectedProjectPath;
                 }
             }
 

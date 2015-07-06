@@ -1,1 +1,0 @@
-splitDLL system/CHAOSTGGARDEN02MR_NIGHT.DLL chaostggarden02mr_night.ini
