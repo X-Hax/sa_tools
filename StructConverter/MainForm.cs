@@ -262,7 +262,7 @@ namespace StructConverter
             Settings.Save();
         }
 
-        private void CheckAll_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -270,7 +270,7 @@ namespace StructConverter
             listView1.EndUpdate();
         }
 
-        private void CheckModified_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -278,7 +278,7 @@ namespace StructConverter
             listView1.EndUpdate();
         }
 
-        private void UnCheckAll_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -845,7 +845,7 @@ namespace StructConverter
 			writer.WriteLine();
 		}
 
-        private void ExportOldCPP_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
                 if (fd.ShowDialog(this) == DialogResult.OK)
@@ -857,7 +857,7 @@ namespace StructConverter
                     }
         }
 
-		private void ExportNewCPP_Click(object sender, EventArgs e)
+		private void button5_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)
@@ -881,7 +881,7 @@ namespace StructConverter
 				fil.CopyTo(Path.Combine(dst, fil.Name), true);
 		}
 
-		private void INIExport_Click(object sender, EventArgs e)
+		private void button6_Click(object sender, EventArgs e)
 		{
             using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "ini", Filter = "INI files|*.ini", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)

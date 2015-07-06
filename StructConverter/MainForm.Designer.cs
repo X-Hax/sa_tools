@@ -38,12 +38,12 @@
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.CheckAllButton = new System.Windows.Forms.Button();
-			this.CheckModifiedButton = new System.Windows.Forms.Button();
-			this.UncheckAllButton = new System.Windows.Forms.Button();
-			this.OldCPlusExportButton = new System.Windows.Forms.Button();
-			this.CPlusExportButton = new System.Windows.Forms.Button();
-			this.IniExportButton = new System.Windows.Forms.Button();
+			this.button1 = new System.Windows.Forms.Button();
+			this.button2 = new System.Windows.Forms.Button();
+			this.button3 = new System.Windows.Forms.Button();
+			this.button4 = new System.Windows.Forms.Button();
+			this.button5 = new System.Windows.Forms.Button();
+			this.button6 = new System.Windows.Forms.Button();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -65,32 +65,32 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
 			// 
 			// openToolStripMenuItem
 			// 
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.openToolStripMenuItem.Text = "&Open...";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
 			// recentProjectsToolStripMenuItem
 			// 
 			this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
-			this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.recentProjectsToolStripMenuItem.Text = "&Recent Projects";
 			this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProjectsToolStripMenuItem_DropDownItemClicked);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(147, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -127,95 +127,95 @@
 			// 
 			this.columnHeader3.Text = "Changed";
 			// 
-			// CheckAllButton
+			// button1
 			// 
-			this.CheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.CheckAllButton.AutoSize = true;
-			this.CheckAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.CheckAllButton.Location = new System.Drawing.Point(12, 527);
-			this.CheckAllButton.Name = "CheckAllButton";
-			this.CheckAllButton.Size = new System.Drawing.Size(62, 23);
-			this.CheckAllButton.TabIndex = 2;
-			this.CheckAllButton.Text = "Check All";
-			this.CheckAllButton.UseVisualStyleBackColor = true;
-			this.CheckAllButton.Click += new System.EventHandler(this.CheckAll_Click);
+			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button1.AutoSize = true;
+			this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button1.Location = new System.Drawing.Point(12, 527);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(62, 23);
+			this.button1.TabIndex = 2;
+			this.button1.Text = "Check All";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
-			// CheckModifiedButton
+			// button2
 			// 
-			this.CheckModifiedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.CheckModifiedButton.AutoSize = true;
-			this.CheckModifiedButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.CheckModifiedButton.Location = new System.Drawing.Point(80, 527);
-			this.CheckModifiedButton.Name = "CheckModifiedButton";
-			this.CheckModifiedButton.Size = new System.Drawing.Size(91, 23);
-			this.CheckModifiedButton.TabIndex = 3;
-			this.CheckModifiedButton.Text = "Check Modified";
-			this.CheckModifiedButton.UseVisualStyleBackColor = true;
-			this.CheckModifiedButton.Click += new System.EventHandler(this.CheckModified_Click);
+			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button2.AutoSize = true;
+			this.button2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button2.Location = new System.Drawing.Point(80, 527);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(91, 23);
+			this.button2.TabIndex = 3;
+			this.button2.Text = "Check Modified";
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
-			// UncheckAllButton
+			// button3
 			// 
-			this.UncheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.UncheckAllButton.AutoSize = true;
-			this.UncheckAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.UncheckAllButton.Location = new System.Drawing.Point(177, 527);
-			this.UncheckAllButton.Name = "UncheckAllButton";
-			this.UncheckAllButton.Size = new System.Drawing.Size(75, 23);
-			this.UncheckAllButton.TabIndex = 4;
-			this.UncheckAllButton.Text = "Uncheck All";
-			this.UncheckAllButton.UseVisualStyleBackColor = true;
-			this.UncheckAllButton.Click += new System.EventHandler(this.UnCheckAll_Click);
+			this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button3.AutoSize = true;
+			this.button3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button3.Location = new System.Drawing.Point(177, 527);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(75, 23);
+			this.button3.TabIndex = 4;
+			this.button3.Text = "Uncheck All";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.button3_Click);
 			// 
-			// OldCPlusExportButton
+			// button4
 			// 
-			this.OldCPlusExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.OldCPlusExportButton.AutoSize = true;
-			this.OldCPlusExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.OldCPlusExportButton.Location = new System.Drawing.Point(258, 527);
-			this.OldCPlusExportButton.Name = "OldCPlusExportButton";
-			this.OldCPlusExportButton.Size = new System.Drawing.Size(92, 23);
-			this.OldCPlusExportButton.TabIndex = 5;
-			this.OldCPlusExportButton.Text = "Export C++ (old)";
-			this.OldCPlusExportButton.UseVisualStyleBackColor = true;
-			this.OldCPlusExportButton.Click += new System.EventHandler(this.ExportOldCPP_Click);
+			this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button4.AutoSize = true;
+			this.button4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button4.Location = new System.Drawing.Point(258, 527);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(92, 23);
+			this.button4.TabIndex = 5;
+			this.button4.Text = "Export C++ (old)";
+			this.button4.UseVisualStyleBackColor = true;
+			this.button4.Click += new System.EventHandler(this.button4_Click);
 			// 
-			// CPlusExportButton
+			// button5
 			// 
-			this.CPlusExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.CPlusExportButton.AutoSize = true;
-			this.CPlusExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.CPlusExportButton.Location = new System.Drawing.Point(356, 527);
-			this.CPlusExportButton.Name = "CPlusExportButton";
-			this.CPlusExportButton.Size = new System.Drawing.Size(98, 23);
-			this.CPlusExportButton.TabIndex = 6;
-			this.CPlusExportButton.Text = "Export C++ (new)";
-			this.CPlusExportButton.UseVisualStyleBackColor = true;
-			this.CPlusExportButton.Click += new System.EventHandler(this.ExportNewCPP_Click);
+			this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button5.AutoSize = true;
+			this.button5.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button5.Location = new System.Drawing.Point(356, 527);
+			this.button5.Name = "button5";
+			this.button5.Size = new System.Drawing.Size(98, 23);
+			this.button5.TabIndex = 6;
+			this.button5.Text = "Export C++ (new)";
+			this.button5.UseVisualStyleBackColor = true;
+			this.button5.Click += new System.EventHandler(this.button5_Click);
 			// 
-			// IniExportButton
+			// button6
 			// 
-			this.IniExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.IniExportButton.AutoSize = true;
-			this.IniExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.IniExportButton.Location = new System.Drawing.Point(460, 527);
-			this.IniExportButton.Name = "IniExportButton";
-			this.IniExportButton.Size = new System.Drawing.Size(64, 23);
-			this.IniExportButton.TabIndex = 7;
-			this.IniExportButton.Text = "Export INI";
-			this.IniExportButton.UseVisualStyleBackColor = true;
-			this.IniExportButton.Click += new System.EventHandler(this.INIExport_Click);
+			this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button6.AutoSize = true;
+			this.button6.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button6.Location = new System.Drawing.Point(460, 527);
+			this.button6.Name = "button6";
+			this.button6.Size = new System.Drawing.Size(64, 23);
+			this.button6.TabIndex = 7;
+			this.button6.Text = "Export INI";
+			this.button6.UseVisualStyleBackColor = true;
+			this.button6.Click += new System.EventHandler(this.button6_Click);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(584, 562);
-			this.Controls.Add(this.IniExportButton);
-			this.Controls.Add(this.CPlusExportButton);
-			this.Controls.Add(this.OldCPlusExportButton);
-			this.Controls.Add(this.UncheckAllButton);
-			this.Controls.Add(this.CheckModifiedButton);
-			this.Controls.Add(this.CheckAllButton);
+			this.Controls.Add(this.button6);
+			this.Controls.Add(this.button5);
+			this.Controls.Add(this.button4);
+			this.Controls.Add(this.button3);
+			this.Controls.Add(this.button2);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this.listView1);
 			this.Controls.Add(this.menuStrip1);
 			this.MainMenuStrip = this.menuStrip1;
@@ -242,12 +242,12 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Button CheckAllButton;
-        private System.Windows.Forms.Button CheckModifiedButton;
-        private System.Windows.Forms.Button UncheckAllButton;
-        private System.Windows.Forms.Button OldCPlusExportButton;
-		private System.Windows.Forms.Button CPlusExportButton;
-		private System.Windows.Forms.Button IniExportButton;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+		private System.Windows.Forms.Button button5;
+		private System.Windows.Forms.Button button6;
     }
 }
 
