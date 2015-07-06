@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SA_Tools;
@@ -19,12 +17,7 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act, Device dev)
 		{
-            string filePath = "Levels/Emerald Coast/Skybox Data.ini";
-
-            Environment.CurrentDirectory = EditorOptions.ProjectPath; // look in our project folder first
-            if (!File.Exists(filePath)) Environment.CurrentDirectory = EditorOptions.GamePath; // look in our fallback if it doesn't exist (probably won't happen in these cases, though.)
-
-            SkyboxScale[] skyboxdata = SkyboxScaleList.Load(filePath);
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Emerald Coast/Skybox Data.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model1 = ObjectHelper.LoadModel("Levels/Emerald Coast/Skybox model.sa1mdl");

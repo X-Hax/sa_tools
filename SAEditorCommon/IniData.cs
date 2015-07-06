@@ -16,6 +16,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			IniSerializer.Serialize(this, filename);
 		}
 
+		public string ModPath { get; set; }
 		public string SystemPath { get; set; }
 		public string ObjectDefinitions { get; set; }
 		public string ObjectTextureList { get; set; }
