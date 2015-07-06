@@ -44,7 +44,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		internal Device d3ddevice;
 		SAEditorCommon.IniData ini;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
-		UI.EditorDataViewer dataViewer;
 		string levelID;
 		internal string levelName;
 		bool isStageLoaded;
@@ -69,21 +68,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.StateChanged += LevelData_StateChanged;
 			panel1.MouseWheel += panel1_MouseWheel;
 
-#if DEBUG
-			ToolStripMenuItem editorDebugItem = new ToolStripMenuItem("Editor Memory");
-			editorDebugItem.Click += new EventHandler(editorDebugItem_Click);
-			viewToolStripMenuItem.DropDownItems.Add(editorDebugItem);
-
-			dataViewer = new UI.EditorDataViewer(this);
-#endif
-
 			if (ShowQuickStart())
 				ShowLevelSelect();
-		}
-
-		void editorDebugItem_Click(object sender, EventArgs e)
-		{
-			dataViewer.Show();
 		}
 
 		private bool ShowQuickStart()

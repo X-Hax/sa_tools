@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweakerLite", "SADXTwea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "split", "split\split.csproj", "{744DBD22-7CD6-4C2C-B653-40030EAFB570}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModGenerator", "StructConverter\ModGenerator.csproj", "{68A3365C-2CE4-4916-8A1A-4583351089D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructConverter", "StructConverter\StructConverter.csproj", "{68A3365C-2CE4-4916-8A1A-4583351089D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionListGenerator", "FunctionListGenerator\FunctionListGenerator.csproj", "{397FCC67-9C8A-43E7-BA1D-2003AABDD366}"
 EndProject
