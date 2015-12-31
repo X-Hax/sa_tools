@@ -16,55 +16,61 @@ namespace GVM2PAK
 	{
 		static void Main(string[] args)
 		{
-			string filename;
-			if (args.Length > 0)
-				filename = args[0];
-			else
+			Queue<string> files = new Queue<string>(args);
+			if (files.Count == 0)
 			{
 				Console.Write("File: ");
-				filename = Console.ReadLine();
+				files.Enqueue(Console.ReadLine());
 			}
-			PAKFile pak = new PAKFile();
-			List<byte> inf = new List<byte>();
-			string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
-			string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
-			byte[] filedata = File.ReadAllBytes(filename);
-			using (System.Windows.Forms.Panel panel1 = new System.Windows.Forms.Panel())
-			using (Device d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } }))
+			while (files.Count > 0)
 			{
-				if (PvrTexture.Is(filedata))
+				string filename = files.Dequeue();
+				PAKFile pak = new PAKFile();
+				List<byte> inf = new List<byte>();
+				string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+				string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
+				byte[] filedata = File.ReadAllBytes(filename);
+				using (System.Windows.Forms.Panel panel1 = new System.Windows.Forms.Panel())
+				using (Device d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } }))
 				{
-					if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename, new MemoryStream(filedata)))
-						return;
-					goto end;
+					if (PvrTexture.Is(filedata))
+					{
+						if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename, new MemoryStream(filedata)))
+							continue;
+						goto end;
+					}
+					else if (GvrTexture.Is(filedata))
+					{
+						if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename, new MemoryStream(filedata)))
+							continue;
+						goto end;
+					}
+					bool gvm = false;
+					ArchiveBase pvmfile = null;
+					byte[] pvmdata = File.ReadAllBytes(filename);
+					if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+						pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
+					pvmfile = new PvmArchive();
+					if (!pvmfile.Is(pvmdata, filename))
+					{
+						pvmfile = new GvmArchive();
+						gvm = true;
+					}
+					ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
+					bool fail = false;
+					foreach (ArchiveEntry file in pvmentries)
+						if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name, file.Open()))
+						{
+							fail = true;
+							break;
+						}
+					if (fail)
+						continue;
 				}
-				else if (GvrTexture.Is(filedata))
-				{
-					if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename, new MemoryStream(filedata)))
-						return;
-					goto end;
-				}
-				bool gvm = false;
-				ArchiveBase pvmfile = null;
-				byte[] pvmdata = File.ReadAllBytes(filename);
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
-				pvmfile = new PvmArchive();
-				if (!pvmfile.Is(pvmdata, filename))
-				{
-					pvmfile = new GvmArchive();
-					gvm = true;
-				}
-				ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
-				foreach (ArchiveEntry file in pvmentries)
-				{
-					if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name, file.Open()))
-						return;
-				}
+			end:
+				pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
+				pak.Save(Path.ChangeExtension(filename, "pak"));
 			}
-		end:
-			pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
-			pak.Save(Path.ChangeExtension(filename, "pak"));
 		}
 
 		static bool AddTexture(PAKFile pak, string filenoext, string longdir, bool gvm, List<byte> inf, Device d3ddevice, string filename, Stream data)
