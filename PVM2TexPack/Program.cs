@@ -92,7 +92,7 @@ namespace PVM2TexPack
 			Bitmap bmp;
 			try { bmp = vrfile.ToBitmap(); }
 			catch { bmp = new Bitmap(1, 1); }
-			bmp.Save(Path.Combine(path, filename));
+			bmp.Save(Path.Combine(path, Path.ChangeExtension(filename, "png")));
 			bmp.Dispose();
 			index.WriteLine("{0},{1}", vrfile.HasGlobalIndex ? vrfile.GlobalIndex : uint.MaxValue, filename + ".png");
 			return true;
