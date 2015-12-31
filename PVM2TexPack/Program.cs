@@ -31,7 +31,7 @@ namespace PVM2TexPack
 					{
 						if (PvrTexture.Is(filedata))
 						{
-							if (!AddTexture(false, path, filename, new MemoryStream(filedata), texList))
+							if (!AddTexture(false, path, Path.GetFileName(filename), new MemoryStream(filedata), texList))
 							{
 								texList.Close();
 								Directory.Delete(path, true);
@@ -40,7 +40,7 @@ namespace PVM2TexPack
 						}
 						else if (GvrTexture.Is(filedata))
 						{
-							if (!AddTexture(true, path, filename, new MemoryStream(filedata), texList))
+							if (!AddTexture(true, path, Path.GetFileName(filename), new MemoryStream(filedata), texList))
 							{
 								texList.Close();
 								Directory.Delete(path, true);
@@ -94,7 +94,7 @@ namespace PVM2TexPack
 			catch { bmp = new Bitmap(1, 1); }
 			bmp.Save(Path.Combine(path, Path.ChangeExtension(filename, "png")));
 			bmp.Dispose();
-			index.WriteLine("{0},{1}", vrfile.HasGlobalIndex ? vrfile.GlobalIndex : uint.MaxValue, filename + ".png");
+			index.WriteLine("{0},{1}", vrfile.HasGlobalIndex ? vrfile.GlobalIndex : uint.MaxValue, Path.ChangeExtension(filename, "png"));
 			return true;
 		}
 	}
