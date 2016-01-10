@@ -1334,7 +1334,10 @@ namespace SA_Tools
 
     public class RecapScreen
     {
-        public RecapScreen() { }
+        public RecapScreen()
+		{
+			Text = string.Empty;
+		}
 
         public RecapScreen(byte[] file, int address, uint imageBase, Languages language)
         {
@@ -1566,7 +1569,10 @@ namespace SA_Tools
 
     public class NPCTextLine
 	{
-        public NPCTextLine() { }
+        public NPCTextLine()
+		{
+			Line = string.Empty;
+		}
 
         public NPCTextLine(byte[] file, int address, uint imageBase, Languages language, bool includeTime)
         {
