@@ -173,6 +173,12 @@
     <Compile Include="StringListEditor.Designer.cs">
       <DependentUpon>StringListEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextSearchDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextSearchDialog.Designer.cs">
+      <DependentUpon>TextSearchDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextureListEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -263,6 +269,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StringListEditor.resx">
       <DependentUpon>StringListEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextSearchDialog.resx">
+      <DependentUpon>TextSearchDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextureListEditor.resx">
       <DependentUpon>TextureListEditor.cs</DependentUpon>
