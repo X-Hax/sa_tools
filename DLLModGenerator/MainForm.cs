@@ -80,7 +80,7 @@ namespace DLLModGenerator
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			listView1.BeginUpdate();
-			listView1.Clear();
+			listView1.Items.Clear();
 			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
 			{
 				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
