@@ -504,6 +504,8 @@ namespace SonicRetro.SAModel.SAMDL
 					Textures = new Texture[TextureInfo.Length];
 					for (int j = 0; j < TextureInfo.Length; j++)
 						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.None, Pool.Managed);
+
+					DrawLevel();
 				}
 			}
 		}
