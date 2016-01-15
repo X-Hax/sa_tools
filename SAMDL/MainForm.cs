@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -57,10 +58,24 @@ namespace SonicRetro.SAModel.SAMDL
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
+				new PresentParameters
+				{
+					Windowed = true,
+					SwapEffect = SwapEffect.Discard,
+					EnableAutoDepthStencil = true,
+					AutoDepthStencilFormat = DepthFormat.D24X8
+				});
+			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
+
 			EditorOptions.Initialize(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
+		}
+
+		private void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
+		{
+			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -225,7 +240,6 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
 				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
