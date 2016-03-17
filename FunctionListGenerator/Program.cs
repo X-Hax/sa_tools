@@ -9,8 +9,8 @@ namespace FunctionListGenerator
 {
 	static class Program
 	{
-		static readonly Regex functiontype = new Regex(@"^(?<returntype>(?:const )?(?:signed |unsigned )?[A-Za-z_][A-Za-z_0-9]*(?: ?\*)?) ?(?<callconv>__cdecl|__stdcall|__fastcall|__thiscall|__usercall)?(?:<(?<returnreg>[^>]+)>)?\((?<arguments>.*)\)$", RegexOptions.CultureInvariant);
-		static readonly Regex argument = new Regex(@"(?<name>[^<]+)(?:<(?<register>[^>]+)>)?", RegexOptions.CultureInvariant);
+		static readonly Regex functiontype = new Regex(@"^(?<returntype>(?:const )?(?:signed |unsigned )?[A-Za-z_][A-Za-z_0-9]*(?: ?\*)?) ?(?<callconv>__cdecl|__stdcall|__fastcall|__thiscall|__usercall)?(?:@<(?<returnreg>[^>]+)>)?\((?<arguments>.*)\)$", RegexOptions.CultureInvariant);
+		static readonly Regex argument = new Regex(@"(?<name>[^<@]+)(?:@<(?<register>[^>]+)>)?", RegexOptions.CultureInvariant);
 		static readonly Regex functionptr = new Regex(@"\((?:__cdecl|__stdcall|__fastcall|__thiscall)? \*(?<name>[A-Za-z_][A-Za-z_0-9]*)\)", RegexOptions.CultureInvariant);
 
 		static void Main(string[] args)
