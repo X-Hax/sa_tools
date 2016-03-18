@@ -32,6 +32,9 @@ namespace FunctionListGenerator
 				filename = Console.ReadLine();
 			}
 			string[] lines = File.ReadAllLines(filename);
+			List<string> excludefuncs = new List<string>();
+			if (args.Length > 1)
+				excludefuncs = new List<string>(File.ReadAllLines(args[1]));
 			using (StreamWriter writer = File.CreateText(Path.ChangeExtension(filename, "h")))
 			{
 				writer.WriteLine("#define FunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) static RETURN_TYPE (__cdecl *const NAME)ARGS = (RETURN_TYPE (__cdecl *)ARGS)ADDRESS");
@@ -46,6 +49,7 @@ namespace FunctionListGenerator
 					string[] split = line.Split('|');
 					if (split.Length != 3) continue;
 					string address = split[0];
+					if (excludefuncs.Contains(address)) continue;
 					string name = split[1];
 					string type = split[2];
 					Match match = functiontype.Match(type);
@@ -79,6 +83,7 @@ namespace FunctionListGenerator
 					writer.WriteLine();
 					string[] split = line.Split('|');
 					string address = split[0];
+					if (excludefuncs.Contains(address)) continue;
 					string name = split[1];
 					string type = split[2];
 					writer.WriteLine("// {0}", type);
