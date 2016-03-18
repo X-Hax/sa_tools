@@ -13,6 +13,14 @@ namespace FunctionListGenerator
 		static readonly Regex argument = new Regex(@"(?<name>[^<@]+)(?:@<(?<register>[^>]+)>)?", RegexOptions.CultureInvariant);
 		static readonly Regex functionptr = new Regex(@"\((?:__cdecl|__stdcall|__fastcall|__thiscall)? \*(?<name>[A-Za-z_][A-Za-z_0-9]*)\)", RegexOptions.CultureInvariant);
 
+		static readonly Dictionary<string, string> boolregs = new Dictionary<string, string>()
+		{
+			{ "eax", "al" },
+			{ "ebx", "bl" },
+			{ "ecx", "cl" },
+			{ "edx", "dl" }
+		};
+
 		static void Main(string[] args)
 		{
 			string filename;
@@ -79,10 +87,28 @@ namespace FunctionListGenerator
 					string returnreg = match.Groups["returnreg"].Value;
 					string callconv = match.Groups["callconv"].Value;
 					string arguments = match.Groups["arguments"].Value;
+					List<string> arglist = new List<string>();
+					int c = 0;
+					while (true)
+					{
+						if (arguments[c] == ' ')
+							c++;
+						int comma = arguments.IndexOf(',', c);
+						if (comma == -1)
+						{
+							arglist.Add(arguments.Substring(c));
+							break;
+						}
+						int paren = arguments.IndexOf('(', c);
+						if (paren > -1 && paren < comma)
+							comma = arguments.IndexOf(')', arguments.IndexOf('(', paren + 1)) + 1;
+						arglist.Add(arguments.Substring(c, comma - c));
+						c = comma + 1;
+					}
 					List<string> argnames = new List<string>();
 					List<string> argdecls = new List<string>();
 					List<string> argregs = new List<string>();
-					foreach (string arg in arguments.Split(','))
+					foreach (string arg in arglist)
 					{
 						match = argument.Match(arg);
 						string argdecl = match.Groups[1].Value.Trim();
@@ -111,7 +137,11 @@ namespace FunctionListGenerator
 					int stackcnt = argregs.Count((item) => string.IsNullOrEmpty(item));
 					if (stackcnt > 0)
 						writer.WriteLine("\t\tadd esp, {0}", stackcnt * 4);
-					if (returntype != "void")
+					if (returntype == "bool")
+						writer.WriteLine("\t\tmov result, {0}", boolregs[returnreg]);
+					else if (returnreg == "st0")
+						writer.WriteLine("\t\tfstp result");
+					else if (returntype != "void")
 						writer.WriteLine("\t\tmov result, {0}", returnreg);
 					writer.WriteLine("\t}");
 					if (returntype != "void")
