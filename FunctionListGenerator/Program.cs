@@ -65,16 +65,16 @@ namespace FunctionListGenerator
 							else if (returntype == "void" && arguments == "ObjectMaster *this")
 								writer.WriteLine("ObjectFunc({0}, {1});", name, address);
 							else
-								writer.WriteLine("FunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments, address);
+								writer.WriteLine("FunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments.Replace("this", "_this"), address);
 							break;
 						case "__stdcall":
-							writer.WriteLine("StdcallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments, address);
+							writer.WriteLine("StdcallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments.Replace("this", "_this"), address);
 							break;
 						case "__fastcall":
-							writer.WriteLine("FastcallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments, address);
+							writer.WriteLine("FastcallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments.Replace("this", "_this"), address);
 							break;
 						case "__thiscall":
-							writer.WriteLine("ThiscallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments, address);
+							writer.WriteLine("ThiscallFunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments.Replace("this", "_this"), address);
 							break;
 					}
 				}
@@ -117,11 +117,32 @@ namespace FunctionListGenerator
 					{
 						match = argument.Match(arg);
 						string argdecl = match.Groups[1].Value.Trim();
-						argdecls.Add(argdecl);
+						string argname;
 						if (functionptr.IsMatch(argdecl))
-							argnames.Add(functionptr.Match(argdecl).Groups["name"].Value);
+							argname = functionptr.Match(argdecl).Groups["name"].Value;
 						else
-							argnames.Add(argdecl.Split(' ').Last().TrimStart('*'));
+							argname = argdecl.Split(' ').Last().TrimStart('*');
+						switch (argname)
+						{
+							case "size":
+								argname = "_size";
+								argdecl = argdecl.Replace("size", "_size");
+								break;
+							case "type":
+								argname = "_type";
+								argdecl = argdecl.Replace("type", "_type");
+								break;
+							case "this":
+								argname = "_this";
+								argdecl = argdecl.Replace("this", "_this");
+								break;
+							case "sp":
+								argname = "_sp";
+								argdecl = argdecl.Replace("sp", "_sp");
+								break;
+						}
+						argdecls.Add(argdecl);
+						argnames.Add(argname);
 						argregs.Add(match.Groups[2].Value);
 					}
 					writer.WriteLine("static const void *const {0}Ptr = (void*){1};", name, address);
