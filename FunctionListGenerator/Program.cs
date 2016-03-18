@@ -89,7 +89,7 @@ namespace FunctionListGenerator
 					string arguments = match.Groups["arguments"].Value;
 					List<string> arglist = new List<string>();
 					int c = 0;
-					while (true)
+					while (c < arguments.Length)
 					{
 						if (arguments[c] == ' ')
 							c++;
