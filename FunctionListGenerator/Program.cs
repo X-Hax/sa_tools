@@ -134,7 +134,32 @@ namespace FunctionListGenerator
 					for (int i = argnames.Count - 1; i >= 0; i--)
 					{
 						if (string.IsNullOrEmpty(argregs[i]))
-							writer.WriteLine("\t\tpush [{0}]", argnames[i]);
+						{
+							bool isbyte = false;
+							if (!argdecls[i].Contains("*"))
+								switch (argdecls[i].Substring(argdecls[i].LastIndexOf(' ')))
+								{
+									case "char":
+									case "unsigned char":
+									case "signed char":
+									case "bool":
+									case "Sint8":
+									case "Uint8":
+									case "byte":
+									case "BOOL1":
+									case "uint8_t":
+									case "int8_t":
+										isbyte = true;
+										break;
+								}
+							if (isbyte)
+							{
+								writer.WriteLine("\t\tmovzx eax, [{0}]", argnames[i]);
+								writer.WriteLine("\t\tpush eax");
+							}
+							else
+								writer.WriteLine("\t\tpush [{0}]", argnames[i]);
+						}
 						else
 							writer.WriteLine("\t\tmov {0}, [{1}]", argregs[i], argnames[i]);
 					}
