@@ -80,7 +80,9 @@ namespace SADXsndSharp
 				if (a.ShowDialog(this) == DialogResult.OK)
 					using (StreamWriter sw = File.CreateText(Path.Combine(a.SelectedPath, "list.txt")))
 					{
-						foreach (FENTRY item in files)
+						List<FENTRY> list = new List<FENTRY>(files);
+						list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
+						foreach (FENTRY item in list)
 						{
 							sw.WriteLine(item.name);
 							File.WriteAllBytes(Path.Combine(a.SelectedPath, item.name), Compress.ProcessBuffer(item.file));
