@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace SADXsndSharp
 {
@@ -26,7 +27,7 @@ namespace SADXsndSharp
 
         private void LoadFile(string filename)
         {
-            byte[] file = System.IO.File.ReadAllBytes(filename);
+            byte[] file = File.ReadAllBytes(filename);
             switch (System.Text.Encoding.ASCII.GetString(file, 0, 0x10))
             {
                 case "archive  V2.2\0\0\0":
@@ -66,8 +67,16 @@ namespace SADXsndSharp
         {
             FolderBrowserDialog a = new FolderBrowserDialog() { ShowNewFolderButton = true };
             if (a.ShowDialog(this) == DialogResult.OK)
-                foreach (FENTRY item in files)
-                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(a.SelectedPath, item.name), Compress.ProcessBuffer(item.file));
+				using (StreamWriter sw = File.CreateText(Path.Combine(a.SelectedPath, "list.txt")))
+				{
+					foreach (FENTRY item in files)
+					{
+						sw.WriteLine(item.name);
+						File.WriteAllBytes(Path.Combine(a.SelectedPath, item.name), Compress.ProcessBuffer(item.file));
+					}
+					sw.Flush();
+					sw.Close();
+				}
         }
 
         ListViewItem selectedItem;
@@ -116,7 +125,7 @@ namespace SADXsndSharp
             };
             if (a.ShowDialog() == DialogResult.OK)
             {
-                System.IO.File.WriteAllBytes(a.FileName, Compress.ProcessBuffer(files[listView1.Items.IndexOf(selectedItem)].file));
+                File.WriteAllBytes(a.FileName, Compress.ProcessBuffer(files[listView1.Items.IndexOf(selectedItem)].file));
             }
         }
 
@@ -196,7 +205,7 @@ namespace SADXsndSharp
                     return;
                 }
             }
-            if (e.Label.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) > -1)
+            if (e.Label.IndexOfAny(Path.GetInvalidFileNameChars()) > -1)
             {
                 e.CancelEdit = true;
                 MessageBox.Show("This name contains invalid characters.");
@@ -208,8 +217,8 @@ namespace SADXsndSharp
 
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
-            string fp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), files[listView1.SelectedIndices[0]].name);
-            System.IO.File.WriteAllBytes(fp, Compress.ProcessBuffer(files[listView1.SelectedIndices[0]].file));
+            string fp = Path.Combine(Path.GetTempPath(), files[listView1.SelectedIndices[0]].name);
+            File.WriteAllBytes(fp, Compress.ProcessBuffer(files[listView1.SelectedIndices[0]].file));
             System.Diagnostics.Process.Start(fp);
         }
 
@@ -244,8 +253,8 @@ namespace SADXsndSharp
 
         private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            string fn = System.IO.Path.Combine(System.IO.Path.GetTempPath(), files[listView1.SelectedIndices[0]].name);
-            System.IO.File.WriteAllBytes(fn, Compress.ProcessBuffer(files[listView1.SelectedIndices[0]].file));
+            string fn = Path.Combine(Path.GetTempPath(), files[listView1.SelectedIndices[0]].name);
+            File.WriteAllBytes(fn, Compress.ProcessBuffer(files[listView1.SelectedIndices[0]].file));
             DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.All);
         }
 
@@ -296,7 +305,7 @@ namespace SADXsndSharp
                     BitConverter.GetBytes(item.file.Length).CopyTo(file, hloc);
                     hloc += 4;
                 }
-                System.IO.File.WriteAllBytes(a.FileName, file);
+                File.WriteAllBytes(a.FileName, file);
             }
         }
 
@@ -345,8 +354,8 @@ namespace SADXsndSharp
 
         public FENTRY(string fileName)
         {
-            name = System.IO.Path.GetFileName(fileName);
-            file = System.IO.File.ReadAllBytes(fileName);
+            name = Path.GetFileName(fileName);
+            file = File.ReadAllBytes(fileName);
         }
 
         public FENTRY(byte[] file, int address)
