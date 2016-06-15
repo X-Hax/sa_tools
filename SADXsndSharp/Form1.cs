@@ -78,7 +78,7 @@ namespace SADXsndSharp
 				if (filename != null)
 					a.SelectedPath = Path.GetDirectoryName(filename);
 				if (a.ShowDialog(this) == DialogResult.OK)
-					using (StreamWriter sw = File.CreateText(Path.Combine(a.SelectedPath, "list.txt")))
+					using (StreamWriter sw = File.CreateText(Path.Combine(a.SelectedPath, "index.txt")))
 					{
 						List<FENTRY> list = new List<FENTRY>(files);
 						list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
