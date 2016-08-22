@@ -290,14 +290,20 @@ namespace SA_Tools
 							break;
 						case IniCollectionMode.IndexOnly:
 							foreach (IniNameValue item in group)
-								if (keyconverter.IsValid(item.Key))
+								try
+								{
 									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+								}
+								catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
 							foreach (IniNameValue item in group)
 								if (item.Key.StartsWith(name))
-									if (keyconverter.IsValid(item.Key.Substring(name.Length)))
+									try
+									{
 										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length)), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.SingleLine:
 							if (group.ContainsKey(name))
@@ -321,20 +327,27 @@ namespace SA_Tools
 							foreach (IniNameGroup item in ini)
 								if (item.Key.StartsWith(fullname + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
 							foreach (IniNameGroup item in ini)
-								if (!string.IsNullOrEmpty(item.Key) && keyconverter.IsValid(item.Key))
-									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+								if (!string.IsNullOrEmpty(item.Key))
+									try
+									{
+										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
 							foreach (IniNameGroup item in ini)
 								if (item.Key.StartsWith(fullname))
-									if (keyconverter.IsValid(item.Key.Substring(fullname.Length)))
+									try
+									{
 										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length)), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.SingleLine:
 							throw new InvalidOperationException("Cannot deserialize type " + valuetype + " with IniCollectionMode.SingleLine!");
@@ -643,14 +656,20 @@ namespace SA_Tools
 							break;
 						case IniCollectionMode.IndexOnly:
 							foreach (IniNameValue item in group)
-								if (keyconverter.IsValid(item.Key))
+								try
+								{
 									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+								}
+								catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
 							foreach (IniNameValue item in group)
 								if (item.Key.StartsWith(name))
-									if (keyconverter.IsValid(item.Key.Substring(name.Length)))
+									try
+									{
 										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length)), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.SingleLine:
 							if (group.ContainsKey(name))
@@ -671,20 +690,27 @@ namespace SA_Tools
 							foreach (IniNameGroup item in ini)
 								if (item.Key.StartsWith(fullname + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
 							foreach (IniNameGroup item in ini)
-								if (!string.IsNullOrEmpty(item.Key) && keyconverter.IsValid(item.Key))
-									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+								if (!string.IsNullOrEmpty(item.Key))
+									try
+									{
+										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
 							foreach (IniNameGroup item in ini)
 								if (item.Key.StartsWith(fullname))
-									if (keyconverter.IsValid(item.Key.Substring(name.Length)))
-										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length)), maxind);
+									try
+									{
+										maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length)), maxind);
+									}
+									catch { }
 							break;
 						case IniCollectionMode.SingleLine:
 							throw new InvalidOperationException("Cannot deserialize type " + valuetype + " with IniCollectionMode.SingleLine!");
