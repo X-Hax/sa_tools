@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 
@@ -12,6 +11,7 @@ namespace FunctionListGenerator
 		static readonly Regex functiontype = new Regex(@"^(?<returntype>(?:const )?(?:signed |unsigned )?[A-Za-z_][A-Za-z_0-9]*(?: ?\*)?) ?(?<callconv>__cdecl|__stdcall|__fastcall|__thiscall|__usercall)?(?:@<(?<returnreg>[^>]+)>)?\((?<arguments>.*)\)$", RegexOptions.CultureInvariant);
 		static readonly Regex argument = new Regex(@"(?<name>[^<@]+)(?:@<(?<register>[^>]+)>)?", RegexOptions.CultureInvariant);
 		static readonly Regex functionptr = new Regex(@"\((?:__cdecl|__stdcall|__fastcall|__thiscall)? \*(?<name>[A-Za-z_][A-Za-z_0-9]*)\)", RegexOptions.CultureInvariant);
+		static readonly Regex objfunc = new Regex(@"^ObjectMaster\s*\*\s*[^\s,]*$");
 
 		static readonly Dictionary<string, string> boolregs = new Dictionary<string, string>()
 		{
@@ -62,7 +62,7 @@ namespace FunctionListGenerator
 						case "":
 							if (returntype == "void" && (arguments == string.Empty || arguments == "void"))
 								writer.WriteLine("VoidFunc({0}, {1});", name, address);
-							else if (returntype == "void" && arguments == "ObjectMaster *this")
+							else if (returntype == "void" && objfunc.IsMatch(arguments))
 								writer.WriteLine("ObjectFunc({0}, {1});", name, address);
 							else
 								writer.WriteLine("FunctionPointer({0}, {1}, ({2}), {3});", returntype, name, arguments.Replace("this", "_this"), address);
