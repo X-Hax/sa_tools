@@ -226,11 +226,11 @@ namespace SonicRetro.SAModel
 				switch (chunk.Type)
 				{
 					case ChunkType.Bits_BlendAlpha:
-					{
-						PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
-						MaterialBuffer.SourceAlpha = c2.SourceAlpha;
-						MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
-					}
+						{
+							PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
+							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
+						}
 						break;
 					case ChunkType.Bits_MipmapDAdjust:
 						break;
@@ -243,21 +243,20 @@ namespace SonicRetro.SAModel
 					case ChunkType.Bits_DrawPolygonList:
 						byte cachenum = ((PolyChunkBitsDrawPolygonList)chunk).List;
 						CachedPoly cached = PolyCache[cachenum];
-						PolyCache[cachenum] = null;
 						result.AddRange(ProcessPolyList(cached.Polys, cached.Index));
 						break;
 					case ChunkType.Tiny_TextureID:
 					case ChunkType.Tiny_TextureID2:
-					{
-						PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
-						MaterialBuffer.ClampU = c2.ClampU;
-						MaterialBuffer.ClampV = c2.ClampV;
-						MaterialBuffer.FilterMode = c2.FilterMode;
-						MaterialBuffer.FlipU = c2.FlipU;
-						MaterialBuffer.FlipV = c2.FlipV;
-						MaterialBuffer.SuperSample = c2.SuperSample;
-						MaterialBuffer.TextureID = c2.TextureID;
-					}
+						{
+							PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
+							MaterialBuffer.ClampU = c2.ClampU;
+							MaterialBuffer.ClampV = c2.ClampV;
+							MaterialBuffer.FilterMode = c2.FilterMode;
+							MaterialBuffer.FlipU = c2.FlipU;
+							MaterialBuffer.FlipV = c2.FlipV;
+							MaterialBuffer.SuperSample = c2.SuperSample;
+							MaterialBuffer.TextureID = c2.TextureID;
+						}
 						break;
 					case ChunkType.Material_Diffuse:
 					case ChunkType.Material_Ambient:
@@ -273,16 +272,16 @@ namespace SonicRetro.SAModel
 					case ChunkType.Material_DiffuseSpecular2:
 					case ChunkType.Material_AmbientSpecular2:
 					case ChunkType.Material_DiffuseAmbientSpecular2:
-					{
-						PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
-						if (c2.Diffuse.HasValue)
-							MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
-						if (c2.Specular.HasValue)
 						{
-							MaterialBuffer.SpecularColor = c2.Specular.Value;
-							MaterialBuffer.Exponent = c2.SpecularExponent;
+							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+							if (c2.Diffuse.HasValue)
+								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
+							if (c2.Specular.HasValue)
+							{
+								MaterialBuffer.SpecularColor = c2.Specular.Value;
+								MaterialBuffer.Exponent = c2.SpecularExponent;
+							}
 						}
-					}
 						break;
 					case ChunkType.Strip_Strip:
 					case ChunkType.Strip_StripUVN:
@@ -296,53 +295,53 @@ namespace SonicRetro.SAModel
 					case ChunkType.Strip_Strip2:
 					case ChunkType.Strip_StripUVN2:
 					case ChunkType.Strip_StripUVH2:
-					{
-						PolyChunkStrip c2 = (PolyChunkStrip)chunk;
-						MaterialBuffer.DoubleSided = c2.DoubleSide;
-						MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
-						MaterialBuffer.FlatShading = c2.FlatShading;
-						MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
-						MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
-						MaterialBuffer.UseAlpha = c2.UseAlpha;
-						bool hasVColor = false;
-						switch (chunk.Type)
 						{
-							case ChunkType.Strip_StripColor:
-							case ChunkType.Strip_StripUVNColor:
-							case ChunkType.Strip_StripUVHColor:
-								hasVColor = true;
-								break;
-						}
-						bool hasUV = false;
-						switch (chunk.Type)
-						{
-							case ChunkType.Strip_StripUVN:
-							case ChunkType.Strip_StripUVH:
-							case ChunkType.Strip_StripUVNColor:
-							case ChunkType.Strip_StripUVHColor:
-							case ChunkType.Strip_StripUVN2:
-							case ChunkType.Strip_StripUVH2:
-								hasUV = true;
-								break;
-						}
-						List<Poly> polys = new List<Poly>();
-						List<VertexData> verts = new List<VertexData>();
-						foreach (PolyChunkStrip.Strip strip in c2.Strips)
-						{
-							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
-							for (int k = 0; k < strip.Indexes.Length; k++)
+							PolyChunkStrip c2 = (PolyChunkStrip)chunk;
+							MaterialBuffer.DoubleSided = c2.DoubleSide;
+							MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
+							MaterialBuffer.FlatShading = c2.FlatShading;
+							MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
+							MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
+							MaterialBuffer.UseAlpha = c2.UseAlpha;
+							bool hasVColor = false;
+							switch (chunk.Type)
 							{
-								str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-									VertexBuffer[strip.Indexes[k]],
-									NormalBuffer[strip.Indexes[k]],
-									hasVColor ? (Color?)strip.VColors[k] : null,
-									hasUV ? strip.UVs[k] : null));
+								case ChunkType.Strip_StripColor:
+								case ChunkType.Strip_StripUVNColor:
+								case ChunkType.Strip_StripUVHColor:
+									hasVColor = true;
+									break;
 							}
-							polys.Add(str);
+							bool hasUV = false;
+							switch (chunk.Type)
+							{
+								case ChunkType.Strip_StripUVN:
+								case ChunkType.Strip_StripUVH:
+								case ChunkType.Strip_StripUVNColor:
+								case ChunkType.Strip_StripUVHColor:
+								case ChunkType.Strip_StripUVN2:
+								case ChunkType.Strip_StripUVH2:
+									hasUV = true;
+									break;
+							}
+							List<Poly> polys = new List<Poly>();
+							List<VertexData> verts = new List<VertexData>();
+							foreach (PolyChunkStrip.Strip strip in c2.Strips)
+							{
+								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+								for (int k = 0; k < strip.Indexes.Length; k++)
+								{
+									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
+										VertexBuffer[strip.Indexes[k]],
+										NormalBuffer[strip.Indexes[k]],
+										hasVColor ? (Color?)strip.VColors[k] : null,
+										hasUV ? strip.UVs[k] : null));
+								}
+								polys.Add(str);
+							}
+							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
 						}
-						result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
-						MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
-					}
 						break;
 				}
 			}

@@ -1544,7 +1544,9 @@ namespace SA_Tools
             Lines = new List<NPCTextLine>();
         }
 
+		[IniCollection(IniCollectionMode.SingleLine, Format=", ")]
         public List<ushort> EventFlags { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format=", ")]
         public List<ushort> NPCFlags { get; set; }
         [DefaultValue((SA1CharacterFlags)0xFF)]
         [IniAlwaysInclude]
