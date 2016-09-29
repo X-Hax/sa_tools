@@ -308,7 +308,11 @@ namespace SA_Tools
 						case IniCollectionMode.SingleLine:
 							if (group.ContainsKey(name))
 							{
-								string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+								string[] items;
+								if (string.IsNullOrEmpty(group[name]))
+									items = new string[0];
+								else
+									items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
 								Array _obj = Array.CreateInstance(valuetype, items.Length);
 								for (int i = 0; i < items.Length; i++)
 									_obj.SetValue(valuetype.ConvertFromString(items[i], collectionSettings.ValueConverter), i);
@@ -674,9 +678,12 @@ namespace SA_Tools
 						case IniCollectionMode.SingleLine:
 							if (group.ContainsKey(name))
 							{
-								string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-								for (int i = 0; i < items.Length; i++)
-									list.Add((T)valuetype.ConvertFromString(items[i], collectionSettings.ValueConverter));
+								if (!string.IsNullOrEmpty(group[name]))
+								{
+									string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+									for (int i = 0; i < items.Length; i++)
+										list.Add((T)valuetype.ConvertFromString(items[i], collectionSettings.ValueConverter));
+								}
 								group.Remove(name);
 							}
 							break;

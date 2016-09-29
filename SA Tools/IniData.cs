@@ -1556,16 +1556,17 @@ namespace SA_Tools
         public List<NPCTextLine> Lines { get; set; }
 
         [IniIgnore]
-        public bool HasControl
-        {
-            get
-            {
-                return
-            !(EventFlags.Count == 0 & NPCFlags.Count == 0
-            & Character == (SA1CharacterFlags)0xFF
-            & !Voice.HasValue & !SetEventFlag.HasValue); } }
+		public bool HasControl
+		{
+			get
+			{
+				return EventFlags.Count > 0 || NPCFlags.Count > 0
+					|| Character != (SA1CharacterFlags)0xFF
+					|| Voice.HasValue || SetEventFlag.HasValue;
+			}
+		}
 
-        [IniIgnore]
+		[IniIgnore]
         public bool HasText { get { return Lines.Count > 0; } }
 	}
 

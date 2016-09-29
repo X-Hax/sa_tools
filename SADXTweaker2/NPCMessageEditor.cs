@@ -28,12 +28,12 @@ namespace SADXTweaker2
         private void NPCMessageEditor_Load(object sender, EventArgs e)
         {
             level.BeginUpdate();
-            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in Program.IniData.Files)
-                if (item.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase))
-                {
-                    NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, int.Parse(item.Value.CustomProperties["length"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo))));
-                    level.Items.Add(item.Key);
-                }
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in Program.IniData.Files)
+				if (item.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase))
+				{
+					NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, int.Parse(item.Value.CustomProperties["length"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo))));
+					level.Items.Add(item.Key);
+				}
             level.EndUpdate();
             axWindowsMediaPlayer1.settings.autoStart = false;
             voiceNum.Directory = Program.IniData.VoiceFolder;
