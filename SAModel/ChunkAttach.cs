@@ -199,10 +199,16 @@ namespace SonicRetro.SAModel
 
 		public override void ProcessVertexData()
 		{
+#if modellog
+			Extensions.Log("Processing Chunk Attach " + Name + Environment.NewLine);
+#endif
 			if (Vertex != null)
 			{
 				foreach (VertexChunk chunk in Vertex)
 				{
+#if modellog
+					Extensions.Log("Vertex Declaration: " + chunk.IndexOffset + "-" + (chunk.IndexOffset + chunk.VertexCount - 1) + Environment.NewLine);
+#endif
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
 					if (NormalBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
@@ -213,11 +219,11 @@ namespace SonicRetro.SAModel
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
 			if (Poly != null)
-				result = ProcessPolyList(Poly, 0);
+				result = ProcessPolyList(PolyName, Poly, 0);
 			MeshInfo = result.ToArray();
 		}
 
-		private List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start)
+		private List<MeshInfo> ProcessPolyList(string name, List<PolyChunk> strips, int start)
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
 			for (int i = start; i < strips.Count; i++)
@@ -238,12 +244,19 @@ namespace SonicRetro.SAModel
 						MaterialBuffer.Exponent = ((PolyChunkBitsSpecularExponent)chunk).SpecularExponent;
 						break;
 					case ChunkType.Bits_CachePolygonList:
-						PolyCache[((PolyChunkBitsCachePolygonList)chunk).List] = new CachedPoly(strips, i + 1);
+						byte cachenum = ((PolyChunkBitsCachePolygonList)chunk).List;
+#if modellog
+						Extensions.Log("Caching Poly List " + name + "[" + (i + 1) + "] to cache #" + cachenum + Environment.NewLine);
+#endif
+						PolyCache[cachenum] = new CachedPoly(name, strips, i + 1);
 						return result;
 					case ChunkType.Bits_DrawPolygonList:
-						byte cachenum = ((PolyChunkBitsDrawPolygonList)chunk).List;
+						cachenum = ((PolyChunkBitsDrawPolygonList)chunk).List;
 						CachedPoly cached = PolyCache[cachenum];
-						result.AddRange(ProcessPolyList(cached.Polys, cached.Index));
+#if modellog
+						Extensions.Log("Drawing Poly List " + cached.Name + "[" + cached.Index + "] from cache #" + cachenum + Environment.NewLine);
+#endif
+						result.AddRange(ProcessPolyList(cached.Name, cached.Polys, cached.Index));
 						break;
 					case ChunkType.Tiny_TextureID:
 					case ChunkType.Tiny_TextureID2:
@@ -297,6 +310,9 @@ namespace SonicRetro.SAModel
 					case ChunkType.Strip_StripUVH2:
 						{
 							PolyChunkStrip c2 = (PolyChunkStrip)chunk;
+#if modellog
+							Extensions.Log("Strip " + c2.Type + Environment.NewLine);
+#endif
 							MaterialBuffer.DoubleSided = c2.DoubleSide;
 							MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
 							MaterialBuffer.FlatShading = c2.FlatShading;
@@ -326,8 +342,14 @@ namespace SonicRetro.SAModel
 							}
 							List<Poly> polys = new List<Poly>();
 							List<VertexData> verts = new List<VertexData>();
+#if modellog
+							List<ushort> indexes = new List<ushort>();
+#endif
 							foreach (PolyChunkStrip.Strip strip in c2.Strips)
 							{
+#if modellog
+								indexes.AddRange(strip.Indexes);
+#endif
 								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 								for (int k = 0; k < strip.Indexes.Length; k++)
 								{
@@ -339,6 +361,27 @@ namespace SonicRetro.SAModel
 								}
 								polys.Add(str);
 							}
+#if modellog
+							indexes = new List<ushort>(System.Linq.Enumerable.Distinct(indexes));
+							indexes.Sort();
+							StringBuilder sb = new StringBuilder("Vertex Usage: ");
+							ushort ist = indexes[0];
+							for (int k = 0; k < indexes.Count - 1; k++)
+							{
+								if (indexes[k + 1] != indexes[k] + 1)
+								{
+									sb.Append(" " + ist);
+									if (indexes[k] != ist)
+										sb.Append("-" + indexes[k]);
+									ist = indexes[++k];
+								}
+							}
+							sb.Append(" " + ist);
+							if (indexes[indexes.Count - 1] != ist)
+								sb.Append("-" + indexes[indexes.Count - 1]);
+							sb.Append(Environment.NewLine);
+							Extensions.Log(sb.ToString());
+#endif
 							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
 						}
@@ -350,11 +393,13 @@ namespace SonicRetro.SAModel
 
 		private class CachedPoly
 		{
+			public string Name { get; private set; }
 			public List<PolyChunk> Polys { get; private set; }
 			public int Index { get; private set; }
 
-			public CachedPoly(List<PolyChunk> polys, int index)
+			public CachedPoly(string name, List<PolyChunk> polys, int index)
 			{
+				Name = name;
 				Polys = polys;
 				Index = index;
 			}

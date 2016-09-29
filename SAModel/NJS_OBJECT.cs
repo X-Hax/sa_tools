@@ -207,6 +207,9 @@ namespace SonicRetro.SAModel
 
 		public void ProcessVertexData()
 		{
+#if modellog
+			Extensions.Log("Processing Object " + Name + Environment.NewLine);
+#endif
 			if (Attach != null)
 				Attach.ProcessVertexData();
 			foreach (NJS_OBJECT item in Children)

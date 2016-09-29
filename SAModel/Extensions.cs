@@ -188,5 +188,12 @@ namespace SonicRetro.SAModel
 			list.Add(item);
 			return val;
 		}
+
+#if modellog
+		internal static void Log(string message)
+		{
+			System.IO.File.AppendAllText("modellog.log", message);
+		}
+#endif
 	}
 }
