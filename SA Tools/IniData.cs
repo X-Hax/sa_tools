@@ -1378,7 +1378,7 @@ namespace SA_Tools
             NPCText[] screen = new NPCText[length];
             for (int i = 0; i < length; i++)
             {
-                screen[i] = new NPCText(file, address, imageBase, (Languages)language, includeTime);
+                screen[i] = new NPCText(file, address, imageBase, language, includeTime);
                 address += 8;
             }
             return screen;
@@ -1416,82 +1416,74 @@ namespace SA_Tools
             Groups = new List<NPCTextGroup>();
         }
 
-        public NPCText(byte[] file, int address, uint imageBase, Languages language, bool includeTime)
-            : this()
-        {
-            NPCTextGroup group = new NPCTextGroup();
-            int add = includeTime ? 8 : 4;
-            bool hasText = ByteConverter.ToUInt32(file, address + 4) != 0;
-            int textaddr = 0;
-            if (hasText)
-                textaddr = file.GetPointer(address + 4, imageBase);
-            if (ByteConverter.ToUInt32(file, address) == 0)
-            {
-                if (!hasText)
-                    return;
-                while (ByteConverter.ToInt32(file, textaddr) != 0)
-                {
-                    group.Lines.Add(new NPCTextLine(file, textaddr, imageBase, language, includeTime));
-                    textaddr += add;
-                }
-                Groups.Add(group);
-                return;
-            }
-            int controladdr = file.GetPointer(address, imageBase);
-            NPCTextControl code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
-            do
-            {
-                if (hasText)
-                {
-                    while (ByteConverter.ToInt32(file, textaddr) != 0)
-                    {
-                        group.Lines.Add(new NPCTextLine(file, textaddr, imageBase, language, includeTime));
-                        textaddr += add;
-                    }
-                    textaddr += add;
-                }
-                while (true)
-                {
-                    switch (code)
-                    {
-                        case NPCTextControl.EventFlag:
-                            controladdr += 2;
-                            group.EventFlags.Add(ByteConverter.ToUInt16(file, controladdr));
-                            break;
-                        case NPCTextControl.NPCFlag:
-                            controladdr += 2;
-                            group.NPCFlags.Add(ByteConverter.ToUInt16(file, controladdr));
-                            break;
-                        case NPCTextControl.Character:
-                            controladdr += 2;
-                            group.Character = (SA1CharacterFlags)ByteConverter.ToUInt16(file, controladdr);
-                            break;
-                        case NPCTextControl.Voice:
-                            controladdr += 2;
-                            group.Voice = ByteConverter.ToUInt16(file, controladdr);
-                            break;
-                        case NPCTextControl.SetEventFlag:
-                            controladdr += 2;
-                            group.SetEventFlag = ByteConverter.ToUInt16(file, controladdr);
-                            break;
-                        default:
-                            break;
-                    }
-                    controladdr += 2;
-                    if (code == NPCTextControl.NewGroup)
-                    {
-                        Groups.Add(group);
-                        group = new NPCTextGroup();
-                        code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
-                        break;
-                    }
-                    if (code == NPCTextControl.End) break;
-                    code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
-                }
-            }
-            while (code != NPCTextControl.End);
-            Groups.Add(group);
-        }
+		public NPCText(byte[] file, int address, uint imageBase, Languages language, bool includeTime)
+			: this()
+		{
+			NPCTextGroup group = new NPCTextGroup();
+			int add = includeTime ? 8 : 4;
+			bool hasText = ByteConverter.ToUInt32(file, address + 4) != 0;
+			int textaddr = 0;
+			if (hasText)
+				textaddr = file.GetPointer(address + 4, imageBase);
+			if (ByteConverter.ToUInt32(file, address) == 0)
+			{
+				if (!hasText)
+					return;
+				while (ByteConverter.ToInt32(file, textaddr) != 0)
+				{
+					group.Lines.Add(new NPCTextLine(file, textaddr, imageBase, language, includeTime));
+					textaddr += add;
+				}
+				Groups.Add(group);
+				return;
+			}
+			int controladdr = file.GetPointer(address, imageBase);
+		newgroup:
+			if (hasText)
+			{
+				while (ByteConverter.ToInt32(file, textaddr) != 0)
+				{
+					group.Lines.Add(new NPCTextLine(file, textaddr, imageBase, language, includeTime));
+					textaddr += add;
+				}
+				textaddr += add;
+			}
+			while (true)
+			{
+				NPCTextControl code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
+				controladdr += sizeof(short);
+				switch (code)
+				{
+					case NPCTextControl.EventFlag:
+						group.EventFlags.Add(ByteConverter.ToUInt16(file, controladdr));
+						controladdr += sizeof(short);
+						break;
+					case NPCTextControl.NPCFlag:
+						group.NPCFlags.Add(ByteConverter.ToUInt16(file, controladdr));
+						controladdr += sizeof(short);
+						break;
+					case NPCTextControl.Character:
+						group.Character = (SA1CharacterFlags)ByteConverter.ToUInt16(file, controladdr);
+						controladdr += sizeof(short);
+						break;
+					case NPCTextControl.Voice:
+						group.Voice = ByteConverter.ToUInt16(file, controladdr);
+						controladdr += sizeof(short);
+						break;
+					case NPCTextControl.SetEventFlag:
+						group.SetEventFlag = ByteConverter.ToUInt16(file, controladdr);
+						controladdr += sizeof(short);
+						break;
+					case NPCTextControl.NewGroup:
+						Groups.Add(group);
+						group = new NPCTextGroup();
+						goto newgroup;
+					case NPCTextControl.End:
+						Groups.Add(group);
+						return;
+				}
+			}
+		}
 
         [IniCollection(IniCollectionMode.IndexOnly)]
         public List<NPCTextGroup> Groups { get; set; }
