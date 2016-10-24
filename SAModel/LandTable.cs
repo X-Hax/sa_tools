@@ -463,7 +463,7 @@ namespace SonicRetro.SAModel
 					labels.Add(Anim[i].Model.Name);
 					result.AppendLine(Anim[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels, textures));
 				}
-				if (labels.Contains(aniid))
+				if (!labels.Contains(aniid))
 				{
 					labels.Add(aniid);
 					result.AppendLine(Anim[i].Animation.ToStructVariables());
