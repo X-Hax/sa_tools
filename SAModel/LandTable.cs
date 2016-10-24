@@ -490,7 +490,7 @@ namespace SonicRetro.SAModel
 				result.AppendLine("};");
 				result.AppendLine();
 			}
-			if (Anim.Count > 0 && !labels.Contains(COLName))
+			if (Anim.Count > 0 && !labels.Contains(AnimName))
 			{
 				labels.Add(COLName);
 				result.Append("GeoAnimData ");
