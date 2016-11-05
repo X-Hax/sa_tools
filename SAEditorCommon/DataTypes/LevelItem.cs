@@ -13,8 +13,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class LevelItem : Item
 	{
-		[Browsable(false)]
 		private COL COL { get; set; }
+		[Browsable(false)]
 		public COL CollisionData { get { return COL; } }
 		[NonSerialized]
 		private Mesh mesh;
@@ -120,7 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			if (!camera.SphereInFrustum(CollisionData.Bounds)) return EmptyRenderInfo;
+			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (!string.IsNullOrEmpty(LevelData.leveltexs))
