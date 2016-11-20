@@ -1080,6 +1080,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			sETItemsToolStripMenuItem1.Enabled = true;
 			// Duplicate
 			duplicateToolStripMenuItem.Enabled = true;
+			// Calculate All Bounds
+			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
 
 			// The whole view menu!
 			viewToolStripMenuItem.Enabled = true;
@@ -2515,6 +2517,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData_StateChanged();
 			}
+		}
+
+		private void calculateAllBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			foreach (LevelItem item in LevelData.LevelItems)
+				item.CalculateBounds();
 		}
 	}
 }

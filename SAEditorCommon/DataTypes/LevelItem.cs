@@ -179,6 +179,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
+		[Browsable(true)]
+		[DisplayName("Calculate Bounds")]
+		public void CalculateBounds()
+		{
+			COL.CalculateBounds();
+			COL.Model.Attach.CalculateBounds();
+		}
+
 		public string Flags
 		{
 			get

@@ -131,6 +131,7 @@ namespace SonicRetro.SAModel.SALVL
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
+			calculateAllBoundsToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
 			selectedItems.SelectionChanged += SelectionChanged;
 			UseWaitCursor = false;
@@ -920,5 +921,11 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 		#endregion
+
+		private void calculateAllBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			foreach (LevelItem item in LevelData.LevelItems)
+				item.CalculateBounds();
+		}
 	}
 }
