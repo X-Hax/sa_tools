@@ -179,7 +179,7 @@ namespace DLLModGenerator
 						writer.WriteLine("void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
-						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export));
+						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export).Distinct());
 						foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
 							writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
 						foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
@@ -201,7 +201,7 @@ namespace DLLModGenerator
 						writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
-						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export));
+						List<string> exports = new List<string>(IniData.Items.Where(item => labels.Contains(item.Label)).Select(item => item.Export).Distinct());
 						foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
 							writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
 						foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
