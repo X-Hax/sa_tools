@@ -16,22 +16,22 @@ namespace SonicRetro.SAModel
 		public int Z { get; set; }
 
 		[DisplayName("X")]
-		public float XDeg
+		public string XStr
 		{
-			get { return BAMSToDeg(X); }
-			set { X = DegToBAMS(value); }
+			get { return X.ToString("X"); }
+			set { X = int.Parse(value, NumberStyles.HexNumber); }
 		}
 		[DisplayName("Y")]
-		public float YDeg
+		public string YStr
 		{
-			get { return BAMSToDeg(Y); }
-			set { Y = DegToBAMS(value); }
+			get { return Y.ToString("X"); }
+			set { Y = int.Parse(value, NumberStyles.HexNumber); }
 		}
 		[DisplayName("Z")]
-		public float ZDeg
+		public string ZStr
 		{
-			get { return BAMSToDeg(Z); }
-			set { Z = DegToBAMS(value); }
+			get { return Z.ToString("X"); }
+			set { Z = int.Parse(value, NumberStyles.HexNumber); }
 		}
 
 		[Browsable(false)]
@@ -54,9 +54,9 @@ namespace SonicRetro.SAModel
 		public Rotation(string data)
 		{
 			string[] a = data.Split(',');
-			X = DegToBAMS(float.Parse(a[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
-			Y = DegToBAMS(float.Parse(a[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
-			Z = DegToBAMS(float.Parse(a[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo));
+			XStr = a[0];
+			YStr = a[1];
+			ZStr = a[2];
 		}
 
 		public Rotation(int x, int y, int z)
@@ -77,9 +77,7 @@ namespace SonicRetro.SAModel
 
 		public override string ToString()
 		{
-			return BAMSToDeg(X).ToString(NumberFormatInfo.InvariantInfo) + ", " +
-			       BAMSToDeg(Y).ToString(NumberFormatInfo.InvariantInfo) + ", " +
-			       BAMSToDeg(Z).ToString(NumberFormatInfo.InvariantInfo);
+			return XStr + ", " + YStr + ", " + ZStr;
 		}
 
 		public int[] ToArray()
