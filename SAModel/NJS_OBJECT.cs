@@ -618,9 +618,9 @@ namespace SonicRetro.SAModel
 				Items = new object[]
 				{
 					new TargetableFloat3 { sid = "translate", Values = new double[] { Position.X, Position.Y, Position.Z } },
-					new rotate { sid = "rotateZ", Values = new double[] { 0, 0, 1, Rotation.ZDeg } },
-					new rotate { sid = "rotateX", Values = new double[] { 1, 0, 0, Rotation.XDeg } },
-					new rotate { sid = "rotateY", Values = new double[] { 0, 1, 0, Rotation.YDeg } },
+					new rotate { sid = "rotateZ", Values = new double[] { 0, 0, 1, Rotation.BAMSToDeg(Rotation.Z) } },
+					new rotate { sid = "rotateX", Values = new double[] { 1, 0, 0, Rotation.BAMSToDeg(Rotation.X) } },
+					new rotate { sid = "rotateY", Values = new double[] { 0, 1, 0, Rotation.BAMSToDeg(Rotation.Y) } },
 					new TargetableFloat3 { sid = "scale", Values = new double[] { Scale.X, Scale.Y, Scale.Z } }
 				},
 				ItemsElementName = new ItemsChoiceType2[]
