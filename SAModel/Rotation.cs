@@ -35,6 +35,25 @@ namespace SonicRetro.SAModel
 		}
 
 		[Browsable(false)]
+		public float XDeg
+		{
+			get { return BAMSToDeg(X); }
+			set { X = DegToBAMS(value); }
+		}
+		[Browsable(false)]
+		public float YDeg
+		{
+			get { return BAMSToDeg(Y); }
+			set { Y = DegToBAMS(value); }
+		}
+		[Browsable(false)]
+		public float ZDeg
+		{
+			get { return BAMSToDeg(Z); }
+			set { Z = DegToBAMS(value); }
+		}
+
+		[Browsable(false)]
 		public static int Size
 		{
 			get { return 12; }
