@@ -29,7 +29,9 @@ namespace DLLModGenerator
 			{ "basicdxmodelarray", "NJS_OBJECT **" },
 			{ "chunkmodel", "NJS_OBJECT *" },
 			{ "chunkmodelarray", "NJS_OBJECT **" },
-			{ "actionarray", "NJS_ACTION **" }
+			{ "actionarray", "NJS_ACTION **" },
+            { "morph", "NJS_MODEL_SADX *" },
+            { "modelsarray", "NJS_MODEL_SADX **" }
 		};
 
 		DllIniData IniData;

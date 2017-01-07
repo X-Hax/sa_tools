@@ -34,3 +34,9 @@ split SONICADV/B_EGM1.prs B_EGM1.ini
 split SONICADV/B_EGM2.prs B_EGM2.ini
 split SONICADV/B_EGM3.prs B_EGM3.ini
 split SONICADV/B_ROBO.prs B_ROBO.ini
+split SONICADV/S_MOT.prs S_MOT.ini
+split SONICADV/K_MOT.prs K_MOT.ini
+split SONICADV/A_MOT.prs A_MOT.ini
+split SONICADV/B_MOT.prs B_MOT.ini
+split SONICADV/E_MOT.prs E_MOT.ini
+split SONICADV/S_SBMOT.prs S_SBMOT.ini

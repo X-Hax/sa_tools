@@ -151,7 +151,23 @@ namespace splitDLL
 							}
 						}
 						break;
-					case "modelarray":
+                    case "morph":
+                        {
+                            SonicRetro.SAModel.BasicAttach dummy = new SonicRetro.SAModel.BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
+                            NJS_OBJECT mdl = new NJS_OBJECT();
+                            mdl.Attach = dummy;
+                            DllItemInfo info = new DllItemInfo();
+                            info.Export = name;
+                            info.Label = dummy.Name;
+                            output.Items.Add(info);
+                            if (!labels.Contains(dummy.Name))
+                            {
+                                models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+                                labels.AddRange(mdl.GetLabels());
+                            }
+                        }
+                        break;
+                    case "modelarray":
 						for (int i = 0; i < data.Length; i++)
 						{
 							int ptr = BitConverter.ToInt32(datafile, address);
@@ -175,7 +191,33 @@ namespace splitDLL
 							address += 4;
 						}
 						break;
-					case "basicmodel":
+                    case "modelsarray":
+                        for (int i = 0; i < data.Length; i++)
+                        {
+                            int ptr = BitConverter.ToInt32(datafile, address);
+                            if (ptr != 0)
+                            {
+                                ptr = (int)(ptr - imageBase);
+                                SonicRetro.SAModel.BasicAttach dummy = new SonicRetro.SAModel.BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
+                                NJS_OBJECT mdl = new NJS_OBJECT();
+                                mdl.Attach = dummy;
+                                string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                DllItemInfo info = new DllItemInfo();
+                                info.Export = name;
+                                info.Index = i;
+                                info.Label = dummy.Name;
+                                output.Items.Add(info);
+                                if (!labels.Contains(dummy.Name))
+                                {
+                                    string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+                                    models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            address += 4;
+                        }
+                        break;
+                    case "basicmodel":
 						{
 							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
 							DllItemInfo info = new DllItemInfo();
@@ -353,7 +395,7 @@ namespace splitDLL
 				}
 				output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
 			}
-			IniSerializer.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
+            IniSerializer.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
 				+ "_data.ini");
 			timer.Stop();
 			Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
