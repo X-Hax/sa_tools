@@ -19,6 +19,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public virtual Vertex Position { get; set; }
 
 		private bool selected;
+		[Browsable(false)]
 		public bool Selected { get { return selected; } }
 		private BoundingSphere bounds = new BoundingSphere();
 		public virtual BoundingSphere Bounds { get { return bounds; } }

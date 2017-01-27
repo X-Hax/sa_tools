@@ -8,6 +8,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
 	public class DefaultObjectDefinition : ObjectDefinition
 	{
+		public static ObjectDefinition DefaultInstance { get; private set; }
+
+		static DefaultObjectDefinition()
+		{
+			DefaultInstance = new DefaultObjectDefinition();
+		}
+
 		private string name = "Unknown";
 		private NJS_OBJECT model;
 		private Mesh[] meshes;

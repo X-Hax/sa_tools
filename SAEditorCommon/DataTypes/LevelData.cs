@@ -30,8 +30,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static string LevelName;
 		public static string SETName;
 		public static List<ObjectDefinition> ObjDefs;
+		public static List<ObjectDefinition> MisnObjDefs;
 		public static List<SETItem>[] SETItems;
 		public static List<CAMItem>[] CAMItems;
+		public static List<MissionSETItem>[] MissionSETItems;
 		public static List<DeathZoneItem> DeathZones;
 		public static LevelDefinition leveleff;
 		public static List<SplineData> LevelSplines;
@@ -125,11 +127,40 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			CAMItems[character] = new List<CAMItem>();
 			InvalidateRenderState();
 		}
+
+		/// <summary>
+		/// Clears Mission SET Items for all characters.
+		/// </summary>
+		public static void ClearMissionSETItems()
+		{
+			if (MissionSETItems == null)
+				return;
+
+			for (uint i = 0; i < SETChars.Length; i++)
+				MissionSETItems[i] = new List<MissionSETItem>();
+
+			InvalidateRenderState();
+		}
+
+		/// <summary>
+		/// Clears Mission SET Items for the specified character.
+		/// </summary>
+		/// <param name="character">The ID of the character whose layout you want to clear.</param>
+		public static void ClearMissionSETItems(int character)
+		{
+			if (MissionSETItems == null)
+				return;
+
+			MissionSETItems[character] = new List<MissionSETItem>();
+			InvalidateRenderState();
+		}
+
 		/// <summary>
 		/// Clears the entire stage.
 		/// </summary>
 		public static void Clear()
 		{
+			ClearMissionSETItems();
 			ClearCAMItems();
 			ClearSETItems();
 			ClearLevelGeoAnims();
@@ -160,7 +191,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			// duplicate goes here
 			for (int i = 0; i < selection.ItemCount; i++)
 			{
-				if (currentItems[i] is SETItem)
+				if (currentItems[i] is MissionSETItem)
+				{
+					MissionSETItem originalItem = (MissionSETItem)currentItems[i];
+					MissionSETItem newItem = new MissionSETItem(originalItem.GetBytes(), 0, originalItem.GetPRMBytes(), 0, selection);
+
+					MissionSETItems[Character].Add(newItem);
+					newItems.Add(newItem);
+				}
+				else if (currentItems[i] is SETItem)
 				{
 					SETItem originalItem = (SETItem)currentItems[i];
 					SETItem newItem = new SETItem(originalItem.GetBytes(), 0, selection);

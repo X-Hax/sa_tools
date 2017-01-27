@@ -13,7 +13,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
 	{
-		private BoundingSphere bounds;
+		protected BoundingSphere bounds;
 		public override BoundingSphere Bounds
 		{
 			get
@@ -22,14 +22,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		private ObjectDefinition objdef;
+		protected ObjectDefinition objdef;
 		public SETItem(EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Position = new Vertex();
 			Rotation = new Rotation();
 			Scale = new Vertex();
-			objdef = LevelData.ObjDefs[id];
+			objdef = GetObjectDefinition();
 			bounds = objdef.GetBounds(this);
 		}
 
@@ -46,17 +46,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Position = new Vertex(file, address + 8);
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
-			objdef = LevelData.ObjDefs[id];
+			objdef = GetObjectDefinition();
 			bounds = objdef.GetBounds(this);
 		}
 
+		public virtual ObjectDefinition GetObjectDefinition()
+		{
+			if (id < LevelData.ObjDefs.Count)
+				return LevelData.ObjDefs[id];
+			else
+				return DefaultObjectDefinition.DefaultInstance;
+		}
+
 		[ParenthesizePropertyName(true)]
-		public string Name { get { return LevelData.ObjDefs[id].Name; } }
+		public string Name { get { return GetObjectDefinition().Name; } }
 		[ParenthesizePropertyName(true)]
-		public string InternalName { get { return LevelData.ObjDefs[id].InternalName; } }
+		public string InternalName { get { return GetObjectDefinition().InternalName; } }
 		protected bool isLoaded = false;
 
-		private ushort id;
+		protected ushort id;
 		[Editor(typeof(IDEditor), typeof(UITypeEditor))]
 		public ushort ID
 		{
@@ -107,7 +115,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
-			return LevelData.ObjDefs[ID].CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
+			return GetObjectDefinition().CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
 		}
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
@@ -115,7 +123,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
 
-			return LevelData.ObjDefs[ID].Render(this, dev, camera, transform);
+			return GetObjectDefinition().Render(this, dev, camera, transform);
 		}
 
 		public byte[] GetBytes()
@@ -187,7 +195,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(this, attributes, true);
 
-			objdef = LevelData.ObjDefs[ID];
+			objdef = GetObjectDefinition();
 			if (objdef.CustomProperties == null || objdef.CustomProperties.Length == 0) return result;
 			List<PropertyDescriptor> props = new List<PropertyDescriptor>(result.Count);
 			foreach (PropertyDescriptor item in result)

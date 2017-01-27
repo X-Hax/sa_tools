@@ -588,6 +588,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					// Loads common object textures (e.g OBJ_REGULAR)
 					LoadTextureList(ini.ObjectTextureList, syspath);
 
+					progress.SetStep("Mission objects");
+					// Loads mission object textures
+					LoadTextureList(ini.MissionTextureList, syspath);
+
 					progress.SetTaskAndStep("Loading stage texture lists...");
 
 					// Loads the textures in the texture list for this stage (e.g BEACH01)
@@ -627,195 +631,161 @@ namespace SonicRetro.SAModel.SADXLVL2
 					Dictionary<string, ObjectData> objdefini =
 						IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
 
-					if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
+					LevelData.MisnObjDefs = new List<ObjectDefinition>();
+
+				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
+				{
+					List<ObjectData> objectErrors = new List<ObjectData>();
+					ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
+					Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+
+					for (int ID = 0; ID < objlstini.Length; ID++)
 					{
-						List<ObjectData> objectErrors = new List<ObjectData>();
-						ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
-						Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+						string codeaddr = objlstini[ID].CodeString;
 
-						for (int ID = 0; ID < objlstini.Length; ID++)
+						if (!objdefini.ContainsKey(codeaddr))
+							codeaddr = "0";
+
+						ObjectData defgroup = objdefini[codeaddr];
+						ObjectDefinition def;
+
+						if (!string.IsNullOrEmpty(defgroup.CodeFile))
 						{
-							string codeaddr = objlstini[ID].CodeString;
+							progress.SetStep("Compiling: " + defgroup.CodeFile);
 
-							if (!objdefini.ContainsKey(codeaddr))
-								codeaddr = "0";
+							// TODO: Split this out to a function
+							#region Compile object code files
 
-							ObjectData defgroup = objdefini[codeaddr];
-							ObjectDefinition def;
-
-							if (!string.IsNullOrEmpty(defgroup.CodeFile))
+							string ty = defgroup.CodeType;
+							string dllfile = Path.Combine("dllcache", ty + ".dll");
+							DateTime modDate = DateTime.MinValue;
+							if (File.Exists(dllfile))
+								modDate = File.GetLastWriteTime(dllfile);
+							string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
+							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+								def =
+									(ObjectDefinition)
+										Activator.CreateInstance(
+											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+												.GetType(ty));
+							else
 							{
-								progress.SetStep("Compiling: " + defgroup.CodeFile);
-
-								// TODO: Split this out to a function
-								#region Compile object code files
-
-								string ty = defgroup.CodeType;
-								string dllfile = Path.Combine("dllcache", ty + ".dll");
-								DateTime modDate = DateTime.MinValue;
-								if (File.Exists(dllfile))
-									modDate = File.GetLastWriteTime(dllfile);
-								string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
-								if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
-									def =
-										(ObjectDefinition)
-											Activator.CreateInstance(
-												Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-													.GetType(ty));
-								else
+								string ext = Path.GetExtension(fp);
+								CodeDomProvider pr = null;
+								switch (ext.ToLowerInvariant())
 								{
-									string ext = Path.GetExtension(fp);
-									CodeDomProvider pr = null;
-									switch (ext.ToLowerInvariant())
-									{
-										case ".cs":
-											pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-											break;
-										case ".vb":
-											pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
-											break;
-									}
-									if (pr != null)
-									{
-										CompilerParameters para =
-											new CompilerParameters(new string[]
-											{
+									case ".cs":
+										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										break;
+									case ".vb":
+										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										break;
+								}
+								if (pr != null)
+								{
+									CompilerParameters para =
+										new CompilerParameters(new string[]
+										{
 												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
 												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
 												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
 												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
 												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
-											})
-											{
-												GenerateExecutable = false,
-												GenerateInMemory = false,
-												IncludeDebugInformation = true,
-												OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-											};
-										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-										if (res.Errors.HasErrors)
+										})
 										{
-											// TODO: Merge with existing object error handler. I add too many ToDos.
-											string errors = null;
-											foreach (CompilerError item in res.Errors)
-												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+											GenerateExecutable = false,
+											GenerateInMemory = false,
+											IncludeDebugInformation = true,
+											OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+										};
+									CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+									if (res.Errors.HasErrors)
+									{
+										// TODO: Merge with existing object error handler. I add too many ToDos.
+										string errors = null;
+										foreach (CompilerError item in res.Errors)
+											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
 
-											MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
-												"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
+											"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-											def = new DefaultObjectDefinition();
-										}
-										else
-										{
-											def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-										}
+										def = new DefaultObjectDefinition();
 									}
 									else
-										def = new DefaultObjectDefinition();
-								}
-
-
-								#endregion
-							}
-							else
-							{
-								def = new DefaultObjectDefinition();
-							}
-
-							LevelData.ObjDefs.Add(def);
-
-							// The only reason .Model is checked for null is for objects that don't yet have any
-							// models defined for them. It would be annoying seeing that error all the time!
-							if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
-							{
-								progress.SetStep("Loading: " + defgroup.Model);
-								// Otherwise, if the model file doesn't exist and/or no texture file is defined,
-								// load the "default object" instead ("?").
-								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-									!LevelData.Textures.ContainsKey(defgroup.Texture))
-								{
-									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-									objectErrors.Add(error);
-									defgroup.Model = null;
-								}
-							}
-
-							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
-							def.SetInternalName(objlstini[ID].Name);
-						}
-
-						// Loading SET Layout
-						progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-						if (LevelData.ObjDefs.Count > 0)
-						{
-							LevelData.SETName = level.SETName ?? level.LevelID;
-							string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-							LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
-							for (int i = 0; i < LevelData.SETChars.Length; i++)
-							{
-								List<SETItem> list = new List<SETItem>();
-								byte[] setfile = null;
-
-								string formatted = string.Format(setstr, LevelData.SETChars[i]);
-
-								if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-									setfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-								else if (File.Exists(formatted))
-									setfile = File.ReadAllBytes(formatted);
-
-								if (setfile != null)
-								{
-									progress.SetTask("SET: " + formatted.Replace(Environment.CurrentDirectory, ""));
-
-									int count = BitConverter.ToInt32(setfile, 0);
-									int address = 0x20;
-									for (int j = 0; j < count; j++)
 									{
-										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-										SETItem ent = new SETItem(setfile, address, selectedItems);
-										list.Add(ent);
-										address += 0x20;
+										def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 									}
 								}
-								LevelData.SETItems[i] = list;
+								else
+									def = new DefaultObjectDefinition();
 							}
+
+
+							#endregion
 						}
 						else
 						{
-							LevelData.SETItems = null;
+							def = new DefaultObjectDefinition();
 						}
 
-						// Checks if there have been any errors added to the error list and does its thing
-						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
-						if (objectErrors.Count > 0)
+						LevelData.ObjDefs.Add(def);
+
+						// The only reason .Model is checked for null is for objects that don't yet have any
+						// models defined for them. It would be annoying seeing that error all the time!
+						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
 						{
-							int count = objectErrors.Count;
-							List<string> errorStrings = new List<string> { "The following objects failed to load:" };
-
-							foreach (ObjectData o in objectErrors)
+							progress.SetStep("Loading: " + defgroup.Model);
+							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+							// load the "default object" instead ("?").
+							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+								!LevelData.Textures.ContainsKey(defgroup.Texture))
 							{
-								bool texEmpty = string.IsNullOrEmpty(o.Texture);
-								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
-								errorStrings.Add("");
-								errorStrings.Add("Object:\t\t" + o.Name);
-								errorStrings.Add("\tModel:");
-								errorStrings.Add("\t\tName:\t" + o.Model);
-								errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
-								errorStrings.Add("\tTexture:");
-								errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
-								errorStrings.Add("\t\tExists:\t" + texExists);
+								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+								objectErrors.Add(error);
+								defgroup.Model = null;
 							}
+						}
 
-							// TODO: Proper logging. Who knows where this file may end up
-							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+						def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+						def.SetInternalName(objlstini[ID].Name);
+					}
 
-							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-											+
-											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.",
-								"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					// Loading SET Layout
+					progress.SetTaskAndStep("Loading SET items", "Initializing...");
+
+					if (LevelData.ObjDefs.Count > 0)
+					{
+						LevelData.SETName = level.SETName ?? level.LevelID;
+						string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+						LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
+						{
+							List<SETItem> list = new List<SETItem>();
+							byte[] setfile = null;
+
+							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+
+							if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+								setfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
+							else if (File.Exists(formatted))
+								setfile = File.ReadAllBytes(formatted);
+
+							if (setfile != null)
+							{
+								progress.SetTask("SET: " + formatted.Replace(Environment.CurrentDirectory, ""));
+
+								int count = BitConverter.ToInt32(setfile, 0);
+								int address = 0x20;
+								for (int j = 0; j < count; j++)
+								{
+									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									SETItem ent = new SETItem(setfile, address, selectedItems);
+									list.Add(ent);
+									address += 0x20;
+								}
+							}
+							LevelData.SETItems[i] = list;
 						}
 					}
 					else
@@ -823,7 +793,248 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.SETItems = null;
 					}
 
-					progress.StepProgress();
+					// Checks if there have been any errors added to the error list and does its thing
+					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+					if (objectErrors.Count > 0)
+					{
+						int count = objectErrors.Count;
+						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+
+						foreach (ObjectData o in objectErrors)
+						{
+							bool texEmpty = string.IsNullOrEmpty(o.Texture);
+							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+							errorStrings.Add("");
+							errorStrings.Add("Object:\t\t" + o.Name);
+							errorStrings.Add("\tModel:");
+							errorStrings.Add("\t\tName:\t" + o.Model);
+							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+							errorStrings.Add("\tTexture:");
+							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+							errorStrings.Add("\t\tExists:\t" + texExists);
+						}
+
+						// TODO: Proper logging. Who knows where this file may end up
+						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+
+						MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+										+
+										"\nThe level will still display, but the objects in question will not display their proper models." +
+										"\n\nPlease check the log for details.",
+							"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+				}
+				else
+				{
+					LevelData.SETItems = null;
+				}
+
+				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
+				{
+					List<ObjectData> objectErrors = new List<ObjectData>();
+					ObjectListEntry[] objlstini = ObjectList.Load(ini.MissionObjectList, false);
+
+					for (int ID = 0; ID < objlstini.Length; ID++)
+					{
+						string codeaddr = objlstini[ID].CodeString;
+
+						if (!objdefini.ContainsKey(codeaddr))
+							codeaddr = "0";
+
+						ObjectData defgroup = objdefini[codeaddr];
+						ObjectDefinition def;
+
+						if (!string.IsNullOrEmpty(defgroup.CodeFile))
+						{
+							progress.SetStep("Compiling: " + defgroup.CodeFile);
+
+							// TODO: Split this out to a function
+							#region Compile object code files
+
+							string ty = defgroup.CodeType;
+							string dllfile = Path.Combine("dllcache", ty + ".dll");
+							DateTime modDate = DateTime.MinValue;
+							if (File.Exists(dllfile))
+								modDate = File.GetLastWriteTime(dllfile);
+							string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
+							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+								def =
+									(ObjectDefinition)
+										Activator.CreateInstance(
+											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+												.GetType(ty));
+							else
+							{
+								string ext = Path.GetExtension(fp);
+								CodeDomProvider pr = null;
+								switch (ext.ToLowerInvariant())
+								{
+									case ".cs":
+										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										break;
+									case ".vb":
+										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										break;
+								}
+								if (pr != null)
+								{
+									CompilerParameters para =
+										new CompilerParameters(new string[]
+										{
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
+												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
+												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
+										})
+										{
+											GenerateExecutable = false,
+											GenerateInMemory = false,
+											IncludeDebugInformation = true,
+											OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+										};
+									CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+									if (res.Errors.HasErrors)
+									{
+										// TODO: Merge with existing object error handler. I add too many ToDos.
+										string errors = null;
+										foreach (CompilerError item in res.Errors)
+											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+
+										MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
+											"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+										def = new DefaultObjectDefinition();
+									}
+									else
+									{
+										def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+									}
+								}
+								else
+									def = new DefaultObjectDefinition();
+							}
+
+
+							#endregion
+						}
+						else
+						{
+							def = new DefaultObjectDefinition();
+						}
+
+						LevelData.MisnObjDefs.Add(def);
+
+						// The only reason .Model is checked for null is for objects that don't yet have any
+						// models defined for them. It would be annoying seeing that error all the time!
+						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+						{
+							progress.SetStep("Loading: " + defgroup.Model);
+							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+							// load the "default object" instead ("?").
+							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+								!LevelData.Textures.ContainsKey(defgroup.Texture))
+							{
+								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+								objectErrors.Add(error);
+								defgroup.Model = null;
+							}
+						}
+
+						def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+						def.SetInternalName(objlstini[ID].Name);
+					}
+
+					// Loading SET Layout
+					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+
+					if (LevelData.MisnObjDefs.Count > 0)
+					{
+						string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
+						string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
+						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
+						{
+							List<MissionSETItem> list = new List<MissionSETItem>();
+							byte[] setfile = null;
+							byte[] prmfile = null;
+
+							string setfmt = string.Format(setstr, LevelData.SETChars[i]);
+							string prmfmt = string.Format(prmstr, LevelData.SETChars[i]);
+
+							if (modpath != null && File.Exists(Path.Combine(modpath, setfmt)) && File.Exists(Path.Combine(modpath, prmfmt)))
+							{
+								setfile = File.ReadAllBytes(Path.Combine(modpath, setfmt));
+								prmfile = File.ReadAllBytes(Path.Combine(modpath, prmfmt));
+							}
+							else if (File.Exists(setfmt) && File.Exists(prmfmt))
+							{
+								setfile = File.ReadAllBytes(setfmt);
+								prmfile = File.ReadAllBytes(prmfmt);
+							}
+
+							if (setfile != null)
+							{
+								progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
+
+								int count = BitConverter.ToInt32(setfile, 0);
+								int setaddr = 0x20;
+								int prmaddr = 0x20;
+								for (int j = 0; j < count; j++)
+								{
+									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+									list.Add(ent);
+									setaddr += 0x20;
+									prmaddr += 0xC;
+								}
+							}
+							LevelData.MissionSETItems[i] = list;
+						}
+					}
+					else
+					{
+						LevelData.MissionSETItems = null;
+					}
+
+					// Checks if there have been any errors added to the error list and does its thing
+					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+					if (objectErrors.Count > 0)
+					{
+						int count = objectErrors.Count;
+						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+
+						foreach (ObjectData o in objectErrors)
+						{
+							bool texEmpty = string.IsNullOrEmpty(o.Texture);
+							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+							errorStrings.Add("");
+							errorStrings.Add("Object:\t\t" + o.Name);
+							errorStrings.Add("\tModel:");
+							errorStrings.Add("\t\tName:\t" + o.Model);
+							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+							errorStrings.Add("\tTexture:");
+							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+							errorStrings.Add("\t\tExists:\t" + texExists);
+						}
+
+						// TODO: Proper logging. Who knows where this file may end up
+						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+
+						MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+										+
+										"\nThe level will still display, but the objects in question will not display their proper models." +
+										"\n\nPlease check the log for details.",
+							"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+				}
+				else
+				{
+					LevelData.MissionSETItems = null;
+				}
+
+				progress.StepProgress();
 
 					#endregion
 
@@ -1062,6 +1273,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			levelPieceToolStripMenuItem.Enabled = isGeometryPresent;
 			// Add -> Object
 			objectToolStripMenuItem.Enabled = isSETPreset;
+			// Add -> Mission Object
+			missionObjectToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 
 			// File menu
 			// Save
@@ -1259,6 +1472,57 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Application.DoEvents();
 
 			#endregion
+
+			#region Saving Mission SET Items
+
+			progress.Step = "Mission SET items...";
+			Application.DoEvents();
+
+			if (LevelData.MissionSETItems != null)
+			{
+				for (int i = 0; i < LevelData.MissionSETItems.Length; i++)
+				{
+					string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + LevelData.SETChars[i] + ".bin");
+					string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + LevelData.SETChars[i] + ".bin");
+					if (modpath != null)
+					{
+						setstr = Path.Combine(modpath, setstr);
+						prmstr = Path.Combine(modpath, prmstr);
+					}
+
+					// TODO: Consider simply blanking the SET file instead of deleting it.
+					// Completely deleting it might be undesirable since Sonic's layout will be loaded
+					// in place of the missing file. And where mods are concerned, you could have conflicts
+					// with other mods if the file is deleted.
+					if (File.Exists(setstr))
+						File.Delete(setstr);
+					if (File.Exists(prmstr))
+						File.Delete(prmstr);
+					if (LevelData.MissionSETItems[i].Count == 0)
+						continue;
+
+					List<byte> setfile = new List<byte>(LevelData.MissionSETItems[i].Count * 0x20 + 0x20);
+					setfile.AddRange(BitConverter.GetBytes(LevelData.MissionSETItems[i].Count));
+					setfile.Align(0x20);
+
+					List<byte> prmfile = new List<byte>(LevelData.MissionSETItems[i].Count * 0xC + 0x20);
+					prmfile.AddRange(new byte[] { 0, 0, 0x30, 0x56 });
+					prmfile.Align(0x20);
+
+					foreach (MissionSETItem item in LevelData.MissionSETItems[i])
+					{
+						setfile.AddRange(item.GetBytes());
+						prmfile.AddRange(item.GetPRMBytes());
+					}
+
+					File.WriteAllBytes(setstr, setfile.ToArray());
+					File.WriteAllBytes(prmstr, prmfile.ToArray());
+				}
+			}
+
+			progress.StepProgress();
+
+			#endregion
 		}
 
 
@@ -1355,6 +1619,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
 				foreach (CAMItem item in LevelData.CAMItems[LevelData.Character])
+					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
+			}
+			#endregion
+
+			#region Adding SET Layout
+			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
+			{
+				foreach (MissionSETItem item in LevelData.MissionSETItems[LevelData.Character])
 					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
@@ -1505,6 +1777,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 					}
 
+					#endregion
+
+					#region Picking Mission SET Items
+					if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
+						foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
+						{
+							dist = setitem.CheckHit(Near, Far, viewport, proj, view);
+							if (dist.IsHit & dist.Distance < mindist)
+							{
+								mindist = dist.Distance;
+								item = setitem;
+							}
+						}
 					#endregion
 
 					#region Picking Splines
@@ -2124,6 +2409,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData_StateChanged();
 		}
 
+		private void missionObjectToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MissionSETItem item = new MissionSETItem(selectedItems);
+			Vector3 pos = cam.Position + (-20 * cam.Look);
+			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
+			LevelData.MissionSETItems[LevelData.Character].Add(item);
+			selectedItems.Clear();
+			selectedItems.Add(item);
+			LevelData_StateChanged();
+		}
+
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveFileDialog a = new SaveFileDialog
@@ -2473,6 +2769,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.ClearCAMItems(LevelData.Character);
 		}
 
+		private void toolClearMissionSetItems_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This will remove all mission objects from the stage for the current character.\n\nAre you sure you want to continue?",
+				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+			if (result != DialogResult.Yes)
+				return;
+
+			LevelData.ClearMissionSETItems(LevelData.Character);
+		}
+
 		private void toolClearAll_Click(object sender, EventArgs e)
 		{
 			DialogResult result = MessageBox.Show("This will clear the entire stage.\n\nAre you sure you want to continue?",
@@ -2490,11 +2797,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				LevelData.ClearSETItems();
 				LevelData.ClearCAMItems();
+				LevelData.ClearMissionSETItems();
 			}
 			else
 			{
 				LevelData.ClearSETItems(LevelData.Character);
 				LevelData.ClearCAMItems(LevelData.Character);
+				LevelData.ClearMissionSETItems(LevelData.Character);
 			}
 
 			LevelData.ClearLevelGeoAnims();

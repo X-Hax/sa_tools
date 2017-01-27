@@ -62,6 +62,7 @@
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />
+    <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
