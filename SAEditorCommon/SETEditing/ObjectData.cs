@@ -16,6 +16,5 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         public float? XPos, YPos, ZPos, XScl, YScl, ZScl;
 		[TypeConverter(typeof(Int32HexConverter))]
 		public int? XRot, YRot, ZRot;
-        public Dictionary<string, string> CustomProperties;
     }
 }

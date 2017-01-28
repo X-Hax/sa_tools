@@ -65,6 +65,7 @@
     <Compile Include="Level Effects\WindyValley1.cs" />
     <Compile Include="Level Effects\WindyValley2.cs" />
     <Compile Include="Level Effects\WindyValley3.cs" />
+    <Compile Include="Mission\MissionEndMarker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
