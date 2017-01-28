@@ -2545,6 +2545,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			LevelData_StateChanged();
+			propertyGrid1.Refresh();
 		}
 
 		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)

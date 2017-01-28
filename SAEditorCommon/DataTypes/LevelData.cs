@@ -43,10 +43,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void InvalidateRenderState()
 		{
-			if (StateChanged != null)
-			{
-				StateChanged();
-			}
+			StateChanged?.Invoke();
 		}
 
 		/// <summary>
