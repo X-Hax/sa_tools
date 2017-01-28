@@ -13,14 +13,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor
 	{
-		protected BoundingSphere bounds;
-		public override BoundingSphere Bounds
-		{
-			get
-			{
-				return bounds;
-			}
-		}
+		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
 		protected ObjectDefinition objdef;
 		public SETItem(EditorItemSelection selectionManager)
@@ -28,9 +21,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			Position = new Vertex();
 			Rotation = new Rotation();
-			Scale = new Vertex();
+			Scale = new Vertex(1, 1, 1);
+			isLoaded = true;
 			objdef = GetObjectDefinition();
-			bounds = objdef.GetBounds(this);
 		}
 
 		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
@@ -47,7 +40,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
-			bounds = objdef.GetBounds(this);
 		}
 
 		public virtual ObjectDefinition GetObjectDefinition()
@@ -59,9 +51,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[ParenthesizePropertyName(true)]
-		public string Name { get { return GetObjectDefinition().Name; } }
+		public string Name { get { return objdef.Name; } }
 		[ParenthesizePropertyName(true)]
-		public string InternalName { get { return GetObjectDefinition().InternalName; } }
+		public string InternalName { get { return objdef.InternalName; } }
 		protected bool isLoaded = false;
 
 		protected ushort id;
@@ -69,7 +61,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public ushort ID
 		{
 			get { return id; }
-			set { id = (ushort)(value & 0xFFF); }
+			set
+			{
+				id = (ushort)(value & 0xFFF);
+				if (isLoaded)
+					objdef = GetObjectDefinition();
+			}
 		}
 
 		private ushort cliplevel;
@@ -87,17 +84,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { ClipLevel = (ushort)value; }
 		}
 
-		private Vertex position;
-
-		public override Vertex Position
-		{
-			get { return position; }
-			set
-			{
-				position = value;
-				if (objdef != null) bounds = objdef.GetBounds(this);
-			}
-		}
+		public override Vertex Position { get; set; }
 
 		public override Rotation Rotation { get; set; }
 
@@ -115,7 +102,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
-			return GetObjectDefinition().CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
+			return objdef.CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
 		}
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
@@ -123,7 +110,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;
 
-			return GetObjectDefinition().Render(this, dev, camera, transform);
+			return objdef.Render(this, dev, camera, transform);
 		}
 
 		public byte[] GetBytes()
@@ -195,7 +182,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(this, attributes, true);
 
-			objdef = GetObjectDefinition();
 			if (objdef.CustomProperties == null || objdef.CustomProperties.Length == 0) return result;
 			List<PropertyDescriptor> props = new List<PropertyDescriptor>(result.Count);
 			foreach (PropertyDescriptor item in result)

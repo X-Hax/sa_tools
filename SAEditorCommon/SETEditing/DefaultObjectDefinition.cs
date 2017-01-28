@@ -48,7 +48,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			transform.Push();
 			Matrix m = transform.Top;
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateXYZ(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			HitResult result;
 			if (model == null)
 				result = ObjectHelper.CheckSpriteHit(Near, Far, Viewport, Projection, View, transform);
@@ -66,7 +66,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateXYZ(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			if (model == null)
 				result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			else

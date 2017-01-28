@@ -1,13 +1,7 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+﻿using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -20,6 +14,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public MissionSETItem(byte[] setfile, int setaddress, byte[] prmfile, int prmaddress, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
+			isLoaded = false;
 			ushort _id = ByteConverter.ToUInt16(setfile, setaddress);
 			ID = _id;
 			ClipLevel = (byte)(_id >> 12);
@@ -32,7 +27,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Array.Copy(prmfile, prmaddress, PRMBytes, 0, 0xC);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
-			bounds = objdef.GetBounds(this);
 		}
 
 		public override ObjectDefinition GetObjectDefinition()
@@ -82,7 +76,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				if (PRMBytes[2] != (byte)value)
 				{
 					PRMBytes[2] = (byte)value;
-					ID = 0;
+					id = 0;
+					objdef = GetObjectDefinition();
 				}
 			}
 		}

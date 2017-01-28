@@ -14,11 +14,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
     {
         internal ListBox listBox1;
         public ushort value { get; private set; }
+		SETItem item;
         private IWindowsFormsEditorService edSvc;
 
-        public IDControl(ushort val, IWindowsFormsEditorService edSvc)
+        public IDControl(ushort val, SETItem item, IWindowsFormsEditorService edSvc)
         {
             value = val;
+			this.item = item;
             this.edSvc = edSvc;
             InitializeComponent();
         }
@@ -48,7 +50,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void IDControl_Load(object sender, EventArgs e)
         {
-            foreach (ObjectDefinition item in LevelData.ObjDefs)
+			
+            foreach (ObjectDefinition item in (item is MissionSETItem && ((MissionSETItem)item).ObjectList == MsnObjectList.Mission) ? LevelData.MisnObjDefs : LevelData.ObjDefs)
                 listBox1.Items.Add(item.Name);
         }
 
@@ -85,7 +88,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             if (edSvc != null)
             {
                 // Display an angle selection control and retrieve the value.
-                IDControl idControl = new IDControl((ushort)value, edSvc);
+                IDControl idControl = new IDControl((ushort)value, (SETItem)context.Instance, edSvc);
                 edSvc.DropDownControl(idControl);
                 return idControl.value;
             }
