@@ -27,7 +27,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
-			transform.NJScale(item.Scale);
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -49,10 +49,44 @@ namespace SADXObjectDefinitions.Mission
 
 		public override string Name { get { return "Mission End Marker"; } }
 
+		static void SetItemList(SETItem obj, object val)
+		{
+			MissionSETItem item = (MissionSETItem)obj;
+			MsnObjectList value = (MsnObjectList)val;
+			item.PRMBytes[6] = (byte)((item.PRMBytes[6] & 0x7F) | (int)val << 7);
+		}
+
+		static object GetItemIndex(SETItem obj)
+		{
+			MissionSETItem item = (MissionSETItem)obj;
+			short val = (short)(item.PRMBytes[6] << 8 | item.PRMBytes[7]);
+			if (val == -1)
+				return -1;
+			else
+				return val & 0x7FFF;
+		}
+
+		static void SetItemIndex(SETItem obj, object val)
+		{
+			MissionSETItem item = (MissionSETItem)obj;
+			short value = (short)val;
+			if (value == -1)
+				item.PRMBytes[6] = item.PRMBytes[7] = 0xFF;
+			else
+			{
+				item.PRMBytes[6] = (byte)((value >> 8) & 0x7F);
+				item.PRMBytes[7] = (byte)value;
+			}
+		}
+
 		// incomplete, further investigation required
+		// specifically: PRMBytes[4] controls the mode of operation, but I can't tell what they all do
+		// also probably need a selector for the Item Index property, maybe draw a line connecting the objects?
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Visible", typeof(bool), null, null, true, (o) => ((MissionSETItem)o).PRMBytes[8] == 0, (o, v) => ((MissionSETItem)o).PRMBytes[8] = (byte)((bool)v ? 0 : 1)),
-			new PropertySpec("Rings Required", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v)
+			new PropertySpec("Rings Required", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v),
+			new PropertySpec("Item List", typeof(MsnObjectList), null, null, MsnObjectList.Mission, o => (MsnObjectList)(((MissionSETItem)o).PRMBytes[6] >> 7), SetItemList),
+			new PropertySpec("Item Index", typeof(short), null, null, -1, GetItemIndex, SetItemIndex)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
