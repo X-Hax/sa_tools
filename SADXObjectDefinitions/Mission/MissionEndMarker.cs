@@ -39,7 +39,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
-			transform.NJScale(item.Scale);
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
