@@ -22,7 +22,7 @@ namespace SonicRetro.SAModel.Direct3D
             Mesh = mesh;
             Subset = subset;
             Transform = transform;
-            Material = material;
+            Material = new NJS_MATERIAL(material);
             Texture = texture;
             FillMode = fillMode;
             Bounds = bounds;
