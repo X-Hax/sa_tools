@@ -1,13 +1,10 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.DirectX;
+﻿using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission
 {
