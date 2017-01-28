@@ -67,6 +67,7 @@
     <Compile Include="Level Effects\WindyValley3.cs" />
     <Compile Include="Mission\MissionBalloon.cs" />
     <Compile Include="Mission\MissionEndMarker.cs" />
+    <Compile Include="Mission\MissionFlag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
