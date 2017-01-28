@@ -46,7 +46,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		private byte[] prmbytes = new byte[0xC];
-		[ParenthesizePropertyName]
+		[ParenthesizePropertyName(true)]
 		[Description("The bytes from the PRM file associated with this object.")]
 		public byte[] PRMBytes
 		{
