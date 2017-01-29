@@ -23,6 +23,7 @@ namespace SADXObjectDefinitions.Mission
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x4000);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -33,6 +34,7 @@ namespace SADXObjectDefinitions.Mission
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x4000);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
