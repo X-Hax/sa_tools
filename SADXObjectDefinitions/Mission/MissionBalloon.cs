@@ -44,7 +44,6 @@ namespace SADXObjectDefinitions.Mission
 
 		public override string Name { get { return "Mission Balloon"; } }
 
-		// incomplete, further investigation required
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Goal", typeof(GoalType), null, null, 0, (o) => (GoalType)((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)(GoalType)v),
 			new PropertySpec("Items Required/Order", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v),

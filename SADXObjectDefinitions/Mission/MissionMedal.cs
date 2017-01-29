@@ -8,14 +8,14 @@ using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission
 {
-	class MissionFlag : ObjectDefinition
+	class MissionMedal : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Mission/Mission Flag.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Mission/Mission Medal.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 
@@ -23,8 +23,6 @@ namespace SADXObjectDefinitions.Mission
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateY(item.Rotation.Y);
-			transform.NJScale(item.Scale);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -34,11 +32,7 @@ namespace SADXObjectDefinitions.Mission
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			((BasicAttach)model.Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
-			((BasicAttach)model.Children[0].Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
 			transform.NJTranslate(item.Position);
-			transform.NJRotateY(item.Rotation.Y);
-			transform.NJScale(item.Scale);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
@@ -46,13 +40,12 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
-		public override string Name { get { return "Mission Flag"; } }
+		public override string Name { get { return "Mission Medal"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Goal", typeof(GoalType), null, null, 0, (o) => (GoalType)((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)(GoalType)v),
 			new PropertySpec("Items Required/Order", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v),
-			new PropertySpec("Last In Order", typeof(bool), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[6] != 0, (o, v) => ((MissionSETItem)o).PRMBytes[6] = (byte)((bool)v ? 1 : 0)),
-			new PropertySpec("Texture", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[8], (o, v) => ((MissionSETItem)o).PRMBytes[8] = (byte)v)
+			new PropertySpec("Last In Order", typeof(bool), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[6] != 0, (o, v) => ((MissionSETItem)o).PRMBytes[6] = (byte)((bool)v ? 1 : 0))
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
