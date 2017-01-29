@@ -1339,7 +1339,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!isStageLoaded)
 				return;
 
-			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 5, true, autoCloseDialog);
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 6, true, autoCloseDialog);
 			progress.Show(this);
 			Application.DoEvents();
 
