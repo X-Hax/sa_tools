@@ -69,6 +69,7 @@
     <Compile Include="Mission\MissionEndMarker.cs" />
     <Compile Include="Mission\MissionFlag.cs" />
     <Compile Include="Mission\MissionMedal.cs" />
+    <Compile Include="Mission\MissionSign.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
