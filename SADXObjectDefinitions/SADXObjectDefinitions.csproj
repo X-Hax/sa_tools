@@ -75,6 +75,8 @@
     <Compile Include="Mission\MissionMedal.cs" />
     <Compile Include="Mission\MissionRobotFish.cs" />
     <Compile Include="Mission\MissionSign.cs" />
+    <Compile Include="Mission\MissionStatue.cs" />
+    <Compile Include="Mission\MissionTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
