@@ -6,7 +6,7 @@ using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 
-namespace SADXObjectDefinitions.Mission
+namespace SADXObjectDefinitions.Common
 {
 	class SpinnerB : ObjectDefinition
 	{

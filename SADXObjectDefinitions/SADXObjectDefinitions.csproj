@@ -62,6 +62,7 @@
     <Compile Include="Common\Spring.cs" />
     <Compile Include="Common\SwingSpikeBall.cs" />
     <Compile Include="Common\Wall.cs" />
+    <Compile Include="Common\Weed.cs" />
     <Compile Include="Level Effects\EmeraldCoast.cs" />
     <Compile Include="Level Effects\SkyChase.cs" />
     <Compile Include="Level Effects\TwinklePark.cs" />
