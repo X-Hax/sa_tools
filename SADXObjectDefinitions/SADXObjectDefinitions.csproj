@@ -56,6 +56,9 @@
     <Compile Include="Common\RingGroup.cs" />
     <Compile Include="Common\Sphere.cs" />
     <Compile Include="Common\Spikes.cs" />
+    <Compile Include="Common\SpinnerA.cs" />
+    <Compile Include="Common\SpinnerB.cs" />
+    <Compile Include="Common\SpinnerC.cs" />
     <Compile Include="Common\Spring.cs" />
     <Compile Include="Common\SwingSpikeBall.cs" />
     <Compile Include="Common\Wall.cs" />
