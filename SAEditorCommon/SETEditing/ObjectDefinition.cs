@@ -15,6 +15,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
 		public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
+		public virtual PropertySpec[] MissionProperties { get { return null; } }
 		/// <summary>
 		/// Returns a bounding sphere for the supplied SET Item.
 		/// </summary>

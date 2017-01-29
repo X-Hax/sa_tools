@@ -182,26 +182,43 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(this, attributes, true);
 
-			if (objdef.CustomProperties == null || objdef.CustomProperties.Length == 0) return result;
 			List<PropertyDescriptor> props = new List<PropertyDescriptor>(result.Count);
 			foreach (PropertyDescriptor item in result)
 				props.Add(item);
 
-			foreach (PropertySpec property in objdef.CustomProperties)
-			{
-				List<Attribute> attrs = new List<Attribute>();
+			if (objdef.CustomProperties != null)
+				foreach (PropertySpec property in objdef.CustomProperties)
+				{
+					List<Attribute> attrs = new List<Attribute>();
 
-				// Additionally, append the custom attributes associated with the
-				// PropertySpec, if any.
-				if (property.Attributes != null)
-					attrs.AddRange(property.Attributes);
+					// Additionally, append the custom attributes associated with the
+					// PropertySpec, if any.
+					if (property.Attributes != null)
+						attrs.AddRange(property.Attributes);
 
-				// Create a new property descriptor for the property item, and add
-				// it to the list.
-				PropertySpecDescriptor pd = new PropertySpecDescriptor(property,
-					property.Name, attrs.ToArray());
-				props.Add(pd);
-			}
+					// Create a new property descriptor for the property item, and add
+					// it to the list.
+					PropertySpecDescriptor pd = new PropertySpecDescriptor(property,
+						property.Name, attrs.ToArray());
+					props.Add(pd);
+				}
+
+			if (this is MissionSETItem && objdef.MissionProperties != null)
+				foreach (PropertySpec property in objdef.MissionProperties)
+				{
+					List<Attribute> attrs = new List<Attribute>();
+
+					// Additionally, append the custom attributes associated with the
+					// PropertySpec, if any.
+					if (property.Attributes != null)
+						attrs.AddRange(property.Attributes);
+
+					// Create a new property descriptor for the property item, and add
+					// it to the list.
+					PropertySpecDescriptor pd = new PropertySpecDescriptor(property,
+						property.Name, attrs.ToArray());
+					props.Add(pd);
+				}
 
 			return new PropertyDescriptorCollection(props.ToArray(), true);
 		}
