@@ -5,6 +5,7 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -44,15 +45,13 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			float largestScale = (item.Scale.X + 10) / 5f;
-			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
-			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
-
-			BoundingSphere sphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale };
-
-			return sphere;
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.Z + 10) / 5f);
+			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f), (item.Scale.Z + 10) / 5f));
 		}
 
 		public override string Name { get { return "Solid Sphere"; } }

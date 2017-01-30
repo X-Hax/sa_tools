@@ -77,7 +77,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
 			BoundingSphere bounds = new BoundingSphere(item.Position, item.Scale.X);	
 

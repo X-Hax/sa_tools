@@ -42,6 +42,14 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Jump Panel"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

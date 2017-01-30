@@ -21,29 +21,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public virtual BoundingSphere GetBounds(SETItem item, NJS_OBJECT model=null)
+		public virtual BoundingSphere GetBounds(SETItem item)
 		{
-			BoundingSphere result = new BoundingSphere();
-
-			if (model != null)
-			{
-				// build bounding spheres for all children using BoundingSphere.CreateMerged
-				if (model.Attach != null)
-				{
-					result = model.Attach.Bounds;
-				}
-
-				ProcessModel(model, ref result);
-			}
-
-			return new BoundingSphere(item.Position, result.Radius);
-		}
-
-		private void ProcessModel(NJS_OBJECT model, ref BoundingSphere bounds)
-		{
-			if (model.Attach != null) bounds = Direct3D.Extensions.Merge(bounds, model.Attach.Bounds);
-
-			foreach (NJS_OBJECT child in model.Children) ProcessModel(child, ref bounds);
+			return new BoundingSphere(item.Position, 0);
 		}
 
 		public string InternalName { get; protected set; }

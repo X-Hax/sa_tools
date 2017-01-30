@@ -42,6 +42,14 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position.ToVector3());
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Dash Panel"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

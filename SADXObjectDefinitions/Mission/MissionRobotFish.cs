@@ -48,6 +48,17 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY((ushort)(item.Rotation.Y + 0x8000));
+			transform.NJRotateZ(item.Rotation.Z);
+			transform.NJRotateX(item.Rotation.X);
+			transform.NJTranslate(-0.5f, 0, 0);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Mission Robot Fish"; } }
 
 		static object GetWeight(SETItem obj)

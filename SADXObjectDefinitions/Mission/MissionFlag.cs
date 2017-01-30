@@ -4,6 +4,7 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
 using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission
@@ -44,6 +45,15 @@ namespace SADXObjectDefinitions.Mission
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			return result;
+		}
+
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(item.Scale);
+			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(item.Scale.X, item.Scale.Y), item.Scale.Z));
 		}
 
 		public override string Name { get { return "Mission Flag"; } }

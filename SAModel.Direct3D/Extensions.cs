@@ -193,6 +193,12 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static BoundingSphere Merge(BoundingSphere sphereA, BoundingSphere sphereB)
 		{
+			// if one sphere is empty, return the other one
+			if (sphereA.Center.IsEmpty && sphereA.Radius == 0)
+				return sphereB;
+			if (sphereB.Center.IsEmpty && sphereB.Radius == 0)
+				return sphereA;
+
 			// we'll merge our bounding spheres here. To do this, we'll take both bounding spheres,
 			// and cast 3 points from each one - center, radius + up, radius + down. Pooly all of them,
 			// and generate a new sphere from that and you've got a merged sphere

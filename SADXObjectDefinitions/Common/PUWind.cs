@@ -31,7 +31,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y - 0x5772);
-			transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.Z);
 			HitResult result = mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 
 			transform.Pop();
@@ -44,7 +44,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y - 0x5772);
-			transform.NJScale((item.Scale.X), (item.Scale.Y), (item.Scale.Z));
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.Z);
 
 			float largestScale = item.Scale.X;
 			if (item.Scale.Y > largestScale) largestScale = item.Scale.Y;
@@ -65,13 +65,13 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			float largestScale = (item.Scale.X + 10) / 5f;
-			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
-			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
+			float largestScale = item.Scale.X;
+			if (item.Scale.Y > largestScale) largestScale = item.Scale.Y;
+			if (item.Scale.Z > largestScale) largestScale = item.Scale.Z;
 
-			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale };
+			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (1.5f * largestScale) };
 
 			return boxSphere;
 		}

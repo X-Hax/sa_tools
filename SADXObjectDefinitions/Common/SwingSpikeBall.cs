@@ -32,25 +32,10 @@ namespace SADXObjectDefinitions.Common
 		{
 			HitResult result = HitResult.NoHit;
 			transform.Push();
-			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
 			result = HitResult.Min(result, centermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, centermeshes));
 			transform.Pop();
-			/*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
-			transform.Push();
-			double v8 = item.Scale.Y * 0.5;
-			transform.NJTranslate(item.Position.X, (float)v8, item.Position.Z);
-			double v9 = item.Scale.Y * 0.05000000074505806;
-			transform.NJScale((float)v14, (float)v9, (float)v14);
-			result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
-			transform.Pop();
-			double v15 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
-			transform.Push();
-			double v13 = item.Scale.Y * 0.5;
-			transform.NJTranslate(item.Position.X, (float)v13, item.Position.Z);
-			transform.NJScale((float)v15, 0.1000000014901161f, (float)v15);
-			result = HitResult.Min(result, cylindermodel.CheckHit(Near, Far, Viewport, Projection, View, transform, cylindermeshes));
-			transform.Pop();*/
 			return result;
 		}
 
@@ -58,8 +43,8 @@ namespace SADXObjectDefinitions.Common
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
 			result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
 			if (item.Selected)
 				result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));
@@ -84,6 +69,14 @@ namespace SADXObjectDefinitions.Common
 				result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
 			transform.Pop();*/
 			return result;
+		}
+
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			return ObjectHelper.GetModelBounds(centermodel, transform);
 		}
 
 		public override string Name { get { return "Swinging Spike Ball"; } }
@@ -148,11 +141,6 @@ namespace SADXObjectDefinitions.Common
 		public static void SetVerticalSpeed(SETItem item, object value)
 		{
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
-		}
-
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
-		{
-			return base.GetBounds(item, model);
 		}
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

@@ -70,6 +70,29 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			BoundingSphere result = new BoundingSphere();
+			int rows = (int)Math.Max(item.Scale.X, 1);
+			int cols = (int)Math.Max(item.Scale.Z, 1);
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+			transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
+			for (int i = 0; i < rows; ++i)
+			{
+				transform.Push();
+				for (int j = 0; j < cols; ++j)
+				{
+					result = SonicRetro.SAModel.Direct3D.Extensions.Merge(result, ObjectHelper.GetModelBounds(model, transform));
+					transform.NJTranslate(0, 0, 15);
+				}
+				transform.Pop();
+				transform.NJTranslate(15, 0, 0);
+			}
+			return result;
+		}
+
 		public override string Name { get { return "Spikes"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

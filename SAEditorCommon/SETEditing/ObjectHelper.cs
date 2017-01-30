@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
     public static class ObjectHelper
     {
-        internal static CustomVertex.PositionTextured[] SquareVerts = {
+        internal static readonly CustomVertex.PositionTextured[] SquareVerts = {
         new CustomVertex.PositionTextured(-8, 8, 0, 1, 0),
         new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0),
@@ -18,6 +18,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         new CustomVertex.PositionTextured(8, -8, 0, 0, 1),
         new CustomVertex.PositionTextured(8, 8, 0, 0, 0)};
         internal static Mesh SquareMesh;
+		internal static BoundingSphere SquareBounds;
 
         public static void Init(Device device, Bitmap unknownBitmap)
         {
@@ -27,6 +28,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
                 ib.Add((short)(i));
             SquareMesh.SetVertexBufferData(SquareVerts, LockFlags.None);
             SquareMesh.SetIndexBufferData(ib.ToArray(), LockFlags.None);
+			Vector3 center;
+			float radius = Geometry.ComputeBoundingSphere(SquareVerts, CustomVertex.PositionTextured.Format, out center);
+			SquareBounds = new BoundingSphere(center.ToVertex(), radius);
 
             QuestionMark = unknownBitmap != null ? new Texture(device, unknownBitmap, Usage.None, Pool.Managed) : new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);
         }
@@ -87,7 +91,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
             return result.ToArray();
         }
 
-        public static float BAMSToRad(int BAMS)
+		public static BoundingSphere GetSpriteBounds(MatrixStack transform, float scale = 1)
+		{
+			return new BoundingSphere(Vector3.TransformCoordinate(SquareBounds.Center.ToVector3(), transform.Top).ToVertex(), SquareBounds.Radius * scale);
+		}
+
+		public static float BAMSToRad(int BAMS)
         {
             return Direct3D.Extensions.BAMSToRad(BAMS);
         }
@@ -116,5 +125,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         {
 			return Direct3D.Extensions.BAMSToFloatInv(BAMS);
         }
-    }
+
+		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale = 1)
+		{
+			return GetModelBounds(model, transform, scale, new BoundingSphere());
+		}
+
+		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale, BoundingSphere bounds)
+		{
+			transform.Push();
+			model.ProcessTransforms(transform);
+			scale *= Math.Max(Math.Max(model.Scale.X, model.Scale.Y), model.Scale.Z);
+			if (model.Attach != null)
+				bounds = Direct3D.Extensions.Merge(bounds, new BoundingSphere(Vector3.TransformCoordinate(model.Attach.Bounds.Center.ToVector3(), transform.Top).ToVertex(), model.Attach.Bounds.Radius * scale));
+			foreach (NJS_OBJECT child in model.Children)
+				bounds = GetModelBounds(child, transform, scale, bounds);
+			transform.Pop();
+			return bounds;
+		}
+	}
 }

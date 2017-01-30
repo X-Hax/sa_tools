@@ -89,7 +89,7 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;
 			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;

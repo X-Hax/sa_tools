@@ -3,6 +3,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using System;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
@@ -80,9 +81,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model = null)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			return base.GetBounds(item, this.model);
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
+			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			if (model == null)
+				return ObjectHelper.GetSpriteBounds(transform);
+			else
+			{
+				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(xscl ?? item.Scale.X, yscl ?? item.Scale.Y), zscl ?? item.Scale.Z));
+			}
 		}
 
 		public override string Name { get { return name; } }

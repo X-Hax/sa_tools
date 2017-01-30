@@ -5,6 +5,7 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -26,8 +27,8 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 
 			float X, Y;
-			X = (float)((item.Scale.X + 10.0) * 0.1f);
-			Y = (float)((item.Scale.Y + 10.0) * 0.1f);
+			X = (item.Scale.X + 10) * 0.1f;
+			Y = (item.Scale.Y + 10) * 0.1f;
 			transform.NJScale(X, Y, X);
 
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
@@ -43,8 +44,8 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 
 			float X, Y;
-			X = (float)((item.Scale.X + 10.0) * 0.1f);
-			Y = (float)((item.Scale.Y + 10.0) * 0.1f);
+			X = (item.Scale.X + 10) * 0.1f;
+			Y = (item.Scale.Y + 10) * 0.1f;
 			transform.NJScale(X, Y, X);
 
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
@@ -54,15 +55,16 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			float largestScale = (item.Scale.X + 10) / 5f;
-			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
-			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
-
-			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale };
-
-			return boxSphere;
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			float X, Y;
+			X = (item.Scale.X + 10) * 0.1f;
+			Y = (item.Scale.Y + 10) * 0.1f;
+			transform.NJScale(X, Y, X);
+			return ObjectHelper.GetModelBounds(model, transform, Math.Max(X, Y));
 		}
 
 		public override string Name { get { return "Solid Cylinder"; } }

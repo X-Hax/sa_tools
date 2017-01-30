@@ -46,6 +46,16 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(item.Rotation.X);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJRotateZ(item.Rotation.Z);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Switch"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

@@ -4,6 +4,7 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
 using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission
@@ -40,6 +41,14 @@ namespace SADXObjectDefinitions.Mission
 				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
 			transform.Pop();
 			return result;
+		}
+
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position.X, item.Position.Y + 8, item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
 		public override string Name { get { return "Mission Statue"; } }

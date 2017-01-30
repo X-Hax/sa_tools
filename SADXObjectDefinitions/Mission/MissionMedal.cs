@@ -42,6 +42,14 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x4000);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Mission Medal"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

@@ -51,6 +51,14 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
 		public override string Name { get { return "Spinner (Attack)"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {

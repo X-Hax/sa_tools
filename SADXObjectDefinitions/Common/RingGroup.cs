@@ -106,9 +106,45 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item, NJS_OBJECT model)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
-			return base.GetBounds(item, model);
+			MatrixStack transform = new MatrixStack();
+			BoundingSphere result = new BoundingSphere();
+			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			{
+				transform.Push();
+				if (item.Scale.Z == 1) // circle
+				{
+					double v4 = i * 360.0;
+					Vector3 v7 = new Vector3(
+						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						0,
+						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
+					transform.Pop();
+					transform.NJTranslate(pos);
+				}
+				else // line
+				{
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					double v5;
+					if (i % 2 == 1)
+						v5 = i * item.Scale.Y * -0.5;
+					else
+						v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
+					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
+					transform.Pop();
+					transform.NJTranslate(pos);
+				}
+				result = SonicRetro.SAModel.Direct3D.Extensions.Merge(result, ObjectHelper.GetModelBounds(model, transform));
+				transform.Pop();
+			}
+			return result;
 		}
 
 		public override string Name { get { return "Ring Group"; } }
