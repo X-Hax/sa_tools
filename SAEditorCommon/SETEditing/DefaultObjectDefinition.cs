@@ -20,8 +20,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 		private string texture;
-		private float? xpos, ypos, zpos, xscl, yscl, zscl;
+		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl;
 		private int? xrot, yrot, zrot;
+		private ushort? defxrot, defyrot, defzrot;
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
@@ -42,6 +43,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			xscl = data.XScl;
 			yscl = data.YScl;
 			zscl = data.ZScl;
+			defxrot = data.DefXRot;
+			defyrot = data.DefYRot;
+			defzrot = data.DefZRot;
+			defxscl = data.DefXScl;
+			defyscl = data.DefYScl;
+			defzscl = data.DefZScl;
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -96,5 +103,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		}
 
 		public override string Name { get { return name; } }
+
+		public override ushort DefaultXRotation { get { return defxrot ?? base.DefaultXRotation; } }
+		public override ushort DefaultYRotation { get { return defyrot ?? base.DefaultYRotation; } }
+		public override ushort DefaultZRotation { get { return defzrot ?? base.DefaultZRotation; } }
+		public override float DefaultXScale { get { return defxscl ?? base.DefaultXScale; } }
+		public override float DefaultYScale { get { return defyscl ?? base.DefaultYScale; } }
+		public override float DefaultZScale { get { return defzscl ?? base.DefaultZScale; } }
 	}
 }

@@ -31,6 +31,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		{
 			InternalName = name;
 		}
+
+		public virtual ushort DefaultXRotation { get { return 0; } }
+		public virtual ushort DefaultYRotation { get { return 0; } }
+		public virtual ushort DefaultZRotation { get { return 0; } }
+		public virtual float DefaultXScale { get { return 1; } }
+		public virtual float DefaultYScale { get { return 1; } }
+		public virtual float DefaultZScale { get { return 1; } }
 	}
 
 	/// <summary>

@@ -2390,13 +2390,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SETItem item = new SETItem(selectedItems);
-			Vector3 pos = cam.Position + (-20 * cam.Look);
-			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-			LevelData.SETItems[LevelData.Character].Add(item);
-			selectedItems.Clear();
-			selectedItems.Add(item);
-			LevelData_StateChanged();
+			using (NewObjectDialog dlg = new NewObjectDialog(false))
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					SETItem item = new SETItem(dlg.ID, selectedItems);
+					Vector3 pos = cam.Position + (-20 * cam.Look);
+					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
+					LevelData.SETItems[LevelData.Character].Add(item);
+					selectedItems.Clear();
+					selectedItems.Add(item);
+					LevelData_StateChanged();
+				}
 		}
 
 		private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2411,13 +2415,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void missionObjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			MissionSETItem item = new MissionSETItem(selectedItems);
-			Vector3 pos = cam.Position + (-20 * cam.Look);
-			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-			LevelData.MissionSETItems[LevelData.Character].Add(item);
-			selectedItems.Clear();
-			selectedItems.Add(item);
-			LevelData_StateChanged();
+			using (NewObjectDialog dlg = new NewObjectDialog(true))
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					MissionSETItem item = new MissionSETItem(dlg.ObjectList, dlg.ID, selectedItems);
+					Vector3 pos = cam.Position + (-20 * cam.Look);
+					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
+					LevelData.MissionSETItems[LevelData.Character].Add(item);
+					selectedItems.Clear();
+					selectedItems.Add(item);
+					LevelData_StateChanged();
+				}
 		}
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)

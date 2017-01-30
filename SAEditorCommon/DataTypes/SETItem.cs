@@ -16,14 +16,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
 		protected ObjectDefinition objdef;
-		public SETItem(EditorItemSelection selectionManager)
+		/// <summary>
+		/// For use by <see cref="MissionSETItem"/>.
+		/// </summary>
+		protected SETItem(EditorItemSelection selectionManager)
+			: base(selectionManager)
+		{ }
+
+		public SETItem(ushort id, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
-			Position = new Vertex();
-			Rotation = new Rotation();
-			Scale = new Vertex(1, 1, 1);
-			isLoaded = true;
+			ID = id;
 			objdef = GetObjectDefinition();
+			Position = new Vertex();
+			Rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
+			isLoaded = true;
 		}
 
 		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)

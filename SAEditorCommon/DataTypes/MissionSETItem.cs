@@ -7,14 +7,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	public class MissionSETItem : SETItem
 	{
-		public MissionSETItem(EditorItemSelection selectionManager)
+		public MissionSETItem(MsnObjectList list, ushort id, EditorItemSelection selectionManager)
 			: base(selectionManager)
-		{ }
+		{
+			ObjectList = list;
+			ID = id;
+			objdef = GetObjectDefinition();
+			Position = new Vertex();
+			Rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
+			isLoaded = true;
+		}
 
 		public MissionSETItem(byte[] setfile, int setaddress, byte[] prmfile, int prmaddress, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
-			isLoaded = false;
 			ushort _id = ByteConverter.ToUInt16(setfile, setaddress);
 			ID = _id;
 			ClipLevel = (byte)(_id >> 12);

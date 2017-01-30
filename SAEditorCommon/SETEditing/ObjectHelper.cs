@@ -91,7 +91,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
             return result.ToArray();
         }
 
-		public static BoundingSphere GetSpriteBounds(MatrixStack transform, float scale = 1)
+		public static BoundingSphere GetSpriteBounds(MatrixStack transform)
+		{
+			return GetSpriteBounds(transform, 1);
+		}
+
+		public static BoundingSphere GetSpriteBounds(MatrixStack transform, float scale)
 		{
 			return new BoundingSphere(Vector3.TransformCoordinate(SquareBounds.Center.ToVector3(), transform.Top).ToVertex(), SquareBounds.Radius * scale);
 		}
@@ -126,7 +131,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return Direct3D.Extensions.BAMSToFloatInv(BAMS);
         }
 
-		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale = 1)
+		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform)
+		{
+			return GetModelBounds(model, transform, 1);
+		}
+
+		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale)
 		{
 			return GetModelBounds(model, transform, scale, new BoundingSphere());
 		}
