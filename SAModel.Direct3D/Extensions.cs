@@ -510,25 +510,52 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static HitResult CheckHit(this Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
+			return CheckHit(mesh, Near, Far, Viewport, Projection, View, transform, null);
+		}
+
+		private static HitResult CheckHit(Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, NJS_OBJECT model)
+		{
 			if (mesh == null) return HitResult.NoHit;
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
 			IntersectInformation info;
 			if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
-			return new HitResult(null, info.Dist);
+			int posoff = 0;
+			foreach (VertexElement elem in mesh.Declaration)
+				if (elem.DeclarationUsage == DeclarationUsage.Position)
+				{
+					posoff = elem.Offset;
+					break;
+				}
+			short[] idxs = new short[3];
+			using (GraphicsStream gs = mesh.LockIndexBuffer(LockFlags.ReadOnly))
+			{
+				gs.Seek(info.FaceIndex * 6, SeekOrigin.Begin);
+				idxs[0] = (short)gs.Read(typeof(short));
+				idxs[1] = (short)gs.Read(typeof(short));
+				idxs[2] = (short)gs.Read(typeof(short));
+			}
+			Vector3[] verts = new Vector3[3];
+			using (GraphicsStream gs = mesh.LockVertexBuffer(LockFlags.ReadOnly))
+				for (int i = 0; i < 3; i++)
+				{
+					gs.Seek(idxs[i] * mesh.NumberBytesPerVertex + posoff, SeekOrigin.Begin);
+					verts[i] = (Vector3)gs.Read(typeof(Vector3));
+				}
+			mesh.UnlockVertexBuffer();
+			mesh.UnlockIndexBuffer();
+			Vector3 point = verts[0] + (info.U * (verts[1] - verts[0])) + (info.V * (verts[2] - verts[0]));
+			point = Vector3.TransformCoordinate(point, transform.Top);
+			Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(verts[1] - verts[0], verts[2] - verts[0])), transform.Top);
+			return new HitResult(model, info.Dist, point, norm);
 		}
 
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
 			MatrixStack transform = new MatrixStack();
-			transform.Push();
 			obj.ProcessTransforms(transform);
-			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-			IntersectInformation info;
-			if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
-			return new HitResult(obj, info.Dist);
+			return CheckHit(mesh, Near, Far, Viewport, Projection, View, transform, obj);
 		}
 
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh)
@@ -543,19 +570,8 @@ namespace SonicRetro.SAModel.Direct3D
 			modelindex++;
 			obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
-			if (obj.Attach != null & mesh[modelindex] != null)
-			{
-				Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-				Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-				IntersectInformation info;
-				if (mesh[modelindex].Intersect(pos, dir, out info))
-				{
-					if (!result.IsHit)
-						result = new HitResult(obj, info.Dist);
-					else if (result.Distance > info.Dist)
-						result = new HitResult(obj, info.Dist);
-				}
-			}
+			if (obj.Attach != null)
+				result = HitResult.Min(result, CheckHit(mesh[modelindex], Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
 			transform.Pop();
@@ -581,19 +597,8 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
-			if (obj.Attach != null & mesh[modelindex] != null)
-			{
-				Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-				Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-				IntersectInformation info;
-				if (mesh[modelindex].Intersect(pos, dir, out info))
-				{
-					if (!result.IsHit)
-						result = new HitResult(obj, info.Dist);
-					else if (result.Distance > info.Dist)
-						result = new HitResult(obj, info.Dist);
-				}
-			}
+			if (obj.Attach != null)
+				result = HitResult.Min(result, CheckHit(mesh[modelindex], Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();

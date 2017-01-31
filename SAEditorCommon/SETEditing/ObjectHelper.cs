@@ -62,11 +62,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
         public static HitResult CheckSpriteHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
         {
-            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-            Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-            IntersectInformation info;
-            if (!SquareMesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
-            return new HitResult(null, info.Dist);
+			return SquareMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
         }
 
         public static RenderInfo[] RenderSprite(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)

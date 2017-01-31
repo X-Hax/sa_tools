@@ -51,6 +51,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Dictionary<string, List<string>> levelNames;
 		bool lookKeyDown;
 		bool zoomKeyDown;
+		Point menuLocation;
 
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
@@ -1683,130 +1684,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					foreach (PointHelper pointHelper in PointHelper.Instances) if (pointHelper.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
-					float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
-					HitResult dist;
-					Item item = null;
-					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-					Viewport viewport = d3ddevice.Viewport;
-					Matrix proj = d3ddevice.Transform.Projection;
-					Matrix view = d3ddevice.Transform.View;
-					Vector3 Near, Far;
-					Near = mousepos;
-					Near.Z = 0;
-					Far = Near;
-					Far.Z = -1;
-
-
-					#region Picking Level Items
-					if (LevelData.LevelItems != null)
-					{
-						for (int i = 0; i < LevelData.LevelItems.Count; i++)
-						{
-							bool display = false;
-							if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
-								display = true;
-							else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
-								display = true;
-							else if (allToolStripMenuItem.Checked)
-								display = true;
-							if (display)
-							{
-								dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
-								if (dist.IsHit & dist.Distance < mindist)
-								{
-									mindist = dist.Distance;
-									item = LevelData.LevelItems[i];
-								}
-							}
-						}
-					}
-					#endregion
-
-					#region Picking Start Positions
-					dist = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
-					if (dist.IsHit & dist.Distance < mindist)
-					{
-						mindist = dist.Distance;
-						item = LevelData.StartPositions[LevelData.Character];
-					}
-					#endregion
-
-					#region Picking SET Items
-					if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
-						foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
-						{
-							dist = setitem.CheckHit(Near, Far, viewport, proj, view);
-							if (dist.IsHit & dist.Distance < mindist)
-							{
-								mindist = dist.Distance;
-								item = setitem;
-							}
-						}
-					#endregion
-
-					#region Picking CAM Items
-					if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
-					{
-						foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
-						{
-							dist = camItem.CheckHit(Near, Far, viewport, proj, view);
-							if (dist.IsHit & dist.Distance < mindist)
-							{
-								mindist = dist.Distance;
-								item = camItem;
-							}
-						}
-					}
-					#endregion
-
-					#region Picking Death Zones
-
-					if (LevelData.DeathZones != null)
-					{
-						foreach (DeathZoneItem dzitem in LevelData.DeathZones)
-						{
-							if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
-							{
-								dist = dzitem.CheckHit(Near, Far, viewport, proj, view);
-								if (dist.IsHit & dist.Distance < mindist)
-								{
-									mindist = dist.Distance;
-									item = dzitem;
-								}
-							}
-						}
-					}
-
-					#endregion
-
-					#region Picking Mission SET Items
-					if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
-						foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
-						{
-							dist = setitem.CheckHit(Near, Far, viewport, proj, view);
-							if (dist.IsHit & dist.Distance < mindist)
-							{
-								mindist = dist.Distance;
-								item = setitem;
-							}
-						}
-					#endregion
-
-					#region Picking Splines
-					if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
-					{
-						foreach (SplineData spline in LevelData.LevelSplines)
-						{
-							dist = spline.CheckHit(Near, Far, viewport, proj, view);
-
-							if (dist.IsHit & dist.Distance < mindist)
-							{
-								mindist = dist.Distance;
-								item = spline;
-							}
-						}
-					}
-					#endregion
+					Item item;
+					PickItem(e.Location, out item);
 
 					if (item != null)
 					{
@@ -1852,12 +1731,150 @@ namespace SonicRetro.SAModel.SADXLVL2
 						deleteToolStripMenuItem.Enabled = false;
 					}
 					pasteToolStripMenuItem.Enabled = false;
+					menuLocation = e.Location;
 					contextMenuStrip1.Show(panel1, e.Location);
 					break;
 			}
 
 			LevelData_StateChanged();
 		}
+
+		private HitResult PickItem(Point mouse)
+		{
+			Item item;
+			return PickItem(mouse, out item);
+		}
+
+		private HitResult PickItem(Point mouse, out Item item)
+		{
+			HitResult closesthit = HitResult.NoHit;
+			HitResult hit;
+			item = null;
+			Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
+			Viewport viewport = d3ddevice.Viewport;
+			Matrix proj = d3ddevice.Transform.Projection;
+			Matrix view = d3ddevice.Transform.View;
+			Vector3 Near, Far;
+			Near = mousepos;
+			Near.Z = 0;
+			Far = Near;
+			Far.Z = -1;
+
+
+			#region Picking Level Items
+			if (LevelData.LevelItems != null)
+			{
+				for (int i = 0; i < LevelData.LevelItems.Count; i++)
+				{
+					bool display = false;
+					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+						display = true;
+					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+						display = true;
+					else if (allToolStripMenuItem.Checked)
+						display = true;
+					if (display)
+					{
+						hit = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = LevelData.LevelItems[i];
+						}
+					}
+				}
+			}
+			#endregion
+
+			#region Picking Start Positions
+			hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
+			if (hit < closesthit)
+			{
+				closesthit = hit;
+				item = LevelData.StartPositions[LevelData.Character];
+			}
+			#endregion
+
+			#region Picking SET Items
+			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
+				foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
+				{
+					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = setitem;
+					}
+				}
+			#endregion
+
+			#region Picking CAM Items
+			if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
+			{
+				foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+				{
+					hit = camItem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = camItem;
+					}
+				}
+			}
+			#endregion
+
+			#region Picking Death Zones
+
+			if (LevelData.DeathZones != null)
+			{
+				foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+				{
+					if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
+					{
+						hit = dzitem.CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = dzitem;
+						}
+					}
+				}
+			}
+
+			#endregion
+
+			#region Picking Mission SET Items
+			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
+				foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
+				{
+					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = setitem;
+					}
+				}
+			#endregion
+
+			#region Picking Splines
+			if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+				{
+					hit = spline.CheckHit(Near, Far, viewport, proj, view);
+
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = spline;
+					}
+				}
+			}
+			#endregion
+
+			return closesthit;
+		}
+
 		private void panel1_MouseUp(object sender, MouseEventArgs e)
 		{
 			UpdatePropertyGrid();
@@ -2393,8 +2410,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (NewObjectDialog dlg = new NewObjectDialog(false))
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
+					HitResult hit = PickItem(menuLocation);
 					SETItem item = new SETItem(dlg.ID, selectedItems);
-					Vector3 pos = cam.Position + (-20 * cam.Look);
+					Vector3 pos;
+					if (hit.IsHit)
+						pos = hit.Position + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
+					else
+						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 					LevelData.SETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();
@@ -2418,8 +2440,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (NewObjectDialog dlg = new NewObjectDialog(true))
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
+					HitResult hit = PickItem(menuLocation);
 					MissionSETItem item = new MissionSETItem(dlg.ObjectList, dlg.ID, selectedItems);
-					Vector3 pos = cam.Position + (-20 * cam.Look);
+					Vector3 pos;
+					if (hit.IsHit)
+						pos = hit.Position + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
+					else
+						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();

@@ -13,7 +13,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
         public string Name;
         public string Model;
         public string Texture;
-        public float? XPos, YPos, ZPos, XScl, YScl, ZScl, DefXScl, DefYScl, DefZScl;
+        public float? XPos, YPos, ZPos, XScl, YScl, ZScl, DefXScl, DefYScl, DefZScl, GndDst;
 		[TypeConverter(typeof(Int32HexConverter))]
 		public int? XRot, YRot, ZRot;
 		[TypeConverter(typeof(UInt16HexConverter))]

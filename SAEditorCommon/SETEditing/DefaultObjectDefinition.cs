@@ -20,7 +20,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 		private string texture;
-		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl;
+		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl, gnddst;
 		private int? xrot, yrot, zrot;
 		private ushort? defxrot, defyrot, defzrot;
 
@@ -49,6 +49,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			defxscl = data.DefXScl;
 			defyscl = data.DefYScl;
 			defzscl = data.DefZScl;
+			gnddst = data.GndDst;
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -110,5 +111,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public override float DefaultXScale { get { return defxscl ?? base.DefaultXScale; } }
 		public override float DefaultYScale { get { return defyscl ?? base.DefaultYScale; } }
 		public override float DefaultZScale { get { return defzscl ?? base.DefaultZScale; } }
+		public override float DistanceFromGround { get { return gnddst ?? base.DistanceFromGround; } }
 	}
 }

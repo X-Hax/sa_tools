@@ -149,6 +149,14 @@ namespace SADXObjectDefinitions.Common
 
 		public override string Name { get { return "Ring Group"; } }
 
+		public override float DistanceFromGround
+		{
+			get
+			{
+				return 7;
+			}
+		}
+
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Number of Rings", typeof(byte), "Extended", null, 1, (o) => (byte)Math.Min(o.Scale.X + 1, 8), (o, v) => o.Scale.X = Math.Max(Math.Min((byte)v - 1, 8), 0)),
 			new PropertySpec("Size", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
