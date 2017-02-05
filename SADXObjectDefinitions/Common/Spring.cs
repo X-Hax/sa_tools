@@ -44,12 +44,26 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
+		public override void SetOrientation(SETItem item, Vertex direction)
+		{
+			int x, z;
+			direction.GetRotation(out x, out z);
+			item.Rotation.X = x + 0x4000;
+			item.Rotation.Z = -z;
+		}
+
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Disable Timer", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
+		public override float DefaultXScale { get { return 0; } }
+
+		public override float DefaultYScale { get { return 0; } }
+
+		public override float DefaultZScale { get { return 0; } }
 	}
 
 	public class Spring : SpringBase

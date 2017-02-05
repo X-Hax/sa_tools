@@ -50,6 +50,14 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
+		public override void SetOrientation(SETItem item, Vertex direction)
+		{
+			int x, z;
+			direction.GetRotation(out x, out z);
+			item.Rotation.X = x + 0x4000;
+			item.Rotation.Z = -z;
+		}
+
 		public override string Name { get { return "Weed"; } }
 
 		private PropertySpec[] missionProperties = new PropertySpec[] {

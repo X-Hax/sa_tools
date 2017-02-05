@@ -171,6 +171,37 @@ namespace SonicRetro.SAModel
 		{
 			return X == other.X && Y == other.Y && Z == other.Z;
 		}
+
+		/// <summary>
+		/// Converts a <see cref="Vertex"/> to two rotation values.
+		/// </summary>
+		/// <param name="a1">The first rotation value.</param>
+		/// <param name="a2">The second rotation value.</param>
+		public void GetRotation(out int a1, out int a2)
+		{
+			a1 = (int)((Math.Atan2(Y, Z) * 65536) * -0.15915497620314795);
+			a2 = (int)((Math.Atan2(X, Math.Sqrt(Z * Z + Y * Y)) * 65536) * 0.15915497620314795);
+		}
+
+		public static Vertex operator +(Vertex a, Vertex b)
+		{
+			return new Vertex(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+		}
+
+		public static Vertex operator -(Vertex a, Vertex b)
+		{
+			return new Vertex(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+		}
+
+		public static Vertex operator -(Vertex v)
+		{
+			return new Vertex(-v.X, -v.Y, -v.Z);
+		}
+
+		public static Vertex operator *(Vertex v, float f)
+		{
+			return new Vertex(v.X * f, v.Y * f, v.Z * f);
+		}
 	}
 
 	public class VertexConverter : ExpandableObjectConverter

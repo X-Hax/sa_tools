@@ -684,6 +684,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 								}
 								if (pr != null)
 								{
+									// System, System.Core, System.Drawing, Microsoft.DirectX, Microsoft.DirectX.Direct3D, Microsoft.DirectX.Direct3DX,
+									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
 									CompilerParameters para =
 										new CompilerParameters(new string[]
 										{
@@ -2414,7 +2416,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					SETItem item = new SETItem(dlg.ID, selectedItems);
 					Vector3 pos;
 					if (hit.IsHit)
+					{
 						pos = hit.Position + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
+						item.SetOrientation(hit.Normal.ToVertex());
+					}
 					else
 						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
@@ -2444,7 +2449,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					MissionSETItem item = new MissionSETItem(dlg.ObjectList, dlg.ID, selectedItems);
 					Vector3 pos;
 					if (hit.IsHit)
+					{
 						pos = hit.Position + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
+						item.SetOrientation(hit.Normal.ToVertex());
+					}
 					else
 						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);

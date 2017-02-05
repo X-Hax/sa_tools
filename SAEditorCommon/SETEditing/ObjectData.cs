@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
-    public class ObjectData
+	public class ObjectData
     {
         [IniName("codefile")]
         public string CodeFile;

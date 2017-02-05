@@ -107,12 +107,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public void RebuildMesh(Device device)
 		{
 			List<CustomVertex.PositionColored> vertList = new List<CustomVertex.PositionColored>();
-			List<UInt16> faceIndexList = new List<UInt16>();
+			List<ushort> faceIndexList = new List<ushort>();
 
 			Vector3 up = new Vector3(0, 1, 0);
 
 			#region Segment vert/face creation
-			UInt16 highestFaceIndex = 0;
+			ushort highestFaceIndex = 0;
 
 			for (int i = 0; i < splineData.Path.Count - 1; i++) // don't process the last knot
 			{
@@ -148,7 +148,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				vert2_3 = new CustomVertex.PositionColored(vert2_1.Position - (up * splineMeshRadius), Color.White.ToArgb());
 				vert2_4 = new CustomVertex.PositionColored(vert2_2.Position - (up * splineMeshRadius), Color.White.ToArgb());
 
-				List<UInt16> thisKnotFaceIndexes = new List<UInt16> 
+				List<ushort> thisKnotFaceIndexes = new List<ushort> 
 				{
 					// far side
 					4,0,6,
@@ -169,7 +169,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 				for (int faceIndx = 0; faceIndx < thisKnotFaceIndexes.Count(); faceIndx++)
 				{
-					thisKnotFaceIndexes[faceIndx] += (UInt16)vertList.Count(); // this is the wrong approach because it's the verts we're indexing, not the faces!
+					thisKnotFaceIndexes[faceIndx] += (ushort)vertList.Count(); // this is the wrong approach because it's the verts we're indexing, not the faces!
 					if (thisKnotFaceIndexes[faceIndx] > highestFaceIndex) highestFaceIndex = thisKnotFaceIndexes[faceIndx];
 				}
 

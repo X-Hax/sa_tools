@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Common\Cube.cs" />
     <Compile Include="Common\Cylinder.cs" />
+    <Compile Include="Common\DashHoop.cs" />
     <Compile Include="Common\DashPanel.cs" />
     <Compile Include="Common\FallSpikeBall.cs" />
     <Compile Include="Common\ItemBox.cs" />

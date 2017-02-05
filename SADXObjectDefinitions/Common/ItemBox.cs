@@ -53,6 +53,12 @@ namespace SADXObjectDefinitions.Common
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
+		public override float DefaultXScale { get { return 0; } }
+
+		public override float DefaultYScale { get { return 0; } }
+
+		public override float DefaultZScale { get { return 0; } }
 	}
 
 	public class ItemBox : ItemBoxBase
@@ -62,6 +68,14 @@ namespace SADXObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("Objects/Common/Item Box/Ground.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 2;
+		}
+
+		public override void SetOrientation(SETItem item, Vertex direction)
+		{
+			int x, z;
+			direction.GetRotation(out x, out z);
+			item.Rotation.X = x + 0x4000;
+			item.Rotation.Z = -z;
 		}
 
 		public override string Name { get { return "Item Box"; } }

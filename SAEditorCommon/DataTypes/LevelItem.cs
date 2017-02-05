@@ -111,7 +111,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
 
-		public override BoundingSphere Bounds { get { return COL.Bounds; } /*set { COL.Bounds = value; }*/ }
+		public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{

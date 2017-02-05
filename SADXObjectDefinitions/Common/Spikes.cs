@@ -101,5 +101,7 @@ namespace SADXObjectDefinitions.Common
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
+		public override float DefaultZScale { get { return 0; } }
 	}
 }

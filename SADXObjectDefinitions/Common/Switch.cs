@@ -56,21 +56,35 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
+		public override void SetOrientation(SETItem item, Vertex direction)
+		{
+			int x, z;
+			direction.GetRotation(out x, out z);
+			item.Rotation.X = x + 0x4000;
+			item.Rotation.Z = -z;
+		}
+
 		public override string Name { get { return "Switch"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Type", typeof(SwitchType), "Extended", null, SwitchType.Toggle, (o) => (SwitchType)o.Scale.X, (o, v) => o.Scale.X = (float)(SwitchType)v),
-			new PropertySpec("ID", typeof(byte), "Extended", null, 0, o => (byte)o.Scale.Y, (o, v) => o.Scale.Y = (byte)v),
+			new PropertySpec("Switch ID", typeof(byte), "Extended", null, 0, o => (byte)o.Scale.Y, (o, v) => o.Scale.Y = (byte)v),
 			new PropertySpec("Active Time", typeof(ushort), "Extended", null, 5, o => (ushort)o.Scale.Z, (o, v) => o.Scale.Z = (ushort)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
 		private PropertySpec[] missionProperties = new PropertySpec[] {
-			new PropertySpec("Switch ID", typeof(byte), null, "Overrides regular ID setting for mission mode.", 0, (o) => ((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)v)
+			new PropertySpec("Switch ID", typeof(byte), null, "Overrides regular Switch ID setting for mission mode.", 0, (o) => ((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)v)
 		};
 
 		public override PropertySpec[] MissionProperties { get { return missionProperties; } }
+
+		public override float DefaultXScale { get { return 0; } }
+
+		public override float DefaultYScale { get { return 0; } }
+
+		public override float DefaultZScale { get { return 0; } }
 
 		enum SwitchType
 		{

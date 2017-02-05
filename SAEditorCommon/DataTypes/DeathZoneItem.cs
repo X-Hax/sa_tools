@@ -27,7 +27,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return Model.Attach.Bounds;
+				Matrix m = Matrix.Identity;
+				Model.ProcessTransforms(m);
+				float scale = Math.Max(Math.Max(Model.Scale.X, Model.Scale.Y), Model.Scale.Z);
+				return new BoundingSphere(Vector3.TransformCoordinate(Model.Attach.Bounds.Center.ToVector3(), m).ToVertex(), Model.Attach.Bounds.Radius * scale);
 			}
 		}
 
@@ -99,20 +102,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public void ExportModel()
 		{
 
-		}
-
-		[Browsable(true)]
-		[DisplayName("Edit Materials")]
-		public void EditMaterials()
-		{
-			if (Model.Attach is BasicAttach)
-			{
-				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)Model.Attach).Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
-				{
-					pw.FormUpdated += pw_FormUpdated;
-					pw.ShowDialog();
-				}
-			}
 		}
 
 		public SA1CharacterFlags Flags { get; set; }
@@ -217,12 +206,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
 			return new DeathZoneFlags() { Flags = Flags };
-		}
-
-		// Form property update event method
-		void pw_FormUpdated(object sender, EventArgs e)
-		{
-			LevelData.InvalidateRenderState();
 		}
 	}
 }
