@@ -126,6 +126,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			objdef.SetOrientation(this, direction);
 		}
 
+		public void PointTo(Vertex location)
+		{
+			objdef.PointTo(this, location);
+		}
+
 		public byte[] GetBytes()
 		{
 			List<byte> bytes = new List<byte>(0x20);

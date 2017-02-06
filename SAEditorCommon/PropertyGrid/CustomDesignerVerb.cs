@@ -1,19 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
 using System.ComponentModel.Design;
 using System.Reflection;
 
 namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
 {
-    public class CustomDesignerVerb : DesignerVerb
+	public class CustomDesignerVerb : DesignerVerb
     {
-        public MethodInfo Method { get; set; }
+		public bool IsVerbSpec { get; private set; }
+        public MethodInfo Method { get; private set; }
+		public Action<SETItem> Action { get; private set; }
 
         public CustomDesignerVerb(string text, EventHandler handler, MethodInfo method)
             : base(text, handler)
         {
             Method = method;
+			IsVerbSpec = false;
         }
+
+		public CustomDesignerVerb(VerbSpec spec, EventHandler handler)
+			: base(spec.Name, handler)
+		{
+			Action = spec.DoVerb;
+			IsVerbSpec = true;
+		}
     }
 }

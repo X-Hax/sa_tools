@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
 
 namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
 {
-    public class DesignerVerbSite : IMenuCommandService, ISite
+	public class DesignerVerbSite : IMenuCommandService, ISite
     {
         // our target object
         protected object _Component;
@@ -76,8 +76,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
                     attrs = mi.GetCustomAttributes(typeof(DisplayNameAttribute), true);
                     if (attrs != null & attrs.Length > 0)
                         name = ((DisplayNameAttribute)attrs[0]).DisplayName;
-                    Verbs.Add(new CustomDesignerVerb(name, new EventHandler(VerbEventHandler), mi));
+                    Verbs.Add(new CustomDesignerVerb(name, VerbEventHandler, mi));
                 }
+				if (_Component is SETItem)
+				{
+					SETItem item = (SETItem)_Component;
+					foreach (SETEditing.VerbSpec spec in item.GetObjectDefinition().CustomVerbs)
+						Verbs.Add(new CustomDesignerVerb(spec, VerbEventHandler));
+				}
                 return Verbs;
             }
         }
@@ -87,7 +93,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
         {
             // The verb is the sender
             CustomDesignerVerb verb = sender as CustomDesignerVerb;
-            verb.Method.Invoke(_Component, null);
+			if (verb.IsVerbSpec)
+				verb.Action((SETItem)_Component);
+			else
+				verb.Method.Invoke(_Component, null);
         }
 
         #endregion

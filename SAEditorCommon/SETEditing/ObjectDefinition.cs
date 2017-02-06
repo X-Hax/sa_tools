@@ -14,9 +14,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
+		public virtual void PointTo(SETItem item, Vertex location) { }
 		public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }
+		public virtual VerbSpec[] CustomVerbs { get { return new VerbSpec[0]; } }
 		/// <summary>
 		/// Returns a bounding sphere for the supplied SET Item.
 		/// </summary>
@@ -409,5 +411,36 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public override string Description { get { return item.Description; } }
 
 		public Dictionary<string, int> Enumeration { get { return item.Enumeration; } }
+	}
+
+	public class VerbSpec
+	{
+		private string name;
+		private Action<SETItem> method;
+
+		/// <summary>
+		/// Initializes a new instance of the VerbSpec class.
+		/// </summary>
+		/// <param name="name">The name of the verb displayed in the property grid.</param>
+		/// <param name="method">The method called when clicked.</param>
+		public VerbSpec(string name, Action<SETItem> method)
+		{ 
+			this.name = name;
+			this.method = method;
+		}
+
+		/// <summary>
+		/// Gets or sets the name of this property.
+		/// </summary>
+		public string Name
+		{
+			get { return name; }
+			set { name = value; }
+		}
+
+		public void DoVerb(SETItem item)
+		{
+			method(item);
+		}
 	}
 }

@@ -14,8 +14,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	public static class LevelData
 	{
 		#region Events
-		public delegate void LevelStateChangeHandler();
-		public static event LevelStateChangeHandler StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
+		public static event Action StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
+		public static event Action PointOperation = delegate { };
 		#endregion
 
 		public static LandTable geo;
@@ -44,6 +44,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static void InvalidateRenderState()
 		{
 			StateChanged?.Invoke();
+		}
+
+		public static void BeginPointOperation()
+		{
+			PointOperation();
 		}
 
 		/// <summary>

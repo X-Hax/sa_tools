@@ -52,6 +52,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool lookKeyDown;
 		bool zoomKeyDown;
 		Point menuLocation;
+		bool isPointOperation;
 
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
@@ -67,6 +68,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
+			LevelData.PointOperation += LevelData_PointOperation;
 			panel1.MouseWheel += panel1_MouseWheel;
 
 			if (ShowQuickStart())
@@ -1667,6 +1669,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
+		private void LevelData_PointOperation()
+		{
+			MessageBox.Show(this, "You have just begun a Point To operation. Left click on the point or item you want the selected item(s) to point to, or right click to cancel.", "SADXLVL2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			isPointOperation = true;
+		}
+
 		#region User Keyboard / Mouse Methods
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -1681,12 +1689,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return;
 
 				case MouseButtons.Left:
+					Item item;
+					if (isPointOperation)
+					{
+						HitResult res = PickItem(e.Location, out item);
+						if (item != null)
+						{
+							using (PointToDialog dlg = new PointToDialog(res.Position.ToVertex(), item.Position))
+								if (dlg.ShowDialog(this) == DialogResult.OK)
+									foreach (SETItem it in System.Linq.Enumerable.OfType<SETItem>(selectedItems.GetSelection()))
+										it.PointTo(dlg.SelectedLocation);
+							isPointOperation = false;
+						}
+						return;
+					}
 					// If we have any helpers selected, don't execute the rest of the method!
 					if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
 					foreach (PointHelper pointHelper in PointHelper.Instances) if (pointHelper.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
-					Item item;
 					PickItem(e.Location, out item);
 
 					if (item != null)
@@ -1711,6 +1732,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.Right:
+					if (isPointOperation)
+					{
+						isPointOperation = false;
+						return;
+					}
 					bool cancopy = false;
 					foreach (Item obj in selectedItems.GetSelection())
 					{

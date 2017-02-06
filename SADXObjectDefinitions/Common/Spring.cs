@@ -52,12 +52,23 @@ namespace SADXObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 
+		public override void PointTo(SETItem item, Vertex location)
+		{
+			SetOrientation(item, item.Position - location);
+		}
+
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Disable Timer", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
+		private VerbSpec[] customVerbs = new VerbSpec[] {
+			new VerbSpec("Point To", o => LevelData.BeginPointOperation())
+		};
+
+		public override VerbSpec[] CustomVerbs { get { return customVerbs; } }
 
 		public override float DefaultXScale { get { return 0; } }
 

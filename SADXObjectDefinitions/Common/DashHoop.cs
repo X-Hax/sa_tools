@@ -76,6 +76,11 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
+		public override void PointTo(SETItem item, Vertex location)
+		{
+			item.Scale = location;
+		}
+
 		public override string Name { get { return "Dash Hoop"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
@@ -83,6 +88,12 @@ namespace SADXObjectDefinitions.Common
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
+		private VerbSpec[] customVerbs = new VerbSpec[] {
+			new VerbSpec("Point To", o => LevelData.BeginPointOperation())
+		};
+
+		public override VerbSpec[] CustomVerbs { get { return customVerbs; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
