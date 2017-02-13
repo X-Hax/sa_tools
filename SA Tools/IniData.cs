@@ -2494,10 +2494,124 @@ namespace SA_Tools
 		}
 	}
 
+	public static class WeldList
+	{
+		public static List<WeldInfo> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<WeldInfo>>(filename);
+		}
+
+		public static List<WeldInfo> Load(byte[] file, int address, uint imageBase)
+		{
+			List<WeldInfo> result = new List<WeldInfo>();
+			int ptr = ByteConverter.ToInt32(file, address);
+			while (ptr != 0)
+			{
+				result.Add(new WeldInfo(file, address, imageBase));
+				address += WeldInfo.Size;
+				ptr = ByteConverter.ToInt32(file, address);
+			}
+			return result;
+		}
+
+		public static void Save(this List<WeldInfo> welds, string filename)
+		{
+			IniSerializer.Serialize(welds, filename);
+		}
+	}
+
+	[Serializable]
+	public class WeldInfo
+	{
+		public string BaseModel { get; set; }
+		public string ModelA { get; set; }
+		public string ModelB { get; set; }
+		[IniAlwaysInclude]
+		public byte WeldType { get; set; }
+		public short Unknown { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine)]
+		public List<ushort> VertIndexes { get; set; }
+		public string VertIndexName { get; set; }
+
+		public static int Size { get { return 0x18; } }
+
+		public WeldInfo() { }
+
+		public WeldInfo(byte[] file, int address, uint imageBase)
+		{
+			int ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+					BaseModel = "object_" + ((uint)ptr - imageBase).ToString("X8");
+				else
+					BaseModel = ptr.ToCHex();
+			ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+					ModelA = "object_" + ((uint)ptr - imageBase).ToString("X8");
+				else
+					ModelA = ptr.ToCHex();
+			ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+					ModelB = "object_" + ((uint)ptr - imageBase).ToString("X8");
+				else
+					ModelB = ptr.ToCHex();
+			int cnt = file[address++] * 2;
+			WeldType = file[address++];
+			Unknown = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			address += sizeof(int);
+			ptr = ByteConverter.ToInt32(file, address);
+			if (ptr != 0)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				VertIndexName = "vi_" + ptr.ToString("X8");
+				VertIndexes = new List<ushort>(cnt);
+				for (int i = 0; i < cnt; i++)
+				{
+					VertIndexes.Add(ByteConverter.ToUInt16(file, ptr));
+					ptr += sizeof(ushort);
+				}
+			}
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(BaseModel ?? "nullptr");
+			sb.Append(", ");
+			sb.Append(ModelA ?? "nullptr");
+			sb.Append(", ");
+			sb.Append(ModelB ?? "nullptr");
+			sb.Append(", ");
+			if (VertIndexes != null)
+				sb.AppendFormat("LengthOfArray({0})", VertIndexName);
+			else
+				sb.Append("0");
+			sb.Append(", ");
+			sb.Append(WeldType);
+			sb.Append(", ");
+			sb.Append(Unknown);
+			sb.Append(", nullptr, ");
+			sb.Append(VertIndexes != null ? VertIndexName : "nullptr");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	/// <summary>
-    /// Converts between <see cref="System.String"/> and <typeparamref name="T"/>
-    /// </summary>
-    public class StringConverter<T> : TypeConverter
+	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
+	/// </summary>
+	public class StringConverter<T> : TypeConverter
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {

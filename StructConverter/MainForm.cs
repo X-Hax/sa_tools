@@ -48,7 +48,8 @@ namespace StructConverter
             { "endpos", "End Positions" },
             { "animationlist", "Animation List" },
 			{ "levelpathlist", "Path List" },
-			{ "stagelightdatalist", "Stage Light Data List" }
+			{ "stagelightdatalist", "Stage Light Data List" },
+			{ "weldlist", "Weld List" }
         };
 
         public MainForm()
@@ -829,6 +830,25 @@ namespace StructConverter
 							objs.Add("{ 0xFFu }");
 							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 							writer.WriteLine("};");
+						}
+						break;
+					case "weldlist":
+						{
+							List<WeldInfo> list = WeldList.Load(data.Filename);
+							foreach (WeldInfo weld in list)
+								if (weld.VertIndexes != null)
+								{
+									writer.WriteLine("uint16_t {0}[] = {{", weld.VertIndexName);
+									for (int i = 0; i < weld.VertIndexes.Count; i += 2)
+										writer.WriteLine("\t{0}, {1},", weld.VertIndexes[i], weld.VertIndexes[i + 1]);
+									writer.WriteLine("};");
+									writer.WriteLine();
+								}
+							writer.WriteLine("WeldInfo {0}[] = {{", name);
+							foreach (WeldInfo weld in list)
+								writer.WriteLine("\t{0},", weld.ToStruct());
+							writer.WriteLine("};");
+							writer.WriteLine();
 						}
 						break;
 				}
