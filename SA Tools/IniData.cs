@@ -2594,7 +2594,7 @@ namespace SA_Tools
 			sb.Append(ModelB ?? "nullptr");
 			sb.Append(", ");
 			if (VertIndexes != null)
-				sb.AppendFormat("LengthOfArray({0})", VertIndexName);
+				sb.AppendFormat("(uint8_t)(LengthOfArray({0}) / 2)", VertIndexName);
 			else
 				sb.Append("0");
 			sb.Append(", ");

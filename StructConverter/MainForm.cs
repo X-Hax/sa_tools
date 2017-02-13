@@ -847,6 +847,7 @@ namespace StructConverter
 							writer.WriteLine("WeldInfo {0}[] = {{", name);
 							foreach (WeldInfo weld in list)
 								writer.WriteLine("\t{0},", weld.ToStruct());
+							writer.WriteLine("\t{ 0 }");
 							writer.WriteLine("};");
 							writer.WriteLine();
 						}
