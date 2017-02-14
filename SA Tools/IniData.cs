@@ -2529,7 +2529,7 @@ namespace SA_Tools
 		[IniAlwaysInclude]
 		public byte WeldType { get; set; }
 		public short Unknown { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine)]
+		[IniCollection(IniCollectionMode.SingleLine,Format=", ")]
 		public List<ushort> VertIndexes { get; set; }
 		public string VertIndexName { get; set; }
 

@@ -340,9 +340,9 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-                                ani.Animation.Name = item.Key + "_" + i;
-                                DllItemInfo info = new DllItemInfo();
-                                info.Export = name;
+								ani.Animation.Name = item.Key + "_" + i;
+								DllItemInfo info = new DllItemInfo();
+								info.Export = name;
 								info.Index = i;
 								info.Label = ani.Animation.Name;
 								info.Field = "motion";

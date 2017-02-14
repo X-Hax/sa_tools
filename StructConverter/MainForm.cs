@@ -835,14 +835,16 @@ namespace StructConverter
 					case "weldlist":
 						{
 							List<WeldInfo> list = WeldList.Load(data.Filename);
+							List<string> labels = new List<string>();
 							foreach (WeldInfo weld in list)
-								if (weld.VertIndexes != null)
+								if (weld.VertIndexes != null && weld.VertIndexes.Count > 0 && !labels.Contains(weld.VertIndexName))
 								{
 									writer.WriteLine("uint16_t {0}[] = {{", weld.VertIndexName);
 									for (int i = 0; i < weld.VertIndexes.Count; i += 2)
 										writer.WriteLine("\t{0}, {1},", weld.VertIndexes[i], weld.VertIndexes[i + 1]);
 									writer.WriteLine("};");
 									writer.WriteLine();
+									labels.Add(weld.VertIndexName);
 								}
 							writer.WriteLine("WeldInfo {0}[] = {{", name);
 							foreach (WeldInfo weld in list)
