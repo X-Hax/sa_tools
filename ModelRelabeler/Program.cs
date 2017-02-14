@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SonicRetro.SAModel;
 
 namespace ModelRelabeler
 {
-	class Program
+	static class Program
 	{
 		static void Main(string[] args)
 		{
@@ -67,12 +65,12 @@ namespace ModelRelabeler
 				else if (objects[i].Attach is ChunkAttach && repobjects[i].Attach is ChunkAttach)
 				{
 					ChunkAttach attach = (ChunkAttach)objects[i].Attach;
-					ChunkAttach repattach = (ChunkAttach)objects[i].Attach;
+					ChunkAttach repattach = (ChunkAttach)repobjects[i].Attach;
 					attach.VertexName = repattach.VertexName;
 					attach.PolyName = repattach.PolyName;
 				}
 			}
-			model.SaveToFile(mdlfilename);
+			model.SaveToFile(repmdlfilename);
 		}
 	}
 }
