@@ -74,6 +74,7 @@ namespace SonicRetro.SAModel
 				for (int i = 0; i < Vertex.Length; i++)
 					Normal[i] = new Vertex(0, 1, 0);
 			}
+			int maxmat = -1;
 			int meshcnt = ByteConverter.ToInt16(file, address + 0x14);
 			tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
 			if (tmpaddr != 0)
@@ -86,10 +87,12 @@ namespace SonicRetro.SAModel
 				for (int i = 0; i < meshcnt; i++)
 				{
 					Mesh.Add(new NJS_MESHSET(file, tmpaddr, imageBase, labels));
+					maxmat = Math.Max(maxmat, Mesh[i].MaterialID);
 					tmpaddr += NJS_MESHSET.Size(DX);
 				}
 			}
-			int matcnt = ByteConverter.ToInt16(file, address + 0x16);
+			// fixes case where model declares material array as shorter than it really is
+			int matcnt = Math.Max(ByteConverter.ToInt16(file, address + 0x16), maxmat + 1);
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
 			if (tmpaddr != 0)
 			{
