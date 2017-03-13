@@ -35,7 +35,6 @@ namespace SADXTweaker2
 					level.Items.Add(item.Key);
 				}
             level.EndUpdate();
-            axWindowsMediaPlayer1.settings.autoStart = false;
             voiceNum.Directory = Program.IniData.VoiceFolder;
             language.SelectedIndex = 1;
             level.SelectedIndex = 0;
@@ -250,20 +249,19 @@ namespace SADXTweaker2
             if (voice.Checked)
             {
                 CurrentGroup.Voice = 0;
-                voiceNum.Enabled = axWindowsMediaPlayer1.Ctlenabled = true;
+                voiceNum.Enabled = true;
                 voiceNum.Value = "0000";
             }
             else
             {
                 CurrentGroup.Voice = null;
-                voiceNum.Enabled = axWindowsMediaPlayer1.Ctlenabled = false;
+                voiceNum.Enabled = false;
             }
         }
 
         private void voiceNum_ValueChanged(object sender, EventArgs e)
         {
             CurrentGroup.Voice = ushort.Parse(voiceNum.Value, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-            axWindowsMediaPlayer1.URL = Path.Combine(Path.Combine(Environment.CurrentDirectory, Program.IniData.VoiceFolder), voiceNum.Value + ".wma").Replace('/', Path.DirectorySeparatorChar);
         }
 
         private void setEventFlag_CheckedChanged(object sender, EventArgs e)

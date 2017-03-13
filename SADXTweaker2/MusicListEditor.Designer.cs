@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MusicListEditor));
-            this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.loop = new System.Windows.Forms.CheckBox();
             this.filename = new SADXTweaker2.FileListControl();
@@ -38,19 +37,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pasteButton = new System.Windows.Forms.Button();
             this.copyButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // axWindowsMediaPlayer1
-            // 
-            this.axWindowsMediaPlayer1.Enabled = true;
-            this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(6, 71);
-            this.axWindowsMediaPlayer1.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
-            this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(215, 44);
-            this.axWindowsMediaPlayer1.TabIndex = 5;
             // 
             // groupBox1
             // 
@@ -58,7 +46,6 @@
             this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox1.Controls.Add(this.loop);
             this.groupBox1.Controls.Add(this.filename);
-            this.groupBox1.Controls.Add(this.axWindowsMediaPlayer1);
             this.groupBox1.Enabled = false;
             this.groupBox1.Location = new System.Drawing.Point(12, 39);
             this.groupBox1.Name = "groupBox1";
@@ -289,7 +276,6 @@
             this.Text = "Music List Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MusicListEditor_FormClosing);
             this.Load += new System.EventHandler(this.MusicListEditor_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -299,7 +285,6 @@
 
         #endregion
 
-        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox trackNum;
         private System.Windows.Forms.Label label2;

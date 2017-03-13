@@ -45,7 +45,6 @@ namespace SADXTweaker2
                     musicfiles = MusicList.Load(item.Value.Filename);
                 }
             levelList.EndUpdate();
-            axWindowsMediaPlayer1.settings.autoStart = false;
             levelList.SelectedIndex = 0;
         }
 
@@ -119,8 +118,6 @@ namespace SADXTweaker2
         private void trackNum_ValueChanged(object sender, EventArgs e)
         {
             CurrentItem.Track = trackNum.SelectedIndex;
-            string songfile = System.IO.Path.Combine(System.IO.Path.Combine(Environment.CurrentDirectory, Program.IniData.MusicFolder), musicfiles[trackNum.SelectedIndex].Filename + ".wma").Replace('/', System.IO.Path.DirectorySeparatorChar);
-            axWindowsMediaPlayer1.URL = songfile;
         }
 
         private void copyButton_Click(object sender, EventArgs e)

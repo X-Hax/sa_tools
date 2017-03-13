@@ -69,7 +69,6 @@
             this.setEventUnset = new System.Windows.Forms.CheckBox();
             this.setEventNum = new System.Windows.Forms.NumericUpDown();
             this.setEventFlag = new System.Windows.Forms.CheckBox();
-            this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
             this.voiceNum = new SADXTweaker2.FileListControl();
             this.voice = new System.Windows.Forms.CheckBox();
             this.groupRemoveButton = new System.Windows.Forms.Button();
@@ -96,7 +95,6 @@
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.setEventNum)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -572,7 +570,6 @@
             this.panel3.Controls.Add(this.setEventUnset);
             this.panel3.Controls.Add(this.setEventNum);
             this.panel3.Controls.Add(this.setEventFlag);
-            this.panel3.Controls.Add(this.axWindowsMediaPlayer1);
             this.panel3.Controls.Add(this.voiceNum);
             this.panel3.Controls.Add(this.voice);
             this.panel3.Controls.Add(groupBox3);
@@ -622,16 +619,6 @@
             this.setEventFlag.Text = "Set Event Flag";
             this.setEventFlag.UseVisualStyleBackColor = true;
             this.setEventFlag.CheckedChanged += new System.EventHandler(this.setEventFlag_CheckedChanged);
-            // 
-            // axWindowsMediaPlayer1
-            // 
-            this.axWindowsMediaPlayer1.Enabled = true;
-            this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(178, 260);
-            this.axWindowsMediaPlayer1.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
-            this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(218, 34);
-            this.axWindowsMediaPlayer1.TabIndex = 6;
             // 
             // voiceNum
             // 
@@ -764,7 +751,6 @@
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.setEventNum)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -800,7 +786,6 @@
         private System.Windows.Forms.CheckBox tikal;
         private System.Windows.Forms.CheckBox voice;
         private FileListControl voiceNum;
-        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
         private System.Windows.Forms.CheckBox setEventFlag;
         private System.Windows.Forms.CheckBox setEventUnset;
         private System.Windows.Forms.NumericUpDown setEventNum;
