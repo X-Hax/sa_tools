@@ -687,6 +687,50 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
+		private void multiObjToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (FolderBrowserDialog dlg = new FolderBrowserDialog()
+			{
+				SelectedPath = Environment.CurrentDirectory,
+				ShowNewFolderButton = true
+			})
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					
+					using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
+					{
+						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
+						{
+							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", TexturePackName, texIndx));
+							mtlstream.WriteLine("Ka 1 1 1");
+							mtlstream.WriteLine("Kd 1 1 1");
+							mtlstream.WriteLine("Ks 0 0 0");
+							mtlstream.WriteLine("illum 1");
+
+							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
+							{
+								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+								// save texture
+								TextureInfo[texIndx].Image.Save(Path.Combine(dlg.SelectedPath, TextureInfo[texIndx].Name + ".png"));
+							}
+						}
+					}
+					foreach (NJS_OBJECT obj in model.GetObjects().Where(a=>a.Attach != null))
+						using (StreamWriter objstream = new StreamWriter(Path.Combine(dlg.SelectedPath, obj.Name + ".obj"), false))
+						{
+							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
+							bool errorFlag = false;
+
+							Direct3D.Extensions.WriteSingleModelAsObj(objstream, model, TexturePackName, ref errorFlag);
+
+							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+						}
+				}
+		}
+
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Clipboard.SetData(GetAttachType().AssemblyQualifiedName, selectedObject.Attach);
