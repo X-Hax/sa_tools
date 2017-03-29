@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SonicRetro.SAModel.SAEditorCommon.UI;
+using System;
 using System.Windows.Forms;
 
 namespace SADXTweaker2
@@ -27,7 +28,7 @@ namespace SADXTweaker2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using (BugReportDialog err = new BugReportDialog(exception))
+            using (BugReportDialog err = new BugReportDialog("SADXTweaker2", exception.ToString()))
                 err.ShowDialog(Owner);
         }
     }

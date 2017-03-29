@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
 using SA_Tools;
+using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SADXTweaker2
 {
@@ -108,7 +109,7 @@ namespace SADXTweaker2
 
         private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (BugReportDialog brd = new BugReportDialog())
+            using (BugReportDialog brd = new BugReportDialog("SADXTweaker2", null))
                 brd.ShowDialog(this);
         }
 

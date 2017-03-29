@@ -2629,7 +2629,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (BugReportDialog dlg = new BugReportDialog())
+			using (BugReportDialog dlg = new BugReportDialog("SADXLVL2", null))
 				dlg.ShowDialog(this);
 		}
 

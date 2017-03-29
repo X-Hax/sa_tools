@@ -70,6 +70,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\BugReportDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\BugReportDialog.designer.cs">
+      <DependentUpon>BugReportDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\DuplicateTo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +157,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="UI\BugReportDialog.resx">
+      <DependentUpon>BugReportDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\DefaultLightEditor.resx">
       <DependentUpon>DefaultLightEditor.cs</DependentUpon>
     </EmbeddedResource>
