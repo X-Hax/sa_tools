@@ -631,6 +631,7 @@ namespace SonicRetro.SAModel.SAMDL
 			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 			editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
+			importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 			exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			DrawLevel();
 		}
