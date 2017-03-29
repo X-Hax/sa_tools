@@ -1071,34 +1071,18 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
-			transform.Push();
-			obj.ProcessTransforms(transform);
-
-			if ((obj.Attach != null))
+			if (obj.Attach != null)
 			{
-				BasicAttach basicAttach = new BasicAttach();
-				bool wroteNormals = false;
-
-				if (obj.Attach is BasicAttach)
-				{
-					basicAttach = (BasicAttach)obj.Attach;
-				}
-				if (obj.Attach is ChunkAttach)
-				{
-					objstream.WriteLine("#Error - Chunk Model got sent to Basic writer.");
-					errorFlag = true;
-
-					goto skip_processing;
-				}
+				BasicAttach basicAttach = (BasicAttach)obj.Attach;
 				objstream.WriteLine("g " + obj.Name);
 
 				#region Outputting Verts and Normals
 				for (int vIndx = 0; vIndx < basicAttach.Vertex.Length; vIndx++)
 				{
 					Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
-					Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+					Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform);
 					objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
 				}
 
@@ -1350,13 +1334,6 @@ namespace SonicRetro.SAModel.Direct3D
 				totalVerts += basicAttach.Vertex.Length;
 				totalNorms += basicAttach.Normal.Length;
 			}
-
-		skip_processing:
-			// handle child nodes should they exist.
-			foreach (NJS_OBJECT item in obj.Children)
-				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-
-			transform.Pop();
 		}
 
 		/// <summary>
@@ -1369,11 +1346,8 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromChunkAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromChunkAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
-			transform.Push();
-			obj.ProcessTransforms(transform);
-
 			// add obj writing here
 			if (obj.Attach != null)
 			{
@@ -1403,7 +1377,7 @@ namespace SonicRetro.SAModel.Direct3D
 							if (chunkAttach.Vertex[vc].Flags == 0)
 							{
 								Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
-								Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform.Top);
+								Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform);
 								objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
 
 								outputVertCount++;
@@ -1518,48 +1492,49 @@ namespace SonicRetro.SAModel.Direct3D
 					objstream.WriteLine("#A chunk model with no vertex or no poly was found. Output is definitely corrupt.");
 				}
 			}
-
-			// handle child nodes should they exist.
-			foreach (NJS_OBJECT item in obj.Children)
-				WriteModelAsObj(objstream, item, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-
-			transform.Pop();
 		}
 
-		/// <summary>
-		/// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
-		/// </summary>
-		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
-		/// <param name="obj">Model to export.</param>
-		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
-		/// <param name="transform">Used for calculating transforms.</param>
-		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
-		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
-		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
-		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
-		{
-			if (obj.Attach is BasicAttach)
-			{
-				WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-			}
-			else if (obj.Attach is ChunkAttach)
-			{
-				WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-			}
-			else if (obj.Attach == null) // model is a dummy node
-			{
-				transform.Push();
-				obj.ProcessTransforms(transform);
+        /// <summary>
+        /// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
+        /// </summary>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+        /// <param name="transform">Used for calculating transforms.</param>
+        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
+        public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+        {
+            transform.Push();
+            obj.ProcessTransforms(transform);
+            if (obj.Attach is BasicAttach)
+                WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+            else if (obj.Attach is ChunkAttach)
+                WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+            foreach (NJS_OBJECT child in obj.Children)
+                WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+            transform.Pop();
+        }
 
-				foreach (NJS_OBJECT child in obj.Children)
-					WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+        /// <summary>
+        /// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
+        /// </summary>
+        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
+        /// <param name="obj">Model to export.</param>
+        /// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
+        public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, ref bool errorFlag)
+        {
+            int v = 0, n = 0, u = 0;
+            if (obj.Attach is BasicAttach)
+                WriteObjFromBasicAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
+            else if (obj.Attach is ChunkAttach)
+                WriteObjFromChunkAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
+        }
 
-				transform.Pop();
-			}
-		}
-
-		public static float Distance(this Vector3 vectorA, Vector3 vectorB)
+        public static float Distance(this Vector3 vectorA, Vector3 vectorB)
 		{
 			return Vector3.Length(Vector3.Subtract(vectorA, vectorB));
 		}

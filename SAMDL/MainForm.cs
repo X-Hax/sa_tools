@@ -612,6 +612,8 @@ namespace SonicRetro.SAModel.SAMDL
 				selectedObject = dist.Model;
 				SelectedItemChanged();
 			}
+            if (e.Button == MouseButtons.Right)
+                contextMenuStrip1.Show(panel1, e.Location);
 		}
 
 		internal Type GetAttachType()
@@ -629,58 +631,59 @@ namespace SonicRetro.SAModel.SAMDL
 			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 			editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
+            exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			DrawLevel();
 		}
 
 		private void objToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj"
-			};
-			if (a.ShowDialog() == DialogResult.OK)
-			{
-				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-				{
-					#region Material Exporting
-					string materialPrefix = model.Name;
+            using (SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj"
+            })
+                if (a.ShowDialog() == DialogResult.OK)
+                {
+                    using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                    using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                    {
+                        #region Material Exporting
+                        string materialPrefix = model.Name;
 
-					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+                        objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-					// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-					for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-					{
-						mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-						mtlstream.WriteLine("Ka 1 1 1");
-						mtlstream.WriteLine("Kd 1 1 1");
-						mtlstream.WriteLine("Ks 0 0 0");
-						mtlstream.WriteLine("illum 1");
+                        // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                        // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                        for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
+                        {
+                            mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+                            mtlstream.WriteLine("Ka 1 1 1");
+                            mtlstream.WriteLine("Kd 1 1 1");
+                            mtlstream.WriteLine("Ks 0 0 0");
+                            mtlstream.WriteLine("illum 1");
 
-						if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-						{
-							mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+                            if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
+                            {
+                                mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
 
-							// save texture
-							string mypath = Path.GetDirectoryName(a.FileName);
-							TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-						}
-					}
-					#endregion
+                                // save texture
+                                string mypath = Path.GetDirectoryName(a.FileName);
+                                TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                            }
+                        }
+                        #endregion
 
-					int totalVerts = 0;
-					int totalNorms = 0;
-					int totalUVs = 0;
+                        int totalVerts = 0;
+                        int totalNorms = 0;
+                        int totalUVs = 0;
 
-					bool errorFlag = false;
+                        bool errorFlag = false;
 
-					Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-				}
-			}
+                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+                    }
+                }
 		}
 
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -732,7 +735,55 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 		}
 
-		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj",
+                FileName = selectedObject.Name
+            })
+                if (a.ShowDialog() == DialogResult.OK)
+                {
+                    using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                    using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                    {
+                        #region Material Exporting
+                        string materialPrefix = selectedObject.Name;
+
+                        objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+                        // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                        // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                        for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
+                        {
+                            mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+                            mtlstream.WriteLine("Ka 1 1 1");
+                            mtlstream.WriteLine("Kd 1 1 1");
+                            mtlstream.WriteLine("Ks 0 0 0");
+                            mtlstream.WriteLine("illum 1");
+
+                            if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
+                            {
+                                mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+                                // save texture
+                                string mypath = Path.GetDirectoryName(a.FileName);
+                                TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                            }
+                        }
+                        #endregion
+
+                        bool errorFlag = false;
+
+                        Direct3D.Extensions.WriteSingleModelAsObj(objstream, model, materialPrefix, ref errorFlag);
+
+                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+                    }
+                }
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			DrawLevel();
 		}
@@ -776,5 +827,5 @@ namespace SonicRetro.SAModel.SAMDL
 						MessageBox.Show(this, "Not found.", "SAMDL");
 				}
 		}
-	}
+    }
 }
