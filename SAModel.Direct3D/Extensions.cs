@@ -1076,6 +1076,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (obj.Attach != null)
 			{
 				BasicAttach basicAttach = (BasicAttach)obj.Attach;
+				bool wroteNormals = false;
 				objstream.WriteLine("g " + obj.Name);
 
 				#region Outputting Verts and Normals
