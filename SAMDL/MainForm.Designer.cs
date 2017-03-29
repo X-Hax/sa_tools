@@ -56,6 +56,7 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -295,9 +296,10 @@
             this.copyModelToolStripMenuItem,
             this.pasteModelToolStripMenuItem,
             this.editMaterialsToolStripMenuItem,
+            this.importOBJToolStripMenuItem,
             this.exportOBJToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 136);
             // 
             // exportOBJToolStripMenuItem
             // 
@@ -306,6 +308,14 @@
             this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.exportOBJToolStripMenuItem.Text = "&Export OBJ...";
             this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
+            // 
+            // importOBJToolStripMenuItem
+            // 
+            this.importOBJToolStripMenuItem.Enabled = false;
+            this.importOBJToolStripMenuItem.Name = "importOBJToolStripMenuItem";
+            this.importOBJToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.importOBJToolStripMenuItem.Text = "&Import OBJ...";
+            this.importOBJToolStripMenuItem.Click += new System.EventHandler(this.importOBJToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -364,6 +374,7 @@
 		private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem exportOBJToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importOBJToolStripMenuItem;
     }
 }
 
