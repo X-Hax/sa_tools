@@ -718,13 +718,13 @@ namespace SonicRetro.SAModel.SAMDL
 							}
 						}
 					}
-					foreach (NJS_OBJECT obj in model.GetObjects().Where(a=>a.Attach != null))
+					foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
 						using (StreamWriter objstream = new StreamWriter(Path.Combine(dlg.SelectedPath, obj.Name + ".obj"), false))
 						{
 							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
 							bool errorFlag = false;
 
-							Direct3D.Extensions.WriteSingleModelAsObj(objstream, model, TexturePackName, ref errorFlag);
+							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, TexturePackName, ref errorFlag);
 
 							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 						}
