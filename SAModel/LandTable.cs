@@ -505,14 +505,14 @@ namespace SonicRetro.SAModel
 			}
 			result.Append("LandTable ");
 			result.Append(Name);
-			result.Append(" = { LengthOfArray(");
+			result.Append(" = { LengthOfArray<int16_t>(");
 			result.Append(COLName);
 			result.Append("), ");
 			switch (format)
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					result.Append(Anim.Count > 0 ? "LengthOfArray(" + AnimName + ")" : "0");
+					result.Append(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
 					result.Append(", ");
 					result.Append(Flags.ToCHex());
 					result.Append(", ");

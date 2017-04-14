@@ -268,15 +268,15 @@ namespace SonicRetro.SAModel
 			result.Append(", ");
 			result.Append(Normal != null ? NormalName : "NULL");
 			result.Append(", ");
-			result.Append(Vertex != null ? "LengthOfArray(" + VertexName + ")" : "0");
+			result.Append(Vertex != null ? "LengthOfArray<Sint32>(" + VertexName + ")" : "0");
 			result.Append(", ");
 			result.Append(Mesh != null ? MeshName : "NULL");
 			result.Append(", ");
 			result.Append(Material != null && Material.Count > 0 ? MaterialName : "NULL");
 			result.Append(", ");
-			result.Append(Mesh != null ? "LengthOfArray(" + MeshName + ")" : "0");
+			result.Append(Mesh != null ? "LengthOfArray<Uint16>(" + MeshName + ")" : "0");
 			result.Append(", ");
-			result.Append(Material != null && Material.Count > 0 ? "LengthOfArray(" + MaterialName + ")" : "0");
+			result.Append(Material != null && Material.Count > 0 ? "LengthOfArray<Uint16>(" + MaterialName + ")" : "0");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			if (DX)

@@ -380,7 +380,7 @@ namespace StructConverter
 										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
-										writer.WriteLine("ObjectList {0} = {{ arraylengthandptr({0}_list) }};", name);
+										writer.WriteLine("ObjectList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
 									}
 									break;
 								case "startpos":
@@ -429,7 +429,7 @@ namespace StructConverter
 										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
-										writer.WriteLine("LevelPVMList {0} = {{ {1}, arraylengthandptr({0}_list) }};", name, list.Level.ToC());
+										writer.WriteLine("LevelPVMList {0} = {{ {1}, arraylengthandptrT({0}_list, int16_t) }};", name, list.Level.ToC());
 									}
 									break;
 								case "triallevellist":
@@ -442,7 +442,7 @@ namespace StructConverter
 										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
-										writer.WriteLine("TrialLevelList {0} = {{ arrayptrandlength({0}_list) }};", name);
+										writer.WriteLine("TrialLevelList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
 										initlines.Add(string.Format("*(TrialLevelList*)0x{0:X} = {1};", data.Address + imagebase, name));
 									}
 									break;
@@ -480,7 +480,7 @@ namespace StructConverter
 										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
-										writer.WriteLine("SoundTestCategory {0} = {{ arrayptrandlength({0}_list) }};", name);
+										writer.WriteLine("SoundTestCategory {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
 										initlines.Add(string.Format("*(SoundTestCategory*)0x{0:X} = {1};", data.Address + imagebase, name));
 									}
 									break;
@@ -506,7 +506,7 @@ namespace StructConverter
 										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
-										writer.WriteLine("SoundList {0} = {{ arraylengthandptr({0}_list) }};", name);
+										writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
 										initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
 									}
 									break;
@@ -573,7 +573,7 @@ namespace StructConverter
 											for (int j = 0; j < texts.Length; j++)
 											{
 												RecapScreen scr = texts[j][l];
-												objs.Add(string.Format("{{ {0}, arraylengthandptr({1}_{2}_{3}_Text) }}",
+												objs.Add(string.Format("{{ {0}, arraylengthandptrT({1}_{2}_{3}_Text, int) }}",
 													SA_Tools.HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
 											}
 											writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
@@ -809,7 +809,7 @@ namespace StructConverter
 												writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 												writer.WriteLine("};");
 												writer.WriteLine();
-												writer.WriteLine("LoopHead {0}_{1}_{2} = {{ {3}, LengthOfArray({0}_{1}_{2}_Entries), {4}, {0}_{1}_{2}_Entries, (ObjectFuncPtr){5} }};",
+												writer.WriteLine("LoopHead {0}_{1}_{2} = {{ {3}, LengthOfArray<int16_t>({0}_{1}_{2}_Entries), {4}, {0}_{1}_{2}_Entries, (ObjectFuncPtr){5} }};",
 													name, level.ToString().MakeIdentifier(), i, paths[i].Unknown,
 													HelperFunctions.ToC(paths[i].TotalDistance),
 													HelperFunctions.ToCHex(paths[i].Code));
@@ -885,7 +885,7 @@ namespace StructConverter
 						writer.WriteLine("{");
 						if (pointers.Count > 0)
 						{
-							writer.WriteLine("\t__declspec(dllexport) PointerList Pointers = { arrayptrandlength(pointers) };");
+							writer.WriteLine("\t__declspec(dllexport) PointerList Pointers = { arrayptrandlengthT(pointers, int) };");
 							writer.WriteLine();
 						}
 						if (initlines.Count > 0)

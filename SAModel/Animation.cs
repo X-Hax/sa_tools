@@ -384,21 +384,21 @@ namespace SonicRetro.SAModel
 				if (hasPos)
 				{
 					if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-						elems.Add(string.Format("LengthOfArray({0}_{1}_pos)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_pos)", id, i));
 					else
 						elems.Add("0");
 				}
 				if (hasRot)
 				{
 					if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-						elems.Add(string.Format("LengthOfArray({0}_{1}_rot)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_rot)", id, i));
 					else
 						elems.Add("0");
 				}
 				if (hasScl)
 				{
 					if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-						elems.Add(string.Format("LengthOfArray({0}_{1}_scl)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_scl)", id, i));
 					else
 						elems.Add("0");
 				}
