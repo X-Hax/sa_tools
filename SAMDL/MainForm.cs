@@ -836,7 +836,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 						bool errorFlag = false;
 
-						Direct3D.Extensions.WriteSingleModelAsObj(objstream, model, materialPrefix, ref errorFlag);
+						Direct3D.Extensions.WriteSingleModelAsObj(objstream, selectedObject, materialPrefix, ref errorFlag);
 
 						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 					}
