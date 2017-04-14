@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using System.IO;
+using System.Globalization;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -664,9 +665,9 @@ namespace SonicRetro.SAModel.Direct3D
 
 								case "kd":
 									lastMaterial.DiffuseColor = Color.FromArgb(
-										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
-										(int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255),
-										(int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[2], CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[3], CultureInfo.InvariantCulture) * 255));
 									break;
 
 								case "map_ka":
@@ -706,27 +707,27 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "ke":
-									lastMaterial.Exponent = float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+									lastMaterial.Exponent = float.Parse(mlin[1], CultureInfo.InvariantCulture);
 									break;
 
 								case "d":
 								case "tr":
 									lastMaterial.DiffuseColor = Color.FromArgb(
-										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
 										lastMaterial.DiffuseColor);
 									break;
 
 								case "ks":
 									lastMaterial.SpecularColor = Color.FromArgb(
-										(int)Math.Round(float.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture) * 255),
-										(int)Math.Round(float.Parse(mlin[2], System.Globalization.CultureInfo.InvariantCulture) * 255),
-										(int)Math.Round(float.Parse(mlin[3], System.Globalization.CultureInfo.InvariantCulture) * 255));
+										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[2], CultureInfo.InvariantCulture) * 255),
+										(int)Math.Round(float.Parse(mlin[3], CultureInfo.InvariantCulture) * 255));
 									break;
 
 								case "texid":
 									if (!textureIdAssigned)
 									{
-										int textureID = int.Parse(mlin[1], System.Globalization.CultureInfo.InvariantCulture);
+										int textureID = int.Parse(mlin[1], CultureInfo.InvariantCulture);
 										lastMaterial.TextureID = textureID;
 										lastTextureId = textureID;
 										textureIdAssigned = true;
@@ -787,30 +788,30 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case "v":
-						verts.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture),
-							float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture),
-							float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+						verts.Add(new Vertex(float.Parse(lin[1], CultureInfo.InvariantCulture),
+							float.Parse(lin[2], CultureInfo.InvariantCulture),
+							float.Parse(lin[3], CultureInfo.InvariantCulture)));
 						break;
 
 					case "vn":
-						norms.Add(new Vertex(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture),
-							float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture),
-							float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)));
+						norms.Add(new Vertex(float.Parse(lin[1], CultureInfo.InvariantCulture),
+							float.Parse(lin[2], CultureInfo.InvariantCulture),
+							float.Parse(lin[3], CultureInfo.InvariantCulture)));
 						break;
 
 					case "vt":
 						uvs.Add(new UV
 						{
-							U = float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture) * -1,
-							V = float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture) * -1
+							U = float.Parse(lin[1], CultureInfo.InvariantCulture) * -1,
+							V = float.Parse(lin[2], CultureInfo.InvariantCulture) * -1
 						});
 						break;
 
 					case "vc":
-						vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], System.Globalization.CultureInfo.InvariantCulture)),
-							(int)Math.Round(float.Parse(lin[2], System.Globalization.CultureInfo.InvariantCulture)),
-							(int)Math.Round(float.Parse(lin[3], System.Globalization.CultureInfo.InvariantCulture)),
-							(int)Math.Round(float.Parse(lin[4], System.Globalization.CultureInfo.InvariantCulture))));
+						vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[2], CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[3], CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[4], CultureInfo.InvariantCulture))));
 						break;
 
 					case "usemtl":
@@ -1084,14 +1085,14 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
 					Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform);
-					objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
+					objstream.WriteLine("v {0} {1} {2}", outputVert.X.ToString(NumberFormatInfo.InvariantInfo), outputVert.Y.ToString(NumberFormatInfo.InvariantInfo), outputVert.Z.ToString(NumberFormatInfo.InvariantInfo));
 				}
 
 				if (basicAttach.Vertex.Length == basicAttach.Normal.Length)
 				{
 					for (int vnIndx = 0; vnIndx < basicAttach.Normal.Length; vnIndx++)
 					{
-						objstream.WriteLine("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X, basicAttach.Normal[vnIndx].Y, basicAttach.Normal[vnIndx].Z);
+						objstream.WriteLine("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X.ToString(NumberFormatInfo.InvariantInfo), basicAttach.Normal[vnIndx].Y.ToString(NumberFormatInfo.InvariantInfo), basicAttach.Normal[vnIndx].Z.ToString(NumberFormatInfo.InvariantInfo));
 					}
 					wroteNormals = true;
 				}
@@ -1112,7 +1113,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						for (int uvIndx = 0; uvIndx < basicAttach.Mesh[meshIndx].UV.Length; uvIndx++)
 						{
-							objstream.WriteLine("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U, basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1);
+							objstream.WriteLine("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U.ToString(NumberFormatInfo.InvariantInfo), (basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1).ToString(NumberFormatInfo.InvariantInfo));
 						}
 					}
 
@@ -1379,7 +1380,7 @@ namespace SonicRetro.SAModel.Direct3D
 							{
 								Vector3 inputVert = new Vector3(chunkAttach.Vertex[vc].Vertices[vIndx].X, chunkAttach.Vertex[vc].Vertices[vIndx].Y, chunkAttach.Vertex[vc].Vertices[vIndx].Z);
 								Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform);
-								objstream.WriteLine("v {0} {1} {2}", outputVert.X, outputVert.Y, outputVert.Z);
+								objstream.WriteLine("v {0} {1} {2}", outputVert.X.ToString(NumberFormatInfo.InvariantInfo), outputVert.Y.ToString(NumberFormatInfo.InvariantInfo), outputVert.Z.ToString(NumberFormatInfo.InvariantInfo));
 
 								outputVertCount++;
 							}
@@ -1392,7 +1393,7 @@ namespace SonicRetro.SAModel.Direct3D
 								for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
 								{
 									objstream.WriteLine("vn {0} {1} {2}",
-										chunkAttach.Vertex[vc].Normals[vnIndx].X, chunkAttach.Vertex[vc].Normals[vnIndx].Y, chunkAttach.Vertex[vc].Normals[vnIndx].Z);
+										chunkAttach.Vertex[vc].Normals[vnIndx].X.ToString(NumberFormatInfo.InvariantInfo), chunkAttach.Vertex[vc].Normals[vnIndx].Y.ToString(NumberFormatInfo.InvariantInfo), chunkAttach.Vertex[vc].Normals[vnIndx].Z.ToString(NumberFormatInfo.InvariantInfo));
 									outputNormalCount++;
 								}
 							}
@@ -1420,7 +1421,7 @@ namespace SonicRetro.SAModel.Direct3D
 										uvsAreValid = true;
 										for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
 										{
-											objstream.WriteLine("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U, chunkStrip.Strips[stripNum].UVs[uvIndx].V);
+											objstream.WriteLine("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U.ToString(NumberFormatInfo.InvariantInfo), chunkStrip.Strips[stripNum].UVs[uvIndx].V.ToString(NumberFormatInfo.InvariantInfo));
 										}
 									}
 								}
