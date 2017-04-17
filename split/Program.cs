@@ -36,6 +36,15 @@ namespace split
 			}
 			byte[] datafile = File.ReadAllBytes(datafilename);
 			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+			if (inifile.MD5 != null)
+			{
+				string datahash = HelperFunctions.FileHash(datafile);
+				if (!inifile.MD5.Any(h => h.Equals(datahash, StringComparison.OrdinalIgnoreCase)))
+				{
+					Console.WriteLine("The file {0} is not valid for use with the INI {1}.", datafilename, inifilename);
+					return;
+				}
+			}
 			SA_Tools.ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 			if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);

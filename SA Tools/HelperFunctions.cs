@@ -171,17 +171,19 @@ namespace SA_Tools
         }
 
         static readonly System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-        public static string FileHash(string path)
-        {
-            byte[] file = File.ReadAllBytes(path);
-            file = md5.ComputeHash(file);
-            string result = string.Empty;
-            foreach (byte item in file)
-                result += item.ToString("x2");
-            return result;
-        }
 
-        private static readonly Encoding jpenc = Encoding.GetEncoding(932);
+		public static string FileHash(string path) { return FileHash(File.ReadAllBytes(path)); }
+
+		public static string FileHash(byte[] file)
+		{
+			file = md5.ComputeHash(file);
+			string result = string.Empty;
+			foreach (byte item in file)
+				result += item.ToString("x2");
+			return result;
+		}
+
+		private static readonly Encoding jpenc = Encoding.GetEncoding(932);
         private static readonly Encoding euenc = Encoding.GetEncoding(1252);
 
         public static Encoding GetEncoding() { return jpenc; }

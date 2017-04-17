@@ -21,6 +21,8 @@ namespace SA_Tools
         [IniName("game")]
         [DefaultValue(Game.SADX)]
         public Game Game { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+		public List<string> MD5 { get; set; }
 		[IniName("masterobjlist")]
 		public string MasterObjectList { get; set; }
         [IniName("systemfolder")]
