@@ -36,7 +36,7 @@ namespace split
 			}
 			byte[] datafile = File.ReadAllBytes(datafilename);
 			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-			if (inifile.MD5 != null)
+			if (inifile.MD5 != null && inifile.MD5.Count > 0)
 			{
 				string datahash = HelperFunctions.FileHash(datafile);
 				if (!inifile.MD5.Any(h => h.Equals(datahash, StringComparison.OrdinalIgnoreCase)))
