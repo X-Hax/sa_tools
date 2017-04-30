@@ -121,6 +121,7 @@ namespace SonicRetro.SAModel.SAMDL
 				byte[] file = File.ReadAllBytes(filename);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
+				SA_Tools.ByteConverter.BigEndian = false;
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
 				if (baseaddr.HasValue)
 				{
@@ -132,6 +133,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
+					SA_Tools.ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
 					modelinfo.numericUpDown2.Value = 0;
 					modelinfo.numericUpDown2.Enabled = false;
