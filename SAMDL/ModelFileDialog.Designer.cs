@@ -78,6 +78,9 @@ namespace SonicRetro.SAModel.SAMDL
             "1st_read.bin",
             "SA1 Level",
             "SA2 Level",
+            "SA1 Event File",
+            "SA2 Event File",
+            "SA2PC Event File",
             "Model File"});
 			this.ComboBox1.Location = new System.Drawing.Point(150, 12);
 			this.ComboBox1.Name = "ComboBox1";

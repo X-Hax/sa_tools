@@ -39,7 +39,16 @@ namespace SonicRetro.SAModel.SAMDL
                 case 4:
                     numericUpDown2.Value = 0x8C500000u;
                     break;
-                case 5:
+				case 5:
+					numericUpDown2.Value = 0xCB80000u;
+					break;
+				case 6:
+					numericUpDown2.Value = 0xC600000u;
+					break;
+				case 7:
+					numericUpDown2.Value = 0x8125FE60u;
+					break;
+				case 8:
                     numericUpDown2.Value = 0u;
                     break;
             }
