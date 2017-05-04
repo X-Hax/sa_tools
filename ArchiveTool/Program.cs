@@ -30,7 +30,7 @@ namespace ArchiveTool
             String filePath = args[0];
             directoryName = Path.GetDirectoryName(filePath);
             string extension = Path.GetExtension(filePath);
-            if (extension == ".txt" || extension == ".TXT")
+            if (extension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
             {
                 string archiveName = Path.GetFileNameWithoutExtension(filePath);
                 if (File.Exists(filePath))
@@ -61,7 +61,7 @@ namespace ArchiveTool
                     return;
                 }
             }
-            if (extension == ".pvm" || extension == ".PVM")
+            if (extension.Equals(".pvm", StringComparison.OrdinalIgnoreCase))
             {
                 Queue<string> files = new Queue<string>(args);
                 while (files.Count > 0)
