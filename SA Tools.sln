@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVM2TexPack", "PVM2TexPack\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SETCodeGenerator", "SETCodeGenerator\SETCodeGenerator.csproj", "{948C5C71-C47F-4129-9E01-7F04071863F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTool", "ArchiveTool\ArchiveTool.csproj", "{ABE90887-11AC-4FDE-B58A-1841BEA128B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -435,6 +437,18 @@ Global
 		{948C5C71-C47F-4129-9E01-7F04071863F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{948C5C71-C47F-4129-9E01-7F04071863F4}.Release|x86.ActiveCfg = Release|Any CPU
 		{948C5C71-C47F-4129-9E01-7F04071863F4}.Release|x86.Build.0 = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Debug|x86.Build.0 = Debug|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABE90887-11AC-4FDE-B58A-1841BEA128B3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
