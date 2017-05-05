@@ -1,115 +1,102 @@
-﻿using System;
+﻿using PuyoTools.Modules.Archive;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using PuyoTools.Modules.Archive;
-using VrSharp;
-using VrSharp.PvrTexture;
+using System.Linq;
 
 namespace ArchiveTool
 {
-    class Program
-    {
-        static bool AddTexture(string path, string filename, Stream data, TextWriter index)
-        {
-            index.WriteLine("{0}", Path.GetFileName(filename));
-            return true;
-        }
-        static void Main(string[] args)
-        {
-            string directoryName;
-            List<String> textureNames = new List<String>();
-            List<PvrTexture> finalTextureList = new List<PvrTexture>();
-
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Error - please specify a texture list (.txt) or a PVM archive (.pvm)");
-                Console.WriteLine("Press ENTER to continue...");
-                Console.ReadLine();
-                return;
-            }
-            String filePath = args[0];
-            directoryName = Path.GetDirectoryName(filePath);
-            string extension = Path.GetExtension(filePath);
-            if (extension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
-            {
-                string archiveName = Path.GetFileNameWithoutExtension(filePath);
-                if (File.Exists(filePath))
-                {
-                    StreamReader texlistStream = File.OpenText(filePath);
-
-                    while (!texlistStream.EndOfStream)
-                        textureNames.Add(texlistStream.ReadLine());
-                    PvmArchive pvmArchive = new PvmArchive();
-                    Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ".pvm"), FileMode.Create);
-                    PvmArchiveWriter pvmWriter = (PvmArchiveWriter)pvmArchive.Create(pvmStream);
-                    // Reading in textures
-                    for (uint imgIndx = 0; imgIndx < textureNames.Count; imgIndx++)
-                    {
-                        string texturePath = Path.Combine(directoryName, Path.ChangeExtension(textureNames[(int)imgIndx], ".pvr"));
-                        pvmWriter.CreateEntryFromFile(texturePath);
-                    }
-                    pvmWriter.Flush();
-                    pvmStream.Close();
-                    Console.WriteLine("PVM was compiled successfully!");
-                    return;
-                }
-                else // error, supplied path is invalid
-                {
-                    Console.WriteLine("Supplied texture list/PVM does not exist!");
-                    Console.WriteLine("Press ENTER to continue...");
-                    Console.ReadLine();
-                    return;
-                }
-            }
-            if (extension.Equals(".pvm", StringComparison.OrdinalIgnoreCase))
-            {
-                Queue<string> files = new Queue<string>(args);
-                while (files.Count > 0)
-                {
-                    string filename = files.Dequeue();
-                    string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-                    Directory.CreateDirectory(path);
-                    byte[] filedata = File.ReadAllBytes(filename);
-                    using (TextWriter texList = File.CreateText(Path.Combine(path, Path.ChangeExtension(filename, ".txt"))))
-                    {
-                        try
-                        {
-                            if (PvrTexture.Is(filedata))
-                            {
-                                if (!AddTexture(path, Path.GetFileName(filename), new MemoryStream(filedata), texList))
-                                {
-                                    texList.Close();
-                                    Directory.Delete(path, true);
-                                }
-                                continue;
-                            }
-                            ArchiveBase pvmfile = null;
-                            byte[] pvmdata = File.ReadAllBytes(filename);
-                            pvmfile = new PvmArchive();
-                            ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
-                            bool fail = false;
-                            foreach (ArchiveEntry file in pvmentries)
-                                if (!AddTexture(path, file.Name, file.Open(), texList))
-                                {
-                                    texList.Close();
-                                    Directory.Delete(path, true);
-                                    fail = true;
-                                    break;
-                                }
-                                else pvmfile.Open(pvmdata).ExtractToFile(file, Path.Combine(path, file.Name));
-                            if (fail)
-                                continue;
-                        }
-                        catch
-                        {
-                            Console.WriteLine("Exception thrown. Canceling conversion.");
-                            Directory.Delete(path, true);
-                            throw;
-                        }
-                        Console.WriteLine("Archive extracted!");
-                    }
-                }
-            }
-        }
-    }
+	static class Program
+	{
+		static void Main(string[] args)
+		{
+			if (args.Length == 0)
+			{
+				Console.WriteLine("Error - please specify a texture list (.txt), a PVM archive (.pvm), or a GVM archive (.gvm).");
+				Console.WriteLine("Press ENTER to continue...");
+				Console.ReadLine();
+				return;
+			}
+			string filePath = args[0];
+			string directoryName = Path.GetDirectoryName(filePath);
+			string extension = Path.GetExtension(filePath).ToLowerInvariant();
+			switch (extension)
+			{
+				case ".txt":
+					string archiveName = Path.GetFileNameWithoutExtension(filePath);
+					if (File.Exists(filePath))
+					{
+						List<string> textureNames = new List<string>(File.ReadAllLines(filePath).Where(a => !string.IsNullOrEmpty(a)));
+						ArchiveBase pvmArchive;
+						string ext = Path.GetExtension(textureNames[0]).ToLowerInvariant();
+						if (!textureNames.All(a => a.Equals(ext, StringComparison.OrdinalIgnoreCase)))
+						{
+							Console.WriteLine("Cannot create archive from mixed file types.");
+							return;
+						}
+						switch (ext)
+						{
+							case ".pvr":
+								pvmArchive = new PvmArchive();
+								break;
+							case ".gvr":
+								pvmArchive = new GvmArchive();
+								break;
+							default:
+								Console.WriteLine("Unknown file type \"{0}\".", ext);
+								return;
+						}
+						using (Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ".pvm"), FileMode.Create))
+						{
+							ArchiveWriter pvmWriter = pvmArchive.Create(pvmStream);
+							// Reading in textures
+							foreach (string tex in textureNames)
+								pvmWriter.CreateEntryFromFile(Path.Combine(directoryName, Path.ChangeExtension(tex, ".pvr")));
+							pvmWriter.Flush();
+						}
+						Console.WriteLine("PVM was compiled successfully!");
+					}
+					else // error, supplied path is invalid
+					{
+						Console.WriteLine("Supplied texture list/PVM does not exist!");
+						Console.WriteLine("Press ENTER to continue...");
+						Console.ReadLine();
+					}
+					break;
+				case ".pvm":
+				case ".gvm":
+					string path = Path.Combine(directoryName, Path.GetFileNameWithoutExtension(filePath));
+					Directory.CreateDirectory(path);
+					byte[] filedata = File.ReadAllBytes(filePath);
+					using (TextWriter texList = File.CreateText(Path.Combine(path, Path.ChangeExtension(filePath, ".txt"))))
+					{
+						try
+						{
+							ArchiveBase pvmfile = null;
+							byte[] pvmdata = File.ReadAllBytes(filePath);
+							pvmfile = new PvmArchive();
+							if (!pvmfile.Is(pvmdata, filePath))
+								pvmfile = new GvmArchive();
+							ArchiveReader pvmReader = pvmfile.Open(pvmdata);
+							foreach (ArchiveEntry file in pvmReader.Entries)
+							{
+								texList.WriteLine(file.Name);
+								pvmReader.ExtractToFile(file, Path.Combine(path, file.Name));
+							}
+							Console.WriteLine("Archive extracted!");
+						}
+						catch
+						{
+							Console.WriteLine("Exception thrown. Canceling conversion.");
+							Directory.Delete(path, true);
+							throw;
+						}
+					}
+					break;
+				default:
+					Console.WriteLine("Unknown extension \"{0}\".", extension);
+					break;
+			}
+		}
+	}
 }
