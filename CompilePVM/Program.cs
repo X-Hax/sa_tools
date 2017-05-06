@@ -12,7 +12,9 @@ namespace CompilePVM
 		static void Main(string[] args)
 		{
 			string directoryName;
-			UInt32 startingGBIX = 0;
+			string FullLine;
+			string texturename;
+			UInt32 GBIX = 0;
 			List<String> textureNames = new List<String>();
 			List<PvrTexture> finalTextureList = new List<PvrTexture>();
 
@@ -23,7 +25,6 @@ namespace CompilePVM
 				Console.ReadLine();
 				return;
 			}
-
 			String filePath = args[0];
 			directoryName = Path.GetDirectoryName(filePath);
 			string archiveName = Path.GetFileNameWithoutExtension(filePath);
@@ -31,23 +32,24 @@ namespace CompilePVM
 			if (File.Exists(filePath))
 			{
 				StreamReader texlistStream = File.OpenText(filePath);
-
-				startingGBIX = UInt32.Parse(texlistStream.ReadLine());
-
 				while (!texlistStream.EndOfStream)
-					textureNames.Add(texlistStream.ReadLine());
-
+				textureNames.Add(texlistStream.ReadLine());
 				PvmArchive pvmArchive = new PvmArchive();
 				Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ".pvm"), FileMode.Create);
 				PvmArchiveWriter pvmWriter = (PvmArchiveWriter)pvmArchive.Create(pvmStream);
-
 				// Reading in textures
 				for (uint imgIndx = 0; imgIndx < textureNames.Count; imgIndx++)
 				{
+					FullLine = textureNames[(int)imgIndx];
+					if (string.IsNullOrEmpty(FullLine)) continue;
+					String[] substrings = FullLine.Split(',');
+					GBIX = UInt32.Parse(substrings[0]);
+					texturename = substrings[1];
 					Bitmap tempTexture = new Bitmap(8, 8);
-					string texturePath = Path.Combine(directoryName, Path.ChangeExtension(textureNames[(int)imgIndx], ".png"));
+					string texturePath = Path.Combine(directoryName, Path.ChangeExtension(texturename, ".png"));
 					if (File.Exists(texturePath))
 					{
+						Console.WriteLine("Adding texture:" + (texturePath));
 						tempTexture = (Bitmap)Bitmap.FromFile(texturePath);
 						tempTexture = tempTexture.Clone(new Rectangle(Point.Empty, tempTexture.Size), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 					}
@@ -88,7 +90,7 @@ namespace CompilePVM
 					if (tempTexture.Width == tempTexture.Height)
 						pdf = PvrDataFormat.SquareTwiddled;
 					PvrTextureEncoder encoder = new PvrTextureEncoder(tempTexture, ppf, pdf);
-					encoder.GlobalIndex = startingGBIX + imgIndx;
+					encoder.GlobalIndex = GBIX;
 					string pvrPath = Path.ChangeExtension(texturePath, ".pvr");
 					encoder.Save(pvrPath);
 
@@ -97,7 +99,6 @@ namespace CompilePVM
 
 				pvmWriter.Flush();
 				pvmStream.Close();
-
 				Console.WriteLine("PVM was compiled successfully!");
 				Console.WriteLine("Press ENTER to continue...");
 				Console.ReadLine();
