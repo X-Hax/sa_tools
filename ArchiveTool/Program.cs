@@ -1,8 +1,8 @@
-﻿using PuyoTools.Modules.Archive;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PuyoTools.Modules.Archive;
 
 namespace ArchiveTool
 {
@@ -29,7 +29,7 @@ namespace ArchiveTool
 						List<string> textureNames = new List<string>(File.ReadAllLines(filePath).Where(a => !string.IsNullOrEmpty(a)));
 						ArchiveBase pvmArchive;
 						string ext = Path.GetExtension(textureNames[0]).ToLowerInvariant();
-						if (!textureNames.All(a => a.Equals(ext, StringComparison.OrdinalIgnoreCase)))
+						if (textureNames.Any(a => !Path.GetExtension(a).Equals(ext, StringComparison.OrdinalIgnoreCase)))
 						{
 							Console.WriteLine("Cannot create archive from mixed file types.");
 							return;
