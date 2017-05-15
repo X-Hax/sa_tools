@@ -143,35 +143,38 @@ namespace DLLModGenerator
 						writer.WriteLine();
 						List<string> labels = new List<string>();
 						foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
+						{
 							switch (item.Value.Type)
 							{
 								case "landtable":
 									LandTable tbl = LandTable.LoadFromFile(item.Key);
-									writer.WriteLine(tbl.ToStructVariables(landfmt, new List<string>()));
+									tbl.ToStructVariables(writer, landfmt, new List<string>());
 									labels.AddRange(tbl.GetLabels());
 									break;
 								case "model":
-									SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(item.Key).Model;
-									writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
+									NJS_OBJECT mdl = new ModelFile(item.Key).Model;
+									mdl.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, new List<string>());
 									labels.AddRange(mdl.GetLabels());
 									break;
 								case "basicmodel":
 								case "chunkmodel":
 									mdl = new ModelFile(item.Key).Model;
-									writer.WriteLine(mdl.ToStructVariables(false, new List<string>()));
+									mdl.ToStructVariables(writer, false, new List<string>());
 									labels.AddRange(mdl.GetLabels());
 									break;
 								case "basicdxmodel":
 									mdl = new ModelFile(item.Key).Model;
-									writer.WriteLine(mdl.ToStructVariables(true, new List<string>()));
+									mdl.ToStructVariables(writer, true, new List<string>());
 									labels.AddRange(mdl.GetLabels());
 									break;
 								case "animation":
 									Animation ani = Animation.Load(item.Key);
-									writer.WriteLine(ani.ToStructVariables());
+									ani.ToStructVariables(writer);
 									labels.Add(ani.Name);
 									break;
 							}
+							writer.WriteLine();
+						}
 						writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 						writer.WriteLine("{");
 						writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
@@ -212,7 +215,7 @@ namespace DLLModGenerator
 							case "basicmodel":
 							case "chunkmodel":
 							case "basicdxmodel":
-								SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(item.Key).Model;
+								NJS_OBJECT mdl = new ModelFile(item.Key).Model;
 								labels.AddRange(mdl.GetLabels());
 								break;
 							case "animation":
@@ -254,13 +257,13 @@ namespace DLLModGenerator
 			return labels;
 		}
 
-		internal static List<string> GetLabels(this SonicRetro.SAModel.NJS_OBJECT obj)
+		internal static List<string> GetLabels(this NJS_OBJECT obj)
 		{
 			List<string> labels = new List<string>() { obj.Name };
 			if (obj.Attach != null)
 				labels.AddRange(obj.Attach.GetLabels());
 			if (obj.Children != null)
-				foreach (SonicRetro.SAModel.NJS_OBJECT o in obj.Children)
+				foreach (NJS_OBJECT o in obj.Children)
 					labels.AddRange(o.GetLabels());
 			return labels;
 		}

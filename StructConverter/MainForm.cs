@@ -333,36 +333,37 @@ namespace StructConverter
 								case "landtable":
 									LandTable tbl = LandTable.LoadFromFile(data.Filename);
 									name = tbl.Name;
-									writer.WriteLine(tbl.ToStructVariables(landfmt, new List<string>()));
+									tbl.ToStructVariables(writer, landfmt, new List<string>());
 									break;
 								case "model":
-									SonicRetro.SAModel.NJS_OBJECT mdl = new ModelFile(data.Filename).Model;
+									NJS_OBJECT mdl = new ModelFile(data.Filename).Model;
 									name = mdl.Name;
-									writer.WriteLine(mdl.ToStructVariables(modelfmt == ModelFormat.BasicDX, new List<string>()));
+									mdl.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, new List<string>());
 									models.Add(item.Key, mdl.Name);
 									break;
 								case "basicmodel":
-									mdl = new SonicRetro.SAModel.ModelFile(data.Filename).Model;
+									mdl = new ModelFile(data.Filename).Model;
 									name = mdl.Name;
-									writer.WriteLine(mdl.ToStructVariables(false, new List<string>()));
+									mdl.ToStructVariables(writer, false, new List<string>());
 									models.Add(item.Key, mdl.Name);
 									break;
 								case "basicdxmodel":
-									mdl = new SonicRetro.SAModel.ModelFile(data.Filename).Model;
+									mdl = new ModelFile(data.Filename).Model;
 									name = mdl.Name;
-									writer.WriteLine(mdl.ToStructVariables(true, new List<string>()));
+									mdl.ToStructVariables(writer, true, new List<string>());
 									models.Add(item.Key, mdl.Name);
 									break;
 								case "chunkmodel":
-									mdl = new SonicRetro.SAModel.ModelFile(data.Filename).Model;
+									mdl = new ModelFile(data.Filename).Model;
 									name = mdl.Name;
-									writer.WriteLine(mdl.ToStructVariables(false, new List<string>()));
+									mdl.ToStructVariables(writer, false, new List<string>());
 									models.Add(item.Key, mdl.Name);
 									break;
 								case "action":
 									Animation ani = Animation.Load(data.Filename);
 									name = "action_" + ani.Name.MakeIdentifier();
-									writer.WriteLine(ani.ToStructVariables());
+									ani.ToStructVariables(writer);
+									writer.WriteLine();
 									writer.WriteLine("NJS_ACTION {0} = {{ &{1}, &{2} }};", name, models[data.CustomProperties["model"]], ani.Name.MakeIdentifier());
 									break;
 								case "animation":
@@ -574,7 +575,7 @@ namespace StructConverter
 											{
 												RecapScreen scr = texts[j][l];
 												objs.Add(string.Format("{{ {0}, arraylengthandptrT({1}_{2}_{3}_Text, int) }}",
-													SA_Tools.HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
+													HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
 											}
 											writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 											writer.WriteLine("};");
@@ -705,9 +706,10 @@ namespace StructConverter
 										List<string> objs = new List<string>();
 										for (int j = 0; j < list.Length; j++)
 										{
-											SonicRetro.SAModel.NJS_OBJECT obj = new ModelFile(Path.Combine(path,
+											NJS_OBJECT obj = new ModelFile(Path.Combine(path,
 												j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl")).Model;
-											writer.WriteLine(obj.ToStructVariables(modelfmt == ModelFormat.BasicDX, objs));
+											obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
+											writer.WriteLine();
 											mdls.Add(obj.Name);
 											objs.Clear();
 										}

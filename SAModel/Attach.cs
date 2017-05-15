@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SonicRetro.SAModel
 {
@@ -77,11 +78,15 @@ namespace SonicRetro.SAModel
 
 		public abstract string ToStruct(bool DX);
 
-		public abstract string ToStructVariables(bool DX, List<string> labels, string[] textures);
+		public abstract void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null);
 
-		public string ToStructVariables(bool DX, List<string> labels)
+		public string ToStructVariables(bool DX, List<string> labels, string[] textures = null)
 		{
-			return ToStructVariables(DX, labels, null);
+			using (StringWriter sw = new StringWriter())
+			{
+				ToStructVariables(sw, DX, labels, textures);
+				return sw.ToString();
+			}
 		}
 
 		public abstract void ProcessVertexData();

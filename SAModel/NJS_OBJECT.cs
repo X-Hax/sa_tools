@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using Collada141;
+using System.IO;
 
 namespace SonicRetro.SAModel
 {
@@ -718,35 +719,39 @@ namespace SonicRetro.SAModel
 			return result.ToString();
 		}
 
-		public string ToStructVariables(bool DX, List<string> labels, string[] textures)
+		public void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
-			StringBuilder result = new StringBuilder();
 			for (int i = Children.Count - 1; i >= 0; i--)
 			{
 				if (!labels.Contains(Children[i].Name))
 				{
 					labels.Add(Children[i].Name);
-					result.AppendLine(Children[i].ToStructVariables(DX, labels, textures));
+					Children[i].ToStructVariables(writer, DX, labels, textures);
+					writer.WriteLine();
 				}
 			}
 			if (Attach != null && !labels.Contains(Attach.Name))
 			{
 				labels.Add(Attach.Name);
-				result.AppendLine(Attach.ToStructVariables(DX, labels, textures));
+				Attach.ToStructVariables(writer, DX, labels, textures);
+				writer.WriteLine();
 			}
-			result.Append("NJS_OBJECT ");
-			result.Append(Name);
-			result.Append(" = ");
-			result.Append(ToStruct());
-			result.AppendLine(";");
-			return result.ToString();
+			writer.Write("NJS_OBJECT ");
+			writer.Write(Name);
+			writer.Write(" = ");
+			writer.Write(ToStruct());
+			writer.WriteLine(";");
 		}
 
-		public string ToStructVariables(bool DX, List<string> labels)
+		public string ToStructVariables(bool DX, List<string> labels, string[] textures = null)
 		{
-			return ToStructVariables(DX, labels, null);
+			using (StringWriter sw = new StringWriter())
+			{
+				ToStructVariables(sw, DX, labels, textures);
+				return sw.ToString();
+			}
 		}
 	}
 }

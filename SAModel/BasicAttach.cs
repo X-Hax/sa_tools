@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 
 namespace SonicRetro.SAModel
@@ -285,21 +286,20 @@ namespace SonicRetro.SAModel
 			return result.ToString();
 		}
 
-		public override string ToStructVariables(bool DX, List<string> labels, string[] textures)
+		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures)
 		{
-			StringBuilder result = new StringBuilder();
 			if (Material != null && Material.Count > 0 && !labels.Contains(MaterialName))
 			{
 				labels.Add(MaterialName);
-				result.Append("NJS_MATERIAL ");
-				result.Append(MaterialName);
-				result.AppendLine("[] = {");
+				writer.Write("NJS_MATERIAL ");
+				writer.Write(MaterialName);
+				writer.WriteLine("[] = {");
 				List<string> mtls = new List<string>(Material.Count);
 				foreach (NJS_MATERIAL item in Material)
 					mtls.Add(item.ToStruct(textures));
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
 			if (!labels.Contains(MeshName))
 			{
@@ -308,15 +308,15 @@ namespace SonicRetro.SAModel
 					if (!labels.Contains(Mesh[i].PolyName))
 					{
 						labels.Add(Mesh[i].PolyName);
-						result.Append("Sint16 ");
-						result.Append(Mesh[i].PolyName);
-						result.AppendLine("[] = {");
+						writer.Write("Sint16 ");
+						writer.Write(Mesh[i].PolyName);
+						writer.WriteLine("[] = {");
 						List<string> plys = new List<string>(Mesh[i].Poly.Count);
 						foreach (Poly item in Mesh[i].Poly)
 							plys.Add(item.ToStruct());
-						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
-						result.AppendLine("};");
-						result.AppendLine();
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("};");
+						writer.WriteLine();
 					}
 				}
 				for (int i = 0; i < Mesh.Count; i++)
@@ -324,15 +324,15 @@ namespace SonicRetro.SAModel
 					if (Mesh[i].PolyNormal != null && !labels.Contains(Mesh[i].PolyNormalName))
 					{
 						labels.Add(Mesh[i].PolyNormalName);
-						result.Append("NJS_VECTOR ");
-						result.Append(Mesh[i].PolyNormalName);
-						result.AppendLine("[] = {");
+						writer.Write("NJS_VECTOR ");
+						writer.Write(Mesh[i].PolyNormalName);
+						writer.WriteLine("[] = {");
 						List<string> plys = new List<string>(Mesh[i].PolyNormal.Length);
 						foreach (Vertex item in Mesh[i].PolyNormal)
 							plys.Add(item.ToStruct());
-						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
-						result.AppendLine("};");
-						result.AppendLine();
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("};");
+						writer.WriteLine();
 					}
 				}
 				for (int i = 0; i < Mesh.Count; i++)
@@ -340,15 +340,15 @@ namespace SonicRetro.SAModel
 					if (Mesh[i].VColor != null && !labels.Contains(Mesh[i].VColorName))
 					{
 						labels.Add(Mesh[i].VColorName);
-						result.Append("NJS_COLOR ");
-						result.Append(Mesh[i].VColorName);
-						result.AppendLine("[] = {");
+						writer.Write("NJS_COLOR ");
+						writer.Write(Mesh[i].VColorName);
+						writer.WriteLine("[] = {");
 						List<string> vcs = new List<string>(Mesh[i].VColor.Length);
 						foreach (Color item in Mesh[i].VColor)
 							vcs.Add(item.ToStruct());
-						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", vcs.ToArray()));
-						result.AppendLine("};");
-						result.AppendLine();
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vcs.ToArray()));
+						writer.WriteLine("};");
+						writer.WriteLine();
 					}
 				}
 				for (int i = 0; i < Mesh.Count; i++)
@@ -356,66 +356,65 @@ namespace SonicRetro.SAModel
 					if (Mesh[i].UV != null && !labels.Contains(Mesh[i].UVName))
 					{
 						labels.Add(Mesh[i].UVName);
-						result.Append("NJS_TEX ");
-						result.Append(Mesh[i].UVName);
-						result.AppendLine("[] = {");
+						writer.Write("NJS_TEX ");
+						writer.Write(Mesh[i].UVName);
+						writer.WriteLine("[] = {");
 						List<string> uvs = new List<string>(Mesh[i].UV.Length);
 						foreach (UV item in Mesh[i].UV)
 							uvs.Add(item.ToStruct());
-						result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", uvs.ToArray()));
-						result.AppendLine("};");
-						result.AppendLine();
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", uvs.ToArray()));
+						writer.WriteLine("};");
+						writer.WriteLine();
 					}
 				}
 				labels.Add(MeshName);
-				result.Append("NJS_MESHSET");
+				writer.Write("NJS_MESHSET");
 				if (DX)
-					result.Append("_SADX");
-				result.Append(" ");
-				result.Append(MeshName);
-				result.AppendLine("[] = {");
+					writer.Write("_SADX");
+				writer.Write(" ");
+				writer.Write(MeshName);
+				writer.WriteLine("[] = {");
 				List<string> mshs = new List<string>(Mesh.Count);
 				foreach (NJS_MESHSET item in Mesh)
 					mshs.Add(item.ToStruct(DX));
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", mshs.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mshs.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
 			if (!labels.Contains(VertexName))
 			{
 				labels.Add(VertexName);
-				result.Append("NJS_VECTOR ");
-				result.Append(VertexName);
-				result.AppendLine("[] = {");
+				writer.Write("NJS_VECTOR ");
+				writer.Write(VertexName);
+				writer.WriteLine("[] = {");
 				List<string> vtxs = new List<string>(Vertex.Length);
 				foreach (Vertex item in Vertex)
 					vtxs.Add(item != null ? item.ToStruct() : "{ 0 }");
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
 			if (Normal != null && !labels.Contains(NormalName))
 			{
 				labels.Add(VertexName);
-				result.Append("NJS_VECTOR ");
-				result.Append(NormalName);
-				result.AppendLine("[] = {");
+				writer.Write("NJS_VECTOR ");
+				writer.Write(NormalName);
+				writer.WriteLine("[] = {");
 				List<string> vtxs = new List<string>(Normal.Length);
 				foreach (Vertex item in Normal)
 					vtxs.Add(item != null ? item.ToStruct() : "{ 0 }");
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
-			result.Append("NJS_MODEL");
+			writer.Write("NJS_MODEL");
 			if (DX)
-				result.Append("_SADX");
-			result.Append(" ");
-			result.Append(Name);
-			result.Append(" = ");
-			result.Append(ToStruct(DX));
-			result.AppendLine(";");
-			return result.ToString();
+				writer.Write("_SADX");
+			writer.Write(" ");
+			writer.Write(Name);
+			writer.Write(" = ");
+			writer.Write(ToStruct(DX));
+			writer.WriteLine(";");
 		}
 
 		public override void ProcessVertexData()

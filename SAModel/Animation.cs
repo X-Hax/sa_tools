@@ -275,9 +275,8 @@ namespace SonicRetro.SAModel
 			return GetBytes(imageBase, out address);
 		}
 
-		public string ToStructVariables()
+		public void ToStructVariables(TextWriter writer)
 		{
-			StringBuilder result = new StringBuilder();
 			bool hasPos = false, hasRot = false, hasScl = false;
 			string id = Name.MakeIdentifier();
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
@@ -285,47 +284,47 @@ namespace SonicRetro.SAModel
 				if (model.Value.Position.Count > 0)
 				{
 					hasPos = true;
-					result.Append("NJS_MKEY_F ");
-					result.Append(id);
-					result.Append("_");
-					result.Append(model.Key);
-					result.AppendLine("_pos[] = {");
+					writer.Write("NJS_MKEY_F ");
+					writer.Write(id);
+					writer.Write("_");
+					writer.Write(model.Key);
+					writer.WriteLine("_pos[] = {");
 					List<string> lines = new List<string>(model.Value.Position.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
-					result.AppendLine("};");
-					result.AppendLine();
+					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
 				}
 				if (model.Value.Rotation.Count > 0)
 				{
 					hasRot = true;
-					result.Append("NJS_MKEY_A ");
-					result.Append(id);
-					result.Append("_");
-					result.Append(model.Key);
-					result.AppendLine("_rot[] = {");
+					writer.Write("NJS_MKEY_A ");
+					writer.Write(id);
+					writer.Write("_");
+					writer.Write(model.Key);
+					writer.WriteLine("_rot[] = {");
 					List<string> lines = new List<string>(model.Value.Rotation.Count);
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
-					result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
-					result.AppendLine("};");
-					result.AppendLine();
+					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
 				}
 				if (model.Value.Scale.Count > 0)
 				{
 					hasScl = true;
-					result.Append("NJS_MKEY_F ");
-					result.Append(id);
-					result.Append("_");
-					result.Append(model.Key);
-					result.AppendLine("_scl[] = {");
+					writer.Write("NJS_MKEY_F ");
+					writer.Write(id);
+					writer.Write("_");
+					writer.Write(model.Key);
+					writer.WriteLine("_scl[] = {");
 					List<string> lines = new List<string>(model.Value.Scale.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					result.AppendLine(string.Join("," + Environment.NewLine, lines.ToArray()));
-					result.AppendLine("};");
-					result.AppendLine();
+					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
 				}
 			}
 			if (hasPos & !hasRot & !hasScl)
@@ -351,11 +350,11 @@ namespace SonicRetro.SAModel
 				flags |= AnimFlags.Scale;
 				numpairs++;
 			}
-			result.Append("NJS_MDATA");
-			result.Append(numpairs);
-			result.Append(" ");
-			result.Append(id);
-			result.AppendLine("_mdat[] = {");
+			writer.Write("NJS_MDATA");
+			writer.Write(numpairs);
+			writer.Write(" ");
+			writer.Write(id);
+			writer.WriteLine("_mdat[] = {");
 			List<string> mdats = new List<string>(ModelParts);
 			for (int i = 0; i < ModelParts; i++)
 			{
@@ -404,20 +403,28 @@ namespace SonicRetro.SAModel
 				}
 				mdats.Add("\t{ " + string.Join(", ", elems.ToArray()) + " }");
 			}
-			result.AppendLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
-			result.AppendLine("};");
-			result.AppendLine();
-			result.Append("NJS_MOTION ");
-			result.Append(id);
-			result.Append(" = { ");
-			result.AppendFormat("{0}_mdat, ", id);
-			result.Append(Frames);
-			result.Append(", ");
-			result.Append(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
-			result.Append(", ");
-			result.Append(numpairs);
-			result.AppendLine(" };");
-			return result.ToString();
+			writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
+			writer.WriteLine("};");
+			writer.WriteLine();
+			writer.Write("NJS_MOTION ");
+			writer.Write(id);
+			writer.Write(" = { ");
+			writer.Write("{0}_mdat, ", id);
+			writer.Write(Frames);
+			writer.Write(", ");
+			writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
+			writer.Write(", ");
+			writer.Write(numpairs);
+			writer.WriteLine(" };");
+		}
+
+		public string ToStructVariables()
+		{
+			using (StringWriter sw = new StringWriter())
+			{
+				ToStructVariables(sw);
+				return sw.ToString();
+			}
 		}
 
 		public byte[] WriteHeader(uint imageBase, uint modeladdr, Dictionary<string, uint> labels, out uint address)

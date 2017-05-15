@@ -508,5 +508,23 @@ namespace splitDLL
 		public int AddressOfFunctions;     // RVA from base of image
 		public int AddressOfNames;         // RVA from base of image
 		public int AddressOfNameOrdinals;  // RVA from base of image
+
+		/// <summary>
+		/// Gets rid of warnings about fields never being written to.
+		/// </summary>
+		public IMAGE_EXPORT_DIRECTORY(bool dummy)
+		{
+			Characteristics = 0;
+			TimeDateStamp = 0;
+			MajorVersion = 0;
+			MinorVersion = 0;
+			Name = 0;
+			Base = 0;
+			NumberOfFunctions = 0;
+			NumberOfNames = 0;
+			AddressOfFunctions = 0;
+			AddressOfNames = 0;
+			AddressOfNameOrdinals = 0;
+		}
 	}
 }

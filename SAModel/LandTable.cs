@@ -432,9 +432,8 @@ namespace SonicRetro.SAModel
 			return GetBytes(imageBase, format, out address);
 		}
 
-		public string ToStructVariables(LandTableFormat format, List<string> labels, string[] textures)
+		public void ToStructVariables(TextWriter writer, LandTableFormat format, List<string> labels, string[] textures = null)
 		{
-			StringBuilder result = new StringBuilder();
 			List<COL> cnk = new List<COL>();
 			List<COL> bas = new List<COL>();
 			foreach (COL item in COL)
@@ -452,7 +451,7 @@ namespace SonicRetro.SAModel
 				if (!labels.Contains(COL[i].Model.Name))
 				{
 					labels.Add(COL[i].Model.Name);
-					result.AppendLine(COL[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels, textures));
+					COL[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
 				}
 			}
 			for (int i = 0; i < Anim.Count; i++)
@@ -461,96 +460,99 @@ namespace SonicRetro.SAModel
 				if (!labels.Contains(Anim[i].Model.Name))
 				{
 					labels.Add(Anim[i].Model.Name);
-					result.AppendLine(Anim[i].Model.ToStructVariables(format == LandTableFormat.SADX, labels, textures));
+					Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
 				}
 				if (!labels.Contains(aniid))
 				{
 					labels.Add(aniid);
-					result.AppendLine(Anim[i].Animation.ToStructVariables());
-					result.Append("NJS_ACTION action_");
-					result.Append(aniid);
-					result.Append(" = { &");
-					result.Append(Anim[i].Model.Name);
-					result.Append(", &");
-					result.Append(aniid);
-					result.AppendLine(" };");
-					result.AppendLine();
+					Anim[i].Animation.ToStructVariables(writer);
+					writer.Write("NJS_ACTION action_");
+					writer.Write(aniid);
+					writer.Write(" = { &");
+					writer.Write(Anim[i].Model.Name);
+					writer.Write(", &");
+					writer.Write(aniid);
+					writer.WriteLine(" };");
+					writer.WriteLine();
 				}
 			}
 			if (!labels.Contains(COLName))
 			{
 				labels.Add(COLName);
-				result.Append("COL ");
-				result.Append(COLName);
-				result.AppendLine("[] = {");
+				writer.Write("COL ");
+				writer.Write(COLName);
+				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(COL.Count);
 				foreach (COL item in COL)
 					lines.Add(item.ToStruct(format));
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
 			if (Anim.Count > 0 && !labels.Contains(AnimName))
 			{
 				labels.Add(AnimName);
-				result.Append("GeoAnimData ");
-				result.Append(AnimName);
-				result.AppendLine("[] = {");
+				writer.Write("GeoAnimData ");
+				writer.Write(AnimName);
+				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(Anim.Count);
 				foreach (GeoAnimData item in Anim)
 					lines.Add(item.ToStruct());
-				result.AppendLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
-				result.AppendLine("};");
-				result.AppendLine();
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
 			}
-			result.Append("LandTable ");
-			result.Append(Name);
-			result.Append(" = { LengthOfArray<int16_t>(");
-			result.Append(COLName);
-			result.Append("), ");
+			writer.Write("LandTable ");
+			writer.Write(Name);
+			writer.Write(" = { LengthOfArray<int16_t>(");
+			writer.Write(COLName);
+			writer.Write("), ");
 			switch (format)
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					result.Append(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
-					result.Append(", ");
-					result.Append(Flags.ToCHex());
-					result.Append(", ");
-					result.Append(Unknown1.ToC());
-					result.Append(", ");
-					result.Append(COLName);
-					result.Append(", ");
-					result.Append(Anim.Count > 0 ? AnimName : "NULL");
-					result.Append(", ");
-					result.Append(TextureFileName.ToC());
-					result.Append(", (NJS_TEXLIST *)");
-					result.Append(TextureList.ToCHex());
-					result.Append(", ");
-					result.Append(Unknown2.ToCHex());
-					result.Append(", ");
-					result.Append(Unknown3.ToCHex());
+					writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
+					writer.Write(", ");
+					writer.Write(Flags.ToCHex());
+					writer.Write(", ");
+					writer.Write(Unknown1.ToC());
+					writer.Write(", ");
+					writer.Write(COLName);
+					writer.Write(", ");
+					writer.Write(Anim.Count > 0 ? AnimName : "NULL");
+					writer.Write(", ");
+					writer.Write(TextureFileName.ToC());
+					writer.Write(", (NJS_TEXLIST *)");
+					writer.Write(TextureList.ToCHex());
+					writer.Write(", ");
+					writer.Write(Unknown2.ToCHex());
+					writer.Write(", ");
+					writer.Write(Unknown3.ToCHex());
 					break;
 				case LandTableFormat.SA2:
-					result.Append(cnk.Count);
-					result.Append(", 0, 0, 0, 0, ");
-					result.Append(Unknown1.ToC());
-					result.Append(", ");
-					result.Append(COLName);
-					result.Append(", ");
-					result.Append(Anim.Count > 0 ? AnimName : "NULL");
-					result.Append(", ");
-					result.Append(TextureFileName.ToC());
-					result.Append(", (NJS_TEXLIST *)");
-					result.Append(TextureList.ToCHex());
+					writer.Write(cnk.Count);
+					writer.Write(", 0, 0, 0, 0, ");
+					writer.Write(Unknown1.ToC());
+					writer.Write(", ");
+					writer.Write(COLName);
+					writer.Write(", ");
+					writer.Write(Anim.Count > 0 ? AnimName : "NULL");
+					writer.Write(", ");
+					writer.Write(TextureFileName.ToC());
+					writer.Write(", (NJS_TEXLIST *)");
+					writer.Write(TextureList.ToCHex());
 					break;
 			}
-			result.AppendLine(" };");
-			return result.ToString();
+			writer.WriteLine(" };");
 		}
 
-		public string ToStructVariables(LandTableFormat format, List<string> labels)
+		public string ToStructVariables(LandTableFormat format, List<string> labels, string[] textures = null)
 		{
-			return ToStructVariables(format, labels, null);
+			using (StringWriter sw = new StringWriter())
+			{
+				ToStructVariables(sw, format, labels, textures);
+				return sw.ToString();
+			}
 		}
 
 		public void SaveToFile(string filename, LandTableFormat format)

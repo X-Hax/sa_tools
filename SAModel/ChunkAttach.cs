@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 
 namespace SonicRetro.SAModel
@@ -139,15 +140,14 @@ namespace SonicRetro.SAModel
 			return result.ToString();
 		}
 
-		public override string ToStructVariables(bool DX, List<string> labels, string[] textures)
+		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures)
 		{
-			StringBuilder result = new StringBuilder();
 			if (Vertex != null && !labels.Contains(VertexName))
 			{
 				labels.Add(VertexName);
-				result.Append("Sint32 ");
-				result.Append(VertexName);
-				result.Append("[] = { ");
+				writer.Write("Sint32 ");
+				writer.Write(VertexName);
+				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (VertexChunk item in Vertex)
 					chunks.AddRange(item.GetBytes());
@@ -159,16 +159,16 @@ namespace SonicRetro.SAModel
 					int it = ByteConverter.ToInt32(cb, i);
 					s.Add("0x" + it.ToString("X") + (it < 0 ? "u" : ""));
 				}
-				result.Append(string.Join(", ", s.ToArray()));
-				result.AppendLine(" };");
-				result.AppendLine();
+				writer.Write(string.Join(", ", s.ToArray()));
+				writer.WriteLine(" };");
+				writer.WriteLine();
 			}
 			if (Poly != null && !labels.Contains(PolyName))
 			{
 				labels.Add(PolyName);
-				result.Append("Sint16 ");
-				result.Append(PolyName);
-				result.Append("[] = { ");
+				writer.Write("Sint16 ");
+				writer.Write(PolyName);
+				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (PolyChunk item in Poly)
 					chunks.AddRange(item.GetBytes());
@@ -180,16 +180,15 @@ namespace SonicRetro.SAModel
 					short sh = ByteConverter.ToInt16(cb, i);
 					s.Add("0x" + sh.ToString("X") + (sh < 0 ? "u" : ""));
 				}
-				result.Append(string.Join(", ", s.ToArray()));
-				result.AppendLine(" };");
-				result.AppendLine();
+				writer.Write(string.Join(", ", s.ToArray()));
+				writer.WriteLine(" };");
+				writer.WriteLine();
 			}
-			result.Append("NJS_CNK_MODEL ");
-			result.Append(Name);
-			result.Append(" = ");
-			result.Append(ToStruct(DX));
-			result.AppendLine(";");
-			return result.ToString();
+			writer.Write("NJS_CNK_MODEL ");
+			writer.Write(Name);
+			writer.Write(" = ");
+			writer.Write(ToStruct(DX));
+			writer.WriteLine(";");
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
