@@ -822,8 +822,11 @@ namespace SonicRetro.SAModel.SAMDL
 			})
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					selectedObject.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
-					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = selectedObject.Attach.CreateD3DMesh(d3ddevice);
+					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
+					if (selectedObject.Attach != null)
+						newattach.Name = selectedObject.Attach.Name;
+					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh(d3ddevice);
+					selectedObject.Attach = newattach;
 					DrawLevel();
 				}
 		}
