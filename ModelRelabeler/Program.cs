@@ -61,13 +61,13 @@ namespace ModelRelabeler
 							attach.Mesh[j].VColorName = repattach.Mesh[j].VColorName;
 						}
 					}
-				}
-				else if (objects[i].Attach is ChunkAttach && repobjects[i].Attach is ChunkAttach)
-				{
-					ChunkAttach attach = (ChunkAttach)objects[i].Attach;
-					ChunkAttach repattach = (ChunkAttach)repobjects[i].Attach;
-					attach.VertexName = repattach.VertexName;
-					attach.PolyName = repattach.PolyName;
+					else if (objects[i].Attach is ChunkAttach && repobjects[i].Attach is ChunkAttach)
+					{
+						ChunkAttach attach = (ChunkAttach)objects[i].Attach;
+						ChunkAttach repattach = (ChunkAttach)repobjects[i].Attach;
+						attach.VertexName = repattach.VertexName;
+						attach.PolyName = repattach.PolyName;
+					}
 				}
 			}
 			model.SaveToFile(repmdlfilename);
