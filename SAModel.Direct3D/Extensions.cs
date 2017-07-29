@@ -400,10 +400,10 @@ namespace SonicRetro.SAModel.Direct3D
 		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes)
 		{
 			int modelindex = -1;
-			return obj.DrawModelTreeInvert(device, transform, meshes, ref modelindex);
+			return obj.DrawModelTreeInvert(transform, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -432,7 +432,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTreeInvert(child, device, transform, meshes, ref modelindex));
+				result.AddRange(DrawModelTreeInvert(child, transform, meshes, ref modelindex));
 			transform.Pop();
 			return result;
 		}
@@ -475,10 +475,10 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			int modelindex = -1;
 			int animindex = -1;
-			return obj.DrawModelTreeAnimatedInvert(device, transform, meshes, anim, animframe, ref modelindex, ref animindex);
+			return obj.DrawModelTreeAnimatedInvert(transform, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -504,7 +504,7 @@ namespace SonicRetro.SAModel.Direct3D
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTreeAnimatedInvert(child, device, transform, meshes, anim, animframe, ref modelindex, ref animindex));
+				result.AddRange(DrawModelTreeAnimatedInvert(child, transform, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
 			return result;
 		}
@@ -735,33 +735,25 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "-u_mirror":
-									bool uMirror = false;
-
-									if (bool.TryParse(mlin[1], out uMirror))
+									if (bool.TryParse(mlin[1], out bool uMirror))
 										lastMaterial.FlipU = uMirror;
 
 									break;
 
 								case "-v_mirror":
-									bool vMirror = false;
-
-									if (bool.TryParse(mlin[1], out vMirror))
+									if (bool.TryParse(mlin[1], out bool vMirror))
 										lastMaterial.FlipV = vMirror;
 
 									break;
 
 								case "-u_tile":
-									bool uTile = true;
-
-									if (bool.TryParse(mlin[1], out uTile))
+									if (bool.TryParse(mlin[1], out bool uTile))
 										lastMaterial.ClampU = !uTile;
 
 									break;
 
 								case "-v_tile":
-									bool vTile = true;
-
-									if (bool.TryParse(mlin[1], out vTile))
+									if (bool.TryParse(mlin[1], out bool vTile))
 										lastMaterial.ClampV = !vTile;
 
 									break;
@@ -868,7 +860,7 @@ namespace SonicRetro.SAModel.Direct3D
 							int verind = model_Vertex.IndexOf(ver);
 							while (verind > -1)
 							{
-								if (model_Normal[verind] == nor)
+								if (Equals(model_Normal[verind], nor))
 									break;
 								verind = model_Vertex.IndexOf(ver, verind + 1);
 							}
@@ -909,7 +901,7 @@ namespace SonicRetro.SAModel.Direct3D
 							int verind = model_Vertex.IndexOf(ver2);
 							while (verind > -1)
 							{
-								if (model_Normal[verind] == nor2)
+								if (Equals(model_Normal[verind], nor2))
 									break;
 								verind = model_Vertex.IndexOf(ver2, verind + 1);
 							}
@@ -940,7 +932,7 @@ namespace SonicRetro.SAModel.Direct3D
 							int verind = model_Vertex.IndexOf(ver3);
 							while (verind > -1)
 							{
-								if (model_Normal[verind] == nor3)
+								if (Equals(model_Normal[verind], nor3))
 									break;
 								verind = model_Vertex.IndexOf(ver3, verind + 1);
 							}
@@ -1020,7 +1012,7 @@ namespace SonicRetro.SAModel.Direct3D
 			Rotation eulerRotationZXY = new Rotation();
 
 			// code below is adopted from Ogre Engine source
-			float rfYAngle = 0, rfPAngle = 0, rfRAngle = 0; // rfY angle = z, rfP angle = y, rfRAngle = x
+			float rfYAngle, rfPAngle, rfRAngle; // rfY angle = z, rfP angle = y, rfRAngle = x
 
 			// rot = cy*cz-sx*sy*sz -cx*sz cz*sy+cy*sx*sz
 			// cz*sx*sy+cy*sz cx*cz -cy*cz*sx+sy*sz
@@ -1067,12 +1059,12 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
+		/// <param name="materialPrefix">idk</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
-		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs)
 		{
 			if (obj.Attach != null)
 			{
@@ -1343,6 +1335,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
+		/// <param name="materialPrefix">idk</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
@@ -1496,47 +1489,47 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-        /// <summary>
-        /// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
-        /// </summary>
-        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
-        /// <param name="obj">Model to export.</param>
-        /// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
-        /// <param name="transform">Used for calculating transforms.</param>
-        /// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
-        /// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
-        /// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
-        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-        public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
-        {
-            transform.Push();
-            obj.ProcessTransforms(transform);
-            if (obj.Attach is BasicAttach)
-                WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-            else if (obj.Attach is ChunkAttach)
-                WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-            foreach (NJS_OBJECT child in obj.Children)
-                WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-            transform.Pop();
-        }
+		/// <summary>
+		/// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
+		/// </summary>
+		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
+		/// <param name="obj">Model to export.</param>
+		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+		/// <param name="transform">Used for calculating transforms.</param>
+		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
+		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
+		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
+		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
+		public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		{
+			transform.Push();
+			obj.ProcessTransforms(transform);
+			if (obj.Attach is BasicAttach)
+				WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs);
+			else if (obj.Attach is ChunkAttach)
+				WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+			foreach (NJS_OBJECT child in obj.Children)
+				WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+			transform.Pop();
+		}
 
-        /// <summary>
-        /// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
-        /// </summary>
-        /// <param name="objstream">stream representing a wavefront obj file to export to</param>
-        /// <param name="obj">Model to export.</param>
-        /// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
-        /// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-        public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, ref bool errorFlag)
-        {
-            int v = 0, n = 0, u = 0;
-            if (obj.Attach is BasicAttach)
-                WriteObjFromBasicAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
-            else if (obj.Attach is ChunkAttach)
-                WriteObjFromChunkAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
-        }
+		/// <summary>
+		/// Primary method for exporting models to Wavefront *.OBJ format. This will auto-detect the model type and send it to the proper export method.
+		/// </summary>
+		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
+		/// <param name="obj">Model to export.</param>
+		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
+		public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, ref bool errorFlag)
+		{
+			int v = 0, n = 0, u = 0;
+			if (obj.Attach is BasicAttach)
+				WriteObjFromBasicAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u);
+			else if (obj.Attach is ChunkAttach)
+				WriteObjFromChunkAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
+		}
 
-        public static float Distance(this Vector3 vectorA, Vector3 vectorB)
+		public static float Distance(this Vector3 vectorA, Vector3 vectorB)
 		{
 			return Vector3.Length(Vector3.Subtract(vectorA, vectorB));
 		}
