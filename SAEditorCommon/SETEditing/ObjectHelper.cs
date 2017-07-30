@@ -28,8 +28,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
                 ib.Add((short)(i));
             SquareMesh.SetVertexBufferData(SquareVerts, LockFlags.None);
             SquareMesh.SetIndexBufferData(ib.ToArray(), LockFlags.None);
-			Vector3 center;
-			float radius = Geometry.ComputeBoundingSphere(SquareVerts, CustomVertex.PositionTextured.Format, out center);
+			float radius = Geometry.ComputeBoundingSphere(SquareVerts, CustomVertex.PositionTextured.Format, out Vector3 center);
 			SquareBounds = new BoundingSphere(center.ToVertex(), radius);
 
             QuestionMark = unknownBitmap != null ? new Texture(device, unknownBitmap, Usage.None, Pool.Managed) : new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);

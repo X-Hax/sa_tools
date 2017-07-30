@@ -270,7 +270,6 @@ namespace SA_Tools
 				}
 				return defaultvalue;
 			}
-			Type generictype;
 			if (type.IsArray)
 			{
 				Type valuetype = type.GetElementType();
@@ -421,7 +420,7 @@ namespace SA_Tools
 					}
 				return obj;
 			}
-			if (ImplementsGenericDefinition(type, typeof(IList<>), out generictype))
+			if (ImplementsGenericDefinition(type, typeof(IList<>), out Type generictype))
 			{
 				object obj = Activator.CreateInstance(type);
 				Type valuetype = generictype.GetGenericArguments()[0];
@@ -962,7 +961,7 @@ namespace SA_Tools
 		/// </summary>
 		public Type KeyConverter
 		{
-			get { return Settings.KeyConverter == null ? null : Settings.KeyConverter.GetType(); }
+			get { return Settings.KeyConverter?.GetType(); }
 			set { Settings.KeyConverter = (TypeConverter)Activator.CreateInstance(value); }
 		}
 
@@ -971,7 +970,7 @@ namespace SA_Tools
 		/// </summary>
 		public Type ValueConverter
 		{
-			get { return Settings.ValueConverter == null ? null : Settings.ValueConverter.GetType(); }
+			get { return Settings.ValueConverter?.GetType(); }
 			set { Settings.ValueConverter = (TypeConverter)Activator.CreateInstance(value); }
 		}
 

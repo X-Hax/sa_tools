@@ -286,9 +286,8 @@ namespace SonicRetro.SAModel
 					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
-			uint addr;
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = Model.GetBytes(0x10, false, labels, out addr);
+			byte[] mdl = Model.GetBytes(0x10, false, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
 			file.AddRange(mdl);
@@ -414,9 +413,8 @@ namespace SonicRetro.SAModel
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
-			uint addr;
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = model.GetBytes(0x10, false, labels, out addr);
+			byte[] mdl = model.GetBytes(0x10, false, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
 			file.AddRange(mdl);

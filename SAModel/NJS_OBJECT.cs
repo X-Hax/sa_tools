@@ -178,8 +178,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX)
 		{
-			uint address;
-			return GetBytes(imageBase, DX, out address);
+			return GetBytes(imageBase, DX, out uint address);
 		}
 
 		public NJS_OBJECT[] GetObjects()

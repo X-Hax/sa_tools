@@ -428,8 +428,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase, LandTableFormat format)
 		{
-			uint address;
-			return GetBytes(imageBase, format, out address);
+			return GetBytes(imageBase, format, out uint address);
 		}
 
 		public void ToStructVariables(TextWriter writer, LandTableFormat format, List<string> labels, string[] textures = null)
@@ -575,9 +574,8 @@ namespace SonicRetro.SAModel
 					throw new ArgumentException("Cannot save " + format + " format levels to file!", "format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
-			uint addr;
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] lvl = GetBytes(0x10, format, labels, out addr);
+			byte[] lvl = GetBytes(0x10, format, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
 			file.AddRange(lvl);

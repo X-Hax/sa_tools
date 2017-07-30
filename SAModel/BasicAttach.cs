@@ -162,7 +162,7 @@ namespace SonicRetro.SAModel
 				}
 				for (int i = 0; i < Mesh.Count; i++)
 				{
-					if (Mesh[i].PolyNormal != null)
+					if (Mesh[i].PolyNormal != null && Mesh[i].PolyNormal.Length > 0)
 					{
 						if (labels.ContainsKey(Mesh[i].PolyNormalName))
 							polyNormalAddrs[i] = labels[Mesh[i].PolyNormalName];
@@ -178,7 +178,7 @@ namespace SonicRetro.SAModel
 				}
 				for (int i = 0; i < Mesh.Count; i++)
 				{
-					if (Mesh[i].VColor != null)
+					if (Mesh[i].VColor != null && Mesh[i].VColor.Length > 0)
 					{
 						if (labels.ContainsKey(Mesh[i].VColorName))
 							vColorAddrs[i] = labels[Mesh[i].VColorName];
@@ -194,7 +194,7 @@ namespace SonicRetro.SAModel
 				}
 				for (int i = 0; i < Mesh.Count; i++)
 				{
-					if (Mesh[i].UV != null)
+					if (Mesh[i].UV != null && Mesh[i].UV.Length > 0)
 					{
 						if (labels.ContainsKey(Mesh[i].UVName))
 							uVAddrs[i] = labels[Mesh[i].UVName];

@@ -233,10 +233,9 @@ namespace SASave
                             foreach (KeyValuePair<string, string> item in group)
                                 if (!usecollectionname)
                                 {
-                                    int key;
-                                    if (int.TryParse(item.Key, out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
+									if (int.TryParse(item.Key, out int key))
+										maxind = Math.Max(key, maxind);
+								}
                                 else if (item.Key.StartsWith(name + "["))
                                 {
                                     int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
@@ -247,10 +246,9 @@ namespace SASave
                             foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
                                 if (!usecollectionname)
                                 {
-                                    int key;
-                                    if (int.TryParse(item.Key, out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
+									if (int.TryParse(item.Key, out int key))
+										maxind = Math.Max(key, maxind);
+								}
                                 else if (item.Key.StartsWith(fullname + "["))
                                 {
                                     int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
@@ -281,10 +279,9 @@ namespace SASave
                             foreach (KeyValuePair<string, string> item in group)
                                 if (!usecollectionname)
                                 {
-                                    int key;
-                                    if (int.TryParse(item.Key, out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
+									if (int.TryParse(item.Key, out int key))
+										maxind = Math.Max(key, maxind);
+								}
                                 else if (item.Key.StartsWith(name + "["))
                                 {
                                     int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
@@ -305,10 +302,9 @@ namespace SASave
                             foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
                                 if (!usecollectionname)
                                 {
-                                    int key;
-                                    if (int.TryParse(item.Key, out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
+									if (int.TryParse(item.Key, out int key))
+										maxind = Math.Max(key, maxind);
+								}
                                 else if (item.Key.StartsWith(fullname + "["))
                                 {
                                     int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));

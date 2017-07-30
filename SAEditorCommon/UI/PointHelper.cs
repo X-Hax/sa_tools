@@ -87,9 +87,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-			IntersectInformation info;
 
-			if (Gizmo.XMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.X_AXIS;
+			if (Gizmo.XMoveMesh.Intersect(pos, dir, out IntersectInformation info)) return GizmoSelectedAxes.X_AXIS;
 			if (Gizmo.YMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Y_AXIS;
 			if (Gizmo.ZMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Z_AXIS;
 			if (Gizmo.XYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XY_AXIS;
@@ -237,7 +236,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			affectedPoint.Z += zOff;
 
 
-			if (PointChanged != null) PointChanged(this);
+			PointChanged?.Invoke(this);
 
 			return true;
 		}

@@ -37,8 +37,7 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(vert.Position.ToVector3());
-			Vector3 center;
-			attach.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+			attach.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
 			attach.Bounds.Center.X = center.X;
 			attach.Bounds.Center.Y = center.Y;
 			attach.Bounds.Center.Z = center.Z;
@@ -173,8 +172,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<Vector3> verts = new List<Vector3>();
 			foreach (VertexData vert in attach.MeshInfo[mesh].Vertices)
 				verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), transform));
-			Vector3 center;
-			float radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+			float radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
 			return new BoundingSphere(center.X, center.Y, center.Z, radius);
 		}
 
@@ -185,8 +183,7 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in col.Model.Attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), matrix));
-			Vector3 center;
-			col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out center);
+			col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
 			col.Bounds.Center.X = center.X;
 			col.Bounds.Center.Y = center.Y;
 			col.Bounds.Center.Z = center.Z;
@@ -219,9 +216,8 @@ namespace SonicRetro.SAModel.Direct3D
 			CustomVertex.PositionOnly[] pointsArray = allPoints.ToArray();
 
 			float finalRadius;
-			Vector3 center;
 
-			finalRadius = Geometry.ComputeBoundingSphere(pointsArray, VertexFormats.Position, out center);
+			finalRadius = Geometry.ComputeBoundingSphere(pointsArray, VertexFormats.Position, out Vector3 center);
 
 			return new BoundingSphere(center.ToVertex(), finalRadius);
 		}
@@ -519,8 +515,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (mesh == null) return HitResult.NoHit;
 			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-			IntersectInformation info;
-			if (!mesh.Intersect(pos, dir, out info)) return HitResult.NoHit;
+			if (!mesh.Intersect(pos, dir, out IntersectInformation info)) return HitResult.NoHit;
 			int posoff = 0;
 			foreach (VertexElement elem in mesh.Declaration)
 				if (elem.DeclarationUsage == DeclarationUsage.Position)
@@ -1406,10 +1401,8 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						PolyChunk polyChunk = chunkAttach.Poly[pc];
 
-						if (polyChunk is PolyChunkStrip)
+						if (polyChunk is PolyChunkStrip chunkStrip)
 						{
-							PolyChunkStrip chunkStrip = (PolyChunkStrip)polyChunk;
-
 							for (int stripNum = 0; stripNum < chunkStrip.StripCount; stripNum++)
 							{
 								// output texture verts before use, if necessary
@@ -1477,9 +1470,8 @@ namespace SonicRetro.SAModel.Direct3D
 						{
 							// no behavior defined yet.
 						}
-						else if (polyChunk is PolyChunkTinyTextureID)
+						else if (polyChunk is PolyChunkTinyTextureID chunkTexID)
 						{
-							PolyChunkTinyTextureID chunkTexID = (PolyChunkTinyTextureID)polyChunk;
 							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID);
 						}
 					}

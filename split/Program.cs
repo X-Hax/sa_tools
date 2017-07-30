@@ -215,8 +215,7 @@ namespace split
 					case "cutscenetext":
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							string[] hashes;
-							new CutsceneText(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							new CutsceneText(datafile, address, imageBase, cnt).Save(data.Filename, out string[] hashes);
 							data.MD5Hash = string.Join(",", hashes);
 							nohash = true;
 						}
@@ -224,8 +223,7 @@ namespace split
 					case "recapscreen":
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							string[][] hashes;
-							RecapScreenList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							RecapScreenList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out string[][] hashes);
 							string[] hash2 = new string[hashes.Length];
 							for (int i = 0; i < hashes.Length; i++)
 							{
@@ -238,8 +236,7 @@ namespace split
 					case "npctext":
 						{
 							int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							string[][] hashes;
-							NPCTextList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out hashes);
+							NPCTextList.Load(datafile, address, imageBase, cnt).Save(data.Filename, out string[][] hashes);
 							string[] hash2 = new string[hashes.Length];
 							for (int i = 0; i < hashes.Length; i++)
 								hash2[i] = string.Join(",", hashes[i]);
@@ -309,8 +306,7 @@ namespace split
 									ptr = (int)((uint)ptr - imageBase);
 									SA1LevelAct level = new SA1LevelAct(lvlnum);
 									string lvldir = Path.Combine(data.Filename, level.ToString());
-									string[] lvlhashes;
-									PathList.Load(datafile, ptr, imageBase).Save(lvldir, out lvlhashes);
+									PathList.Load(datafile, ptr, imageBase).Save(lvldir, out string[] lvlhashes);
 									hashes.Add(level.ToString() + ":" + string.Join(",", lvlhashes));
 								}
 								address += 8;

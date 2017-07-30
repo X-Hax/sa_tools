@@ -251,7 +251,7 @@ namespace SA_Tools
         public ushort Flags { get; set; }
         public float Distance { get; set; }
         [IniIgnore]
-        public uint Code { get { uint code; if (uint.TryParse(CodeString, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out code)) return code; else return uint.MaxValue; } set { CodeString = value.ToString("X8"); } }
+        public uint Code { get { if (uint.TryParse(CodeString, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out uint code)) return code; else return uint.MaxValue; } set { CodeString = value.ToString("X8"); } }
         [IniName("Code")]
         public string CodeString { get; set; }
         public string Name { get; set; }
@@ -287,10 +287,12 @@ namespace SA_Tools
 
         public override byte[] GetBytes(Dictionary<string, uint> labels, uint nameAddress)
         {
-            List<byte> result = new List<byte>(Size);
-            result.Add(Arg1);
-            result.Add(Arg2);
-            result.AddRange(ByteConverter.GetBytes(Flags));
+			List<byte> result = new List<byte>(Size)
+			{
+				Arg1,
+				Arg2
+			};
+			result.AddRange(ByteConverter.GetBytes(Flags));
             result.AddRange(ByteConverter.GetBytes(Distance));
             result.AddRange(ByteConverter.GetBytes(Unknown));
             if (Code == uint.MaxValue)
@@ -343,10 +345,12 @@ namespace SA_Tools
 
         public override byte[] GetBytes(Dictionary<string, uint> labels, uint nameAddress)
         {
-            List<byte> result = new List<byte>(Size);
-            result.Add(Arg1);
-            result.Add(Arg2);
-            result.AddRange(ByteConverter.GetBytes(Flags));
+			List<byte> result = new List<byte>(Size)
+			{
+				Arg1,
+				Arg2
+			};
+			result.AddRange(ByteConverter.GetBytes(Flags));
             result.AddRange(ByteConverter.GetBytes(Distance));
             if (Code == uint.MaxValue)
                 Code = labels[CodeString];
@@ -905,10 +909,12 @@ namespace SA_Tools
 
         public byte[] GetBytes()
         {
-            List<byte> result = new List<byte>(Size);
-            result.Add((byte)Field);
-            result.Add(0);
-            result.AddRange(Position.GetBytes());
+			List<byte> result = new List<byte>(Size)
+			{
+				(byte)Field,
+				0
+			};
+			result.AddRange(Position.GetBytes());
             result.AddRange(ByteConverter.GetBytes(YRotation));
             return result.ToArray();
         }
@@ -1261,9 +1267,8 @@ namespace SA_Tools
 
         public void Save(string directory)
         {
-            string[] hashes;
-            Save(directory, out hashes);
-        }
+			Save(directory, out string[] hashes);
+		}
 
         public void Save(string directory, out string[] hashes)
         {
@@ -1311,9 +1316,8 @@ namespace SA_Tools
 
         public static void Save(this RecapScreen[][] list, string directory)
         {
-            string[][] hashes;
-            Save(list, directory, out hashes);
-        }
+			Save(list, directory, out string[][] hashes);
+		}
 
         public static void Save(this RecapScreen[][] list, string directory, out string[][] hashes)
         {
@@ -1388,9 +1392,8 @@ namespace SA_Tools
 
         public static void Save(this NPCText[][] list, string directory)
         {
-            string[][] hashes;
-            Save(list, directory, out hashes);
-        }
+			Save(list, directory, out string[][] hashes);
+		}
 
         public static void Save(this NPCText[][] list, string directory, out string[][] hashes)
         {
@@ -2265,8 +2268,7 @@ namespace SA_Tools
 			List<uint> pointers = new List<uint>();
 			foreach (PathData path in paths)
 			{
-				uint ptr;
-				result.AddRange(path.GetBytes(imageBase, out ptr));
+				result.AddRange(path.GetBytes(imageBase, out uint ptr));
 				pointers.Add(ptr);
 			}
 			dataaddr = imageBase + (uint)result.Count;
@@ -2458,11 +2460,13 @@ namespace SA_Tools
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
-			result.Add((byte)Level);
-			result.Add(Act);
-			result.Add(LightNum);
-			result.Add((byte)(UseDirection ? 1 : 0));
+			List<byte> result = new List<byte>(Size)
+			{
+				(byte)Level,
+				Act,
+				LightNum,
+				(byte)(UseDirection ? 1 : 0)
+			};
 			result.AddRange(Direction.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Dif));
 			result.AddRange(ByteConverter.GetBytes(Multiplier));
@@ -2678,9 +2682,8 @@ namespace SA_Tools
 		{
 			if (value is uint)
 				return true;
-			uint i;
 			if (value is string)
-				return uint.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+				return uint.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out uint i);
 			return base.IsValid(context, value);
 		}
 	}
@@ -2719,9 +2722,8 @@ namespace SA_Tools
 		{
 			if (value is int)
 				return true;
-			int i;
 			if (value is string)
-				return int.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+				return int.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out int i);
 			return base.IsValid(context, value);
 		}
 	}
@@ -2760,9 +2762,8 @@ namespace SA_Tools
 		{
 			if (value is ushort)
 				return true;
-			ushort i;
 			if (value is string)
-				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out i);
+				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out ushort i);
 			return base.IsValid(context, value);
 		}
 	}

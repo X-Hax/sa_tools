@@ -238,56 +238,53 @@ namespace PAKtool
                 }
                 return defaultvalue;
             }
-            Type generictype;
-            if (type.IsArray)
-            {
-                Type valuetype = type.GetElementType();
-                int maxind = -1;
-                if (!IsComplexType(valuetype))
-                {
-                    foreach (KeyValuePair<string, string> item in group)
-                        if (!usecollectionname)
-                        {
-                            int key;
-                            if (int.TryParse(item.Key, out key))
-                                maxind = Math.Max(key, maxind);
-                        }
-                        else if (item.Key.StartsWith(name + "["))
-                        {
-                            int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
-                            maxind = Math.Max(key, maxind);
-                        }
-                }
-                else
-                    foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
-                        if (!usecollectionname)
-                        {
-                            int key;
-                            if (int.TryParse(item.Key, out key))
-                                maxind = Math.Max(key, maxind);
-                        }
-                        else if (item.Key.StartsWith(fullname + "["))
-                        {
-                            int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
-                            maxind = Math.Max(key, maxind);
-                        }
-                maxind++;
-                Array obj = Array.CreateInstance(valuetype, maxind);
-                if (!IsComplexType(valuetype))
-                    for (int i = 0; i < maxind; i++)
-                        if (group.ContainsKey(usecollectionname ? name + "[" + i + "]" : i.ToString()))
-                        {
-                            obj.SetValue(ConvertFromString(valuetype, group[usecollectionname ? name + "[" + i + "]" : i.ToString()]), i);
-                            group.Remove(usecollectionname ? name + "[" + i + "]" : i.ToString());
-                        }
-                        else
-                            obj.SetValue(valuetype.GetDefaultValue(), i);
-                else
-                    for (int i = 0; i < maxind; i++)
-                        obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, usecollectionname ? fullname + "[" + i + "]" : i.ToString(), true, true), i);
-                return obj;
-            }
-            if (ImplementsGenericDefinition(type, typeof(IList<>), out generictype))
+			if (type.IsArray)
+			{
+				Type valuetype = type.GetElementType();
+				int maxind = -1;
+				if (!IsComplexType(valuetype))
+				{
+					foreach (KeyValuePair<string, string> item in group)
+						if (!usecollectionname)
+						{
+							if (int.TryParse(item.Key, out int key))
+								maxind = Math.Max(key, maxind);
+						}
+						else if (item.Key.StartsWith(name + "["))
+						{
+							int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+							maxind = Math.Max(key, maxind);
+						}
+				}
+				else
+					foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
+						if (!usecollectionname)
+						{
+							if (int.TryParse(item.Key, out int key))
+								maxind = Math.Max(key, maxind);
+						}
+						else if (item.Key.StartsWith(fullname + "["))
+						{
+							int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
+							maxind = Math.Max(key, maxind);
+						}
+				maxind++;
+				Array obj = Array.CreateInstance(valuetype, maxind);
+				if (!IsComplexType(valuetype))
+					for (int i = 0; i < maxind; i++)
+						if (group.ContainsKey(usecollectionname ? name + "[" + i + "]" : i.ToString()))
+						{
+							obj.SetValue(ConvertFromString(valuetype, group[usecollectionname ? name + "[" + i + "]" : i.ToString()]), i);
+							group.Remove(usecollectionname ? name + "[" + i + "]" : i.ToString());
+						}
+						else
+							obj.SetValue(valuetype.GetDefaultValue(), i);
+				else
+					for (int i = 0; i < maxind; i++)
+						obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, usecollectionname ? fullname + "[" + i + "]" : i.ToString(), true, true), i);
+				return obj;
+			}
+			if (ImplementsGenericDefinition(type, typeof(IList<>), out Type generictype))
             {
                 object obj = Activator.CreateInstance(type);
                 Type valuetype = generictype.GetGenericArguments()[0];
@@ -515,10 +512,9 @@ namespace PAKtool
                     foreach (KeyValuePair<string, string> item in group)
                         if (!usecollectionname)
                         {
-                            int key;
-                            if (int.TryParse(item.Key, out key))
-                                maxind = Math.Max(key, maxind);
-                        }
+							if (int.TryParse(item.Key, out int key))
+								maxind = Math.Max(key, maxind);
+						}
                         else if (item.Key.StartsWith(name + "["))
                         {
                             int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
@@ -540,10 +536,9 @@ namespace PAKtool
                     foreach (KeyValuePair<string, Dictionary<string, string>> item in ini)
                         if (!usecollectionname)
                         {
-                            int key;
-                            if (int.TryParse(item.Key, out key))
-                                maxind = Math.Max(key, maxind);
-                        }
+							if (int.TryParse(item.Key, out int key))
+								maxind = Math.Max(key, maxind);
+						}
                         else if (item.Key.StartsWith(fullname + "["))
                         {
                             int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));

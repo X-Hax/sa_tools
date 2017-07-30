@@ -191,8 +191,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			faceIndeces = faceIndexList.ToArray();
 
 			// build bounding sphere
-			Vector3 center;
-			float radius = Geometry.ComputeBoundingSphere(vertices, CustomVertex.PositionColored.Format, out center);
+			float radius = Geometry.ComputeBoundingSphere(vertices, CustomVertex.PositionColored.Format, out Vector3 center);
 			bounds = new BoundingSphere(center.ToVertex(), radius);
 
 			// build actual mesh from face index array and vbuf

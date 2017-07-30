@@ -74,22 +74,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			#endregion
 
 			#region Temporary ExtendedMaterials
-			ExtendedMaterial[] xMaterials;
-			ExtendedMaterial[] yMaterials;
-			ExtendedMaterial[] zMaterials;
-			ExtendedMaterial[] doubleAxisMaterials;
 			#endregion
 
 			#region Loading Meshes and Materials from Streams
-			XMoveMesh = Mesh.FromStream(x_MoveStream, MeshFlags.Managed, d3dDevice, out xMaterials);
-			YMoveMesh = Mesh.FromStream(y_MoveStream, MeshFlags.Managed, d3dDevice, out yMaterials);
-			ZMoveMesh = Mesh.FromStream(z_MoveStream, MeshFlags.Managed, d3dDevice, out zMaterials);
+			XMoveMesh = Mesh.FromStream(x_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] xMaterials);
+			YMoveMesh = Mesh.FromStream(y_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] yMaterials);
+			ZMoveMesh = Mesh.FromStream(z_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] zMaterials);
 
 			XNullMesh = Mesh.FromStream(x_NullStream, MeshFlags.Managed, d3dDevice);
 			YNullMesh = Mesh.FromStream(y_NullStream, MeshFlags.Managed, d3dDevice);
 			ZNullMesh = Mesh.FromStream(z_NullStream, MeshFlags.Managed, d3dDevice);
 
-			XYMoveMesh = Mesh.FromStream(xy_MoveStream, MeshFlags.Managed, d3dDevice, out doubleAxisMaterials);
+			XYMoveMesh = Mesh.FromStream(xy_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] doubleAxisMaterials);
 			ZXMoveMesh = Mesh.FromStream(zx_MoveStream, MeshFlags.Managed, d3dDevice);
 			ZYMoveMesh = Mesh.FromStream(zy_MoveStream, MeshFlags.Managed, d3dDevice);
 

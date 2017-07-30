@@ -129,9 +129,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private void ValidateExponent()
 		{
 			// check to see if exponent can be parsed
-			float expParse;
 
-			if (!float.TryParse(exponentTextBox.Text, out expParse))
+			if (!float.TryParse(exponentTextBox.Text, out float expParse))
 			{
 				MessageBox.Show("Specular exponent was invalid - setting to 10");
 				materials[comboMaterial.SelectedIndex].Exponent = 10;
@@ -258,8 +257,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void RaiseFormUpdated()
 		{
-			if (FormUpdated != null)
-				FormUpdated(this, EventArgs.Empty);
+			FormUpdated?.Invoke(this, EventArgs.Empty);
 
 			DisplayFlags(comboMaterial.SelectedIndex);
 		}

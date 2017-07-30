@@ -34,10 +34,9 @@ namespace buildMDL
                 mdlfilename = Path.GetFullPath(mdlfilename);
                 Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
                 SortedDictionary<int, SonicRetro.SAModel.NJS_OBJECT> models = new SortedDictionary<int, SonicRetro.SAModel.NJS_OBJECT>();
-                int i;
-                foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
-                    if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out i))
-                        models.Add(i, new ModelFile(file).Model);
+				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
+					if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int i))
+						models.Add(i, new ModelFile(file).Model);
 				Dictionary<int, string> modelnames = IniSerializer.Deserialize<Dictionary<int, string>>(
 					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"),
 					new IniCollectionSettings(IniCollectionMode.IndexOnly));
@@ -47,8 +46,7 @@ namespace buildMDL
                 uint imageBase = (uint)(modelnames.Count * 8) + 8;
 				foreach (KeyValuePair<int, SonicRetro.SAModel.NJS_OBJECT> item in models)
 				{
-					uint address;
-					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out address);
+					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out uint address);
 					modelbytes.AddRange(tmp);
 					imageBase += (uint)tmp.Length;
 				}

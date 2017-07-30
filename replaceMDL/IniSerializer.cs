@@ -207,137 +207,133 @@ namespace IniFile
                 }
                 return defaultvalue;
             }
-            Type generictype;
-            if (type.IsArray)
-            {
-                Type valuetype = type.GetElementType();
-                int maxind = int.MinValue;
-                if (!IsComplexType(valuetype))
-                {
-                    switch (collectionSettings.Mode)
-                    {
-                        case IniCollectionMode.Normal:
-                            foreach (IniNameValue item in group)
-                                if (item.Key.StartsWith(name + "["))
-                                {
-                                    int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
-                                    maxind = Math.Max(key, maxind);
-                                }
-                            break;
-                        case IniCollectionMode.IndexOnly:
-                            foreach (IniNameValue item in group)
-                            {
-                                int key;
-                                if (int.TryParse(item.Key, out key))
-                                    maxind = Math.Max(key, maxind);
-                            }
-                            break;
-                        case IniCollectionMode.NoSquareBrackets:
-                            foreach (IniNameValue item in group)
-                                if (item.Key.StartsWith(name))
-                                {
-                                    int key;
-                                    if (int.TryParse(item.Key.Substring(name.Length), out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
-                            break;
-                        case IniCollectionMode.SingleLine:
-                            string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-                            Array _obj = Array.CreateInstance(valuetype, items.Length);
-                            for (int i = 0; i < items.Length; i++)
-                                _obj.SetValue(valuetype.ConvertFromString(items[i]), i);
-                            group.Remove(name);
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (collectionSettings.Mode)
-                    {
-                        case IniCollectionMode.Normal:
-                            foreach (IniNameGroup item in ini)
-                                if (item.Key.StartsWith(fullname + "["))
-                                {
-                                    int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
-                                    maxind = Math.Max(key, maxind);
-                                }
-                            break;
-                        case IniCollectionMode.IndexOnly:
-                            foreach (IniNameGroup item in ini)
-                            {
-                                int key;
-                                if (int.TryParse(item.Key, out key))
-                                    maxind = Math.Max(key, maxind);
-                            }
-                            break;
-                        case IniCollectionMode.NoSquareBrackets:
-                            foreach (IniNameGroup item in ini)
-                                if (item.Key.StartsWith(fullname))
-                                {
-                                    int key = int.Parse(item.Key.Substring(fullname.Length));
-                                    maxind = Math.Max(key, maxind);
-                                }
-                            break;
-                        case IniCollectionMode.SingleLine:
-                            throw new InvalidOperationException("Cannot deserialize type " + valuetype + " with IniCollectionMode.SingleLine!");
-                    }
-                }
-                if (maxind == int.MinValue) return Array.CreateInstance(valuetype, 0);
-                int length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
-                Array obj = Array.CreateInstance(valuetype, length);
-                if (!IsComplexType(valuetype))
-                    switch (collectionSettings.Mode)
-                    {
-                        case IniCollectionMode.Normal:
-                            for (int i = 0; i < length; i++)
-                                if (group.ContainsKey(name + "[" + (i + collectionSettings.StartIndex).ToString() + "]"))
-                                {
-                                    obj.SetValue(valuetype.ConvertFromString(group[name + "[" + (i + collectionSettings.StartIndex).ToString() + "]"]), i);
-                                    group.Remove(name + "[" + (i + collectionSettings.StartIndex).ToString() + "]");
-                                }
-                                else
-                                    obj.SetValue(valuetype.GetDefaultValue(), i);
-                            break;
-                        case IniCollectionMode.IndexOnly:
-                            for (int i = 0; i < length; i++)
-                                if (group.ContainsKey((i + collectionSettings.StartIndex).ToString()))
-                                {
-                                    obj.SetValue(valuetype.ConvertFromString(group[(i + collectionSettings.StartIndex).ToString()]), i);
-                                    group.Remove((i + collectionSettings.StartIndex).ToString());
-                                }
-                                else
-                                    obj.SetValue(valuetype.GetDefaultValue(), i);
-                            break;
-                        case IniCollectionMode.NoSquareBrackets:
-                            for (int i = 0; i < length; i++)
-                                if (group.ContainsKey(name + (i + collectionSettings.StartIndex).ToString()))
-                                {
-                                    obj.SetValue(valuetype.ConvertFromString(group[name + (i + collectionSettings.StartIndex).ToString()]), i);
-                                    group.Remove(name + (i + collectionSettings.StartIndex).ToString());
-                                }
-                                else
-                                    obj.SetValue(valuetype.GetDefaultValue(), i);
-                            break;
-                    }
-                else
-                    switch (collectionSettings.Mode)
-                    {
-                        case IniCollectionMode.Normal:
-                            for (int i = 0; i < maxind; i++)
-                                obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + "[" + (i + collectionSettings.StartIndex).ToString() + "]", true, defaultCollectionSettings), i);
-                            break;
-                        case IniCollectionMode.IndexOnly:
-                            for (int i = 0; i < maxind; i++)
-                                obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
-                            break;
-                        case IniCollectionMode.NoSquareBrackets:
-                            for (int i = 0; i < maxind; i++)
-                                obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
-                            break;
-                    }
-                return obj;
-            }
-            if (ImplementsGenericDefinition(type, typeof(IList<>), out generictype))
+			if (type.IsArray)
+			{
+				Type valuetype = type.GetElementType();
+				int maxind = int.MinValue;
+				if (!IsComplexType(valuetype))
+				{
+					switch (collectionSettings.Mode)
+					{
+						case IniCollectionMode.Normal:
+							foreach (IniNameValue item in group)
+								if (item.Key.StartsWith(name + "["))
+								{
+									int key = int.Parse(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+									maxind = Math.Max(key, maxind);
+								}
+							break;
+						case IniCollectionMode.IndexOnly:
+							foreach (IniNameValue item in group)
+							{
+								if (int.TryParse(item.Key, out int key))
+									maxind = Math.Max(key, maxind);
+							}
+							break;
+						case IniCollectionMode.NoSquareBrackets:
+							foreach (IniNameValue item in group)
+								if (item.Key.StartsWith(name))
+								{
+									if (int.TryParse(item.Key.Substring(name.Length), out int key))
+										maxind = Math.Max(key, maxind);
+								}
+							break;
+						case IniCollectionMode.SingleLine:
+							string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+							Array _obj = Array.CreateInstance(valuetype, items.Length);
+							for (int i = 0; i < items.Length; i++)
+								_obj.SetValue(valuetype.ConvertFromString(items[i]), i);
+							group.Remove(name);
+							break;
+					}
+				}
+				else
+				{
+					switch (collectionSettings.Mode)
+					{
+						case IniCollectionMode.Normal:
+							foreach (IniNameGroup item in ini)
+								if (item.Key.StartsWith(fullname + "["))
+								{
+									int key = int.Parse(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
+									maxind = Math.Max(key, maxind);
+								}
+							break;
+						case IniCollectionMode.IndexOnly:
+							foreach (IniNameGroup item in ini)
+							{
+								if (int.TryParse(item.Key, out int key))
+									maxind = Math.Max(key, maxind);
+							}
+							break;
+						case IniCollectionMode.NoSquareBrackets:
+							foreach (IniNameGroup item in ini)
+								if (item.Key.StartsWith(fullname))
+								{
+									int key = int.Parse(item.Key.Substring(fullname.Length));
+									maxind = Math.Max(key, maxind);
+								}
+							break;
+						case IniCollectionMode.SingleLine:
+							throw new InvalidOperationException("Cannot deserialize type " + valuetype + " with IniCollectionMode.SingleLine!");
+					}
+				}
+				if (maxind == int.MinValue) return Array.CreateInstance(valuetype, 0);
+				int length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
+				Array obj = Array.CreateInstance(valuetype, length);
+				if (!IsComplexType(valuetype))
+					switch (collectionSettings.Mode)
+					{
+						case IniCollectionMode.Normal:
+							for (int i = 0; i < length; i++)
+								if (group.ContainsKey(name + "[" + (i + collectionSettings.StartIndex).ToString() + "]"))
+								{
+									obj.SetValue(valuetype.ConvertFromString(group[name + "[" + (i + collectionSettings.StartIndex).ToString() + "]"]), i);
+									group.Remove(name + "[" + (i + collectionSettings.StartIndex).ToString() + "]");
+								}
+								else
+									obj.SetValue(valuetype.GetDefaultValue(), i);
+							break;
+						case IniCollectionMode.IndexOnly:
+							for (int i = 0; i < length; i++)
+								if (group.ContainsKey((i + collectionSettings.StartIndex).ToString()))
+								{
+									obj.SetValue(valuetype.ConvertFromString(group[(i + collectionSettings.StartIndex).ToString()]), i);
+									group.Remove((i + collectionSettings.StartIndex).ToString());
+								}
+								else
+									obj.SetValue(valuetype.GetDefaultValue(), i);
+							break;
+						case IniCollectionMode.NoSquareBrackets:
+							for (int i = 0; i < length; i++)
+								if (group.ContainsKey(name + (i + collectionSettings.StartIndex).ToString()))
+								{
+									obj.SetValue(valuetype.ConvertFromString(group[name + (i + collectionSettings.StartIndex).ToString()]), i);
+									group.Remove(name + (i + collectionSettings.StartIndex).ToString());
+								}
+								else
+									obj.SetValue(valuetype.GetDefaultValue(), i);
+							break;
+					}
+				else
+					switch (collectionSettings.Mode)
+					{
+						case IniCollectionMode.Normal:
+							for (int i = 0; i < maxind; i++)
+								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + "[" + (i + collectionSettings.StartIndex).ToString() + "]", true, defaultCollectionSettings), i);
+							break;
+						case IniCollectionMode.IndexOnly:
+							for (int i = 0; i < maxind; i++)
+								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
+							break;
+						case IniCollectionMode.NoSquareBrackets:
+							for (int i = 0; i < maxind; i++)
+								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + (i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings), i);
+							break;
+					}
+				return obj;
+			}
+			if (ImplementsGenericDefinition(type, typeof(IList<>), out Type generictype))
             {
                 object obj = Activator.CreateInstance(type);
                 Type valuetype = generictype.GetGenericArguments()[0];
@@ -568,19 +564,17 @@ namespace IniFile
                         case IniCollectionMode.IndexOnly:
                             foreach (IniNameValue item in group)
                             {
-                                int key;
-                                if (int.TryParse(item.Key, out key))
-                                    maxind = Math.Max(key, maxind);
-                            }
+								if (int.TryParse(item.Key, out int key))
+									maxind = Math.Max(key, maxind);
+							}
                             break;
                         case IniCollectionMode.NoSquareBrackets:
                             foreach (IniNameValue item in group)
                                 if (item.Key.StartsWith(name))
                                 {
-                                    int key;
-                                    if (int.TryParse(item.Key.Substring(name.Length), out key))
-                                        maxind = Math.Max(key, maxind);
-                                }
+									if (int.TryParse(item.Key.Substring(name.Length), out int key))
+										maxind = Math.Max(key, maxind);
+								}
                             break;
                         case IniCollectionMode.SingleLine:
                             string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
@@ -605,10 +599,9 @@ namespace IniFile
                         case IniCollectionMode.IndexOnly:
                             foreach (IniNameGroup item in ini)
                             {
-                                int key;
-                                if (int.TryParse(item.Key, out key))
-                                    maxind = Math.Max(key, maxind);
-                            }
+								if (int.TryParse(item.Key, out int key))
+									maxind = Math.Max(key, maxind);
+							}
                             break;
                         case IniCollectionMode.NoSquareBrackets:
                             foreach (IniNameGroup item in ini)

@@ -64,9 +64,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			}
 
 			nodeCountLines = nodeCountLines[2].Split(';');
-			int nodeCount = 0;
 
-			if (!Int32.TryParse(nodeCountLines[0], out nodeCount))
+			if (!Int32.TryParse(nodeCountLines[0], out int nodeCount))
 			{
 				errorFlag = true;
 				errorMsg = "Error parsing node count!";
@@ -86,9 +85,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					string[] nodeDescriptorSplit = nodeInput.Split(' ');
 					string[] nodeIndexSplit = nodeDescriptorSplit[1].Split(';');
 
-					int nodeIndex = 0;
 
-					if (!Int32.TryParse(nodeIndexSplit[0], out nodeIndex))
+					if (!Int32.TryParse(nodeIndexSplit[0], out int nodeIndex))
 					{
 						errorFlag = true;
 						errorMsg = String.Format("Error parsing node label for node {0}.", n);
@@ -98,7 +96,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					#region Position Read/Parse
 					Vertex position;
-					float xPos, yPos, zPos;
 					string[] positionSplit = nodeTableStream.ReadLine().Split(' ');
 
 					if (positionSplit[0] != "pos")
@@ -110,7 +107,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					positionSplit[3] = positionSplit[3].Split(';')[0];
 
-					if ((float.TryParse(positionSplit[1], out xPos)) && (float.TryParse(positionSplit[2], out yPos)) && (float.TryParse(positionSplit[3], out zPos)))
+					if ((float.TryParse(positionSplit[1], out float xPos)) && (float.TryParse(positionSplit[2], out float yPos)) && (float.TryParse(positionSplit[3], out float zPos)))
 					{
 						position = new Vertex(xPos, yPos, zPos);
 					}
@@ -125,8 +122,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					#region Rotation Read/Parse
 					Rotation rotation;
-					float xRot, yRot, zRot;
-
 					string[] rotationSplit = nodeTableStream.ReadLine().Split(' ');
 
 					if (rotationSplit[0] != "rot")
@@ -138,7 +133,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					rotationSplit[3] = rotationSplit[3].Split(';')[0];
 
-					if (float.TryParse(rotationSplit[1], out xRot) && float.TryParse(rotationSplit[2], out yRot) && float.TryParse(rotationSplit[3], out zRot))
+					if (float.TryParse(rotationSplit[1], out float xRot) && float.TryParse(rotationSplit[2], out float yRot) && float.TryParse(rotationSplit[3], out float zRot))
 					{
 
 						rotation = new Rotation(Rotation.DegToBAMS(xRot), Rotation.DegToBAMS(yRot), Rotation.DegToBAMS(zRot));
@@ -190,9 +185,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					string[] nodeDescriptorSplit = nodeInput.Split(' ');
 					string[] nodeIndexSplit = nodeDescriptorSplit[1].Split(';');
 
-					int nodeIndex = 0;
 
-					if (!Int32.TryParse(nodeIndexSplit[0], out nodeIndex))
+					if (!Int32.TryParse(nodeIndexSplit[0], out int nodeIndex))
 					{
 						errorFlag = true;
 						errorMsg = String.Format("Error parsing node label for node {0}.", n);
@@ -202,7 +196,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					#region Position Read/Parse
 					Vertex position;
-					float xPos, yPos, zPos;
 					string[] positionSplit = nodeTableStream.ReadLine().Split(' ');
 
 					if (positionSplit[0] != "pos")
@@ -214,7 +207,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					positionSplit[3] = positionSplit[3].Split(';')[0];
 
-					if ((float.TryParse(positionSplit[1], out xPos)) && (float.TryParse(positionSplit[2], out yPos)) && (float.TryParse(positionSplit[3], out zPos)))
+					if ((float.TryParse(positionSplit[1], out float xPos)) && (float.TryParse(positionSplit[2], out float yPos)) && (float.TryParse(positionSplit[3], out float zPos)))
 					{
 						position = new Vertex(xPos, yPos, zPos);
 					}
@@ -229,8 +222,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					#region Rotation Read/Parse
 					Rotation rotation;
-					float xRot, yRot, zRot;
-
 					string[] rotationSplit = nodeTableStream.ReadLine().Split(' ');
 
 					if (rotationSplit[0] != "rot")
@@ -242,7 +233,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					rotationSplit[3] = rotationSplit[3].Split(';')[0];
 
-					if (float.TryParse(rotationSplit[1], out xRot) && float.TryParse(rotationSplit[2], out yRot) && float.TryParse(rotationSplit[3], out zRot))
+					if (float.TryParse(rotationSplit[1], out float xRot) && float.TryParse(rotationSplit[2], out float yRot) && float.TryParse(rotationSplit[3], out float zRot))
 					{
 
 						rotation = new Rotation(Rotation.DegToBAMS(xRot), Rotation.DegToBAMS(yRot), Rotation.DegToBAMS(zRot));
@@ -281,15 +272,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count, selectionManager);
-						levelItem.Flags = surfaceFlags;
+						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItems.Count, selectionManager)
+						{
+							Flags = surfaceFlags
+						};
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count, selectionManager);
-						levelItem.Flags = surfaceFlags;
+						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItems.Count, selectionManager)
+						{
+							Flags = surfaceFlags
+						};
 					}
 					#endregion
 

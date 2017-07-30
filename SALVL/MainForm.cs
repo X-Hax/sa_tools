@@ -634,10 +634,8 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				string filePath = importFileDialog.FileName;
 
-				bool errorFlag = false;
-				string errorMsg = "";
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -666,10 +664,8 @@ namespace SonicRetro.SAModel.SALVL
 					}
 				}
 
-				bool errorFlag = false;
-				string errorMsg = "";
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -842,9 +838,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			bool errorFlag = false;
-			string errorMsg = "";
-			LevelData.DuplicateSelection(d3ddevice, selectedItems, out errorFlag, out errorMsg);
+			LevelData.DuplicateSelection(d3ddevice, selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}

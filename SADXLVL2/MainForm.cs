@@ -1769,8 +1769,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private HitResult PickItem(Point mouse)
 		{
-			Item item;
-			return PickItem(mouse, out item);
+			return PickItem(mouse, out Item item);
 		}
 
 		private HitResult PickItem(Point mouse, out Item item)
@@ -2385,10 +2384,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			
 			foreach (string s in importFileDialog.FileNames)
 			{
-				bool errorFlag;
-				string errorMsg;
 
-				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
+				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
 					MessageBox.Show(errorMsg);
@@ -2421,10 +2418,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				bool errorFlag;
-				string errorMsg;
 
-				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out errorFlag, out errorMsg, selectedItems));
+				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
 					MessageBox.Show(errorMsg);
@@ -2674,9 +2669,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			bool errorFlag;
-			string errorMsg;
-			LevelData.DuplicateSelection(d3ddevice, selectedItems, out errorFlag, out errorMsg);
+			LevelData.DuplicateSelection(d3ddevice, selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}

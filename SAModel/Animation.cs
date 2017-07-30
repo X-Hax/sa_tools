@@ -25,11 +25,9 @@ namespace SonicRetro.SAModel
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
 			List<byte> result = new List<byte>();
-			uint modeladdr;
-			result.AddRange(Model.GetBytes(imageBase, DX, labels, out modeladdr));
+			result.AddRange(Model.GetBytes(imageBase, DX, labels, out uint modeladdr));
 			uint tmp = (uint)result.Count;
-			uint head2;
-			result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out head2));
+			result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out uint head2));
 			address = (uint)result.Count;
 			result.AddRange(ByteConverter.GetBytes(modeladdr + imageBase));
 			result.AddRange(ByteConverter.GetBytes(head2 + tmp + imageBase));
@@ -43,8 +41,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX)
 		{
-			uint address;
-			return GetBytes(imageBase, DX, out address);
+			return GetBytes(imageBase, DX, out uint address);
 		}
 	}
 
@@ -271,8 +268,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase)
 		{
-			uint address;
-			return GetBytes(imageBase, out address);
+			return GetBytes(imageBase, out uint address);
 		}
 
 		public void ToStructVariables(TextWriter writer)
@@ -430,8 +426,7 @@ namespace SonicRetro.SAModel
 		public byte[] WriteHeader(uint imageBase, uint modeladdr, Dictionary<string, uint> labels, out uint address)
 		{
 			List<byte> result = new List<byte>();
-			uint head2;
-			result.AddRange(GetBytes(imageBase, labels, out head2));
+			result.AddRange(GetBytes(imageBase, labels, out uint head2));
 			address = (uint)result.Count;
 			result.AddRange(ByteConverter.GetBytes(modeladdr));
 			result.AddRange(ByteConverter.GetBytes(head2 + imageBase));
@@ -445,8 +440,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] WriteHeader(uint imageBase, uint modeladdr)
 		{
-			uint address;
-			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out address);
+			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out uint address);
 		}
 
 		public void Save(string filename)
@@ -455,8 +449,7 @@ namespace SonicRetro.SAModel
 			ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
 			file.AddRange(ByteConverter.GetBytes(SAANIMVer));
-			uint addr;
-			byte[] anim = GetBytes(0x14, out addr);
+			byte[] anim = GetBytes(0x14, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x14));
 			file.Align(0x10);
 			file.AddRange(ByteConverter.GetBytes(ModelParts));
@@ -579,10 +572,12 @@ namespace SonicRetro.SAModel
 			}
 			if (f2 == 0)
 				return GetPosition(0);
-			Vertex val = new Vertex();
-			val.X = (((Position[f2].X - Position[f1].X) / (f2 - f1)) * (frame - f1)) + Position[f1].X;
-			val.Y = (((Position[f2].Y - Position[f1].Y) / (f2 - f1)) * (frame - f1)) + Position[f1].Y;
-			val.Z = (((Position[f2].Z - Position[f1].Z) / (f2 - f1)) * (frame - f1)) + Position[f1].Z;
+			Vertex val = new Vertex()
+			{
+				X = (((Position[f2].X - Position[f1].X) / (f2 - f1)) * (frame - f1)) + Position[f1].X,
+				Y = (((Position[f2].Y - Position[f1].Y) / (f2 - f1)) * (frame - f1)) + Position[f1].Y,
+				Z = (((Position[f2].Z - Position[f1].Z) / (f2 - f1)) * (frame - f1)) + Position[f1].Z
+			};
 			return val;
 		}
 
@@ -607,10 +602,12 @@ namespace SonicRetro.SAModel
 			}
 			if (f2 == 0)
 				return GetRotation(0);
-			Rotation val = new Rotation();
-			val.X = (int)Math.Round((((Rotation[f2].X - Rotation[f1].X) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero);
-			val.Y = (int)Math.Round((((Rotation[f2].Y - Rotation[f1].Y) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero);
-			val.Z = (int)Math.Round((((Rotation[f2].Z - Rotation[f1].Z) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero);
+			Rotation val = new Rotation()
+			{
+				X = (int)Math.Round((((Rotation[f2].X - Rotation[f1].X) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero),
+				Y = (int)Math.Round((((Rotation[f2].Y - Rotation[f1].Y) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero),
+				Z = (int)Math.Round((((Rotation[f2].Z - Rotation[f1].Z) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero)
+			};
 			return val;
 		}
 
@@ -635,10 +632,12 @@ namespace SonicRetro.SAModel
 			}
 			if (f2 == 0)
 				return GetScale(0);
-			Vertex val = new Vertex();
-			val.X = (((Scale[f2].X - Scale[f1].X) / (f2 - f1)) * (frame - f1)) + Scale[f1].X;
-			val.Y = (((Scale[f2].Y - Scale[f1].Y) / (f2 - f1)) * (frame - f1)) + Scale[f1].Y;
-			val.Z = (((Scale[f2].Z - Scale[f1].Z) / (f2 - f1)) * (frame - f1)) + Scale[f1].Z;
+			Vertex val = new Vertex()
+			{
+				X = (((Scale[f2].X - Scale[f1].X) / (f2 - f1)) * (frame - f1)) + Scale[f1].X,
+				Y = (((Scale[f2].Y - Scale[f1].Y) / (f2 - f1)) * (frame - f1)) + Scale[f1].Y,
+				Z = (((Scale[f2].Z - Scale[f1].Z) / (f2 - f1)) * (frame - f1)) + Scale[f1].Z
+			};
 			return val;
 		}
 	}

@@ -33,20 +33,18 @@ namespace buildMTN
                 mtnfilename = Path.Combine(Environment.CurrentDirectory, mtnfilename);
                 Environment.CurrentDirectory = Path.GetDirectoryName(mtnfilename);
                 SortedDictionary<short, Animation> anims = new SortedDictionary<short, Animation>();
-                short i;
-                foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mtnfilename), "*.saanim"))
-                    if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out i))
-                        anims.Add(i, Animation.Load(file));
-                List<byte> mtnfile = new List<byte>();
+				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mtnfilename), "*.saanim"))
+					if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
+						anims.Add(i, Animation.Load(file));
+				List<byte> mtnfile = new List<byte>();
                 List<byte> animbytes = new List<byte>();
                 uint imageBase = (uint)(anims.Count * 8) + 8;
                 foreach (KeyValuePair<short, Animation> item in anims)
                 {
                     mtnfile.AddRange(ByteConverter.GetBytes(item.Key));
                     mtnfile.AddRange(ByteConverter.GetBytes((short)item.Value.ModelParts));
-                    uint address;
-                    animbytes.AddRange(item.Value.GetBytes((uint)(imageBase), out address));
-                    mtnfile.AddRange(ByteConverter.GetBytes(imageBase + address));
+					animbytes.AddRange(item.Value.GetBytes((uint)(imageBase), out uint address));
+					mtnfile.AddRange(ByteConverter.GetBytes(imageBase + address));
                     imageBase = (uint)(anims.Count * 8) + 8 + (uint)animbytes.Count;
                 }
                 mtnfile.AddRange(new byte[] { 0xFF, 0xFF, 0, 0, 0, 0, 0, 0 });
