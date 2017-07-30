@@ -61,7 +61,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 2);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
@@ -70,7 +70,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
@@ -79,12 +79,12 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1000000014901161f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

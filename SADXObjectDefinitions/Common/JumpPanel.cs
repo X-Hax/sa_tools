@@ -37,7 +37,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateObject(item.Rotation);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}
@@ -62,7 +62,7 @@ namespace SADXObjectDefinitions.Common
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Panel Number", typeof(int), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (int)v),
-            new PropertySpec("Next Panel", typeof(int), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (int)v)
+			new PropertySpec("Next Panel", typeof(int), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (int)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }

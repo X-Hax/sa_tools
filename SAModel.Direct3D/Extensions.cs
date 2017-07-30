@@ -214,15 +214,8 @@ namespace SonicRetro.SAModel.Direct3D
 				new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, -1 * sphereB.Radius, 0))
 			};
 
-
-
-			CustomVertex.PositionOnly[] pointsArray = allPoints.ToArray();
-
-			float finalRadius;
 			Vector3 center;
-
-			finalRadius = Geometry.ComputeBoundingSphere(pointsArray, VertexFormats.Position, out center);
-
+			float finalRadius = Geometry.ComputeBoundingSphere(allPoints.ToArray(), VertexFormats.Position, out center);
 			return new BoundingSphere(center.ToVertex(), finalRadius);
 		}
 
@@ -338,7 +331,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModelInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -397,7 +390,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTreeInvert(transform, meshes, ref modelindex);
@@ -471,7 +464,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, Device device, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
@@ -1068,54 +1061,54 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			if (obj.Attach != null)
 			{
-				BasicAttach basicAttach = (BasicAttach)obj.Attach;
+				var basicAttach = (BasicAttach)obj.Attach;
 				bool wroteNormals = false;
 				objstream.WriteLine("g " + obj.Name);
 
 				#region Outputting Verts and Normals
-				for (int vIndx = 0; vIndx < basicAttach.Vertex.Length; vIndx++)
+				foreach (Vertex v in basicAttach.Vertex)
 				{
-					Vector3 inputVert = new Vector3(basicAttach.Vertex[vIndx].X, basicAttach.Vertex[vIndx].Y, basicAttach.Vertex[vIndx].Z);
+					Vector3 inputVert = new Vector3(v.X, v.Y, v.Z);
 					Vector3 outputVert = Vector3.TransformCoordinate(inputVert, transform);
 					objstream.WriteLine("v {0} {1} {2}", outputVert.X.ToString(NumberFormatInfo.InvariantInfo), outputVert.Y.ToString(NumberFormatInfo.InvariantInfo), outputVert.Z.ToString(NumberFormatInfo.InvariantInfo));
 				}
 
 				if (basicAttach.Vertex.Length == basicAttach.Normal.Length)
 				{
-					for (int vnIndx = 0; vnIndx < basicAttach.Normal.Length; vnIndx++)
+					foreach (Vertex v in basicAttach.Normal)
 					{
-						objstream.WriteLine("vn {0} {1} {2}", basicAttach.Normal[vnIndx].X.ToString(NumberFormatInfo.InvariantInfo), basicAttach.Normal[vnIndx].Y.ToString(NumberFormatInfo.InvariantInfo), basicAttach.Normal[vnIndx].Z.ToString(NumberFormatInfo.InvariantInfo));
+						objstream.WriteLine("vn {0} {1} {2}", v.X.ToString(NumberFormatInfo.InvariantInfo), v.Y.ToString(NumberFormatInfo.InvariantInfo), v.Z.ToString(NumberFormatInfo.InvariantInfo));
 					}
 					wroteNormals = true;
 				}
 				#endregion
 
 				#region Outputting Meshes
-				for (int meshIndx = 0; meshIndx < basicAttach.Mesh.Count; meshIndx++)
+				foreach (NJS_MESHSET set in basicAttach.Mesh)
 				{
 					if (basicAttach.Material.Count > 0)
 					{
-						if (basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].UseTexture)
+						if (basicAttach.Material[set.MaterialID].UseTexture)
 						{
-							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[basicAttach.Mesh[meshIndx].MaterialID].TextureID);
+							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[set.MaterialID].TextureID);
 						}
 					}
 
-					if (basicAttach.Mesh[meshIndx].UV != null)
+					if (set.UV != null)
 					{
-						for (int uvIndx = 0; uvIndx < basicAttach.Mesh[meshIndx].UV.Length; uvIndx++)
+						foreach (UV uv in set.UV)
 						{
-							objstream.WriteLine("vt {0} {1}", basicAttach.Mesh[meshIndx].UV[uvIndx].U.ToString(NumberFormatInfo.InvariantInfo), (basicAttach.Mesh[meshIndx].UV[uvIndx].V * -1).ToString(NumberFormatInfo.InvariantInfo));
+							objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), (uv.V * -1).ToString(NumberFormatInfo.InvariantInfo));
 						}
 					}
 
 					int processedUVStripCount = 0;
-					for (int polyIndx = 0; polyIndx < basicAttach.Mesh[meshIndx].Poly.Count; polyIndx++)
+					foreach (Poly poly in set.Poly)
 					{
-						switch (basicAttach.Mesh[meshIndx].Poly[polyIndx].PolyType)
+						switch (poly.PolyType)
 						{
 							case Basic_PolyType.Strips:
-								Strip polyStrip = (Strip)basicAttach.Mesh[meshIndx].Poly[polyIndx];
+								var polyStrip = (Strip)poly;
 								int expectedTrisCount = polyStrip.Indexes.Length - 2;
 								bool triangleWindReversed = polyStrip.Reversed;
 
@@ -1123,77 +1116,91 @@ namespace SonicRetro.SAModel.Direct3D
 								{
 									if (triangleWindReversed)
 									{
-										Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
+										Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx + 1] + 1),
+											(polyStrip.Indexes[stripIndx] + 1),
+											(polyStrip.Indexes[stripIndx + 2] + 1));
 
-										if (basicAttach.Mesh[meshIndx].UV != null)
+										if (set.UV != null)
 										{
-											int uv1, uv2, uv3;
-
-											uv1 = (stripIndx + 1) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-											uv2 = (stripIndx) + processedUVStripCount + 1;
-											uv3 = (stripIndx + 2) + processedUVStripCount + 1;
+											int uv1 = (stripIndx + 1) + processedUVStripCount + 1;
+											int uv2 = (stripIndx) + processedUVStripCount + 1;
+											int uv3 = (stripIndx + 2) + processedUVStripCount + 1;
 
 											if (wroteNormals)
+											{
 												objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
 													(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
 													(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
 													(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+											}
 											else
+											{
 												objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
 													(int)newFace.X + totalVerts, uv1 + totalUVs,
 													(int)newFace.Y + totalVerts, uv2 + totalUVs,
 													(int)newFace.Z + totalVerts, uv3 + totalUVs);
+											}
 										}
 										else
 										{
 											if (wroteNormals)
+											{
 												objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
 													(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
 													(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
 													(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+											}
 											else
+											{
 												objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+											}
 										}
 									}
 									else
 									{
 										Vector3 newFace = new Vector3((polyStrip.Indexes[stripIndx] + 1), (polyStrip.Indexes[stripIndx + 1] + 1), (polyStrip.Indexes[stripIndx + 2] + 1));
 
-										if (basicAttach.Mesh[meshIndx].UV != null)
+										if (set.UV != null)
 										{
-											int uv1, uv2, uv3;
-
-											uv1 = (stripIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-											uv2 = stripIndx + 1 + processedUVStripCount + 1;
-											uv3 = stripIndx + 2 + processedUVStripCount + 1;
+											int uv1 = (stripIndx) + processedUVStripCount + 1;
+											int uv2 = stripIndx + 1 + processedUVStripCount + 1;
+											int uv3 = stripIndx + 2 + processedUVStripCount + 1;
 
 											if (wroteNormals)
+											{
 												objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
 													(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
 													(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
 													(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+											}
 											else
+											{
 												objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
 													(int)newFace.X + totalVerts, uv1 + totalUVs,
 													(int)newFace.Y + totalVerts, uv2 + totalUVs,
 													(int)newFace.Z + totalVerts, uv3 + totalUVs);
+											}
 										}
 										else
 										{
 											if (wroteNormals)
+											{
 												objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
 													(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
 													(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
 													(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+											}
 											else
+											{
 												objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+											}
 										}
 									}
 
 									triangleWindReversed = !triangleWindReversed; // flip every other triangle or the output will be wrong
 								}
 
-								if (basicAttach.Mesh[meshIndx].UV != null)
+								if (set.UV != null)
 								{
 									processedUVStripCount += polyStrip.Indexes.Length;
 									objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
@@ -1201,42 +1208,48 @@ namespace SonicRetro.SAModel.Direct3D
 								break;
 
 							case Basic_PolyType.Triangles:
-								for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 3; faceVIndx++)
+								for (int faceVIndx = 0; faceVIndx < poly.Indexes.Length / 3; faceVIndx++)
 								{
-									Vector3 newFace = new Vector3((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx] + 1),
-										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1), (basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1));
+									Vector3 newFace = new Vector3((poly.Indexes[faceVIndx] + 1),
+										(poly.Indexes[faceVIndx + 1] + 1), (poly.Indexes[faceVIndx + 2] + 1));
 
-									if (basicAttach.Mesh[meshIndx].UV != null)
+									if (set.UV != null)
 									{
-										int uv1, uv2, uv3;
-
-										uv1 = (faceVIndx) + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-										uv2 = faceVIndx + 1 + processedUVStripCount + 1;
-										uv3 = faceVIndx + 2 + processedUVStripCount + 1;
+										int uv1 = (faceVIndx) + processedUVStripCount + 1;
+										int uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+										int uv3 = faceVIndx + 2 + processedUVStripCount + 1;
 
 										if (wroteNormals)
+										{
 											objstream.WriteLine("f {0}/{1}/{2} {3}/{4}/{5} {6}/{7}/{8}",
 												(int)newFace.X + totalVerts, uv1 + totalUVs, (int)newFace.X + totalNorms,
 												(int)newFace.Y + totalVerts, uv2 + totalUVs, (int)newFace.Y + totalNorms,
 												(int)newFace.Z + totalVerts, uv3 + totalUVs, (int)newFace.Z + totalNorms);
+										}
 										else
+										{
 											objstream.WriteLine("f {0}/{1} {2}/{3} {4}/{5}",
 												(int)newFace.X + totalVerts, uv1 + totalUVs,
 												(int)newFace.Y + totalVerts, uv2 + totalUVs,
 												(int)newFace.Z + totalVerts, uv3 + totalUVs);
+										}
 									}
 									else
 									{
 										if (wroteNormals)
+										{
 											objstream.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
 												(int)newFace.X + totalVerts, (int)newFace.X + totalNorms,
 												(int)newFace.Y + totalVerts, (int)newFace.Y + totalNorms,
 												(int)newFace.Z + totalVerts, (int)newFace.Z + totalNorms);
+										}
 										else
+										{
 											objstream.WriteLine("f {0} {1} {2}", (int)newFace.X + totalVerts, (int)newFace.Y + totalVerts, (int)newFace.Z + totalVerts);
+										}
 									}
 
-									if (basicAttach.Mesh[meshIndx].UV != null)
+									if (set.UV != null)
 									{
 										processedUVStripCount += 3;
 										objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
@@ -1245,21 +1258,19 @@ namespace SonicRetro.SAModel.Direct3D
 								break;
 
 							case Basic_PolyType.Quads:
-								for (int faceVIndx = 0; faceVIndx < basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes.Length / 4; faceVIndx++)
+								for (int faceVIndx = 0; faceVIndx < poly.Indexes.Length / 4; faceVIndx++)
 								{
-									Vector4 newFace = new Vector4((basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 0] + 1),
-										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 1] + 1),
-										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 2] + 1),
-										(basicAttach.Mesh[meshIndx].Poly[polyIndx].Indexes[faceVIndx + 3] + 1));
+									Vector4 newFace = new Vector4((poly.Indexes[faceVIndx + 0] + 1),
+										(poly.Indexes[faceVIndx + 1] + 1),
+										(poly.Indexes[faceVIndx + 2] + 1),
+										(poly.Indexes[faceVIndx + 3] + 1));
 
-									if (basicAttach.Mesh[meshIndx].UV != null)
+									if (set.UV != null)
 									{
-										int uv1, uv2, uv3, uv4;
-
-										uv1 = faceVIndx + 0 + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
-										uv2 = faceVIndx + 1 + processedUVStripCount + 1;
-										uv3 = faceVIndx + 2 + processedUVStripCount + 1;
-										uv4 = faceVIndx + 3 + processedUVStripCount + 1;
+										int uv1 = faceVIndx + 0 + processedUVStripCount + 1; // +1's are because obj indeces always start at 1, not 0
+										int uv2 = faceVIndx + 1 + processedUVStripCount + 1;
+										int uv3 = faceVIndx + 2 + processedUVStripCount + 1;
+										int uv4 = faceVIndx + 3 + processedUVStripCount + 1;
 
 										if (wroteNormals)
 										{
@@ -1304,7 +1315,7 @@ namespace SonicRetro.SAModel.Direct3D
 										}
 									}
 
-									if (basicAttach.Mesh[meshIndx].UV != null)
+									if (set.UV != null)
 									{
 										processedUVStripCount += 4;
 										objstream.WriteLine("# processed UV strips this poly: {0}", processedUVStripCount);
@@ -1318,7 +1329,10 @@ namespace SonicRetro.SAModel.Direct3D
 						}
 					}
 
-					if (basicAttach.Mesh[meshIndx].UV != null) totalUVs += basicAttach.Mesh[meshIndx].UV.Length;
+					if (set.UV != null)
+					{
+						totalUVs += set.UV.Length;
+					}
 				}
 				#endregion
 
@@ -1379,17 +1393,21 @@ namespace SonicRetro.SAModel.Direct3D
 							}
 						}
 
-						if (chunkAttach.Vertex[vc].Normals.Count > 0)
+						if (chunkAttach.Vertex[vc].Normals.Count <= 0)
 						{
-							if (chunkAttach.Vertex[vc].Flags == 0)
-							{
-								for (int vnIndx = 0; vnIndx < chunkAttach.Vertex[vc].Normals.Count; vnIndx++)
-								{
-									objstream.WriteLine("vn {0} {1} {2}",
-										chunkAttach.Vertex[vc].Normals[vnIndx].X.ToString(NumberFormatInfo.InvariantInfo), chunkAttach.Vertex[vc].Normals[vnIndx].Y.ToString(NumberFormatInfo.InvariantInfo), chunkAttach.Vertex[vc].Normals[vnIndx].Z.ToString(NumberFormatInfo.InvariantInfo));
-									outputNormalCount++;
-								}
-							}
+							continue;
+						}
+
+						if (chunkAttach.Vertex[vc].Flags != 0)
+						{
+							continue;
+						}
+
+						foreach (Vertex v in chunkAttach.Vertex[vc].Normals)
+						{
+							objstream.WriteLine("vn {0} {1} {2}",
+								v.X.ToString(NumberFormatInfo.InvariantInfo), v.Y.ToString(NumberFormatInfo.InvariantInfo), v.Z.ToString(NumberFormatInfo.InvariantInfo));
+							outputNormalCount++;
 						}
 					}
 					#endregion
@@ -1412,9 +1430,9 @@ namespace SonicRetro.SAModel.Direct3D
 									if (chunkStrip.Strips[stripNum].UVs.Length > 0)
 									{
 										uvsAreValid = true;
-										for (int uvIndx = 0; uvIndx < chunkStrip.Strips[stripNum].UVs.Length; uvIndx++)
+										foreach (UV uv in chunkStrip.Strips[stripNum].UVs)
 										{
-											objstream.WriteLine("vt {0} {1}", chunkStrip.Strips[stripNum].UVs[uvIndx].U.ToString(NumberFormatInfo.InvariantInfo), chunkStrip.Strips[stripNum].UVs[uvIndx].V.ToString(NumberFormatInfo.InvariantInfo));
+											objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), uv.V.ToString(NumberFormatInfo.InvariantInfo));
 										}
 									}
 								}
@@ -1581,7 +1599,7 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.LoadMatrix(obj.ProcessTransforms(anim, animframe, transform.Top));
 		}
 
-		private static float[] BAMSTable = {
+		private static readonly float[] sineTable = {
 			0.0F,
 			0.001534F,
 			0.0030680001F,
@@ -2609,29 +2627,29 @@ namespace SonicRetro.SAModel.Direct3D
 			1.0F
 		};
 
-		public static float BAMSToFloat(int BAMS)
+		/// <summary>
+		/// Get the sine of an angle in BAMS.
+		/// </summary>
+		/// <param name="angle">The angle in BAMS.</param>
+		/// <returns>The sine of the angle.</returns>
+		public static float BAMSSin(int angle)
 		{
-			int v1;
-			int v2;
-			int v3;
-			byte v4;
-			double v6;
-			double v7;
-			float v8;
-			int a1 = BAMS;
-			v8 = a1;
-			v4 = (byte)a1;
-			v3 = (a1 >> 4) & 0xFFF;
-			v2 = v4 & 0xF;
-			v1 = v3 & 0xC00;
+			int a1 = angle;
+			float v8 = a1;
+			var v4 = (byte)a1;
+			int v3 = (a1 >> 4) & 0xFFF;
+			int v2 = v4 & 0xF;
+			int v1 = v3 & 0xC00;
 			if (v2 != 0)
 			{
+				double v6;
+				double v7;
 				if (v1 > 0x800)
 				{
 					if (v1 == 0xC00)
 					{
-						v7 = -BAMSTable[4096 - v3];
-						v6 = -BAMSTable[4096 + -v3 - 1];
+						v7 = -sineTable[4096 - v3];
+						v6 = -sineTable[4096 + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 				}
@@ -2639,20 +2657,20 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					if (v1 == 0x800)
 					{
-						v7 = -BAMSTable[-2048 + v3];
-						v6 = -BAMSTable[-2047 + v3];
+						v7 = -sineTable[-2048 + v3];
+						v6 = -sineTable[-2047 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 					if ((v3 & 0xC00) == 0)
 					{
-						v7 = BAMSTable[v3];
-						v6 = BAMSTable[1 + v3];
+						v7 = sineTable[v3];
+						v6 = sineTable[1 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 					if (v1 == 0x400)
 					{
-						v7 = BAMSTable[2048 - v3];
-						v6 = BAMSTable[2048 + -v3 - 1];
+						v7 = sineTable[2048 - v3];
+						v6 = sineTable[2048 + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 				}
@@ -2663,43 +2681,43 @@ namespace SonicRetro.SAModel.Direct3D
 			if (v1 > 0x800)
 			{
 				if (v1 == 0xC00)
-					return -BAMSTable[4096 - v3];
+					return -sineTable[4096 - v3];
 			}
 			else
 			{
 				if (v1 == 0x800)
-					return -BAMSTable[-2048 + v3];
+					return -sineTable[-2048 + v3];
 				if ((v3 & 0xC00) == 0)
-					return BAMSTable[v3];
+					return sineTable[v3];
 				if (v1 == 0x400)
-					return BAMSTable[2048 - v3];
+					return sineTable[2048 - v3];
 			}
 			return v8;
 		}
 
-		public static float BAMSToFloatInv(int BAMS)
+		/// <summary>
+		/// Get the inverse sine of an angle in BAMS.
+		/// </summary>
+		/// <param name="angle">The angle in BAMS.</param>
+		/// <returns>The inverse sine of the angle.</returns>
+		public static float BAMSSinInv(int angle)
 		{
-			int v1;
-			int v2;
-			int v3;
-			byte v4;
-			double v6;
-			double v7;
-			float v8;
-			int a1 = BAMS;
-			v8 = a1;
-			v4 = (byte)a1;
-			v3 = (a1 >> 4) & 0xFFF;
-			v2 = v4 & 0xF;
-			v1 = v3 & 0xC00;
+			int a1 = angle;
+			float v8 = a1;
+			var v4 = (byte)a1;
+			int v3 = (a1 >> 4) & 0xFFF;
+			int v2 = v4 & 0xF;
+			int v1 = v3 & 0xC00;
 			if (v2 != 0)
 			{
+				double v6;
+				double v7;
 				if (v1 > 0x800)
 				{
 					if (v1 == 0xC00)
 					{
-						v7 = BAMSTable[-3072 + v3];
-						v6 = BAMSTable[-3071 + v3];
+						v7 = sineTable[-3072 + v3];
+						v6 = sineTable[-3071 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 				}
@@ -2707,20 +2725,20 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					if (v1 == 0x800)
 					{
-						v7 = -BAMSTable[3072 - v3];
-						v6 = -BAMSTable[3072 + -v3 - 1];
+						v7 = -sineTable[3072 - v3];
+						v6 = -sineTable[3072 + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 					if ((v3 & 0xC00) == 0)
 					{
-						v7 = BAMSTable[(BAMSTable.Length - 1) + -v3];
-						v6 = BAMSTable[(BAMSTable.Length - 1) + -v3 - 1];
+						v7 = sineTable[(sineTable.Length - 1) + -v3];
+						v6 = sineTable[(sineTable.Length - 1) + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 					if (v1 == 0x400)
 					{
-						v7 = -BAMSTable[-1024 + v3];
-						v6 = -BAMSTable[-1023 + v3];
+						v7 = -sineTable[-1024 + v3];
+						v6 = -sineTable[-1023 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 					}
 				}
@@ -2731,16 +2749,16 @@ namespace SonicRetro.SAModel.Direct3D
 			if (v1 > 0x800)
 			{
 				if (v1 == 0xC00)
-					return BAMSTable[-3072 + v3];
+					return sineTable[-3072 + v3];
 			}
 			else
 			{
 				if (v1 == 0x800)
-					return -BAMSTable[3072 - v3];
+					return -sineTable[3072 - v3];
 				if ((v3 & 0xC00) == 0)
-					return BAMSTable[(BAMSTable.Length - 1) - v3];
+					return sineTable[(sineTable.Length - 1) - v3];
 				if (v1 == 0x400)
-					return -BAMSTable[-1024 + v3];
+					return -sineTable[-1024 + v3];
 			}
 			return v8;
 		}

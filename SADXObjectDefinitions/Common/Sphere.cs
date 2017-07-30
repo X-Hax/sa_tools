@@ -40,7 +40,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f);
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

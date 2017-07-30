@@ -47,7 +47,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateObject(item.Rotation);
 			result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
 			if (item.Selected)
-				result.AddRange(centermodel.DrawModelTreeInvert(dev, transform, centermeshes));
+				result.AddRange(centermodel.DrawModelTreeInvert(transform, centermeshes));
 			transform.Pop();
 			/*double v14 = (item.Scale.X + 6.0) * 0.4000000059604645 + 0.6000000238418579;
 			transform.Push();

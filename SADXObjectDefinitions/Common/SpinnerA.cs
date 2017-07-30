@@ -42,7 +42,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("SUPI_SUPI"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			float sx = (item.Scale.X + 70) * 0.1f;
 			transform.NJScale(sx, 0.02f, sx);
