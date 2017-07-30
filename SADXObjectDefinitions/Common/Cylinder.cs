@@ -50,7 +50,7 @@ namespace SADXObjectDefinitions.Common
 
 			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

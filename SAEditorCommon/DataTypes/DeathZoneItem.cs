@@ -70,7 +70,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			List<RenderInfo> result = new List<RenderInfo>();
 			result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
 			if (Selected)
-				result.AddRange(Model.DrawModelInvert(dev, transform, Mesh, false));
+				result.AddRange(Model.DrawModelInvert(transform, Mesh, false));
 			return result;
 		}
 

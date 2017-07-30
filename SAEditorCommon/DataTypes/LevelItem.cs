@@ -128,7 +128,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			else
 				result.AddRange(COL.Model.DrawModel(dev, transform, null, Mesh, Visible));
 			if (Selected)
-				result.AddRange(COL.Model.DrawModelInvert(dev, transform, Mesh, Visible));
+				result.AddRange(COL.Model.DrawModelInvert(transform, Mesh, Visible));
 			return result;
 		}
 

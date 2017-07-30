@@ -41,8 +41,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static void RotateX(ref Matrix matrix, int x)
 		{
-			float v24 = Extensions.BAMSToFloat(x);
-			float v17 = Extensions.BAMSToFloatInv(x);
+			float v24 = Extensions.BAMSSin(x);
+			float v17 = Extensions.BAMSSinInv(x);
 			float v18 = matrix.M21;
 			float v19 = matrix.M22;
 			float v21 = matrix.M23;
@@ -66,8 +66,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static void RotateY(ref Matrix matrix, int y)
 		{
-			float v22 = Extensions.BAMSToFloat(y);
-			float v7 = Extensions.BAMSToFloatInv(y);
+			float v22 = Extensions.BAMSSin(y);
+			float v7 = Extensions.BAMSSinInv(y);
 			float v8 = matrix.M11;
 			float v9 = matrix.M12;
 			float v10 = matrix.M13;
@@ -91,8 +91,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static void RotateZ(ref Matrix matrix, int z)
 		{
-			float v22 = Extensions.BAMSToFloat(z);
-			float v7 = Extensions.BAMSToFloatInv(z);
+			float v22 = Extensions.BAMSSin(z);
+			float v7 = Extensions.BAMSSinInv(z);
 			float v8 = matrix.M11;
 			float v9 = matrix.M12;
 			float v10 = matrix.M13;

@@ -37,7 +37,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateObject(item.Rotation);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

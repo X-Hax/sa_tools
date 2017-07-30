@@ -43,7 +43,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJTranslate(-0.5f, 0, 0);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("mecha"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

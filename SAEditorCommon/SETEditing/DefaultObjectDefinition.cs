@@ -83,7 +83,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
 				result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes));
 				if (item.Selected)
-					result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+					result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			}
 			transform.Pop();
 			return result;

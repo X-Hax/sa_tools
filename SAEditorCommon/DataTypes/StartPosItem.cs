@@ -80,7 +80,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.NJRotateY(YRotation);
 			result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
 			if (Selected)
-				result.AddRange(Model.DrawModelTreeInvert(dev, transform, Meshes));
+				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes));
 			transform.Pop();
 			return result;
 		}

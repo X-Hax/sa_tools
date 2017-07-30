@@ -4,7 +4,6 @@ using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using System;
 using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission
@@ -38,7 +37,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("mi_3dasu"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}

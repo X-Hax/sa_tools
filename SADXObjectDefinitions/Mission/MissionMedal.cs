@@ -37,7 +37,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJRotateX(0x4000);
 			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(dev, transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
 		}
