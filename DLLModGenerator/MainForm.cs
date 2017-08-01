@@ -200,7 +200,7 @@ namespace DLLModGenerator
 									str = $"{tex.Export}[{tex.Index.Value}]";
 								else
 									str = tex.Export;
-								writer.WriteLine("\t{0}.TexList = {1}", item.Key, str);
+								writer.WriteLine("\t{0}.TexList = {1};", item.Key, str);
 							}
 						}
 						writer.WriteLine("}");
