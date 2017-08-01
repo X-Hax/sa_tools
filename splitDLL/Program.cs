@@ -80,9 +80,11 @@ namespace splitDLL
 			int itemcount = 0;
 			List<string> labels = new List<string>();
 			ModelAnimationsDictionary models = new ModelAnimationsDictionary();
-			DllIniData output = new DllIniData();
-			output.Name = inifile.ModuleName;
-			output.Game = inifile.Game;
+			DllIniData output = new DllIniData()
+			{
+				Name = inifile.ModuleName,
+				Game = inifile.Game
+			};
 			Stopwatch timer = new Stopwatch();
 			timer.Start();
 			foreach (KeyValuePair<string, FileInfo> item in inifile.Files)
@@ -100,9 +102,11 @@ namespace splitDLL
 					case "landtable":
 						{
 							LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
-							DllItemInfo info = new DllItemInfo();
-							info.Export = name;
-							info.Label = land.Name;
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = land.Name
+							};
 							output.Items.Add(info);
 							if (!labels.Contains(land.Name))
 							{
@@ -121,10 +125,12 @@ namespace splitDLL
 								ptr = (int)(ptr - imageBase);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = land.Name;
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = land.Name
+								};
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
@@ -139,10 +145,12 @@ namespace splitDLL
 						break;
 					case "model":
 						{
-							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, modelfmt);
-							DllItemInfo info = new DllItemInfo();
-							info.Export = name;
-							info.Label = mdl.Name;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = mdl.Name
+							};
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
@@ -151,35 +159,41 @@ namespace splitDLL
 							}
 						}
 						break;
-                    case "morph":
-                        {
-                            SonicRetro.SAModel.BasicAttach dummy = new SonicRetro.SAModel.BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
-                            NJS_OBJECT mdl = new NJS_OBJECT();
-                            mdl.Attach = dummy;
-                            DllItemInfo info = new DllItemInfo();
-                            info.Export = name;
-                            info.Label = dummy.Name;
-                            output.Items.Add(info);
-                            if (!labels.Contains(dummy.Name))
-                            {
-                                models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
-                                labels.AddRange(mdl.GetLabels());
-                            }
-                        }
-                        break;
-                    case "modelarray":
+					case "morph":
+						{
+							BasicAttach dummy = new BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
+							NJS_OBJECT mdl = new NJS_OBJECT()
+							{
+								Attach = dummy
+							};
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = dummy.Name
+							};
+							output.Items.Add(info);
+							if (!labels.Contains(dummy.Name))
+							{
+								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+								labels.AddRange(mdl.GetLabels());
+							}
+						}
+						break;
+					case "modelarray":
 						for (int i = 0; i < data.Length; i++)
 						{
 							int ptr = BitConverter.ToInt32(datafile, address);
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = mdl.Name;
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = mdl.Name
+								};
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
@@ -191,38 +205,44 @@ namespace splitDLL
 							address += 4;
 						}
 						break;
-                    case "modelsarray":
-                        for (int i = 0; i < data.Length; i++)
-                        {
-                            int ptr = BitConverter.ToInt32(datafile, address);
-                            if (ptr != 0)
-                            {
-                                ptr = (int)(ptr - imageBase);
-                                SonicRetro.SAModel.BasicAttach dummy = new SonicRetro.SAModel.BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
-                                NJS_OBJECT mdl = new NJS_OBJECT();
-                                mdl.Attach = dummy;
-                                string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-                                DllItemInfo info = new DllItemInfo();
-                                info.Export = name;
-                                info.Index = i;
-                                info.Label = dummy.Name;
-                                output.Items.Add(info);
-                                if (!labels.Contains(dummy.Name))
-                                {
-                                    string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
-                                    models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-                                    labels.AddRange(mdl.GetLabels());
-                                }
-                            }
-                            address += 4;
-                        }
-                        break;
-                    case "basicmodel":
+					case "modelsarray":
+						for (int i = 0; i < data.Length; i++)
 						{
-							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
-							DllItemInfo info = new DllItemInfo();
-							info.Export = name;
-							info.Label = mdl.Name;
+							int ptr = BitConverter.ToInt32(datafile, address);
+							if (ptr != 0)
+							{
+								ptr = (int)(ptr - imageBase);
+								BasicAttach dummy = new BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
+								NJS_OBJECT mdl = new NJS_OBJECT()
+								{
+									Attach = dummy
+								};
+								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = dummy.Name
+								};
+								output.Items.Add(info);
+								if (!labels.Contains(dummy.Name))
+								{
+									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
+									labels.AddRange(mdl.GetLabels());
+								}
+							}
+							address += 4;
+						}
+						break;
+					case "basicmodel":
+						{
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = mdl.Name
+							};
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
@@ -238,12 +258,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = mdl.Name;
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = mdl.Name
+								};
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
@@ -257,10 +279,12 @@ namespace splitDLL
 						break;
 					case "basicdxmodel":
 						{
-							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
-							DllItemInfo info = new DllItemInfo();
-							info.Export = name;
-							info.Label = mdl.Name;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = mdl.Name
+							};
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
@@ -276,12 +300,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = mdl.Name;
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = mdl.Name
+								};
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
@@ -295,10 +321,12 @@ namespace splitDLL
 						break;
 					case "chunkmodel":
 						{
-							SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
-							DllItemInfo info = new DllItemInfo();
-							info.Export = name;
-							info.Label = mdl.Name;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
+							DllItemInfo info = new DllItemInfo()
+							{
+								Export = name,
+								Label = mdl.Name
+							};
 							output.Items.Add(info);
 							if (!labels.Contains(mdl.Name))
 							{
@@ -314,12 +342,14 @@ namespace splitDLL
 							if (ptr != 0)
 							{
 								ptr = (int)(ptr - imageBase);
-								SonicRetro.SAModel.NJS_OBJECT mdl = new SonicRetro.SAModel.NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = mdl.Name;
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = mdl.Name
+								};
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
@@ -341,17 +371,21 @@ namespace splitDLL
 								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
 								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 								ani.Animation.Name = item.Key + "_" + i;
-								DllItemInfo info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = ani.Animation.Name;
-								info.Field = "motion";
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = ani.Animation.Name,
+									Field = "motion"
+								};
 								output.Items.Add(info);
-								info = new DllItemInfo();
-								info.Export = name;
-								info.Index = i;
-								info.Label = ani.Model.Name;
-								info.Field = "object";
+								info = new DllItemInfo()
+								{
+									Export = name,
+									Index = i,
+									Label = ani.Model.Name,
+									Field = "object"
+								};
 								output.Items.Add(info);
 								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 								ani.Animation.Save(fn);
@@ -371,6 +405,22 @@ namespace splitDLL
 									output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
 								}
 							}
+							address += 4;
+						}
+						break;
+					case "texlist":
+						if (output.TexLists == null)
+							output.TexLists = new TexListContainer();
+						output.TexLists.Add((uint)(address + imageBase), new DllTexListInfo(name, null));
+						break;
+					case "texlistarray":
+						if (output.TexLists == null)
+							output.TexLists = new TexListContainer();
+						for (int i = 0; i < data.Length; i++)
+						{
+							uint ptr = BitConverter.ToUInt32(datafile, address);
+							if (ptr != 0)
+								output.TexLists.Add(ptr, new DllTexListInfo(name, i));
 							address += 4;
 						}
 						break;
@@ -431,13 +481,13 @@ namespace splitDLL
 			return labels;
 		}
 
-		static List<string> GetLabels(this SonicRetro.SAModel.NJS_OBJECT obj)
+		static List<string> GetLabels(this NJS_OBJECT obj)
 		{
 			List<string> labels = new List<string>() { obj.Name };
 			if (obj.Attach != null)
 				labels.AddRange(obj.Attach.GetLabels());
 			if (obj.Children != null)
-				foreach (SonicRetro.SAModel.NJS_OBJECT o in obj.Children)
+				foreach (NJS_OBJECT o in obj.Children)
 					labels.AddRange(o.GetLabels());
 			return labels;
 		}
@@ -445,9 +495,8 @@ namespace splitDLL
 		static List<string> GetLabels(this Attach att)
 		{
 			List<string> labels = new List<string>() { att.Name };
-			if (att is BasicAttach)
+			if (att is BasicAttach bas)
 			{
-				BasicAttach bas = (BasicAttach)att;
 				if (bas.VertexName != null)
 					labels.Add(bas.VertexName);
 				if (bas.NormalName != null)
@@ -457,9 +506,8 @@ namespace splitDLL
 				if (bas.MeshName != null)
 					labels.Add(bas.MeshName);
 			}
-			else if (att is ChunkAttach)
+			else if (att is ChunkAttach cnk)
 			{
-				ChunkAttach cnk = (ChunkAttach)att;
 				if (cnk.VertexName != null)
 					labels.Add(cnk.VertexName);
 				if (cnk.PolyName != null)
@@ -481,11 +529,11 @@ namespace splitDLL
 	{
 		public string Filename { get; private set; }
 		public string Name { get; private set; }
-		public SonicRetro.SAModel.NJS_OBJECT Model { get; private set; }
+		public NJS_OBJECT Model { get; private set; }
 		public ModelFormat Format { get; private set; }
 		public List<string> Animations { get; private set; }
 
-		public ModelAnimations(string filename, string name, SonicRetro.SAModel.NJS_OBJECT model, ModelFormat format)
+		public ModelAnimations(string filename, string name, NJS_OBJECT model, ModelFormat format)
 		{
 			Filename = filename;
 			Name = name;

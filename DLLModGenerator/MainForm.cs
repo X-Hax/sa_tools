@@ -31,7 +31,9 @@ namespace DLLModGenerator
 			{ "chunkmodelarray", "NJS_OBJECT **" },
 			{ "actionarray", "NJS_ACTION **" },
             { "morph", "NJS_MODEL_SADX *" },
-            { "modelsarray", "NJS_MODEL_SADX **" }
+            { "modelsarray", "NJS_MODEL_SADX **" },
+			{ "texlist", "NJS_TEXLIST *" },
+			{ "texlistarray", "NJS_TEXLIST **" }
 		};
 
 		DllIniData IniData;
@@ -142,12 +144,14 @@ namespace DLLModGenerator
 							writer.WriteLine("#include \"SADXModLoader.h\"");
 						writer.WriteLine();
 						List<string> labels = new List<string>();
+						Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 						foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
 						{
 							switch (item.Value.Type)
 							{
 								case "landtable":
 									LandTable tbl = LandTable.LoadFromFile(item.Key);
+									texlists.Add(tbl.Name, tbl.TextureList);
 									tbl.ToStructVariables(writer, landfmt, new List<string>());
 									labels.AddRange(tbl.GetLabels());
 									break;
@@ -183,6 +187,22 @@ namespace DLLModGenerator
 							writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
 						foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
 							writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
+						if (texlists.Count > 0 && IniData.TexLists != null)
+						{
+							exports = new List<string>(IniData.TexLists.Where(item => texlists.Values.Contains(item.Key)).Select(item => item.Value.Export).Distinct());
+							foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
+								writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
+							foreach (KeyValuePair<string, uint> item in texlists)
+							{
+								DllTexListInfo tex = IniData.TexLists[item.Value];
+								string str;
+								if (tex.Index.HasValue)
+									str = $"{tex.Export}[{tex.Index.Value}]";
+								else
+									str = tex.Export;
+								writer.WriteLine("\t{0}.TexList = {1}", item.Key, str);
+							}
+						}
 						writer.WriteLine("}");
 						writer.WriteLine();
 						writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
@@ -195,11 +215,13 @@ namespace DLLModGenerator
 				if (fd.ShowDialog(this) == DialogResult.OK)
 				{
 					string dstfol = Path.GetDirectoryName(fd.FileName);
-					DllIniData output = new DllIniData();
-					output.Name = IniData.Name;
-					output.Game = IniData.Game;
-					output.Exports = IniData.Exports;
-					output.Files = new DictionaryContainer<FileTypeHash>();
+					DllIniData output = new DllIniData()
+					{
+						Name = IniData.Name,
+						Game = IniData.Game,
+						Exports = IniData.Exports,
+						Files = new DictionaryContainer<FileTypeHash>()
+					};
 					List<string> labels = new List<string>();
 					foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
 					{
@@ -271,9 +293,8 @@ namespace DLLModGenerator
 		internal static List<string> GetLabels(this Attach att)
 		{
 			List<string> labels = new List<string>() { att.Name };
-			if (att is BasicAttach)
+			if (att is BasicAttach bas)
 			{
-				BasicAttach bas = (BasicAttach)att;
 				if (bas.VertexName != null)
 					labels.Add(bas.VertexName);
 				if (bas.NormalName != null)
@@ -283,9 +304,8 @@ namespace DLLModGenerator
 				if (bas.MeshName != null)
 					labels.Add(bas.MeshName);
 			}
-			else if (att is ChunkAttach)
+			else if (att is ChunkAttach cnk)
 			{
-				ChunkAttach cnk = (ChunkAttach)att;
 				if (cnk.VertexName != null)
 					labels.Add(cnk.VertexName);
 				if (cnk.PolyName != null)

@@ -44,6 +44,7 @@ namespace DLLModGenerator
 		public Game Game { get; set; }
 		public DictionaryContainer<string> Exports { get; set; }
 		public DictionaryContainer<FileTypeHash> Files { get; set; }
+		public TexListContainer TexLists { get; set; }
 		[IniName("Item")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<DllItemInfo> Items { get; set; }
@@ -120,7 +121,7 @@ namespace DLLModGenerator
 		}
 	}
 
-	[System.ComponentModel.TypeConverter(typeof(StringConverter<FileTypeHash>))]
+	[TypeConverter(typeof(StringConverter<FileTypeHash>))]
 	public class FileTypeHash
 	{
 		public string Type { get; set; }
@@ -145,6 +146,99 @@ namespace DLLModGenerator
 			if (Hash != null)
 				return Type + "|" + Hash;
 			return Type;
+		}
+	}
+
+	public class TexListContainer : IEnumerable<KeyValuePair<uint, DllTexListInfo>>
+	{
+		[IniCollection(IniCollectionMode.IndexOnly, KeyConverter = typeof(UInt32HexConverter))]
+		public Dictionary<uint, DllTexListInfo> Items { get; set; }
+
+		public TexListContainer()
+		{
+			Items = new Dictionary<uint, DllTexListInfo>();
+		}
+
+		public void Add(uint key, DllTexListInfo value)
+		{
+			Items.Add(key, value);
+		}
+
+		public bool ContainsKey(uint key)
+		{
+			return Items.ContainsKey(key);
+		}
+
+		public bool Remove(uint key)
+		{
+			return Items.Remove(key);
+		}
+
+		public bool TryGetValue(uint key, out DllTexListInfo value)
+		{
+			return Items.TryGetValue(key, out value);
+		}
+
+		public DllTexListInfo this[uint key]
+		{
+			get
+			{
+				return Items[key];
+			}
+			set
+			{
+				Items[key] = value;
+			}
+		}
+
+		public void Clear()
+		{
+			Items.Clear();
+		}
+
+		[IniIgnore]
+		public int Count
+		{
+			get { return Items.Count; }
+		}
+
+		public IEnumerator<KeyValuePair<uint, DllTexListInfo>> GetEnumerator()
+		{
+			return Items.GetEnumerator();
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+	}
+
+	[TypeConverter(typeof(StringConverter<DllTexListInfo>))]
+	public class DllTexListInfo
+	{
+		public string Export { get; set; }
+		public int? Index { get; set; }
+
+		public DllTexListInfo(string data)
+		{
+			string[] split = data.Split(',');
+			Export = split[0];
+			if (split.Length > 1)
+				Index = int.Parse(split[1]);
+		}
+
+		public DllTexListInfo(string export, int? index)
+		{
+			Export = export;
+			Index = index;
+		}
+
+		public override string ToString()
+		{
+			if (Index.HasValue)
+				return $"{Export},{Index}";
+			else
+				return Export;
 		}
 	}
 
