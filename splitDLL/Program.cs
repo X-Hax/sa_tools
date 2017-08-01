@@ -424,7 +424,7 @@ namespace splitDLL
 						for (int i = 0; i < data.Length; i++)
 						{
 							uint ptr = BitConverter.ToUInt32(datafile, address);
-							if (ptr != 0)
+							if (ptr != 0 && !output.TexLists.ContainsKey(ptr))
 								output.TexLists.Add(ptr, new DllTexListInfo(name, i));
 							address += 4;
 						}
