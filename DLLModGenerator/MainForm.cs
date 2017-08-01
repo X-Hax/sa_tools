@@ -220,6 +220,7 @@ namespace DLLModGenerator
 						Name = IniData.Name,
 						Game = IniData.Game,
 						Exports = IniData.Exports,
+						TexLists = IniData.TexLists,
 						Files = new DictionaryContainer<FileTypeHash>()
 					};
 					List<string> labels = new List<string>();
