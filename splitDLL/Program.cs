@@ -95,8 +95,13 @@ namespace splitDLL
 				string name = item.Key;
 				output.Exports[name] = type;
 				int address = exports[name];
-				Console.WriteLine(name + " → " + data.Filename);
-				Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
+				if (data.Filename != null)
+				{
+					Console.WriteLine(name + " -> " + data.Filename);
+					Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
+				}
+				else
+					Console.WriteLine(name);
 				switch (type)
 				{
 					case "landtable":
