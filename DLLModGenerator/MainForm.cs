@@ -187,7 +187,7 @@ namespace DLLModGenerator
 							writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
 						foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
 							writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
-						if (texlists.Count > 0 && IniData.TexLists != null)
+						if (texlists.Count > 0 && IniData.TexLists != null && IniData.TexLists.Items != null)
 						{
 							exports = new List<string>(IniData.TexLists.Where(item => texlists.Values.Contains(item.Key)).Select(item => item.Value.Export).Distinct());
 							foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
