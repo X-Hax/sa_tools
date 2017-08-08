@@ -192,7 +192,7 @@ namespace DLLModGenerator
 							exports = new List<string>(IniData.TexLists.Where(item => texlists.Values.Contains(item.Key)).Select(item => item.Value.Export).Distinct());
 							foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
 								writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
-							foreach (KeyValuePair<string, uint> item in texlists)
+							foreach (KeyValuePair<string, uint> item in texlists.Where(item => IniData.TexLists.ContainsKey(item.Value)))
 							{
 								DllTexListInfo tex = IniData.TexLists[item.Value];
 								string str;
