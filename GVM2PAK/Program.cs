@@ -55,6 +55,11 @@ namespace GVM2PAK
 					{
 						pvmfile = new GvmArchive();
 						gvm = true;
+						if (!pvmfile.Is(pvmdata, filename))
+						{
+							Console.WriteLine("{0} is not a valid file.", filename);
+							continue;
+						}
 					}
 					ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
 					bool fail = false;
