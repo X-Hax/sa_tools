@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/Jump Panel.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/O JPanel.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 

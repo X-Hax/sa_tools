@@ -16,7 +16,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Collision/Cylinder.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Collision/C CYLINDER.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 

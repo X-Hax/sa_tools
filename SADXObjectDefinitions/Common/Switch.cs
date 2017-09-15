@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/Switch.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/O SWITCH.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 		}
 

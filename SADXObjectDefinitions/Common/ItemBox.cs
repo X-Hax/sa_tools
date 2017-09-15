@@ -65,7 +65,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/Item Box/Ground.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/O ITEMBOX.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 2;
 		}
@@ -85,7 +85,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name, Device dev)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/Item Box/Air.sa1mdl");
+			model = ObjectHelper.LoadModel("Objects/Common/O ItemBoxAir.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
 			childindex = 1;
 		}
