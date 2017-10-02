@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
@@ -49,7 +49,7 @@ namespace SADXObjectDefinitions.Common
 		internal int[] charTexs = { 31, 0, 4, 0, 0, 1, 3, 2 };
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Item", typeof(Item), "Extended", null, null, (o) => (Items)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
+			new PropertySpec("Item", typeof(Items), "Extended", null, null, (o) => (Items)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
