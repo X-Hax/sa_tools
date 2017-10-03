@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,6 +12,7 @@ using Microsoft.DirectX.Direct3D;
 using SA_Tools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
+using System.Linq;
 
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
@@ -2516,7 +2517,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-					int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+                    int levelItemsCount = LevelData.LevelItems.Count(v => mode == 0 || (mode == 1 && v.Visible) || (mode == 2 && !v.Visible));
+                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + levelItemsCount;
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
@@ -2563,7 +2565,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                             Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
                                 ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-                            progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+                            progress.Step = String.Format("Mesh {0}/{1}", i + 1, levelItemsCount);
                             progress.StepProgress();
                             Application.DoEvents();
                         }
