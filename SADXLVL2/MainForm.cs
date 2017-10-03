@@ -2484,7 +2484,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 		}
 
-		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
+        private void allToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(0);
+        }
+
+        private void visibleToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(1);
+        }
+
+        private void invisibleToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(2);
+        }
+
+        private void exportOBJ(int mode)
 		{
 			SaveFileDialog a = new SaveFileDialog
 			{
@@ -2543,12 +2558,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					for (int i = 0; i < LevelData.geo.COL.Count; i++)
 					{
-						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
-							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        if (mode == 0 || (mode == 1 && LevelData.LevelItems[i].Visible) || (mode == 2 && !LevelData.LevelItems[i].Visible))
+                        {
+                            Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
+                                ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-						progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
-						progress.StepProgress();
-						Application.DoEvents();
+                            progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+                            progress.StepProgress();
+                            Application.DoEvents();
+                        }
 					}
 					if (LevelData.geo.Anim != null)
 					{
@@ -2896,5 +2914,5 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
 		}
-	}
+    }
 }
