@@ -2485,22 +2485,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 		}
 
+        private enum exportModes
+        {
+            all,
+            visible,
+            invisible
+        }
+
         private void allToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            exportOBJ(0);
+            exportOBJ(exportModes.all);
         }
 
         private void visibleToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            exportOBJ(1);
+            exportOBJ(exportModes.visible);
         }
 
         private void invisibleToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            exportOBJ(2);
+            exportOBJ(exportModes.invisible);
         }
 
-        private void exportOBJ(int mode)
+        private void exportOBJ(exportModes mode)
 		{
 			SaveFileDialog a = new SaveFileDialog
 			{
@@ -2517,7 +2524,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-                    int levelItemsCount = LevelData.LevelItems.Count(v => mode == 0 || (mode == 1 && v.Visible) || (mode == 2 && !v.Visible));
+                    int levelItemsCount = LevelData.LevelItems.Count(v => mode == exportModes.all || (mode == exportModes.visible && v.Visible) || (mode == exportModes.invisible && !v.Visible));
                     int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + levelItemsCount;
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
@@ -2560,7 +2567,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					for (int i = 0; i < LevelData.geo.COL.Count; i++)
 					{
-                        if (mode == 0 || (mode == 1 && LevelData.LevelItems[i].Visible) || (mode == 2 && !LevelData.LevelItems[i].Visible))
+                        if (mode == exportModes.all || (mode == exportModes.visible && LevelData.LevelItems[i].Visible) || (mode == exportModes.invisible && !LevelData.LevelItems[i].Visible))
                         {
                             Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
                                 ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
