@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,6 +12,7 @@ using Microsoft.DirectX.Direct3D;
 using SA_Tools;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
+using System.Linq;
 
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
@@ -2484,7 +2485,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 		}
 
-		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
+        private enum exportModes
+        {
+            all,
+            visible,
+            invisible
+        }
+
+        private void allToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(exportModes.all);
+        }
+
+        private void visibleToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(exportModes.visible);
+        }
+
+        private void invisibleToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            exportOBJ(exportModes.invisible);
+        }
+
+        private void exportOBJ(exportModes mode)
 		{
 			SaveFileDialog a = new SaveFileDialog
 			{
@@ -2501,7 +2524,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-					int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+                    List<LevelItem> levelItemsExport = LevelData.LevelItems.Where(v => mode == exportModes.all || (mode == exportModes.visible && v.Visible) || (mode == exportModes.invisible && !v.Visible)).ToList();
+
+                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + levelItemsExport.Count;
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
@@ -2541,14 +2566,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					bool errorFlag = false;
 
-					for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					for (int i = 0; i < levelItemsExport.Count; i++)
 					{
-						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
-							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        //if (mode == exportModes.all || (mode == exportModes.visible && LevelData.LevelItems[i].Visible) || (mode == exportModes.invisible && !LevelData.LevelItems[i].Visible))
+                        Direct3D.Extensions.WriteModelAsObj(objstream, levelItemsExport[i].CollisionData.Model, materialPrefix, new MatrixStack(),
+                            ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-						progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
-						progress.StepProgress();
-						Application.DoEvents();
+                        progress.Step = String.Format("Mesh {0}/{1}", i + 1, levelItemsExport.Count);
+                        progress.StepProgress();
+                        Application.DoEvents();
 					}
 					if (LevelData.geo.Anim != null)
 					{
@@ -2896,5 +2922,5 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
 		}
-	}
+    }
 }
