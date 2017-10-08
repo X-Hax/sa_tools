@@ -2524,8 +2524,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-                    int levelItemsCount = LevelData.LevelItems.Count(v => mode == exportModes.all || (mode == exportModes.visible && v.Visible) || (mode == exportModes.invisible && !v.Visible));
-                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + levelItemsCount;
+                    List<LevelItem> levelItemsExport = LevelData.LevelItems.Where(v => mode == exportModes.all || (mode == exportModes.visible && v.Visible) || (mode == exportModes.invisible && !v.Visible)).ToList();
+
+                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + levelItemsExport.Count;
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
@@ -2565,17 +2566,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					bool errorFlag = false;
 
-					for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					for (int i = 0; i < levelItemsExport.Count; i++)
 					{
-                        if (mode == exportModes.all || (mode == exportModes.visible && LevelData.LevelItems[i].Visible) || (mode == exportModes.invisible && !LevelData.LevelItems[i].Visible))
-                        {
-                            Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
-                                ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        //if (mode == exportModes.all || (mode == exportModes.visible && LevelData.LevelItems[i].Visible) || (mode == exportModes.invisible && !LevelData.LevelItems[i].Visible))
+                        Direct3D.Extensions.WriteModelAsObj(objstream, levelItemsExport[i].CollisionData.Model, materialPrefix, new MatrixStack(),
+                            ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-                            progress.Step = String.Format("Mesh {0}/{1}", i + 1, levelItemsCount);
-                            progress.StepProgress();
-                            Application.DoEvents();
-                        }
+                        progress.Step = String.Format("Mesh {0}/{1}", i + 1, levelItemsExport.Count);
+                        progress.StepProgress();
+                        Application.DoEvents();
 					}
 					if (LevelData.geo.Anim != null)
 					{
