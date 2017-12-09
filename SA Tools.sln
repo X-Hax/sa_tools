@@ -75,7 +75,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SETCodeGenerator", "SETCode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTool", "ArchiveTool\ArchiveTool.csproj", "{ABE90887-11AC-4FDE-B58A-1841BEA128B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaraibleListGenerator", "VaraibleListGenerator\VaraibleListGenerator.csproj", "{BD125752-C906-4935-8E7C-7BB2AB741143}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariableListGenerator", "VariableListGenerator\VariableListGenerator.csproj", "{BD125752-C906-4935-8E7C-7BB2AB741143}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace VaraibleListGenerator
+namespace VariableListGenerator
 {
 	class Program
 	{
