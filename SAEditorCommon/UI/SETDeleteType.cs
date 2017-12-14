@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -29,18 +29,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			deleteType = (ushort)delTypeDropDown.SelectedIndex;
 
-			for (int itemIndx = 0; itemIndx < LevelData.SETItems[LevelData.Character].Count; itemIndx++)
-			{
-				List<SETItem> removeItems = new List<SETItem>();
-				if (LevelData.SETItems[LevelData.Character][itemIndx].ID == deleteType)
-				{
-					removeItems.Add(LevelData.SETItems[LevelData.Character][itemIndx]);
-				}
+			var removeItems = LevelData.SETItems[LevelData.Character].Where(item => item.ID == deleteType);
 
-				foreach (SETItem item in removeItems)
-				{
-					LevelData.SETItems[LevelData.Character].Remove(item);
-				}
+			foreach (SETItem item in removeItems)
+			{
+				LevelData.SETItems[LevelData.Character].Remove(item);
 			}
 
 			DialogResult = DialogResult.OK;
