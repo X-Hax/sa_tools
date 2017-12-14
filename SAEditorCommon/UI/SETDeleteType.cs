@@ -1,6 +1,7 @@
 ﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -29,12 +30,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			deleteType = (ushort)delTypeDropDown.SelectedIndex;
 
-			var removeItems = LevelData.SETItems[LevelData.Character].Where(item => item.ID == deleteType);
-
-			foreach (SETItem item in removeItems)
-			{
-				LevelData.SETItems[LevelData.Character].Remove(item);
-			}
+			LevelData.SETItems[LevelData.Character].RemoveAll(item => item.ID == deleteType);
 
 			DialogResult = DialogResult.OK;
 			Close();
