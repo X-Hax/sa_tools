@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 <ItemGroup>
+    <Reference Include="FraGag.Compression.Prs">
+      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
+    </Reference>
     <Reference Include="PuyoTools.Modules">
       <HintPath>..\Dependencies\PuyoTools.Modules.dll</HintPath>
     </Reference>
