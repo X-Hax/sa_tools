@@ -12,12 +12,14 @@ namespace ArchiveTool
 		{
 			if (args.Length == 0)
 			{
-				Console.WriteLine("Error - please specify a texture list (.txt), a PVM archive (.pvm), or a GVM archive (.gvm).");
-				Console.WriteLine("Press ENTER to continue...");
+				Console.WriteLine("Error - please specify a texture list (.txt), or a PRS/PVM/GVM archive.");
+				Console.WriteLine("Press ENTER to exit.");
 				Console.ReadLine();
 				return;
 			}
 			string filePath = args[0];
+			bool IsPRS = false;
+            		if (args.Length > 1 && args[1] == "-prs") IsPRS = true;
 			string directoryName = Path.GetDirectoryName(filePath);
 			string extension = Path.GetExtension(filePath).ToLowerInvariant();
 			switch (extension)
@@ -54,15 +56,23 @@ namespace ArchiveTool
 								pvmWriter.CreateEntryFromFile(Path.Combine(directoryName, Path.ChangeExtension(tex, ".pvr")));
 							pvmWriter.Flush();
 						}
-						Console.WriteLine("PVM was compiled successfully!");
+						if (IsPRS == true)
+						{
+                            			byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
+                            			pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+                            			File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), pvmdata);
+                            			File.Delete(Path.ChangeExtension(filePath, ".pvm"));
+						}
+						Console.WriteLine("Archive was compiled successfully!");
 					}
 					else // error, supplied path is invalid
 					{
-						Console.WriteLine("Supplied texture list/PVM does not exist!");
-						Console.WriteLine("Press ENTER to continue...");
+						Console.WriteLine("Supplied archive/texture list does not exist!");
+						Console.WriteLine("Press ENTER to exit.");
 						Console.ReadLine();
 					}
 					break;
+				case ".prs":
 				case ".pvm":
 				case ".gvm":
 					string path = Path.Combine(directoryName, Path.GetFileNameWithoutExtension(filePath));
@@ -74,6 +84,7 @@ namespace ArchiveTool
 						{
 							ArchiveBase pvmfile = null;
 							byte[] pvmdata = File.ReadAllBytes(filePath);
+							if (extension == ".prs") pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 							pvmfile = new PvmArchive();
 							if (!pvmfile.Is(pvmdata, filePath))
 								pvmfile = new GvmArchive();
