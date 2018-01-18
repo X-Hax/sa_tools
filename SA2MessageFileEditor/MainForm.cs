@@ -39,7 +39,7 @@ namespace SA2MessageFileEditor
 			{
 				Settings settings = Settings.Load(settingsPath);
 				if (settings.RecentFiles != null)
-					recentFiles = settings.RecentFiles;
+					recentFiles = new List<string>(settings.RecentFiles.Where(a => File.Exists(a)));
 				if (recentFiles.Count > 0)
 					UpdateRecentFiles();
 				bigEndian = settings.BigEndian;
@@ -117,13 +117,18 @@ namespace SA2MessageFileEditor
 				address += 4;
 				off = ByteConverter.ToInt32(fc, address);
 			}
-			messageNum.Items.Clear();
-			if (messages.Count > 0)
-				messageNum.Items.AddRange(messages.Select((a, i) => (object)((i + 1).ToString() + ": " + a[0].GetPreview())).ToArray());
+			UpdateMessageSelect();
 			messagePanel.Enabled = false;
 			AddRecentFile(filename);
 			Text = "SA2 Message File Editor - " + Path.GetFileName(filename);
 			findNextToolStripMenuItem.Enabled = false;
+		}
+
+		private void UpdateMessageSelect()
+		{
+			messageNum.Items.Clear();
+			if (messages.Count > 0)
+				messageNum.Items.AddRange(messages.Select((a, i) => (object)((i + 1).ToString() + ": " + a[0].GetPreview())).ToArray());
 		}
 
 		private void AddRecentFile(string filename)
@@ -242,24 +247,32 @@ namespace SA2MessageFileEditor
 			else
 			{
 				messagePanel.Enabled = messageRemoveButton.Enabled = true;
-				lineNum.Items.Clear();
-				lineNum.Items.AddRange(CurrentMessage.Select((a, i) => (object)((i + 1).ToString() + ": " + a.GetPreview())).ToArray());
+				UpdateLineSelect();
 				linePanel.Enabled = false;
 			}
+		}
+
+		private void UpdateLineSelect()
+		{
+			lineNum.Items.Clear();
+			lineNum.Items.AddRange(CurrentMessage.Select((a, i) => (object)((i + 1).ToString() + ": " + a.GetPreview())).ToArray());
 		}
 
 		private void messageAddButton_Click(object sender, EventArgs e)
 		{
 			messages.Add(new List<Message>() { new Message() });
-			messageNum.Items.Add(messageNum.Items.Count + 1);
+			messageNum.Items.Add((messageNum.Items.Count + 1) + ": ");
 			messageNum.SelectedIndex = messageNum.Items.Count - 1;
 		}
 
 		private void messageRemoveButton_Click(object sender, EventArgs e)
 		{
-			messages.RemoveAt(messageNum.SelectedIndex);
-			messageNum.Items.RemoveAt(messageNum.Items.Count - 1);
-			messageNum_SelectedIndexChanged(messageRemoveButton, EventArgs.Empty);
+			int msg = messageNum.SelectedIndex;
+			messages.RemoveAt(msg);
+			if (msg == messages.Count)
+				--msg;
+			UpdateMessageSelect();
+			messageNum.SelectedIndex = msg;
 		}
 
 		private void lineNum_SelectedIndexChanged(object sender, EventArgs e)
@@ -286,15 +299,18 @@ namespace SA2MessageFileEditor
 		private void lineAddButton_Click(object sender, EventArgs e)
 		{
 			CurrentMessage.Add(new Message());
-			lineNum.Items.Add(lineNum.Items.Count + 1);
+			lineNum.Items.Add((lineNum.Items.Count + 1) + ": ");
 			lineNum.SelectedIndex = lineNum.Items.Count - 1;
 		}
 
 		private void lineRemoveButton_Click(object sender, EventArgs e)
 		{
-			CurrentMessage.RemoveAt(lineNum.SelectedIndex);
-			lineNum.Items.RemoveAt(lineNum.Items.Count - 1);
-			lineNum_SelectedIndexChanged(lineRemoveButton, EventArgs.Empty);
+			int line = lineNum.SelectedIndex;
+			CurrentMessage.RemoveAt(line);
+			if (line == CurrentMessage.Count)
+				--line;
+			UpdateLineSelect();
+			lineNum.SelectedIndex = line;
 		}
 
 		private void playAudioCheckBox_CheckedChanged(object sender, EventArgs e)
