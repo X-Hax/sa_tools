@@ -128,7 +128,7 @@ namespace SA2MessageFileEditor
 		{
 			messageNum.Items.Clear();
 			if (messages.Count > 0)
-				messageNum.Items.AddRange(messages.Select((a, i) => (object)((i + 1).ToString() + ": " + a[0].GetPreview())).ToArray());
+				messageNum.Items.AddRange(messages.Select((a, i) => (object)((i + 1).ToString() + ": " + (a.Count > 0 ? a[0].GetPreview() : string.Empty))).ToArray());
 		}
 
 		private void AddRecentFile(string filename)
