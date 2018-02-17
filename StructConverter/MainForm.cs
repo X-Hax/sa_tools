@@ -49,7 +49,8 @@ namespace StructConverter
             { "animationlist", "Animation List" },
 			{ "levelpathlist", "Path List" },
 			{ "stagelightdatalist", "Stage Light Data List" },
-			{ "weldlist", "Weld List" }
+			{ "weldlist", "Weld List" },
+			{ "bmitemattrlist", "BM Item Attributes List" }
         };
 
         public MainForm()
@@ -865,6 +866,26 @@ namespace StructConverter
 										writer.WriteLine("\t{ 0 }");
 										writer.WriteLine("};");
 										writer.WriteLine();
+									}
+									break;
+								case "bmitemattrlist":
+									{
+										Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> list = BlackMarketItemAttributesList.Load(data.Filename);
+										foreach (var attrlist in list)
+										{
+											writer.WriteLine("BlackMarketItemAttributes {0}_{1}[] = {{", name, attrlist.Key);
+											foreach (var attr in attrlist.Value)
+												writer.WriteLine("\t{0},", attr.ToStruct());
+											writer.WriteLine("};");
+											writer.WriteLine();
+										}
+										writer.WriteLine("BlackMarketItemAttributesList {0}[] = {{");
+										for (int i = 0; i < 11; i++)
+											if (list.ContainsKey((ChaoItemCategory)i))
+												writer.WriteLine("\t{{ arrayptrandlengthT({0}_{1}, int) }},", name, (ChaoItemCategory)i);
+											else
+												writer.WriteLine("\t{ 0 },");
+										writer.WriteLine("};");
 									}
 									break;
 							}

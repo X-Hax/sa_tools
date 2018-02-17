@@ -2614,6 +2614,84 @@ namespace SA_Tools
 		}
 	}
 
+	public static class BlackMarketItemAttributesList
+	{
+		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(string filename)
+		{
+			return IniSerializer.Deserialize<Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>>>(filename);
+		}
+
+		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(byte[] file, int address, uint imageBase)
+		{
+			Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> result = new Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>>();
+			for (int i = 0; i < 11; i++)
+			{
+				int ptr = ByteConverter.ToInt32(file, address);
+				address += sizeof(int);
+				if (ptr != 0)
+				{
+					ptr = (int)(ptr - imageBase);
+					int cnt = ByteConverter.ToInt32(file, address);
+					List<BlackMarketItemAttributes> attrs = new List<BlackMarketItemAttributes>();
+					for (int j = 0; j < cnt; j++)
+					{
+						attrs.Add(new BlackMarketItemAttributes(file, ptr));
+						ptr += BlackMarketItemAttributes.Size;
+					}
+					result.Add((ChaoItemCategory)i, attrs);
+				}
+				address += sizeof(int);
+			}
+			return result;
+		}
+
+		public static void Save(this Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> list, string filename)
+		{
+			IniSerializer.Serialize(list, filename);
+		}
+	}
+
+	[Serializable]
+	public class BlackMarketItemAttributes
+	{
+		public int PurchasePrice { get; set; }
+		public int SalePrice { get; set; }
+		[IniAlwaysInclude]
+		public short RequiredEmblems { get; set; }
+		public short NameID;
+		public short DescriptionID;
+		public short Unknown;
+
+		public static int Size { get { return 0x10; } }
+
+		public BlackMarketItemAttributes() { }
+
+		public BlackMarketItemAttributes(byte[] file, int address)
+		{
+			PurchasePrice = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			SalePrice = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			RequiredEmblems = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			NameID = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			DescriptionID = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Unknown = ByteConverter.ToInt16(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			return $"{{ {PurchasePrice}, {SalePrice}, {RequiredEmblems}, {NameID}, {DescriptionID}, {Unknown} }}";
+		}
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>

@@ -322,6 +322,9 @@ namespace split
 					case "weldlist":
 						WeldList.Load(datafile, address, imageBase).Save(data.Filename);
 						break;
+					case "bmitemattrlist":
+						BlackMarketItemAttributesList.Load(datafile, address, imageBase).Save(data.Filename);
+						break;
 					default: // raw binary
 						{
 							byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];

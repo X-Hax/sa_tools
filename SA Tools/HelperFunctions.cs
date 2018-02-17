@@ -652,7 +652,16 @@ namespace SA_Tools
         German = 4
     }
 
-    class OSModuleLink
+	public enum ChaoItemCategory
+	{
+		ChaoItemCategory_Egg = 1,
+		ChaoItemCategory_Fruit = 3,
+		ChaoItemCategory_Seed = 7,
+		ChaoItemCategory_Hat = 9,
+		ChaoItemCategory_MenuTheme = 0x10
+	}
+
+	class OSModuleLink
     {
         public uint next;
         public uint prev;
