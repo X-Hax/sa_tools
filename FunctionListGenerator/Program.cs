@@ -106,7 +106,12 @@ namespace FunctionListGenerator
 						}
 						int paren = arguments.IndexOf('(', c);
 						if (paren > -1 && paren < comma)
-							comma = arguments.IndexOf(')', arguments.IndexOf('(', paren + 1)) + 1;
+							comma = arguments.IndexOf(',', arguments.IndexOf(')', arguments.IndexOf('(', paren + 1)));
+						if (comma == -1)
+						{
+							arglist.Add(arguments.Substring(c));
+							break;
+						}
 						arglist.Add(arguments.Substring(c, comma - c));
 						c = comma + 1;
 					}
