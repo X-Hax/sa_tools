@@ -712,14 +712,11 @@ namespace SA_Tools
             else
                 Name = file.GetCString((int)(nameAddress - imageBase));
             Textures = ByteConverter.ToUInt32(file, address + 4);
-            if (Textures != 0)
-                Count = ByteConverter.ToInt32(file, (int)(Textures - imageBase) + 4);
         }
 
         public string Name { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint Textures { get; set; }
-        public int Count { get; set; }
 
         public static int Size { get { return 8; } }
 

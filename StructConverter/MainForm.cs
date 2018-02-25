@@ -941,8 +941,10 @@ namespace StructConverter
 				if (fd.ShowDialog(this) == DialogResult.OK)
 				{
 					string dstfol = Path.GetDirectoryName(fd.FileName);
-					IniData output = new IniData();
-					output.Files = new Dictionary<string, SA_Tools.FileInfo>();
+					IniData output = new IniData
+					{
+						Files = new Dictionary<string, SA_Tools.FileInfo>()
+					};
 					foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
 					{
 						if (Directory.Exists(item.Value.Filename))
