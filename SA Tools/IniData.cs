@@ -2724,7 +2724,7 @@ namespace SA_Tools
 			Type = file[address++];
 			TexID = (sbyte)file[address++];
 			Unknown1 = file[address++];
-			Unknown2 = file[address]++;
+			Unknown2 = file[address++];
 			Text = file.GetCString(file.GetPointer(address, imageBase));
 		}
 
