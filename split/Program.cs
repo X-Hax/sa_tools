@@ -325,6 +325,9 @@ namespace split
 					case "bmitemattrlist":
 						BlackMarketItemAttributesList.Load(datafile, address, imageBase).Save(data.Filename);
 						break;
+					case "creditstextlist":
+						CreditsTextList.Load(datafile, address, imageBase).Save(data.Filename);
+						break;
 					default: // raw binary
 						{
 							byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];

@@ -50,7 +50,8 @@ namespace StructConverter
 			{ "levelpathlist", "Path List" },
 			{ "stagelightdatalist", "Stage Light Data List" },
 			{ "weldlist", "Weld List" },
-			{ "bmitemattrlist", "BM Item Attributes List" }
+			{ "bmitemattrlist", "BM Item Attributes List" },
+			{ "creditstextlist", "Credits Text List" }
         };
 
         public MainForm()
@@ -886,6 +887,20 @@ namespace StructConverter
 											else
 												writer.WriteLine("\t{ 0 },");
 										writer.WriteLine("};");
+									}
+									break;
+								case "creditstextlist":
+									{
+										CreditsTextListEntry[] list = CreditsTextList.Load(data.Filename);
+										writer.WriteLine("CreditsEntry {0}_list[] = {{", name);
+										List<string> objs = new List<string>(list.Length);
+										foreach (CreditsTextListEntry obj in list)
+											objs.Add(obj.ToStruct());
+										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+										writer.WriteLine("};");
+										writer.WriteLine();
+										writer.WriteLine("CreditsList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
+										initlines.Add(string.Format("*(CreditsList*)0x{0:X} = {1};", data.Address + imagebase, name));
 									}
 									break;
 							}

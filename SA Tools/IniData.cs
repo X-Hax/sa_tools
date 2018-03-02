@@ -2689,6 +2689,61 @@ namespace SA_Tools
 		}
 	}
 
+	public static class CreditsTextList
+	{
+		public static CreditsTextListEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<CreditsTextListEntry[]>(filename);
+		}
+
+		public static CreditsTextListEntry[] Load(byte[] file, int address, uint imageBase)
+		{
+			int numobjs = ByteConverter.ToInt32(file, address + 4);
+			address = file.GetPointer(address, imageBase);
+			List<CreditsTextListEntry> objini = new List<CreditsTextListEntry>(numobjs);
+			for (int i = 0; i < numobjs; i++)
+			{
+				objini.Add(new CreditsTextListEntry(file, address, imageBase));
+				address += CreditsTextListEntry.Size;
+			}
+			return objini.ToArray();
+		}
+
+		public static void Save(this CreditsTextListEntry[] list, string filename)
+		{
+			IniSerializer.Serialize(list, filename);
+		}
+	}
+
+	[Serializable]
+	public class CreditsTextListEntry
+	{
+		public CreditsTextListEntry() { Text = string.Empty; }
+		public CreditsTextListEntry(byte[] file, int address, uint imageBase)
+		{
+			Type = file[address++];
+			TexID = (sbyte)file[address++];
+			Unknown1 = file[address++];
+			Unknown2 = file[address]++;
+			Text = file.GetCString(file.GetPointer(address, imageBase));
+		}
+
+		[IniAlwaysInclude]
+		public byte Type { get; set; }
+		[DefaultValue(-1)]
+		public sbyte TexID { get; set; }
+		public byte Unknown1 { get; set; }
+		public byte Unknown2 { get; set; }
+		public string Text { get; set; }
+
+		public static int Size { get { return 8; } }
+
+		public string ToStruct()
+		{
+			return $"{{ {Type}, {TexID}, {Unknown1}, {Unknown2}, {Text.ToC()} }}";
+		}
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>

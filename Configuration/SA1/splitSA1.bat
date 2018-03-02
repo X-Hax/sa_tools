@@ -41,3 +41,4 @@ split SONICADV/A_MOT.prs A_MOT.ini
 split SONICADV/B_MOT.prs B_MOT.ini
 split SONICADV/E_MOT.prs E_MOT.ini
 split SONICADV/S_SBMOT.prs S_SBMOT.ini
+split SONICADV/SUMMARY.prs SUMMARY.ini
