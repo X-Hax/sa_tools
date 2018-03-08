@@ -12,6 +12,8 @@ namespace VariableListGenerator
 		// TODO: exclusions
 		static void Main(string[] args)
 		{
+			bool outputD = args.Any(x => x == "-d");
+
 			string filename;
 
 			if (args.Length > 0)
@@ -32,7 +34,7 @@ namespace VariableListGenerator
 
 			string[] lines = File.ReadAllLines(filename);
 
-			using (StreamWriter writer = File.CreateText(Path.ChangeExtension(filename, "h")))
+			using (StreamWriter writer = File.CreateText(Path.ChangeExtension(filename, outputD ? "d" : "h")))
 			{
 				int lineNumber = 0;
 				foreach (string line in lines.Select(x => x.Trim()))
@@ -51,7 +53,7 @@ namespace VariableListGenerator
 					string name    = fields[1];
 					string type    = fields[2];
 
-					var  matches = arrayLengthExp.Matches(type);
+					MatchCollection matches = arrayLengthExp.Matches(type);
 					bool isArray = matches.Count == 1;
 
 					if (matches.Count > 1)
@@ -62,13 +64,22 @@ namespace VariableListGenerator
 
 					if (isArray)
 					{
-						var groups = matches[0].Groups;
+						GroupCollection groups = matches[0].Groups;
 						if (groups.Count == 2 && !string.IsNullOrEmpty(groups[1].Value))
 						{
 							int length = int.Parse(groups[1].Value);
-							var baseType = arrayLengthExp.Split(type)[0];
+							string baseType = arrayLengthExp.Split(type)[0];
 
-							writer.WriteLine($"DataArray({baseType}, {name}, {address}, {length});");
+							if (outputD)
+							{
+								baseType = toDType(baseType);
+								writer.WriteLine($@"mixin DataArray!({baseType}, ""{name}"", {address}, {length});");
+							}
+							else
+							{
+								writer.WriteLine($"DataArray({baseType}, {name}, {address}, {length});");
+							}
+
 							continue;
 						}
 
@@ -77,9 +88,49 @@ namespace VariableListGenerator
 						type = arrayLengthExp.Split(type)[0] + "*";
 					}
 
-					writer.WriteLine($"DataPointer({type}, {name}, {address});");
+					if (outputD)
+					{
+						type = toDType(type);
+						writer.WriteLine($@"mixin DataPointer!({type}, ""{name}"", {address});");
+					}
+					else
+					{
+						writer.WriteLine($"DataPointer({type}, {name}, {address});");
+					}
 				}
 			}
+		}
+
+		static string toDType(string value)
+		{
+			string result = value;
+
+			if (value.Contains("unsigned "))
+			{
+				result = result.Replace("unsigned ", "u");
+			}
+
+			if (result.Contains("__int8"))
+			{
+				result = result.Replace("__int8", "byte");
+			}
+
+			if (result.Contains("__int16"))
+			{
+				result = result.Replace("__int16", "short");
+			}
+
+			if (result.Contains("__int64"))
+			{
+				result = result.Replace("__int64", "long");
+			}
+
+			if (result.Contains("signed "))
+			{
+				result = result.Replace("signed ", null);
+			}
+
+			return result;
 		}
 	}
 }
