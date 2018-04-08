@@ -825,6 +825,9 @@ namespace SonicRetro.SAModel
 
 		public override byte[] GetBytes()
 		{
+			Size = 1;
+			foreach (Poly str in Polys)
+				Size += (ushort)(str.Size / 2);
 			List<byte> result = new List<byte>(base.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Header2));
 			foreach (Poly str in Polys)
