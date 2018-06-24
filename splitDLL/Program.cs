@@ -11,452 +11,558 @@ namespace splitDLL
 {
 	static class Program
 	{
-		static void Main(string[] args)
+        enum ERRORVALUE
+        {
+            Success = 0,
+            NoProject = -1,
+            InvalidProject = -2,
+            NoSourceFile = -3,
+            NoDataMapping = -4,
+            InvalidDataMapping = -5,
+            UnhandledException = -6
+        }
+
+        private static void PrintHelp()
+        {
+            Console.WriteLine("Argument #1: Path to file to be split apart into data chunks.");
+            Console.WriteLine("Argument #2: Path to data mapping file. This is usually an INI file.");
+            Console.WriteLine("Argument #3: Project Directory. All files will be output to this directory.");
+            //Console.WriteLine("Argument #3 must be an absolute path.");
+        }
+
+        private static int SplitDLL(string datafilename, string inifilename, string projectFolderName)
+        {
+            try
+            {
+                byte[] datafile = File.ReadAllBytes(datafilename);
+                IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+                uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
+                Dictionary<string, int> exports;
+                {
+                    int ptr = BitConverter.ToInt32(datafile, BitConverter.ToInt32(datafile, 0x3c) + 4 + 20 + 96);
+                    GCHandle handle = GCHandle.Alloc(datafile, GCHandleType.Pinned);
+                    IMAGE_EXPORT_DIRECTORY dir = (IMAGE_EXPORT_DIRECTORY)Marshal.PtrToStructure(
+                        Marshal.UnsafeAddrOfPinnedArrayElement(datafile, ptr), typeof(IMAGE_EXPORT_DIRECTORY));
+                    handle.Free();
+                    exports = new Dictionary<string, int>(dir.NumberOfFunctions);
+                    int nameaddr = dir.AddressOfNames;
+                    int ordaddr = dir.AddressOfNameOrdinals;
+                    for (int i = 0; i < dir.NumberOfNames; i++)
+                    {
+                        string name = HelperFunctions.GetCString(datafile, BitConverter.ToInt32(datafile, nameaddr),
+                            System.Text.Encoding.ASCII);
+                        int addr = BitConverter.ToInt32(datafile,
+                            dir.AddressOfFunctions + (BitConverter.ToInt16(datafile, ordaddr) * 4));
+                        exports.Add(name, addr);
+                        nameaddr += 4;
+                        ordaddr += 2;
+                    }
+                }
+                ModelFormat modelfmt = 0;
+                LandTableFormat landfmt = 0;
+                string modelext = null;
+                string landext = null;
+                switch (inifile.Game)
+                {
+                    case Game.SADX:
+                        modelfmt = ModelFormat.BasicDX;
+                        landfmt = LandTableFormat.SADX;
+                        modelext = ".sa1mdl";
+                        landext = ".sa1lvl";
+                        break;
+                    case Game.SA2B:
+                        modelfmt = ModelFormat.Chunk;
+                        landfmt = LandTableFormat.SA2;
+                        modelext = ".sa2mdl";
+                        landext = ".sa2lvl";
+                        break;
+                }
+                int itemcount = 0;
+                List<string> labels = new List<string>();
+                ModelAnimationsDictionary models = new ModelAnimationsDictionary();
+                DllIniData output = new DllIniData()
+                {
+                    Name = inifile.ModuleName,
+                    Game = inifile.Game
+                };
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+                foreach (KeyValuePair<string, FileInfo> item in inifile.Files)
+                {
+                    if (string.IsNullOrEmpty(item.Key)) continue;
+                    FileInfo data = item.Value;
+                    string type = data.Type;
+                    string name = item.Key;
+                    output.Exports[name] = type;
+                    int address = exports[name];
+
+                    string fileOutputPath = "";
+                    if (data.Filename != null)
+                    {
+                        fileOutputPath = string.Concat(projectFolderName, data.Filename);
+
+                        Console.WriteLine(name + " -> " + fileOutputPath);
+                        Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+                    }
+                    else
+                        Console.WriteLine(name);
+                    switch (type)
+                    {
+                        case "landtable":
+                            {
+                                LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = land.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(land.Name))
+                                {
+                                    land.SaveToFile(fileOutputPath, landfmt);
+                                    output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
+                                    labels.AddRange(land.GetLabels());
+                                }
+                            }
+                            break;
+                        case "landtablearray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = land.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(land.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
+                                        land.SaveToFile(fn, landfmt);
+                                        output.Files[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
+                                        labels.AddRange(land.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "model":
+                            {
+                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = mdl.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(mdl.Name))
+                                {
+                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, modelfmt));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            break;
+                        case "morph":
+                            {
+                                BasicAttach dummy = new BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
+                                NJS_OBJECT mdl = new NJS_OBJECT()
+                                {
+                                    Attach = dummy
+                                };
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = dummy.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(dummy.Name))
+                                {
+                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, modelfmt));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            break;
+                        case "modelarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = mdl.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(mdl.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+                                        models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
+                                        labels.AddRange(mdl.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "modelsarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    BasicAttach dummy = new BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
+                                    NJS_OBJECT mdl = new NJS_OBJECT()
+                                    {
+                                        Attach = dummy
+                                    };
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = dummy.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(dummy.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+                                        models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
+                                        labels.AddRange(mdl.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "basicmodel":
+                            {
+                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = mdl.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(mdl.Name))
+                                {
+                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Basic));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            break;
+                        case "basicmodelarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = mdl.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(mdl.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+                                        models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
+                                        labels.AddRange(mdl.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "basicdxmodel":
+                            {
+                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = mdl.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(mdl.Name))
+                                {
+                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.BasicDX));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            break;
+                        case "basicdxmodelarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = mdl.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(mdl.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+                                        models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
+                                        labels.AddRange(mdl.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "chunkmodel":
+                            {
+                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
+                                DllItemInfo info = new DllItemInfo()
+                                {
+                                    Export = name,
+                                    Label = mdl.Name
+                                };
+                                output.Items.Add(info);
+                                if (!labels.Contains(mdl.Name))
+                                {
+                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Chunk));
+                                    labels.AddRange(mdl.GetLabels());
+                                }
+                            }
+                            break;
+                        case "chunkmodelarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = mdl.Name
+                                    };
+                                    output.Items.Add(info);
+                                    if (!labels.Contains(mdl.Name))
+                                    {
+                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
+                                        models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
+                                        labels.AddRange(mdl.GetLabels());
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "actionarray":
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                int ptr = BitConverter.ToInt32(datafile, address);
+                                if (ptr != 0)
+                                {
+                                    ptr = (int)(ptr - imageBase);
+                                    AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
+                                    string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+                                    ani.Animation.Name = item.Key + "_" + i;
+                                    DllItemInfo info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = ani.Animation.Name,
+                                        Field = "motion"
+                                    };
+                                    output.Items.Add(info);
+                                    info = new DllItemInfo()
+                                    {
+                                        Export = name,
+                                        Index = i,
+                                        Label = ani.Model.Name,
+                                        Field = "object"
+                                    };
+                                    output.Items.Add(info);
+                                    string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+                                    ani.Animation.Save(fn);
+                                    output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
+                                    if (models.Contains(ani.Model.Name))
+                                    {
+                                        ModelAnimations mdl = models[ani.Model.Name];
+                                        System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
+                                        PathRelativePathTo(sb, Path.GetFullPath(mdl.Filename), 0, Path.GetFullPath(fn), 0);
+                                        mdl.Animations.Add(sb.ToString());
+                                    }
+                                    else
+                                    {
+                                        string mfn = Path.ChangeExtension(fn, modelext);
+                                        ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
+                                            idx + "->object", "splitDLL", null, modelfmt);
+                                        output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
+                                    }
+                                }
+                                address += 4;
+                            }
+                            break;
+                        case "texlist":
+                            if (output.TexLists == null)
+                                output.TexLists = new TexListContainer();
+                            output.TexLists.Add((uint)(address + imageBase), new DllTexListInfo(name, null));
+                            break;
+                        case "texlistarray":
+                            if (output.TexLists == null)
+                                output.TexLists = new TexListContainer();
+                            for (int i = 0; i < data.Length; i++)
+                            {
+                                uint ptr = BitConverter.ToUInt32(datafile, address);
+                                if (ptr != 0 && !output.TexLists.ContainsKey(ptr))
+                                    output.TexLists.Add(ptr, new DllTexListInfo(name, i));
+                                address += 4;
+                            }
+                            break;
+                    }
+                    itemcount++;
+                }
+                foreach (ModelAnimations item in models)
+                {
+                    //string modelOutputPath = string.Concat(projectFolderName, item.Filename);
+                    string modelOutputPath = item.Filename;
+
+                    ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
+                        null, item.Format);
+                    string type = "model";
+                    switch (item.Format)
+                    {
+                        case ModelFormat.Basic:
+                            type = "basicmodel";
+                            break;
+                        case ModelFormat.BasicDX:
+                            type = "basicdxmodel";
+                            break;
+                        case ModelFormat.Chunk:
+                            type = "chunkmodel";
+                            break;
+                    }
+                    output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(modelOutputPath));
+                }
+                IniSerializer.Serialize(output, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(datafilename))
+                    + "_data.ini");
+                timer.Stop();
+                Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
+                Console.WriteLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message, e.StackTrace);
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.UnhandledException;
+            }
+
+            return (int)ERRORVALUE.Success;
+        }
+
+        static int Main(string[] args)
 		{
-			string datafilename, inifilename;
-			if (args.Length > 0)
-			{
-				datafilename = args[0];
-				Console.WriteLine("File: {0}", datafilename);
-			}
-			else
-			{
-				Console.Write("File: ");
-				datafilename = Console.ReadLine();
-			}
-			if (args.Length > 1)
-			{
-				inifilename = args[1];
-				Console.WriteLine("INI File: {0}", inifilename);
-			}
-			else
-			{
-				Console.Write("INI File: ");
-				inifilename = Console.ReadLine();
-			}
-			byte[] datafile = File.ReadAllBytes(datafilename);
-			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-			uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
-			Dictionary<string, int> exports;
-			{
-				int ptr = BitConverter.ToInt32(datafile, BitConverter.ToInt32(datafile, 0x3c) + 4 + 20 + 96);
-				GCHandle handle = GCHandle.Alloc(datafile, GCHandleType.Pinned);
-				IMAGE_EXPORT_DIRECTORY dir = (IMAGE_EXPORT_DIRECTORY)Marshal.PtrToStructure(
-					Marshal.UnsafeAddrOfPinnedArrayElement(datafile, ptr), typeof(IMAGE_EXPORT_DIRECTORY));
-				handle.Free();
-				exports = new Dictionary<string, int>(dir.NumberOfFunctions);
-				int nameaddr = dir.AddressOfNames;
-				int ordaddr = dir.AddressOfNameOrdinals;
-				for (int i = 0; i < dir.NumberOfNames; i++)
-				{
-					string name = HelperFunctions.GetCString(datafile, BitConverter.ToInt32(datafile, nameaddr),
-						System.Text.Encoding.ASCII);
-					int addr = BitConverter.ToInt32(datafile,
-						dir.AddressOfFunctions + (BitConverter.ToInt16(datafile, ordaddr) * 4));
-					exports.Add(name, addr);
-					nameaddr += 4;
-					ordaddr += 2;
-				}
-			}
-			ModelFormat modelfmt = 0;
-			LandTableFormat landfmt = 0;
-			string modelext = null;
-			string landext = null;
-			switch (inifile.Game)
-			{
-				case Game.SADX:
-					modelfmt = ModelFormat.BasicDX;
-					landfmt = LandTableFormat.SADX;
-					modelext = ".sa1mdl";
-					landext = ".sa1lvl";
-					break;
-				case Game.SA2B:
-					modelfmt = ModelFormat.Chunk;
-					landfmt = LandTableFormat.SA2;
-					modelext = ".sa2mdl";
-					landext = ".sa2lvl";
-					break;
-			}
-			int itemcount = 0;
-			List<string> labels = new List<string>();
-			ModelAnimationsDictionary models = new ModelAnimationsDictionary();
-			DllIniData output = new DllIniData()
-			{
-				Name = inifile.ModuleName,
-				Game = inifile.Game
-			};
-			Stopwatch timer = new Stopwatch();
-			timer.Start();
-			foreach (KeyValuePair<string, FileInfo> item in inifile.Files)
-			{
-				if (string.IsNullOrEmpty(item.Key)) continue;
-				FileInfo data = item.Value;
-				string type = data.Type;
-				string name = item.Key;
-				output.Exports[name] = type;
-				int address = exports[name];
-				if (data.Filename != null)
-				{
-					Console.WriteLine(name + " -> " + data.Filename);
-					Directory.CreateDirectory(Path.GetDirectoryName(data.Filename));
-				}
-				else
-					Console.WriteLine(name);
-				switch (type)
-				{
-					case "landtable":
-						{
-							LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = land.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(land.Name))
-							{
-								land.SaveToFile(data.Filename, landfmt);
-								output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(data.Filename));
-								labels.AddRange(land.GetLabels());
-							}
-						}
-						break;
-					case "landtablearray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = land.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(land.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-									land.SaveToFile(fn, landfmt);
-									output.Files[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
-									labels.AddRange(land.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "model":
-						{
-							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = mdl.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(mdl.Name))
-							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
-								labels.AddRange(mdl.GetLabels());
-							}
-						}
-						break;
-					case "morph":
-						{
-							BasicAttach dummy = new BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
-							NJS_OBJECT mdl = new NJS_OBJECT()
-							{
-								Attach = dummy
-							};
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = dummy.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(dummy.Name))
-							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
-								labels.AddRange(mdl.GetLabels());
-							}
-						}
-						break;
-					case "modelarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
-									models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "modelsarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								BasicAttach dummy = new BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
-								NJS_OBJECT mdl = new NJS_OBJECT()
-								{
-									Attach = dummy
-								};
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = dummy.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(dummy.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
-									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "basicmodel":
-						{
-							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = mdl.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(mdl.Name))
-							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
-								labels.AddRange(mdl.GetLabels());
-							}
-						}
-						break;
-					case "basicmodelarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
-									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "basicdxmodel":
-						{
-							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = mdl.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(mdl.Name))
-							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
-								labels.AddRange(mdl.GetLabels());
-							}
-						}
-						break;
-					case "basicdxmodelarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
-									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "chunkmodel":
-						{
-							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
-							DllItemInfo info = new DllItemInfo()
-							{
-								Export = name,
-								Label = mdl.Name
-							};
-							output.Items.Add(info);
-							if (!labels.Contains(mdl.Name))
-							{
-								models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
-								labels.AddRange(mdl.GetLabels());
-							}
-						}
-						break;
-					case "chunkmodelarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
-									models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "actionarray":
-						for (int i = 0; i < data.Length; i++)
-						{
-							int ptr = BitConverter.ToInt32(datafile, address);
-							if (ptr != 0)
-							{
-								ptr = (int)(ptr - imageBase);
-								AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
-								string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-								ani.Animation.Name = item.Key + "_" + i;
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = ani.Animation.Name,
-									Field = "motion"
-								};
-								output.Items.Add(info);
-								info = new DllItemInfo()
-								{
-									Export = name,
-									Index = i,
-									Label = ani.Model.Name,
-									Field = "object"
-								};
-								output.Items.Add(info);
-								string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-								ani.Animation.Save(fn);
-								output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
-								if (models.Contains(ani.Model.Name))
-								{
-									ModelAnimations mdl = models[ani.Model.Name];
-									System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
-									PathRelativePathTo(sb, Path.GetFullPath(mdl.Filename), 0, Path.GetFullPath(fn), 0);
-									mdl.Animations.Add(sb.ToString());
-								}
-								else
-								{
-									string mfn = Path.ChangeExtension(fn, modelext);
-									ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
-										idx + "->object", "splitDLL", null, modelfmt);
-									output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
-								}
-							}
-							address += 4;
-						}
-						break;
-					case "texlist":
-						if (output.TexLists == null)
-							output.TexLists = new TexListContainer();
-						output.TexLists.Add((uint)(address + imageBase), new DllTexListInfo(name, null));
-						break;
-					case "texlistarray":
-						if (output.TexLists == null)
-							output.TexLists = new TexListContainer();
-						for (int i = 0; i < data.Length; i++)
-						{
-							uint ptr = BitConverter.ToUInt32(datafile, address);
-							if (ptr != 0 && !output.TexLists.ContainsKey(ptr))
-								output.TexLists.Add(ptr, new DllTexListInfo(name, i));
-							address += 4;
-						}
-						break;
-				}
-				itemcount++;
-			}
-			foreach (ModelAnimations item in models)
-			{
-				ModelFile.CreateFile(item.Filename, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
-					null, item.Format);
-				string type = "model";
-				switch (item.Format)
-				{
-					case ModelFormat.Basic:
-						type = "basicmodel";
-						break;
-					case ModelFormat.BasicDX:
-						type = "basicdxmodel";
-						break;
-					case ModelFormat.Chunk:
-						type = "chunkmodel";
-						break;
-				}
-				output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(item.Filename));
-			}
-            IniSerializer.Serialize(output, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(datafilename))
-				+ "_data.ini");
-			timer.Stop();
-			Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
-			Console.WriteLine();
-		}
+            #region Getting Input Arguments
+            string datafilename, inifilename, projectFolderName;
+            if (args.Length > 0)
+            {
+                datafilename = args[0];
+                Console.WriteLine("File: {0}", datafilename);
+            }
+            else
+            {
+                Console.WriteLine("No source file supplied. Aborting.");
+                PrintHelp();
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.NoSourceFile;
+            }
+            if (args.Length > 1)
+            {
+                inifilename = args[1];
+                Console.WriteLine("INI File: {0}", inifilename);
+            }
+            else
+            {
+                Console.WriteLine("No data mapping file supplied (expected ini). Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.NoDataMapping;
+            }
+            if (args.Length > 2)
+            {
+                projectFolderName = args[2];
+                Console.WriteLine("Project Folder: {0}", projectFolderName);
+            }
+            else
+            {
+                Console.WriteLine("No project folder supplied. Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.NoProject;
+            }
+            #endregion
+
+            #region Validating Inputs
+            if (!File.Exists(datafilename))
+            {
+                Console.WriteLine("No source file supplied. Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.NoSourceFile;
+            }
+
+            if (!File.Exists(inifilename))
+            {
+                Console.WriteLine("ini data mapping not found. Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+                return (int)ERRORVALUE.NoDataMapping;
+            }
+
+            if (!Directory.Exists(projectFolderName))
+            {
+                // try creating the directory
+                bool created = true;
+
+                try
+                {
+                    // check to see if trailing charcter closes 
+                    Directory.CreateDirectory(projectFolderName);
+                }
+                catch
+                {
+                    created = false;
+                }
+
+                if (!created)
+                {
+                    // couldn't create directory.
+                    Console.WriteLine("Output folder did not exist and couldn't be created.");
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadLine();
+                    return (int)ERRORVALUE.InvalidProject;
+                }
+            }
+            #endregion
+
+            return SplitDLL(datafilename, inifilename, projectFolderName);
+        } // end of Main()
 
 		[DllImport("shlwapi.dll", SetLastError = true)]
 		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath,
@@ -580,4 +686,4 @@ namespace splitDLL
 			AddressOfNameOrdinals = 0;
 		}
 	}
-}
+} // end of namespace
