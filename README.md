@@ -5,7 +5,7 @@
 Whether you're programming or just using the tools, the first thing you'll need to do is separate the game's data from the executable. This is done using a program called Split.
 
 ## Using Split
-- download the latest release from the [releases tab](https://github.com/sonicretro/sa_tools/releases)
+- download the latest release from the [here](http://mm.reimuhakurei.net/SA%20Tools.7z)
 
 - Decide which game your project is for. In this example, we'll be using SADX PC, but the steps should be similar for other titles.
 
