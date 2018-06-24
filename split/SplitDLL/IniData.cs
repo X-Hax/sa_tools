@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using SA_Tools;
 
-namespace splitDLL
+namespace split.SplitDLL
 {
     public class IniData
     {
