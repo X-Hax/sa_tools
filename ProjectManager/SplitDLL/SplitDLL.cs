@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace split.SplitDLL
+namespace ProjectManager.SplitDLL
 {
     static class SplitDLL
     {

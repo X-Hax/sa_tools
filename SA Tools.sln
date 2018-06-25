@@ -7,13 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA Tools", "SA Tools\SA Too
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweaker2", "SADXTweaker2\SADXTweaker2.csproj", "{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "split", "split\split.csproj", "{744DBD22-7CD6-4C2C-B653-40030EAFB570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManager", "split\ProjectManager.csproj", "{744DBD22-7CD6-4C2C-B653-40030EAFB570}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructConverter", "StructConverter\StructConverter.csproj", "{68A3365C-2CE4-4916-8A1A-4583351089D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionListGenerator", "FunctionListGenerator\FunctionListGenerator.csproj", "{397FCC67-9C8A-43E7-BA1D-2003AABDD366}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splitDLL", "splitDLL\splitDLL.csproj", "{FA3DFE1D-560B-487D-A791-92B2287594B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLLModGenerator", "DLLModGenerator\DLLModGenerator.csproj", "{5C9E5ED9-F89C-4DBC-BB86-083DE8BCF14A}"
 EndProject
@@ -141,16 +139,6 @@ Global
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|Mixed Platforms.Build.0 = Release|x86
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|x86.ActiveCfg = Release|x86
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366}.Release|x86.Build.0 = Release|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|x86.ActiveCfg = Debug|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Debug|x86.Build.0 = Debug|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Any CPU.ActiveCfg = Release|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|Mixed Platforms.Build.0 = Release|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|x86.ActiveCfg = Release|x86
-		{FA3DFE1D-560B-487D-A791-92B2287594B0}.Release|x86.Build.0 = Release|x86
 		{5C9E5ED9-F89C-4DBC-BB86-083DE8BCF14A}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{5C9E5ED9-F89C-4DBC-BB86-083DE8BCF14A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{5C9E5ED9-F89C-4DBC-BB86-083DE8BCF14A}.Debug|Mixed Platforms.Build.0 = Debug|x86

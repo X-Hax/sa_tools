@@ -7,7 +7,7 @@ using System.Linq;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace split.Split
+namespace ProjectManager.Split
 {
     static class Split
     {
