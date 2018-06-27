@@ -1,6 +1,6 @@
 ﻿namespace ProjectManager
 {
-    partial class ProjectSelect
+    partial class ProjectManager
     {
         /// <summary>
         /// Required designer variable.
@@ -42,6 +42,7 @@
             this.NewProjectButton.TabIndex = 0;
             this.NewProjectButton.Text = "New Project";
             this.NewProjectButton.UseVisualStyleBackColor = true;
+            this.NewProjectButton.Click += new System.EventHandler(this.NewProjectButton_Click);
             // 
             // OpenProjectButton
             // 
@@ -71,7 +72,7 @@
             this.SplitToolsButton.Text = "Split Tools";
             this.SplitToolsButton.UseVisualStyleBackColor = true;
             // 
-            // ProjectSelect
+            // ProjectManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -81,7 +82,7 @@
             this.Controls.Add(this.OpenProjectButton);
             this.Controls.Add(this.NewProjectButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Name = "ProjectSelect";
+            this.Name = "ProjectManager";
             this.Text = "Project Manger";
             this.ResumeLayout(false);
 
