@@ -10,10 +10,11 @@ using System.Windows.Forms;
 namespace ProjectManager
 {
     public partial class ProjectManager : Form
-    {
+    { 
         private GameConfig gameConfig;
         private NewProject newProject;
         private ProjectActions projectActions;
+        private ProjectSelect projectSelect;
 
         public ProjectManager()
         {
@@ -26,6 +27,17 @@ namespace ProjectManager
 
             projectActions = new ProjectActions();
             projectActions.NavigateBack += () => { this.Show(); };
+
+            projectSelect = new ProjectSelect();
+            projectSelect.ProjectSelected += ProjectSelect_ProjectSelceted;
+            projectSelect.SelectionCanceled += () => { this.Show(); };
+        }
+
+        private void ProjectSelect_ProjectSelceted(SA_Tools.Game game, string projectName, string fullProjectPath)
+        {
+            this.Hide();
+            projectActions.Init(game, projectName, fullProjectPath);
+            projectActions.Show();
         }
 
         private void NewProject_ProjectCreated(SA_Tools.Game game, string projectName, string fullProjectPath)
@@ -44,6 +56,12 @@ namespace ProjectManager
         {
             Hide();
             newProject.Show();
+        }
+
+        private void OpenProjectButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+            projectSelect.Show();
         }
     }
 }

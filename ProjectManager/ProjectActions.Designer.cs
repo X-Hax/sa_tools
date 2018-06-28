@@ -30,13 +30,13 @@
         {
             this.ProjectNameLAbel = new System.Windows.Forms.Label();
             this.GameSpecificOptions = new System.Windows.Forms.GroupBox();
-            this.SADXLVL2Button = new System.Windows.Forms.Button();
-            this.SAMDLButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.SAMDLButton = new System.Windows.Forms.Button();
+            this.SADXLVL2Button = new System.Windows.Forms.Button();
             this.buildGroup = new System.Windows.Forms.GroupBox();
-            this.ConfigBuildButton = new System.Windows.Forms.Button();
-            this.BuildButton = new System.Windows.Forms.Button();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
+            this.BuildButton = new System.Windows.Forms.Button();
+            this.ConfigBuildButton = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -63,16 +63,16 @@
             this.GameSpecificOptions.TabStop = false;
             this.GameSpecificOptions.Text = "Game Specific Tools";
             // 
-            // SADXLVL2Button
+            // button1
             // 
-            this.SADXLVL2Button.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SADXLVL2Button.Location = new System.Drawing.Point(6, 19);
-            this.SADXLVL2Button.Name = "SADXLVL2Button";
-            this.SADXLVL2Button.Size = new System.Drawing.Size(324, 23);
-            this.SADXLVL2Button.TabIndex = 0;
-            this.SADXLVL2Button.Text = "SADXLVL2";
-            this.SADXLVL2Button.UseVisualStyleBackColor = true;
+            this.button1.Location = new System.Drawing.Point(6, 77);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(324, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "SADXTweaker2";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // SAMDLButton
             // 
@@ -85,16 +85,16 @@
             this.SAMDLButton.Text = "SAMDL";
             this.SAMDLButton.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // SADXLVL2Button
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.SADXLVL2Button.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(6, 77);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(324, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "SADXTweaker2";
-            this.button1.UseVisualStyleBackColor = true;
+            this.SADXLVL2Button.Location = new System.Drawing.Point(6, 19);
+            this.SADXLVL2Button.Name = "SADXLVL2Button";
+            this.SADXLVL2Button.Size = new System.Drawing.Size(324, 23);
+            this.SADXLVL2Button.TabIndex = 0;
+            this.SADXLVL2Button.Text = "SADXLVL2";
+            this.SADXLVL2Button.UseVisualStyleBackColor = true;
             // 
             // buildGroup
             // 
@@ -108,14 +108,14 @@
             this.buildGroup.TabStop = false;
             this.buildGroup.Text = "Build";
             // 
-            // ConfigBuildButton
+            // BuildAndRunButton
             // 
-            this.ConfigBuildButton.Location = new System.Drawing.Point(6, 19);
-            this.ConfigBuildButton.Name = "ConfigBuildButton";
-            this.ConfigBuildButton.Size = new System.Drawing.Size(240, 23);
-            this.ConfigBuildButton.TabIndex = 0;
-            this.ConfigBuildButton.Text = "Configure build";
-            this.ConfigBuildButton.UseVisualStyleBackColor = true;
+            this.BuildAndRunButton.Location = new System.Drawing.Point(7, 78);
+            this.BuildAndRunButton.Name = "BuildAndRunButton";
+            this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
+            this.BuildAndRunButton.TabIndex = 2;
+            this.BuildAndRunButton.Text = "Build and Run";
+            this.BuildAndRunButton.UseVisualStyleBackColor = true;
             // 
             // BuildButton
             // 
@@ -126,14 +126,14 @@
             this.BuildButton.Text = "Build";
             this.BuildButton.UseVisualStyleBackColor = true;
             // 
-            // BuildAndRunButton
+            // ConfigBuildButton
             // 
-            this.BuildAndRunButton.Location = new System.Drawing.Point(7, 78);
-            this.BuildAndRunButton.Name = "BuildAndRunButton";
-            this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
-            this.BuildAndRunButton.TabIndex = 2;
-            this.BuildAndRunButton.Text = "Build & Run";
-            this.BuildAndRunButton.UseVisualStyleBackColor = true;
+            this.ConfigBuildButton.Location = new System.Drawing.Point(6, 19);
+            this.ConfigBuildButton.Name = "ConfigBuildButton";
+            this.ConfigBuildButton.Size = new System.Drawing.Size(240, 23);
+            this.ConfigBuildButton.TabIndex = 0;
+            this.ConfigBuildButton.Text = "Configure build";
+            this.ConfigBuildButton.UseVisualStyleBackColor = true;
             // 
             // ProjectActions
             // 

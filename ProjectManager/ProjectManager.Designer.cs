@@ -52,6 +52,7 @@
             this.OpenProjectButton.TabIndex = 1;
             this.OpenProjectButton.Text = "Open Project";
             this.OpenProjectButton.UseVisualStyleBackColor = true;
+            this.OpenProjectButton.Click += new System.EventHandler(this.OpenProjectButton_Click);
             // 
             // ConfigButton
             // 
