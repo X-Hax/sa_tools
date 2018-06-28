@@ -64,11 +64,24 @@
     <Compile Include="DataTypes\LevelItem.cs" />
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
+    <Compile Include="DLLModGenerator\IniData.cs" />
+    <Compile Include="DLLModGenerator\DLLModGenUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DLLModGenerator\DLLModGenUI.Designer.cs">
+      <DependentUpon>DLLModGenUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="IniData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StructConverter\StructConverterUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StructConverter\StructConverterUI.Designer.cs">
+      <DependentUpon>StructConverterUI.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\BugReportDialog.cs">
       <SubType>Form</SubType>
@@ -157,6 +170,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
+      <DependentUpon>DLLModGenUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
+      <DependentUpon>StructConverterUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -236,6 +255,7 @@
   <ItemGroup>
     <None Include="Resources\PointATexture.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

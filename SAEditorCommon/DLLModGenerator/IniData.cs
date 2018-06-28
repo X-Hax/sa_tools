@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using SA_Tools;
 
-namespace DLLModGenerator
+namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 {
     public class IniData
     {

@@ -9,12 +9,10 @@ using System.Windows.Forms;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace StructConverter
+namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 {
-    public partial class MainForm : Form
+    public partial class StructConverterUI : Form
     {
-        private Properties.Settings Settings;
-
         public Dictionary<string, string> DataTypeList = new Dictionary<string, string>()
         {
             { "landtable", "LandTable" },
@@ -54,28 +52,16 @@ namespace StructConverter
 			{ "creditstextlist", "Credits Text List" }
         };
 
-        public MainForm()
+        public StructConverterUI()
         {
             InitializeComponent();
         }
 
-        IniData IniData;
+        SA_Tools.IniData iniData;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Settings = Properties.Settings.Default;
-            if (Settings.MRUList == null)
-                Settings.MRUList = new StringCollection();
-            StringCollection mru = new StringCollection();
-            foreach (string item in Settings.MRUList)
-                if (File.Exists(item))
-                {
-                    mru.Add(item);
-                    recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
-                }
-            Settings.MRUList = mru;
-            if (Program.Arguments.Length > 0)
-                LoadINI(Program.Arguments[0]);
+
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -91,24 +77,18 @@ namespace StructConverter
 
         private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            fileToolStripMenuItem.DropDown.Close();
-            LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+
         }
 
         private void LoadINI(string filename)
         {
-            IniData = IniSerializer.Deserialize<IniData>(filename);
-            if (Settings.MRUList.Contains(filename))
-            {
-                recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
-                Settings.MRUList.Remove(filename);
-            }
-            Settings.MRUList.Insert(0, filename);
+            iniData = IniSerializer.Deserialize<SA_Tools.IniData>(filename);
+
             recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
             Environment.CurrentDirectory = Path.GetDirectoryName(filename);
             listView1.BeginUpdate();
 			listView1.Items.Clear();
-            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files)
+            foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
             {
                 bool? modified = null;
                 switch (item.Value.Type)
@@ -185,7 +165,7 @@ namespace StructConverter
 							}
 							string path = Path.GetDirectoryName(item.Value.Filename);
 							for (int i = 0; i < flags.Length; i++)
-								if (HelperFunctions.FileHash(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + (IniData.Game == Game.SA2 || IniData.Game == Game.SA2B ? ".sa2mdl" : ".sa1mdl")))
+								if (HelperFunctions.FileHash(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + (iniData.Game == Game.SA2 || iniData.Game == Game.SA2B ? ".sa2mdl" : ".sa1mdl")))
 									!= hashes[i + 1])
 								{
 									modified = true;
@@ -263,10 +243,10 @@ namespace StructConverter
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Settings.Save();
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void CheckAllButton_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -274,7 +254,7 @@ namespace StructConverter
             listView1.EndUpdate();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void CheckModifiedButton_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -282,7 +262,7 @@ namespace StructConverter
             listView1.EndUpdate();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void UncheckAllButton_Click(object sender, EventArgs e)
         {
             listView1.BeginUpdate();
             foreach (ListViewItem item in listView1.Items)
@@ -290,19 +270,19 @@ namespace StructConverter
             listView1.EndUpdate();
         }
 
-		private void button5_Click(object sender, EventArgs e)
+		private void ExportCPPButton_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)
 					using (TextWriter writer = File.CreateText(fd.FileName))
 					{
-						bool SA2 = IniData.Game == Game.SA2 || IniData.Game == Game.SA2B;
+						bool SA2 = iniData.Game == Game.SA2 || iniData.Game == Game.SA2B;
 						Dictionary<uint, string> pointers = new Dictionary<uint, string>();
 						List<string> initlines = new List<string>();
-						uint imagebase = IniData.ImageBase ?? 0x400000;
+						uint imagebase = iniData.ImageBase ?? 0x400000;
 						ModelFormat modelfmt = 0;
 						LandTableFormat landfmt = 0;
-						switch (IniData.Game)
+						switch (iniData.Game)
 						{
 							case Game.SA1:
 								modelfmt = ModelFormat.Basic;
@@ -326,7 +306,7 @@ namespace StructConverter
 							writer.WriteLine("#include \"SADXModLoader.h\"");
 						writer.WriteLine();
 						Dictionary<string, string> models = new Dictionary<string, string>();
-						foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
+						foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
 						{
 							string name = item.Key.MakeIdentifier();
 							SA_Tools.FileInfo data = item.Value;
@@ -950,17 +930,17 @@ namespace StructConverter
 				fil.CopyTo(Path.Combine(dst, fil.Name), true);
 		}
 
-		private void button6_Click(object sender, EventArgs e)
+		private void ExportINIButton_Click(object sender, EventArgs e)
 		{
             using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "ini", Filter = "INI files|*.ini", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)
 				{
 					string dstfol = Path.GetDirectoryName(fd.FileName);
-					IniData output = new IniData
-					{
+                    SA_Tools.IniData output = new SA_Tools.IniData
+                    {
 						Files = new Dictionary<string, SA_Tools.FileInfo>()
 					};
-					foreach (KeyValuePair<string, SA_Tools.FileInfo> item in IniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
+					foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
 					{
 						if (Directory.Exists(item.Value.Filename))
 							Directory.CreateDirectory(Path.Combine(dstfol, item.Value.Filename));

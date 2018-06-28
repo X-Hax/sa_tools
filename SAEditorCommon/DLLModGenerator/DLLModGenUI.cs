@@ -7,13 +7,11 @@ using System.Windows.Forms;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace DLLModGenerator
+namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 {
-	public partial class MainForm : Form
+	public partial class DLLModGenUI : Form
 	{
-		private Properties.Settings Settings;
-
-		public MainForm()
+		public DLLModGenUI()
 		{
 			InitializeComponent();
 		}
@@ -40,19 +38,7 @@ namespace DLLModGenerator
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Settings = Properties.Settings.Default;
-			if (Settings.MRUList == null)
-				Settings.MRUList = new StringCollection();
-			StringCollection mru = new StringCollection();
-			foreach (string item in Settings.MRUList)
-				if (File.Exists(item))
-				{
-					mru.Add(item);
-					recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
-				}
-			Settings.MRUList = mru;
-			if (Program.Arguments.Length > 0)
-				LoadINI(Program.Arguments[0]);
+
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -66,22 +52,10 @@ namespace DLLModGenerator
 					LoadINI(a.FileName);
 		}
 
-		private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-		{
-			fileToolStripMenuItem.DropDown.Close();
-			LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
-		}
-
 		private void LoadINI(string filename)
 		{
 			IniData = IniSerializer.Deserialize<DllIniData>(filename);
-			if (Settings.MRUList.Contains(filename))
-			{
-				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
-				Settings.MRUList.Remove(filename);
-			}
-			Settings.MRUList.Insert(0, filename);
-			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
+
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			listView1.BeginUpdate();
 			listView1.Items.Clear();
@@ -98,12 +72,7 @@ namespace DLLModGenerator
 			Close();
 		}
 
-		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			Settings.Save();
-		}
-
-		private void button1_Click(object sender, EventArgs e)
+		private void CheckAllButton_Click(object sender, EventArgs e)
 		{
 			listView1.BeginUpdate();
 			foreach (ListViewItem item in listView1.Items)
@@ -111,7 +80,7 @@ namespace DLLModGenerator
 			listView1.EndUpdate();
 		}
 
-		private void button2_Click(object sender, EventArgs e)
+		private void CheckModifiedButton_Click(object sender, EventArgs e)
 		{
 			listView1.BeginUpdate();
 			foreach (ListViewItem item in listView1.Items)
@@ -119,7 +88,7 @@ namespace DLLModGenerator
 			listView1.EndUpdate();
 		}
 
-		private void button3_Click(object sender, EventArgs e)
+		private void UncheckAllButton_Click(object sender, EventArgs e)
 		{
 			listView1.BeginUpdate();
 			foreach (ListViewItem item in listView1.Items)
@@ -127,7 +96,7 @@ namespace DLLModGenerator
 			listView1.EndUpdate();
 		}
 
-		private void button5_Click(object sender, EventArgs e)
+		private void ExportCPPButton_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)
@@ -209,7 +178,7 @@ namespace DLLModGenerator
 					}
 		}
 
-		private void button6_Click(object sender, EventArgs e)
+		private void ExportINIButton_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog fd = new SaveFileDialog() { DefaultExt = "ini", Filter = "INI files|*.ini", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
 				if (fd.ShowDialog(this) == DialogResult.OK)

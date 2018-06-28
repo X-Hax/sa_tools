@@ -35,8 +35,9 @@
             this.SADXLVL2Button = new System.Windows.Forms.Button();
             this.buildGroup = new System.Windows.Forms.GroupBox();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
-            this.BuildButton = new System.Windows.Forms.Button();
+            this.ExeBuildButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
+            this.BuildDLLDerivedData = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -98,8 +99,9 @@
             // 
             // buildGroup
             // 
+            this.buildGroup.Controls.Add(this.BuildDLLDerivedData);
             this.buildGroup.Controls.Add(this.BuildAndRunButton);
-            this.buildGroup.Controls.Add(this.BuildButton);
+            this.buildGroup.Controls.Add(this.ExeBuildButton);
             this.buildGroup.Controls.Add(this.ConfigBuildButton);
             this.buildGroup.Location = new System.Drawing.Point(354, 68);
             this.buildGroup.Name = "buildGroup";
@@ -110,21 +112,23 @@
             // 
             // BuildAndRunButton
             // 
-            this.BuildAndRunButton.Location = new System.Drawing.Point(7, 78);
+            this.BuildAndRunButton.Enabled = false;
+            this.BuildAndRunButton.Location = new System.Drawing.Point(7, 106);
             this.BuildAndRunButton.Name = "BuildAndRunButton";
             this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
             this.BuildAndRunButton.TabIndex = 2;
             this.BuildAndRunButton.Text = "Build and Run";
             this.BuildAndRunButton.UseVisualStyleBackColor = true;
             // 
-            // BuildButton
+            // ExeBuildButton
             // 
-            this.BuildButton.Location = new System.Drawing.Point(7, 49);
-            this.BuildButton.Name = "BuildButton";
-            this.BuildButton.Size = new System.Drawing.Size(239, 23);
-            this.BuildButton.TabIndex = 1;
-            this.BuildButton.Text = "Build";
-            this.BuildButton.UseVisualStyleBackColor = true;
+            this.ExeBuildButton.Location = new System.Drawing.Point(7, 77);
+            this.ExeBuildButton.Name = "ExeBuildButton";
+            this.ExeBuildButton.Size = new System.Drawing.Size(239, 23);
+            this.ExeBuildButton.TabIndex = 1;
+            this.ExeBuildButton.Text = "Build Exe-Derived Data";
+            this.ExeBuildButton.UseVisualStyleBackColor = true;
+            this.ExeBuildButton.Click += new System.EventHandler(this.ExeBuildButton_Click);
             // 
             // ConfigBuildButton
             // 
@@ -134,6 +138,16 @@
             this.ConfigBuildButton.TabIndex = 0;
             this.ConfigBuildButton.Text = "Configure build";
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
+            // 
+            // BuildDLLDerivedData
+            // 
+            this.BuildDLLDerivedData.Location = new System.Drawing.Point(6, 48);
+            this.BuildDLLDerivedData.Name = "BuildDLLDerivedData";
+            this.BuildDLLDerivedData.Size = new System.Drawing.Size(239, 23);
+            this.BuildDLLDerivedData.TabIndex = 3;
+            this.BuildDLLDerivedData.Text = "Build DLL-Derived Data";
+            this.BuildDLLDerivedData.UseVisualStyleBackColor = true;
+            this.BuildDLLDerivedData.Click += new System.EventHandler(this.BuildDLLDerivedData_Click);
             // 
             // ProjectActions
             // 
@@ -161,8 +175,9 @@
         private System.Windows.Forms.Button SAMDLButton;
         private System.Windows.Forms.Button SADXLVL2Button;
         private System.Windows.Forms.GroupBox buildGroup;
-        private System.Windows.Forms.Button BuildButton;
+        private System.Windows.Forms.Button ExeBuildButton;
         private System.Windows.Forms.Button ConfigBuildButton;
         private System.Windows.Forms.Button BuildAndRunButton;
+        private System.Windows.Forms.Button BuildDLLDerivedData;
     }
 }
