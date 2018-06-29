@@ -170,6 +170,71 @@ namespace ProjectManager
             return "";
         }
 
+        private void SADXSplitData_Sub(SplitData splitData, ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+        {
+            string datafilename = Path.Combine(gameFolder, splitData.dataFile);
+            string inifilename = Path.Combine(iniFolder, splitData.iniFile);
+            string projectFolderName = outputFolder;
+
+            progress.StepProgress();
+            progress.SetStep("Splitting: " + splitData.dataFile);
+
+            #region Validating Inputs
+            if (!File.Exists(datafilename))
+            {
+                Console.WriteLine("No source file supplied. Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+
+                throw new Exception(ERRORVALUE.NoSourceFile.ToString());
+                //return (int)ERRORVALUE.NoSourceFile;
+            }
+
+            if (!File.Exists(inifilename))
+            {
+                Console.WriteLine("ini data mapping not found. Aborting.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
+
+                throw new Exception(ERRORVALUE.NoDataMapping.ToString());
+                //return (int)ERRORVALUE.NoDataMapping;
+            }
+
+            if (!Directory.Exists(projectFolderName))
+            {
+                // try creating the directory
+                bool created = true;
+
+                try
+                {
+                    // check to see if trailing charcter closes 
+                    Directory.CreateDirectory(projectFolderName);
+                }
+                catch
+                {
+                    created = false;
+                }
+
+                if (!created)
+                {
+                    // couldn't create directory.
+                    Console.WriteLine("Output folder did not exist and couldn't be created.");
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadLine();
+
+                    throw new Exception(ERRORVALUE.InvalidProject.ToString());
+                    //return (int)ERRORVALUE.InvalidProject;
+                }
+            }
+            #endregion
+
+            // switch on file extension - if dll, use dll splitter
+            System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
+
+            int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
+                Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+        }
+
         private void DoSADXSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
             progress.StepProgress();
@@ -177,68 +242,30 @@ namespace ProjectManager
 
             foreach (SplitData splitData in sadxpcsplits)
             {
-                string datafilename=Path.Combine(gameFolder, splitData.dataFile);
-                string inifilename=Path.Combine(iniFolder, splitData.iniFile);
-                string projectFolderName = outputFolder;
-
-                progress.StepProgress();
-                progress.SetStep("Splitting: " + splitData.dataFile);
-
-#region Validating Inputs
-                if (!File.Exists(datafilename))
-                {
-                    Console.WriteLine("No source file supplied. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoSourceFile.ToString());
-                    //return (int)ERRORVALUE.NoSourceFile;
-                }
-
-                if (!File.Exists(inifilename))
-                {
-                    Console.WriteLine("ini data mapping not found. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoDataMapping.ToString());
-                    //return (int)ERRORVALUE.NoDataMapping;
-                }
-
-                if (!Directory.Exists(projectFolderName))
-                {
-                    // try creating the directory
-                    bool created = true;
-
-                    try
-                    {
-                        // check to see if trailing charcter closes 
-                        Directory.CreateDirectory(projectFolderName);
-                    }
-                    catch
-                    {
-                        created = false;
-                    }
-
-                    if (!created)
-                    {
-                        // couldn't create directory.
-                        Console.WriteLine("Output folder did not exist and couldn't be created.");
-                        Console.WriteLine("Press any key to exit.");
-                        Console.ReadLine();
-
-                        throw new Exception(ERRORVALUE.InvalidProject.ToString());
-                        //return (int)ERRORVALUE.InvalidProject;
-                    }
-                }
-#endregion
-
-                // switch on file extension - if dll, use dll splitter
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
-
-                int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-                    Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+                SADXSplitData_Sub(splitData, progress, gameFolder, iniFolder, outputFolder);
             }
+
+            // do our last split, chrmodels
+            SplitData chrmodelsSplitData = new SplitData();
+
+            if(File.Exists(Path.Combine(gameFolder, "system/CHRMODELS_orig.dll")))
+            {
+                chrmodelsSplitData = new SplitData()
+                {
+                    dataFile = "system/CHRMODELS_orig.dll",
+                    iniFile = "chrmodels.ini"
+                };
+            }
+            else
+            {
+                chrmodelsSplitData = new SplitData()
+                {
+                    dataFile = "system/CHRMODELS.dll",
+                    iniFile = "chrmodels.ini"
+                };
+            }
+
+            SADXSplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
         }
 
         private void DoSA2PCSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
