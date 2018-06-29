@@ -30,14 +30,14 @@
         {
             this.ProjectNameLAbel = new System.Windows.Forms.Label();
             this.GameSpecificOptions = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.SADXTweaker2Button = new System.Windows.Forms.Button();
             this.SAMDLButton = new System.Windows.Forms.Button();
             this.SADXLVL2Button = new System.Windows.Forms.Button();
             this.buildGroup = new System.Windows.Forms.GroupBox();
+            this.BuildDLLDerivedData = new System.Windows.Forms.Button();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
             this.ExeBuildButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
-            this.BuildDLLDerivedData = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -54,7 +54,7 @@
             // 
             // GameSpecificOptions
             // 
-            this.GameSpecificOptions.Controls.Add(this.button1);
+            this.GameSpecificOptions.Controls.Add(this.SADXTweaker2Button);
             this.GameSpecificOptions.Controls.Add(this.SAMDLButton);
             this.GameSpecificOptions.Controls.Add(this.SADXLVL2Button);
             this.GameSpecificOptions.Location = new System.Drawing.Point(12, 68);
@@ -64,16 +64,17 @@
             this.GameSpecificOptions.TabStop = false;
             this.GameSpecificOptions.Text = "Game Specific Tools";
             // 
-            // button1
+            // SADXTweaker2Button
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.SADXTweaker2Button.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(6, 77);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(324, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "SADXTweaker2";
-            this.button1.UseVisualStyleBackColor = true;
+            this.SADXTweaker2Button.Location = new System.Drawing.Point(6, 77);
+            this.SADXTweaker2Button.Name = "SADXTweaker2Button";
+            this.SADXTweaker2Button.Size = new System.Drawing.Size(324, 23);
+            this.SADXTweaker2Button.TabIndex = 2;
+            this.SADXTweaker2Button.Text = "SADXTweaker2";
+            this.SADXTweaker2Button.UseVisualStyleBackColor = true;
+            this.SADXTweaker2Button.Click += new System.EventHandler(this.SADXTweaker2Button_Click);
             // 
             // SAMDLButton
             // 
@@ -85,6 +86,7 @@
             this.SAMDLButton.TabIndex = 1;
             this.SAMDLButton.Text = "SAMDL";
             this.SAMDLButton.UseVisualStyleBackColor = true;
+            this.SAMDLButton.Click += new System.EventHandler(this.SAMDLButton_Click);
             // 
             // SADXLVL2Button
             // 
@@ -96,6 +98,7 @@
             this.SADXLVL2Button.TabIndex = 0;
             this.SADXLVL2Button.Text = "SADXLVL2";
             this.SADXLVL2Button.UseVisualStyleBackColor = true;
+            this.SADXLVL2Button.Click += new System.EventHandler(this.SADXLVL2Button_Click);
             // 
             // buildGroup
             // 
@@ -109,6 +112,16 @@
             this.buildGroup.TabIndex = 2;
             this.buildGroup.TabStop = false;
             this.buildGroup.Text = "Build";
+            // 
+            // BuildDLLDerivedData
+            // 
+            this.BuildDLLDerivedData.Location = new System.Drawing.Point(6, 48);
+            this.BuildDLLDerivedData.Name = "BuildDLLDerivedData";
+            this.BuildDLLDerivedData.Size = new System.Drawing.Size(239, 23);
+            this.BuildDLLDerivedData.TabIndex = 3;
+            this.BuildDLLDerivedData.Text = "Build DLL-Derived Data";
+            this.BuildDLLDerivedData.UseVisualStyleBackColor = true;
+            this.BuildDLLDerivedData.Click += new System.EventHandler(this.BuildDLLDerivedData_Click);
             // 
             // BuildAndRunButton
             // 
@@ -139,16 +152,6 @@
             this.ConfigBuildButton.Text = "Configure build";
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
             // 
-            // BuildDLLDerivedData
-            // 
-            this.BuildDLLDerivedData.Location = new System.Drawing.Point(6, 48);
-            this.BuildDLLDerivedData.Name = "BuildDLLDerivedData";
-            this.BuildDLLDerivedData.Size = new System.Drawing.Size(239, 23);
-            this.BuildDLLDerivedData.TabIndex = 3;
-            this.BuildDLLDerivedData.Text = "Build DLL-Derived Data";
-            this.BuildDLLDerivedData.UseVisualStyleBackColor = true;
-            this.BuildDLLDerivedData.Click += new System.EventHandler(this.BuildDLLDerivedData_Click);
-            // 
             // ProjectActions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,7 +174,7 @@
 
         private System.Windows.Forms.Label ProjectNameLAbel;
         private System.Windows.Forms.GroupBox GameSpecificOptions;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button SADXTweaker2Button;
         private System.Windows.Forms.Button SAMDLButton;
         private System.Windows.Forms.Button SADXLVL2Button;
         private System.Windows.Forms.GroupBox buildGroup;
