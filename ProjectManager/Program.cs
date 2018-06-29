@@ -25,8 +25,8 @@ namespace ProjectManager
 
     static class Program
 	{
-        private static Settings settings;
-        public static Settings Settings { get { return settings; } } 
+        private static ProjectManagerSettings settings;
+        public static ProjectManagerSettings Settings { get { return settings; } } 
 
         private static void PrintHelp()
         {
@@ -58,7 +58,7 @@ namespace ProjectManager
             ProjectManager projectSelect;
 
             //Properties.Settings.Default.Upgrade();
-            settings = Settings.Load();
+            settings = ProjectManagerSettings.Load();
 
             if(args != null && args.Length > 0  && args[0] == "build")
             {

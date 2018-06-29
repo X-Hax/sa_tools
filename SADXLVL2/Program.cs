@@ -10,6 +10,9 @@ namespace SonicRetro.SAModel.SADXLVL2
         internal static string[] args;
         public static MainForm primaryForm;
 
+        private static string sadxGameFolder;
+        public static string SADXGameFolder { get { return sadxGameFolder; } }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -20,6 +23,17 @@ namespace SonicRetro.SAModel.SADXLVL2
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // check for our game folder validity.
+            // if it isn't set up, let the user know that they need to run and configure project maanger
+            // before continuing
+
+            //string 
+
+            string sadxGamePathInvalidReason = "";
+
+            //if(!SAEditorCommon.GamePathChecker.CheckSADXPCValid())
+
             primaryForm = new MainForm();
             Application.Run(primaryForm);
         }

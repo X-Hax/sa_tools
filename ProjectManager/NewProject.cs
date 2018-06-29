@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using SonicRetro.SAModel.SAEditorCommon;
 
 namespace ProjectManager
 {
@@ -86,10 +87,13 @@ namespace ProjectManager
             InitializeComponent();
 
             string sadxInvalidReason = "";
-            sadxIsValid = Program.CheckSADXPCValid(out sadxInvalidReason);
+            
+            sadxIsValid = GamePathChecker.CheckSADXPCValid(
+                Program.Settings.SADXPCPath, out sadxInvalidReason);
 
             string sa2pcInvalidReason = "";
-            sa2pcIsValid = Program.CheckSADXPCValid(out sa2pcInvalidReason);
+            sa2pcIsValid = GamePathChecker.CheckSADXPCValid(
+                Program.Settings.SA2PCPath, out sa2pcInvalidReason);
 
             backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
 

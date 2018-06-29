@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using SonicRetro.SAModel.SAEditorCommon;
+
 namespace ProjectManager
 {
     public partial class GameConfig : Form
@@ -42,7 +44,8 @@ namespace ProjectManager
 
             // check validity
             string sadxFailReason = "";
-            bool sadxpcValid = Program.CheckSADXPCValid(out sadxFailReason);
+            bool sadxpcValid = GamePathChecker.CheckSADXPCValid(
+                Program.Settings.SADXPCPath, out sadxFailReason);
 
             if(!sadxpcValid)
             {
@@ -50,7 +53,8 @@ namespace ProjectManager
             }
 
             string sa2PCFailReason = "";
-            bool sa2PCValid = Program.CheckSA2PCValid(out sa2PCFailReason);
+            bool sa2PCValid = GamePathChecker.CheckSA2PCValid(
+                Program.Settings.SA2PCPath, out sa2PCFailReason);
 
             if(!sa2PCValid)
             {
@@ -87,7 +91,8 @@ namespace ProjectManager
 
             // check validity
             string sadxFailReason = "";
-            bool sadxpcValid = Program.CheckSADXPCValid(out sadxFailReason);
+            bool sadxpcValid = GamePathChecker.CheckSADXPCValid(
+                Program.Settings.SADXPCPath, out sadxFailReason);
 
             if (!sadxpcValid)
             {
@@ -95,7 +100,8 @@ namespace ProjectManager
             }
 
             string sa2PCFailReason = "";
-            bool sa2PCValid = Program.CheckSA2PCValid(out sa2PCFailReason);
+            bool sa2PCValid = GamePathChecker.CheckSA2PCValid(
+                Program.Settings.SA2PCPath, out sa2PCFailReason);
 
             if (!sa2PCValid)
             {

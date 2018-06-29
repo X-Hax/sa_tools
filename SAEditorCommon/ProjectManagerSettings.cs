@@ -9,7 +9,7 @@ namespace ProjectManager
     /// <summary>
     /// Holds settings necessary for the project manager.
     /// </summary>
-    public class Settings
+    public class ProjectManagerSettings
     {
         public string SADXPCPath { get; set; }
         public string SA2PCPath { get; set; }
@@ -19,15 +19,15 @@ namespace ProjectManager
             return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
         }
 
-        public static Settings Load()
+        public static ProjectManagerSettings Load()
         {
             if(File.Exists(GetSettingsPath()))
             {
-                return (Settings) IniSerializer.Deserialize(typeof(Settings), GetSettingsPath());
+                return (ProjectManagerSettings) IniSerializer.Deserialize(typeof(ProjectManagerSettings), GetSettingsPath());
             }
             else
             {
-                Settings result = new Settings()
+                ProjectManagerSettings result = new ProjectManagerSettings()
                 {
                     SA2PCPath = "",
                     SADXPCPath = ""

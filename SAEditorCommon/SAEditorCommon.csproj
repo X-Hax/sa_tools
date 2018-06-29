@@ -71,7 +71,9 @@
     <Compile Include="DLLModGenerator\DLLModGenUI.Designer.cs">
       <DependentUpon>DLLModGenUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="GamePathChecker.cs" />
     <Compile Include="IniData.cs" />
+    <Compile Include="ProjectManagerSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

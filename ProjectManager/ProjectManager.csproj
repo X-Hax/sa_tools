@@ -86,7 +86,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />
     <Compile Include="Split\Split.cs" />
