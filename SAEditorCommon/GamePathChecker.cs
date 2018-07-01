@@ -90,5 +90,10 @@ namespace SonicRetro.SAModel.SAEditorCommon
             failReason = "";
             return sa2PCIsValid;
         }
+
+        public static string PathOrFallback(string path, string fallbackPath)
+        {
+            return (File.Exists(path)) ? path : fallbackPath;
+        }
     }
 }

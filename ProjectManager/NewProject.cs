@@ -270,6 +270,51 @@ namespace ProjectManager
             }
 
             SADXSplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
+
+            // copy sadxlvl.ini
+            string sadxlvlIniSourcePath = Path.GetFullPath(Path.Combine(iniFolder, "sadxlvl.ini"));
+            string sadxlvlIniOutputPath = Path.GetFullPath(Path.Combine(outputFolder, "sadxlvl.ini"));
+            File.Copy(sadxlvlIniSourcePath, sadxlvlIniOutputPath, true);
+
+            // copy objdefs.ini
+            File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(outputFolder, "objdefs.ini"), true);
+
+            // copy objdefs files (this needs to be turned into a recursive folder copy)
+            string objdefsPath = GetObjDefsDirectory();
+            string outputObjdefsPath = Path.Combine(outputFolder, "objdefs");
+
+            CopyFolder(objdefsPath, outputObjdefsPath);
+        }
+
+        private void CopyFolder(string sourceFolder, string destinationFolder)
+        {
+            string[] files = Directory.GetFiles(sourceFolder);
+
+            Directory.CreateDirectory(destinationFolder);
+
+            foreach (string objdef in files)
+            {
+                FileInfo objdefFileInfo = new FileInfo(objdef);
+                if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
+
+                // copy
+                string filePath = Path.Combine(sourceFolder, objdefFileInfo.Name);
+                string destinationPath = Path.Combine(destinationFolder, objdefFileInfo.Name);
+                File.Copy(filePath, destinationPath, true);
+            }
+
+            string[] directories = Directory.GetDirectories(sourceFolder);
+
+            foreach(string directory in directories)
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(directory);
+                if (directoryInfo.Name.Equals("bin") || directoryInfo.Name.Equals("obj")) continue;
+
+                string copySrcDir = Path.Combine(sourceFolder, directoryInfo.Name);
+                string copyDstDir = Path.Combine(destinationFolder, directoryInfo.Name);
+
+                CopyFolder(copySrcDir, copyDstDir);
+            }
         }
 
         private void DoSA2PCSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -432,6 +477,17 @@ namespace ProjectManager
             return ((SADXPCButton.Checked) ? Program.Settings.SADXPCPath : Program.Settings.SA2PCPath);
         }
 
+        private string GetObjDefsDirectory()
+        {
+#if DEBUG
+            return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
+#endif
+
+#if !DEBUG
+            return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetFolderForGame(game) + "/objdefs/";
+#endif
+        }
+
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             // we should disable all form controls
@@ -454,7 +510,7 @@ namespace ProjectManager
                 // get our ini files to split
                 string iniFolder = "";
 #if DEBUG
-                iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "../../../../Configuration/" + GetIniFolderForGame(game);
+                iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + GetIniFolderForGame(game);
 #endif
 
 #if !DEBUG

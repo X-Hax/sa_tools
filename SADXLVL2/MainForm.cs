@@ -64,12 +64,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 		// light list
 		List<SA1StageLightData> stageLightList;
 
+        // project support stuff
+        string systemFallback;
+        
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			panel1.MouseWheel += panel1_MouseWheel;
+
+            systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (ShowQuickStart())
 				ShowLevelSelect();
@@ -437,7 +442,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (!LevelData.TextureBitmaps.ContainsKey(pvmName))
 			{
-				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(Path.Combine(systemPath, pvmName) + ".PVM");
+                string textureFallbackPath = Path.Combine(systemFallback, pvmName) + ".PVM";
+                string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
+
+				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
 
 				for (int i = 0; i < textureBitmaps.Length; i++)
@@ -473,7 +481,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					IniLevelData level = ini.Levels[levelID];
 
 					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-					string modpath = ini.ModPath;
+					//string modpath = ini.ModPath;
 
 					SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 					LevelData.leveltexs = null;
@@ -507,8 +515,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.Textures = new Dictionary<string, Texture[]>();
 					if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					{
-						BMPInfo[] TexBmps =
-							TextureArchive.GetTextures(Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM");
+                        string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) +".PVM";
+                        string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
+
+                        BMPInfo[] TexBmps =
+							TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
 							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
@@ -761,23 +772,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (LevelData.ObjDefs.Count > 0)
 					{
 						LevelData.SETName = level.SETName ?? level.LevelID;
-						string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+                        string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
+                        string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
 						LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
 						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
 							List<SETItem> list = new List<SETItem>();
 							byte[] setfile = null;
 
-							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+                            //GamePathChecker.PathOrFallback(setstr, setfallback)
 
-							if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+                            string formatted = string.Format(setstr, LevelData.SETChars[i]);
+                            string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+                            string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+
+							/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
 								setfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-							else if (File.Exists(formatted))
-								setfile = File.ReadAllBytes(formatted);
+							else if (File.Exists(formatted))*/
+								if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
 
 							if (setfile != null)
 							{
-								progress.SetTask("SET: " + formatted.Replace(Environment.CurrentDirectory, ""));
+								progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
 
 								int count = BitConverter.ToInt32(setfile, 0);
 								int address = 0x20;
@@ -955,8 +972,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					if (LevelData.MisnObjDefs.Count > 0)
 					{
-						string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
-						string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
+                        string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+                        string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
+
+                        string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+                        string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
 						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
 						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
@@ -964,19 +984,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 							byte[] setfile = null;
 							byte[] prmfile = null;
 
-							string setfmt = string.Format(setstr, LevelData.SETChars[i]);
-							string prmfmt = string.Format(prmstr, LevelData.SETChars[i]);
+                            string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+                            string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
 
-							if (modpath != null && File.Exists(Path.Combine(modpath, setfmt)) && File.Exists(Path.Combine(modpath, prmfmt)))
+                            string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+                            string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+							string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
+							string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
+
+							/*if (modpath != null && File.Exists(Path.Combine(modpath, setfmt)) && File.Exists(Path.Combine(modpath, prmfmt)))
 							{
 								setfile = File.ReadAllBytes(Path.Combine(modpath, setfmt));
 								prmfile = File.ReadAllBytes(Path.Combine(modpath, prmfmt));
 							}
 							else if (File.Exists(setfmt) && File.Exists(prmfmt))
-							{
-								setfile = File.ReadAllBytes(setfmt);
-								prmfile = File.ReadAllBytes(prmfmt);
-							}
+							{*/
+								if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+								if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+							//}
 
 							if (setfile != null)
 							{
@@ -1047,7 +1073,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-					string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
+                    string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
+                    string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
 
 					LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
 					for (int i = 0; i < LevelData.SETChars.Length; i++)
@@ -1055,12 +1082,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 						List<CAMItem> list = new List<CAMItem>();
 						byte[] camfile = null;
 
-						string formatted = string.Format(camstr, LevelData.SETChars[i]);
+                        string camfmt = string.Format(camstr, LevelData.SETChars[i]);
+						string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
 
-						if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+                        string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
+
+						/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
 							camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-						else if (File.Exists(formatted))
-							camfile = File.ReadAllBytes(formatted);
+						else if (File.Exists(formatted))*/
+							if(File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
 
 						if (camfile != null)
 						{
@@ -1350,7 +1380,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			IniLevelData level = ini.Levels[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-			string modpath = ini.ModPath;
+            Directory.CreateDirectory(syspath);
+			//string modpath = ini.ModPath;
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 
 			progress.SetTaskAndStep("Saving:", "Geometry...");
@@ -1413,17 +1444,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 				for (int i = 0; i < LevelData.SETItems.Length; i++)
 				{
 					string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-					if (modpath != null)
-						setstr = Path.Combine(modpath, setstr);
+					/*if (modpath != null)
+						setstr = Path.Combine(modpath, setstr);*/
 
-					// TODO: Consider simply blanking the SET file instead of deleting it.
-					// Completely deleting it might be undesirable since Sonic's layout will be loaded
-					// in place of the missing file. And where mods are concerned, you could have conflicts
-					// with other mods if the file is deleted.
-					if (File.Exists(setstr))
-						File.Delete(setstr);
-					if (LevelData.SETItems[i].Count == 0)
-						continue;
+                    // blank the set file
+                    if (File.Exists(setstr) || LevelData.SETItems[i].Count == 0)
+                    {
+                        byte[] emptyBytes = new byte[0x20];
+                        File.WriteAllBytes(setstr, emptyBytes);
+                    }
 
 					List<byte> file = new List<byte>(LevelData.SETItems[i].Count*0x20 + 0x20);
 					file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
@@ -1450,8 +1479,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				for (int i = 0; i < LevelData.CAMItems.Length; i++)
 				{
 					string camString = Path.Combine(syspath, "CAM" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-					if (modpath != null)
-						camString = Path.Combine(modpath, camString);
+					/*if (modpath != null)
+						camString = Path.Combine(modpath, camString);*/
 
 					// TODO: Handle this differently. File stream? If the user is using a symbolic link for example, we defeat the purpose by deleting it.
 					if (File.Exists(camString))
@@ -1489,11 +1518,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + LevelData.SETChars[i] + ".bin");
 					string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + LevelData.SETChars[i] + ".bin");
-					if (modpath != null)
+					/*if (modpath != null)
 					{
 						setstr = Path.Combine(modpath, setstr);
 						prmstr = Path.Combine(modpath, prmstr);
-					}
+					}*/
 
 					// TODO: Consider simply blanking the SET file instead of deleting it.
 					// Completely deleting it might be undesirable since Sonic's layout will be loaded

@@ -68,7 +68,7 @@ namespace ProjectManager
 
             System.Diagnostics.ProcessStartInfo sadxlvl2StartInfo = new System.Diagnostics.ProcessStartInfo(
                 Path.GetFullPath(sadxlvl2Path),
-                Path.GetFullPath(projectFolder));
+                string.Format("\"{0}\"", Path.GetFullPath(projectFolder + "/sadxlvl.ini")));
 
             System.Diagnostics.Process sadxlvl2Process = System.Diagnostics.Process.Start(sadxlvl2StartInfo);
         }
@@ -98,7 +98,7 @@ namespace ProjectManager
             string sadxtweaker2Path = "";
 
 #if DEBUG
-            sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXTweaker2/bin/Debug/SADXTweaker2.exe.exe";
+            sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXTweaker2/bin/Debug/SADXTweaker2.exe";
 #endif
 #if !DEBUG
             sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXTweaker2/SADXTweaker2.exe.exe";

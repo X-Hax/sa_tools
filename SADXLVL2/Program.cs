@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -28,11 +30,29 @@ namespace SonicRetro.SAModel.SADXLVL2
             // if it isn't set up, let the user know that they need to run and configure project maanger
             // before continuing
 
-            //string 
+            string projectManagerPath = "";
+
+#if DEBUG
+            projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../ProjectManager/bin/Debug/Settings.ini";
+#endif
+#if !DEBUG
+            projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../ProjectManager/Settings.ini";
+#endif
+
+            projectManagerPath = Path.GetFullPath(projectManagerPath); // cleaning up path.
+
+            ProjectManager.ProjectManagerSettings settings = ProjectManager.ProjectManagerSettings.Load(projectManagerPath);
 
             string sadxGamePathInvalidReason = "";
 
-            //if(!SAEditorCommon.GamePathChecker.CheckSADXPCValid())
+            if (!SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
+            {
+                MessageBox.Show(string.Format("The SADX game folder was incorrect because: {0}.\n Please run ProjectManager to configure SADX game path.",
+                    sadxGamePathInvalidReason), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+            else sadxGameFolder = settings.SADXPCPath;
 
             primaryForm = new MainForm();
             Application.Run(primaryForm);

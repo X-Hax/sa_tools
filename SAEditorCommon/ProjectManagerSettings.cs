@@ -19,11 +19,11 @@ namespace ProjectManager
             return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
         }
 
-        public static ProjectManagerSettings Load()
+        public static ProjectManagerSettings Load(string iniPath)
         {
-            if(File.Exists(GetSettingsPath()))
+            if (File.Exists(iniPath))
             {
-                return (ProjectManagerSettings) IniSerializer.Deserialize(typeof(ProjectManagerSettings), GetSettingsPath());
+                return (ProjectManagerSettings)IniSerializer.Deserialize(typeof(ProjectManagerSettings), iniPath);
             }
             else
             {
@@ -35,6 +35,11 @@ namespace ProjectManager
 
                 return result;
             }
+        }
+
+        public static ProjectManagerSettings Load()
+        {
+            return Load(GetSettingsPath());
         }
 
         public void Save()
