@@ -1093,7 +1093,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						foreach (UV uv in set.UV)
 						{
-							objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), (uv.V * -1).ToString(NumberFormatInfo.InvariantInfo));
+							objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), (-uv.V).ToString(NumberFormatInfo.InvariantInfo));
 						}
 					}
 
@@ -1425,7 +1425,7 @@ namespace SonicRetro.SAModel.Direct3D
 										uvsAreValid = true;
 										foreach (UV uv in chunkStrip.Strips[stripNum].UVs)
 										{
-											objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), uv.V.ToString(NumberFormatInfo.InvariantInfo));
+											objstream.WriteLine("vt {0} {1}", uv.U.ToString(NumberFormatInfo.InvariantInfo), (-uv.V).ToString(NumberFormatInfo.InvariantInfo));
 										}
 									}
 								}
