@@ -13,8 +13,8 @@ namespace ProjectManager.SplitDLL
     {
         public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
         {
-            try
-            {
+            /*try
+            {*/
                 byte[] datafile = File.ReadAllBytes(datafilename);
                 IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
                 uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
@@ -124,9 +124,11 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(land.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-                                        land.SaveToFile(fn, landfmt);
-                                        output.Files[fn] = new FileTypeHash("landtable", HelperFunctions.FileHash(fn));
+                                        string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
+                                        string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
+                                        
+                                        land.SaveToFile(outputFN, landfmt);
+                                        output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
                                         labels.AddRange(land.GetLabels());
                                     }
                                 }
@@ -144,7 +146,7 @@ namespace ProjectManager.SplitDLL
                                 output.Items.Add(info);
                                 if (!labels.Contains(mdl.Name))
                                 {
-                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, modelfmt));
+                                    models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
                                     labels.AddRange(mdl.GetLabels());
                                 }
                             }
@@ -164,7 +166,7 @@ namespace ProjectManager.SplitDLL
                                 output.Items.Add(info);
                                 if (!labels.Contains(dummy.Name))
                                 {
-                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, modelfmt));
+                                    models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
                                     labels.AddRange(mdl.GetLabels());
                                 }
                             }
@@ -187,7 +189,7 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(mdl.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+                                        string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
                                         models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
                                         labels.AddRange(mdl.GetLabels());
                                     }
@@ -217,7 +219,7 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(dummy.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+                                        string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
                                         models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
                                         labels.AddRange(mdl.GetLabels());
                                     }
@@ -236,7 +238,7 @@ namespace ProjectManager.SplitDLL
                                 output.Items.Add(info);
                                 if (!labels.Contains(mdl.Name))
                                 {
-                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Basic));
+                                    models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
                                     labels.AddRange(mdl.GetLabels());
                                 }
                             }
@@ -259,7 +261,7 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(mdl.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+                                        string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
                                         models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
                                         labels.AddRange(mdl.GetLabels());
                                     }
@@ -278,7 +280,7 @@ namespace ProjectManager.SplitDLL
                                 output.Items.Add(info);
                                 if (!labels.Contains(mdl.Name))
                                 {
-                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.BasicDX));
+                                    models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
                                     labels.AddRange(mdl.GetLabels());
                                 }
                             }
@@ -301,7 +303,7 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(mdl.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+                                        string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
                                         models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
                                         labels.AddRange(mdl.GetLabels());
                                     }
@@ -320,7 +322,7 @@ namespace ProjectManager.SplitDLL
                                 output.Items.Add(info);
                                 if (!labels.Contains(mdl.Name))
                                 {
-                                    models.Add(new ModelAnimations(fileOutputPath, name, mdl, ModelFormat.Chunk));
+                                    models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
                                     labels.AddRange(mdl.GetLabels());
                                 }
                             }
@@ -343,7 +345,7 @@ namespace ProjectManager.SplitDLL
                                     output.Items.Add(info);
                                     if (!labels.Contains(mdl.Name))
                                     {
-                                        string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
+                                        string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
                                         models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
                                         labels.AddRange(mdl.GetLabels());
                                     }
@@ -377,22 +379,26 @@ namespace ProjectManager.SplitDLL
                                         Field = "object"
                                     };
                                     output.Items.Add(info);
-                                    string fn = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-                                    ani.Animation.Save(fn);
-                                    output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(fn));
+                                    string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+                                    string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+                                    ani.Animation.Save(outputFN);
+                                    output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
                                     if (models.Contains(ani.Model.Name))
                                     {
                                         ModelAnimations mdl = models[ani.Model.Name];
                                         System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
-                                        PathRelativePathTo(sb, Path.GetFullPath(mdl.Filename), 0, Path.GetFullPath(fn), 0);
-                                        mdl.Animations.Add(sb.ToString());
+                                        PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);                         
+                                        mdl.Animations.Add(sb.ToString()); // this is where the problem is
                                     }
                                     else
                                     {
                                         string mfn = Path.ChangeExtension(fn, modelext);
-                                        ModelFile.CreateFile(mfn, ani.Model, new[] { Path.GetFileName(fn) }, null, null,
+                                        string outputmfn = Path.Combine(projectFolderName, mfn);
+                                        string animationName = Path.GetFileName(outputFN);
+
+                                        ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, null,
                                             idx + "->object", "splitDLL", null, modelfmt);
-                                        output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(mfn));
+                                        output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
                                     }
                                 }
                                 address += 4;
@@ -419,8 +425,8 @@ namespace ProjectManager.SplitDLL
                 }
                 foreach (ModelAnimations item in models)
                 {
-                    //string modelOutputPath = string.Concat(projectFolderName, item.Filename);
-                    string modelOutputPath = item.Filename;
+                    string modelOutputPath = string.Concat(projectFolderName, item.Filename);
+                    //string modelOutputPath = item.Filename;
 
                     ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
                         null, item.Format);
@@ -444,14 +450,14 @@ namespace ProjectManager.SplitDLL
                 timer.Stop();
                 Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
                 Console.WriteLine();
-            }
+            /*}
             catch (Exception e)
             {
                 Console.WriteLine(e.Message, e.StackTrace);
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadLine();
                 return (int)ERRORVALUE.UnhandledException;
-            }
+            }*/
 
             return (int)ERRORVALUE.Success;
         }
