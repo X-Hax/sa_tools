@@ -100,10 +100,10 @@ Next, we'll do an extremely similar process, but for exporting the data that des
 We're almost done. The final step is to create our mod.ini. Create: sadx\Mods\(your project name)\mod.ini
 Mod.ini has a very simple key/value format. Every line represents one key/value pair, separated by an '=' character.
 
-   Name=Test Project
-   Description=Testing the new SA Tools pipeline
-   Author=
-   EXEData=exeData.ini
+    Name=Test Project
+    Description=Testing the new SA Tools pipeline
+    Author=You
+    EXEData=exeData.ini
 
 We'll need to add one more line to reference our dll-derived ini data file. The dll data references use the format <assembly name>data, so if we were to export a piece of ADV00MODELS.dll, we would supply the key/value pair ADV00MODELSData=Adv00Models.ini
 
