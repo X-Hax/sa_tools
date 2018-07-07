@@ -29,19 +29,19 @@ When the project is done being created, you will be greeted by the Project Actio
 
 ### Tools:
 - SADXLVL2 is for modifying game stages. You can modify or generate completely new:
--- level geometry
--- SET (object) layouts
--- CAM (camera) layouts
--- MI (Mission) layouts
--- Splines
+ - level geometry
+ - SET (object) layouts
+ - CAM (camera) layouts
+ - MI (Mission) layouts
+ - Splines
 - SADXTweaker2 is for modifying various game-data. You can change:
--- (make a complete article for sadtweaker 2)
+ - (make a complete article for sadtweaker 2)
 - SAMDL is for replacing and editing properties of in-game models. It will soon have features geared specifically towards character mods.
 
 
 ## Building A project
 
-### About Building Projects
+## About Building Projects
 SADX:
 There are two kinds of ways to 'build' a mod for SADXPC: ini mods (simple) and dll mods (advanced). Ini mods are simple data replacements. Dll mods are custom code models that can also have data embedded in them. DLL mods have the most power and can do anything that INI mods can do.
 
@@ -66,10 +66,10 @@ Either:
 SA2:
 More info coming soon
 
-### Building a SADXPC Project (ini)
+## Building a SADXPC Project (ini)
 The build process is still, unfortunately, very manual. We will be improving this before release. In this example, we'll build an INI mod for SADXPC.
 
-First step is to create the mod folder. This is different from the project folder. The project folder is for your source files. The mod folder is what you'll be giving way to players for them to use. Use the same name for the mod folder that you used when creating it. The path should be: sadx/mods/<your project name>/
+First step is to create the mod folder. This is different from the project folder. The project folder is for your source files. The mod folder is what you'll be giving way to players for them to use. Use the same name for the mod folder that you used when creating it. The path should be: sadx/mods/(your project name)/
 
 Then, make a trivial edit to something that originally comes from sonic.exe (like Emerald Coast). Then, make a trivial edit of something that belongs to a DLL file (like an adventure field). Do not try messing with chrmodels. Character model edits are still in the realm of DLL editing only. Make a note of which DLL file your edit belongs to, it will be relevant later.
 
@@ -78,10 +78,10 @@ After your edits are made, Load up Project Manager. Select Open Project and spec
 - click the 'Build DLL Derived Data' button.
 - DLLModGenerator will open in a new window.
 - Click: File->Open
--- Supply the dialog with the file: sadx/Projects/<your project name>/<dll data name>.ini example: ADV00MODELS_data.ini
+  - Supply the dialog with the file: sadx/Projects/(your project name)/(dll data name).ini example: ADV00MODELS_data.ini
 - Ensure that everything you want to be exported is checked.
 - Click the 'Export INI' button.
-- Export the ini to sadx/Mods/<your project name>/<dll data name>.ini
+- Export the ini to sadx\Mods\(your project name)\(dll data name).ini
 - the data should now be exported correctly.
 - close the DLLModGenerator window.
 
@@ -90,20 +90,20 @@ Next, we'll do an extremely similar process, but for exporting the data that des
 - Click the 'Build EXE Derived Data' button.
 - StructConverter will open in a new window.
 - Click: File->Open
--- Supply the dialog with the file: sadx/Projects/<your project name>/sonic_data.ini
+  - Supply the dialog with the file: sadx\Projects\(your project name)\sonic_data.ini
 - Ensure that everything you want to be exported is checked.
 - Click the 'Export INI' button.
-- Export the ini to sadx/Mods/<your project name/exeData.ini
+- Export the ini to sadx\Mods\(your project name)/exeData.ini
 - The data should now be exported correctly.
 - close the StructConverter window
 
-We're almost done. The final step is to create our mod.ini. Create: sadx/Mods/<your project name/mod.ini
+We're almost done. The final step is to create our mod.ini. Create: sadx\Mods\(your project name)\mod.ini
 Mod.ini has a very simple key/value format. Every line represents one key/value pair, separated by an '=' character.
 
-Name=Test Project
-Description=Testing the new SA Tools pipeline
-Author=
-EXEData=exeData.ini
+   Name=Test Project
+   Description=Testing the new SA Tools pipeline
+   Author=
+   EXEData=exeData.ini
 
 We'll need to add one more line to reference our dll-derived ini data file. The dll data references use the format <assembly name>data, so if we were to export a piece of ADV00MODELS.dll, we would supply the key/value pair ADV00MODELSData=Adv00Models.ini
 
