@@ -54,6 +54,7 @@ namespace SonicRetro.SAModel.SAMDL
 		ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
+		Mesh sphereMesh;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -69,6 +70,7 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
 			EditorOptions.Initialize(d3ddevice);
+			sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -307,13 +309,26 @@ namespace SonicRetro.SAModel.SAMDL
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			MatrixStack transform = new MatrixStack();
-			if (animation != null)
-				RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
-			else
-				RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
+			if (showModelToolStripMenuItem.Checked)
+			{
+				if (animation != null)
+					RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
+				else
+					RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
 
-			if (selectedObject != null)
-				DrawSelectedObject(model, transform);
+				if (selectedObject != null)
+					DrawSelectedObject(model, transform);
+			}
+
+			d3ddevice.RenderState.AlphaBlendEnable = false;
+			d3ddevice.RenderState.FillMode = FillMode.Solid;
+			d3ddevice.RenderState.Lighting = false;
+			d3ddevice.RenderState.ZBufferEnable = false;
+			if (showNodesToolStripMenuItem.Checked)
+				DrawNodes(model, transform);
+
+			if (showNodeConnectionsToolStripMenuItem.Checked)
+				DrawNodeConnections(model, transform);
 
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
@@ -361,6 +376,62 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			transform.Pop();
 			return false;
+		}
+
+		private void DrawNodes(NJS_OBJECT obj, MatrixStack transform)
+		{
+			int modelnum = -1;
+			int animindex = -1;
+			DrawNodes(obj, transform, ref modelnum, ref animindex);
+		}
+
+		private void DrawNodes(NJS_OBJECT obj, MatrixStack transform, ref int modelindex, ref int animindex)
+		{
+			transform.Push();
+			modelindex++;
+			if (obj.Animate) animindex++;
+			if (animation != null && animation.Models.ContainsKey(animindex))
+				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			d3ddevice.Transform.World = Matrix.Translation(Vector3.TransformCoordinate(new Vector3(), transform.Top));
+			sphereMesh.DrawSubset(0);
+			foreach (NJS_OBJECT child in obj.Children)
+				DrawNodes(child, transform, ref modelindex, ref animindex);
+			transform.Pop();
+		}
+
+		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform)
+		{
+			int modelnum = -1;
+			int animindex = -1;
+			List<Vector3> points = new List<Vector3>();
+			List<short> indexes = new List<short>();
+			DrawNodeConnections(obj, transform, points, indexes, -1, ref modelnum, ref animindex);
+			d3ddevice.VertexFormat = VertexFormats.Position;
+			d3ddevice.Transform.World = Matrix.Identity;
+			d3ddevice.DrawIndexedUserPrimitives(PrimitiveType.LineList, 0, indexes.Count, indexes.Count / 2, indexes.ToArray(), true, points.ToArray());
+		}
+
+		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform, List<Vector3> points, List<short> indexes, short parentidx, ref int modelindex, ref int animindex)
+		{
+			transform.Push();
+			modelindex++;
+			if (obj.Animate) animindex++;
+			if (animation != null && animation.Models.ContainsKey(animindex))
+				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			short newidx = (short)points.Count;
+			points.Add(Vector3.TransformCoordinate(new Vector3(), transform.Top));
+			if (parentidx != -1)
+			{
+				indexes.Add(parentidx);
+				indexes.Add(newidx);
+			}
+			foreach (NJS_OBJECT child in obj.Children)
+				DrawNodeConnections(child, transform, points, indexes, newidx, ref modelindex, ref animindex);
+			transform.Pop();
 		}
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
@@ -922,6 +993,21 @@ namespace SonicRetro.SAModel.SAMDL
 					else
 						MessageBox.Show(this, "Not found.", "SAMDL");
 				}
+		}
+
+		private void showModelToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawLevel();
+		}
+
+		private void showNodesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawLevel();
+		}
+
+		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawLevel();
 		}
 	}
 }
