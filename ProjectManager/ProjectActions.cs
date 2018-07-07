@@ -103,10 +103,10 @@ namespace ProjectManager
 #if !DEBUG
             sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXTweaker2/SADXTweaker2.exe.exe";
 #endif
-
+            string sonicDataPath = Path.GetFullPath(Path.Combine(projectFolder, "sonic_data.ini"));
             System.Diagnostics.ProcessStartInfo sadxTweaker2StartInfo = new System.Diagnostics.ProcessStartInfo(
                 Path.GetFullPath(sadxtweaker2Path),
-                Path.GetFullPath(projectFolder));
+                string.Format("\"{0}\"", sonicDataPath));
 
             System.Diagnostics.Process sadxTweaker2Process = System.Diagnostics.Process.Start(sadxTweaker2StartInfo);
         }
