@@ -103,7 +103,7 @@
             this.ProjectNameBox.Location = new System.Drawing.Point(8, 27);
             this.ProjectNameBox.Name = "ProjectNameBox";
             this.ProjectNameBox.Size = new System.Drawing.Size(387, 20);
-            this.ProjectNameBox.TabIndex = 6;
+            this.ProjectNameBox.TabIndex = 0;
             this.ProjectNameBox.TextChanged += new System.EventHandler(this.ProjectNameBox_TextChanged);
             // 
             // backgroundWorker1
@@ -112,6 +112,7 @@
             // 
             // NewProject
             // 
+            this.AcceptButton = this.NextButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(407, 181);

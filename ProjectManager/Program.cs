@@ -82,6 +82,7 @@ namespace ProjectManager
 
                 // todo: catch unhandled exceptions
                 projectSelect = new ProjectManager();
+                Application.ThreadException += Application_ThreadException;
                 Application.Run(projectSelect);
             }
 
@@ -130,5 +131,20 @@ namespace ProjectManager
 
             return 0;
         }
-	}
+
+        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            string error = string.Format("{0}\n{1}", e.Exception.Message, e.Exception.TargetSite);
+            MessageBox.Show(error, "Unhandled exception");
+
+                //if (primaryForm != null)
+                //    using (ErrorDialog ed = new ErrorDialog((Exception)e.ExceptionObject, false))
+                //        ed.ShowDialog(primaryForm);
+                //else
+                //{
+                //    System.IO.File.WriteAllText("SADXLVL2.log", e.ExceptionObject.ToString());
+                //    MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //}
+        }
+    }
 }

@@ -38,6 +38,7 @@
             this.BuildAndRunButton = new System.Windows.Forms.Button();
             this.ExeBuildButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
+            this.systemButton = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -102,6 +103,7 @@
             // 
             // buildGroup
             // 
+            this.buildGroup.Controls.Add(this.systemButton);
             this.buildGroup.Controls.Add(this.BuildDLLDerivedData);
             this.buildGroup.Controls.Add(this.BuildAndRunButton);
             this.buildGroup.Controls.Add(this.ExeBuildButton);
@@ -126,7 +128,7 @@
             // BuildAndRunButton
             // 
             this.BuildAndRunButton.Enabled = false;
-            this.BuildAndRunButton.Location = new System.Drawing.Point(7, 106);
+            this.BuildAndRunButton.Location = new System.Drawing.Point(6, 135);
             this.BuildAndRunButton.Name = "BuildAndRunButton";
             this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
             this.BuildAndRunButton.TabIndex = 2;
@@ -151,6 +153,16 @@
             this.ConfigBuildButton.TabIndex = 0;
             this.ConfigBuildButton.Text = "Configure build";
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
+            // 
+            // systemButton
+            // 
+            this.systemButton.Enabled = false;
+            this.systemButton.Location = new System.Drawing.Point(7, 106);
+            this.systemButton.Name = "systemButton";
+            this.systemButton.Size = new System.Drawing.Size(239, 23);
+            this.systemButton.TabIndex = 4;
+            this.systemButton.Text = "Copy System Folder";
+            this.systemButton.UseVisualStyleBackColor = true;
             // 
             // ProjectActions
             // 
@@ -182,5 +194,6 @@
         private System.Windows.Forms.Button ConfigBuildButton;
         private System.Windows.Forms.Button BuildAndRunButton;
         private System.Windows.Forms.Button BuildDLLDerivedData;
+        private System.Windows.Forms.Button systemButton;
     }
 }
