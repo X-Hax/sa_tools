@@ -48,6 +48,7 @@
             this.SADXPCButton.TabStop = true;
             this.SADXPCButton.Text = "SADX PC";
             this.SADXPCButton.UseVisualStyleBackColor = true;
+            this.SADXPCButton.CheckedChanged += new System.EventHandler(this.SADXPCButton_CheckedChanged);
             // 
             // SA2RadioButton
             // 
@@ -59,6 +60,7 @@
             this.SA2RadioButton.TabStop = true;
             this.SA2RadioButton.Text = "SA2 PC";
             this.SA2RadioButton.UseVisualStyleBackColor = true;
+            this.SA2RadioButton.CheckedChanged += new System.EventHandler(this.SA2RadioButton_CheckedChanged);
             // 
             // label1
             // 

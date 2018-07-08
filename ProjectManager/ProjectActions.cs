@@ -46,12 +46,24 @@ namespace ProjectManager
 
         private void BuildDLLDerivedData_Click(object sender, EventArgs e)
         {
+            modGenUI.SetProjectFolder(projectFolder);
+            modGenUI.SetModFolder(Path.Combine(Program.Settings.GetModPathForGame(game),
+                projectName));
+
             modGenUI.ShowDialog();
         }
 
         private void ExeBuildButton_Click(object sender, EventArgs e)
         {
-            structConverterUI.ShowDialog();
+            structConverterUI.SetProjectFolder(projectFolder);
+            structConverterUI.SetModFolder(Path.Combine(Program.Settings.GetModPathForGame(game),
+                projectName));
+
+            // we need to set the ini file to open properly.
+            // we can know which one to load because there's only one exe per game
+            string iniFileToOpen = (game == SA_Tools.Game.SADX) ? "sonic_data.ini" : "sonic2app_data.ini";
+
+            structConverterUI.OpenFile(iniFileToOpen);
         }
 
         private void SADXLVL2Button_Click(object sender, EventArgs e)
@@ -86,8 +98,8 @@ namespace ProjectManager
 #endif
 
             System.Diagnostics.ProcessStartInfo samdlStartInfo = new System.Diagnostics.ProcessStartInfo(
-                Path.GetFullPath(samdlPath),
-                Path.GetFullPath(projectFolder));
+                Path.GetFullPath(samdlPath)//,
+                /*Path.GetFullPath(projectFolder)*/);
 
             System.Diagnostics.Process samdlProcess = System.Diagnostics.Process.Start(samdlStartInfo);
         }

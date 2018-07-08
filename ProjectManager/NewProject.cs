@@ -148,7 +148,7 @@ namespace ProjectManager
         private SA_Tools.Game GetGameForRadioButtons()
         {
             if (SADXPCButton.Checked) return SA_Tools.Game.SADX;
-            else if (SADXPCButton.Checked) return SA_Tools.Game.SA2B;
+            else if (SA2RadioButton.Checked) return SA_Tools.Game.SA2B;
             else return SA_Tools.Game.SA1;
         }            
 
@@ -553,6 +553,16 @@ namespace ProjectManager
         {
             NavBack();
             Hide();
+        }
+
+        private void SA2RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("SA2 Radio button: " + SA2RadioButton.Checked);
+        }
+
+        private void SADXPCButton_CheckedChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("SADX Radio button: " + SADXPCButton.Checked);
         }
     }
 }

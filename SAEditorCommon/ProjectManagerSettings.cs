@@ -37,6 +37,27 @@ namespace ProjectManager
             }
         }
 
+        public string GetModPathForGame(SA_Tools.Game game)
+        {
+            switch (game)
+            {
+                case Game.SA1:
+                case Game.SA2:
+                    throw new System.NotSupportedException();
+                    return "";
+
+                case Game.SADX:
+                    return  Path.Combine(SADXPCPath, "mods");
+                
+                case Game.SA2B:
+                    return Path.Combine(SA2PCPath, "mods");
+
+                default:
+                    throw new System.NotSupportedException();
+                    return "";
+            }
+        }
+
         public static ProjectManagerSettings Load()
         {
             return Load(GetSettingsPath());

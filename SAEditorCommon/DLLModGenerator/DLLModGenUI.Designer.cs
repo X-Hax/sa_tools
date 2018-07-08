@@ -100,6 +100,7 @@
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView1_ItemChecked);
             // 
             // columnHeader1
             // 
@@ -175,7 +176,7 @@
             this.ExportINIButton.UseVisualStyleBackColor = true;
             this.ExportINIButton.Click += new System.EventHandler(this.ExportINIButton_Click);
             // 
-            // MainForm
+            // DLLModGenUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -188,7 +189,7 @@
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "MainForm";
+            this.Name = "DLLModGenUI";
             this.Text = "DLL Mod Generator";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
