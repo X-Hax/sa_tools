@@ -92,7 +92,7 @@ namespace ProjectManager
                 Program.Settings.SADXPCPath, out sadxInvalidReason);
 
             string sa2pcInvalidReason = "";
-            sa2pcIsValid = GamePathChecker.CheckSADXPCValid(
+            sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
                 Program.Settings.SA2PCPath, out sa2pcInvalidReason);
 
             backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
