@@ -36,21 +36,18 @@ namespace ProjectManager
             new SplitData() { dataFile="system/ADV00MODELS.DLL", iniFile = "adv00models.ini" },
             new SplitData() { dataFile="system/ADV01CMODELS.DLL", iniFile = "adv01cmodels.ini" },
             new SplitData() { dataFile="system/ADV01MODELS.DLL", iniFile = "adv01models.ini" },
-            new SplitData() { dataFile="system/ADV01MODELS.DLL", iniFile = "adv01models.ini" },
             new SplitData() { dataFile="system/ADV02MODELS.DLL", iniFile = "adv02models.ini" },
             new SplitData() { dataFile="system/ADV03MODELS.DLL", iniFile = "adv03models.ini" },
             new SplitData() { dataFile="system/BOSSCHAOS0MODELS.DLL", iniFile = "bosschaos0models.ini" },
             new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_DAYTIME.DLL", iniFile = "chaostggarden02mr_daytime.ini" },
             new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_EVENING.DLL", iniFile = "chaostggarden02mr_evening.ini" },
-            new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_NIGHT.DLL", iniFile = "chaostggarden02mr_night.ini" },
             new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_NIGHT.DLL", iniFile = "chaostggarden02mr_night.ini" }
             // chrmodels and chrmodels_orig are special cases
         };
 
         SplitData[] sa2pcSplitsDll = new SplitData[]
         {
-            new SplitData() { dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll", iniFile = "data_dll.ini" },
-            new SplitData() { dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll", iniFile = "data_dll.ini" },
+            new SplitData() { dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll", iniFile = "data_dll.ini" }
         };
 
         /*string[] sa2pcSplitsMDL = new string[]

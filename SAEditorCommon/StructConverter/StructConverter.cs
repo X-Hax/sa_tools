@@ -12,6 +12,45 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 {
     public static class StructConverter
     {
+        public static readonly Dictionary<string, string> DataTypeList = new Dictionary<string, string>()
+        {
+            { "landtable", "LandTable" },
+            { "model", "Model" },
+            { "basicmodel", "Basic Model" },
+            { "basicdxmodel", "Basic Model (SADX)" },
+            { "chunkmodel", "Chunk Model" },
+            { "action", "Action (animation+model)" },
+            { "animation", "Animation" },
+            { "objlist", "Object List" },
+            { "startpos", "Start Positions" },
+            { "texlist", "Texture List" },
+            { "leveltexlist", "Level Texture List" },
+            { "triallevellist", "Trial Level List" },
+            { "bosslevellist", "Boss Level List" },
+            { "fieldstartpos", "Field Start Positions" },
+            { "soundtestlist", "Sound Test List" },
+            { "musiclist", "Music List" },
+            { "soundlist", "Sound List" },
+            { "stringarray", "String Array" },
+            { "nextlevellist", "Next Level List" },
+            { "cutscenetext", "Cutscene Text" },
+            { "recapscreen", "Recap Screen" },
+            { "npctext", "NPC Text" },
+            { "levelclearflags", "Level Clear Flags" },
+            { "deathzone", "Death Zones" },
+            { "skyboxscale", "Skybox Scale" },
+            { "stageselectlist", "Stage Select List" },
+            { "levelrankscores", "Level Rank Scores" },
+            { "levelranktimes", "Level Rank Times" },
+            { "endpos", "End Positions" },
+            { "animationlist", "Animation List" },
+            { "levelpathlist", "Path List" },
+            { "stagelightdatalist", "Stage Light Data List" },
+            { "weldlist", "Weld List" },
+            { "bmitemattrlist", "BM Item Attributes List" },
+            { "creditstextlist", "Credits Text List" }
+        };
+
         public static SA_Tools.IniData LoadINI(string filename, 
             ref Dictionary<string, bool> defaultExportState)
         {

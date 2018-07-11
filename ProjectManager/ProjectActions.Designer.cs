@@ -34,11 +34,12 @@
             this.SAMDLButton = new System.Windows.Forms.Button();
             this.SADXLVL2Button = new System.Windows.Forms.Button();
             this.buildGroup = new System.Windows.Forms.GroupBox();
+            this.systemButton = new System.Windows.Forms.Button();
             this.BuildDLLDerivedData = new System.Windows.Forms.Button();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
             this.ExeBuildButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
-            this.systemButton = new System.Windows.Forms.Button();
+            this.ManualBuildbutton = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -103,6 +104,7 @@
             // 
             // buildGroup
             // 
+            this.buildGroup.Controls.Add(this.ManualBuildbutton);
             this.buildGroup.Controls.Add(this.systemButton);
             this.buildGroup.Controls.Add(this.BuildDLLDerivedData);
             this.buildGroup.Controls.Add(this.BuildAndRunButton);
@@ -114,6 +116,16 @@
             this.buildGroup.TabIndex = 2;
             this.buildGroup.TabStop = false;
             this.buildGroup.Text = "Build";
+            // 
+            // systemButton
+            // 
+            this.systemButton.Enabled = false;
+            this.systemButton.Location = new System.Drawing.Point(7, 134);
+            this.systemButton.Name = "systemButton";
+            this.systemButton.Size = new System.Drawing.Size(239, 23);
+            this.systemButton.TabIndex = 4;
+            this.systemButton.Text = "Copy System Folder";
+            this.systemButton.UseVisualStyleBackColor = true;
             // 
             // BuildDLLDerivedData
             // 
@@ -128,7 +140,7 @@
             // BuildAndRunButton
             // 
             this.BuildAndRunButton.Enabled = false;
-            this.BuildAndRunButton.Location = new System.Drawing.Point(6, 135);
+            this.BuildAndRunButton.Location = new System.Drawing.Point(6, 163);
             this.BuildAndRunButton.Name = "BuildAndRunButton";
             this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
             this.BuildAndRunButton.TabIndex = 2;
@@ -154,15 +166,15 @@
             this.ConfigBuildButton.Text = "Configure build";
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
             // 
-            // systemButton
+            // ManualBuildbutton
             // 
-            this.systemButton.Enabled = false;
-            this.systemButton.Location = new System.Drawing.Point(7, 106);
-            this.systemButton.Name = "systemButton";
-            this.systemButton.Size = new System.Drawing.Size(239, 23);
-            this.systemButton.TabIndex = 4;
-            this.systemButton.Text = "Copy System Folder";
-            this.systemButton.UseVisualStyleBackColor = true;
+            this.ManualBuildbutton.Location = new System.Drawing.Point(7, 105);
+            this.ManualBuildbutton.Name = "ManualBuildbutton";
+            this.ManualBuildbutton.Size = new System.Drawing.Size(239, 23);
+            this.ManualBuildbutton.TabIndex = 5;
+            this.ManualBuildbutton.Text = "Manual Build";
+            this.ManualBuildbutton.UseVisualStyleBackColor = true;
+            this.ManualBuildbutton.Click += new System.EventHandler(this.ManualBuildbutton_Click);
             // 
             // ProjectActions
             // 
@@ -195,5 +207,6 @@
         private System.Windows.Forms.Button BuildAndRunButton;
         private System.Windows.Forms.Button BuildDLLDerivedData;
         private System.Windows.Forms.Button systemButton;
+        private System.Windows.Forms.Button ManualBuildbutton;
     }
 }

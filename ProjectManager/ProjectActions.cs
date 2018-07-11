@@ -20,6 +20,9 @@ namespace ProjectManager
         SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGenUI modGenUI = 
            new SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGenUI();
 
+        SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow manualBuildWindow =
+            new SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow();
+
         SA_Tools.Game game;
         string projectFolder;
         string projectName;
@@ -121,6 +124,70 @@ namespace ProjectManager
                 string.Format("\"{0}\"", sonicDataPath));
 
             System.Diagnostics.Process sadxTweaker2Process = System.Diagnostics.Process.Start(sadxTweaker2StartInfo);
+        }
+
+        private void ManualBuildbutton_Click(object sender, EventArgs e)
+        {
+            // we have to get the assemblies for our game
+
+            Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies = 
+                new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
+
+            switch (game)
+            {
+
+                case SA_Tools.Game.SADX:
+                    List<String> sadxAssemblyNames = new List<String>();
+                    sadxAssemblyNames.Add("ADV00MODELS");
+                    sadxAssemblyNames.Add("ADV01CMODELS");
+                    sadxAssemblyNames.Add("ADV01MODELS");
+                    sadxAssemblyNames.Add("ADV02MODELS");
+                    sadxAssemblyNames.Add("ADV03MODELS");
+                    sadxAssemblyNames.Add("BOSSCHAOS0MODELS");
+                    sadxAssemblyNames.Add("CHAOSTGGARDEN02MR_DAYTIME");
+                    sadxAssemblyNames.Add("CHAOSTGGARDEN02MR_EVENING");
+                    sadxAssemblyNames.Add("CHAOSTGGARDEN02MR_NIGHT");
+
+                    // check for chrmodels or chrmodels_orig
+                    string chrmodels = "chrmodels";
+                    string chrmodelsOrig = "chrmodels_orig";
+
+                    string chrmodelsCompletePath = Path.Combine(projectFolder, chrmodels + "_data.ini");
+                    string chrmodelsOrigCompletePath = Path.Combine(projectFolder, chrmodelsOrig + "_data.ini");
+
+                    if (File.Exists(chrmodelsCompletePath))
+                    {
+                        sadxAssemblyNames.Add(chrmodels);
+                    }
+                    else
+                    {
+                        sadxAssemblyNames.Add(chrmodelsOrig);
+                    }
+
+                    assemblies.Add("sonic", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+
+                    foreach (string assemblyName in sadxAssemblyNames)
+                    {
+                        assemblies.Add(assemblyName, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+                    }
+                    break;
+                case SA_Tools.Game.SA2B:
+
+                    // dll
+                    assemblies.Add("Data_DLL", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+
+                    // exe
+                    assemblies.Add("sonic2app", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+                    break;
+                default:
+                    break;
+            }
+
+            manualBuildWindow.Initalize(game, projectName,
+                projectFolder, Path.Combine(Program.Settings.GetModPathForGame(game),
+                projectName), assemblies);
+
+            manualBuildWindow.ShowDialog();
         }
     }
 }

@@ -48,8 +48,10 @@
     <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="VrSharp">
       <HintPath>..\Dependencies\VrSharp.dll</HintPath>
     </Reference>
@@ -74,6 +76,12 @@
     </Compile>
     <Compile Include="GamePathChecker.cs" />
     <Compile Include="IniData.cs" />
+    <Compile Include="ManualBuildWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ManualBuildWindow.Designer.cs">
+      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProjectManagerSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -176,6 +184,9 @@
   <ItemGroup>
     <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
       <DependentUpon>DLLModGenUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ManualBuildWindow.resx">
+      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
