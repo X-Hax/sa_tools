@@ -94,6 +94,9 @@ namespace ProjectManager
 
             backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
 
+            SADXPCButton.Checked = (sadxIsValid);
+            SA2RadioButton.Checked = (false);
+
             SetControls();
         }
 
@@ -109,10 +112,7 @@ namespace ProjectManager
 
         void SetControls()
         {
-            SADXPCButton.Checked = (sadxIsValid);
             SADXPCButton.Enabled = (sadxIsValid);
-
-            SA2RadioButton.Checked = (false);
             SA2RadioButton.Enabled = (sa2pcIsValid);
 
             NextButton.Enabled = (ProjectNameBox.Text.Length > 0);
