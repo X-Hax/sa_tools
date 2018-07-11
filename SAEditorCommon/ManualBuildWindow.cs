@@ -273,12 +273,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
                         switch (assembly.Value)
                         {
                             case AssemblyType.Exe:
-                                StructConverter.StructConverter.ExportCPP((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
+                                StructConverter.StructConverter.ExportINI((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
                                     assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + ".ini"));
                                 break;
 
                             case AssemblyType.DLL:
-                                DLLModGenerator.DLLModGen.ExportCPP((DLLModGenerator.DllIniData)assemblyIniFiles[assembly.Key],
+                                DLLModGenerator.DLLModGen.ExportINI((DLLModGenerator.DllIniData)assemblyIniFiles[assembly.Key],
                                     assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + ".ini"));
                                 break;
 
