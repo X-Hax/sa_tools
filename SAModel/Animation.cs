@@ -54,7 +54,7 @@ namespace SonicRetro.SAModel
 
 		public int Frames { get; set; }
 		public string Name { get; set; }
-		public int ModelParts { get; private set; }
+		public int ModelParts { get; set; }
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 

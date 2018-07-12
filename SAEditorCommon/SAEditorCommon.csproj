@@ -115,6 +115,9 @@
     </Compile>
     <Compile Include="UI\EditorItemSelection.cs" />
     <Compile Include="UI\Gizmo.cs" />
+    <Compile Include="UI\HexNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\NewObjectDialog.cs">
       <SubType>Form</SubType>
     </Compile>

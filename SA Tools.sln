@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA2MessageFileEditor", "SA2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA2CutsceneTextEditor", "SA2CutsceneTextEditor\SA2CutsceneTextEditor.csproj", "{A5867DCE-8B2C-457F-961C-FAAD4FE54EE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimJSONConverter", "AnimJSONConverter\AnimJSONConverter.csproj", "{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManager", "ProjectManager\ProjectManager.csproj", "{744DBD22-7CD6-4C2C-B653-40030EAFB570}"
 EndProject
 Global
@@ -445,6 +447,17 @@ Global
 		{A5867DCE-8B2C-457F-961C-FAAD4FE54EE2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A5867DCE-8B2C-457F-961C-FAAD4FE54EE2}.Release|x86.ActiveCfg = Release|Any CPU
 		{A5867DCE-8B2C-457F-961C-FAAD4FE54EE2}.Release|x86.Build.0 = Release|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Debug|x86.Build.0 = Debug|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0B913F7A-260B-46CA-AD0B-06BF5DB0367A}.Release|x86.ActiveCfg = Release|Any CPU
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{744DBD22-7CD6-4C2C-B653-40030EAFB570}.Debug|Mixed Platforms.Build.0 = Debug|x86
