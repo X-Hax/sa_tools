@@ -346,6 +346,31 @@ namespace ProjectManager
                 default:
                     break;
             }
+
+            // execute our post-build script
+            string projectSettingsPath = Path.Combine(projectFolder, "ProjectSettings.ini");
+
+            if (File.Exists(projectSettingsPath))
+            {
+                ProjectSettings projectSettings = SA_Tools.IniSerializer.Deserialize<ProjectSettings>(projectSettingsPath);
+
+                string storedEnvironmentDirectory = Environment.CurrentDirectory;
+
+                if (File.Exists(projectSettings.PostBuildScript))
+                {
+                    System.Diagnostics.ProcessStartInfo procStartInfo =
+                        new System.Diagnostics.ProcessStartInfo(projectSettings.PostBuildScript);
+
+                    System.Diagnostics.Process process = System.Diagnostics.Process.Start(procStartInfo);
+
+                    while(!process.HasExited)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+
+                    Environment.CurrentDirectory = storedEnvironmentDirectory;
+                }
+            }
         }
 
         private void systemButton_Click(object sender, EventArgs e)
@@ -358,7 +383,19 @@ namespace ProjectManager
 
         private void PlayMod()
         {
-            string modLoaderConfig = "";
+            List<string> otherMods = new List<string>();
+
+            string projectSettingsPath = Path.Combine(projectFolder, "ProjectSettings.ini");
+
+            if (File.Exists(projectSettingsPath))
+            {
+                ProjectSettings projectSettings = SA_Tools.IniSerializer.Deserialize<ProjectSettings>(projectSettingsPath);
+                foreach(string otherMod in projectSettings.OtherModsToRun)
+                {
+                    otherMods.Add(otherMod);
+                }
+            }
+                string modLoaderConfig = "";
             switch (game)
             {
                 case SA_Tools.Game.SADX:
@@ -369,6 +406,11 @@ namespace ProjectManager
                     sadxLoaderInfo.Mods.Clear();
                     sadxLoaderInfo.Mods.Add(projectName);
 
+                    foreach(string otherMod in otherMods)
+                    {
+                        sadxLoaderInfo.Mods.Add(otherMod);
+                    }
+
                     SA_Tools.IniSerializer.Serialize(sadxLoaderInfo, modLoaderConfig);
                     break;
 
@@ -378,6 +420,11 @@ namespace ProjectManager
                     SA2LoaderInfo sa2LoaderInfo = SA_Tools.IniSerializer.Deserialize<SA2LoaderInfo>(modLoaderConfig);
                     sa2LoaderInfo.Mods.Clear();
                     sa2LoaderInfo.Mods.Add(projectName);
+
+                    foreach(string otherMod in otherMods)
+                    {
+                        sa2LoaderInfo.Mods.Add(otherMod);
+                    }
 
                     SA_Tools.IniSerializer.Serialize(sa2LoaderInfo, modLoaderConfig);
                     break;
@@ -393,6 +440,8 @@ namespace ProjectManager
             Environment.CurrentDirectory = Path.GetDirectoryName(gameExecutable);
 
             System.Diagnostics.Process gameProcess = System.Diagnostics.Process.Start(gameExecutable);
+
+            Environment.CurrentDirectory = environmentDirectory; // restore the old directory in case any other code relies upon it
         }
 
         private void BuildAndRunButton_Click(object sender, EventArgs e)

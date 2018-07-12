@@ -57,6 +57,15 @@ namespace ProjectManager
             // save project settings
             string projectSettingsPath = Path.Combine(projectFolder, "ProjectSettings.ini");
 
+            projectSettings.OtherModsToRun.Clear();
+
+            string[] otherMods = otherModsTextBox.Text.Split('\n');
+
+            foreach(string otherMod in otherMods)
+            {
+                projectSettings.OtherModsToRun.Add(otherMod);
+            }
+
             // update project settings
             projectSettings.PostBuildScript = postBuildScript.Text;
 
@@ -103,6 +112,19 @@ namespace ProjectManager
         private void ModConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
             Save();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.InitialDirectory = projectFolder;
+
+                if(fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    postBuildScript.Text = fileDialog.FileName;
+                }
+            }
         }
     }
 }
