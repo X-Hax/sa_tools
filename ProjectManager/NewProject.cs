@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 
 namespace ProjectManager
 {
@@ -283,6 +284,33 @@ namespace ProjectManager
             CopyFolder(objdefsPath, outputObjdefsPath);
         }
 
+        private void GenerateSADXModFile(string gameFolder, string projectName)
+        {
+            SADXModInfo modInfo = new SADXModInfo();
+            modInfo.Author = AuthorTextBox.Text;
+            modInfo.Name = ProjectNameBox.Text;
+            modInfo.Version = string.Format("0");
+            modInfo.Description = DescriptionTextBox.Text;
+
+            string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
+
+            SA_Tools.IniSerializer.Serialize(modInfo, outputPath);
+        }
+
+        private void GenerateSA2ModFile(string gameFolder, string projectName)
+        {
+            SA2ModInfo modInfo = new SA2ModInfo();
+
+            modInfo.Author = AuthorTextBox.Text;
+            modInfo.Name = ProjectNameBox.Text;
+            modInfo.Version = string.Format("0");
+            modInfo.Description = DescriptionTextBox.Text;
+
+            string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
+
+            SA_Tools.IniSerializer.Serialize(modInfo, outputPath);
+        }
+
         private void CopyFolder(string sourceFolder, string destinationFolder)
         {
             string[] files = Directory.GetFiles(sourceFolder);
@@ -517,6 +545,16 @@ namespace ProjectManager
                 // we need to run split
                 if (game == SA_Tools.Game.SADX) DoSADXSplit(progress, gameFolder, iniFolder, outputFolder);
                 else if (game == SA_Tools.Game.SA2B) DoSA2PCSplit(progress, gameFolder, iniFolder, outputFolder);
+
+                progress.StepProgress();
+                progress.SetStep("Creating mod.ini");
+
+                if (game == SA_Tools.Game.SADX) GenerateSADXModFile(gameFolder, ProjectNameBox.Text);
+                else GenerateSA2ModFile(gameFolder, ProjectNameBox.Text);
+
+                // create our system directory
+                string systemPath = Path.Combine(outputFolder, GamePathChecker.GetSystemPathName(game));
+                Directory.CreateDirectory(systemPath);
 
                 Invoke((Action)progress.Close);
             }

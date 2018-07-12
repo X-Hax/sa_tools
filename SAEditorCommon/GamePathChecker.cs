@@ -95,5 +95,33 @@ namespace SonicRetro.SAModel.SAEditorCommon
         {
             return (File.Exists(path)) ? path : fallbackPath;
         }
+
+        /// <summary>
+        /// Gets the primary game content folder.
+        /// For SADX PC this is called 'System',
+        /// for SA2PC it's called 'GD_PC'
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static string GetSystemPathName(SA_Tools.Game game)
+        {
+            switch (game)
+            {
+                case SA_Tools.Game.SA1:
+                case SA_Tools.Game.SA2:
+                    throw new System.NotSupportedException();
+                    return "";
+
+                case SA_Tools.Game.SADX:
+                    return "system";
+
+                case SA_Tools.Game.SA2B:
+                    return "resource/GC_PC";
+
+                default:
+                    throw new System.NotSupportedException();
+                    return "";
+            }
+        }
     }
 }

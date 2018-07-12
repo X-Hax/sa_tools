@@ -36,6 +36,10 @@
             this.ProjectNameBox = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.AuthorLabel = new System.Windows.Forms.Label();
+            this.AuthorTextBox = new System.Windows.Forms.TextBox();
+            this.DescriptionLabel = new System.Windows.Forms.Label();
+            this.DescriptionTextBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +69,8 @@
             // 
             // NextButton
             // 
-            this.NextButton.Location = new System.Drawing.Point(320, 146);
+            this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.NextButton.Location = new System.Drawing.Point(334, 226);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(75, 23);
             this.NextButton.TabIndex = 3;
@@ -75,7 +80,8 @@
             // 
             // BackButton
             // 
-            this.BackButton.Location = new System.Drawing.Point(8, 146);
+            this.BackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BackButton.Location = new System.Drawing.Point(8, 226);
             this.BackButton.Name = "BackButton";
             this.BackButton.Size = new System.Drawing.Size(75, 23);
             this.BackButton.TabIndex = 4;
@@ -94,9 +100,11 @@
             // 
             // ProjectNameBox
             // 
+            this.ProjectNameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ProjectNameBox.Location = new System.Drawing.Point(8, 27);
             this.ProjectNameBox.Name = "ProjectNameBox";
-            this.ProjectNameBox.Size = new System.Drawing.Size(387, 20);
+            this.ProjectNameBox.Size = new System.Drawing.Size(401, 20);
             this.ProjectNameBox.TabIndex = 0;
             this.ProjectNameBox.TextChanged += new System.EventHandler(this.ProjectNameBox_TextChanged);
             // 
@@ -110,17 +118,59 @@
             this.groupBox1.Controls.Add(this.SA2RadioButton);
             this.groupBox1.Location = new System.Drawing.Point(11, 52);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(105, 74);
+            this.groupBox1.Size = new System.Drawing.Size(105, 138);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "GameType";
+            // 
+            // AuthorLabel
+            // 
+            this.AuthorLabel.AutoSize = true;
+            this.AuthorLabel.Location = new System.Drawing.Point(122, 54);
+            this.AuthorLabel.Name = "AuthorLabel";
+            this.AuthorLabel.Size = new System.Drawing.Size(38, 13);
+            this.AuthorLabel.TabIndex = 7;
+            this.AuthorLabel.Text = "Author";
+            // 
+            // AuthorTextBox
+            // 
+            this.AuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.AuthorTextBox.Location = new System.Drawing.Point(125, 70);
+            this.AuthorTextBox.Name = "AuthorTextBox";
+            this.AuthorTextBox.Size = new System.Drawing.Size(284, 20);
+            this.AuthorTextBox.TabIndex = 8;
+            // 
+            // DescriptionLabel
+            // 
+            this.DescriptionLabel.AutoSize = true;
+            this.DescriptionLabel.Location = new System.Drawing.Point(122, 106);
+            this.DescriptionLabel.Name = "DescriptionLabel";
+            this.DescriptionLabel.Size = new System.Drawing.Size(57, 13);
+            this.DescriptionLabel.TabIndex = 9;
+            this.DescriptionLabel.Text = "Descripion";
+            // 
+            // DescriptionTextBox
+            // 
+            this.DescriptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DescriptionTextBox.Location = new System.Drawing.Point(128, 122);
+            this.DescriptionTextBox.Multiline = true;
+            this.DescriptionTextBox.Name = "DescriptionTextBox";
+            this.DescriptionTextBox.Size = new System.Drawing.Size(281, 98);
+            this.DescriptionTextBox.TabIndex = 10;
             // 
             // NewProject
             // 
             this.AcceptButton = this.NextButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 181);
+            this.ClientSize = new System.Drawing.Size(421, 261);
+            this.Controls.Add(this.DescriptionTextBox);
+            this.Controls.Add(this.DescriptionLabel);
+            this.Controls.Add(this.AuthorTextBox);
+            this.Controls.Add(this.AuthorLabel);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.ProjectNameBox);
             this.Controls.Add(this.label2);
@@ -147,5 +197,9 @@
         private System.Windows.Forms.TextBox ProjectNameBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label AuthorLabel;
+        private System.Windows.Forms.TextBox AuthorTextBox;
+        private System.Windows.Forms.Label DescriptionLabel;
+        private System.Windows.Forms.TextBox DescriptionTextBox;
     }
 }

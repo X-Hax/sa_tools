@@ -66,11 +66,12 @@
             // 
             // SplitToolsButton
             // 
+            this.SplitToolsButton.Enabled = false;
             this.SplitToolsButton.Location = new System.Drawing.Point(25, 138);
             this.SplitToolsButton.Name = "SplitToolsButton";
             this.SplitToolsButton.Size = new System.Drawing.Size(360, 23);
             this.SplitToolsButton.TabIndex = 3;
-            this.SplitToolsButton.Text = "Split Tools";
+            this.SplitToolsButton.Text = "Manual Split Tools";
             this.SplitToolsButton.UseVisualStyleBackColor = true;
             // 
             // ProjectManager

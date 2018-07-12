@@ -82,6 +82,12 @@
     <Compile Include="ManualBuildWindow.Designer.cs">
       <DependentUpon>ManualBuildWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModManagement\LoaderInfo.cs" />
+    <Compile Include="ModManagement\ModInfo.cs" />
+    <Compile Include="ModManagement\SA2LoaderInfo.cs" />
+    <Compile Include="ModManagement\SA2ModInfo.cs" />
+    <Compile Include="ModManagement\SADXLoaderInfo.cs" />
+    <Compile Include="ModManagement\SADXModInfo.cs" />
     <Compile Include="ProjectManagerSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
