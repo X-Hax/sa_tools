@@ -24,6 +24,8 @@ The first time you run Project Manager, it will need some information from you. 
 ### New Project
 In the project menu, select 'New Project'. In the dialog that appears, give your project a name. Don't use any characters that would be invalid for a folder name. Select whether you want it to be SADXPC or SA2PC, then click 'create'. The program will spend a noticable amount of time splitting all of the data out from the game's files. SA2 Note: not everything will be split this way. For some things, you will need to split the data manually (GUI for this not yet implemented).
 
+For reference, the project's source data will be saved to /game_path/Projects/project_name/ You shouldn't need to mess with things in this folder for most mods, with the primary exception being new content like textures and audio that would normally go in the /system/ or /gd_PC/ folders. Anything you put into those folders will get copied to the proper location by the build process.
+
 ## Editing the Project
 When the project is done being created, you will be greeted by the Project Actions screen. Here you can select a tool to modify the project with, or build the project.
 
@@ -37,7 +39,6 @@ When the project is done being created, you will be greeted by the Project Actio
 - SADXTweaker2 is for modifying various game-data. You can change:
  - (make a complete article for sadtweaker 2)
 - SAMDL is for replacing and editing properties of in-game models. It will soon have features geared specifically towards character mods.
-
 
 ## Building A project
 
@@ -66,45 +67,15 @@ Either:
 SA2:
 More info coming soon
 
-## Building a SADXPC Project (ini)
-The build process is still, unfortunately, very manual. We will be improving this before release. In this example, we'll build an INI mod for SADXPC.
+## Auto-Build
+If you're creating an INI mod and don't need any C++ code at all, use this. Click on either Auto-Build, or 'Build and Run'. The two options are identical aside from one difference: if you click 'Build and Run', the game will start as soon as the build is complete.
 
-First step is to create the mod folder. This is different from the project folder. The project folder is for your source files. The mod folder is what you'll be giving way to players for them to use. Use the same name for the mod folder that you used when creating it. The path should be: sadx/mods/(your project name)/
+## Manual Build
+If you're making a more complicated mod (like one that uses C++ code), use the 'manual build' option. It will open a window that allows you to select which data files will be exported. You can export to either INI or C++. If you choose the C++ option, the C++ files will be exported to the /game/Projects/project_name/source/ folder. Otherwise, you will be prompted for the location to save the ini files. Usually this is /game/mods/project_name/
 
-Then, make a trivial edit to something that originally comes from sonic.exe (like Emerald Coast). Then, make a trivial edit of something that belongs to a DLL file (like an adventure field). Do not try messing with chrmodels. Character model edits are still in the realm of DLL editing only. Make a note of which DLL file your edit belongs to, it will be relevant later.
-
-After your edits are made, Load up Project Manager. Select Open Project and specify your project. The Project Actions dialog should appear. To generate the ini for your dll-derived data:
-
-- click the 'Build DLL Derived Data' button.
-- DLLModGenerator will open in a new window.
-- Click: File->Open
-  - Supply the dialog with the file: sadx/Projects/(your project name)/(dll data name).ini example: ADV00MODELS_data.ini
-- Ensure that everything you want to be exported is checked.
-- Click the 'Export INI' button.
-- Export the ini to sadx\Mods\(your project name)\(dll data name).ini
-- the data should now be exported correctly.
-- close the DLLModGenerator window.
-
-Next, we'll do an extremely similar process, but for exporting the data that descends from sonic.exe. Back in the Project Actions window:
-
-- Click the 'Build EXE Derived Data' button.
-- StructConverter will open in a new window.
-- Click: File->Open
-  - Supply the dialog with the file: sadx\Projects\(your project name)\sonic_data.ini
-- Ensure that everything you want to be exported is checked.
-- Click the 'Export INI' button.
-- Export the ini to sadx\Mods\(your project name)/exeData.ini
-- The data should now be exported correctly.
-- close the StructConverter window
-
-We're almost done. The final step is to create our mod.ini. Create: sadx\Mods\(your project name)\mod.ini
-Mod.ini has a very simple key/value format. Every line represents one key/value pair, separated by an '=' character.
+You will then need to add the ini files as entries to /game/mods/project_name/mod.ini
 
     Name=Test Project
     Description=Testing the new SA Tools pipeline
     Author=You
     EXEData=exeData.ini
-
-We'll need to add one more line to reference our dll-derived ini data file. The dll data references use the format <assembly name>data, so if we were to export a piece of ADV00MODELS.dll, we would supply the key/value pair ADV00MODELSData=Adv00Models.ini
-
-That's it! Save your mod.ini file and then load up SADXModManager and enjoy your mod!
