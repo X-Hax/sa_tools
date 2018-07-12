@@ -35,7 +35,9 @@
             this.CheckAllButton = new System.Windows.Forms.Button();
             this.UncheckAllButton = new System.Windows.Forms.Button();
             this.CheckModifiedButton = new System.Windows.Forms.Button();
+            this.LoadingLabel = new System.Windows.Forms.Label();
             this.assemblyItemTabs.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // assemblyItemTabs
@@ -52,6 +54,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.LoadingLabel);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -115,20 +118,33 @@
             this.CheckModifiedButton.UseVisualStyleBackColor = true;
             this.CheckModifiedButton.Click += new System.EventHandler(this.CheckModifiedButton_Click);
             // 
+            // LoadingLabel
+            // 
+            this.LoadingLabel.AutoSize = true;
+            this.LoadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LoadingLabel.Location = new System.Drawing.Point(309, 154);
+            this.LoadingLabel.Name = "LoadingLabel";
+            this.LoadingLabel.Size = new System.Drawing.Size(159, 42);
+            this.LoadingLabel.TabIndex = 6;
+            this.LoadingLabel.Text = "Loading";
+            // 
             // ManualBuildWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.assemblyItemTabs);
             this.Controls.Add(this.CheckModifiedButton);
             this.Controls.Add(this.UncheckAllButton);
             this.Controls.Add(this.CheckAllButton);
             this.Controls.Add(this.CPPExportButton);
             this.Controls.Add(this.IniExportButton);
-            this.Controls.Add(this.assemblyItemTabs);
             this.Name = "ManualBuildWindow";
             this.Text = "ManualBuildWindow";
+            this.Shown += new System.EventHandler(this.ManualBuildWindow_Shown);
             this.assemblyItemTabs.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -142,5 +158,6 @@
         private System.Windows.Forms.Button CheckAllButton;
         private System.Windows.Forms.Button UncheckAllButton;
         private System.Windows.Forms.Button CheckModifiedButton;
+        private System.Windows.Forms.Label LoadingLabel;
     }
 }

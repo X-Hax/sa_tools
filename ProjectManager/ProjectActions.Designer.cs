@@ -38,6 +38,7 @@
             this.ManualBuildbutton = new System.Windows.Forms.Button();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -153,6 +154,10 @@
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
             this.ConfigBuildButton.Click += new System.EventHandler(this.ConfigBuildButton_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            // 
             // ProjectActions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -183,5 +188,6 @@
         private System.Windows.Forms.Button BuildAndRunButton;
         private System.Windows.Forms.Button ManualBuildbutton;
         private System.Windows.Forms.Button AutoBuildButton;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

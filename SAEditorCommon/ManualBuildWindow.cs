@@ -37,9 +37,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
             this.modFolder = modFolder;
             this.assemblies = assemblies;
 
-            LoadIniFiles();
-
-            SetTabsForAssemblies();
+            LoadingLabel.Visible = true;
         }
 
         private void LoadIniFiles()
@@ -290,6 +288,28 @@ namespace SonicRetro.SAModel.SAEditorCommon
             }
 
             MessageBox.Show("Export complete!");
+        }
+
+        private void ManualBuildWindow_Shown(object sender, EventArgs e)
+        {
+            CPPExportButton.Enabled = false;
+            IniExportButton.Enabled = false;
+            CheckAllButton.Enabled = false;
+            CheckModifiedButton.Enabled = false;
+            UncheckAllButton.Enabled = false;
+
+            LoadingLabel.Visible = false;
+
+            LoadIniFiles();
+
+            SetTabsForAssemblies();
+
+            LoadingLabel.Visible = false;
+            CPPExportButton.Enabled = true;
+            IniExportButton.Enabled = true;
+            CheckAllButton.Enabled = true;
+            CheckModifiedButton.Enabled = true;
+            UncheckAllButton.Enabled = true;
         }
     }
 }
