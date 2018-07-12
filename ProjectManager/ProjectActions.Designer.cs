@@ -34,11 +34,10 @@
             this.SAMDLButton = new System.Windows.Forms.Button();
             this.SADXLVL2Button = new System.Windows.Forms.Button();
             this.buildGroup = new System.Windows.Forms.GroupBox();
+            this.AutoBuildButton = new System.Windows.Forms.Button();
             this.ManualBuildbutton = new System.Windows.Forms.Button();
-            this.systemButton = new System.Windows.Forms.Button();
             this.BuildAndRunButton = new System.Windows.Forms.Button();
             this.ConfigBuildButton = new System.Windows.Forms.Button();
-            this.AutoBuildButton = new System.Windows.Forms.Button();
             this.GameSpecificOptions.SuspendLayout();
             this.buildGroup.SuspendLayout();
             this.SuspendLayout();
@@ -105,7 +104,6 @@
             // 
             this.buildGroup.Controls.Add(this.AutoBuildButton);
             this.buildGroup.Controls.Add(this.ManualBuildbutton);
-            this.buildGroup.Controls.Add(this.systemButton);
             this.buildGroup.Controls.Add(this.BuildAndRunButton);
             this.buildGroup.Controls.Add(this.ConfigBuildButton);
             this.buildGroup.Location = new System.Drawing.Point(354, 68);
@@ -114,6 +112,16 @@
             this.buildGroup.TabIndex = 2;
             this.buildGroup.TabStop = false;
             this.buildGroup.Text = "Build";
+            // 
+            // AutoBuildButton
+            // 
+            this.AutoBuildButton.Location = new System.Drawing.Point(7, 77);
+            this.AutoBuildButton.Name = "AutoBuildButton";
+            this.AutoBuildButton.Size = new System.Drawing.Size(239, 23);
+            this.AutoBuildButton.TabIndex = 6;
+            this.AutoBuildButton.Text = "Auto Build";
+            this.AutoBuildButton.UseVisualStyleBackColor = true;
+            this.AutoBuildButton.Click += new System.EventHandler(this.AutoBuildButton_Click);
             // 
             // ManualBuildbutton
             // 
@@ -125,19 +133,9 @@
             this.ManualBuildbutton.UseVisualStyleBackColor = true;
             this.ManualBuildbutton.Click += new System.EventHandler(this.ManualBuildbutton_Click);
             // 
-            // systemButton
-            // 
-            this.systemButton.Location = new System.Drawing.Point(7, 106);
-            this.systemButton.Name = "systemButton";
-            this.systemButton.Size = new System.Drawing.Size(239, 23);
-            this.systemButton.TabIndex = 4;
-            this.systemButton.Text = "Copy System Folder";
-            this.systemButton.UseVisualStyleBackColor = true;
-            this.systemButton.Click += new System.EventHandler(this.systemButton_Click);
-            // 
             // BuildAndRunButton
             // 
-            this.BuildAndRunButton.Location = new System.Drawing.Point(6, 135);
+            this.BuildAndRunButton.Location = new System.Drawing.Point(6, 106);
             this.BuildAndRunButton.Name = "BuildAndRunButton";
             this.BuildAndRunButton.Size = new System.Drawing.Size(239, 23);
             this.BuildAndRunButton.TabIndex = 2;
@@ -153,16 +151,7 @@
             this.ConfigBuildButton.TabIndex = 0;
             this.ConfigBuildButton.Text = "Configure build";
             this.ConfigBuildButton.UseVisualStyleBackColor = true;
-            // 
-            // AutoBuildButton
-            // 
-            this.AutoBuildButton.Location = new System.Drawing.Point(7, 77);
-            this.AutoBuildButton.Name = "AutoBuildButton";
-            this.AutoBuildButton.Size = new System.Drawing.Size(239, 23);
-            this.AutoBuildButton.TabIndex = 6;
-            this.AutoBuildButton.Text = "Auto Build";
-            this.AutoBuildButton.UseVisualStyleBackColor = true;
-            this.AutoBuildButton.Click += new System.EventHandler(this.AutoBuildButton_Click);
+            this.ConfigBuildButton.Click += new System.EventHandler(this.ConfigBuildButton_Click);
             // 
             // ProjectActions
             // 
@@ -192,7 +181,6 @@
         private System.Windows.Forms.GroupBox buildGroup;
         private System.Windows.Forms.Button ConfigBuildButton;
         private System.Windows.Forms.Button BuildAndRunButton;
-        private System.Windows.Forms.Button systemButton;
         private System.Windows.Forms.Button ManualBuildbutton;
         private System.Windows.Forms.Button AutoBuildButton;
     }

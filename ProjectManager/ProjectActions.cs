@@ -400,5 +400,14 @@ namespace ProjectManager
             AutoBuild();
             PlayMod();
         }
+
+        private void ConfigBuildButton_Click(object sender, EventArgs e)
+        {
+            using (ModConfigEditor configEditor = new ModConfigEditor())
+            {
+                configEditor.Init(game, projectName, projectFolder);
+                configEditor.ShowDialog();
+            }
+        }
     }
 }
