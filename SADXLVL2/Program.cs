@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../ProjectManager/bin/Debug/Settings.ini";
 #endif
 #if !DEBUG
-            projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../ProjectManager/Settings.ini";
+            projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../ProjectManager/Settings.ini";
 #endif
 
             projectManagerPath = Path.GetFullPath(projectManagerPath); // cleaning up path.

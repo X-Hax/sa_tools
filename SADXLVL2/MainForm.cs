@@ -76,19 +76,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 
             systemFallback = Program.SADXGameFolder + "/System/";
 
-			if (ShowQuickStart())
-				ShowLevelSelect();
-		}
+            if (Program.args.Length > 0)
+            {
+                LoadINI(Program.args[0]);
+                ShowLevelSelect();
+            }
+            else
+            {
+                using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+                {
+                    projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
 
-		private bool ShowQuickStart()
-		{
-			bool result;
-			using (QuickStartDialog dialog = new QuickStartDialog(this, GetRecentFiles()))
-			{
-				if (result = (dialog.ShowDialog() == DialogResult.OK))
-					LoadINI(dialog.SelectedItem);
-			}
-			return result;
+                    if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadProject(projectSelectDialog.SelectedProject);
+                    }
+                }
+            }
 		}
 
 		private void ShowLevelSelect()
@@ -133,44 +137,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private StringCollection GetRecentFiles()
-		{
-			if (Settings.MRUList == null)
-				Settings.MRUList = new StringCollection();
-
-			StringCollection mru = new StringCollection();
-
-			foreach (string item in Settings.MRUList)
-			{
-				if (File.Exists(item))
-				{
-					mru.Add(item);
-					recentProjectsToolStripMenuItem.DropDownItems.Add(item.Replace("&", "&&"));
-				}
-			}
-
-			Settings.MRUList = mru;
-			if (mru.Count > 0)
-				recentProjectsToolStripMenuItem.DropDownItems.Remove(noneToolStripMenuItem2);
-
-			if (Program.args.Length > 0)
-				LoadINI(Program.args[0]);
-
-			return mru;
-		}
-
 		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
 		{
 			// HACK: Not so sure we should have to re-initialize this every time...
 			EditorOptions.Initialize(d3ddevice);
 		}
 
-		private void openToolStripMenuItem_Click(object sender, EventArgs e)
+		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFile();
+			OpenNewProject();
 		}
 
-		public bool OpenFile()
+        private void LoadProject(string projectName)
+        {
+            string projectPath = Path.Combine(Program.SADXGameFolder, string.Format("projects/{0}/sadxlvl.ini", projectName));
+            LoadINI(projectPath);
+            ShowLevelSelect();
+        }
+
+		public bool OpenNewProject()
 		{
 			if (isStageLoaded)
 			{
@@ -178,19 +163,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return false;
 			}
 
-			OpenFileDialog a = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "INI Files|*.ini|All Files|*.*"
-			};
+            using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+            {
+                projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
 
-			if (a.ShowDialog(this) == DialogResult.OK)
-			{
-				LoadINI(a.FileName);
-				return true;
-			}
+                if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+                {
+                    LoadProject(projectSelectDialog.SelectedProject);
 
-			return false;
+                    return true;
+                }
+                else return false;
+            }
+
+            return false;
 		}
 
 		private void LoadINI(string filename)
@@ -221,21 +207,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			// Set up the Change Level menu...
 			PopulateLevelMenu(changeLevelToolStripMenuItem, levelNames);
-
-			// If no projects have been recently used, clear the list to remove the "(none)" entry.
-			if (Settings.MRUList.Count == 0)
-				recentProjectsToolStripMenuItem.DropDownItems.Clear();
-
-			// If this project has been loaded before, remove it...
-			if (Settings.MRUList.Contains(filename))
-			{
-				recentProjectsToolStripMenuItem.DropDownItems.RemoveAt(Settings.MRUList.IndexOf(filename));
-				Settings.MRUList.Remove(filename);
-			}
-
-			// ...so that it can be re-inserted at the top of the Recent Projects list.
-			Settings.MRUList.Insert(0, filename);
-			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
 
 			// File menu -> Change Level
 			changeLevelToolStripMenuItem.Enabled = true;
@@ -2646,11 +2617,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void recentProjectsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-		{
-			LoadINI(Settings.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
-		}
-
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (BugReportDialog dlg = new BugReportDialog("SADXLVL2", null))
@@ -2810,11 +2776,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowLevelSelect();
-		}
-
-		private void recentProjectsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ShowQuickStart();
 		}
 
 		private void toolClearGeometry_Click(object sender, EventArgs e)

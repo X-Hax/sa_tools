@@ -184,7 +184,7 @@ namespace ProjectManager
             #region Validating Inputs
             if (!File.Exists(datafilename))
             {
-                Console.WriteLine("No source file supplied. Aborting.");
+                Console.WriteLine(datafilename + " not found. Aborting.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadLine();
 
@@ -194,7 +194,7 @@ namespace ProjectManager
 
             if (!File.Exists(inifilename))
             {
-                Console.WriteLine("ini data mapping not found. Aborting.");
+                Console.WriteLine(inifilename + " not found. Aborting.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadLine();
 
@@ -509,7 +509,7 @@ namespace ProjectManager
 #endif
 
 #if !DEBUG
-            return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetFolderForGame(game) + "/objdefs/";
+            return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
 #endif
         }
 
@@ -539,7 +539,7 @@ namespace ProjectManager
 #endif
 
 #if !DEBUG
-                iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "../" + GetFolderForGame(game);
+                iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(game);
 #endif
 
                 // we need to run split

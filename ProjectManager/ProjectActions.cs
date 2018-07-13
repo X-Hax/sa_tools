@@ -92,9 +92,10 @@ namespace ProjectManager
             sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXLVL2/SADXLVL2.exe";
 #endif
 
+            string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectFolder, "sadxlvl.ini"));
+
             System.Diagnostics.ProcessStartInfo sadxlvl2StartInfo = new System.Diagnostics.ProcessStartInfo(
-                Path.GetFullPath(sadxlvl2Path),
-                string.Format("\"{0}\"", Path.GetFullPath(projectFolder + "/sadxlvl.ini")));
+                Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);
 
             System.Diagnostics.Process sadxlvl2Process = System.Diagnostics.Process.Start(sadxlvl2StartInfo);
         }
