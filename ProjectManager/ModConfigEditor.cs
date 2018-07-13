@@ -59,11 +59,14 @@ namespace ProjectManager
 
             projectSettings.OtherModsToRun.Clear();
 
-            string[] otherMods = otherModsTextBox.Text.Split('\n');
+            string[] otherMods = otherModsTextBox.Text.Split( new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries );
 
             foreach(string otherMod in otherMods)
             {
-                projectSettings.OtherModsToRun.Add(otherMod);
+                if (otherMod.Length > 0)
+                {
+                    projectSettings.OtherModsToRun.Add(otherMod);
+                }
             }
 
             // update project settings
@@ -103,7 +106,7 @@ namespace ProjectManager
 
             foreach (string otherMod in projectSettings.OtherModsToRun)
             {
-                otherModsTextBox.Text = string.Format("{0}\n{1}", otherModsTextBox.Text, otherMod);
+                otherModsTextBox.Text = string.Format("{0}{1}{2}", otherModsTextBox.Text, (otherModsTextBox.Text.Length > 0) ? Environment.NewLine : "", otherMod);
             }
 
             postBuildScript.Text = projectSettings.PostBuildScript;

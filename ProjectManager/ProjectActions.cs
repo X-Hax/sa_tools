@@ -247,6 +247,8 @@ namespace ProjectManager
                 string modFolder = Path.Combine(Program.Settings.GetModPathForGame(game),
                     projectName);
 
+                Directory.CreateDirectory(modFolder);
+
                 progress.StepProgress();
                 progress.SetStep("Getting Assembies");
                 switch (game)
@@ -426,7 +428,16 @@ namespace ProjectManager
                 ProjectSettings projectSettings = SA_Tools.IniSerializer.Deserialize<ProjectSettings>(projectSettingsPath);
                 foreach(string otherMod in projectSettings.OtherModsToRun)
                 {
-                    otherMods.Add(otherMod);
+                    if (otherMod.Length == 0) continue; // skip empty mod entries/newlines
+
+                    string otherModClean = System.Text.RegularExpressions.Regex.Replace(otherMod, @"\t\n\r", "");
+
+                    string modIniPath = Path.Combine(Program.Settings.GetGamePath(game), string.Format("mods/{0}/mod.ini", otherModClean));
+
+                    if (File.Exists(modIniPath))
+                    {
+                        otherMods.Add(otherMod);
+                    }
                 }
             }
                 string modLoaderConfig = "";
@@ -442,7 +453,9 @@ namespace ProjectManager
 
                     foreach(string otherMod in otherMods)
                     {
-                        sadxLoaderInfo.Mods.Add(otherMod);
+                        string otherModClean = System.Text.RegularExpressions.Regex.Replace(otherMod, @"\t\n\r", "");
+
+                        sadxLoaderInfo.Mods.Add(otherModClean);
                     }
 
                     SA_Tools.IniSerializer.Serialize(sadxLoaderInfo, modLoaderConfig);
