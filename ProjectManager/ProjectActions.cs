@@ -109,8 +109,10 @@ namespace ProjectManager
             samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SAMDL/bin/Debug/SAMDL.exe";
 #endif
 #if !DEBUG
-            samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SAMDL/SAMDL.exe";
+            samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SAMDL/SAMDL.exe";
 #endif
+
+            Console.WriteLine(samdlPath);
 
             System.Diagnostics.ProcessStartInfo samdlStartInfo = new System.Diagnostics.ProcessStartInfo(
                 Path.GetFullPath(samdlPath)//,
@@ -128,7 +130,7 @@ namespace ProjectManager
             sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXTweaker2/bin/Debug/SADXTweaker2.exe";
 #endif
 #if !DEBUG
-            sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXTweaker2/SADXTweaker2.exe.exe";
+            sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXTweaker2/SADXTweaker2.exe";
 #endif
             string sonicDataPath = Path.GetFullPath(Path.Combine(projectFolder, "sonic_data.ini"));
             System.Diagnostics.ProcessStartInfo sadxTweaker2StartInfo = new System.Diagnostics.ProcessStartInfo(
