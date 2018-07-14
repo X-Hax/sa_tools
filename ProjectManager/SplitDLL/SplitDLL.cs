@@ -420,8 +420,33 @@ namespace ProjectManager.SplitDLL
                                 address += 4;
                             }
                             break;
-                    }
-                    itemcount++;
+						case "animindexlist":
+							{
+								int c = 0;
+								int i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+								while (i != -1)
+								{
+									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+
+									Animation anim = new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, SA_Tools.ByteConverter.ToInt16(datafile, address + 2));
+									DllItemInfo info = new DllItemInfo()
+									{
+										Export = name,
+										Index = c,
+										Field = "Animation",
+										Label = anim.Name
+									};
+									anim.Save(outputFN);
+									output.Files[fileName] = new FileTypeHash("animindex", HelperFunctions.FileHash(outputFN));
+									address += 8;
+									i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+									++c;
+								}
+							}
+							break;
+					}
+					itemcount++;
                 }
                 foreach (ModelAnimations item in models)
                 {

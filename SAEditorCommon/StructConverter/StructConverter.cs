@@ -48,7 +48,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
             { "stagelightdatalist", "Stage Light Data List" },
             { "weldlist", "Weld List" },
             { "bmitemattrlist", "BM Item Attributes List" },
-            { "creditstextlist", "Credits Text List" }
+            { "creditstextlist", "Credits Text List" },
+			{ "animindexlist", "Animation Index List" }
         };
 
         public static SA_Tools.IniData LoadINI(string filename, 
@@ -869,7 +870,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                                 writer.WriteLine("CreditsList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
                                 initlines.Add(string.Format("*(CreditsList*)0x{0:X} = {1};", data.Address + imagebase, name));
                             }
-                            break;
+							break;
+						case "animindexlist":
+							{
+								SortedDictionary<short, Animation> anims = new SortedDictionary<short, Animation>();
+								foreach (string file in Directory.GetFiles(data.Filename, "*.saanim"))
+									if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
+										anims.Add(i, Animation.Load(file));
+								foreach (KeyValuePair<short, Animation> obj in anims)
+								{
+									obj.Value.ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								writer.WriteLine("AnimationIndex {0}[] = {{", name);
+								List<string> objs = new List<string>(anims.Count);
+								foreach (KeyValuePair<short, Animation> obj in anims)
+									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, {obj.Value.Name} }}");
+								objs.Add("{ -1 }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
                     }
                     writer.WriteLine();
                     if (data.PointerList != null && data.PointerList.Length > 0)

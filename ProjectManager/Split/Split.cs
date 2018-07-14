@@ -311,6 +311,23 @@ namespace ProjectManager.Split
                         case "creditstextlist":
                             CreditsTextList.Load(datafile, address, imageBase).Save(fileOutputPath);
                             break;
+						case "animindexlist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
+								int i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+								while (i != -1)
+								{
+									new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, SA_Tools.ByteConverter.ToInt16(datafile, address + 2))
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
+									address += 8;
+									i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+								}
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
                         default: // raw binary
                             {
                                 byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];

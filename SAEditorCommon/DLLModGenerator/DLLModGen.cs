@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using SA_Tools;
-using SonicRetro.SAModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 {
-    public static class DLLModGen
+	public static class DLLModGen
     {
         static readonly Dictionary<string, string> typemap = new Dictionary<string, string>() {
             { "landtable", "LandTable *" },
@@ -25,7 +23,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
             { "morph", "NJS_MODEL_SADX *" },
             { "modelsarray", "NJS_MODEL_SADX **" },
             { "texlist", "NJS_TEXLIST *" },
-            { "texlistarray", "NJS_TEXLIST **" }
+            { "texlistarray", "NJS_TEXLIST **" },
+			{ "animindexlist", "AnimationIndex *" }
         };
 
         public static DllIniData LoadINI(string fileName,
@@ -78,6 +77,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
                         labels.AddRange(mdl.GetLabels());
                         break;
                     case "animation":
+					case "animindex":
                         Animation ani = Animation.Load(item.Key);
                         labels.Add(ani.Name);
                         break;
@@ -133,6 +133,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
                             labels.AddRange(mdl.GetLabels());
                             break;
                         case "animation":
+						case "animindex":
                             Animation ani = Animation.Load(item.Key);
                             ani.ToStructVariables(writer);
                             labels.Add(ani.Name);
