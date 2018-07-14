@@ -478,7 +478,8 @@ namespace ProjectManager.SplitDLL
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message, e.StackTrace);
+				Console.WriteLine(e.Message);
+				Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadLine();
                 return (int)ERRORVALUE.UnhandledException;

@@ -33,7 +33,7 @@
             this.SADXBrowseButton = new System.Windows.Forms.Button();
             this.SA2PCPath = new System.Windows.Forms.TextBox();
             this.SA2PCLabel = new System.Windows.Forms.Label();
-            this.AcceptButton = new System.Windows.Forms.Button();
+            this._AcceptButton = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.SA2PCBrowse = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -87,14 +87,14 @@
             // 
             // AcceptButton
             // 
-            this.AcceptButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AcceptButton.Location = new System.Drawing.Point(415, 152);
-            this.AcceptButton.Name = "AcceptButton";
-            this.AcceptButton.Size = new System.Drawing.Size(75, 23);
-            this.AcceptButton.TabIndex = 6;
-            this.AcceptButton.Text = "Accept";
-            this.AcceptButton.UseVisualStyleBackColor = true;
-            this.AcceptButton.Click += new System.EventHandler(this.AcceptButton_Click);
+            this._AcceptButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this._AcceptButton.Location = new System.Drawing.Point(415, 152);
+            this._AcceptButton.Name = "AcceptButton";
+            this._AcceptButton.Size = new System.Drawing.Size(75, 23);
+            this._AcceptButton.TabIndex = 6;
+            this._AcceptButton.Text = "Accept";
+            this._AcceptButton.UseVisualStyleBackColor = true;
+            this._AcceptButton.Click += new System.EventHandler(this.AcceptButton_Click);
             // 
             // SA2PCBrowse
             // 
@@ -112,7 +112,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(502, 187);
-            this.Controls.Add(this.AcceptButton);
+            this.Controls.Add(this._AcceptButton);
             this.Controls.Add(this.SA2PCBrowse);
             this.Controls.Add(this.SA2PCPath);
             this.Controls.Add(this.SA2PCLabel);
@@ -136,7 +136,7 @@
         private System.Windows.Forms.Button SADXBrowseButton;
         private System.Windows.Forms.TextBox SA2PCPath;
         private System.Windows.Forms.Label SA2PCLabel;
-        private System.Windows.Forms.Button AcceptButton;
+        private System.Windows.Forms.Button _AcceptButton;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button SA2PCBrowse;
     }

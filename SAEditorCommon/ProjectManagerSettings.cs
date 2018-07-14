@@ -44,7 +44,6 @@ namespace ProjectManager
                 case Game.SA1:
                 case Game.SA2:
                     throw new System.NotSupportedException();
-                    return "";
 
                 case Game.SADX:
                     return  Path.Combine(SADXPCPath, "mods");
@@ -54,7 +53,6 @@ namespace ProjectManager
 
                 default:
                     throw new System.NotSupportedException();
-                    return "";
             }
         }
 
@@ -65,7 +63,6 @@ namespace ProjectManager
                 case Game.SA1:
                 case Game.SA2:
                     throw new System.NotSupportedException();
-                    return "";
 
                 case Game.SADX:
                     return "sonic.exe";
@@ -75,7 +72,6 @@ namespace ProjectManager
 
                 default:
                     throw new System.NotSupportedException();
-                    return "";
             }
         }
 
@@ -86,7 +82,6 @@ namespace ProjectManager
                 case Game.SA1:
                 case Game.SA2:
                     throw new System.NotSupportedException();
-                    return "";
 
                 case Game.SADX:
                     return SADXPCPath;
@@ -96,7 +91,6 @@ namespace ProjectManager
 
                 default:
                     throw new System.NotSupportedException();
-                    return "";
             }
         }
 

@@ -40,7 +40,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
                     return false;
                 }
             }
-            catch (System.InvalidCastException e)
+            catch (InvalidCastException)
             {
                 failReason = "sadxpc path settings variable was not string type";
                 sadxPCIsValid = false;
@@ -82,8 +82,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
                     return false;
                 }
             }
-            catch (System.InvalidCastException e)
-            {
+            catch (InvalidCastException)
+			{
                 sa2PCIsValid = false;
             }
 
@@ -99,7 +99,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
         /// <summary>
         /// Gets the primary game content folder.
         /// For SADX PC this is called 'System',
-        /// for SA2PC it's called 'GD_PC'
+        /// for SA2PC it's called 'gd_PC'
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
@@ -110,17 +110,15 @@ namespace SonicRetro.SAModel.SAEditorCommon
                 case SA_Tools.Game.SA1:
                 case SA_Tools.Game.SA2:
                     throw new System.NotSupportedException();
-                    return "";
 
                 case SA_Tools.Game.SADX:
                     return "system";
 
                 case SA_Tools.Game.SA2B:
-                    return "resource/GC_PC";
+                    return "resource/gd_PC";
 
                 default:
                     throw new System.NotSupportedException();
-                    return "";
             }
         }
     }

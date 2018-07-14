@@ -46,11 +46,6 @@ namespace ProjectManager
             // chrmodels and chrmodels_orig are special cases
         };
 
-        SplitData[] sa2pcSplitsDll = new SplitData[]
-        {
-            new SplitData() { dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll", iniFile = "data_dll.ini" }
-        };
-
         /*string[] sa2pcSplitsMDL = new string[]
         {
             "/be resource\\gd_PC\\amymdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\amymtn.prs",
@@ -84,16 +79,14 @@ namespace ProjectManager
         {
             InitializeComponent();
 
-            string sadxInvalidReason = "";
-            
-            sadxIsValid = GamePathChecker.CheckSADXPCValid(
-                Program.Settings.SADXPCPath, out sadxInvalidReason);
 
-            string sa2pcInvalidReason = "";
-            sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
-                Program.Settings.SA2PCPath, out sa2pcInvalidReason);
+			sadxIsValid = GamePathChecker.CheckSADXPCValid(
+				Program.Settings.SADXPCPath, out string sadxInvalidReason);
 
-            backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
+			sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
+				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
+
+			backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
 
             SADXPCButton.Checked = (sadxIsValid);
             SA2RadioButton.Checked = (false);
@@ -286,27 +279,30 @@ namespace ProjectManager
 
         private void GenerateSADXModFile(string gameFolder, string projectName)
         {
-            SADXModInfo modInfo = new SADXModInfo();
-            modInfo.Author = AuthorTextBox.Text;
-            modInfo.Name = ProjectNameBox.Text;
-            modInfo.Version = string.Format("0");
-            modInfo.Description = DescriptionTextBox.Text;
+			SADXModInfo modInfo = new SADXModInfo
+			{
+				Author = AuthorTextBox.Text,
+				Name = ProjectNameBox.Text,
+				Version = string.Format("0"),
+				Description = DescriptionTextBox.Text
+			};
 
-            string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
+			string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
 
             SA_Tools.IniSerializer.Serialize(modInfo, outputPath);
         }
 
         private void GenerateSA2ModFile(string gameFolder, string projectName)
         {
-            SA2ModInfo modInfo = new SA2ModInfo();
+			SA2ModInfo modInfo = new SA2ModInfo
+			{
+				Author = AuthorTextBox.Text,
+				Name = ProjectNameBox.Text,
+				Version = string.Format("0"),
+				Description = DescriptionTextBox.Text
+			};
 
-            modInfo.Author = AuthorTextBox.Text;
-            modInfo.Name = ProjectNameBox.Text;
-            modInfo.Version = string.Format("0");
-            modInfo.Description = DescriptionTextBox.Text;
-
-            string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
+			string outputPath = Path.Combine(gameFolder, string.Format("Projects/{0}/mod.ini", projectName));
 
             SA_Tools.IniSerializer.Serialize(modInfo, outputPath);
         }
@@ -344,153 +340,47 @@ namespace ProjectManager
 
         private void DoSA2PCSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
-            // split data dlls
-#region Split Data DLLs
+            // split data dll
+#region Split Data DLL
 
             progress.StepProgress();
-            progress.SetStep("Splitting Data DLLs");
+            progress.SetStep("Splitting Data DLL");
 
-            foreach (SplitData splitData in sa2pcSplitsDll)
-            {
-                string datafilename = Path.Combine(gameFolder, splitData.dataFile);
-                string inifilename = Path.Combine(iniFolder, splitData.iniFile);
-                string projectFolderName = outputFolder;
+			SplitData dllSplitData = new SplitData();
 
-                progress.StepProgress();
-                progress.SetStep("Splitting: " + splitData.dataFile);
+			if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
+			{
+				dllSplitData = new SplitData()
+				{
+					dataFile = "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll",
+					iniFile = "data_dll.ini"
+				};
+			}
+			else
+			{
+				dllSplitData = new SplitData()
+				{
+					dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll",
+					iniFile = "data_dll.ini"
+				};
+			}
 
-#region Validating Inputs
-                if (!File.Exists(datafilename))
-                {
-                    Console.WriteLine("No source file supplied. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoSourceFile.ToString());
-                    //return (int)ERRORVALUE.NoSourceFile;
-                }
-
-                if (!File.Exists(inifilename))
-                {
-                    Console.WriteLine("ini data mapping not found. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoDataMapping.ToString());
-                    //return (int)ERRORVALUE.NoDataMapping;
-                }
-
-                if (!Directory.Exists(projectFolderName))
-                {
-                    // try creating the directory
-                    bool created = true;
-
-                    try
-                    {
-                        // check to see if trailing charcter closes 
-                        Directory.CreateDirectory(projectFolderName);
-                    }
-                    catch
-                    {
-                        created = false;
-                    }
-
-                    if (!created)
-                    {
-                        // couldn't create directory.
-                        Console.WriteLine("Output folder did not exist and couldn't be created.");
-                        Console.WriteLine("Press any key to exit.");
-                        Console.ReadLine();
-
-                        throw new Exception(ERRORVALUE.InvalidProject.ToString());
-                        //return (int)ERRORVALUE.InvalidProject;
-                    }
-                }
+			SADXSplitData_Sub(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
 #endregion
 
-                // switch on file extension - if dll, use dll splitter
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
+			// run split mdl commands
+			// todo: add this
 
-                int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-                    Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
-            }
-#endregion
-
-            // run split mdl commands
-            // todo: add this
-
-            // split sonic2app
-#region Split sonic2app
-            {
-                progress.StepProgress();
+			// split sonic2app
+			#region Split sonic2app
+			{
+				progress.StepProgress();
                 progress.SetStep("Splitting Sonic2App");
 
-                SplitData splitData = sonic2AppSplit;
-
-                string datafilename = Path.Combine(gameFolder, splitData.dataFile);
-                string inifilename = Path.Combine(iniFolder, splitData.iniFile);
-                string projectFolderName = outputFolder;
-
-                progress.StepProgress();
-                progress.SetStep("Splitting: " + splitData.dataFile);
-
-#region Validating Inputs
-                if (!File.Exists(datafilename))
-                {
-                    Console.WriteLine("No source file supplied. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoSourceFile.ToString());
-                    //return (int)ERRORVALUE.NoSourceFile;
-                }
-
-                if (!File.Exists(inifilename))
-                {
-                    Console.WriteLine("ini data mapping not found. Aborting.");
-                    Console.WriteLine("Press any key to exit.");
-                    Console.ReadLine();
-
-                    throw new Exception(ERRORVALUE.NoDataMapping.ToString());
-                    //return (int)ERRORVALUE.NoDataMapping;
-                }
-
-                if (!Directory.Exists(projectFolderName))
-                {
-                    // try creating the directory
-                    bool created = true;
-
-                    try
-                    {
-                        // check to see if trailing charcter closes 
-                        Directory.CreateDirectory(projectFolderName);
-                    }
-                    catch
-                    {
-                        created = false;
-                    }
-
-                    if (!created)
-                    {
-                        // couldn't create directory.
-                        Console.WriteLine("Output folder did not exist and couldn't be created.");
-                        Console.WriteLine("Press any key to exit.");
-                        Console.ReadLine();
-
-                        throw new Exception(ERRORVALUE.InvalidProject.ToString());
-                        //return (int)ERRORVALUE.InvalidProject;
-                    }
-                }
-#endregion
-
-                // switch on file extension - if dll, use dll splitter
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
-
-                int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-                    Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
-            }
-#endregion
-        }
+				SADXSplitData_Sub(sonic2AppSplit, progress, gameFolder, iniFolder, outputFolder);
+			}
+			#endregion
+		}
 
         private string GetOutputFolder()
         {
