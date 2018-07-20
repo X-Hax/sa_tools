@@ -8,7 +8,7 @@ using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
-    class ActionMappingList
+    public class ActionMappingList
     {
         public List<ActionKeyMapping> ActionKeyMappings { get; set; }
 

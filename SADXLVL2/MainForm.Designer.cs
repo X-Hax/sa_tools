@@ -233,42 +233,42 @@
             // toolClearGeometry
             // 
             this.toolClearGeometry.Name = "toolClearGeometry";
-            this.toolClearGeometry.Size = new System.Drawing.Size(169, 22);
+            this.toolClearGeometry.Size = new System.Drawing.Size(180, 22);
             this.toolClearGeometry.Text = "Geometry";
             this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
             // 
             // toolClearAnimations
             // 
             this.toolClearAnimations.Name = "toolClearAnimations";
-            this.toolClearAnimations.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAnimations.Size = new System.Drawing.Size(180, 22);
             this.toolClearAnimations.Text = "Animations";
             this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
             // 
             // toolClearSetItems
             // 
             this.toolClearSetItems.Name = "toolClearSetItems";
-            this.toolClearSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearSetItems.Size = new System.Drawing.Size(180, 22);
             this.toolClearSetItems.Text = "SET Items";
             this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
             // 
             // toolClearCamItems
             // 
             this.toolClearCamItems.Name = "toolClearCamItems";
-            this.toolClearCamItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearCamItems.Size = new System.Drawing.Size(180, 22);
             this.toolClearCamItems.Text = "CAM Items";
             this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
             // 
             // toolClearMissionSetItems
             // 
             this.toolClearMissionSetItems.Name = "toolClearMissionSetItems";
-            this.toolClearMissionSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearMissionSetItems.Size = new System.Drawing.Size(180, 22);
             this.toolClearMissionSetItems.Text = "Mission SET Items";
             this.toolClearMissionSetItems.Click += new System.EventHandler(this.toolClearMissionSetItems_Click);
             // 
             // toolClearAll
             // 
             this.toolClearAll.Name = "toolClearAll";
-            this.toolClearAll.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAll.Size = new System.Drawing.Size(180, 22);
             this.toolClearAll.Text = "All";
             this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
             // 
@@ -938,6 +938,6 @@
 		private System.Windows.Forms.ToolStripMenuItem missionSETItemsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem missionObjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolClearMissionSetItems;
-	}
+    }
 }
 

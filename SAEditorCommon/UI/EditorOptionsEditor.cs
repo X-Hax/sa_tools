@@ -7,6 +7,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
     public partial class EditorOptionsEditor : Form
     {
+        public Action CustomizeKeybindsCommand;
+
         public delegate void FormUpdatedHandler();
         public event FormUpdatedHandler FormUpdated;
 
@@ -55,6 +57,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             EditorOptions.OverrideLighting = fullBrightCheck.Checked;
             FormUpdated();
+        }
+
+        private void KeyboardShortcutButton_Click(object sender, EventArgs e)
+        {
+            CustomizeKeybindsCommand.Invoke();
+        }
+
+        private void EditorOptionsEditor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
         }
     }
 }
