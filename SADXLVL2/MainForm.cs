@@ -42,12 +42,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		internal Device d3ddevice;
-		SAEditorCommon.IniData ini;
+
+        #region Editor-Specific Variables
+        SAEditorCommon.IniData ini;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
-		string levelID;
+        EditorItemSelection selectedItems = new EditorItemSelection();
+        EditorOptionsEditor optionsEditor;
+        #endregion
+
+        string levelID;
 		internal string levelName;
 		bool isStageLoaded;
-		EditorItemSelection selectedItems = new EditorItemSelection();
+
 		Dictionary<string, List<string>> levelNames;
 		bool lookKeyDown;
 		bool zoomKeyDown;
@@ -93,7 +99,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     }
                 }
             }
-		}
+
+            optionsEditor = new EditorOptionsEditor(cam);
+            optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+        }
 
 		private void ShowLevelSelect()
 		{
@@ -2672,9 +2681,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
 		}
 
 		void optionsEditor_FormUpdated()
