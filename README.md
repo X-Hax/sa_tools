@@ -1,8 +1,14 @@
 # Sonic Adventure Toolset
 
 # Quick Start Guide
+If you're looking to work with SA Tools, there are two ways to proceed.
+For users: use the release version of the tools. If you just want to make a mod with the tools, this is what you want.
+For developers: skip to the 'building SA Tools'. If you need to modify the toolkit itself and plan on contributing to the repo, this is what you want.
 
-This branch currently does not have a release! You will need to work entirely from source.
+## Using the Release version
+- Download the tools [from here](http://mm.reimuhakurei.net/SA%20Tools.7z)
+- Extract them to a folder. For organizational purposes, it is recommended to extract them near a game folder but directly within one. The tools' locations do not need to have a relationship to the game paths.
+- Start working by opening up /SA Tools/ProjectManager/ProjectManager.exe
 
 ## Building SA Tools
 - First, you'll need [Visual Studio 2017](https://visualstudio.microsoft.com/vs/). Earlier versions won't work, since the codebase takes advantage of newer C# features.
@@ -16,7 +22,7 @@ This branch currently does not have a release! You will need to work entirely fr
 - To build, go to the menu-toolbar and select "Build->Build Solution". Wait a moment, then check the Output window to see if the build has succeeded or not. If it has, you're ready to go.
 
 ## Creating a new project.
-The point of entry for all new mods is now the Project Manager. To boot it up, open the SA Tools solution ("SA Tools.sln") in visual studio. In the Solution Explorer tab (on the right hand side of the screen), scroll until you find "Project Manager". Press F5 to run.
+The point of entry for all new mods is now the Project Manager. Load it by starting /SA Tools/ProjectManager/ProjectManager.exe
 
 ### First-Time Project Manager config.
 The first time you run Project Manager, it will need some information from you. Specifically, it needs to know where your games are. It's ok if you only have one of the games installed. Click the 'browse' button for the game you want to locate (SADXPC, or SA2PC) and then use the folder browser to specify the folder that contains either sonic.exe or sa2app.exe.
