@@ -101,6 +101,15 @@
     <Compile Include="StructConverter\StructConverterUI.Designer.cs">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\ActionInputCollector.cs" />
+    <Compile Include="UI\ActionKeyMapping.cs" />
+    <Compile Include="UI\ActionMappingList.cs" />
+    <Compile Include="UI\ActionMapTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ActionMapTest.Designer.cs">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\BugReportDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -199,6 +208,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionMapTest.resx">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
