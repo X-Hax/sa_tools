@@ -1219,9 +1219,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 								d3ddevice.Lights[i].Enabled = false;
 							}
 
-							for (int i = 0; i < lightList.Count; i++)
-							{
-								SA1StageLightData lightData = lightList[i];
+                        for (int i = 0; i < lightList.Count * 2; i++)
+                        {
+                                int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
+                                SA1StageLightData lightData = lightList[originalIndex];
 
 								d3ddevice.Lights[i].Enabled = true;
 								d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
