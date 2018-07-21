@@ -202,8 +202,6 @@ namespace SonicRetro.SAModel.SADXLVL2
                 }
                 else return false;
             }
-
-            return false;
 		}
 
 		private void LoadINI(string filename)
