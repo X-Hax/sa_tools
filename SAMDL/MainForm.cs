@@ -38,8 +38,9 @@ namespace SonicRetro.SAModel.SAMDL
 
 		internal Device d3ddevice;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+        EditorOptionsEditor optionsEditor;
+
 		bool loaded;
-		int interval = 1;
 		NJS_OBJECT model;
 		Animation[] animations;
 		Animation animation;
@@ -56,7 +57,18 @@ namespace SonicRetro.SAModel.SAMDL
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
 		Mesh sphereMesh;
 
-		private void MainForm_Load(object sender, EventArgs e)
+        #region UI
+        bool lookKeyDown;
+        bool zoomKeyDown;
+        bool cameraKeyDown;
+
+        int cameraMotionInterval = 1;
+
+        ActionMappingList actionList;
+        ActionInputCollector actionInputCollector;
+        #endregion
+
+        private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
@@ -70,7 +82,19 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
 			EditorOptions.Initialize(d3ddevice);
-			sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
+            optionsEditor = new EditorOptionsEditor(cam);
+            optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+            optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+
+            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+                DefaultActionList.DefaultActionMapping);
+
+            actionInputCollector = new ActionInputCollector();
+            actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+            actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+            actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+            sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -293,12 +317,13 @@ namespace SonicRetro.SAModel.SAMDL
 			Close();
 		}
 
-		internal void DrawLevel()
+        #region Rendering Methods
+        internal void DrawLevel()
 		{
 			if (!loaded) return;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
+			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
 			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
 			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
 			d3ddevice.Material = new Material { Ambient = Color.White };
@@ -438,132 +463,241 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			DrawLevel();
 		}
+        #endregion
 
-		private void panel1_KeyDown(object sender, KeyEventArgs e)
+        #region Keyboard/Mouse Methods
+        void CustomizeControls()
+        {
+            ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
+
+            editor.ShowDialog();
+
+            // copy all our mappings back
+            actionList.ActionKeyMappings.Clear();
+
+            ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
+            foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
+
+            actionInputCollector.SetActions(newMappings);
+
+            // save our controls
+            string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+
+            actionList.Save(saveControlsPath);
+
+            this.BringToFront();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
+            //this.panel1.Focus();
+        }
+
+        private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
+        {
+            if (!loaded)
+                return;
+
+            bool draw = false; // should the scene redraw after this action
+
+            switch (actionName)
+            {
+                case ("Camera Mode"):
+                    cam.mode = (cam.mode + 1) % 2;
+
+                    if (cam.mode == 1)
+                    {
+                        /*if (selectedItems.GetSelection().Count > 0)
+                            cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+                        else
+                            cam.FocalPoint = cam.Position += cam.Look * cam.Distance;*/
+                    }
+
+                    draw = true;
+                    break;
+
+                case ("Zoom to target"):
+                    throw new System.NotImplementedException();
+                    /*if (selectedItems.ItemCount > 1)
+                    {
+                        BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
+
+                        for (int i = 0; i < selectedItems.ItemCount; i++)
+                        {
+                            combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
+                        }
+
+                        cam.MoveToShowBounds(combinedBounds);
+                    }
+                    else if (selectedItems.ItemCount == 1)
+                    {
+                        cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
+                    }*/
+
+                    draw = true;
+                    break;
+
+                case ("Change Render Mode"):
+                    if (EditorOptions.RenderFillMode == FillMode.Solid)
+                        EditorOptions.RenderFillMode = FillMode.Point;
+                    else
+                        EditorOptions.RenderFillMode += 1;
+
+                    draw = true;
+                    break;
+
+                case ("Delete"):
+                    /*foreach (Item item in selectedItems.GetSelection())
+                        item.Delete();
+                    selectedItems.Clear();*/
+                    throw new System.NotImplementedException();
+                    draw = true;
+                    break;
+
+                case ("Increase camera move speed"):
+                    cam.MoveSpeed += 0.0625f;
+                    //UpdateTitlebar();
+                    break;
+
+                case ("Decrease camera move speed"):
+                    cam.MoveSpeed -= 0.0625f;
+                    //UpdateTitlebar();
+                    break;
+
+                case ("Reset camera move speed"):
+                    cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+                    //UpdateTitlebar();
+                    break;
+
+                case ("Reset Camera Position"):
+                    if (cam.mode == 0)
+                    {
+                        cam.Position = new Vector3();
+                        draw = true;
+                    }
+                    break;
+
+                case ("Reset Camera Rotation"):
+                    if (cam.mode == 0)
+                    {
+                        cam.Pitch = 0;
+                        cam.Yaw = 0;
+                        draw = true;
+                    }
+                    break;
+
+                case ("Camera Move"):
+                    cameraKeyDown = false;
+                    break;
+
+                case ("Camera Zoom"):
+                    zoomKeyDown = false;
+                    break;
+
+                case ("Camera Look"):
+                    lookKeyDown = false;
+                    break;
+
+                case ("Next Animation"):
+                    if(animations != null)
+                    {
+                        animnum++;
+                        animframe = 0;
+                        if (animnum == animations.Length) animnum = -1;
+                        if (animnum > -1)
+                            animation = animations[animnum];
+                        else
+                            animation = null;
+
+                        draw = true;
+                    }
+                    break;
+
+                case ("Previous Animation"):
+                    if(animations != null)
+                    {
+                        animnum--;
+                        animframe = 0;
+                        if (animnum == -2) animnum = animations.Length - 1;
+                        if (animnum > -1)
+                            animation = animations[animnum];
+                        else
+                            animation = null;
+
+                        draw = true;
+                    }
+                    break;
+
+                case ("Previous Frame"):
+                    if (animation != null)
+                    {
+                        animframe--;
+                        if (animframe < 0) animframe = animation.Frames - 1;
+                        draw = true;
+                    }
+                    break;
+
+                case ("Next Frame"):
+                    if (animation != null)
+                    {
+                        animframe++;
+                        if (animframe == animation.Frames) animframe = 0;
+                        draw = true;
+                    }
+                    break;
+
+                case ("Play/Pause Animation"):
+                    if(animation != null)
+                    {
+                        timer1.Enabled = !timer1.Enabled;
+                        draw = true;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (draw)
+            {
+                DrawLevel();
+            }
+        }
+
+        private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
+        {
+            switch (actionName)
+            {
+                case ("Camera Move"):
+                    cameraKeyDown = true;
+                    break;
+
+                case ("Camera Zoom"):
+                    zoomKeyDown = true;
+                    break;
+
+                case ("Camera Look"):
+                    lookKeyDown = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!loaded) return;
-			if (cam.mode == 0)
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Position += cam.Up * -interval;
-					else
-						cam.Position += cam.Look * interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Position += cam.Up * interval;
-					else
-						cam.Position += cam.Look * -interval;
-				if (e.KeyCode == Keys.Left)
-					cam.Position += cam.Right * -interval;
-				if (e.KeyCode == Keys.Right)
-					cam.Position += cam.Right * interval;
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.E)
-					cam.Position = new Vector3();
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			else
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-					else
-						cam.Distance += interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-					else
-					{
-						cam.Distance -= interval;
-						cam.Distance = Math.Max(cam.Distance, interval);
-					}
-				if (e.KeyCode == Keys.Left)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.Right)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			if (e.KeyCode == Keys.X)
-				cam.mode = (cam.mode + 1) % 2;
-			if (e.KeyCode == Keys.Q)
-				interval += 1;
-			if (e.KeyCode == Keys.W)
-				interval -= 1;
-			if (e.KeyCode == Keys.OemQuotes & animations != null)
-			{
-				animnum++;
-				animframe = 0;
-				if (animnum == animations.Length) animnum = -1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-			}
-			if (e.KeyCode == Keys.OemSemicolon & animations != null)
-			{
-				animnum--;
-				animframe = 0;
-				if (animnum == -2) animnum = animations.Length - 1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-			}
-			if (e.KeyCode == Keys.OemOpenBrackets & animation != null)
-			{
-				animframe--;
-				if (animframe < 0) animframe = animation.Frames - 1;
-			}
-			if (e.KeyCode == Keys.OemCloseBrackets & animation != null)
-			{
-				animframe++;
-				if (animframe == animation.Frames) animframe = 0;
-			}
-			if (e.KeyCode == Keys.P & animation != null)
-				timer1.Enabled = !timer1.Enabled;
-			if (e.KeyCode == Keys.N)
-				if (EditorOptions.RenderFillMode == FillMode.Solid)
-					EditorOptions.RenderFillMode = FillMode.Point;
-				else
-					EditorOptions.RenderFillMode++;
-			DrawLevel();
+
+            actionInputCollector.KeyDown(e.KeyCode);
 		}
 
-		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        private void panel1_KeyUp(object sender, KeyEventArgs e)
+        {
+            actionInputCollector.KeyUp(e.KeyCode);
+        }
+
+        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			switch (e.KeyCode)
+			/*switch (e.KeyCode)
 			{
 				case Keys.Down:
 				case Keys.Left:
@@ -571,30 +705,146 @@ namespace SonicRetro.SAModel.SAMDL
 				case Keys.Up:
 					e.IsInputKey = true;
 					break;
-			}
+			}*/
 		}
 
-		Point lastmouse;
+		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			Point evloc = e.Location;
-			if (lastmouse == Point.Empty)
-			{
-				lastmouse = evloc;
-				return;
-			}
-			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == MouseButtons.Middle)
-			{
-				cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-				cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
-				DrawLevel();
-			}
-			lastmouse = evloc;
-		}
 
-		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+            #region Motion Handling
+            Point mouseEvent = e.Location;
+            if (mouseLast == Point.Empty)
+            {
+                mouseLast = mouseEvent;
+                return;
+            }
+
+            bool mouseWrapScreen = true;
+            ushort mouseWrapThreshold = 2;
+
+            Point mouseDelta = mouseEvent - (Size)mouseLast;
+            bool performedWrap = false;
+
+            if (e.Button != MouseButtons.None)
+            {
+                Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+
+                if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
+                {
+                    Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+                    mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+                    performedWrap = true;
+                }
+                else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
+                {
+                    Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+                    mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+                    performedWrap = true;
+                }
+                if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
+                    mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
+                    performedWrap = true;
+                }
+                else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
+                {
+                    Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
+                    mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
+                    performedWrap = true;
+                }
+            }
+            #endregion
+
+            if (cameraKeyDown)
+            {
+                // all cam controls are now bound to the middle mouse button
+                if (cam.mode == 0)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+                        cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+                    }
+                }
+                else if (cam.mode == 1)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+                        cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+                    }
+                }
+
+                DrawLevel();
+            }
+
+            if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+            {
+                mouseLast = mouseEvent;
+                if (e.Button != MouseButtons.None && selectedObject != null) propertyGrid1.Refresh();
+                    
+            }
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!loaded) return;
+
+            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
+            
+            HitResult dist;
+            Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+            Viewport viewport = d3ddevice.Viewport;
+            Matrix proj = d3ddevice.Transform.Projection;
+            Matrix view = d3ddevice.Transform.View;
+            Vector3 Near, Far;
+            Near = mousepos;
+            Near.Z = 0;
+            Far = Near;
+            Far.Z = -1;
+            dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+            if (dist.IsHit)
+            {
+                selectedObject = dist.Model;
+                SelectedItemChanged();
+            }
+            else
+            {
+                selectedObject = null;
+                SelectedItemChanged();
+            }
+            if (e.Button == MouseButtons.Right)
+                contextMenuStrip1.Show(panel1, e.Location);
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+        }
+        #endregion
+
+        private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
 			{
@@ -697,29 +947,6 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
-		private void panel1_MouseDown(object sender, MouseEventArgs e)
-		{
-			if (!loaded) return;
-			HitResult dist;
-			Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-			Viewport viewport = d3ddevice.Viewport;
-			Matrix proj = d3ddevice.Transform.Projection;
-			Matrix view = d3ddevice.Transform.View;
-			Vector3 Near, Far;
-			Near = mousepos;
-			Near.Z = 0;
-			Far = Near;
-			Far.Z = -1;
-			dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
-			if (dist.IsHit)
-			{
-				selectedObject = dist.Model;
-				SelectedItemChanged();
-			}
-			if (e.Button == MouseButtons.Right)
-				contextMenuStrip1.Show(panel1, e.Location);
-		}
-
 		internal Type GetAttachType()
 		{
 			return outfmt == ModelFormat.Chunk ? typeof(ChunkAttach) : typeof(BasicAttach);
@@ -729,14 +956,29 @@ namespace SonicRetro.SAModel.SAMDL
 		internal void SelectedItemChanged()
 		{
 			suppressTreeEvent = true;
-			treeView1.SelectedNode = nodeDict[selectedObject];
-			suppressTreeEvent = false;
-			propertyGrid1.SelectedObject = selectedObject;
-			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
-			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-			editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
-			importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-			exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+            if (selectedObject != null)
+            {
+                treeView1.SelectedNode = nodeDict[selectedObject];
+                suppressTreeEvent = false;
+                propertyGrid1.SelectedObject = selectedObject;
+                copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
+                pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+                editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
+                importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+                exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+            }
+            else
+            {
+                treeView1.SelectedNode = null;
+                suppressTreeEvent = false;
+                propertyGrid1.SelectedObject = null;
+                copyModelToolStripMenuItem.Enabled = false;
+                pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+                editMaterialsToolStripMenuItem.Enabled = false;
+                importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+                exportOBJToolStripMenuItem.Enabled = false;
+            }
+
 			DrawLevel();
 		}
 
@@ -969,9 +1211,9 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
 		}
 
 		void optionsEditor_FormUpdated()
@@ -1009,5 +1251,5 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			DrawLevel();
 		}
-	}
+    }
 }
