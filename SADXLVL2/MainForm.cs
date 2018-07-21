@@ -1722,6 +1722,10 @@ namespace SonicRetro.SAModel.SADXLVL2
             string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
 
             actionList.Save(saveControlsPath);
+
+            this.BringToFront();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
         }
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
