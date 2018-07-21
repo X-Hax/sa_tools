@@ -45,8 +45,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		[Browsable(false)]
 		public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; } }
+        public override bool RotateZYX { get { return false; } set { } }
 
-		public override bool CanCopy { get { return false; } }
+        public override bool CanCopy { get { return false; } }
 
 		public override void Paste()
 		{

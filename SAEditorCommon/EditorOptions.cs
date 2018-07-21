@@ -31,14 +31,14 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			direct3DDevice = d3dDevice;
 
-            SetDefaultLights(d3dDevice);
+            SetDefaultLights(d3dDevice, false);
 
 			#region Font Setup
 			onscreenFont = new Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
 
-        private static void SetDefaultLights(Device d3dDevice)
+        public static void SetDefaultLights(Device d3dDevice, bool reset)
         {
             foreach(Light light in d3dDevice.Lights)
             {
@@ -60,7 +60,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
             d3dDevice.Lights[1].Type = LightType.Directional;
             d3dDevice.Lights[1].DiffuseColor = new ColorValue(132, 132, 132, 255);
             d3dDevice.Lights[1].Diffuse = Color.FromArgb(255, 132, 132, 132);
-            d3dDevice.Lights[1].Ambient = Color.Gray;
+            d3dDevice.Lights[1].Ambient = (reset) ? Color.Black : Color.Gray;
             d3dDevice.Lights[1].Specular = Color.Gray;
             d3dDevice.Lights[1].Range = 0;
             d3dDevice.Lights[1].Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f));

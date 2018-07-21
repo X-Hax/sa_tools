@@ -56,6 +56,8 @@
             this.calculateAllBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inputTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sonicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,8 +109,7 @@
             this.toolKnuckles = new System.Windows.Forms.ToolStripButton();
             this.toolTails = new System.Windows.Forms.ToolStripButton();
             this.toolSonic = new System.Windows.Forms.ToolStripButton();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.inputTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -335,6 +336,21 @@
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.inputTestToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // inputTestToolStripMenuItem
+            // 
+            this.inputTestToolStripMenuItem.Name = "inputTestToolStripMenuItem";
+            this.inputTestToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.inputTestToolStripMenuItem.Text = "Input Test";
+            this.inputTestToolStripMenuItem.Click += new System.EventHandler(this.inputTestToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -693,7 +709,8 @@
             this.toolAmy,
             this.toolKnuckles,
             this.toolTails,
-            this.toolSonic});
+            this.toolSonic,
+            this.pivotComboBox});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(584, 25);
@@ -833,20 +850,14 @@
             this.toolSonic.ToolTipText = "Switch to Sonic\'s item layout";
             this.toolSonic.Click += new System.EventHandler(this.onClickCharacterButton);
             // 
-            // debugToolStripMenuItem
+            // pivotComboBox
             // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.inputTestToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.debugToolStripMenuItem.Text = "Debug";
-            // 
-            // inputTestToolStripMenuItem
-            // 
-            this.inputTestToolStripMenuItem.Name = "inputTestToolStripMenuItem";
-            this.inputTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.inputTestToolStripMenuItem.Text = "Input Test";
-            this.inputTestToolStripMenuItem.Click += new System.EventHandler(this.inputTestToolStripMenuItem_Click);
+            this.pivotComboBox.Items.AddRange(new object[] {
+            "CenterMass",
+            "Origin"});
+            this.pivotComboBox.Name = "pivotComboBox";
+            this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
+            this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
             // 
             // MainForm
             // 
@@ -958,6 +969,7 @@
 		private System.Windows.Forms.ToolStripMenuItem toolClearMissionSetItems;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inputTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox pivotComboBox;
     }
 }
 

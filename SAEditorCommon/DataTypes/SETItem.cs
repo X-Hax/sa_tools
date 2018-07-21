@@ -97,8 +97,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override Rotation Rotation { get; set; }
 
 		public Vertex Scale { get; set; }
+        public override bool RotateZYX { get { return false; } set { } }
 
-		public override void Paste()
+        public override void Paste()
 		{
 			LevelData.SETItems[LevelData.Character].Add(this);
 		}

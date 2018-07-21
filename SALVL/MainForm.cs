@@ -475,7 +475,12 @@ namespace SonicRetro.SAModel.SALVL
 			}
 			if (e.Button == MouseButtons.Left)
 			{
-				if (transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+                if (transformGizmo != null)
+                {
+                    //transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+                    throw new System.NotImplementedException();
+                }
+
 				DrawLevel();
 
 				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
@@ -548,20 +553,20 @@ namespace SonicRetro.SAModel.SALVL
 				cam.FocalPoint = Item.CenterFromSelection(sender.GetSelection()).ToVector3();
 			}
 
-			if (sender.ItemCount > 0) // set up gizmo
-			{
-				transformGizmo.Enabled = true;
-				transformGizmo.AffectedItems = sender.GetSelection();
-			}
-			else
-			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.AffectedItems = new List<Item>();
-					transformGizmo.Enabled = false;
-				}
-			}
-		}
+            if (sender.ItemCount > 0) // set up gizmo
+            {
+                transformGizmo.Enabled = true;
+                transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
+                    selectedItems.Get(0).Rotation, selectedItems.Get(0).RotateZYX);
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.Enabled = false;
+                }
+            }
+        }
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -813,7 +818,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo != null) transformGizmo.AffectedItems = selectedItems.GetSelection();
+            if (transformGizmo != null) transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			DrawLevel();
 		}
 

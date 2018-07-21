@@ -60,7 +60,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
-		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        public override bool RotateZYX { get { return false; } set { } }
+
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}

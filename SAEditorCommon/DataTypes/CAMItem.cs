@@ -25,7 +25,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override Vertex Position { get; set; }
 		public override Rotation Rotation { get; set; }
-		public override BoundingSphere Bounds
+        public override bool RotateZYX { get { return false; } set { } }
+
+        public override BoundingSphere Bounds
 		{
 			get
 			{
@@ -42,7 +44,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static Mesh VolumeMesh { get; set; }
 		public static NJS_MATERIAL Material { get; set; }
 
-		public static PointHelper pointHelperA;
+        public static PointHelper pointHelperA;
 		public static PointHelper pointHelperB;
 		#endregion
 

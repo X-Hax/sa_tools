@@ -1250,13 +1250,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (lightList.Count > 0)
 						{
-							for (int i = 0; i < d3ddevice.Lights.Count; i++) // clear all default lights
-							{
-								d3ddevice.Lights[i].Enabled = false;
-							}
+                            EditorOptions.SetDefaultLights(d3ddevice, true);
 
-                        for (int i = 0; i < lightList.Count * 2; i++)
-                        {
+                            for (int i = 0; i < lightList.Count * 2; i++)
+                            {
                                 int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
                                 SA1StageLightData lightData = lightList[originalIndex];
 
@@ -1274,6 +1271,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 						{
 							MessageBox.Show("No lights were found for this stage. Using default lights instead.", "No lights found",
 								MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            EditorOptions.SetDefaultLights(d3ddevice, false);
 						}
 					}
 
@@ -2215,8 +2214,35 @@ namespace SonicRetro.SAModel.SADXLVL2
 						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-					transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
-					DrawLevel();
+                    switch (transformGizmo.Mode)
+                    {
+                        case TransformMode.NONE:
+                            break;
+                        case TransformMode.TRANFORM_MOVE:
+                            // move all of our editor selected items
+                            foreach(Item item in selectedItems.Items)
+                            {
+                                Vector3 up, right, forward;
+
+                                item.GetLocalAxes(out up, out right, out forward);
+
+                                item.Position = transformGizmo.Move(new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y /2 * cam.MoveSpeed),
+                                    item.Position.ToVector3(), cam, up, forward, right).ToVertex();
+                            }
+                            break;
+                        case TransformMode.TRANSFORM_ROTATE:
+                            // rotate all of our editor selected items
+                            break;
+                        case TransformMode.TRANSFORM_SCALE:
+                            // scale all of our editor selected items
+                            break;
+                        default:
+                            break;
+                    }
+                     //transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+
+
+                    DrawLevel();
 					break;
 
 				case MouseButtons.None:
@@ -2326,20 +2352,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 			}
 
-			if (sender.ItemCount > 0) // set up gizmo
-			{
-				transformGizmo.Enabled = true;
-				transformGizmo.AffectedItems = selectedItems.GetSelection();
-			}
-			else
-			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.AffectedItems = new List<Item>();
-					transformGizmo.Enabled = false;
-				}
-			}
-		}
+            if (sender.ItemCount > 0) // set up gizmo
+            {
+                transformGizmo.Enabled = true;
+                transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
+                    selectedItems.Get(0).Rotation, selectedItems.Get(0).RotateZYX);
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.Enabled = false;
+                }
+            }
+        }
 
 		/// <summary>
 		/// Refreshes the properties for the currently selected items.
@@ -2465,9 +2491,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			transformGizmo.Enabled = false;
 
-			if (transformGizmo.AffectedItems != null)
-				transformGizmo.AffectedItems.Clear();
-
 			DrawLevel();
 		}
 
@@ -2493,7 +2516,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 			
 			transformGizmo.Enabled = false;
-			transformGizmo.AffectedItems.Clear();
 
 			DrawLevel();
 		}
@@ -2746,8 +2768,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo != null)
-				transformGizmo.AffectedItems = selectedItems.GetSelection();
+            transformGizmo.Enabled = selectedItems.ItemCount > 0;
 
 			DrawLevel();
 		}
@@ -2882,7 +2903,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void deleteAllOfTypeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			transformGizmo.Enabled = false;
-			transformGizmo.AffectedItems = null; // just in case we wind up deleting our selection
 
 			SETDeleteType typeDeleter = new SETDeleteType();
 
@@ -3013,6 +3033,15 @@ namespace SonicRetro.SAModel.SADXLVL2
             using (ActionMapTest test = new ActionMapTest())
             {
                 test.ShowDialog();
+            }
+        }
+
+        private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+                DrawLevel();
             }
         }
     }

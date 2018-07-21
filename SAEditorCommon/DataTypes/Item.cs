@@ -25,8 +25,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[ParenthesizePropertyName(true)]
 		public virtual BoundingSphere Bounds { get { return bounds; } }
 		public abstract Rotation Rotation { get; set; }
+        public abstract bool RotateZYX { get; set; }
 
-		[Browsable(false)]
+        [Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
 		public abstract void Paste();
 		public abstract void Delete();
@@ -95,18 +96,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Vertex.CenterOfPoints(vertList);
 		}
 
-		public Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
+		public virtual Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
 		{
 			Matrix transform = Matrix.Identity;
 
-			try
-			{
-				MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
-			}
-			catch (NotSupportedException)
-			{
-				Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
-			}
+            if(RotateZYX)
+            {
+                MatrixStack matrixStack = new MatrixStack();
+                matrixStack.LoadIdentity();
+                MatrixFunctions.NJRotateZYX(matrixStack, Rotation);
+
+                transform = matrixStack.Top;
+            }
+            else
+            {
+                MatrixStack matrixStack = new MatrixStack();
+                matrixStack.LoadIdentity();
+                MatrixFunctions.NJRotateXYZ(matrixStack, Rotation);
+                transform = matrixStack.Top;
+            }
 
 			Up = new Vector3(0, 1, 0);
 			Look = new Vector3(0, 0, 1);
