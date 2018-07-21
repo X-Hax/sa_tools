@@ -505,32 +505,27 @@ namespace SonicRetro.SAModel.SAMDL
 
                     if (cam.mode == 1)
                     {
-                        /*if (selectedItems.GetSelection().Count > 0)
-                            cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+                        if (selectedObject != null)
+                        {
+                            cam.FocalPoint = selectedObject.Position.ToVector3();
+                        }
                         else
-                            cam.FocalPoint = cam.Position += cam.Look * cam.Distance;*/
+                        {
+                            cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+                        }
                     }
 
                     draw = true;
                     break;
 
                 case ("Zoom to target"):
-                    throw new System.NotImplementedException();
-                    /*if (selectedItems.ItemCount > 1)
+                    if(selectedObject != null)
                     {
-                        BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
+                        BoundingSphere bounds = selectedObject.Attach.Bounds;
 
-                        for (int i = 0; i < selectedItems.ItemCount; i++)
-                        {
-                            combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
-                        }
-
-                        cam.MoveToShowBounds(combinedBounds);
+                        bounds.Center += selectedObject.Position;
+                        cam.MoveToShowBounds(bounds);
                     }
-                    else if (selectedItems.ItemCount == 1)
-                    {
-                        cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
-                    }*/
 
                     draw = true;
                     break;
