@@ -807,28 +807,32 @@ namespace SonicRetro.SAModel.SAMDL
             if (!loaded) return;
 
             if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
-            
-            HitResult dist;
-            Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-            Viewport viewport = d3ddevice.Viewport;
-            Matrix proj = d3ddevice.Transform.Projection;
-            Matrix view = d3ddevice.Transform.View;
-            Vector3 Near, Far;
-            Near = mousepos;
-            Near.Z = 0;
-            Far = Near;
-            Far.Z = -1;
-            dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
-            if (dist.IsHit)
+
+            if (e.Button == MouseButtons.Left)
             {
-                selectedObject = dist.Model;
-                SelectedItemChanged();
+                HitResult dist;
+                Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+                Viewport viewport = d3ddevice.Viewport;
+                Matrix proj = d3ddevice.Transform.Projection;
+                Matrix view = d3ddevice.Transform.View;
+                Vector3 Near, Far;
+                Near = mousepos;
+                Near.Z = 0;
+                Far = Near;
+                Far.Z = -1;
+                dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+                if (dist.IsHit)
+                {
+                    selectedObject = dist.Model;
+                    SelectedItemChanged();
+                }
+                else
+                {
+                    selectedObject = null;
+                    SelectedItemChanged();
+                }
             }
-            else
-            {
-                selectedObject = null;
-                SelectedItemChanged();
-            }
+
             if (e.Button == MouseButtons.Right)
                 contextMenuStrip1.Show(panel1, e.Location);
         }
