@@ -85,6 +85,17 @@ namespace SonicRetro.SAModel.SAMDL
             optionsEditor = new EditorOptionsEditor(cam);
             optionsEditor.FormUpdated += optionsEditor_FormUpdated;
             optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+            optionsEditor.ResetDefaultKeybindsCommand += () =>
+            {
+                actionList.ActionKeyMappings.Clear();
+
+                foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
+                {
+                    actionList.ActionKeyMappings.Add(keymapping);
+                }
+
+                actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+            };
 
             actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
                 DefaultActionList.DefaultActionMapping);

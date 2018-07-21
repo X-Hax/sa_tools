@@ -39,6 +39,7 @@
             this.doneButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.KeyboardShortcutButton = new System.Windows.Forms.Button();
+            this.ResetDefaultKeybindButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawDistSlider)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -152,6 +153,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.ResetDefaultKeybindButton);
             this.groupBox2.Controls.Add(this.KeyboardShortcutButton);
             this.groupBox2.Location = new System.Drawing.Point(257, 12);
             this.groupBox2.Name = "groupBox2";
@@ -169,6 +171,16 @@
             this.KeyboardShortcutButton.Text = "Configure Keyboard Shortcuts";
             this.KeyboardShortcutButton.UseVisualStyleBackColor = true;
             this.KeyboardShortcutButton.Click += new System.EventHandler(this.KeyboardShortcutButton_Click);
+            // 
+            // ResetDefaultKeybindButton
+            // 
+            this.ResetDefaultKeybindButton.Location = new System.Drawing.Point(6, 50);
+            this.ResetDefaultKeybindButton.Name = "ResetDefaultKeybindButton";
+            this.ResetDefaultKeybindButton.Size = new System.Drawing.Size(243, 23);
+            this.ResetDefaultKeybindButton.TabIndex = 1;
+            this.ResetDefaultKeybindButton.Text = "Reset Default Keybinds";
+            this.ResetDefaultKeybindButton.UseVisualStyleBackColor = true;
+            this.ResetDefaultKeybindButton.Click += new System.EventHandler(this.ResetDefaultKeybindButton_Click);
             // 
             // EditorOptionsEditor
             // 
@@ -205,5 +217,6 @@
         private System.Windows.Forms.CheckBox fullBrightCheck;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button KeyboardShortcutButton;
+        private System.Windows.Forms.Button ResetDefaultKeybindButton;
     }
 }

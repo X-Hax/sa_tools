@@ -8,6 +8,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
     public partial class EditorOptionsEditor : Form
     {
         public Action CustomizeKeybindsCommand;
+        public Action ResetDefaultKeybindsCommand;
 
         public delegate void FormUpdatedHandler();
         public event FormUpdatedHandler FormUpdated;
@@ -68,6 +69,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             e.Cancel = true;
             Hide();
+        }
+
+        private void ResetDefaultKeybindButton_Click(object sender, EventArgs e)
+        {
+            ResetDefaultKeybindsCommand.Invoke();
         }
     }
 }
