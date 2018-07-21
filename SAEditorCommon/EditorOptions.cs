@@ -31,45 +31,55 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			direct3DDevice = d3dDevice;
 
-			#region Key Light
-			d3dDevice.Lights[0].Type = LightType.Directional;
-			d3dDevice.Lights[0].DiffuseColor = new ColorValue(180, 172, 172, 255);
-			d3dDevice.Lights[0].Diffuse = Color.FromArgb(255, 180, 172, 172);
-			d3dDevice.Lights[0].Ambient = Color.Black;
-			d3dDevice.Lights[0].Specular = Color.White;
-			d3dDevice.Lights[0].Range = 0;
-			d3dDevice.Lights[0].Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f));
-			d3dDevice.Lights[0].Enabled = true;
-			#endregion
-
-			#region Fill Light
-			d3dDevice.Lights[1].Type = LightType.Directional;
-			d3dDevice.Lights[1].DiffuseColor = new ColorValue(132, 132, 132, 255);
-			d3dDevice.Lights[1].Diffuse = Color.FromArgb(255, 132, 132, 132);
-			d3dDevice.Lights[1].Ambient = Color.Black;
-			d3dDevice.Lights[1].Specular = Color.Gray;
-			d3dDevice.Lights[1].Range = 0;
-			d3dDevice.Lights[1].Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f));
-			d3dDevice.Lights[1].Enabled = true;
-			#endregion
-
-			#region Back Light
-			d3dDevice.Lights[2].Type = LightType.Directional;
-			d3dDevice.Lights[2].DiffuseColor = new ColorValue(100, 100, 100, 255);
-			d3dDevice.Lights[2].Diffuse = Color.FromArgb(255, 130, 142, 130);
-			d3dDevice.Lights[2].Ambient = Color.Black;
-			d3dDevice.Lights[2].Specular = Color.Gray;
-			d3dDevice.Lights[2].Range = 0;
-			d3dDevice.Lights[2].Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f));
-			d3dDevice.Lights[2].Enabled = true;
-			#endregion
+            SetDefaultLights(d3dDevice);
 
 			#region Font Setup
 			onscreenFont = new Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
 
-		public static void Load()
+        private static void SetDefaultLights(Device d3dDevice)
+        {
+            foreach(Light light in d3dDevice.Lights)
+            {
+                light.Enabled = false;
+            }
+
+            #region Key Light
+            d3dDevice.Lights[0].Type = LightType.Directional;
+            d3dDevice.Lights[0].DiffuseColor = new ColorValue(180, 172, 172, 255);
+            d3dDevice.Lights[0].Diffuse = Color.FromArgb(255, 180, 172, 172);
+            d3dDevice.Lights[0].Ambient = Color.Black;
+            d3dDevice.Lights[0].Specular = Color.White;
+            d3dDevice.Lights[0].Range = 0;
+            d3dDevice.Lights[0].Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f));
+            d3dDevice.Lights[0].Enabled = true;
+            #endregion
+
+            #region Fill Light
+            d3dDevice.Lights[1].Type = LightType.Directional;
+            d3dDevice.Lights[1].DiffuseColor = new ColorValue(132, 132, 132, 255);
+            d3dDevice.Lights[1].Diffuse = Color.FromArgb(255, 132, 132, 132);
+            d3dDevice.Lights[1].Ambient = Color.Gray;
+            d3dDevice.Lights[1].Specular = Color.Gray;
+            d3dDevice.Lights[1].Range = 0;
+            d3dDevice.Lights[1].Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f));
+            d3dDevice.Lights[1].Enabled = true;
+            #endregion
+
+            #region Back Light
+            d3dDevice.Lights[2].Type = LightType.Directional;
+            d3dDevice.Lights[2].DiffuseColor = new ColorValue(100, 100, 100, 255);
+            d3dDevice.Lights[2].Diffuse = Color.FromArgb(255, 130, 142, 130);
+            d3dDevice.Lights[2].Ambient = Color.Black;
+            d3dDevice.Lights[2].Specular = Color.Gray;
+            d3dDevice.Lights[2].Range = 0;
+            d3dDevice.Lights[2].Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f));
+            d3dDevice.Lights[2].Enabled = true;
+            #endregion
+        }
+
+        public static void Load()
 		{
 			throw new NotImplementedException();
 		}
