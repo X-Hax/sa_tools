@@ -144,6 +144,39 @@ namespace SonicRetro.SAModel.SADXLVL2
                 IsSearchable = true,
                 Modifiers = Keys.Control,
                 Synonyms = new string[] { "shortcut", "keybind" }
+            },
+            new ActionKeyMapping()
+            {
+                Name = "Camera Move",
+                MainKey = Keys.MButton,
+                AltKey = Keys.None,
+                FireType = ActionFireType.OnHold,
+                Description = "Press to move the camera. Use rotate & zoom buttons to change behavior.",
+                IsSearchable = true,
+                Modifiers = Keys.None,
+                Synonyms = new string[] { "Pan", "Scroll", "Dolly" }
+            },
+            new ActionKeyMapping()
+            {
+                Name = "Camera Zoom",
+                MainKey = Keys.Control,
+                AltKey = Keys.None,
+                Modifiers = Keys.None,
+                Description = "Combine with Camera Move to zoom the camera.",
+                FireType = ActionFireType.OnHold,
+                IsSearchable = true,
+                Synonyms = new string[] { }
+            },
+            new ActionKeyMapping()
+            {
+                Name = "Camera Look",
+                MainKey = Keys.Menu,
+                AltKey = Keys.None,
+                Description = "Combine with Camera Move to mouselook the camera.",
+                FireType = ActionFireType.OnHold,
+                IsSearchable = true,
+                Modifiers = Keys.None,
+                Synonyms = new string[] { "mouselook", "rotate" }
             }
         };
 

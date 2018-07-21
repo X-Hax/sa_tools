@@ -65,6 +65,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         #region UI & Customization
         bool lookKeyDown;
 		bool zoomKeyDown;
+        bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
 
@@ -1716,6 +1717,11 @@ namespace SonicRetro.SAModel.SADXLVL2
             foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
 
             actionInputCollector.SetActions(newMappings);
+
+            // save our controls
+            string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+
+            actionList.Save(saveControlsPath);
         }
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1733,27 +1739,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_KeyUp(object sender, KeyEventArgs e)
 		{
-			lookKeyDown = e.Alt; // move these to the action handling
-			zoomKeyDown = e.Control;
-
             actionInputCollector.KeyUp(e.KeyCode);
 		}
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
             actionInputCollector.KeyDown(e.KeyCode);
-
-			if (!isStageLoaded)
-				return;
-
-			bool draw = false;
-
-			if ((lookKeyDown = e.Alt) && panel1.ContainsFocus)
-				e.Handled = false;
-			zoomKeyDown = e.Control;
-
-			if (draw)
-				DrawLevel();
 		}
 
         private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
@@ -1871,6 +1862,18 @@ namespace SonicRetro.SAModel.SADXLVL2
                     }
                     break;
 
+                case ("Camera Move"):
+                    cameraKeyDown = false;
+                    break;
+
+                case ("Camera Zoom"):
+                    zoomKeyDown = false;
+                    break;
+
+                case ("Camera Look"):
+                    lookKeyDown = false;
+                    break;
+
                 default:
                     break;
             }
@@ -1883,7 +1886,26 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
         {
+            switch (actionName)
+            {
+                case ("Camera Move"):
+                    cameraKeyDown = true;
+                    break;
 
+                case ("Camera Zoom"):
+                    zoomKeyDown = true;
+                    break;
+
+                case ("Camera Look"):
+                    lookKeyDown = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            //lookKeyDown = e.Alt; // move these to the action handling
+            //zoomKeyDown = e.Control;
         }
 
         // mouse
@@ -2172,43 +2194,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
-					// all cam controls are now bound to the middle mouse button
-					if (cam.mode == 0)
-					{
-						if (zoomKeyDown)
-						{
-							cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-						}
-						else if (lookKeyDown)
-						{
-							cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-							cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						}
-						else if (!lookKeyDown && !zoomKeyDown) // pan
-						{
-							cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-							cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						}
-					}
-					else if (cam.mode == 1)
-					{
-						if (zoomKeyDown)
-						{
-							cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-						}
-						else if (lookKeyDown)
-						{
-							cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-							cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						}
-						else if (!lookKeyDown && !zoomKeyDown) // pan
-						{
-							cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-							cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						}
-					}
-
-					DrawLevel();
 					break;
 
 				case MouseButtons.Left:
@@ -2251,7 +2236,48 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+            if (cameraKeyDown)
+            {
+                // all cam controls are now bound to the middle mouse button
+                if (cam.mode == 0)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+                        cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+                    }
+                }
+                else if (cam.mode == 1)
+                {
+                    if (zoomKeyDown)
+                    {
+                        cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
+                    }
+                    else if (lookKeyDown)
+                    {
+                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+                    }
+                    else if (!lookKeyDown && !zoomKeyDown) // pan
+                    {
+                        cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+                        cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+                    }
+                }
+
+                DrawLevel();
+            }
+
+            if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
 			{
 				mouseLast = mouseEvent;
 				if (e.Button != MouseButtons.None && selectedItems.ItemCount > 0)
@@ -2968,5 +2994,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
 		}
+
+        private void inputTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (ActionMapTest test = new ActionMapTest())
+            {
+                test.ShowDialog();
+            }
+        }
     }
 }

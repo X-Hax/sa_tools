@@ -42,11 +42,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         public bool KeyMatch(Keys key, Keys mainKey, Keys altKey, Keys modifiers)
         {
-            bool mainKeyMatch = (mainKey == key);
+            bool mainKeyMatch = KeysMatch(mainKey, key);
             bool altKeyExists = altKey != Keys.None;
-            bool altKeyMatch = (altKey == key);
+            bool altKeyMatch = KeysMatch(altKey, key);
             bool modifiersExist = modifiers != Keys.None;
-            bool modifierMatch = (modifiers == key);
+            bool modifierMatch = KeysMatch(modifiers, key);
 
             if (mainKeyMatch)
             {
@@ -64,10 +64,34 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             }
         }
 
+        private bool KeysMatch(Keys keyA, Keys keyB)
+        {
+            switch (keyA)
+            {
+                case (Keys.Menu):
+                    return (keyB == Keys.Alt || keyB == Keys.LMenu || keyB == Keys.RMenu || keyB == Keys.Menu);
+                case (Keys.Alt):
+                    return (keyB == Keys.Menu || keyB == Keys.LMenu || keyB == Keys.RMenu || keyB == Keys.Alt);
+                case (Keys.LMenu):
+                    return (keyB == Keys.Alt || keyB == Keys.Menu || keyB == Keys.RMenu || keyB == Keys.LMenu);
+                case (Keys.RMenu):
+                    return (keyB == Keys.Alt || keyB == Keys.LMenu || keyB == Keys.Menu || keyB == Keys.RMenu);
+
+                case (Keys.Control):
+                    return (keyB == Keys.LControlKey || keyB == Keys.RControlKey || keyB == Keys.ControlKey || keyB == Keys.Control);
+                case (Keys.RControlKey):
+                    return (keyB == Keys.Control || keyB == Keys.LControlKey || keyB == Keys.ControlKey || keyB == Keys.RControlKey);
+                case (Keys.LControlKey):
+                    return (keyB == Keys.Control || keyB == Keys.LControlKey || keyB == Keys.RControlKey || keyB == Keys.LControlKey);
+                default:
+                    break;
+            }
+            return keyA == keyB;
+        }
+
         public void KeyDown(Keys keys)
         {
-            // check for on-hold events
-            if(keysDown.Contains(keys))
+            if(!keysDown.Contains(keys))
             {
                 // find any hold actions that are valid under the new key arrangement
                 foreach(string holdAction in holdActions)
@@ -84,10 +108,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                         }                      
                     }
                 }
-            }
 
-            // modify keysdown
-            keysDown.Add(keys);
+                // modify keysdown
+                keysDown.Add(keys);
+            }
         }
 
         public void KeyUp(Keys keys)
@@ -95,7 +119,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             // check for on-release events
             foreach(ActionKeyMapping action in actions.Values)
             {
-                if(action.MainKey == keys || action.AltKey == keys) // keys.none == 0 so this is causing problems?
+                if(KeysMatch(action.MainKey, keys) || 
+                    (KeysMatch(action.AltKey, keys) && action.AltKey != Keys.None)) // keys.none == 0 so this is causing problems?
                 {
                     actionsActiveState[action.Name] = false;
 

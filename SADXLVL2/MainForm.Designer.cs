@@ -107,6 +107,8 @@
             this.toolKnuckles = new System.Windows.Forms.ToolStripButton();
             this.toolTails = new System.Windows.Forms.ToolStripButton();
             this.toolSonic = new System.Windows.Forms.ToolStripButton();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inputTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -212,7 +214,8 @@
             this.duplicateToolStripMenuItem,
             this.calculateAllBoundsToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.preferencesToolStripMenuItem});
+            this.preferencesToolStripMenuItem,
+            this.debugToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
@@ -233,42 +236,42 @@
             // toolClearGeometry
             // 
             this.toolClearGeometry.Name = "toolClearGeometry";
-            this.toolClearGeometry.Size = new System.Drawing.Size(180, 22);
+            this.toolClearGeometry.Size = new System.Drawing.Size(169, 22);
             this.toolClearGeometry.Text = "Geometry";
             this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
             // 
             // toolClearAnimations
             // 
             this.toolClearAnimations.Name = "toolClearAnimations";
-            this.toolClearAnimations.Size = new System.Drawing.Size(180, 22);
+            this.toolClearAnimations.Size = new System.Drawing.Size(169, 22);
             this.toolClearAnimations.Text = "Animations";
             this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
             // 
             // toolClearSetItems
             // 
             this.toolClearSetItems.Name = "toolClearSetItems";
-            this.toolClearSetItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearSetItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearSetItems.Text = "SET Items";
             this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
             // 
             // toolClearCamItems
             // 
             this.toolClearCamItems.Name = "toolClearCamItems";
-            this.toolClearCamItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearCamItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearCamItems.Text = "CAM Items";
             this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
             // 
             // toolClearMissionSetItems
             // 
             this.toolClearMissionSetItems.Name = "toolClearMissionSetItems";
-            this.toolClearMissionSetItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearMissionSetItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearMissionSetItems.Text = "Mission SET Items";
             this.toolClearMissionSetItems.Click += new System.EventHandler(this.toolClearMissionSetItems_Click);
             // 
             // toolClearAll
             // 
             this.toolClearAll.Name = "toolClearAll";
-            this.toolClearAll.Size = new System.Drawing.Size(180, 22);
+            this.toolClearAll.Size = new System.Drawing.Size(169, 22);
             this.toolClearAll.Text = "All";
             this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
             // 
@@ -830,6 +833,21 @@
             this.toolSonic.ToolTipText = "Switch to Sonic\'s item layout";
             this.toolSonic.Click += new System.EventHandler(this.onClickCharacterButton);
             // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.inputTestToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // inputTestToolStripMenuItem
+            // 
+            this.inputTestToolStripMenuItem.Name = "inputTestToolStripMenuItem";
+            this.inputTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.inputTestToolStripMenuItem.Text = "Input Test";
+            this.inputTestToolStripMenuItem.Click += new System.EventHandler(this.inputTestToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -938,6 +956,8 @@
 		private System.Windows.Forms.ToolStripMenuItem missionSETItemsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem missionObjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolClearMissionSetItems;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inputTestToolStripMenuItem;
     }
 }
 
