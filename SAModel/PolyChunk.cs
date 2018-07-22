@@ -341,6 +341,18 @@ namespace SonicRetro.SAModel
 	[Serializable]
 	public class PolyChunkMaterial : PolyChunkSize
 	{
+		public AlphaInstruction SourceAlpha
+		{
+			get { return (AlphaInstruction)((Flags >> 3) & 7); }
+			set { Flags = (byte)((Flags & ~0x38) | ((byte)value << 3)); }
+		}
+
+		public AlphaInstruction DestinationAlpha
+		{
+			get { return (AlphaInstruction)(Flags & 7); }
+			set { Flags = (byte)((Flags & ~7) | (byte)value); }
+		}
+
 		public Color? Diffuse { get; set; }
 		public Color? Ambient { get; set; }
 		public Color? Specular { get; set; }

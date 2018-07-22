@@ -63,11 +63,6 @@ namespace LevelConverter
 									if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
 									{
 										mat = basatt.Material[mesh.MaterialID];
-										cnkatt.Poly.Add(new PolyChunkBitsBlendAlpha()
-										{
-											SourceAlpha = mat.SourceAlpha,
-											DestinationAlpha = mat.DestinationAlpha
-										});
 										cnkatt.Poly.Add(new PolyChunkTinyTextureID()
 										{
 											ClampU = mat.ClampU,
@@ -80,6 +75,8 @@ namespace LevelConverter
 										});
 										cnkatt.Poly.Add(new PolyChunkMaterial()
 										{
+											SourceAlpha = mat.SourceAlpha,
+											DestinationAlpha = mat.DestinationAlpha,
 											Diffuse = mat.DiffuseColor,
 											Specular = mat.SpecularColor,
 											SpecularExponent = (byte)mat.Exponent
