@@ -54,10 +54,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	{
 		#region Private Variables
 		private Vector3 position = new Vector3();
-		private Rotation rotation = new Rotation();
+        private Matrix localTransformMatrix = Matrix.Identity;
+        private Matrix globalTransformMatrix = Matrix.Identity;
 
 		private bool enabled = false;
-        private bool isRotationZYX=false;
 		private bool isTransformLocal = false; // if TRUE,  the gizmo is in Local mode.
 		private GizmoSelectedAxes selectedAxes = GizmoSelectedAxes.NONE; // if this value is not NONE and enabled is true, you've gotten yourself into an invalid state.
 		private TransformMode mode = TransformMode.NONE;
@@ -66,7 +66,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		#region Public Accesors
 		public Vector3 Position { get { return position; } }
-		public Rotation GizRotation { get { return rotation; } }
+        public Rotation Rotation { get; }
 		public bool Enabled { get { return enabled; } set { enabled = value; } }
 
 		public GizmoSelectedAxes SelectedAxes { get { return selectedAxes; } set { selectedAxes = value; } }
@@ -100,16 +100,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (!enabled)
 				return GizmoSelectedAxes.NONE;
 
-			MatrixStack transform = new MatrixStack();
-			transform.Push();
-
 			float dist = Direct3D.Extensions.Distance(cam.Position, position) * 0.0825f;
 
-			transform.TranslateLocal(position.X, position.Y, position.Z);
-			transform.RotateXYZLocal(rotation.X, rotation.Y, rotation.Z);
-			transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+            MatrixStack transform = new MatrixStack();
 
-			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
+            transform.Push();
+            Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+            transform.LoadMatrix(transformMatrix);
+            transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+
+            Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
 			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
 			IntersectInformation info;
 
@@ -193,15 +193,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			dev.SetRenderState(RenderStates.AlphaBlendEnable, false);
 			dev.SetRenderState(RenderStates.ColorVertex, false);
 			dev.Clear(ClearFlags.ZBuffer, 0, 1, 0);
-			#endregion
+            #endregion
 
-			transform.Push();
-			transform.TranslateLocal(position.X, position.Y, position.Z);
-			transform.RotateXYZLocal(rotation.X, rotation.Y, rotation.Z);
-			transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+            transform.Push();
+            Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+            transform.LoadMatrix(transformMatrix);
+            transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 
-			#region Handling Transform Modes
-			switch (mode)
+            #region Handling Transform Modes
+            switch (mode)
 			{
 				case TransformMode.TRANFORM_MOVE:
 					{
@@ -212,15 +212,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 						RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
 						result.Add(zRenderInfo);
 
-						if (!isTransformLocal) // this is such a cop-out. I'll try to find a better solution.
-						{
-							RenderInfo xyRenderInfo = new RenderInfo(Gizmo.XYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(xyRenderInfo);
-							RenderInfo zxRenderInfo = new RenderInfo(Gizmo.ZXMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XZ_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(zxRenderInfo);
-							RenderInfo zyRenderInfo = new RenderInfo(Gizmo.ZYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.ZY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(zyRenderInfo);
-						}
+						RenderInfo xyRenderInfo = new RenderInfo(Gizmo.XYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+						result.Add(xyRenderInfo);
+						RenderInfo zxRenderInfo = new RenderInfo(Gizmo.ZXMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XZ_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+						result.Add(zxRenderInfo);
+						RenderInfo zyRenderInfo = new RenderInfo(Gizmo.ZYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.ZY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+						result.Add(zyRenderInfo);
 					}
 					break;
 				case TransformMode.TRANSFORM_ROTATE:
@@ -260,14 +257,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			return result.ToArray();
 		}
 
-        public void SetGizmo(Vector3 center, Rotation rotation, bool isRotationZYX)
+        public void SetGizmo(Vector3 center, Matrix transformMatrix)
         {
             if (!enabled)
                 return;
 
             position = center;
-            this.rotation = rotation;
-            this.isRotationZYX = isRotationZYX;
+
+            globalTransformMatrix = Matrix.Identity;
+            globalTransformMatrix.Translate(position);
+            localTransformMatrix = transformMatrix;
         }
 
         #region Move Methods
@@ -280,11 +279,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         /// <param name="Look"></param>
         /// <param name="Right"></param>
         /// <returns></returns>
-        public Vector3 MoveDirection(Vector2 input, EditorCamera cam, Vector3 Up, Vector3 Look, Vector3 Right)
+        public Vector3 MoveDirection(Vector2 input, EditorCamera cam/*, Vector3 Up, Vector3 Look, Vector3 Right*/)
         {
             float yFlip = -1; // I don't think we'll ever need to mess with this
             float xFlip = 1;
             float axisDot = 0;
+
+            Vector3 Right = new Vector3(1, 0, 0), Up = new Vector3(0, 1, 0), Look = new Vector3(0, 0, 1);
+
+            Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+
+            Right = Vector3.TransformNormal(Right, transformMatrix);
+            Up = Vector3.TransformNormal(Up, transformMatrix);
+            Look = Vector3.TransformNormal(Look, transformMatrix);
 
             Vector3 offset = new Vector3();
 
@@ -332,14 +339,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         /// <param name="Look"></param>
         /// <param name="Right"></param>
         /// <returns></returns>
-        public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam, Vector3 Up, Vector3 Look, Vector3 Right)
+        public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam)
         {
-            return sourcePosition + MoveDirection(input, cam, Up, Look, Right);
+            return position = (sourcePosition + MoveDirection(input, cam));
         }
         #endregion
 
         #region Rotation Methods
-        public void Rotate(Vector2 input, EditorCamera cam, MatrixStack transform, Rotation rotation)
+        public Rotation Rotate(Vector2 input, EditorCamera cam, Rotation rotation)
         {
             if (isTransformLocal)
             {
@@ -396,6 +403,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 // todo: Fix Matrix->Euler conversion, then uncomment the line with the rotatexyz call. Then uncomment the call below and the gizmo should work.
                 //currentItem.Rotation = newRotation;
             }
+
+            return rotation;
         }
         #endregion
 

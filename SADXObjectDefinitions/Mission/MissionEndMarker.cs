@@ -54,7 +54,17 @@ namespace SADXObjectDefinitions.Mission
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(item.Scale.X, item.Scale.Y));
 		}
 
-		public override string Name { get { return "Mission End Marker"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Mission End Marker"; } }
 
 		static void SetItemList(SETItem obj, object val)
 		{

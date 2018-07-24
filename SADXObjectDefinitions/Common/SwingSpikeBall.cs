@@ -79,7 +79,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(centermodel, transform);
 		}
 
-		public override string Name { get { return "Swinging Spike Ball"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Swinging Spike Ball"; } }
 
 		public static object GetOneBall(SETItem item)
 		{

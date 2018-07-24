@@ -31,8 +31,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			YRotation = yrot;
 		}
 
-		public override Vertex Position { get; set; }
-
 		[Browsable(false)]
 		public int YRotation { get; set; }
 
@@ -44,8 +42,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[Browsable(false)]
-		public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; } }
-        public override bool RotateZYX { get { return false; } set { } }
+		public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; GetHandleMatrix(); } }
 
         public override bool CanCopy { get { return false; } }
 

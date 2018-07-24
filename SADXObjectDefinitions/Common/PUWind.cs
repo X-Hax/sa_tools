@@ -65,7 +65,17 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override BoundingSphere GetBounds(SETItem item)
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y - 0x5772);
+
+            return matrix;
+        }
+
+        public override BoundingSphere GetBounds(SETItem item)
 		{
 			float largestScale = item.Scale.X;
 			if (item.Scale.Y > largestScale) largestScale = item.Scale.Y;

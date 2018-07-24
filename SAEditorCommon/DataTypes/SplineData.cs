@@ -369,8 +369,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-        public override bool RotateZYX { get { return false; } set { } }
-
         void selectionManager_SelectionChanged(EditorItemSelection sender)
 		{
 			if (sender.ItemCount != 1)

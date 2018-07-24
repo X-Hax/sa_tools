@@ -184,7 +184,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return boxSphere;
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Power", typeof(float), "Extended", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v)
 		};
 

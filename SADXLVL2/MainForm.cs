@@ -2214,32 +2214,47 @@ namespace SonicRetro.SAModel.SADXLVL2
 						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-                    switch (transformGizmo.Mode)
+                    if (transformGizmo.Enabled)
                     {
-                        case TransformMode.NONE:
-                            break;
-                        case TransformMode.TRANFORM_MOVE:
-                            // move all of our editor selected items
-                            foreach(Item item in selectedItems.Items)
-                            {
-                                Vector3 up, right, forward;
+                        switch (transformGizmo.Mode)
+                        {
+                            case TransformMode.NONE:
+                                break;
+                            case TransformMode.TRANFORM_MOVE:
+                                // move all of our editor selected items
+                                foreach (Item item in selectedItems.Items)
+                                {
+                                    item.Position = transformGizmo.Move(new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed),
+                                        item.Position.ToVector3(), cam).ToVertex();
+                                }
 
-                                item.GetLocalAxes(out up, out right, out forward);
+                                Item firstItem = selectedItems.Get(0);
+                                transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
+                                break;
+                            case TransformMode.TRANSFORM_ROTATE:
+                                // rotate all of our editor selected items
+                                foreach (Item item in selectedItems.Items)
+                                {
+                                    item.Rotation = transformGizmo.Rotate(
+                                        new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed),
+                                        cam, item.Rotation);
+                                }
 
-                                item.Position = transformGizmo.Move(new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y /2 * cam.MoveSpeed),
-                                    item.Position.ToVector3(), cam, up, forward, right).ToVertex();
-                            }
-                            break;
-                        case TransformMode.TRANSFORM_ROTATE:
-                            // rotate all of our editor selected items
-                            break;
-                        case TransformMode.TRANSFORM_SCALE:
-                            // scale all of our editor selected items
-                            break;
-                        default:
-                            break;
+                                firstItem = selectedItems.Get(0);
+                                transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
+                                break;
+                            case TransformMode.TRANSFORM_SCALE:
+                                // scale all of our editor selected items
+                                foreach(Item item in selectedItems.Items)
+                                {
+                                    //item.Scale
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        //transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
                     }
-                     //transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 
 
                     DrawLevel();
@@ -2356,7 +2371,7 @@ namespace SonicRetro.SAModel.SADXLVL2
             {
                 transformGizmo.Enabled = true;
                 transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
-                    selectedItems.Get(0).Rotation, selectedItems.Get(0).RotateZYX);
+                    selectedItems.Get(0).TransformMatrix);
             }
             else
             {
@@ -2873,7 +2888,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private void scaleModeButton_Click(object sender, EventArgs e)
+        private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (transformGizmo != null)
+            {
+                transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+                DrawLevel();
+            }
+        }
+
+        private void scaleModeButton_Click(object sender, EventArgs e)
 		{
 			if (transformGizmo != null)
 			{
@@ -3033,15 +3057,6 @@ namespace SonicRetro.SAModel.SADXLVL2
             using (ActionMapTest test = new ActionMapTest())
             {
                 test.ShowDialog();
-            }
-        }
-
-        private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            if (transformGizmo != null)
-            {
-                transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
-                DrawLevel();
             }
         }
     }

@@ -348,7 +348,7 @@
             // inputTestToolStripMenuItem
             // 
             this.inputTestToolStripMenuItem.Name = "inputTestToolStripMenuItem";
-            this.inputTestToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.inputTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.inputTestToolStripMenuItem.Text = "Input Test";
             this.inputTestToolStripMenuItem.Click += new System.EventHandler(this.inputTestToolStripMenuItem_Click);
             // 

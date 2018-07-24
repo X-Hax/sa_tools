@@ -45,6 +45,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ImportModel(filePath, dev);
 			COL.CalculateBounds();
 			Paste();
+
+            GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -59,6 +61,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			COL = col;
 			col.Model.ProcessVertexData();
 			Mesh = col.Model.Attach.CreateD3DMesh(dev);
+
+            GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -107,11 +111,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; } }
+		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; GetHandleMatrix(); } }
 
-		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
-
-        public override bool RotateZYX { get { return false; } set { } }
+		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
 
         public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
@@ -201,8 +203,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		#region Surface Flag Accessors
-		public bool Solid
+        protected override void GetHandleMatrix()
+        {
+            position = Position;
+            rotation = Rotation;
+            base.GetHandleMatrix();
+        }
+
+        #region Surface Flag Accessors
+        public bool Solid
 		{
 			get { return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0); }

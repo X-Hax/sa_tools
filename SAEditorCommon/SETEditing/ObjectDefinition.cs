@@ -15,6 +15,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
 		public virtual void PointTo(SETItem item, Vertex location) { }
+        public abstract Matrix GetHandleMatrix(SETItem item);
 		public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }

@@ -76,7 +76,17 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + item.Scale.Y, + item.Position.Z);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+    }
 
 	public class OFrog : O_Frog
 	{
@@ -133,7 +143,17 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(2f, 0f, 0f);
 			return ObjectHelper.GetModelBounds(frog, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+    }
 
 	public class Froggy : Kaeru
 	{

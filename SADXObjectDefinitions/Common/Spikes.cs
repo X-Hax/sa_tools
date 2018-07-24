@@ -93,7 +93,17 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-		public override string Name { get { return "Spikes"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Spikes"; } }
 
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Rows", typeof(int), "Extended", null, 1, (o) => Math.Max((int)o.Scale.X, 1), (o, v) => o.Scale.X = Math.Max((int)v, 1)),

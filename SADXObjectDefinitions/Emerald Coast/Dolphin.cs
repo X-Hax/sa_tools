@@ -46,7 +46,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJRotateObject(item.Rotation);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+    }
 
 	public class Dolphin : O_DOLPHIN
 	{
@@ -96,7 +106,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+
+            return matrix;
+        }
+    }
 
 	public class Dolsw : O_DOLSW
 	{

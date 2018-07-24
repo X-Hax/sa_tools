@@ -64,7 +64,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale(4.5f, 4.5f, 4.5f);
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+    }
 
 	public class AOSummon : O_AOSummon
 	{
@@ -133,7 +143,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale(4.5f, 4.5f, 4.5f);
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+
+            return matrix;
+        }
+    }
 
 	public class AOKill : O_AOKill
 	{
@@ -202,7 +221,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale(4.5f, 4.5f, 4.5f);
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+
+            return matrix;
+        }
+    }
 
 	public class POSummon : O_POSummon
 	{

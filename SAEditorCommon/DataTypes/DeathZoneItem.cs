@@ -44,6 +44,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
+
+            rotateZYX = Model.RotateZYX;
+            GetHandleMatrix();
 		}
 
 		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, Device device, EditorItemSelection selectionManager)
@@ -54,13 +57,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Flags = flags;
 			Mesh = Model.Attach.CreateD3DMesh(device);
 			this.device = device;
+
+            rotateZYX = Model.RotateZYX;
+            GetHandleMatrix();
 		}
 
 		public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
 
 		public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
-        public override bool RotateZYX { get { return false; } set { } }
+        protected override void GetHandleMatrix()
+        {
+            position = Model.Position;
+            rotation = Model.Rotation;
+            base.GetHandleMatrix();
+        }
 
         public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{

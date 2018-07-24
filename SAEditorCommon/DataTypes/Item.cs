@@ -9,23 +9,28 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	[Serializable]
-	public abstract class Item : IComponent
-	{
-		[ReadOnly(true)]
-		[ParenthesizePropertyName(true)]
-		public string Type { get { return GetType().Name; } }
+    [Serializable]
+    public abstract class Item : IComponent
+    {
+        [ReadOnly(true)]
+        [ParenthesizePropertyName(true)]
+        public string Type { get { return GetType().Name; } }
 
-		public virtual Vertex Position { get; set; }
+        private bool selected;
+        [Browsable(false)]
+        public bool Selected { get { return selected; } }
+        private BoundingSphere bounds = new BoundingSphere();
+        [ParenthesizePropertyName(true)]
+        public virtual BoundingSphere Bounds { get { return bounds; } }
 
-		private bool selected;
-		[Browsable(false)]
-		public bool Selected { get { return selected; } }
-		private BoundingSphere bounds = new BoundingSphere();
-		[ParenthesizePropertyName(true)]
-		public virtual BoundingSphere Bounds { get { return bounds; } }
-		public abstract Rotation Rotation { get; set; }
-        public abstract bool RotateZYX { get; set; }
+        protected Matrix transformMatrix = Matrix.Identity;
+        protected Vertex position = new Vertex();
+        protected Rotation rotation = new Rotation();
+        protected bool rotateZYX = false;
+
+        public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+        public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+        public Matrix TransformMatrix { get { return transformMatrix; } }
 
         [Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
@@ -94,37 +99,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 
 			return Vertex.CenterOfPoints(vertList);
-		}
+        }
 
-		public virtual Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
+        protected virtual void GetHandleMatrix()
 		{
-			Matrix transform = Matrix.Identity;
+            transformMatrix = Matrix.Identity;
 
-            if(RotateZYX)
-            {
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.LoadIdentity();
-                MatrixFunctions.NJRotateZYX(matrixStack, Rotation);
+            /*if (position == null) position = new Vertex();
+            if (rotation == null) rotation = new Rotation();*/
 
-                transform = matrixStack.Top;
-            }
-            else
-            {
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.LoadIdentity();
-                MatrixFunctions.NJRotateXYZ(matrixStack, Rotation);
-                transform = matrixStack.Top;
-            }
+            MatrixStack matrixStack = new MatrixStack();
+            matrixStack.LoadIdentity();
+            matrixStack.NJTranslate(Position);
+            if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
+            else matrixStack.NJRotateZYX(Rotation);
 
-			Up = new Vector3(0, 1, 0);
-			Look = new Vector3(0, 0, 1);
-			Right = new Vector3(1, 0, 0);
-
-			Up = Vector3.TransformCoordinate(Up, transform);
-			Look = Vector3.TransformCoordinate(Look, transform);
-			Right = Vector3.TransformCoordinate(Right, transform);
-
-			return transform;
+            transformMatrix = matrixStack.Top;
 		}
 	}
 }

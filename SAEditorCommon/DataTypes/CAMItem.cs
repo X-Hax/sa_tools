@@ -23,10 +23,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public Vertex PointB { get; set; }
 		public float Variable { get; set; }
 
-		public override Vertex Position { get; set; }
-		public override Rotation Rotation { get; set; }
-        public override bool RotateZYX { get { return false; } set { } }
+		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+        public override Rotation Rotation { get { return rotation; } set
+            {
+                if (rotation == null)
+                {
+                    rotation = new Rotation();
+                }
 
+                rotation.X = 0; rotation.Y = value.Y; rotation.Z = 0; GetHandleMatrix();
+            }
+        }
         public override BoundingSphere Bounds
 		{
 			get
@@ -70,6 +77,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Variable = 45f;
 
 			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
+
+            GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -95,6 +104,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 
+            GetHandleMatrix();
 		}
 
 		public static void Init(Device dev)

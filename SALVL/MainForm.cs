@@ -557,7 +557,7 @@ namespace SonicRetro.SAModel.SALVL
             {
                 transformGizmo.Enabled = true;
                 transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
-                    selectedItems.Get(0).Rotation, selectedItems.Get(0).RotateZYX);
+                    selectedItems.Get(0).TransformMatrix);
             }
             else
             {

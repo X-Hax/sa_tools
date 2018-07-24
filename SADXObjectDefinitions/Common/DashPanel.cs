@@ -50,7 +50,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-		public override void SetOrientation(SETItem item, Vertex direction)
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+
+            return matrix;
+        }
+
+        public override void SetOrientation(SETItem item, Vertex direction)
 		{
 			int x, z;
 			direction.GetRotation(out x, out z);
