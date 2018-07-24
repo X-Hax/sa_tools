@@ -11,7 +11,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class SETItem : Item, ICustomTypeDescriptor
+	public class SETItem : Item, ICustomTypeDescriptor, IScaleable
 	{
 		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
@@ -100,6 +100,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
         protected Vertex scale = new Vertex();
         public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
+
+        public Vertex GetScale()
+        {
+            return Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            this.Scale = scale;
+        }
 
         protected override void GetHandleMatrix()
         {
@@ -253,7 +263,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return this;
 		}
-	}
+    }
 
 	public enum ClipSetting : ushort
 	{

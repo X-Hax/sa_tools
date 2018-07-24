@@ -13,7 +13,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	public class DeathZoneItem : Item
+	public class DeathZoneItem : Item, IScaleable
 	{
 		[Browsable(false)]
 		private NJS_OBJECT Model { get; set; }
@@ -220,5 +220,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
 			return new DeathZoneFlags() { Flags = Flags };
 		}
-	}
+
+        public Vertex GetScale()
+        {
+            return Model.Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            Model.Scale = scale;
+        }
+    }
 }

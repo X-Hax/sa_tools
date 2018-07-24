@@ -60,6 +60,7 @@
     <Compile Include="DataTypes\CAMItem.cs" />
     <Compile Include="DataTypes\DeathZoneItem.cs" />
     <Compile Include="DataTypes\EditableVertex.cs" />
+    <Compile Include="DataTypes\IScaleable.cs" />
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />

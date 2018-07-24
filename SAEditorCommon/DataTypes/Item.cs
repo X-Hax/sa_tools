@@ -105,9 +105,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
             transformMatrix = Matrix.Identity;
 
-            /*if (position == null) position = new Vertex();
-            if (rotation == null) rotation = new Rotation();*/
-
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.LoadIdentity();
             matrixStack.NJTranslate(Position);

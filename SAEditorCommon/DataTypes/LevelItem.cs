@@ -11,7 +11,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class LevelItem : Item
+	public class LevelItem : Item, IScaleable
 	{
 		private COL COL { get; set; }
 		[Browsable(false)]
@@ -112,9 +112,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; GetHandleMatrix(); } }
-
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
-
         public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -285,5 +283,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			LevelData.InvalidateRenderState();
 		}
-	}
+
+        public Vertex GetScale()
+        {
+            return COL.Model.Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            COL.Model.Scale = scale;
+        }
+    }
 }

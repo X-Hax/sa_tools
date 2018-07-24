@@ -2216,6 +2216,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
                     if (transformGizmo.Enabled)
                     {
+                        Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
+
                         switch (transformGizmo.Mode)
                         {
                             case TransformMode.NONE:
@@ -2224,7 +2226,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 // move all of our editor selected items
                                 foreach (Item item in selectedItems.Items)
                                 {
-                                    item.Position = transformGizmo.Move(new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed),
+                                    item.Position = transformGizmo.Move(gizmoMouseInput,
                                         item.Position.ToVector3(), cam).ToVertex();
                                 }
 
@@ -2235,9 +2237,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 // rotate all of our editor selected items
                                 foreach (Item item in selectedItems.Items)
                                 {
-                                    item.Rotation = transformGizmo.Rotate(
-                                        new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed),
-                                        cam, item.Rotation);
+                                    item.Rotation = transformGizmo.Rotate(gizmoMouseInput, cam, item.Rotation);
                                 }
 
                                 firstItem = selectedItems.Get(0);
@@ -2247,13 +2247,15 @@ namespace SonicRetro.SAModel.SADXLVL2
                                 // scale all of our editor selected items
                                 foreach(Item item in selectedItems.Items)
                                 {
-                                    //item.Scale
+                                    if (item is IScaleable scalableItem)
+                                    {
+                                        scalableItem.SetScale(transformGizmo.Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
+                                    }
                                 }
                                 break;
                             default:
                                 break;
                         }
-                        //transformGizmo.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
                     }
 
 

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	public class MissionSETItem : SETItem
+	public class MissionSETItem : SETItem, IScaleable
 	{
 		public MissionSETItem(MsnObjectList list, ushort id, EditorItemSelection selectionManager)
 			: base(selectionManager)
@@ -42,6 +42,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
         public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+
+        public Vertex GetScale()
+        {
+            return scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            this.scale = scale;
+        }
 
         protected override void GetHandleMatrix()
         {
@@ -115,7 +125,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return PRMBytes;
 		}
-	}
+    }
 
 	public enum Appear
 	{

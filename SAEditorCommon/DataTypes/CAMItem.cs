@@ -9,7 +9,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class CAMItem : Item
+	public class CAMItem : Item, IScaleable
 	{
 		#region Camera Data Vars
 		public byte CamType { get; set; }
@@ -45,6 +45,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = (1.5f * largestScale) };
 			}
 		}
+
+        public Vertex GetScale()
+        {
+            return Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            Scale = scale;
+        }
 		#endregion
 
 		#region Render / Volume Vars
