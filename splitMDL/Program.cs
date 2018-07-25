@@ -15,12 +15,15 @@ namespace splitMDL
             string dir = Environment.CurrentDirectory;
             try
             {
+                // Bigh endian check
                 Queue<string> argq = new Queue<string>(args);
                 if (argq.Count > 0 && argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
                 {
                     ByteConverter.BigEndian = true;
                     argq.Dequeue();
                 }
+
+                // get file name, read it from the console if nothing
                 string mdlfilename;
                 if (argq.Count > 0)
                 {
@@ -33,17 +36,23 @@ namespace splitMDL
                     mdlfilename = Console.ReadLine();
                 }
                 mdlfilename = Path.GetFullPath(mdlfilename);
+
+                // look through the argumetns for animationfiles
                 string[] anifilenames = new string[argq.Count];
                 for (int j = 0; j < anifilenames.Length; j++)
                 {
                     Console.WriteLine("Animations: {0}", argq.Peek());
                     anifilenames[j] = Path.GetFullPath(argq.Dequeue());
                 }
+
+                // load model file
                 Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
                 byte[] mdlfile = File.ReadAllBytes(mdlfilename);
                 if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
                 Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
+
+                // getting model pointers
                 int address = 0;
                 int i = ByteConverter.ToInt32(mdlfile, address);
 				SortedDictionary<int, int> modeladdrs = new SortedDictionary<int, int>();
@@ -53,6 +62,8 @@ namespace splitMDL
 					address += 8;
 					i = ByteConverter.ToInt32(mdlfile, address);
 				}
+
+                // load models from pointer list
 				Dictionary<int, NJS_OBJECT> models = new Dictionary<int, NJS_OBJECT>();
 				Dictionary<int, string> modelnames = new Dictionary<int, string>();
 				List<string> partnames = new List<string>();
@@ -69,6 +80,8 @@ namespace splitMDL
 						partnames.AddRange(names);
 					}
                 }
+
+                // load animations
                 Dictionary<int, string> animfns = new Dictionary<int, string>();
                 Dictionary<int, Animation> anims = new Dictionary<int, Animation>();
                 foreach (string anifilename in anifilenames)
@@ -87,6 +100,8 @@ namespace splitMDL
                         i = ByteConverter.ToInt16(anifile, address);
                     }
                 }
+
+                // save output model files
                 foreach (KeyValuePair<int, NJS_OBJECT> model in models)
                 {
                     List<string> animlist = new List<string>();
@@ -97,6 +112,8 @@ namespace splitMDL
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
 						null, null, null, "splitMDL", null, ModelFormat.Chunk);
                 }
+
+                // save ini file
 				IniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
 					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
                 foreach (KeyValuePair<int, Animation> anim in anims)
