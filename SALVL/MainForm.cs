@@ -59,7 +59,23 @@ namespace SonicRetro.SAModel.SALVL
 			panel1.MouseWheel += panel1_MouseWheel;
 		}
 
-		void d3ddevice_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+
+            d3ddevice.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        void d3ddevice_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			// HACK: Not so sure we should have to re-initialize this every time...
 			EditorOptions.Initialize(d3ddevice);
