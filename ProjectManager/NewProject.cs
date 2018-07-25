@@ -165,7 +165,7 @@ namespace ProjectManager
             return "";
         }
 
-        private void SADXSplitData_Sub(SplitData splitData, ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+        private void SplitData_Sub(SplitData splitData, ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
             string datafilename = Path.Combine(gameFolder, splitData.dataFile);
             string inifilename = Path.Combine(iniFolder, splitData.iniFile);
@@ -237,7 +237,7 @@ namespace ProjectManager
 
             foreach (SplitData splitData in sadxpcsplits)
             {
-                SADXSplitData_Sub(splitData, progress, gameFolder, iniFolder, outputFolder);
+                SplitData_Sub(splitData, progress, gameFolder, iniFolder, outputFolder);
             }
 
             // do our last split, chrmodels
@@ -260,7 +260,7 @@ namespace ProjectManager
                 };
             }
 
-            SADXSplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
+            SplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
 
             // copy sadxlvl.ini
             string sadxlvlIniSourcePath = Path.GetFullPath(Path.Combine(iniFolder, "sadxlvl.ini"));
@@ -341,7 +341,7 @@ namespace ProjectManager
         private void DoSA2PCSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
             // split data dll
-#region Split Data DLL
+            #region Split Data DLL
 
             progress.StepProgress();
             progress.SetStep("Splitting Data DLL");
@@ -365,8 +365,8 @@ namespace ProjectManager
 				};
 			}
 
-			SADXSplitData_Sub(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
-#endregion
+			SplitData_Sub(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
+            #endregion
 
 			// run split mdl commands
 			// todo: add this
@@ -377,7 +377,7 @@ namespace ProjectManager
 				progress.StepProgress();
                 progress.SetStep("Splitting Sonic2App");
 
-				SADXSplitData_Sub(sonic2AppSplit, progress, gameFolder, iniFolder, outputFolder);
+				SplitData_Sub(sonic2AppSplit, progress, gameFolder, iniFolder, outputFolder);
 			}
 			#endregion
 		}
