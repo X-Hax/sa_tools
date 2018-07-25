@@ -61,8 +61,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\amymdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\amymtn.prs"
+                    "plcommtn.prs",
+                    "amymtn.prs"
                 }
             },
             new SplitMDLData()
@@ -71,8 +71,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\bknuckmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\knuckmtn.prs"
+                    "plcommtn.prs",
+                    "knuckmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -81,8 +81,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\brougemdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\rougemtn.prs"
+                    "plcommtn.prs",
+                    "rougemtn.prs"
                 }
             },
             new SplitMDLData()
@@ -91,8 +91,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\chaos0mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\chaos0mtn.prs"
+                    "plcommtn.prs",
+                    "chaos0mtn.prs"
                 }
             },
             new SplitMDLData()
@@ -101,8 +101,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\cwalkmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\cwalkmtn.prs"
+                    "plcommtn.prs",
+                    "cwalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -111,8 +111,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\dwalkmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\dwalkmtn.prs"
+                    "plcommtn.prs",
+                    "dwalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -121,8 +121,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\eggmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\eggmtn.prs"
+                    "plcommtn.prs",
+                    "eggmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -131,8 +131,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\ewalk1mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\ewalkmtn.prs"
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -141,8 +141,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\ewalk2mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\ewalkmtn.prs"
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -151,8 +151,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\ewalkmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\ewalkmtn.prs"
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -161,8 +161,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\knuckmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\knuckmtn.prs"
+                    "plcommtn.prs",
+                    "knuckmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -171,8 +171,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\metalsonicmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\metalsonicmtn.prs"
+                    "plcommtn.prs",
+                    "metalsonicmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -181,8 +181,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\milesmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\milesmtn.prs"
+                    "plcommtn.prs",
+                    "milesmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -191,8 +191,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\rougemdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\rougemtn.prs"
+                    "plcommtn.prs",
+                    "rougemtn.prs"
                 }
             },
             new SplitMDLData()
@@ -201,8 +201,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\shadow1mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\teriosmtn.prs"
+                    "plcommtn.prs",
+                    "teriosmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -211,8 +211,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\sonic1mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\sonicmtn.prs"
+                    "plcommtn.prs",
+                    "sonicmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -221,8 +221,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\sonicmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\sonicmtn.prs"
+                    "plcommtn.prs",
+                    "sonicmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -231,7 +231,7 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\sshadowmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs"
+                    "plcommtn.prs"
                 }
             },
             new SplitMDLData()
@@ -240,7 +240,7 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\ssonicmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs"
+                    "plcommtn.prs"
                 }
             },
             new SplitMDLData()
@@ -249,8 +249,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\teriosmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\teriosmtn.prs"
+                    "plcommtn.prs",
+                    "teriosmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -259,8 +259,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\ticalmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\ticalmtn.prs"
+                    "plcommtn.prs",
+                    "ticalmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -269,8 +269,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\twalk1mdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\twalkmtn.prs"
+                    "plcommtn.prs",
+                    "twalkmtn.prs"
                 }
             },
             new SplitMDLData()
@@ -279,8 +279,8 @@ namespace ProjectManager
                 dataFile = "resource\\gd_PC\\twalkmdl.prs",
                 animationFiles = new string[]
                 {
-                    "resource\\gd_PC\\plcommtn.prs",
-                    "resource\\gd_PC\\twalkmtn.prs"
+                    "plcommtn.prs",
+                    "twalkmtn.prs"
                 }
             }
         };
@@ -587,9 +587,10 @@ namespace ProjectManager
             foreach (SplitMDLData splitMDL in sa2PCSplitMDL)
             {
                 string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
+                string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
 
                 SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
-                    outputFolder, splitMDL.animationFiles);
+                    fileOutputFolder, splitMDL.animationFiles);
             }
 
 			// split sonic2app

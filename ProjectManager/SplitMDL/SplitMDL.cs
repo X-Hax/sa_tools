@@ -31,7 +31,6 @@ namespace SplitMDL
                 byte[] mdlfile = File.ReadAllBytes(mdlfilename);
                 if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
-                Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
 
                 // getting model pointers
                 int address = 0;
@@ -85,8 +84,6 @@ namespace SplitMDL
                     }
                 }
 
-                Environment.CurrentDirectory = outputFolder;
-
                 // save output model files
                 foreach (KeyValuePair<int, NJS_OBJECT> model in models)
                 {
@@ -94,11 +91,19 @@ namespace SplitMDL
                     foreach (KeyValuePair<int, Animation> anim in anims)
                         if (model.Value.CountAnimated() == anim.Value.ModelParts)
                             animlist.Add("../" + animfns[anim.Key]);
-                    ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
-                        model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
+
+                    string modelOutputPath = Path.Combine(outputFolder, Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), // this is losing our relative path
+                        model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"));
+
+                    string modelOutputFolder = Path.GetDirectoryName(modelOutputPath);
+
+                    Directory.CreateDirectory(modelOutputFolder);
+
+                    ModelFile.CreateFile(modelOutputPath, model.Value, animlist.ToArray(),
                         null, null, null, "splitMDL", null, ModelFormat.Chunk);
                 }
 
+                Environment.CurrentDirectory = Path.GetDirectoryName(outputFolder);
                 // save ini file
                 MDLIniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
                     Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
