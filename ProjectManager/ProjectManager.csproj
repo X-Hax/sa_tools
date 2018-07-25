@@ -55,6 +55,12 @@
     <Compile Include="GameConfig.Designer.cs">
       <DependentUpon>GameConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="ManualSplit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ManualSplit.Designer.cs">
+      <DependentUpon>ManualSplit.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModConfigEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +94,11 @@
     </Compile>
     <Compile Include="ProjectSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -95,6 +106,12 @@
     </Compile>
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />
+    <Compile Include="SplitUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SplitUIControl.Designer.cs">
+      <DependentUpon>SplitUIControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Split\Split.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +139,9 @@
     <EmbeddedResource Include="GameConfig.resx">
       <DependentUpon>GameConfig.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ManualSplit.resx">
+      <DependentUpon>ManualSplit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ModConfigEditor.resx">
       <DependentUpon>ModConfigEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -136,6 +156,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectSelect.resx">
       <DependentUpon>ProjectSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SplitUIControl.resx">
+      <DependentUpon>SplitUIControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

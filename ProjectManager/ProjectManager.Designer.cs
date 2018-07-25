@@ -38,7 +38,7 @@
             // 
             this.NewProjectButton.Location = new System.Drawing.Point(25, 18);
             this.NewProjectButton.Name = "NewProjectButton";
-            this.NewProjectButton.Size = new System.Drawing.Size(360, 23);
+            this.NewProjectButton.Size = new System.Drawing.Size(360, 55);
             this.NewProjectButton.TabIndex = 0;
             this.NewProjectButton.Text = "New Project";
             this.NewProjectButton.UseVisualStyleBackColor = true;
@@ -46,9 +46,9 @@
             // 
             // OpenProjectButton
             // 
-            this.OpenProjectButton.Location = new System.Drawing.Point(25, 57);
+            this.OpenProjectButton.Location = new System.Drawing.Point(25, 88);
             this.OpenProjectButton.Name = "OpenProjectButton";
-            this.OpenProjectButton.Size = new System.Drawing.Size(360, 23);
+            this.OpenProjectButton.Size = new System.Drawing.Size(360, 55);
             this.OpenProjectButton.TabIndex = 1;
             this.OpenProjectButton.Text = "Open Project";
             this.OpenProjectButton.UseVisualStyleBackColor = true;
@@ -56,7 +56,7 @@
             // 
             // ConfigButton
             // 
-            this.ConfigButton.Location = new System.Drawing.Point(25, 96);
+            this.ConfigButton.Location = new System.Drawing.Point(25, 159);
             this.ConfigButton.Name = "ConfigButton";
             this.ConfigButton.Size = new System.Drawing.Size(360, 23);
             this.ConfigButton.TabIndex = 2;
@@ -66,19 +66,19 @@
             // 
             // SplitToolsButton
             // 
-            this.SplitToolsButton.Enabled = false;
-            this.SplitToolsButton.Location = new System.Drawing.Point(25, 138);
+            this.SplitToolsButton.Location = new System.Drawing.Point(25, 203);
             this.SplitToolsButton.Name = "SplitToolsButton";
             this.SplitToolsButton.Size = new System.Drawing.Size(360, 23);
             this.SplitToolsButton.TabIndex = 3;
             this.SplitToolsButton.Text = "Manual Split Tools";
             this.SplitToolsButton.UseVisualStyleBackColor = true;
+            this.SplitToolsButton.Click += new System.EventHandler(this.SplitToolsButton_Click);
             // 
             // ProjectManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(413, 184);
+            this.ClientSize = new System.Drawing.Size(413, 246);
             this.Controls.Add(this.SplitToolsButton);
             this.Controls.Add(this.ConfigButton);
             this.Controls.Add(this.OpenProjectButton);
