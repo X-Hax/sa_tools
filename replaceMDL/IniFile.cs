@@ -8,7 +8,7 @@ using IniGroup = System.Collections.Generic.Dictionary<string, string>;
 using IniNameGroup = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, string>>;
 using IniNameValue = System.Collections.Generic.KeyValuePair<string, string>;
 
-namespace IniFile
+namespace SplitMDLIniFile
 {
     public static class IniFile
     {

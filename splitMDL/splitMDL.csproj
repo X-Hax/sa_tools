@@ -46,8 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IniFile.cs" />
-    <Compile Include="IniSerializer.cs" />
+    <Compile Include="MDLIniFile.cs" />
+    <Compile Include="MDLIniSerializer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SplitMDL.cs" />

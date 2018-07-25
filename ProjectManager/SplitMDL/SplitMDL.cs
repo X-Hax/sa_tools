@@ -26,7 +26,8 @@ namespace SplitMDL
                 string[] anifilenames = animationPaths;
 
                 // load model file
-                Environment.CurrentDirectory = (outputFolder.Length != 0) ? outputFolder : Path.GetDirectoryName(mdlfilename);
+                //Environment.CurrentDirectory = (outputFolder.Length > 0 && Directory.Exists(outputFolder)) ? outputFolder : Path.GetDirectoryName(mdlfilename);
+                Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
                 byte[] mdlfile = File.ReadAllBytes(mdlfilename);
                 if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
@@ -69,7 +70,10 @@ namespace SplitMDL
                     byte[] anifile = File.ReadAllBytes(anifilename);
                     if (Path.GetExtension(anifilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                         anifile = FraGag.Compression.Prs.Decompress(anifile);
-                    Directory.CreateDirectory(Path.GetFileNameWithoutExtension(anifilename));
+
+                    string aniOutputDir = Path.Combine(outputFolder, Path.GetFileNameWithoutExtension(anifilename));
+
+                    Directory.CreateDirectory(aniOutputDir);
                     address = 0;
                     i = ByteConverter.ToInt16(anifile, address);
                     while (i != -1)
@@ -80,6 +84,8 @@ namespace SplitMDL
                         i = ByteConverter.ToInt16(anifile, address);
                     }
                 }
+
+                Environment.CurrentDirectory = outputFolder;
 
                 // save output model files
                 foreach (KeyValuePair<int, NJS_OBJECT> model in models)

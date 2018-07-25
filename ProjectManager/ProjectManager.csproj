@@ -106,6 +106,15 @@
     </Compile>
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />
+    <Compile Include="SplitMDL\MDLIniFile.cs" />
+    <Compile Include="SplitMDL\MDLIniSerializer.cs" />
+    <Compile Include="SplitMDL\SplitMDL.cs" />
+    <Compile Include="SplitMDL\SplitMDLGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SplitMDL\SplitMDLGUI.Designer.cs">
+      <DependentUpon>SplitMDLGUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="SplitUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -161,10 +170,14 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="SplitMDL\SplitMDLGUI.resx">
+      <DependentUpon>SplitMDLGUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SplitUIControl.resx">
       <DependentUpon>SplitUIControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
