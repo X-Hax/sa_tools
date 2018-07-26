@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.HelpButton = new System.Windows.Forms.Button();
+            this.InfoButton = new System.Windows.Forms.Button();
             this.SplitButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
@@ -46,17 +46,17 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(730, 422);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
-            // HelpButton
+            // InfoButton
             // 
-            this.HelpButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.HelpButton.Location = new System.Drawing.Point(12, 12);
-            this.HelpButton.Name = "HelpButton";
-            this.HelpButton.Size = new System.Drawing.Size(145, 43);
-            this.HelpButton.TabIndex = 1;
-            this.HelpButton.Text = "What\'s this for?";
-            this.HelpButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.HelpButton.UseVisualStyleBackColor = true;
-            this.HelpButton.Click += new System.EventHandler(this.HelpButton_Click);
+            this.InfoButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.InfoButton.Location = new System.Drawing.Point(12, 12);
+            this.InfoButton.Name = "InfoButton";
+            this.InfoButton.Size = new System.Drawing.Size(145, 43);
+            this.InfoButton.TabIndex = 1;
+            this.InfoButton.Text = "What\'s this for?";
+            this.InfoButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.InfoButton.UseVisualStyleBackColor = true;
+            this.InfoButton.Click += new System.EventHandler(this.HelpButton_Click);
             // 
             // SplitButton
             // 
@@ -79,7 +79,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(754, 495);
             this.Controls.Add(this.SplitButton);
-            this.Controls.Add(this.HelpButton);
+            this.Controls.Add(this.InfoButton);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "ManualSplit";
             this.Text = "ManualSplit";
@@ -91,7 +91,7 @@
         #endregion
 
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Button HelpButton;
+        private System.Windows.Forms.Button InfoButton;
         private System.Windows.Forms.Button SplitButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }

@@ -24,7 +24,7 @@ namespace ProjectManager
         {
             InitializeComponent();
 
-            HelpButton.Image = SystemIcons.Question.ToBitmap();
+            InfoButton.Image = SystemIcons.Question.ToBitmap();
 
             SplitUIControl firstControl = new SplitUIControl(false, true);
 
