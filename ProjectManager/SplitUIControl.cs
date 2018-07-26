@@ -28,6 +28,14 @@ namespace ProjectManager
 
         SplitType splitType = SplitType.BinDLL;
 
+        string[] animFiles;
+        bool isBigEndian = false;
+
+        public string[] AnimFiles { get { return animFiles; } }
+
+        private const int splitBinHeight = 299;
+        private const int splitMDLHeight = 414;
+
         public SplitUIControl(bool canRemove, bool canAdd)
         {
             InitializeComponent();
@@ -40,8 +48,51 @@ namespace ProjectManager
 
             splitTypeComboBox.SelectedIndex = 0;
 
+            SetControls();
+
             bigEndianCheckbox.Visible = false;
             bigEndianCheckbox.Enabled = false;
+        }
+
+        private void SetControls()
+        {
+            switch (splitType)
+            {
+                case SplitType.BinDLL:
+                    this.Size = new Size(this.Size.Width, splitBinHeight);
+                    this.animFilesList.Visible = false;
+                    this.animFilesList.Enabled = false;
+                    this.AddNewAnimFileButton.Visible = false;
+                    this.AddNewAnimFileButton.Enabled = false;
+                    this.RemoveAnimButton.Visible = false;
+                    this.RemoveAnimButton.Enabled = false;
+
+                    this.dataMappingPathText.Visible = true;
+                    this.dataMappingPathText.Enabled = true;
+                    DataMappingLabel.Text = "Data Mapping:";
+                    break;
+
+                case SplitType.MDL:
+                    this.Size = new Size(this.Size.Width, splitMDLHeight);
+                    this.animFilesList.Visible = true;
+                    this.animFilesList.Enabled = true;
+                    this.AddNewAnimFileButton.Visible = true;
+                    this.AddNewAnimFileButton.Enabled = true;
+                    this.RemoveAnimButton.Visible = true;
+                    this.RemoveAnimButton.Enabled = animFilesList.SelectedItems.Count > 0;
+
+                    this.dataMappingPathText.Visible = false;
+                    this.dataMappingPathText.Enabled = false;
+                    DataMappingLabel.Text = "Animation Files";
+                    break;
+
+                case SplitType.MTN:
+                    break;
+                case SplitType.NB:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void DisableAddingNew()
@@ -77,7 +128,7 @@ namespace ProjectManager
 
         public bool IsBigEndian()
         {
-            return bigEndianCheckbox.Checked ^ bigEndianCheckbox.Visible;
+            return isBigEndian;
         }
 
         internal SplitType GetSplitType()
@@ -143,6 +194,76 @@ namespace ProjectManager
             splitType = (SplitType)splitTypeComboBox.SelectedIndex;
             bigEndianCheckbox.Visible = splitType != SplitType.BinDLL && splitType != SplitType.NB;
             bigEndianCheckbox.Enabled = bigEndianCheckbox.Visible;
+
+            SetControls();
+        }
+
+        private void animFilesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RemoveAnimButton.Enabled = animFilesList.SelectedItems.Count > 0;
+        }
+
+        private void AddNewAnimFileButton_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                if(fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (animFiles.Contains(fileDialog.FileName))
+                    {
+                        MessageBox.Show("Cannot add the same file twice.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                    else if (animFiles.Contains(filePathText.Text))
+                    {
+                        MessageBox.Show("Model file is not a valid animation file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        animFilesList.Items.Add(fileDialog.FileName);
+
+                        RemoveAnimButton.Enabled = true;
+
+                        animFiles = new string[animFilesList.Items.Count];
+
+                        for (int i = 0; i < animFilesList.Items.Count; i++)
+                        {
+                            animFiles[i] = animFilesList.Items[i].Text;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RemoveAnimButton_Click(object sender, EventArgs e)
+        {
+            if(animFilesList.SelectedItems.Count > 0)
+            {
+                List<ListViewItem> removeItems = new List<ListViewItem>();
+
+                foreach (ListViewItem removeItem in animFilesList.SelectedItems)
+                {
+                    removeItems.Add(removeItem);
+                }
+
+                foreach(ListViewItem removeItem in removeItems)
+                {
+                    animFilesList.Items.Remove(removeItem);
+                }
+
+                RemoveAnimButton.Enabled = animFilesList.SelectedItems.Count > 0;
+
+                animFiles = new string[animFilesList.Items.Count];
+
+                for (int i = 0; i < animFilesList.Items.Count; i++)
+                {
+                    animFiles[i] = animFilesList.Items[i].Text;
+                }
+            }
+        }
+
+        private void bigEndianCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            isBigEndian = bigEndianCheckbox.Checked;
         }
     }
 }

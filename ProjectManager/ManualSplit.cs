@@ -175,7 +175,8 @@ namespace ProjectManager
                             break;
 
                         case SplitType.MDL:
-                            // use the command line split
+                            SplitMDL.SplitMDL.Split(splitControl.IsBigEndian(), splitControl.GetFilePath(),
+                                outputFolder, splitControl.AnimFiles);
                             break;
 
                         case SplitType.MTN:

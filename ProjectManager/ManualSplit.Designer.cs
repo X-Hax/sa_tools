@@ -43,7 +43,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 61);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(574, 422);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(730, 422);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // HelpButton
@@ -61,7 +61,7 @@
             // SplitButton
             // 
             this.SplitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SplitButton.Location = new System.Drawing.Point(441, 19);
+            this.SplitButton.Location = new System.Drawing.Point(597, 19);
             this.SplitButton.Name = "SplitButton";
             this.SplitButton.Size = new System.Drawing.Size(145, 28);
             this.SplitButton.TabIndex = 2;
@@ -77,7 +77,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(598, 495);
+            this.ClientSize = new System.Drawing.Size(754, 495);
             this.Controls.Add(this.SplitButton);
             this.Controls.Add(this.HelpButton);
             this.Controls.Add(this.flowLayoutPanel1);
