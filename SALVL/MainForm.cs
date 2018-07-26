@@ -70,7 +70,7 @@ namespace SonicRetro.SAModel.SALVL
                 components.Dispose();
             }
 
-            d3ddevice.Dispose();
+            if(disposing) d3ddevice.Dispose();
 
             base.Dispose(disposing);
         }
