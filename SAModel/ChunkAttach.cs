@@ -286,6 +286,8 @@ namespace SonicRetro.SAModel
 					case ChunkType.Material_DiffuseAmbientSpecular2:
 						{
 							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
 							if (c2.Diffuse.HasValue)
 								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
 							if (c2.Specular.HasValue)

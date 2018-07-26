@@ -47,6 +47,9 @@ namespace ProjectManager
             this.projectName = projectName;
             ProjectNameLAbel.Text = projectName + " : " +  game.ToString();
             this.projectFolder = projectFolder;
+
+            SADXLVL2Button.Enabled = game == SA_Tools.Game.SADX;
+            SADXTweaker2Button.Enabled = game == SA_Tools.Game.SADX;
         }
 
         public void CopySystemFolder(string modFolder)

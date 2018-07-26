@@ -15,6 +15,7 @@ namespace ProjectManager
         private NewProject newProject;
         private ProjectActions projectActions;
         private ProjectSelect projectSelect;
+        private ManualSplit manualSplit;
 
         public ProjectManager()
         {
@@ -31,6 +32,23 @@ namespace ProjectManager
             projectSelect = new ProjectSelect();
             projectSelect.ProjectSelected += ProjectSelect_ProjectSelceted;
             projectSelect.SelectionCanceled += () => { this.Show(); };
+
+            manualSplit = new ManualSplit();
+            manualSplit.OnSplitFinished += () => { this.Show(); };
+            manualSplit.OnSplitCanceled += () => { this.Show(); };
+
+            // tooltips
+            ToolTip newProjectTooltip = new ToolTip();
+            newProjectTooltip.SetToolTip(NewProjectButton, "Create a new project. This will create a project folder, and extract data from the game for modification.");
+
+            ToolTip openProjectTooltip = new ToolTip();
+            openProjectTooltip.SetToolTip(OpenProjectButton, "Open an existing project. From here you can launch editor tools, build the mod, and launch the game");
+
+            ToolTip configTooltip = new ToolTip();
+            configTooltip.SetToolTip(ConfigButton, "Configure Project Manager. This primarily means supplying the paths to SADXPC and SA2");
+
+            ToolTip splitTooltip = new ToolTip();
+            splitTooltip.SetToolTip(SplitToolsButton, "Manual split tools. If you're just looking to rip data and not create or modify a mod, this is what you want.");
         }
 
         private void ProjectSelect_ProjectSelceted(SA_Tools.Game game, string projectName, string fullProjectPath)
@@ -63,6 +81,12 @@ namespace ProjectManager
         {
             Hide();
             projectSelect.Show();
+        }
+
+        private void SplitToolsButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+            manualSplit.Show();
         }
     }
 }

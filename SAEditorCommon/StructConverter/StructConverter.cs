@@ -198,6 +198,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                             }
                         }
                         break;
+                    case ("animindexlist"):
+                        modified = false;
+
+                        string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
+
+                        foreach(string md5KeyValuePair in md5KeyvaluePairs)
+                        {
+                            string[] keySplit = md5KeyValuePair.Split(':');
+
+                            string filePath = Path.Combine(item.Value.Filename, keySplit[0] + ".saanim");
+
+                            if(File.Exists(filePath))
+                            {
+                                if(HelperFunctions.FileHash(filePath) != keySplit[1])
+                                {
+                                    modified = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        break;
+
                     default:
                         if (!string.IsNullOrEmpty(item.Value.MD5Hash))
                             modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;

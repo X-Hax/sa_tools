@@ -21,6 +21,13 @@ namespace ProjectManager
         public string iniFile;
     }
 
+    public struct SplitMDLData
+    {
+        public bool isBigEndian;
+        public string dataFile;
+        public string[] animationFiles;
+    }
+
     public partial class NewProject : Form
     {
         public delegate void ProjectCreationHandler(SA_Tools.Game game, string projectName, string fullProjectPath);
@@ -46,32 +53,237 @@ namespace ProjectManager
             // chrmodels and chrmodels_orig are special cases
         };
 
-        /*string[] sa2pcSplitsMDL = new string[]
+        SplitMDLData[] sa2PCSplitMDL = new SplitMDLData[]
         {
-            "/be resource\\gd_PC\\amymdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\amymtn.prs",
-            "/be resource\\gd_PC\\bknuckmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\knuckmtn.prs",
-            "/be resource\\gd_PC\\brougemdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\rougemtn.prs",
-            "/be resource\\gd_PC\\chaos0mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\chaos0mtn.prs",
-            "/be resource\\gd_PC\\cwalkmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\cwalkmtn.prs",
-            "/be resource\\gd_PC\\dwalkmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\dwalkmtn.prs",
-            "/be resource\\gd_PC\\eggmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\eggmtn.prs",
-            "/be resource\\gd_PC\\ewalk1mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\ewalkmtn.prs",
-            "/be resource\\gd_PC\\ewalk2mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\ewalkmtn.prs",
-            "/be resource\\gd_PC\\ewalkmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\ewalkmtn.prs",
-            "/be resource\\gd_PC\\knuckmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\knuckmtn.prs",
-            "/be resource\\gd_PC\\metalsonicmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\metalsonicmtn.prs",
-            "/be resource\\gd_PC\\milesmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\milesmtn.prs",
-            "/be resource\\gd_PC\\rougemdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\rougemtn.prs",
-            "/be resource\\gd_PC\\shadow1mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\teriosmtn.prs",
-            "/be resource\\gd_PC\\sonic1mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\sonicmtn.prs",
-            "/be resource\\gd_PC\\sonicmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\sonicmtn.prs",
-            "/be resource\\gd_PC\\sshadowmdl.prs resource\\gd_PC\\plcommtn.prs",
-            "/be resource\\gd_PC\\ssonicmdl.prs resource\\gd_PC\\plcommtn.prs",
-            "/be resource\\gd_PC\\teriosmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\teriosmtn.prs",
-            "/be resource\\gd_PC\\ticalmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\ticalmtn.prs",
-            "/be resource\\gd_PC\\twalk1mdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\twalkmtn.prs",
-            "/be resource\\gd_PC\\twalkmdl.prs resource\\gd_PC\\plcommtn.prs resource\\gd_PC\\twalkmtn.prs"
-        };*/
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\amymdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "amymtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\bknuckmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "knuckmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true, 
+                dataFile = "resource\\gd_PC\\brougemdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "rougemtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\chaos0mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "chaos0mtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\cwalkmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "cwalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\dwalkmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "dwalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\eggmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "eggmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\ewalk1mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\ewalk2mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\ewalkmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "ewalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\knuckmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "knuckmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\metalsonicmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "metalsonicmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\milesmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "milesmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\rougemdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "rougemtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\shadow1mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "teriosmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\sonic1mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "sonicmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\sonicmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "sonicmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\sshadowmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\ssonicmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\teriosmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "teriosmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\ticalmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "ticalmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\twalk1mdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "twalkmtn.prs"
+                }
+            },
+            new SplitMDLData()
+            {
+                isBigEndian = true,
+                dataFile = "resource\\gd_PC\\twalkmdl.prs",
+                animationFiles = new string[]
+                {
+                    "plcommtn.prs",
+                    "twalkmtn.prs"
+                }
+            }
+        };
 
         SplitData sonic2AppSplit = new SplitData() { dataFile = "sonic2app.exe", iniFile = "splitsonic2app.ini" };
 
@@ -165,7 +377,7 @@ namespace ProjectManager
             return "";
         }
 
-        private void SADXSplitData_Sub(SplitData splitData, ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+        private void SplitData_Sub(SplitData splitData, ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
             string datafilename = Path.Combine(gameFolder, splitData.dataFile);
             string inifilename = Path.Combine(iniFolder, splitData.iniFile);
@@ -237,7 +449,7 @@ namespace ProjectManager
 
             foreach (SplitData splitData in sadxpcsplits)
             {
-                SADXSplitData_Sub(splitData, progress, gameFolder, iniFolder, outputFolder);
+                SplitData_Sub(splitData, progress, gameFolder, iniFolder, outputFolder);
             }
 
             // do our last split, chrmodels
@@ -260,7 +472,7 @@ namespace ProjectManager
                 };
             }
 
-            SADXSplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
+            SplitData_Sub(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
 
             // copy sadxlvl.ini
             string sadxlvlIniSourcePath = Path.GetFullPath(Path.Combine(iniFolder, "sadxlvl.ini"));
@@ -341,7 +553,7 @@ namespace ProjectManager
         private void DoSA2PCSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
         {
             // split data dll
-#region Split Data DLL
+            #region Split Data DLL
 
             progress.StepProgress();
             progress.SetStep("Splitting Data DLL");
@@ -365,11 +577,21 @@ namespace ProjectManager
 				};
 			}
 
-			SADXSplitData_Sub(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
-#endregion
+			SplitData_Sub(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
+            #endregion
 
-			// run split mdl commands
-			// todo: add this
+            // run split mdl commands
+            progress.StepProgress();
+            progress.SetStep("Splitting character model files");
+
+            foreach (SplitMDLData splitMDL in sa2PCSplitMDL)
+            {
+                string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
+                string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
+
+                SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
+                    fileOutputFolder, splitMDL.animationFiles);
+            }
 
 			// split sonic2app
 			#region Split sonic2app
@@ -377,7 +599,7 @@ namespace ProjectManager
 				progress.StepProgress();
                 progress.SetStep("Splitting Sonic2App");
 
-				SADXSplitData_Sub(sonic2AppSplit, progress, gameFolder, iniFolder, outputFolder);
+				SplitData_Sub(sonic2AppSplit, progress, gameFolder, iniFolder, outputFolder);
 			}
 			#endregion
 		}

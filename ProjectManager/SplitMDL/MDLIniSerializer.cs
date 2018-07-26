@@ -8,9 +8,9 @@ using IniGroup = System.Collections.Generic.Dictionary<string, string>;
 using IniNameGroup = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, string>>;
 using IniNameValue = System.Collections.Generic.KeyValuePair<string, string>;
 
-namespace SplitMDLIniFile
+namespace SplitMDL
 {
-    public static class IniSerializer
+    public static class MDLIniSerializer
     {
         private static readonly IniCollectionSettings initialCollectionSettings = new IniCollectionSettings(IniCollectionMode.IndexOnly);
         private static readonly IniCollectionSettings defaultCollectionSettings = new IniCollectionSettings(IniCollectionMode.Normal);
@@ -18,12 +18,12 @@ namespace SplitMDLIniFile
 
         public static void Serialize(object Object, string Filename)
         {
-            IniFile.Save(Serialize(Object), Filename);
+            MDLIniFile.Save(Serialize(Object), Filename);
         }
 
         public static void Serialize(object Object, IniCollectionSettings CollectionSettings, string Filename)
         {
-            IniFile.Save(Serialize(Object, CollectionSettings), Filename);
+            MDLIniFile.Save(Serialize(Object, CollectionSettings), Filename);
         }
 
         public static IniDictionary Serialize(object Object)
@@ -143,12 +143,12 @@ namespace SplitMDLIniFile
 
         public static T Deserialize<T>(string filename)
         {
-            return Deserialize<T>(IniFile.Load(filename));
+            return Deserialize<T>(MDLIniFile.Load(filename));
         }
 
         public static object Deserialize(Type Type, string Filename)
         {
-            return Deserialize(Type, IniFile.Load(Filename));
+            return Deserialize(Type, MDLIniFile.Load(Filename));
         }
 
         public static T Deserialize<T>(IniDictionary INI)
@@ -163,12 +163,12 @@ namespace SplitMDLIniFile
 
         public static T Deserialize<T>(string filename, IniCollectionSettings CollectionSettings)
         {
-            return Deserialize<T>(IniFile.Load(filename), CollectionSettings);
+            return Deserialize<T>(MDLIniFile.Load(filename), CollectionSettings);
         }
 
         public static object Deserialize(Type Type, string Filename, IniCollectionSettings CollectionSettings)
         {
-            return Deserialize(Type, IniFile.Load(Filename), CollectionSettings);
+            return Deserialize(Type, MDLIniFile.Load(Filename), CollectionSettings);
         }
 
         public static T Deserialize<T>(IniDictionary INI, IniCollectionSettings CollectionSettings)
@@ -180,7 +180,7 @@ namespace SplitMDLIniFile
         {
             object Object;
             IniDictionary ini = new IniDictionary();
-            ini = IniFile.Combine(ini, INI);
+            ini = MDLIniFile.Combine(ini, INI);
             Object = DeserializeInternal("value", Type, Type.GetDefaultValue(), ini, string.Empty, true, CollectionSettings);
             return Object;
         }

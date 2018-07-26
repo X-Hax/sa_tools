@@ -8,9 +8,9 @@ using IniGroup = System.Collections.Generic.Dictionary<string, string>;
 using IniNameGroup = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, string>>;
 using IniNameValue = System.Collections.Generic.KeyValuePair<string, string>;
 
-namespace SplitMDLIniFile
+namespace SplitMDL
 {
-    public static class IniFile
+    public static class MDLIniFile
     {
         public static IniDictionary Load(params string[] data)
         {

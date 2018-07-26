@@ -5,9 +5,9 @@ using System.Text;
 using SonicRetro.SAModel;
 using System.Drawing;
 
-namespace LevelConverter
+namespace ModelConverter
 {
-	class Program
+	static class Program
 	{
 		static void Main(string[] args)
 		{
@@ -22,125 +22,105 @@ namespace LevelConverter
 				Console.Write("File: ");
 				filename = Console.ReadLine();
 			}
-			LandTable level = LandTable.LoadFromFile(filename);
-			switch (level.Format)
+			ModelFile model = new ModelFile(filename);
+			switch (model.Format)
 			{
-				case LandTableFormat.SA1:
+				case ModelFormat.Basic:
+					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is BasicAttach))
 					{
-						List<COL> newcollist = new List<COL>();
-						foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach != null))
+						BasicAttach basatt = (BasicAttach)obj.Attach;
+						ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
+						obj.Attach = cnkatt;
+						VertexChunk vcnk;
+						if (basatt.Normal != null && basatt.Normal.Length > 0)
+							vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
+						else
+							vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
+						vcnk.Vertices = new List<Vertex>(basatt.Vertex);
+						if (basatt.Normal != null)
+							vcnk.Normals = new List<Vertex>(basatt.Normal);
+						vcnk.VertexCount = (ushort)basatt.Vertex.Length;
+						vcnk.Size = (ushort)((vcnk.Type == ChunkType.Vertex_VertexNormal ? vcnk.VertexCount * 6 : vcnk.VertexCount * 3) + 1);
+						cnkatt.Vertex.Add(vcnk);
+						foreach (NJS_MESHSET mesh in basatt.Mesh)
 						{
-							if ((col.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible)
+							if (mesh.PolyType != Basic_PolyType.Strips)
 							{
-								COL newcol = new COL() { Bounds = col.Bounds };
-								newcol.SurfaceFlags = SurfaceFlags.Visible;
-								newcol.Model = new SonicRetro.SAModel.NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
-								newcol.Model.Position = col.Model.Position;
-								newcol.Model.Rotation = col.Model.Rotation;
-								newcol.Model.Scale = col.Model.Scale;
-								BasicAttach basatt = (BasicAttach)col.Model.Attach;
-								ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
-								newcol.Model.Attach = cnkatt;
-								VertexChunk vcnk;
-								if (basatt.Normal != null && basatt.Normal.Length > 0)
-									vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
-								else
-									vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
-								vcnk.Vertices = new List<Vertex>(basatt.Vertex);
-								if (basatt.Normal != null)
-									vcnk.Normals = new List<Vertex>(basatt.Normal);
-								vcnk.VertexCount = (ushort)basatt.Vertex.Length;
-								vcnk.Size = (ushort)((vcnk.Type == ChunkType.Vertex_VertexNormal ? vcnk.VertexCount * 6 : vcnk.VertexCount * 3) + 1);
-								cnkatt.Vertex.Add(vcnk);
-								foreach (NJS_MESHSET mesh in basatt.Mesh)
+								Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
+								continue;
+							}
+							NJS_MATERIAL mat = null;
+							if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
+							{
+								mat = basatt.Material[mesh.MaterialID];
+								cnkatt.Poly.Add(new PolyChunkTinyTextureID()
 								{
-									if (mesh.PolyType != Basic_PolyType.Strips)
-									{
-										Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
-										continue;
-									}
-									NJS_MATERIAL mat = null;
-									if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
-									{
-										mat = basatt.Material[mesh.MaterialID];
-										cnkatt.Poly.Add(new PolyChunkTinyTextureID()
-										{
-											ClampU = mat.ClampU,
-											ClampV = mat.ClampV,
-											FilterMode = mat.FilterMode,
-											FlipU = mat.FlipU,
-											FlipV = mat.FlipV,
-											SuperSample = mat.SuperSample,
-											TextureID = (ushort)mat.TextureID
-										});
-										cnkatt.Poly.Add(new PolyChunkMaterial()
-										{
-											SourceAlpha = mat.SourceAlpha,
-											DestinationAlpha = mat.DestinationAlpha,
-											Diffuse = mat.DiffuseColor,
-											Specular = mat.SpecularColor,
-											SpecularExponent = (byte)mat.Exponent
-										});
-									}
-									PolyChunkStrip strip;
-									if (mesh.UV != null & mesh.VColor != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripUVNColor);
-									else if (mesh.UV != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
-									else if (mesh.VColor != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripColor);
-									else
-										strip = new PolyChunkStrip(ChunkType.Strip_Strip);
-									if (mat != null)
-									{
-										strip.IgnoreLight = mat.IgnoreLighting;
-										strip.IgnoreSpecular = mat.IgnoreSpecular;
-										strip.UseAlpha = mat.UseAlpha;
-										strip.DoubleSide = mat.DoubleSided;
-										strip.FlatShading = mat.FlatShading;
-										strip.EnvironmentMapping = mat.EnvironmentMap;
-									}
-									int striptotal = 0;
-									foreach (Strip item in mesh.Poly.Cast<Strip>())
-									{
-										UV[] uvs = null;
-										if (mesh.UV != null)
-										{
-											uvs = new UV[item.Indexes.Length];
-											Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
-										}
-										Color[] vcolors = null;
-										if (mesh.VColor != null)
-										{
-											vcolors = new Color[item.Indexes.Length];
-											Array.Copy(mesh.VColor, striptotal, vcolors, 0, item.Indexes.Length);
-										}
-										strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uvs, vcolors));
-										striptotal += item.Indexes.Length;
-									}
-									cnkatt.Poly.Add(strip);
-								}
-								newcollist.Add(newcol);
+									ClampU = mat.ClampU,
+									ClampV = mat.ClampV,
+									FilterMode = mat.FilterMode,
+									FlipU = mat.FlipU,
+									FlipV = mat.FlipV,
+									SuperSample = mat.SuperSample,
+									TextureID = (ushort)mat.TextureID
+								});
+								cnkatt.Poly.Add(new PolyChunkMaterial()
+								{
+									SourceAlpha = mat.SourceAlpha,
+									DestinationAlpha = mat.DestinationAlpha,
+									Diffuse = mat.DiffuseColor,
+									Specular = mat.SpecularColor,
+									SpecularExponent = (byte)mat.Exponent
+								});
 							}
-							if ((col.SurfaceFlags & ~SurfaceFlags.Visible) != 0)
+							PolyChunkStrip strip;
+							if (mesh.UV != null & mesh.VColor != null)
+								strip = new PolyChunkStrip(ChunkType.Strip_StripUVNColor);
+							else if (mesh.UV != null)
+								strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
+							else if (mesh.VColor != null)
+								strip = new PolyChunkStrip(ChunkType.Strip_StripColor);
+							else
+								strip = new PolyChunkStrip(ChunkType.Strip_Strip);
+							if (mat != null)
 							{
-								col.SurfaceFlags &= ~SurfaceFlags.Visible;
-								newcollist.Add(col);
+								strip.IgnoreLight = mat.IgnoreLighting;
+								strip.IgnoreSpecular = mat.IgnoreSpecular;
+								strip.UseAlpha = mat.UseAlpha;
+								strip.DoubleSide = mat.DoubleSided;
+								strip.FlatShading = mat.FlatShading;
+								strip.EnvironmentMapping = mat.EnvironmentMap;
 							}
+							int striptotal = 0;
+							foreach (Strip item in mesh.Poly.Cast<Strip>())
+							{
+								UV[] uvs = null;
+								if (mesh.UV != null)
+								{
+									uvs = new UV[item.Indexes.Length];
+									Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
+								}
+								Color[] vcolors = null;
+								if (mesh.VColor != null)
+								{
+									vcolors = new Color[item.Indexes.Length];
+									Array.Copy(mesh.VColor, striptotal, vcolors, 0, item.Indexes.Length);
+								}
+								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uvs, vcolors));
+								striptotal += item.Indexes.Length;
+							}
+							cnkatt.Poly.Add(strip);
 						}
-						level.COL = newcollist;
 					}
-					level.Anim = new List<GeoAnimData>();
-					level.Tool = "SA Tools Level Converter";
-					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa2lvl"), LandTableFormat.SA2);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, "SA Tools Model Converter", null, ModelFormat.Chunk);
 					break;
-				case LandTableFormat.SA2:
+				case ModelFormat.Chunk:
 					Vertex[] VertexBuffer = new Vertex[0];
 					Vertex[] NormalBuffer = new Vertex[0];
-					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach is ChunkAttach))
+					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is ChunkAttach))
 					{
-						ChunkAttach cnkatt = (ChunkAttach)col.Model.Attach;
+						ChunkAttach cnkatt = (ChunkAttach)obj.Attach;
 						BasicAttach basatt = new BasicAttach() { Name = cnkatt.Name, Bounds = cnkatt.Bounds };
+						obj.Attach = basatt;
 						if (cnkatt.Vertex != null)
 							foreach (VertexChunk chunk in cnkatt.Vertex)
 							{
@@ -282,11 +262,8 @@ namespace LevelConverter
 							foreach (Poly poly in mesh.Poly)
 								for (int i = 0; i < poly.Indexes.Length; i++)
 									poly.Indexes[i] = (ushort)(poly.Indexes[i] - minVtx);
-						col.Model.Attach = basatt;
 					}
-					level.Anim = new List<GeoAnimData>();
-					level.Tool = "SA Tools Level Converter";
-					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, "SA Tools Model Converter", null, ModelFormat.Basic);
 					break;
 			}
 		}

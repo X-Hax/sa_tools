@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using IniFile;
+using SplitMDLIniFile;
 using SonicRetro.SAModel;
 
 namespace buildMDL
