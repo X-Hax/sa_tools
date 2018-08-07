@@ -62,6 +62,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -177,7 +178,7 @@
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -186,7 +187,7 @@
             this.findToolStripMenuItem.Enabled = false;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.findToolStripMenuItem.Text = "&Find...";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
@@ -195,7 +196,8 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showModelToolStripMenuItem,
             this.showNodesToolStripMenuItem,
-            this.showNodeConnectionsToolStripMenuItem});
+            this.showNodeConnectionsToolStripMenuItem,
+            this.modelLibraryToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -370,6 +372,13 @@
             this.exportOBJToolStripMenuItem.Text = "&Export OBJ...";
             this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
             // 
+            // modelLibraryToolStripMenuItem
+            // 
+            this.modelLibraryToolStripMenuItem.Name = "modelLibraryToolStripMenuItem";
+            this.modelLibraryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.modelLibraryToolStripMenuItem.Text = "Model &Library";
+            this.modelLibraryToolStripMenuItem.Click += new System.EventHandler(this.modelLibraryToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -433,6 +442,7 @@
 		private System.Windows.Forms.ToolStripMenuItem showNodesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem showNodeConnectionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem showModelToolStripMenuItem;
-	}
+        private System.Windows.Forms.ToolStripMenuItem modelLibraryToolStripMenuItem;
+    }
 }
 

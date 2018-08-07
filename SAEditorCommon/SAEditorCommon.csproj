@@ -139,6 +139,12 @@
     <Compile Include="UI\HexNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\ModelLibrary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibrary.Designer.cs">
+      <DependentUpon>ModelLibrary.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\NewObjectDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -251,6 +257,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibrary.resx">
+      <DependentUpon>ModelLibrary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\NewObjectDialog.resx">
       <DependentUpon>NewObjectDialog.cs</DependentUpon>
