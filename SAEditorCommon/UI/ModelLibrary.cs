@@ -31,31 +31,34 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		// state tracking variables
 		private int selectedModelIndex = -1;
-		public Attach SelectedModel { get { return (selectedModelIndex >= 0) ? modelList[selectedModelIndex].Value : null; } set 
-		{
-			selectedModelIndex = -1;
-			selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
+		public Attach SelectedModel
+        {
+            get { return (selectedModelIndex >= 0) ? modelList[selectedModelIndex].Value : null; }
+            set 
+		    {
+			    selectedModelIndex = -1;
+			    selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
 
-			if(selectedModelIndex >= 0) 
-			{
-				modelListView.SelectedItems.Clear();
-				modelListView.Items[selectedModelIndex].Selected = true;
-				modelListView.Select();
-			}
-			else
-			{
-				modelListView.SelectedItems.Clear();
-			}
-		}
+			    if(selectedModelIndex >= 0) 
+			    {
+				    modelListView.SelectedItems.Clear();
+				    modelListView.Items[selectedModelIndex].Selected = true;
+				    modelListView.Select();
+			    }
+			    else
+			    {
+				    modelListView.SelectedItems.Clear();
+			    }
+		    }
 		}
 
 		#region Rendering Variables
 		private Bitmap renderFailureBitmap;
 		private List<KeyValuePair<int, Bitmap>> attachListRenders; // list of meshes rendered to texture so that users can select them as buttons
 		internal Device d3dDevice;
-		private Microsoft.DirectX.Direct3D.Font onscreenFont;
+		//private Microsoft.DirectX.Direct3D.Font onscreenFont;
 		private int panSpeed = 0x01;
-		private Sprite textSprite;
+		//private Sprite textSprite;
 		private Point screenCenter;
 		private Texture screenRenderTexture;
 		private Surface defaultRenderTarget;
@@ -92,7 +95,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			d3dDevice = new Device(0, DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 			defaultRenderTarget = d3dDevice.GetRenderTarget(0);
 			screenCenter = new Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
-			textSprite = new Sprite(d3dDevice);
+			//textSprite = new Sprite(d3dDevice);
 
 			renderFailureBitmap = new Bitmap(2, 2, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 			for (int h = 0; h < 2; h++ )
@@ -155,13 +158,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			#endregion
 
 			#region Setup Font
-			onscreenFont = new Microsoft.DirectX.Direct3D.Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
+			//onscreenFont = new Microsoft.DirectX.Direct3D.Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
-		#endregion
+        #endregion
 
-		#region State Management Methods
-		public void Clear()
+        #region Cleanup / Disposal Methods
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+
+            if(disposing)
+            {
+                if(renderFailureBitmap != null) renderFailureBitmap.Dispose();
+                //if(textSprite != null) textSprite.Dispose();
+                if(screenRenderTexture != null) screenRenderTexture.Dispose();
+                if(defaultRenderTarget != null) defaultRenderTarget.Dispose();
+                //if(onscreenFont != null) onscreenFont.Dispose();
+                if(d3dDevice != null) d3dDevice.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+        #endregion
+
+        #region State Management Methods
+        public void Clear()
 		{
 			modelList.Clear();
 			attachListRenders.Clear();
@@ -273,7 +302,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 			else // invalid selection, show a message telling the user to select something
 			{
-				onscreenFont.DrawText(textSprite, "No model selected.", screenCenter, Color.White);
+                // see if we can hide the panel's picture and/or draw an actual label here
+				//onscreenFont.DrawText(textSprite, "No model selected.", screenCenter, Color.Black);
 			}
 
 			d3dDevice.EndScene(); //all drawings before this line
