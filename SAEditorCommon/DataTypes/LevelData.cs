@@ -16,6 +16,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Events
 		public static event Action StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
 		public static event Action PointOperation = delegate { };
+        public static event Action CharacterChanged = delegate { };
 		#endregion
 
 		public static LandTable geo;
@@ -25,7 +26,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static List<LevelItem> LevelItems;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
-		public static int Character;
+        private static int character;
+		public static int Character
+        {
+            get { return character; }
+            set
+            {
+                int oldCharacter = character;
+                character = value;
+                if (oldCharacter != character) CharacterChanged.Invoke();
+            }
+        }
 		public static StartPosItem[] StartPositions;
 		public static string LevelName;
 		public static string SETName;

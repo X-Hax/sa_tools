@@ -87,7 +87,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
-			panel1.MouseWheel += panel1_MouseWheel;
+			RenderPanel.MouseWheel += panel1_MouseWheel;
 
             systemFallback = Program.SADXGameFolder + "/System/";
 
@@ -159,7 +159,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (d3ddevice == null)
 			{
-				d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
+				d3ddevice = new Device(0, DeviceType.Hardware, RenderPanel, CreateFlags.HardwareVertexProcessing,
 					new PresentParameters
 					{
 						Windowed = true,
@@ -1578,7 +1578,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			cam.FOV = (float)(Math.PI / 4);
-			cam.Aspect = panel1.Width / (float)panel1.Height;
+			cam.Aspect = RenderPanel.Width / (float)RenderPanel.Height;
 			cam.DrawDistance = 100000;
 			UpdateTitlebar();
 
@@ -2008,7 +2008,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                     }
                     pasteToolStripMenuItem.Enabled = false;
                     menuLocation = e.Location;
-                    contextMenuStrip1.Show(panel1, e.Location);
+                    contextMenuStrip1.Show(RenderPanel, e.Location);
                     break;
             }
 
@@ -2175,7 +2175,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (e.Button != MouseButtons.None)
 			{
-				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 
 				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
 				{
@@ -2343,7 +2343,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (!isStageLoaded || !panel1.Focused)
+			if (!isStageLoaded || !RenderPanel.Focused)
 				return;
 
 			float detentValue = -1;

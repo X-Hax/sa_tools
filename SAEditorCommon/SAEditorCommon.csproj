@@ -164,6 +164,12 @@
     <Compile Include="UI\ProgressDialog.Designer.cs">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\SceneGraphControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\SceneGraphControl.Designer.cs">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SETDeleteType.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -269,6 +275,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SceneGraphControl.resx">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETDeleteType.resx">
       <DependentUpon>SETDeleteType.cs</DependentUpon>
