@@ -256,7 +256,7 @@ namespace LevelConverter
 										{
 											minVtx = Math.Min(minVtx, strip.Indexes.Min());
 											maxVtx = Math.Max(maxVtx, strip.Indexes.Max());
-											strips.Add(new Strip(strip.Indexes, strip.Reversed));
+											strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
 											if (hasUV)
 												uvs.AddRange(strip.UVs);
 											if (hasVColor)
