@@ -179,6 +179,8 @@ namespace ModelConverter
 								case ChunkType.Material_DiffuseAmbientSpecular2:
 									{
 										PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+										material.SourceAlpha = c2.SourceAlpha;
+										material.DestinationAlpha = c2.DestinationAlpha;
 										if (c2.Diffuse.HasValue)
 											material.DiffuseColor = c2.Diffuse.Value;
 										if (c2.Specular.HasValue)

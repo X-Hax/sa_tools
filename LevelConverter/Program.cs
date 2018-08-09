@@ -34,7 +34,7 @@ namespace LevelConverter
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
 								newcol.SurfaceFlags = SurfaceFlags.Visible;
-								newcol.Model = new SonicRetro.SAModel.NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
+								newcol.Model = new NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
 								newcol.Model.Scale = col.Model.Scale;
@@ -199,6 +199,8 @@ namespace LevelConverter
 								case ChunkType.Material_DiffuseAmbientSpecular2:
 									{
 										PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+										material.SourceAlpha = c2.SourceAlpha;
+										material.DestinationAlpha = c2.DestinationAlpha;
 										if (c2.Diffuse.HasValue)
 											material.DiffuseColor = c2.Diffuse.Value;
 										if (c2.Specular.HasValue)
