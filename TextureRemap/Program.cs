@@ -21,7 +21,10 @@ namespace TextureRemap
 			ModelFile model = new ModelFile(filename);
 			string[] mapstr;
 			if (args.Length > 1)
-				Console.WriteLine("Remaps: {0}", mapstr = args.Skip(1).ToArray());
+			{
+				mapstr = args.Skip(1).ToArray();
+				Console.WriteLine("Remaps: {0}", string.Join(" ", mapstr));
+			}
 			else
 			{
 				Console.WriteLine("Enter texture mappings (src,dst [src,dst ...]):");
