@@ -19,16 +19,16 @@ namespace TextureRemap
 				filename = Console.ReadLine();
 			}
 			ModelFile model = new ModelFile(filename);
-			string mapstr;
+			string[] mapstr;
 			if (args.Length > 1)
-				Console.WriteLine("Remaps: {0}", mapstr = args[1]);
+				Console.WriteLine("Remaps: {0}", mapstr = args.Skip(1).ToArray());
 			else
 			{
 				Console.WriteLine("Enter texture mappings (src,dst [src,dst ...]):");
-				mapstr = Console.ReadLine();
+				mapstr = Console.ReadLine().Split(' ');
 			}
 			Dictionary<ushort, ushort> maps = new Dictionary<ushort, ushort>();
-			foreach (string str in mapstr.Split(' '))
+			foreach (string str in mapstr)
 			{
 				string[] b = str.Split(',');
 				maps.Add(ushort.Parse(b[0]), ushort.Parse(b[1]));
