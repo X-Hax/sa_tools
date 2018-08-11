@@ -255,7 +255,8 @@ public COLLADA ToCollada(string[] textures)
 			List<effect> effects = new List<effect>();
 			List<geometry> geometries = new List<geometry>();
 			List<string> visitedAttaches = new List<string>();
-			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null, 0);
+			int nodeID = -1;
+			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null, ref nodeID);
 			libraries.Add(new library_materials { material = materials.ToArray() });
 			libraries.Add(new library_effects { effect = effects.ToArray() });
 			libraries.Add(new library_geometries { geometry = geometries.ToArray() });
@@ -276,7 +277,7 @@ public COLLADA ToCollada(string[] textures)
 		}
 
 		protected node AddToCollada(List<material> materials, List<effect> effects, List<geometry> geometries,
-			   List<string> visitedAttaches, bool hasTextures, int nodeID)
+			   List<string> visitedAttaches, bool hasTextures, ref int nodeID)
 		{
 
 			BasicAttach attach = Attach as BasicAttach;
@@ -612,10 +613,11 @@ public COLLADA ToCollada(string[] textures)
 				}
 			});
 			skipAttach:
+			++nodeID;
 			node node = new node
 			{
-				id = $"{nodeID:00}_{Name}",
-				name = $"{nodeID:00}_{Name}",
+				id = $"{nodeID:000}_{Name}",
+				name = $"{nodeID:000}_{Name}",
 				Items = new object[]
 				{
 					new TargetableFloat3 { sid = "translate", Values = new double[] { Position.X, Position.Y, Position.Z } },
@@ -654,8 +656,8 @@ public COLLADA ToCollada(string[] textures)
 				};
 			}
 			List<node> childnodes = new List<node>();
-			for (int i = 0; i < Children.Count; i++)
-				childnodes.Add(Children[i].AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures, i));
+			foreach (NJS_OBJECT item in Children)
+				childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures, ref nodeID));
 			node.node1 = childnodes.ToArray();
 			return node;
 		}
