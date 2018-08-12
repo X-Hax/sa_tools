@@ -16,7 +16,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         EditorItemSelection selection;
 
         TreeNode levelItemNode;
-        //TreeNodeCollection startPositionNodes;
+        TreeNode deathZoneNode;
         TreeNode setNode;
         TreeNode camNode;
         TreeNode missionSETNode;
@@ -43,6 +43,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             {
                 // go through the level data and add all the things
                 levelItemNode = sceneTreeView.Nodes.Add("Level Objects");
+                deathZoneNode = sceneTreeView.Nodes.Add("Death Zones");
                 setNode = sceneTreeView.Nodes.Add("SET Items");
                 camNode = sceneTreeView.Nodes.Add("CAM Items");
                 splineNode = sceneTreeView.Nodes.Add("Spline Objects");
@@ -74,6 +75,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             sceneTreeView.BeginUpdate();
 
             levelItemNode.Nodes.Clear();
+            deathZoneNode.Nodes.Clear();
             setNode.Nodes.Clear();
             camNode.Nodes.Clear();
             splineNode.Nodes.Clear();
@@ -85,6 +87,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 levelItemNode.Nodes.Add(levelItem.Name);
             }
 
+            foreach(DeathZoneItem deathZone in LevelData.DeathZones)
+            {
+                deathZoneNode.Nodes.Add(deathZone.Name);
+            }
+
             // set node
             foreach(SETItem setItem in LevelData.SETItems[LevelData.Character])
             {
@@ -94,7 +101,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             // cam node
             foreach(CAMItem camItem in LevelData.CAMItems[LevelData.Character])
             {
-                setNode.Nodes.Add(camItem.CamType.ToString());
+                camNode.Nodes.Add(camItem.CamType.ToString());
             }
 
             foreach(SplineData splineData in LevelData.LevelSplines)

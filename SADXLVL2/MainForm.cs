@@ -510,9 +510,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 					{
 						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
-						LevelData.LevelItems = new List<LevelItem>();
+                        LevelData.ClearLevelItems();
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
-							LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
 					}
 
 					progress.StepProgress();
@@ -1352,7 +1352,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
 			toolStrip1.Enabled = isStageLoaded;
-			LevelData_StateChanged();
+            LevelData.InvalidateRenderState();
+			//LevelData_StateChanged();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -2012,7 +2013,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                     break;
             }
 
-            LevelData_StateChanged();
+            LevelData.InvalidateRenderState();
         }
 
         private HitResult PickItem(Point mouse)
@@ -2039,22 +2040,22 @@ namespace SonicRetro.SAModel.SADXLVL2
             #region Picking Level Items
             if (LevelData.LevelItems != null)
             {
-                for (int i = 0; i < LevelData.LevelItems.Count; i++)
+                for (int i = 0; i < LevelData.LevelItemCount; i++)
                 {
                     bool display = false;
-                    if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+                    if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
                         display = true;
-                    else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+                    else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
                         display = true;
                     else if (allToolStripMenuItem.Checked)
                         display = true;
                     if (display)
                     {
-                        hit = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+                        hit = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
                         if (hit < closesthit)
                         {
                             closesthit = hit;
-                            item = LevelData.LevelItems[i];
+                            item = LevelData.GetLevelitemAtIndex(i);
                         }
                     }
                 }
@@ -2404,7 +2405,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 			selectedItems.Clear();
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
 		}
@@ -2449,7 +2450,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			selectedItems.Clear();
 			selectedItems.Add(new List<Item>(objs));
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2461,7 +2462,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			selectedItems.Clear();
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -2551,7 +2552,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					MessageBox.Show(errorMsg);
 			}
 
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void importToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2585,7 +2586,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					MessageBox.Show(errorMsg);
 			}
 
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2607,7 +2608,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.SETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();
 					selectedItems.Add(item);
-					LevelData_StateChanged();
+					LevelData.InvalidateRenderState();
 				}
 		}
 
@@ -2618,7 +2619,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			selectedItems.Clear();
 			selectedItems.Add(item);
-			LevelData_StateChanged();
+            LevelData.InvalidateRenderState();
+			//LevelData_StateChanged();
 		}
 
 		private void missionObjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2640,7 +2642,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();
 					selectedItems.Add(item);
-					LevelData_StateChanged();
+					LevelData.InvalidateRenderState();
 				}
 		}
 
@@ -2763,12 +2765,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			selectedItems.Clear();
 			selectedItems.Add(item);
-			LevelData_StateChanged();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			LevelData_StateChanged();
+            LevelData.InvalidateRenderState();
 			propertyGrid1.Refresh();
 		}
 
@@ -2817,7 +2819,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (findReplaceResult == DialogResult.OK)
 			{
-				LevelData_StateChanged();
+				LevelData.InvalidateRenderState();
 			}
 		}
 
@@ -3044,7 +3046,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				a.Rotation.XDeg = (float)Math.Asin(-m.M23) * MathHelper.Rad2Deg;
 				a.Rotation.ZDeg = (float)Math.Atan2(m.M21, m.M22) * MathHelper.Rad2Deg;
 
-				LevelData_StateChanged();
+				LevelData.InvalidateRenderState();
 			}
 		}
 

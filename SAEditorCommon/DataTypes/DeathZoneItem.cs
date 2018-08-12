@@ -21,6 +21,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
+        public string Name { get { return Model.Name; } }
 
 		[Browsable(false)]
 		public override BoundingSphere Bounds

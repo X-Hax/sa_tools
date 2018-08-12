@@ -136,14 +136,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override void Paste()
 		{
-			LevelData.LevelItems.Add(this);
+            /*LevelData.LevelItems.Add(this);*/
 			LevelData.geo.COL.Add(COL);
+
+            LevelData.AddLevelItem(this);
 		}
 
 		public override void Delete()
 		{
-			LevelData.geo.COL.Remove(COL);
-			LevelData.LevelItems.Remove(this);
+            LevelData.geo.COL.Remove(COL);
+			//LevelData.LevelItems.Remove(this);
+
+            LevelData.RemoveLevelItem(this);
 		}
 
 		public void RegenerateMesh(Device dev)

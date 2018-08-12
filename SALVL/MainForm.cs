@@ -121,10 +121,12 @@ namespace SonicRetro.SAModel.SALVL
 					LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (LandTableFormat)dlg.comboBox2.SelectedIndex);
 				}
 			}
-			LevelData.LevelItems = new List<LevelItem>();
+            LevelData.ClearLevelItems();
 
-			for (int i = 0; i < LevelData.geo.COL.Count; i++)
-				LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+            for (int i = 0; i < LevelData.geo.COL.Count; i++)
+            {
+                LevelData.AddLevelItem((new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems)));
+            }
 
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -225,17 +227,17 @@ namespace SonicRetro.SAModel.SALVL
 			MatrixStack transform = new MatrixStack();
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 			if (LevelData.LevelItems != null)
-				for (int i = 0; i < LevelData.LevelItems.Count; i++)
+				for (int i = 0; i < LevelData.LevelItemCount; i++)
 				{
 					bool display = false;
-					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+					if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
 						display = true;
-					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+					else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
 						display = true;
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
-						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform));
+						renderlist.AddRange(LevelData.GetLevelitemAtIndex(i).Render(d3ddevice, cam, transform));
 				}
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
@@ -293,22 +295,22 @@ namespace SonicRetro.SAModel.SALVL
 						{
 							if (LevelData.LevelItems != null)
 							{
-								for (int i = 0; i < LevelData.LevelItems.Count; i++)
+								for (int i = 0; i < LevelData.LevelItemCount; i++)
 								{
 									bool display = false;
-									if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+									if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
 										display = true;
-									else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+									else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
 										display = true;
 									else if (allToolStripMenuItem.Checked)
 										display = true;
 									if (display)
 									{
-										dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+										dist = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
 										if (dist.IsHit & dist.Distance < mindist)
 										{
 											mindist = dist.Distance;
-											item = LevelData.LevelItems[i];
+											item = LevelData.GetLevelitemAtIndex(i);
 										}
 									}
 								}
