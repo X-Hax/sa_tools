@@ -145,6 +145,9 @@
     <Compile Include="UI\ModelLibrary.Designer.cs">
       <DependentUpon>ModelLibrary.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\MultiSelectTreeview.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\NewObjectDialog.cs">
       <SubType>Form</SubType>
     </Compile>

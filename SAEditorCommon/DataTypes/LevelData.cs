@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.DirectX;
@@ -56,6 +57,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return levelItems[index];
         }
         public static IEnumerable<LevelItem> LevelItems { get { return levelItems; } }
+        public static int GetIndexOfItem(LevelItem item)
+        {
+            if (levelItems.Contains(item))
+            {
+                return levelItems.IndexOf(item);
+            }
+            else return -1;
+        }
 
 		public static List<ObjectDefinition> MisnObjDefs;
 		public static List<SETItem>[] SETItems;

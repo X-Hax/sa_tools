@@ -131,6 +131,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
                 actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
             };
+
+            sceneGraphControl1.InitSceneControl(selectedItems);
         }
 
         private void ShowLevelSelect()
@@ -1949,6 +1951,8 @@ namespace SonicRetro.SAModel.SADXLVL2
                                     foreach (SETItem it in System.Linq.Enumerable.OfType<SETItem>(selectedItems.GetSelection()))
                                         it.PointTo(dlg.SelectedLocation);
                             isPointOperation = false;
+
+                            LevelData.InvalidateRenderState();
                         }
                         return;
                     }
@@ -2013,7 +2017,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                     break;
             }
 
-            LevelData.InvalidateRenderState();
+            DrawLevel();
         }
 
         private HitResult PickItem(Point mouse)
@@ -2383,6 +2387,8 @@ namespace SonicRetro.SAModel.SADXLVL2
                     transformGizmo.Enabled = false;
                 }
             }
+
+            DrawLevel();
         }
 
 		/// <summary>

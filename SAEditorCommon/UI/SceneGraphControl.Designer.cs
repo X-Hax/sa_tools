@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.sceneTreeView = new System.Windows.Forms.TreeView();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneGraphControl));
+            this.sceneTreeView = new SonicRetro.SAModel.SAEditorCommon.UI.MultiSelectTreeview();
             this.SuspendLayout();
             // 
             // sceneTreeView
@@ -36,6 +37,7 @@
             this.sceneTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sceneTreeView.Location = new System.Drawing.Point(0, 0);
             this.sceneTreeView.Name = "sceneTreeView";
+            this.sceneTreeView.SelectedNodes = ((System.Collections.Generic.List<System.Windows.Forms.TreeNode>)(resources.GetObject("sceneTreeView.SelectedNodes")));
             this.sceneTreeView.Size = new System.Drawing.Size(235, 385);
             this.sceneTreeView.TabIndex = 0;
             // 
@@ -53,6 +55,6 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView sceneTreeView;
+        private MultiSelectTreeview sceneTreeView;
     }
 }
