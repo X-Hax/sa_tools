@@ -44,7 +44,7 @@ namespace buildEvent
 				List<byte> modelbytes = new List<byte>(fc);
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
 				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(a.Key) != a.Value).Select(a => a.Key))
-					modelbytes.AddRange(new ModelFile(file).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint address));
+					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint address));
 				fc = modelbytes.ToArray();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
@@ -59,9 +59,9 @@ namespace buildEvent
 								ByteConverter.GetBytes(labels[info.AttachNode1]).CopyTo(fc, ptr + 4);
 							if (labels.ContainsKey(info.Model1))
 								ByteConverter.GetBytes(labels[info.Model1]).CopyTo(fc, ptr + 8);
-							if (labels.ContainsKey(info.AttachNode2))
+							if (info.AttachNode2 != null && labels.ContainsKey(info.AttachNode2))
 								ByteConverter.GetBytes(labels[info.AttachNode2]).CopyTo(fc, ptr + 12);
-							if (labels.ContainsKey(info.Model2))
+							if (info.Model2 != null && labels.ContainsKey(info.Model2))
 								ByteConverter.GetBytes(labels[info.Model2]).CopyTo(fc, ptr + 16);
 						}
 						ptr += 0x14;
