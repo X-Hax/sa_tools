@@ -222,7 +222,9 @@ namespace SA_Tools
 
         public static int GetPointer(this byte[] file, int address, uint imageBase)
         {
-            return (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+			uint tmp = ByteConverter.ToUInt32(file, address);
+			if (tmp == 0) return 0;
+			return (int)(tmp - imageBase);
         }
 
         public static string UnescapeNewlines(this string line)
