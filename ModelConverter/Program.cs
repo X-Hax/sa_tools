@@ -32,18 +32,61 @@ namespace ModelConverter
 						ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
 						obj.Attach = cnkatt;
 						VertexChunk vcnk;
-						if (basatt.Normal != null && basatt.Normal.Length > 0)
+						bool hasnormal = basatt.Normal?.Length > 0;
+						bool hasvcolor = basatt.Mesh.Any(a => a.VColor != null);
+						if (hasvcolor)
+							vcnk = new VertexChunk(ChunkType.Vertex_VertexDiffuse8);
+						else if (hasnormal)
 							vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
 						else
 							vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
-						vcnk.Vertices = new List<Vertex>(basatt.Vertex);
-						if (basatt.Normal != null)
-							vcnk.Normals = new List<Vertex>(basatt.Normal);
-						vcnk.VertexCount = (ushort)basatt.Vertex.Length;
-						vcnk.Size = (ushort)((vcnk.Type == ChunkType.Vertex_VertexNormal ? vcnk.VertexCount * 6 : vcnk.VertexCount * 3) + 1);
-						cnkatt.Vertex.Add(vcnk);
+						List<CachedVertex> cache = new List<CachedVertex>(basatt.Vertex.Length);
+						List<List<ushort[]>> strips = new List<List<ushort[]>>();
 						foreach (NJS_MESHSET mesh in basatt.Mesh)
 						{
+							List<ushort[]> polys = new List<ushort[]>();
+							bool hasVColor = mesh.VColor != null;
+							int currentstriptotal = 0;
+							foreach (Poly poly in mesh.Poly)
+							{
+								ushort[] inds = (ushort[])poly.Indexes.Clone();
+								for (int i = 0; i < poly.Indexes.Length; i++)
+									inds[i] = (ushort)cache.AddUnique(new CachedVertex(
+										basatt.Vertex[poly.Indexes[i]],
+										basatt.Normal?[poly.Indexes[i]] ?? Vertex.UpNormal,
+										hasVColor ? mesh.VColor[currentstriptotal++] : Color.White));
+								polys.Add(inds);
+							}
+							strips.Add(polys);
+						}
+						foreach (var item in cache)
+						{
+							vcnk.Vertices.Add(item.vertex);
+							if (hasnormal)
+								vcnk.Normals.Add(item.normal);
+							if (hasvcolor)
+								vcnk.Diffuse.Add(item.color);
+						}
+						vcnk.VertexCount = (ushort)cache.Count;
+						switch (vcnk.Type)
+						{
+							case ChunkType.Vertex_Vertex:
+								vcnk.Size = (ushort)(vcnk.VertexCount * 3 + 1);
+								break;
+							case ChunkType.Vertex_VertexDiffuse8:
+								vcnk.Size = (ushort)(vcnk.VertexCount * 4 + 1);
+								break;
+							case ChunkType.Vertex_VertexNormal:
+								vcnk.Size = (ushort)(vcnk.VertexCount * 6 + 1);
+								break;
+							case ChunkType.Vertex_VertexNormalDiffuse8:
+								vcnk.Size = (ushort)(vcnk.VertexCount * 7 + 1);
+								break;
+						}
+						cnkatt.Vertex.Add(vcnk);
+						for (int i = 0; i < basatt.Mesh.Count; i++)
+						{
+							NJS_MESHSET mesh = basatt.Mesh[i];
 							if (mesh.PolyType != Basic_PolyType.Strips)
 							{
 								Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
@@ -73,12 +116,8 @@ namespace ModelConverter
 								});
 							}
 							PolyChunkStrip strip;
-							if (mesh.UV != null & mesh.VColor != null)
-								strip = new PolyChunkStrip(ChunkType.Strip_StripUVNColor);
-							else if (mesh.UV != null)
+							if (mesh.UV != null)
 								strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
-							else if (mesh.VColor != null)
-								strip = new PolyChunkStrip(ChunkType.Strip_StripColor);
 							else
 								strip = new PolyChunkStrip(ChunkType.Strip_Strip);
 							if (mat != null)
@@ -91,21 +130,16 @@ namespace ModelConverter
 								strip.EnvironmentMapping = mat.EnvironmentMap;
 							}
 							int striptotal = 0;
-							foreach (Strip item in mesh.Poly.Cast<Strip>())
+							for (int i1 = 0; i1 < mesh.Poly.Count; i1++)
 							{
+								Strip item = (Strip)mesh.Poly[i1];
 								UV[] uvs = null;
 								if (mesh.UV != null)
 								{
 									uvs = new UV[item.Indexes.Length];
 									Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
 								}
-								Color[] vcolors = null;
-								if (mesh.VColor != null)
-								{
-									vcolors = new Color[item.Indexes.Length];
-									Array.Copy(mesh.VColor, striptotal, vcolors, 0, item.Indexes.Length);
-								}
-								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uvs, vcolors));
+								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, strips[i][i1], uvs, null));
 								striptotal += item.Indexes.Length;
 							}
 							cnkatt.Poly.Add(strip);
@@ -268,6 +302,28 @@ namespace ModelConverter
 					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, "SA Tools Model Converter", null, ModelFormat.Basic);
 					break;
 			}
+		}
+	}
+
+	class CachedVertex : IEquatable<CachedVertex>
+	{
+		public Vertex vertex;
+		public Vertex normal;
+		public Color color;
+
+		public CachedVertex(Vertex v, Vertex n, Color c)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+		}
+
+		public bool Equals(CachedVertex other)
+		{
+			if (!vertex.Equals(other.vertex)) return false;
+			if (!normal.Equals(other.normal)) return false;
+			if (!color.Equals(other.color)) return false;
+			return true;
 		}
 	}
 }
