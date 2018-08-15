@@ -306,8 +306,11 @@ namespace ProjectManager
             SetControls();
         }
 
+		Exception createError = null;
         private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+			if (createError != null)
+				throw createError;
             if(ProjectCreated != null)
             {
                 ProjectCreationHandler dispatch = ProjectCreated;
@@ -333,7 +336,7 @@ namespace ProjectManager
             BackButton.Enabled = false;
             NextButton.Enabled = false;
             ControlBox = false;
-
+			createError = null;
 #if !DEBUG
             backgroundWorker1.RunWorkerAsync();
 #endif
@@ -627,8 +630,12 @@ namespace ProjectManager
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            // we should disable all form controls
-            SA_Tools.Game game = GetGameForRadioButtons();
+#if !DEBUG
+			try
+			{
+#endif
+			// we should disable all form controls
+			SA_Tools.Game game = GetGameForRadioButtons();
 
             using (ProgressDialog progress = new ProgressDialog("Creating project"))
             {
@@ -670,7 +677,14 @@ namespace ProjectManager
 
                 Invoke((Action)progress.Close);
             }
-        }
+#if !DEBUG
+			}
+			catch (Exception ex)
+			{
+				createError = ex;
+			}
+#endif
+		}
 
         private void NewProject_Shown(object sender, EventArgs e)
         {
