@@ -52,7 +52,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                     selectedNode == missionSETNode || selectedNode == splineNode) continue;
 
                 Item _item = GetItemForNode(selectedNode);
-                selection.Add(_item);
+                selection.Add(_item); // todo: need to find a way to suppress 
+                                // selection update events to prevent this from going crazy
             }
         }
 
