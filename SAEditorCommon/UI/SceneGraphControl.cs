@@ -22,6 +22,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         TreeNode missionSETNode;
         TreeNode splineNode;
 
+        bool suppressSelectionEvents = false;
+
         public SceneGraphControl()
         {
             InitializeComponent();
@@ -40,6 +42,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void SceneTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+
+            suppressSelectionEvents = true;
+
             selection.Clear();
 
             // match our editor selection to our tree
@@ -55,6 +60,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 selection.Add(_item); // todo: need to find a way to suppress 
                                 // selection update events to prevent this from going crazy
             }
+
+            suppressSelectionEvents = false;
         }
 
         private Item GetItemForNode(TreeNode node)
@@ -91,6 +98,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void Selection_SelectionChanged(EditorItemSelection sender)
         {
+            if (suppressSelectionEvents) return;
+
             // match our tree to our editor selection
             List<TreeNode> selectedNodes = new List<TreeNode>();
 
