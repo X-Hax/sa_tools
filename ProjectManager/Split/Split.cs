@@ -299,7 +299,14 @@ namespace ProjectManager.Split
                                 nohash = true;
                             }
                             break;
-                        case "stagelightdatalist":
+						case "pathlist":
+							{
+								PathList.Load(datafile, address, imageBase).Save(fileOutputPath, out string[] hashes);
+								data.MD5Hash = string.Join(",", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+						case "stagelightdatalist":
                             SA1StageLightDataList.Load(datafile, address).Save(fileOutputPath);
                             break;
                         case "weldlist":

@@ -224,7 +224,7 @@ namespace SonicRetro.SAModel
 			return ToCollada(texs);
 		}
 
-		public COLLADA ToCollada(string[] textures)
+public COLLADA ToCollada(string[] textures)
 		{
 			COLLADA result = new COLLADA
 			{
@@ -255,7 +255,8 @@ namespace SonicRetro.SAModel
 			List<effect> effects = new List<effect>();
 			List<geometry> geometries = new List<geometry>();
 			List<string> visitedAttaches = new List<string>();
-			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null);
+			int nodeID = -1;
+			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null, ref nodeID);
 			libraries.Add(new library_materials { material = materials.ToArray() });
 			libraries.Add(new library_effects { effect = effects.ToArray() });
 			libraries.Add(new library_geometries { geometry = geometries.ToArray() });
@@ -276,8 +277,9 @@ namespace SonicRetro.SAModel
 		}
 
 		protected node AddToCollada(List<material> materials, List<effect> effects, List<geometry> geometries,
-			List<string> visitedAttaches, bool hasTextures)
+			   List<string> visitedAttaches, bool hasTextures, ref int nodeID)
 		{
+
 			BasicAttach attach = Attach as BasicAttach;
 			if (attach == null || visitedAttaches.Contains(attach.Name))
 				goto skipAttach;
@@ -611,10 +613,11 @@ namespace SonicRetro.SAModel
 				}
 			});
 			skipAttach:
+			++nodeID;
 			node node = new node
 			{
-				id = Name,
-				name = Name,
+				id = $"{nodeID:000}_{Name}",
+				name = $"{nodeID:000}_{Name}",
 				Items = new object[]
 				{
 					new TargetableFloat3 { sid = "translate", Values = new double[] { Position.X, Position.Y, Position.Z } },
@@ -654,7 +657,7 @@ namespace SonicRetro.SAModel
 			}
 			List<node> childnodes = new List<node>();
 			foreach (NJS_OBJECT item in Children)
-				childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures));
+				childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures, ref nodeID));
 			node.node1 = childnodes.ToArray();
 			return node;
 		}

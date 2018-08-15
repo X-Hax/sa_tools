@@ -45,6 +45,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
             { "endpos", "End Positions" },
             { "animationlist", "Animation List" },
             { "levelpathlist", "Path List" },
+            { "pathlist", "Path List" },
             { "stagelightdatalist", "Stage Light Data List" },
             { "weldlist", "Weld List" },
             { "bmitemattrlist", "BM Item Attributes List" },
@@ -146,59 +147,84 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                         }
                         break;
                     case "levelpathlist":
-                        {
-                            modified = false;
-                            Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
-                            string[] hash1 = item.Value.MD5Hash.Split('|');
-                            foreach (string hash in hash1)
-                            {
-                                string[] hash2 = hash.Split(':');
-                                hashes.Add(hash2[0], hash2[1].Split(','));
-                            }
-                            foreach (string dir in Directory.GetDirectories(item.Value.Filename))
-                            {
-                                string name = new DirectoryInfo(dir).Name;
-                                if (!hashes.ContainsKey(name))
-                                {
-                                    modified = true;
-                                    break;
-                                }
-                            }
-                            if (modified.Value)
-                                break;
-                            foreach (KeyValuePair<string, string[]> dirinfo in hashes)
-                            {
-                                string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
-                                if (!Directory.Exists(dir))
-                                {
-                                    modified = true;
-                                    break;
-                                }
-                                if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
-                                {
-                                    modified = true;
-                                    break;
-                                }
-                                for (int i = 0; i < dirinfo.Value.Length; i++)
-                                {
-                                    string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
-                                    if (!File.Exists(file))
-                                    {
-                                        modified = true;
-                                        break;
-                                    }
-                                    else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
-                                    {
-                                        modified = true;
-                                        break;
-                                    }
-                                }
-                                if (modified.Value)
-                                    break;
-                            }
-                        }
+						{
+							modified = false;
+							string[] hashes = item.Value.MD5Hash.Split(',');
+							if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
+							{
+								modified = true;
+								break;
+							}
+							for (int i = 0; i < hashes.Length; i++)
+							{
+								string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+								if (!File.Exists(file))
+								{
+									modified = true;
+									break;
+								}
+								else if (HelperFunctions.FileHash(file) != hashes[i])
+								{
+									modified = true;
+									break;
+								}
+							}
+						}
                         break;
-                    case ("animindexlist"):
+					case "pathlist":
+						{
+							modified = false;
+							Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
+							string[] hash1 = item.Value.MD5Hash.Split('|');
+							foreach (string hash in hash1)
+							{
+								string[] hash2 = hash.Split(':');
+								hashes.Add(hash2[0], hash2[1].Split(','));
+							}
+							foreach (string dir in Directory.GetDirectories(item.Value.Filename))
+							{
+								string name = new DirectoryInfo(dir).Name;
+								if (!hashes.ContainsKey(name))
+								{
+									modified = true;
+									break;
+								}
+							}
+							if (modified.Value)
+								break;
+							foreach (KeyValuePair<string, string[]> dirinfo in hashes)
+							{
+								string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
+								if (!Directory.Exists(dir))
+								{
+									modified = true;
+									break;
+								}
+								if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
+								{
+									modified = true;
+									break;
+								}
+								for (int i = 0; i < dirinfo.Value.Length; i++)
+								{
+									string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									if (!File.Exists(file))
+									{
+										modified = true;
+										break;
+									}
+									else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
+									{
+										modified = true;
+										break;
+									}
+								}
+								if (modified.Value)
+									break;
+							}
+						}
+						break;
+					case ("animindexlist"):
                         modified = false;
 
                         string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
@@ -826,7 +852,33 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                                 writer.WriteLine();
                             }
                             break;
-                        case "stagelightdatalist":
+						case "pathlist":
+							{
+								List<PathData> paths = PathList.Load(data.Filename);
+								for (int i = 0; i < paths.Count; i++)
+								{
+									writer.WriteLine("Loop {0}_{1}_Entries[] = {{", name, i);
+									List<string> objs = new List<string>(paths[i].Path.Count);
+									foreach (PathDataEntry entry in paths[i].Path)
+										objs.Add(entry.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+									writer.WriteLine();
+									writer.WriteLine("LoopHead {0}_{1} = {{ {2}, LengthOfArray<int16_t>({0}_{1}_Entries), {3}, {0}_{1}_Entries, (ObjectFuncPtr){4} }};",
+										name, i, paths[i].Unknown,
+										HelperFunctions.ToC(paths[i].TotalDistance),
+										HelperFunctions.ToCHex(paths[i].Code));
+									writer.WriteLine();
+								}
+								writer.WriteLine("LoopHead *{0}[] = {{", name);
+								for (int i = 0; i < paths.Count; i++)
+									writer.WriteLine("\t&{0}_{1},", name, i);
+								writer.WriteLine("\tNULL");
+								writer.WriteLine("};");
+								writer.WriteLine();
+							}
+							break;
+						case "stagelightdatalist":
                             {
                                 List<SA1StageLightData> list = SA1StageLightDataList.Load(data.Filename);
                                 writer.WriteLine("StageLightData {0}[] = {{", name);

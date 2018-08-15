@@ -23,6 +23,7 @@ namespace LevelConverter
 				filename = Console.ReadLine();
 			}
 			LandTable level = LandTable.LoadFromFile(filename);
+			Dictionary<string, Attach> visitedAttaches = new Dictionary<string, Attach>();
 			switch (level.Format)
 			{
 				case LandTableFormat.SA1:
@@ -34,91 +35,132 @@ namespace LevelConverter
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
 								newcol.SurfaceFlags = SurfaceFlags.Visible;
-								newcol.Model = new SonicRetro.SAModel.NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
+								newcol.Model = new NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
 								newcol.Model.Scale = col.Model.Scale;
 								BasicAttach basatt = (BasicAttach)col.Model.Attach;
-								ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
-								newcol.Model.Attach = cnkatt;
-								VertexChunk vcnk;
-								if (basatt.Normal != null && basatt.Normal.Length > 0)
-									vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
+								string newname = basatt.Name + "_cnk";
+								if (visitedAttaches.ContainsKey(newname))
+									newcol.Model.Attach = visitedAttaches[newname];
 								else
-									vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
-								vcnk.Vertices = new List<Vertex>(basatt.Vertex);
-								if (basatt.Normal != null)
-									vcnk.Normals = new List<Vertex>(basatt.Normal);
-								vcnk.VertexCount = (ushort)basatt.Vertex.Length;
-								vcnk.Size = (ushort)((vcnk.Type == ChunkType.Vertex_VertexNormal ? vcnk.VertexCount * 6 : vcnk.VertexCount * 3) + 1);
-								cnkatt.Vertex.Add(vcnk);
-								foreach (NJS_MESHSET mesh in basatt.Mesh)
 								{
-									if (mesh.PolyType != Basic_PolyType.Strips)
-									{
-										Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
-										continue;
-									}
-									NJS_MATERIAL mat = null;
-									if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
-									{
-										mat = basatt.Material[mesh.MaterialID];
-										cnkatt.Poly.Add(new PolyChunkTinyTextureID()
-										{
-											ClampU = mat.ClampU,
-											ClampV = mat.ClampV,
-											FilterMode = mat.FilterMode,
-											FlipU = mat.FlipU,
-											FlipV = mat.FlipV,
-											SuperSample = mat.SuperSample,
-											TextureID = (ushort)mat.TextureID
-										});
-										cnkatt.Poly.Add(new PolyChunkMaterial()
-										{
-											SourceAlpha = mat.SourceAlpha,
-											DestinationAlpha = mat.DestinationAlpha,
-											Diffuse = mat.DiffuseColor,
-											Specular = mat.SpecularColor,
-											SpecularExponent = (byte)mat.Exponent
-										});
-									}
-									PolyChunkStrip strip;
-									if (mesh.UV != null & mesh.VColor != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripUVNColor);
-									else if (mesh.UV != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
-									else if (mesh.VColor != null)
-										strip = new PolyChunkStrip(ChunkType.Strip_StripColor);
+									ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = basatt.Name + "_cnk", Bounds = basatt.Bounds };
+									visitedAttaches[newname] = cnkatt;
+									newcol.Model.Attach = cnkatt;
+									VertexChunk vcnk;
+									bool hasnormal = basatt.Normal?.Length > 0;
+									bool hasvcolor = basatt.Mesh.Any(a => a.VColor != null);
+									if (hasvcolor)
+										vcnk = new VertexChunk(ChunkType.Vertex_VertexDiffuse8);
+									else if (hasnormal)
+										vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
 									else
-										strip = new PolyChunkStrip(ChunkType.Strip_Strip);
-									if (mat != null)
+										vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
+									List<CachedVertex> cache = new List<CachedVertex>(basatt.Vertex.Length);
+									List<List<ushort[]>> strips = new List<List<ushort[]>>();
+									foreach (NJS_MESHSET mesh in basatt.Mesh)
 									{
-										strip.IgnoreLight = mat.IgnoreLighting;
-										strip.IgnoreSpecular = mat.IgnoreSpecular;
-										strip.UseAlpha = mat.UseAlpha;
-										strip.DoubleSide = mat.DoubleSided;
-										strip.FlatShading = mat.FlatShading;
-										strip.EnvironmentMapping = mat.EnvironmentMap;
+										List<ushort[]> polys = new List<ushort[]>();
+										bool hasVColor = mesh.VColor != null;
+										int currentstriptotal = 0;
+										foreach (Poly poly in mesh.Poly)
+										{
+											ushort[] inds = (ushort[])poly.Indexes.Clone();
+											for (int i = 0; i < poly.Indexes.Length; i++)
+												inds[i] = (ushort)cache.AddUnique(new CachedVertex(
+													basatt.Vertex[poly.Indexes[i]],
+													basatt.Normal?[poly.Indexes[i]] ?? Vertex.UpNormal,
+													hasVColor ? mesh.VColor[currentstriptotal++] : Color.White));
+											polys.Add(inds);
+										}
+										strips.Add(polys);
 									}
-									int striptotal = 0;
-									foreach (Strip item in mesh.Poly.Cast<Strip>())
+									foreach (var item in cache)
 									{
-										UV[] uvs = null;
+										vcnk.Vertices.Add(item.vertex);
+										if (hasnormal)
+											vcnk.Normals.Add(item.normal);
+										if (hasvcolor)
+											vcnk.Diffuse.Add(item.color);
+									}
+									vcnk.VertexCount = (ushort)cache.Count;
+									switch (vcnk.Type)
+									{
+										case ChunkType.Vertex_Vertex:
+											vcnk.Size = (ushort)(vcnk.VertexCount * 3 + 1);
+											break;
+										case ChunkType.Vertex_VertexDiffuse8:
+											vcnk.Size = (ushort)(vcnk.VertexCount * 4 + 1);
+											break;
+										case ChunkType.Vertex_VertexNormal:
+											vcnk.Size = (ushort)(vcnk.VertexCount * 6 + 1);
+											break;
+										case ChunkType.Vertex_VertexNormalDiffuse8:
+											vcnk.Size = (ushort)(vcnk.VertexCount * 7 + 1);
+											break;
+									}
+									cnkatt.Vertex.Add(vcnk);
+									for (int i = 0; i < basatt.Mesh.Count; i++)
+									{
+										NJS_MESHSET mesh = basatt.Mesh[i];
+										if (mesh.PolyType != Basic_PolyType.Strips)
+										{
+											Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
+											continue;
+										}
+										NJS_MATERIAL mat = null;
+										if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
+										{
+											mat = basatt.Material[mesh.MaterialID];
+											cnkatt.Poly.Add(new PolyChunkTinyTextureID()
+											{
+												ClampU = mat.ClampU,
+												ClampV = mat.ClampV,
+												FilterMode = mat.FilterMode,
+												FlipU = mat.FlipU,
+												FlipV = mat.FlipV,
+												SuperSample = mat.SuperSample,
+												TextureID = (ushort)mat.TextureID
+											});
+											cnkatt.Poly.Add(new PolyChunkMaterial()
+											{
+												SourceAlpha = mat.SourceAlpha,
+												DestinationAlpha = mat.DestinationAlpha,
+												Diffuse = mat.DiffuseColor,
+												Specular = mat.SpecularColor,
+												SpecularExponent = (byte)mat.Exponent
+											});
+										}
+										PolyChunkStrip strip;
 										if (mesh.UV != null)
+											strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
+										else
+											strip = new PolyChunkStrip(ChunkType.Strip_Strip);
+										if (mat != null)
 										{
-											uvs = new UV[item.Indexes.Length];
-											Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
+											strip.IgnoreLight = mat.IgnoreLighting;
+											strip.IgnoreSpecular = mat.IgnoreSpecular;
+											strip.UseAlpha = mat.UseAlpha;
+											strip.DoubleSide = mat.DoubleSided;
+											strip.FlatShading = mat.FlatShading;
+											strip.EnvironmentMapping = mat.EnvironmentMap;
 										}
-										Color[] vcolors = null;
-										if (mesh.VColor != null)
+										int striptotal = 0;
+										for (int i1 = 0; i1 < mesh.Poly.Count; i1++)
 										{
-											vcolors = new Color[item.Indexes.Length];
-											Array.Copy(mesh.VColor, striptotal, vcolors, 0, item.Indexes.Length);
+											Strip item = (Strip)mesh.Poly[i1];
+											UV[] uvs = null;
+											if (mesh.UV != null)
+											{
+												uvs = new UV[item.Indexes.Length];
+												Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
+											}
+											strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, strips[i][i1], uvs, null));
+											striptotal += item.Indexes.Length;
 										}
-										strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uvs, vcolors));
-										striptotal += item.Indexes.Length;
+										cnkatt.Poly.Add(strip);
 									}
-									cnkatt.Poly.Add(strip);
 								}
 								newcollist.Add(newcol);
 							}
@@ -199,6 +241,8 @@ namespace LevelConverter
 								case ChunkType.Material_DiffuseAmbientSpecular2:
 									{
 										PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+										material.SourceAlpha = c2.SourceAlpha;
+										material.DestinationAlpha = c2.DestinationAlpha;
 										if (c2.Diffuse.HasValue)
 											material.DiffuseColor = c2.Diffuse.Value;
 										if (c2.Specular.HasValue)
@@ -256,7 +300,7 @@ namespace LevelConverter
 										{
 											minVtx = Math.Min(minVtx, strip.Indexes.Min());
 											maxVtx = Math.Max(maxVtx, strip.Indexes.Max());
-											strips.Add(new Strip(strip.Indexes, strip.Reversed));
+											strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
 											if (hasUV)
 												uvs.AddRange(strip.UVs);
 											if (hasVColor)
@@ -289,6 +333,28 @@ namespace LevelConverter
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
 					break;
 			}
+		}
+	}
+
+	class CachedVertex : IEquatable<CachedVertex>
+	{
+		public Vertex vertex;
+		public Vertex normal;
+		public Color color;
+
+		public CachedVertex(Vertex v, Vertex n, Color c)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+		}
+
+		public bool Equals(CachedVertex other)
+		{
+			if (!vertex.Equals(other.vertex)) return false;
+			if (!normal.Equals(other.normal)) return false;
+			if (!color.Equals(other.color)) return false;
+			return true;
 		}
 	}
 }
