@@ -88,6 +88,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
+            modelLibraryControl1.InitRenderer();
 
             systemFallback = Program.SADXGameFolder + "/System/";
 
@@ -513,8 +514,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
                         LevelData.ClearLevelItems();
-						for (int i = 0; i < LevelData.geo.COL.Count; i++)
-							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+
+                        modelLibraryControl1.BeginUpdate();
+
+                        for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                        {
+                            LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+                            modelLibraryControl1.Add(LevelData.geo.COL[i].Model.Attach);
+                        }
+
 					}
 
 					progress.StepProgress();
@@ -1326,7 +1334,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
-			exportOBJToolStripMenuItem.Enabled = isGeometryPresent;
+			exportToolStripMenuItem.Enabled = isGeometryPresent;
 
 			// Edit menu
 			// Clear Level
@@ -1353,6 +1361,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
+            modelLibraryControl1.EndUpdate();
 			toolStrip1.Enabled = isStageLoaded;
             LevelData.InvalidateRenderState();
 			//LevelData_StateChanged();
@@ -2652,95 +2661,111 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 		}
 
-		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj"
-			};
-			if (a.ShowDialog() == DialogResult.OK)
-			{
-				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-				{
-					#region Material Exporting
-					string materialPrefix = LevelData.leveltexs;
+        private void levelGeoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportObj();
+        }
 
-					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+        private void selectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //ExportObj();
+        }
 
-					int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
-					if (LevelData.geo.Anim != null)
-						stepCount += LevelData.geo.Anim.Count;
+        private void everythingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //ExportObj();
+        }
 
-					ProgressDialog progress = new ProgressDialog("Exporting stage: " + levelName, stepCount, true, false);
-					progress.Show(this);
-					progress.SetTaskAndStep("Exporting...");
+        private void ExportObj()
+        {
+            SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj"
+            };
+            if (a.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                {
+                    #region Material Exporting
+                    string materialPrefix = LevelData.leveltexs;
 
-					// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-					// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-					for (int i = 0; i < LevelData.TextureBitmaps[LevelData.leveltexs].Length; i++)
-					{
-						mtlstream.WriteLine("newmtl {0}_material_{1}", materialPrefix, i);
-						mtlstream.WriteLine("Ka 1 1 1");
-						mtlstream.WriteLine("Kd 1 1 1");
-						mtlstream.WriteLine("Ks 0 0 0");
-						mtlstream.WriteLine("illum 1");
+                    objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-						if (!string.IsNullOrEmpty(LevelData.leveltexs))
-						{
-							mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][i].Name + ".png");
+                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+                    if (LevelData.geo.Anim != null)
+                        stepCount += LevelData.geo.Anim.Count;
 
-							// save texture
-							string mypath = Path.GetDirectoryName(a.FileName);
-							BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][i];
-							item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
-						}
+                    ProgressDialog progress = new ProgressDialog("Exporting stage: " + levelName, stepCount, true, false);
+                    progress.Show(this);
+                    progress.SetTaskAndStep("Exporting...");
 
-						progress.Step = String.Format("Texture {0}/{1}", i + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
-						progress.StepProgress();
-						Application.DoEvents();
-					}
-					#endregion
+                    // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                    // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                    for (int i = 0; i < LevelData.TextureBitmaps[LevelData.leveltexs].Length; i++)
+                    {
+                        mtlstream.WriteLine("newmtl {0}_material_{1}", materialPrefix, i);
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine("Kd 1 1 1");
+                        mtlstream.WriteLine("Ks 0 0 0");
+                        mtlstream.WriteLine("illum 1");
 
-					int totalVerts = 0;
-					int totalNorms = 0;
-					int totalUVs = 0;
+                        if (!string.IsNullOrEmpty(LevelData.leveltexs))
+                        {
+                            mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][i].Name + ".png");
 
-					bool errorFlag = false;
+                            // save texture
+                            string mypath = Path.GetDirectoryName(a.FileName);
+                            BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+                            item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
+                        }
 
-					for (int i = 0; i < LevelData.geo.COL.Count; i++)
-					{
-						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
-							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                        progress.Step = String.Format("Texture {0}/{1}", i + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
+                        progress.StepProgress();
+                        Application.DoEvents();
+                    }
+                    #endregion
 
-						progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
-						progress.StepProgress();
-						Application.DoEvents();
-					}
-					if (LevelData.geo.Anim != null)
-					{
-						for (int i = 0; i < LevelData.geo.Anim.Count; i++)
-						{
-							Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(),
-								ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+                    int totalVerts = 0;
+                    int totalNorms = 0;
+                    int totalUVs = 0;
 
-							progress.Step = String.Format("Animation {0}/{1}", i + 1, LevelData.geo.Anim.Count);
-							progress.StepProgress();
-							Application.DoEvents();
-						}
-					}
+                    bool errorFlag = false;
 
-					if (errorFlag)
-					{
-						MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.", "Failure",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
+                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                    {
+                        
+                        Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, materialPrefix, new MatrixStack(),
+                            ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-					progress.SetTaskAndStep("Export complete!");
-				}
-			}
-		}
+                        progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+                        progress.StepProgress();
+                        Application.DoEvents();
+                    }
+                    if (LevelData.geo.Anim != null)
+                    {
+                        for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+                        {
+                            Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(),
+                                ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                            progress.Step = String.Format("Animation {0}/{1}", i + 1, LevelData.geo.Anim.Count);
+                            progress.StepProgress();
+                            Application.DoEvents();
+                        }
+                    }
+
+                    if (errorFlag)
+                    {
+                        MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.", "Failure",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    progress.SetTaskAndStep("Export complete!");
+                }
+            }
+        }
 
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
 		{

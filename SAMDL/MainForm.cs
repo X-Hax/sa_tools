@@ -66,7 +66,8 @@ namespace SonicRetro.SAModel.SAMDL
 
         ActionMappingList actionList;
         ActionInputCollector actionInputCollector;
-        ModelLibrary modelLibrary;
+        ModelLibraryWindow modelLibraryWindow;
+        ModelLibraryControl modelLibrary;
         #endregion
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -106,7 +107,8 @@ namespace SonicRetro.SAModel.SAMDL
             actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
             actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-            modelLibrary = new ModelLibrary();
+            modelLibraryWindow = new ModelLibraryWindow();
+            modelLibrary = modelLibraryWindow.modelLibraryControl1;
             modelLibrary.InitRenderer();
             modelLibrary.SelectionChanged += modelLibrary_SelectionChanged;
 
@@ -1297,10 +1299,10 @@ namespace SonicRetro.SAModel.SAMDL
         private void modelLibraryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // show model library
-            modelLibrary.Show();
+            modelLibraryWindow.Show();
         }
 
-        void modelLibrary_SelectionChanged(ModelLibrary sender, int selectionIndex, Attach selectedModel)
+        void modelLibrary_SelectionChanged(ModelLibraryControl sender, int selectionIndex, Attach selectedModel)
         {
             if ((selectionIndex >= 0) && (selectedModel != null) && selectedObject != null)
             {

@@ -15,10 +15,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	/// <summary>
 	/// Manages a list of attach objects, as well as provides a visual interface for allowing users to select them.
 	/// </summary>
-	public partial class ModelLibrary : Form
+	public partial class ModelLibraryControl : UserControl
 	{
 		#region Events
-		public delegate void LibrarySelectHandler(ModelLibrary sender, int selectionIndex, Attach selectedModel);
+		public delegate void LibrarySelectHandler(ModelLibraryControl sender, int selectionIndex, Attach selectedModel);
 		public event LibrarySelectHandler SelectionChanged;
 		#endregion
 
@@ -36,19 +36,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             get { return (selectedModelIndex >= 0) ? modelList[selectedModelIndex].Value : null; }
             set 
 		    {
-			    selectedModelIndex = -1;
-			    selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
+                if (!IsDesignMode())
+                {
+                    selectedModelIndex = -1;
+                    selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
 
-			    if(selectedModelIndex >= 0) 
-			    {
-				    modelListView.SelectedItems.Clear();
-				    modelListView.Items[selectedModelIndex].Selected = true;
-				    modelListView.Select();
-			    }
-			    else
-			    {
-				    modelListView.SelectedItems.Clear();
-			    }
+                    if (selectedModelIndex >= 0)
+                    {
+                        modelListView.SelectedItems.Clear();
+                        modelListView.Items[selectedModelIndex].Selected = true;
+                        modelListView.Select();
+                    }
+                    else
+                    {
+                        modelListView.SelectedItems.Clear();
+                    }
+                }
 		    }
 		}
 
@@ -71,23 +74,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		#endregion
 
 		#region Initialization / Construction Methods
-		public ModelLibrary()
+		public ModelLibraryControl()
 		{
 			InitializeComponent();
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			modelList = new List<KeyValuePair<int, Attach>>();
-			attachListRenders = new List<KeyValuePair<int, Bitmap>>();
-			meshes = new List<Mesh>();
-			njs_object = new NJS_OBJECT();
+            if (!IsDesignMode())
+            {
 
-			modelListView.LargeImageList = new ImageList();
-			modelListView.HideSelection = false;
+                SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+                modelList = new List<KeyValuePair<int, Attach>>();
+                attachListRenders = new List<KeyValuePair<int, Bitmap>>();
+                meshes = new List<Mesh>();
+                njs_object = new NJS_OBJECT();
 
-			panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
-			defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
+                modelListView.LargeImageList = new ImageList();
+                modelListView.HideSelection = false;
 
-			splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
+                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
+                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
+
+                splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
+            }
 		}
 
 		public void InitRenderer()
@@ -261,6 +268,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 			suppressingListUpateEvents = false;
 		}
+
+        private bool IsDesignMode()
+        {
+            //return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+
+            if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
+            {
+                return true;
+            }
+            return false;
+        }
 		#endregion
 
 		#region Rendering Methods
@@ -347,26 +365,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (SelectionChanged != null) SelectionChanged(this, selectedModelIndex, SelectedModel);
 		}
 
-		private void ModelLibrary_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			this.Hide();
-			e.Cancel = true;
-		}
+        private void ModelLibraryControl_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!IsDesignMode())
+            {
 
-		private void ModelLibrary_Shown(object sender, EventArgs e)
-		{
-			RenderAllModels();
-			PopulateListView();
-			RenderModel(selectedModelIndex, false);
-		}
+            }
+        }
 
-		private void ModelLibrary_ResizeEnd(object sender, EventArgs e)
-		{
-			RenderModel(selectedModelIndex, false);
-		}
+        public void FullReRender()
+        {
+            RenderAllModels();
+            PopulateListView();
+            RenderModel(selectedModelIndex, false);
+        }
 
-		#region Input Event Methods
-		bool zoomKeyDown = false, lookKeyDown = false;
+        private void ModelLibraryControl_Resize(object sender, EventArgs e)
+        {
+            if (!IsDesignMode())
+            {
+                if(d3dDevice != null) RenderModel(selectedModelIndex, false);
+            }
+        }
+
+        #region Input Event Methods
+        bool zoomKeyDown = false, lookKeyDown = false;
 		Point mouseLast;
 		private void splitContainer1_Panel2_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -415,7 +438,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			RenderModel(selectedModelIndex, false);
 		}
 
-		private void splitContainer1_Panel2_MouseUp(object sender, MouseEventArgs e)
+        private void splitContainer1_Panel2_MouseUp(object sender, MouseEventArgs e)
 		{
 			if (e.Button == System.Windows.Forms.MouseButtons.Left) lookKeyDown = false;
 		}

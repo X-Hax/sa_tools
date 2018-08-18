@@ -139,11 +139,17 @@
     <Compile Include="UI\HexNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\ModelLibrary.cs">
+    <Compile Include="UI\ModelLibraryControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryControl.Designer.cs">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ModelLibraryWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ModelLibrary.Designer.cs">
-      <DependentUpon>ModelLibrary.cs</DependentUpon>
+    <Compile Include="UI\ModelLibraryWindow.Designer.cs">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MultiSelectTreeview.cs">
       <SubType>Component</SubType>
@@ -267,8 +273,11 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\ModelLibrary.resx">
-      <DependentUpon>ModelLibrary.cs</DependentUpon>
+    <EmbeddedResource Include="UI\ModelLibraryControl.resx">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibraryWindow.resx">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\NewObjectDialog.resx">
       <DependentUpon>NewObjectDialog.cs</DependentUpon>
