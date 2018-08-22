@@ -1,12 +1,17 @@
-﻿using System.Drawing;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using System.Runtime.InteropServices;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.Direct3D
 {
-    [StructLayout(LayoutKind.Explicit)]
-    public struct FVF_PositionNormal
+	public interface IVertex
+	{
+		Vector3 GetPosition();
+	}
+
+	[StructLayout(LayoutKind.Explicit)]
+    public struct FVF_PositionNormal : IVertex
     {
         [FieldOffset(0x00)]
         public Vector3 Position;
@@ -25,7 +30,7 @@ namespace SonicRetro.SAModel.Direct3D
             }
         }
 
-        public const VertexFormats Format = VertexFormats.PositionNormal;
+        public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal;
 
         public FVF_PositionNormal(Vector3 Pos, Vector3 Nor)
         {
@@ -38,10 +43,15 @@ namespace SonicRetro.SAModel.Direct3D
             Position = data.Position.ToVector3();
             Normal = data.Normal.ToVector3();
         }
-    }
+
+		public Vector3 GetPosition()
+		{
+			return Position;
+		}
+	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalTextured
+	public struct FVF_PositionNormalTextured : IVertex
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -63,7 +73,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		public const VertexFormats Format = VertexFormats.PositionNormal | VertexFormats.Texture1;
+		public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal | VertexFormat.Texture1;
 
 		public FVF_PositionNormalTextured(Vector3 Pos, Vector3 Nor, Vector2 UV)
 		{
@@ -81,10 +91,15 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				UV = new Vector2();
 		}
+
+		public Vector3 GetPosition()
+		{
+			return Position;
+		}
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalColored
+	public struct FVF_PositionNormalColored : IVertex
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -106,7 +121,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		public const VertexFormats Format = VertexFormats.PositionNormal | VertexFormats.Diffuse;
+		public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal | VertexFormat.Diffuse;
 
 		public FVF_PositionNormalColored(Vector3 Pos, Vector3 Nor, Color Col)
 		{
@@ -121,10 +136,15 @@ namespace SonicRetro.SAModel.Direct3D
 			Normal = data.Normal.ToVector3();
 			Color = (data.Color ?? System.Drawing.Color.White).ToArgb();
 		}
+
+		public Vector3 GetPosition()
+		{
+			return Position;
+		}
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalTexturedColored
+	public struct FVF_PositionNormalTexturedColored : IVertex
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -149,7 +169,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		public const VertexFormats Format = VertexFormats.PositionNormal | VertexFormats.Diffuse | VertexFormats.Texture1;
+		public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal | VertexFormat.Diffuse | VertexFormat.Texture1;
 
 		public FVF_PositionNormalTexturedColored(Vector3 Pos, Vector3 Nor, Vector2 UV, Color Col)
 		{
@@ -168,6 +188,11 @@ namespace SonicRetro.SAModel.Direct3D
 				UV = new Vector2(data.UV.U, data.UV.V);
 			else
 				UV = new Vector2();
+		}
+
+		public Vector3 GetPosition()
+		{
+			return Position;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.DirectX;
+﻿using SharpDX;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -22,23 +23,6 @@ namespace SonicRetro.SAModel.Direct3D
 			Translate(ref matrix, vector.X, vector.Y, vector.Z);
 		}
 
-		public static void NJTranslate(this MatrixStack transform, float x, float y, float z)
-		{
-			Matrix m = transform.Top;
-			Translate(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJTranslate(this MatrixStack transform, Vertex vertex)
-		{
-			transform.NJTranslate(vertex.X, vertex.Y, vertex.Z);
-		}
-
-		public static void NJTranslate(this MatrixStack transform, Vector3 vector)
-		{
-			transform.NJTranslate(vector.X, vector.Y, vector.Z);
-		}
-
 		public static void RotateX(ref Matrix matrix, int x)
 		{
 			float v24 = Extensions.BAMSSin(x);
@@ -55,13 +39,6 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M32 = v17 * matrix.M32 - v19 * v24;
 			matrix.M33 = v17 * matrix.M33 - v21 * v24;
 			matrix.M34 = v17 * matrix.M34 - v20 * v24;
-		}
-
-		public static void NJRotateX(this MatrixStack transform, int x)
-		{
-			Matrix m = transform.Top;
-			RotateX(ref m, x);
-			transform.LoadMatrix(m);
 		}
 
 		public static void RotateY(ref Matrix matrix, int y)
@@ -82,13 +59,6 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M34 = v11 * v22 + v7 * matrix.M34;
 		}
 
-		public static void NJRotateY(this MatrixStack transform, int y)
-		{
-			Matrix m = transform.Top;
-			RotateY(ref m, y);
-			transform.LoadMatrix(m);
-		}
-
 		public static void RotateZ(ref Matrix matrix, int z)
 		{
 			float v22 = Extensions.BAMSSin(z);
@@ -107,13 +77,6 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M24 = v7 * matrix.M24 - v11 * v22;
 		}
 
-		public static void NJRotateZ(this MatrixStack transform, int z)
-		{
-			Matrix m = transform.Top;
-			RotateZ(ref m, z);
-			transform.LoadMatrix(m);
-		}
-
 		public static void RotateXYZ(ref Matrix matrix, int x, int y, int z)
 		{
 			if (z != 0)
@@ -127,18 +90,6 @@ namespace SonicRetro.SAModel.Direct3D
 		public static void RotateXYZ(ref Matrix matrix, Rotation rotation)
 		{
 			RotateXYZ(ref matrix, rotation.X, rotation.Y, rotation.Z);
-		}
-
-		public static void NJRotateXYZ(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateXYZ(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateXYZ(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
 		}
 
 		public static void RotateZYX(ref Matrix matrix, int x, int y, int z)
@@ -156,18 +107,6 @@ namespace SonicRetro.SAModel.Direct3D
 			RotateZYX(ref matrix, rotation.X, rotation.Y, rotation.Z);
 		}
 
-		public static void NJRotateZYX(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateZYX(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateZYX(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateZYX(rotation.X, rotation.Y, rotation.Z);
-		}
-
 		public static void RotateObject(ref Matrix matrix, int x, int y, int z)
 		{
 			if (z != 0)
@@ -181,18 +120,6 @@ namespace SonicRetro.SAModel.Direct3D
 		public static void RotateObject(ref Matrix matrix, Rotation rotation)
 		{
 			RotateObject(ref matrix, rotation.X, rotation.Y, rotation.Z);
-		}
-
-		public static void NJRotateObject(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateObject(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateObject(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateObject(rotation.X, rotation.Y, rotation.Z);
 		}
 
 		public static void Scale(ref Matrix matrix, float x, float y, float z)
@@ -220,22 +147,100 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			Scale(ref matrix, vector.X, vector.Y, vector.Z);
 		}
+	}
 
-		public static void NJScale(this MatrixStack transform, float x, float y, float z)
+	public class MatrixStack
+	{
+		private Stack<Matrix> matrices = new Stack<Matrix>();
+
+		public Matrix Top => matrices.Peek();
+
+		public void Push() => matrices.Push(Top);
+
+		public void Pop() => matrices.Pop();
+
+		public void LoadMatrix(Matrix m) { matrices.Pop(); matrices.Push(m); }
+
+		public void NJTranslate(float x, float y, float z)
 		{
-			Matrix m = transform.Top;
-			Scale(ref m, x, y, z);
-			transform.LoadMatrix(m);
+			Matrix m = Top;
+			MatrixFunctions.Translate(ref m, x, y, z);
+			LoadMatrix(m);
 		}
 
-		public static void NJScale(this MatrixStack transform, Vertex vertex)
+		public void NJTranslate(Vertex vertex)
 		{
-			transform.NJScale(vertex.X, vertex.Y, vertex.Z);
+			NJTranslate(vertex.X, vertex.Y, vertex.Z);
 		}
 
-		public static void NJScale(this MatrixStack transform, Vector3 vector)
+		public void NJTranslate(Vector3 vector)
 		{
-			transform.NJScale(vector.X, vector.Y, vector.Z);
+			NJTranslate(vector.X, vector.Y, vector.Z);
 		}
+
+		public void NJRotateX(int x)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateX(ref m, x);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateY(int y)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateY(ref m, y);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateZ(int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateZ(ref m, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateXYZ(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateXYZ(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateXYZ(Rotation rotation)
+		{
+			NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
+		}
+
+		public void NJRotateZYX(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateZYX(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateZYX(Rotation rotation)
+		{
+			NJRotateZYX(rotation.X, rotation.Y, rotation.Z);
+		}
+
+		public void NJRotateObject(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateObject(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateObject(Rotation rotation) => NJRotateObject(rotation.X, rotation.Y, rotation.Z);
+
+		public void NJScale(float x, float y, float z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.Scale(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJScale(Vertex vertex) => NJScale(vertex.X, vertex.Y, vertex.Z);
+
+		public void NJScale(Vector3 vector) => NJScale(vector.X, vector.Y, vector.Z);
 	}
 }

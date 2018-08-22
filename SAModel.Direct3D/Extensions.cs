@@ -2,34 +2,29 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using System.IO;
 using System.Globalization;
+using SharpDX;
+using Color = System.Drawing.Color;
+using SharpDX.Direct3D9;
 
 namespace SonicRetro.SAModel.Direct3D
 {
 	public static class Extensions
 	{
-		public static Vector3 ToVector3(this Vertex vert)
-		{
-			return new Vector3(vert.X, vert.Y, vert.Z);
-		}
+		public static Vector3 ToVector3(this Vertex vert) => new Vector3(vert.X, vert.Y, vert.Z);
 
-		public static Vector3 ToVector3(this Rotation rotation)
-		{
-			return new Vector3(rotation.XDeg, rotation.YDeg, rotation.ZDeg);
-		}
+		public static Vector3 ToVector3(this Rotation rotation) => new Vector3(rotation.XDeg, rotation.YDeg, rotation.ZDeg);
 
-		public static Color ToColor(this Vertex vert)
-		{
-			return Color.FromArgb(255, (int)(vert.X * 255), (int)(vert.Y * 255), (int)(vert.Z * 255));
-		}
+		public static Color ToColor(this Vertex vert) => Color.FromArgb(255, (int)(vert.X * 255), (int)(vert.Y * 255), (int)(vert.Z * 255));
 
-		public static Vertex ToVertex(this Vector3 input)
-		{
-			return new Vertex(input.X, input.Y, input.Z);
-		}
+		public static Vertex ToVertex(this Vector3 input) => new Vertex(input.X, input.Y, input.Z);
+
+		public static BoundingSphere ToSAModel(this SharpDX.BoundingSphere sphere) => new BoundingSphere(sphere.Center.ToVertex(), sphere.Radius);
+
+		public static SharpDX.BoundingSphere ToSharpDX(this BoundingSphere sphere) => new SharpDX.BoundingSphere(sphere.Center.ToVector3(), sphere.Radius);
+
+		public static SharpDX.Mathematics.Interop.RawColor4 ToRawColor4(this Color color) => new SharpDX.Mathematics.Interop.RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
 
 		public static void CalculateBounds(this Attach attach)
 		{
@@ -37,46 +32,43 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(vert.Position.ToVector3());
-			attach.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
-			attach.Bounds.Center.X = center.X;
-			attach.Bounds.Center.Y = center.Y;
-			attach.Bounds.Center.Z = center.Z;
+			attach.Bounds = SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
 		}
 
 		public static void SetDeviceStates(this NJS_MATERIAL material, Device device, Texture texture, Matrix transform, FillMode fillMode)
 		{
-			device.RenderState.FillMode = fillMode;
-			device.SetTransform(TransformType.World, transform);
+			device.SetRenderState(RenderState.FillMode, fillMode);
+			device.SetTransform(TransformState.World, transform);
 			if (material != null)
 			{
 				device.Material = new Material
 				{
-					Diffuse = material.DiffuseColor,
-					Ambient = material.DiffuseColor,
-					Specular = material.IgnoreSpecular ? Color.Transparent : material.SpecularColor,
-					SpecularSharpness = material.Exponent * material.Exponent
+					Diffuse = material.DiffuseColor.ToRawColor4(),
+					Ambient = material.DiffuseColor.ToRawColor4(),
+					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
+					Power = material.Exponent * material.Exponent
 				};
 				if (!material.SuperSample)
 				{
-					device.SamplerState[0].MagFilter = TextureFilter.None;
-					device.SamplerState[0].MinFilter = TextureFilter.None;
-					device.SamplerState[0].MipFilter = TextureFilter.None;
+					device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
+					device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
+					device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
 				}
 				device.SetTexture(0, material.UseTexture ? texture : null);
-				device.RenderState.Ambient = (material.IgnoreLighting) ? Color.White : Color.Black;
-				device.RenderState.AlphaBlendEnable = material.UseAlpha;
+				device.SetRenderState(RenderState.Ambient, (material.IgnoreLighting ? Color.White : Color.Black).ToArgb());
+				device.SetRenderState(RenderState.AlphaBlendEnable, material.UseAlpha);
 
 				if (material.UseAlpha)
-					device.RenderState.Ambient = material.DiffuseColor;
+					device.SetRenderState(RenderState.Ambient, material.DiffuseColor.ToArgb());
 
 				switch (material.DestinationAlpha)
 				{
 					case AlphaInstruction.Zero:
-						device.RenderState.AlphaDestinationBlend = Blend.Zero;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.Zero);
 						break;
 
 					case AlphaInstruction.One:
-						device.RenderState.AlphaDestinationBlend = Blend.One;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.One);
 						break;
 
 					case AlphaInstruction.OtherColor:
@@ -86,29 +78,29 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case AlphaInstruction.SourceAlpha:
-						device.RenderState.AlphaDestinationBlend = Blend.SourceAlpha;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.SourceAlpha);
 						break;
 
 					case AlphaInstruction.InverseSourceAlpha:
-						device.RenderState.AlphaDestinationBlend = Blend.InvSourceAlpha;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseSourceAlpha);
 						break;
 
 					case AlphaInstruction.DestinationAlpha:
-						device.RenderState.AlphaDestinationBlend = Blend.DestinationAlpha;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.DestinationAlpha);
 						break;
 
 					case AlphaInstruction.InverseDestinationAlpha:
-						device.RenderState.AlphaDestinationBlend = Blend.InvDestinationAlpha;
+						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseDestinationAlpha);
 						break;
 				}
 				switch (material.SourceAlpha)
 				{
 					case AlphaInstruction.Zero:
-						device.RenderState.AlphaSourceBlend = Blend.Zero;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.Zero);
 						break;
 
 					case AlphaInstruction.One:
-						device.RenderState.AlphaSourceBlend = Blend.One;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
 						break;
 
 					case AlphaInstruction.OtherColor:
@@ -118,52 +110,52 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case AlphaInstruction.SourceAlpha:
-						device.RenderState.AlphaSourceBlend = Blend.SourceAlpha;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
 						break;
 
 					case AlphaInstruction.InverseSourceAlpha:
-						device.RenderState.AlphaSourceBlend = Blend.InvSourceAlpha;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseSourceAlpha);
 						break;
 
 					case AlphaInstruction.DestinationAlpha:
-						device.RenderState.AlphaSourceBlend = Blend.DestinationAlpha;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.DestinationAlpha);
 						break;
 
 					case AlphaInstruction.InverseDestinationAlpha:
-						device.RenderState.AlphaSourceBlend = Blend.InvDestinationAlpha;
+						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseDestinationAlpha);
 						break;
 				}
-				device.TextureState[0].TextureCoordinateIndex = material.EnvironmentMap ? (int)TextureCoordinateIndex.SphereMap : 0;
+				device.SetTextureStageState(0, TextureStage.TexCoordIndex, material.EnvironmentMap ? (int)TextureCoordIndex.SphereMap : 0);
 				if (material.ClampU)
-					device.SamplerState[0].AddressU = TextureAddress.Clamp;
+					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
 				else if (material.FlipU)
-					device.SamplerState[0].AddressU = TextureAddress.Mirror;
+					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Mirror);
 				else
-					device.SamplerState[0].AddressU = TextureAddress.Wrap;
+					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
 				if (material.ClampV)
-					device.SamplerState[0].AddressV = TextureAddress.Clamp;
+					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
 				else if (material.FlipV)
-					device.SamplerState[0].AddressV = TextureAddress.Mirror;
+					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Mirror);
 				else
-					device.SamplerState[0].AddressV = TextureAddress.Wrap;
+					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
 			}
 			else
 			{
 				device.Material = new Material
 				{
-					Diffuse = Color.White,
-					Ambient = Color.White,
-					Specular = Color.Transparent
+					Diffuse = Color.White.ToRawColor4(),
+					Ambient = Color.White.ToRawColor4(),
+					Specular = Color.Transparent.ToRawColor4()
 				};
-				device.SamplerState[0].MagFilter = TextureFilter.None;
-				device.SamplerState[0].MinFilter = TextureFilter.None;
-				device.SamplerState[0].MipFilter = TextureFilter.None;
+				device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
+				device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
+				device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
 				device.SetTexture(0, null);
-				device.RenderState.Ambient = Color.White;
-				device.RenderState.AlphaBlendEnable = false;
-				device.TextureState[0].TextureCoordinateIndex = 0;
-				device.SamplerState[0].AddressU = TextureAddress.Wrap;
-				device.SamplerState[0].AddressV = TextureAddress.Wrap;
+				device.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
+				device.SetRenderState(RenderState.AlphaBlendEnable, false);
+				device.SetTextureStageState(0, TextureStage.TexCoordIndex, 0);
+				device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
+				device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
 			}
 		}
 
@@ -172,8 +164,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<Vector3> verts = new List<Vector3>();
 			foreach (VertexData vert in attach.MeshInfo[mesh].Vertices)
 				verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), transform));
-			float radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
-			return new BoundingSphere(center.X, center.Y, center.Z, radius);
+			return SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
 		}
 
 		public static void CalculateBounds(this COL col)
@@ -183,10 +174,7 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in col.Model.Attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), matrix));
-			col.Bounds.Radius = Geometry.ComputeBoundingSphere(verts.ToArray(), VertexFormats.Position, out Vector3 center);
-			col.Bounds.Center.X = center.X;
-			col.Bounds.Center.Y = center.Y;
-			col.Bounds.Center.Z = center.Z;
+			col.Bounds = SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
 		}
 
 		public static BoundingSphere Merge(BoundingSphere sphereA, BoundingSphere sphereB)
@@ -197,22 +185,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (sphereB.Center.IsEmpty && sphereB.Radius == 0)
 				return sphereA;
 
-			// we'll merge our bounding spheres here. To do this, we'll take both bounding spheres,
-			// and cast 3 points from each one - center, radius + up, radius + down. Pooly all of them,
-			// and generate a new sphere from that and you've got a merged sphere
-
-			List<CustomVertex.PositionOnly> allPoints = new List<CustomVertex.PositionOnly>
-			{
-				new CustomVertex.PositionOnly(sphereA.Center.ToVector3()),
-				new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, 1 * sphereA.Radius, 0)),
-				new CustomVertex.PositionOnly(sphereA.Center.ToVector3() + new Vector3(0, -1 * sphereA.Radius, 0)),
-				new CustomVertex.PositionOnly(sphereB.Center.ToVector3()),
-				new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, 1 * sphereB.Radius, 0)),
-				new CustomVertex.PositionOnly(sphereB.Center.ToVector3() + new Vector3(0, -1 * sphereB.Radius, 0))
-			};
-
-			float finalRadius = Geometry.ComputeBoundingSphere(allPoints.ToArray(), VertexFormats.Position, out Vector3 center);
-			return new BoundingSphere(center.ToVertex(), finalRadius);
+			return SharpDX.BoundingSphere.Merge(sphereA.ToSharpDX(), sphereB.ToSharpDX()).ToSAModel();
 		}
 
 		public static Mesh CreateD3DMesh(this Attach attach, Device dev)
@@ -231,47 +204,14 @@ namespace SonicRetro.SAModel.Direct3D
 			switch (data)
 			{
 				case 3:
-					return CreateD3DMesh<FVF_PositionNormalTexturedColored>(attach, dev, numverts);
+					return new Mesh<FVF_PositionNormalTexturedColored>(attach, dev);
 				case 2:
-					return CreateD3DMesh<FVF_PositionNormalColored>(attach, dev, numverts);
+					return new Mesh<FVF_PositionNormalColored>(attach, dev);
 				case 1:
-					return CreateD3DMesh<FVF_PositionNormalTextured>(attach, dev, numverts);
+					return new Mesh<FVF_PositionNormalTextured>(attach, dev);
 				default:
-					return CreateD3DMesh<FVF_PositionNormal>(attach, dev, numverts);
+					return new Mesh<FVF_PositionNormal>(attach, dev);
 			}
-		}
-
-		private static Mesh CreateD3DMesh<T>(Attach attach, Device dev, int numverts)
-		{
-			List<T> vb = new List<T>(numverts);
-			List<short> ib = new List<short>(numverts);
-			List<int> at = new List<int>(numverts / 3);
-			for (int i = 0; i < attach.MeshInfo.Length; i++)
-			{
-				int off = vb.Count;
-				vb.AddRange(attach.MeshInfo[i].Vertices.Select(v => (T)Activator.CreateInstance(typeof(T), v)));
-				ushort[] tris = attach.MeshInfo[i].ToTriangles();
-				ib.AddRange(tris.Select(t => (short)(t + off)));
-				for (int j = 0; j < tris.Length / 3; j++)
-					at.Add(i);
-			}
-			Mesh functionReturnValue = new Mesh(ib.Count / 3, vb.Count,
-				MeshFlags.Managed, (VertexElement[])typeof(T).InvokeMember("Elements",
-				System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-				null, null, null), dev);
-			int[] atb = functionReturnValue.LockAttributeBufferArray(LockFlags.None);
-			at.CopyTo(atb);
-			functionReturnValue.SetVertexBufferData(vb.ToArray(), LockFlags.None);
-			functionReturnValue.SetIndexBufferData(ib.ToArray(), LockFlags.None);
-			functionReturnValue.UnlockAttributeBuffer(atb);
-
-			int[] adjacency = new int[functionReturnValue.NumberFaces * 3];
-			functionReturnValue.GenerateAdjacency(0.0001f, adjacency);
-			functionReturnValue.Optimize(MeshFlags.OptimizeCompact, adjacency);
-			/*float[] texCoordEps = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f }; // TODO: make d3d mesh only for picking, ruthlessly weld things. Draw models with d3dDrawPrimitive
-			functionReturnValue.WeldVertices(WeldEpsilonsFlags.WeldAll, new WeldEpsilons { Position = 0.001f, TextureCoordinate = texCoordEps }, adjacency);*/
-
-			return functionReturnValue;
 		}
 
 		public static float BAMSToRad(int BAMS)
@@ -319,7 +259,7 @@ namespace SonicRetro.SAModel.Direct3D
 							obj.Attach.MeshInfo[j] = new MeshInfo(mat, old.Polys, old.Vertices, old.HasUV, old.HasVC);
 						}
 					}
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -348,7 +288,7 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			transform.Pop();
 			return result;
@@ -376,7 +316,7 @@ namespace SonicRetro.SAModel.Direct3D
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -416,7 +356,7 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -452,7 +392,7 @@ namespace SonicRetro.SAModel.Direct3D
 					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.RenderState.FillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
@@ -490,7 +430,7 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimatedInvert(child, transform, meshes, anim, animframe, ref modelindex, ref animindex));
@@ -498,53 +438,12 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static HitResult CheckHit(this Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
-		{
-			return CheckHit(mesh, Near, Far, Viewport, Projection, View, transform, null);
-		}
-
-		private static HitResult CheckHit(Mesh mesh, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, NJS_OBJECT model)
-		{
-			if (mesh == null) return HitResult.NoHit;
-			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-			if (!mesh.Intersect(pos, dir, out IntersectInformation info)) return HitResult.NoHit;
-			int posoff = 0;
-			foreach (VertexElement elem in mesh.Declaration)
-				if (elem.DeclarationUsage == DeclarationUsage.Position)
-				{
-					posoff = elem.Offset;
-					break;
-				}
-			short[] idxs = new short[3];
-			using (GraphicsStream gs = mesh.LockIndexBuffer(LockFlags.ReadOnly))
-			{
-				gs.Seek(info.FaceIndex * 6, SeekOrigin.Begin);
-				idxs[0] = (short)gs.Read(typeof(short));
-				idxs[1] = (short)gs.Read(typeof(short));
-				idxs[2] = (short)gs.Read(typeof(short));
-			}
-			Vector3[] verts = new Vector3[3];
-			using (GraphicsStream gs = mesh.LockVertexBuffer(LockFlags.ReadOnly))
-				for (int i = 0; i < 3; i++)
-				{
-					gs.Seek(idxs[i] * mesh.NumberBytesPerVertex + posoff, SeekOrigin.Begin);
-					verts[i] = (Vector3)gs.Read(typeof(Vector3));
-				}
-			mesh.UnlockVertexBuffer();
-			mesh.UnlockIndexBuffer();
-			Vector3 point = verts[0] + (info.U * (verts[1] - verts[0])) + (info.V * (verts[2] - verts[0]));
-			point = Vector3.TransformCoordinate(point, transform.Top);
-			Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(verts[1] - verts[0], verts[2] - verts[0])), transform.Top);
-			return new HitResult(model, info.Dist, point, norm);
-		}
-
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
 			MatrixStack transform = new MatrixStack();
 			obj.ProcessTransforms(transform);
-			return CheckHit(mesh, Near, Far, Viewport, Projection, View, transform, obj);
+			return mesh.CheckHit(Near, Far, Viewport, Projection, View, transform, obj);
 		}
 
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh)
@@ -560,7 +459,7 @@ namespace SonicRetro.SAModel.Direct3D
 			obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
 			if (obj.Attach != null)
-				result = HitResult.Min(result, CheckHit(mesh[modelindex], Near, Far, Viewport, Projection, View, transform, obj));
+				result = HitResult.Min(result, mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
 			transform.Pop();
@@ -587,7 +486,7 @@ namespace SonicRetro.SAModel.Direct3D
 				obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
 			if (obj.Attach != null)
-				result = HitResult.Min(result, CheckHit(mesh[modelindex], Near, Far, Viewport, Projection, View, transform, obj));
+				result = HitResult.Min(result, mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
@@ -974,20 +873,9 @@ namespace SonicRetro.SAModel.Direct3D
 			return list[index - 1];
 		}
 
-		private static readonly Vector3 XAxis = new Vector3(1, 0, 0);
-		private static readonly Vector3 YAxis = new Vector3(0, 1, 0);
-		private static readonly Vector3 ZAxis = new Vector3(0, 0, 1);
-
 		public static int RadToBAMS(float rad)
 		{
 			return (int)(rad * (65536 / (2 * Math.PI)));
-		}
-
-		public static void RotateXYZLocal(this MatrixStack transform, int x, int y, int z)
-		{
-			transform.RotateAxisLocal(ZAxis, BAMSToRad(z));
-			transform.RotateAxisLocal(XAxis, BAMSToRad(x));
-			transform.RotateAxisLocal(YAxis, BAMSToRad(y));
 		}
 
 		/// <summary>
@@ -1541,7 +1429,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static float Distance(this Vector3 vectorA, Vector3 vectorB)
 		{
-			return Vector3.Length(Vector3.Subtract(vectorA, vectorB));
+			return Vector3.Subtract(vectorA, vectorB).Length();
 		}
 
 		public static Matrix ProcessTransforms(this NJS_OBJECT obj, Matrix matrix)

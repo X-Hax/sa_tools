@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.DirectX;
+﻿using SharpDX;
+using System;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -125,39 +125,39 @@ namespace SonicRetro.SAModel.Direct3D
 
 			#region Building Frustum Planes
 			// Left plane
-			frustumPlanes[0].A = viewMatrix.M14 + viewMatrix.M11;
-			frustumPlanes[0].B = viewMatrix.M24 + viewMatrix.M21;
-			frustumPlanes[0].C = viewMatrix.M34 + viewMatrix.M31;
+			frustumPlanes[0].Normal.X = viewMatrix.M14 + viewMatrix.M11;
+			frustumPlanes[0].Normal.Y = viewMatrix.M24 + viewMatrix.M21;
+			frustumPlanes[0].Normal.Z = viewMatrix.M34 + viewMatrix.M31;
 			frustumPlanes[0].D = viewMatrix.M44 + viewMatrix.M41;
 
 			// Right plane
-			frustumPlanes[1].A = viewMatrix.M14 - viewMatrix.M11;
-			frustumPlanes[1].B = viewMatrix.M24 - viewMatrix.M21;
-			frustumPlanes[1].C = viewMatrix.M34 - viewMatrix.M31;
+			frustumPlanes[1].Normal.X = viewMatrix.M14 - viewMatrix.M11;
+			frustumPlanes[1].Normal.Y = viewMatrix.M24 - viewMatrix.M21;
+			frustumPlanes[1].Normal.Z = viewMatrix.M34 - viewMatrix.M31;
 			frustumPlanes[1].D = viewMatrix.M44 - viewMatrix.M41;
 
 			// Top plane
-			frustumPlanes[2].A = viewMatrix.M14 - viewMatrix.M12;
-			frustumPlanes[2].B = viewMatrix.M24 - viewMatrix.M22;
-			frustumPlanes[2].C = viewMatrix.M34 - viewMatrix.M32;
+			frustumPlanes[2].Normal.X = viewMatrix.M14 - viewMatrix.M12;
+			frustumPlanes[2].Normal.Y = viewMatrix.M24 - viewMatrix.M22;
+			frustumPlanes[2].Normal.Z = viewMatrix.M34 - viewMatrix.M32;
 			frustumPlanes[2].D = viewMatrix.M44 - viewMatrix.M42;
 
 			// Bottom plane
-			frustumPlanes[3].A = viewMatrix.M14 + viewMatrix.M12;
-			frustumPlanes[3].B = viewMatrix.M24 + viewMatrix.M22;
-			frustumPlanes[3].C = viewMatrix.M34 + viewMatrix.M32;
+			frustumPlanes[3].Normal.X = viewMatrix.M14 + viewMatrix.M12;
+			frustumPlanes[3].Normal.Y = viewMatrix.M24 + viewMatrix.M22;
+			frustumPlanes[3].Normal.Z = viewMatrix.M34 + viewMatrix.M32;
 			frustumPlanes[3].D = viewMatrix.M44 + viewMatrix.M42;
 
 			// Near plane
-			frustumPlanes[4].A = viewMatrix.M13;
-			frustumPlanes[4].B = viewMatrix.M23;
-			frustumPlanes[4].C = viewMatrix.M33;
+			frustumPlanes[4].Normal.X = viewMatrix.M13;
+			frustumPlanes[4].Normal.Y = viewMatrix.M23;
+			frustumPlanes[4].Normal.Z = viewMatrix.M33;
 			frustumPlanes[4].D = viewMatrix.M43;
 
 			// Far plane
-			frustumPlanes[5].A = viewMatrix.M14 - viewMatrix.M13;
-			frustumPlanes[5].B = viewMatrix.M24 - viewMatrix.M23;
-			frustumPlanes[5].C = viewMatrix.M34 - viewMatrix.M33;
+			frustumPlanes[5].Normal.X = viewMatrix.M14 - viewMatrix.M13;
+			frustumPlanes[5].Normal.Y = viewMatrix.M24 - viewMatrix.M23;
+			frustumPlanes[5].Normal.Z = viewMatrix.M34 - viewMatrix.M33;
 			frustumPlanes[5].D = viewMatrix.M44 - viewMatrix.M43;
 			#endregion
 
@@ -172,7 +172,7 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				if (frustumPlanes[i].Dot(sphere.Center.ToVector3()) + sphere.Radius < 0)
+				if (Plane.Dot(frustumPlanes[i], new Vector4(sphere.Center.ToVector3(), 0)) + sphere.Radius < 0)
 				{
 					return false;
 				}
