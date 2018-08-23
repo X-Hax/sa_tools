@@ -250,11 +250,17 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
-			TreeNode node = nodes.Add(model.Name);
+			int index = 0;
+			AddTreeNode(model, ref index, nodes);
+		}
+
+		private void AddTreeNode(NJS_OBJECT model, ref int index, TreeNodeCollection nodes)
+		{
+			TreeNode node = nodes.Add($"{index++}: {model.Name}");
 			node.Tag = model;
 			nodeDict[model] = node;
 			foreach (NJS_OBJECT child in model.Children)
-				AddTreeNode(child, node.Nodes);
+				AddTreeNode(child, ref index, node.Nodes);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
