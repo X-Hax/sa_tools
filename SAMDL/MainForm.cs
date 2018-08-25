@@ -41,6 +41,7 @@ namespace SonicRetro.SAModel.SAMDL
         EditorOptionsEditor optionsEditor;
 
 		bool loaded;
+        string currentFileName = "";
 		NJS_OBJECT model;
 		Animation[] animations;
 		Animation animation;
@@ -128,7 +129,7 @@ namespace SonicRetro.SAModel.SAMDL
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
+						saveAsToolStripMenuItem_Click(this, EventArgs.Empty);
 						break;
 					case DialogResult.Cancel:
 						return;
@@ -266,9 +267,11 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-			selectedObject = model;
+			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+            selectedObject = model;
 			SelectedItemChanged();
+
+            currentFileName = filename;
 
             AddModelToLibrary(model, false);
         }
@@ -330,7 +333,7 @@ namespace SonicRetro.SAModel.SAMDL
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
+						saveAsToolStripMenuItem_Click(this, EventArgs.Empty);
 						break;
 					case DialogResult.Cancel:
 						e.Cancel = true;
@@ -338,27 +341,134 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
-		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog a = new SaveFileDialog()
-			{
-				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
-				Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
-			})
-				if (a.ShowDialog(this) == DialogResult.OK)
-					if (modelFile != null)
-					{
-						modelFile.Tool = "SAMDL";
-						modelFile.SaveToFile(a.FileName);
-					}
-					else
-						ModelFile.CreateFile(a.FileName, model, null, null, null, null, "SAMDL", null, outfmt);
+            SaveAs();
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAs()
+        {
+            using (SaveFileDialog a = new SaveFileDialog()
+            {
+                InitialDirectory = Path.GetDirectoryName(currentFileName),
+                DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
+                Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
+            })
+            {
+                if (a.ShowDialog(this) == DialogResult.OK)
+                {
+                    Save(a.FileName);
+                }
+            }
+        }
+
+        private void Save(string fileName)
+        {
+            if (modelFile != null)
+            {
+                modelFile.Tool = "SAMDL";
+                modelFile.SaveToFile(fileName);
+            }
+            else
+            {
+                ModelFile.CreateFile(fileName, model, null, null, null, null, "SAMDL", null, outfmt);
+                modelFile = new ModelFile(fileName);
+            }
+        }
+
+        private void saveMenuItem_Click(object sender, EventArgs e)
+        {
+            if(File.Exists(currentFileName))
+            {
+                // ask if we want to over-write
+                bool doOperation = false;
+
+                if (!doOperation)
+                {
+                    // ask if we're sure we want to over-write
+                    DialogResult dialogResult = MessageBox.Show("Are you sure? You will lose any unsaved work.", "Are you sure?", MessageBoxButtons.YesNo);
+
+                    doOperation = dialogResult == DialogResult.Yes;
+                }
+
+                if(doOperation) Save(currentFileName);
+            }
+            else
+            {
+                // ask us where to save
+                SaveAs();
+            }
+        }
+
+        private void NewFile(ModelFormat modelFormat)
+        {
+            loaded = false;
+            //Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
+            timer1.Stop();
+            modelFile = null;
+            animation = null;
+            animations = null;
+            animnum = -1;
+            animframe = 0;
+
+            outfmt = modelFormat;
+            animations = new Animation[0];
+
+            model = new NJS_OBJECT();
+            model.Morph = false;
+            meshes = new Mesh[0];
+            treeView1.Nodes.Clear();
+            nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+            AddTreeNode(model, treeView1.Nodes);
+            selectedObject = model;
+            SelectedItemChanged();
+
+            loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+        }
+
+        private void NewFileOperation(ModelFormat modelFormat)
+        {
+            bool doOperation = !loaded;
+
+            if (!doOperation)
+            {
+                // ask if we're sure we want to over-write
+                DialogResult dialogResult = MessageBox.Show("Are you sure? You will lose any unsaved work.", "Are you sure?", MessageBoxButtons.YesNo);
+
+                doOperation = dialogResult == DialogResult.Yes;
+            }
+
+            if (doOperation)
+            {
+                NewFile(modelFormat);
+            }
+        }
+
+        private void basicModelDXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewFileOperation(ModelFormat.BasicDX);
+        }
+
+        private void basicModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewFileOperation(ModelFormat.Basic);
+        }
+
+        private void chunkModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewFileOperation(ModelFormat.Chunk);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
+
+        string GetStatusString()
+        {
+            return currentFileName;
+            // + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
+        }
 
         #region Rendering Methods
         internal void DrawEntireModel()
@@ -366,7 +476,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (!loaded) return;
 			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
+            Text = GetStatusString();
 			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
 			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
 			d3ddevice.Material = new Material { Ambient = Color.White };
@@ -1048,37 +1158,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 						Direct3D.Extensions.WriteModelAsObj(objstream, model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-
-                        //#region Material Exporting
-                        //string materialPrefix = model.Name;
-
-                        //objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-                        //// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-                        //// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-                        //for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-                        //{
-                        //    mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-                        //    mtlstream.WriteLine("Ka 1 1 1");
-                        //    mtlstream.WriteLine("Kd 1 1 1");
-                        //    mtlstream.WriteLine("Ks 0 0 0");
-                        //    mtlstream.WriteLine("illum 1");
-
-                        //    if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-                        //    {
-                        //        mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-                        //        // save texture
-                        //        string mypath = Path.GetDirectoryName(a.FileName);
-                        //        TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-                        //    }
-                        //}
-                        //#endregion
-
                         #region Material Exporting
-                        string materialPrefix = materialPrefix = model.Name;
-
                         objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
                         for (int i = 0; i < materials.Count; i++)
@@ -1113,52 +1193,70 @@ namespace SonicRetro.SAModel.SAMDL
                             Application.DoEvents();
                         }
                         #endregion
+
+                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
                     }
                 }
 		}
 
 		private void multiObjToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog dlg = new FolderBrowserDialog()
-			{
-				SelectedPath = Environment.CurrentDirectory,
-				ShowNewFolderButton = true
-			})
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					
-					using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
-					{
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", TexturePackName, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
+            using (FolderBrowserDialog dlg = new FolderBrowserDialog()
+            {
+                SelectedPath = Environment.CurrentDirectory,
+                ShowNewFolderButton = true
+            })
+            {
+                if (dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
+                    {
+                        string objFileName = Path.Combine(dlg.SelectedPath, obj.Name + ".obj");
+                        using (StreamWriter objstream = new StreamWriter(objFileName, false))
+                        {
+                            List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
 
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+                            objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
+                            bool errorFlag = false;
 
-								// save texture
-								TextureInfo[texIndx].Image.Save(Path.Combine(dlg.SelectedPath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-					}
-					foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
-						using (StreamWriter objstream = new StreamWriter(Path.Combine(dlg.SelectedPath, obj.Name + ".obj"), false))
-						{
-							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-							bool errorFlag = false;
+                            Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
 
-							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, TexturePackName, ref errorFlag);
+                            if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 
-							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-						}
-				}
+                            using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
+                            {
+                                for (int i = 0; i < materials.Count; i++)
+                                {
+                                    int texIndx = materials[i].TextureID;
+
+                                    NJS_MATERIAL material = materials[i];
+                                    mtlstream.WriteLine("newmtl material_{0}", i);
+                                    mtlstream.WriteLine("Ka 1 1 1");
+                                    mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+                                        material.DiffuseColor.R / 255,
+                                        material.DiffuseColor.G / 255,
+                                        material.DiffuseColor.B / 255));
+
+                                    mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+                                        material.SpecularColor.R / 255,
+                                        material.SpecularColor.G / 255,
+                                        material.SpecularColor.B / 255));
+                                    mtlstream.WriteLine("illum 1");
+
+                                    if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+                                    {
+                                        mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+                                        // save texture
+                                        string mypath = Path.GetDirectoryName(objFileName);
+                                        TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 		}
 
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1230,50 +1328,100 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj",
-				FileName = selectedObject.Name
-			})
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-					{
-						#region Material Exporting
-						string materialPrefix = selectedObject.Name;
+            using (SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj",
+                FileName = selectedObject.Name
+            })
+            {
+                if (a.ShowDialog() == DialogResult.OK)
+                {
+                    #region Old Code
+                    /*using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                    using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                    {
+                        #region Material Exporting
+                        string materialPrefix = selectedObject.Name;
 
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+                        objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
 
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
+                        // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                        // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                        for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
+                        {
+                            mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+                            mtlstream.WriteLine("Ka 1 1 1");
+                            mtlstream.WriteLine("Kd 1 1 1");
+                            mtlstream.WriteLine("Ks 0 0 0");
+                            mtlstream.WriteLine("illum 1");
 
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+                            if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
+                            {
+                                mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
 
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-						#endregion
+                                // save texture
+                                string mypath = Path.GetDirectoryName(a.FileName);
+                                TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                            }
+                        }
+                        #endregion
 
-						bool errorFlag = false;
+                        bool errorFlag = false;
 
-						Direct3D.Extensions.WriteSingleModelAsObj(objstream, selectedObject, materialPrefix, ref errorFlag);
+                        Direct3D.Extensions.WriteSingleModelAsObj(objstream, selectedObject, materialPrefix, ref errorFlag);
 
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-					}
-				}
+                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+                    }*/
+                    #endregion
+
+                    string objFileName = a.FileName;
+                    NJS_OBJECT obj = selectedObject;
+                    using (StreamWriter objstream = new StreamWriter(objFileName, false))
+                    {
+                        List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
+
+                        objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
+                        bool errorFlag = false;
+
+                        Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
+
+                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+
+                        string mypath = Path.GetDirectoryName(objFileName);
+                        using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
+                        {
+                            for (int i = 0; i < materials.Count; i++)
+                            {
+                                int texIndx = materials[i].TextureID;
+
+                                NJS_MATERIAL material = materials[i];
+                                mtlstream.WriteLine("newmtl material_{0}", i);
+                                mtlstream.WriteLine("Ka 1 1 1");
+                                mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+                                    material.DiffuseColor.R / 255,
+                                    material.DiffuseColor.G / 255,
+                                    material.DiffuseColor.B / 255));
+
+                                mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+                                    material.SpecularColor.R / 255,
+                                    material.SpecularColor.G / 255,
+                                    material.SpecularColor.B / 255));
+                                mtlstream.WriteLine("illum 1");
+
+                                if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+                                {
+                                    mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+                                    // save texture
+                                    
+                                    TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)

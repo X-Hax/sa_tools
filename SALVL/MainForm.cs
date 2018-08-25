@@ -699,7 +699,8 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveFileDialog a = new SaveFileDialog
+            #region Old Code
+            /*SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "obj",
 				Filter = "OBJ Files|*.obj"
@@ -750,10 +751,111 @@ namespace SonicRetro.SAModel.SALVL
 
 					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 				}
-			}
+			}*/
+            #endregion
+
+            ExportObj();
 		}
 
-		private void editInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExportObj()
+        {
+            SaveFileDialog a = new SaveFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "OBJ Files|*.obj"
+            };
+            if (a.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+                using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+                {
+                    int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+                    if (LevelData.geo.Anim != null)
+                        stepCount += LevelData.geo.Anim.Count;
+
+                    List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
+
+                    ProgressDialog progress = new ProgressDialog("Exporting stage", stepCount, true, false);
+                    progress.Show(this);
+                    progress.SetTaskAndStep("Exporting...");
+
+                    int totalVerts = 0;
+                    int totalNorms = 0;
+                    int totalUVs = 0;
+
+                    bool errorFlag = false;
+
+                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
+                    {
+                        Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, ref materials, new MatrixStack(),
+                            ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                        progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+                        progress.StepProgress();
+                        Application.DoEvents();
+                    }
+                    if (LevelData.geo.Anim != null)
+                    {
+                        for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+                        {
+                            Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, ref materials, new MatrixStack(),
+                                ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+                            progress.Step = String.Format("Animation {0}/{1}", i + 1, LevelData.geo.Anim.Count);
+                            progress.StepProgress();
+                            Application.DoEvents();
+                        }
+                    }
+
+                    if (errorFlag)
+                    {
+                        MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.", "Failure",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    #region Material Exporting
+                    string materialPrefix = LevelData.leveltexs;
+
+                    objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+                    for (int i = 0; i < materials.Count; i++)
+                    {
+                        NJS_MATERIAL material = materials[i];
+                        mtlstream.WriteLine("newmtl material_{0}", i);
+                        mtlstream.WriteLine("Ka 1 1 1");
+                        mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+                            material.DiffuseColor.R / 255,
+                            material.DiffuseColor.G / 255,
+                            material.DiffuseColor.B / 255));
+
+                        mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+                            material.SpecularColor.R / 255,
+                            material.SpecularColor.G / 255,
+                            material.SpecularColor.B / 255));
+                        mtlstream.WriteLine("illum 1");
+
+                        if (!string.IsNullOrEmpty(LevelData.leveltexs) && material.UseTexture)
+                        {
+                            mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][material.TextureID].Name + ".png");
+
+                            // save texture
+                            string mypath = Path.GetDirectoryName(a.FileName);
+                            BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][material.TextureID];
+                            item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
+                        }
+
+                        //progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
+                        //progress.StepProgress();
+                        Application.DoEvents();
+                    }
+                    #endregion
+
+                    progress.SetTaskAndStep("Export complete!");
+                }
+            }
+        }
+
+        private void editInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (AdvancedInfoDialog dlg = new AdvancedInfoDialog())
 				dlg.ShowDialog(this);
