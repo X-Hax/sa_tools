@@ -1090,7 +1090,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
-		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs)
+		private static void WriteObjFromBasicAttach(StreamWriter objstream, NJS_OBJECT obj, ref List<NJS_MATERIAL> materials, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs)
 		{
 			if (obj.Attach != null)
 			{
@@ -1114,17 +1114,32 @@ namespace SonicRetro.SAModel.Direct3D
 					}
 					wroteNormals = true;
 				}
-				#endregion
+                #endregion
 
-				#region Outputting Meshes
+                #region Outputting Meshes
+                int meshID = 0;
 				foreach (NJS_MESHSET set in basicAttach.Mesh)
 				{
 					if (basicAttach.Material.Count > 0)
 					{
-						if (basicAttach.Material[set.MaterialID].UseTexture)
+                        /*if (basicAttach.Material[set.MaterialID].UseTexture)
 						{
 							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[set.MaterialID].TextureID);
-						}
+						}*/
+
+
+                        int materialIndexInList = 0;
+
+                        NJS_MATERIAL material = basicAttach.Material[meshID];
+
+                        if(!materials.Contains(material))
+                        {
+                            materials.Add(material);
+                        }
+
+                        materialIndexInList = materials.IndexOf(material);
+
+                        objstream.WriteLine("usemtl material_{0}", materialIndexInList);                        
 					}
 
 					if (set.UV != null)
@@ -1366,6 +1381,8 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						totalUVs += set.UV.Length;
 					}
+
+                    meshID++;
 				}
 				#endregion
 
@@ -1388,7 +1405,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		private static void WriteObjFromChunkAttach(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		private static void WriteObjFromChunkAttach(StreamWriter objstream, NJS_OBJECT obj, ref List<NJS_MATERIAL> materials, Matrix transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			// add obj writing here
 			if (obj.Attach != null)
@@ -1521,7 +1538,8 @@ namespace SonicRetro.SAModel.Direct3D
 						}
 						else if (polyChunk is PolyChunkTinyTextureID chunkTexID)
 						{
-							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID);
+							//objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID);
+                            // no behavior defined yet
 						}
 					}
 					#endregion
@@ -1548,16 +1566,16 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
 		/// <param name="totalUVs">This keeps track of how many texture verts have been exported to the current file. This is necessary because *.obj textue vert indeces are file-level, not object-level.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
+		public static void WriteModelAsObj(StreamWriter objstream, NJS_OBJECT obj, ref List<NJS_MATERIAL> materials, MatrixStack transform, ref int totalVerts, ref int totalNorms, ref int totalUVs, ref bool errorFlag)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach is BasicAttach)
-				WriteObjFromBasicAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs);
+				WriteObjFromBasicAttach(objstream, obj, ref materials, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs);
 			else if (obj.Attach is ChunkAttach)
-				WriteObjFromChunkAttach(objstream, obj, materialPrefix, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteObjFromChunkAttach(objstream, obj, ref materials, transform.Top, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 			foreach (NJS_OBJECT child in obj.Children)
-				WriteModelAsObj(objstream, child, materialPrefix, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+				WriteModelAsObj(objstream, child, ref materials, transform, ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 			transform.Pop();
 		}
 
@@ -1568,13 +1586,13 @@ namespace SonicRetro.SAModel.Direct3D
 		/// <param name="obj">Model to export.</param>
 		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
-		public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, string materialPrefix, ref bool errorFlag)
+		public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, ref List<NJS_MATERIAL> materials, ref bool errorFlag)
 		{
 			int v = 0, n = 0, u = 0;
 			if (obj.Attach is BasicAttach)
-				WriteObjFromBasicAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u);
+				WriteObjFromBasicAttach(objstream, obj, ref materials, Matrix.Identity, ref v, ref n, ref u);
 			else if (obj.Attach is ChunkAttach)
-				WriteObjFromChunkAttach(objstream, obj, materialPrefix, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
+				WriteObjFromChunkAttach(objstream, obj, ref materials, Matrix.Identity, ref v, ref n, ref u, ref errorFlag);
 		}
 
 		public static float Distance(this Vector3 vectorA, Vector3 vectorB)
