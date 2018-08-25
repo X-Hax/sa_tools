@@ -416,14 +416,15 @@ namespace SonicRetro.SAModel.SAMDL
 
             model = new NJS_OBJECT();
             model.Morph = false;
+            model.ProcessVertexData();
             meshes = new Mesh[0];
             treeView1.Nodes.Clear();
             nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
             AddTreeNode(model, treeView1.Nodes);
             selectedObject = model;
-            SelectedItemChanged();
 
             loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+            SelectedItemChanged();
         }
 
         private void NewFileOperation(ModelFormat modelFormat)
