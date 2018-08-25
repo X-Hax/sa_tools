@@ -417,7 +417,7 @@ namespace SonicRetro.SAModel.SAMDL
             model = new NJS_OBJECT();
             model.Morph = false;
             model.ProcessVertexData();
-            meshes = new Mesh[0];
+            meshes = new Mesh[1];
             treeView1.Nodes.Clear();
             nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
             AddTreeNode(model, treeView1.Nodes);
@@ -467,7 +467,7 @@ namespace SonicRetro.SAModel.SAMDL
 
         string GetStatusString()
         {
-            return currentFileName;
+            return "SAMDL: " + currentFileName;
             // + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
         }
 
@@ -1319,6 +1319,9 @@ namespace SonicRetro.SAModel.SAMDL
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
+
+                    modelLibrary.Add(newattach);
+
 					if (selectedObject.Attach != null)
 						newattach.Name = selectedObject.Attach.Name;
 					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh(d3ddevice);
@@ -1338,44 +1341,6 @@ namespace SonicRetro.SAModel.SAMDL
             {
                 if (a.ShowDialog() == DialogResult.OK)
                 {
-                    #region Old Code
-                    /*using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-                    using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-                    {
-                        #region Material Exporting
-                        string materialPrefix = selectedObject.Name;
-
-                        objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-                        // This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-                        // So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-                        for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-                        {
-                            mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-                            mtlstream.WriteLine("Ka 1 1 1");
-                            mtlstream.WriteLine("Kd 1 1 1");
-                            mtlstream.WriteLine("Ks 0 0 0");
-                            mtlstream.WriteLine("illum 1");
-
-                            if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-                            {
-                                mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-                                // save texture
-                                string mypath = Path.GetDirectoryName(a.FileName);
-                                TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-                            }
-                        }
-                        #endregion
-
-                        bool errorFlag = false;
-
-                        Direct3D.Extensions.WriteSingleModelAsObj(objstream, selectedObject, materialPrefix, ref errorFlag);
-
-                        if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-                    }*/
-                    #endregion
-
                     string objFileName = a.FileName;
                     NJS_OBJECT obj = selectedObject;
                     using (StreamWriter objstream = new StreamWriter(objFileName, false))
