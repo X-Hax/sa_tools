@@ -45,7 +45,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			diffuseColorBox.BackColor = materials[index].DiffuseColor;
 			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
 			specColorBox.BackColor = materials[index].SpecularColor;
-			textureBox.Image = textures[materials[index].TextureID].Image;
+			if(textures != null && materials[index].TextureID < textures.Length) textureBox.Image = textures[materials[index].TextureID].Image;
 			exponentTextBox.Text = materials[index].Exponent.ToString();
 			filterModeDropDown.SelectedIndex = (int)materials[index].FilterMode;
 			srcAlphaCombo.SelectedIndex = (int)materials[index].SourceAlpha;
