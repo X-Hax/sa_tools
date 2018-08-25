@@ -118,7 +118,7 @@ namespace SonicRetro.SAModel.SAMDL
 				LoadFile(Program.Arguments[0]);
 		}
 
-		private void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
+        private void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
 		{
 			EditorOptions.Initialize(d3ddevice);
 		}
