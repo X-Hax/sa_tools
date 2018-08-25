@@ -1038,31 +1038,7 @@ namespace SonicRetro.SAModel.SAMDL
 					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
 					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
 					{
-						#region Material Exporting
-						string materialPrefix = model.Name;
-
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
-
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-						#endregion
+                        List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
 
 						int totalVerts = 0;
 						int totalNorms = 0;
@@ -1070,11 +1046,75 @@ namespace SonicRetro.SAModel.SAMDL
 
 						bool errorFlag = false;
 
-						Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+						Direct3D.Extensions.WriteModelAsObj(objstream, model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-					}
-				}
+
+                        //#region Material Exporting
+                        //string materialPrefix = model.Name;
+
+                        //objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+                        //// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
+                        //// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
+                        //for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
+                        //{
+                        //    mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
+                        //    mtlstream.WriteLine("Ka 1 1 1");
+                        //    mtlstream.WriteLine("Kd 1 1 1");
+                        //    mtlstream.WriteLine("Ks 0 0 0");
+                        //    mtlstream.WriteLine("illum 1");
+
+                        //    if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
+                        //    {
+                        //        mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+                        //        // save texture
+                        //        string mypath = Path.GetDirectoryName(a.FileName);
+                        //        TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                        //    }
+                        //}
+                        //#endregion
+
+                        #region Material Exporting
+                        string materialPrefix = materialPrefix = model.Name;
+
+                        objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+                        for (int i = 0; i < materials.Count; i++)
+                        {
+                            int texIndx = materials[i].TextureID;
+
+                            NJS_MATERIAL material = materials[i];
+                            mtlstream.WriteLine("newmtl material_{0}", i);
+                            mtlstream.WriteLine("Ka 1 1 1");
+                            mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+                                material.DiffuseColor.R / 255,
+                                material.DiffuseColor.G / 255,
+                                material.DiffuseColor.B / 255));
+
+                            mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+                                material.SpecularColor.R / 255,
+                                material.SpecularColor.G / 255,
+                                material.SpecularColor.B / 255));
+                            mtlstream.WriteLine("illum 1");
+
+                            if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+                            {
+                                mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+                                // save texture
+                                string mypath = Path.GetDirectoryName(a.FileName);
+                                TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+                            }
+
+                            //progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
+                            //progress.StepProgress();
+                            Application.DoEvents();
+                        }
+                        #endregion
+                    }
+                }
 		}
 
 		private void multiObjToolStripMenuItem_Click(object sender, EventArgs e)

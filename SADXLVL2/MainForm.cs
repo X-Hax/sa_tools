@@ -2753,7 +2753,7 @@ namespace SonicRetro.SAModel.SADXLVL2
                             material.SpecularColor.B / 255));
                         mtlstream.WriteLine("illum 1");
 
-                        if (!string.IsNullOrEmpty(LevelData.leveltexs))
+                        if (!string.IsNullOrEmpty(LevelData.leveltexs) && material.UseTexture)
                         {
                             mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][material.TextureID].Name + ".png");
 
