@@ -1118,7 +1118,7 @@ namespace SonicRetro.SAModel.SAMDL
                 propertyGrid1.SelectedObject = selectedObject;
                 copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
                 pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-                editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
+                editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
                 importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
                 exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
             }
@@ -1319,6 +1319,8 @@ namespace SonicRetro.SAModel.SAMDL
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
+
+                    editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 
                     modelLibrary.Add(newattach);
 
