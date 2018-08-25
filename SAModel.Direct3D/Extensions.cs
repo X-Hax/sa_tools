@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.IO;
 using System.Globalization;
 using SharpDX;
 using Color = System.Drawing.Color;
 using SharpDX.Direct3D9;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -25,6 +26,24 @@ namespace SonicRetro.SAModel.Direct3D
 		public static SharpDX.BoundingSphere ToSharpDX(this BoundingSphere sphere) => new SharpDX.BoundingSphere(sphere.Center.ToVector3(), sphere.Radius);
 
 		public static SharpDX.Mathematics.Interop.RawColor4 ToRawColor4(this Color color) => new SharpDX.Mathematics.Interop.RawColor4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+
+		public static SharpDX.Mathematics.Interop.RawColorBGRA ToRawColorBGRA(this Color color) => new SharpDX.Mathematics.Interop.RawColorBGRA(color.B, color.G, color.R, color.A);
+
+		public static Viewport ToViewport(this SharpDX.Mathematics.Interop.RawViewport raw) => new Viewport(raw.X, raw.Y, raw.Width, raw.Height, raw.MinDepth, raw.MaxDepth);
+
+		public static Texture ToTexture(this Bitmap bitmap, Device device)
+		{
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
+			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
+			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
+			bitmap.UnlockBits(bitmapData);
+			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
+			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
+			texture.UnlockRectangle(0);
+			return texture;
+		}
 
 		public static void CalculateBounds(this Attach attach)
 		{

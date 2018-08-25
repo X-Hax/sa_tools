@@ -137,7 +137,9 @@
     <Compile Include="Windy Valley\O_UKISIM.cs" />
     <Compile Include="Windy Valley\O_VCROK.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SADXLVL2\SADXLVL2.csproj">
       <Project>{5997DC6A-DA95-487E-BB19-2D8890684A54}</Project>

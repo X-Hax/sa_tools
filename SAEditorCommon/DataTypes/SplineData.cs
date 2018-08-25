@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using SA_Tools;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -21,9 +23,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		#region Rendering Variables
 		[NonSerialized]
-		private CustomVertex.PositionColored[] vertices;
+		private FVF_PositionColored[] vertices;
 		[NonSerialized]
-		private UInt16[] faceIndeces;
+		private short[] faceIndeces;
 
 		[NonSerialized]
 		private BoundingSphere bounds;
@@ -106,13 +108,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public void RebuildMesh(Device device)
 		{
-			List<CustomVertex.PositionColored> vertList = new List<CustomVertex.PositionColored>();
-			List<ushort> faceIndexList = new List<ushort>();
+			List<FVF_PositionColored> vertList = new List<FVF_PositionColored>();
+			List<short> faceIndexList = new List<short>();
 
 			Vector3 up = new Vector3(0, 1, 0);
 
 			#region Segment vert/face creation
-			ushort highestFaceIndex = 0;
+			short highestFaceIndex = 0;
 
 			for (int i = 0; i < splineData.Path.Count - 1; i++) // don't process the last knot
 			{
@@ -123,32 +125,32 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Vector3 perpendicularDirection = Vector3.Cross(directionToNextKnot, up);
 
 				// verts for knot 1
-				CustomVertex.PositionColored vert1_1; // top vert 1 (0)
-				CustomVertex.PositionColored vert1_2; // top vert 2 (1)
-				CustomVertex.PositionColored vert1_3; // bottom vert 1 (2)
-				CustomVertex.PositionColored vert1_4; // bottom vert 2 (3)
+				FVF_PositionColored vert1_1; // top vert 1 (0)
+				FVF_PositionColored vert1_2; // top vert 2 (1)
+				FVF_PositionColored vert1_3; // bottom vert 1 (2)
+				FVF_PositionColored vert1_4; // bottom vert 2 (3)
 
 				// verts for knot 2
-				CustomVertex.PositionColored vert2_1; // top vert 1 (4)
-				CustomVertex.PositionColored vert2_2; // top vert 2 (5)
-				CustomVertex.PositionColored vert2_3; // bottom vert 1 (6)
-				CustomVertex.PositionColored vert2_4; // bottom vert 2 (7)
+				FVF_PositionColored vert2_1; // top vert 1 (4)
+				FVF_PositionColored vert2_2; // top vert 2 (5)
+				FVF_PositionColored vert2_3; // bottom vert 1 (6)
+				FVF_PositionColored vert2_4; // bottom vert 2 (7)
 
 				// move top verts
-				vert1_1 = new CustomVertex.PositionColored((thisKnot + (perpendicularDirection * splineMeshRadius)), Color.White.ToArgb());
-				vert1_2 = new CustomVertex.PositionColored((thisKnot + (perpendicularDirection * (splineMeshRadius * -1))), Color.White.ToArgb());
+				vert1_1 = new FVF_PositionColored((thisKnot + (perpendicularDirection * splineMeshRadius)), Color.White);
+				vert1_2 = new FVF_PositionColored((thisKnot + (perpendicularDirection * (splineMeshRadius * -1))), Color.White);
 
-				vert2_1 = new CustomVertex.PositionColored((nextKnot + (perpendicularDirection * splineMeshRadius)), Color.White.ToArgb());
-				vert2_2 = new CustomVertex.PositionColored((nextKnot + (perpendicularDirection * (splineMeshRadius * -1))), Color.White.ToArgb());
+				vert2_1 = new FVF_PositionColored((nextKnot + (perpendicularDirection * splineMeshRadius)), Color.White);
+				vert2_2 = new FVF_PositionColored((nextKnot + (perpendicularDirection * (splineMeshRadius * -1))), Color.White);
 
 				// move bottom verts
-				vert1_3 = new CustomVertex.PositionColored(vert1_1.Position - (up * splineMeshRadius), Color.White.ToArgb());
-				vert1_4 = new CustomVertex.PositionColored(vert1_2.Position - (up * splineMeshRadius), Color.White.ToArgb());
+				vert1_3 = new FVF_PositionColored(vert1_1.Position - (up * splineMeshRadius), Color.White);
+				vert1_4 = new FVF_PositionColored(vert1_2.Position - (up * splineMeshRadius), Color.White);
 
-				vert2_3 = new CustomVertex.PositionColored(vert2_1.Position - (up * splineMeshRadius), Color.White.ToArgb());
-				vert2_4 = new CustomVertex.PositionColored(vert2_2.Position - (up * splineMeshRadius), Color.White.ToArgb());
+				vert2_3 = new FVF_PositionColored(vert2_1.Position - (up * splineMeshRadius), Color.White);
+				vert2_4 = new FVF_PositionColored(vert2_2.Position - (up * splineMeshRadius), Color.White);
 
-				List<ushort> thisKnotFaceIndexes = new List<ushort> 
+				List<short> thisKnotFaceIndexes = new List<short> 
 				{
 					// far side
 					4,0,6,
@@ -169,7 +171,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 				for (int faceIndx = 0; faceIndx < thisKnotFaceIndexes.Count(); faceIndx++)
 				{
-					thisKnotFaceIndexes[faceIndx] += (ushort)vertList.Count(); // this is the wrong approach because it's the verts we're indexing, not the faces!
+					thisKnotFaceIndexes[faceIndx] += (short)vertList.Count(); // this is the wrong approach because it's the verts we're indexing, not the faces!
 					if (thisKnotFaceIndexes[faceIndx] > highestFaceIndex) highestFaceIndex = thisKnotFaceIndexes[faceIndx];
 				}
 
@@ -191,15 +193,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			faceIndeces = faceIndexList.ToArray();
 
 			// build bounding sphere
-			float radius = Geometry.ComputeBoundingSphere(vertices, CustomVertex.PositionColored.Format, out Vector3 center);
-			bounds = new BoundingSphere(center.ToVertex(), radius);
+			bounds = SharpDX.BoundingSphere.FromPoints(vertices.Select(a => a.Position).ToArray()).ToSAModel();
 
 			// build actual mesh from face index array and vbuf
-			mesh = new Mesh(faceIndexList.Count() / 3, vertList.Count(), MeshFlags.Managed, CustomVertex.PositionColored.Format, device);
-
-			// Apply the buffers
-			mesh.SetVertexBufferData(vertices, LockFlags.None);
-			mesh.IndexBuffer.SetData(faceIndeces, 0, LockFlags.None);
+			mesh = new Mesh<FVF_PositionColored>(device, vertices, new short[][] { faceIndeces });
 
 			// create a vertexHandle
 			if (vertexHandleMesh == null) vertexHandleMesh = Mesh.Box(device, 1, 1, 1);
@@ -266,7 +263,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				{
 					transform.Push();
 
-					transform.Translate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
+					transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
 
 					HitResult hitResult = vertexHandleMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 
@@ -300,29 +297,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			Matrix view = camera.ToMatrix();
 			Matrix projection = Matrix.PerspectiveFovRH(camera.FOV, camera.Aspect, 1, camera.DrawDistance);
+			Viewport viewport = dev.Viewport.ToViewport();
 
 			if (Selected)
 			{
 				for (int vIndx = 0; vIndx < splineData.Path.Count(); vIndx++)
 				{
 					#region Draw Vertex IDs
-					Vector3 screenCoordinates = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
-						dev.Viewport, projection, view, Matrix.Identity);
-					Vector3 altScrCoord = Vector3.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
-						dev.Viewport, dev.Transform.Projection, dev.Transform.View, Matrix.Identity);
+					Vector3 screenCoordinates = viewport.Project(new Vector3(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z),
+						projection, view, Matrix.Identity);
 
-					EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), new Point((int)(screenCoordinates.X), (int)(screenCoordinates.Y)), Color.White);
+					EditorOptions.OnscreenFont.DrawText(textSprite, vIndx.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
 					#endregion
 
 					#region Draw Vertex Handles
 					transform.Push();
 
-					transform.Translate(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z);
+					transform.NJTranslate(splineData.Path[vIndx].Position.X, splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z);
 
 					result.Add(new RenderInfo(vertexHandleMesh, 0, transform.Top, UnSelectedMaterial, null, FillMode.Solid, new BoundingSphere(splineData.Path[vIndx].Position.X,
 						splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z, 1f)));
 
-					if (vIndx == selectedKnot) result.Add(new RenderInfo(vertexHandleMesh, 0, transform.Top, SelectedMaterial, null, FillMode.WireFrame, new BoundingSphere(splineData.Path[vIndx].Position.X,
+					if (vIndx == selectedKnot) result.Add(new RenderInfo(vertexHandleMesh, 0, transform.Top, SelectedMaterial, null, FillMode.Wireframe, new BoundingSphere(splineData.Path[vIndx].Position.X,
 	   splineData.Path[vIndx].Position.Y, splineData.Path[vIndx].Position.Z, 1f)));
 					transform.Pop();
 					#endregion
