@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             comboBox1.Items.Clear();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 comboBox1.Items.Add(i.ToString());
             }

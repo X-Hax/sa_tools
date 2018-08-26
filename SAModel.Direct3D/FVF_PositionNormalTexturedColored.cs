@@ -8,6 +8,7 @@ namespace SonicRetro.SAModel.Direct3D
 	public interface IVertex
 	{
 		Vector3 GetPosition();
+		VertexFormat GetFormat();
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -44,10 +45,9 @@ namespace SonicRetro.SAModel.Direct3D
             Normal = data.Normal.ToVector3();
         }
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -87,10 +87,9 @@ namespace SonicRetro.SAModel.Direct3D
 				UV = new Vector2();
 		}
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -127,10 +126,9 @@ namespace SonicRetro.SAModel.Direct3D
 			Color = (data.Color ?? System.Drawing.Color.White).ToArgb();
 		}
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -175,10 +173,9 @@ namespace SonicRetro.SAModel.Direct3D
 				UV = new Vector2();
 		}
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -220,10 +217,9 @@ namespace SonicRetro.SAModel.Direct3D
 			Color = (data.Color ?? System.Drawing.Color.White).ToArgb();
 		}
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -273,9 +269,8 @@ namespace SonicRetro.SAModel.Direct3D
 				UV = new Vector2();
 		}
 
-		public Vector3 GetPosition()
-		{
-			return Position;
-		}
+		public Vector3 GetPosition() => Position;
+
+		public VertexFormat GetFormat() => Format;
 	}
 }

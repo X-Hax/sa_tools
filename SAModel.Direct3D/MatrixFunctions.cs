@@ -151,13 +151,23 @@ namespace SonicRetro.SAModel.Direct3D
 
 	public class MatrixStack
 	{
-		private Stack<Matrix> matrices = new Stack<Matrix>();
+		private Stack<Matrix> matrices;
+
+		public MatrixStack()
+		{
+			matrices = new Stack<Matrix>();
+			matrices.Push(Matrix.Identity);
+		}
 
 		public Matrix Top => matrices.Peek();
 
 		public void Push() => matrices.Push(Top);
 
-		public void Pop() => matrices.Pop();
+		public void Pop()
+		{
+			if (matrices.Count > 1)
+				matrices.Pop();
+		}
 
 		public void LoadMatrix(Matrix m) { matrices.Pop(); matrices.Push(m); }
 

@@ -297,7 +297,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			Matrix view = camera.ToMatrix();
 			Matrix projection = Matrix.PerspectiveFovRH(camera.FOV, camera.Aspect, 1, camera.DrawDistance);
-			Viewport viewport = dev.Viewport.ToViewport();
+			Viewport viewport = dev.Viewport;
 
 			if (Selected)
 			{

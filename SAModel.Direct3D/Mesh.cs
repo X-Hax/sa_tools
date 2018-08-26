@@ -53,10 +53,64 @@ namespace SonicRetro.SAModel.Direct3D
 		}
 		#endregion
 
-		/*public static Mesh Sphere(Device device)
+		#region Sphere
+		// http://www.richardssoftware.net/2013/07/shapes-demo-with-direct3d11-and-slimdx.html
+		public static Mesh Sphere(Device device, float radius, int slices, int stacks)
 		{
-			throw new NotImplementedException();
-		}*/
+			List<FVF_PositionNormalTextured> verts = new List<FVF_PositionNormalTextured>();
+			verts.Add(new FVF_PositionNormalTextured(new Vector3(0, radius, 0), new Vector3(0, 1, 0), new Vector2(0, 0)));
+			var phiStep = Math.PI / stacks;
+			var thetaStep = 2.0f * Math.PI / slices;
+
+			for (int i = 1; i < stacks; i++)
+			{
+				var phi = i * phiStep;
+				for (int j = 0; j <= slices; j++)
+				{
+					var theta = j * thetaStep;
+					var p = new Vector3((float)(radius * Math.Sin(phi) * Math.Cos(theta)), (float)(radius * Math.Cos(phi)), (float)(radius * Math.Sin(phi) * Math.Sin(theta)));
+
+					var n = p;
+					n.Normalize();
+					var uv = new Vector2((float)(theta / (Math.PI * 2)), (float)(phi / Math.PI));
+					verts.Add(new FVF_PositionNormalTextured(p, n, uv));
+				}
+			}
+			verts.Add(new FVF_PositionNormalTextured(new Vector3(0, -radius, 0), new Vector3(0, -1, 0), new Vector2(0, 1)));
+
+			List<short> inds = new List<short>();
+			for (short i = 1; i <= slices; i++)
+			{
+				inds.Add(0);
+				inds.Add((short)(i + 1));
+				inds.Add(i);
+			}
+			var baseIndex = 1;
+			var ringVertexCount = slices + 1;
+			for (int i = 0; i < stacks - 2; i++)
+			{
+				for (int j = 0; j < slices; j++)
+				{
+					inds.Add((short)(baseIndex + i * ringVertexCount + j));
+					inds.Add((short)(baseIndex + i * ringVertexCount + j + 1));
+					inds.Add((short)(baseIndex + (i + 1) * ringVertexCount + j));
+
+					inds.Add((short)(baseIndex + (i + 1) * ringVertexCount + j));
+					inds.Add((short)(baseIndex + i * ringVertexCount + j + 1));
+					inds.Add((short)(baseIndex + (i + 1) * ringVertexCount + j + 1));
+				}
+			}
+			short southPoleIndex = (short)(verts.Count - 1);
+			baseIndex = southPoleIndex - ringVertexCount;
+			for (int i = 0; i < slices; i++)
+			{
+				inds.Add(southPoleIndex);
+				inds.Add((short)(baseIndex + i));
+				inds.Add((short)(baseIndex + i + 1));
+			}
+			return new Mesh<FVF_PositionNormalTextured>(device, verts.ToArray(), new short[][] { inds.ToArray() });
+		}
+		#endregion
 	}
 
 	public class Mesh<T> : Mesh
@@ -90,6 +144,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public override void DrawSubset(int subset)
 		{
+			device.VertexFormat = vertexBuffer[0].GetFormat();
 			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
 		}
 
