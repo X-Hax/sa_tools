@@ -350,11 +350,12 @@ namespace SonicRetro.SAModel.SAMDL
         {
             using (SaveFileDialog a = new SaveFileDialog()
             {
-                InitialDirectory = Path.GetDirectoryName(currentFileName),
                 DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
                 Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
             })
             {
+                if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
+
                 if (a.ShowDialog(this) == DialogResult.OK)
                 {
                     Save(a.FileName);
