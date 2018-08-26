@@ -29,6 +29,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static SharpDX.Mathematics.Interop.RawColorBGRA ToRawColorBGRA(this Color color) => new SharpDX.Mathematics.Interop.RawColorBGRA(color.B, color.G, color.R, color.A);
 
+		public static SharpDX.Mathematics.Interop.RawColor4 ToRawColor4(this Vertex vertex) => new SharpDX.Mathematics.Interop.RawColor4(vertex.X, vertex.Y, vertex.Z, 1);
+
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
 			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
