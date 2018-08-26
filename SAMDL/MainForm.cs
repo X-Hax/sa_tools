@@ -374,6 +374,9 @@ namespace SonicRetro.SAModel.SAMDL
                 ModelFile.CreateFile(fileName, model, null, null, null, null, "SAMDL", null, outfmt);
                 modelFile = new ModelFile(fileName);
             }
+
+            currentFileName = fileName;
+            Text = GetStatusString();
         }
 
         private void saveMenuItem_Click(object sender, EventArgs e)
@@ -425,6 +428,9 @@ namespace SonicRetro.SAModel.SAMDL
 
             loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
             SelectedItemChanged();
+
+            currentFileName = "";
+            Text = GetStatusString();
         }
 
         private void NewFileOperation(ModelFormat modelFormat)
