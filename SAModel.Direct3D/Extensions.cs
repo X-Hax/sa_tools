@@ -406,7 +406,7 @@ namespace SonicRetro.SAModel.Direct3D
 			obj.ProcessTransforms(transform);
 
             bool attachValid = obj.Attach != null;
-            bool meshValid = modelindex > 0 && modelindex < meshes.Length && meshes[modelindex] != null;
+            bool meshValid = modelindex >= 0 && modelindex < meshes.Length && meshes[modelindex] != null;
 
 			if (attachValid & meshValid)
 			{
