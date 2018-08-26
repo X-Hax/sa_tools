@@ -254,21 +254,21 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Resources\xy_move.x" />
-    <None Include="Resources\x_move.x" />
-    <None Include="Resources\x_null.x" />
-    <None Include="Resources\x_rotation.x" />
-    <None Include="Resources\x_scale.x" />
-    <None Include="Resources\y_move.x" />
-    <None Include="Resources\y_null.x" />
-    <None Include="Resources\y_rotation.x" />
-    <None Include="Resources\y_scale.x" />
-    <None Include="Resources\zx_move.x" />
-    <None Include="Resources\zy_move.x" />
-    <None Include="Resources\z_move.x" />
-    <None Include="Resources\z_null.x" />
-    <None Include="Resources\z_rotation.x" />
-    <None Include="Resources\z_scale.x" />
+    <None Include="Resources\xy_move_x.sa1mdl" />
+    <None Include="Resources\x_move_x.sa1mdl" />
+    <None Include="Resources\x_null.sa1mdl" />
+    <None Include="Resources\x_rotation_x.sa1mdl" />
+    <None Include="Resources\x_scale_x.sa1mdl" />
+    <None Include="Resources\y_move_x.sa1mdl" />
+    <None Include="Resources\y_null.sa1mdl" />
+    <None Include="Resources\y_rotation_x.sa1mdl" />
+    <None Include="Resources\y_scale_x.sa1mdl" />
+    <None Include="Resources\zx_move_x.sa1mdl" />
+    <None Include="Resources\zy_move_x.sa1mdl" />
+    <None Include="Resources\z_move_x.sa1mdl" />
+    <None Include="Resources\z_null.sa1mdl" />
+    <None Include="Resources\z_rotation_x.sa1mdl" />
+    <None Include="Resources\z_scale_x.sa1mdl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PointBTexture.png" />
