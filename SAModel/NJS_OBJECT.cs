@@ -224,7 +224,7 @@ namespace SonicRetro.SAModel
 			return ToCollada(texs);
 		}
 
-public COLLADA ToCollada(string[] textures)
+        public COLLADA ToCollada(string[] textures)
 		{
 			COLLADA result = new COLLADA
 			{
