@@ -27,11 +27,15 @@ namespace SonicRetro.SAModel
 		private string[] morphFiles;
 
 		public ModelFile(string filename)
+			: this(File.ReadAllBytes(filename), filename)
+		{
+		}
+
+		public ModelFile(byte[] file, string filename = null)
 		{
 			int tmpaddr;
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
@@ -66,52 +70,55 @@ namespace SonicRetro.SAModel
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
 				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
-				tmpaddr = ByteConverter.ToInt32(file, 0xC);
-				if (tmpaddr != 0)
+				if (filename != null)
 				{
-					List<string> animfiles = new List<string>();
-					int addr = ByteConverter.ToInt32(file, tmpaddr);
-					while (addr != -1)
-					{
-						animfiles.Add(file.GetCString(addr));
-						tmpaddr += 4;
-						addr = ByteConverter.ToInt32(file, tmpaddr);
-					}
-					animationFiles = animfiles.ToArray();
-				}
-				else
-					animationFiles = new string[0];
-				string path = Path.GetDirectoryName(filename);
-				List<Animation> anims = new List<Animation>();
-				foreach (string item in animationFiles)
-					anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
-				Animations = anims.AsReadOnly();
-				if (version == 1)
-				{
-					tmpaddr = ByteConverter.ToInt32(file, 0x10);
+					tmpaddr = ByteConverter.ToInt32(file, 0xC);
 					if (tmpaddr != 0)
 					{
-						List<string> morphfiles = new List<string>();
+						List<string> animfiles = new List<string>();
 						int addr = ByteConverter.ToInt32(file, tmpaddr);
 						while (addr != -1)
 						{
-							morphfiles.Add(file.GetCString(addr));
+							animfiles.Add(file.GetCString(addr));
 							tmpaddr += 4;
 							addr = ByteConverter.ToInt32(file, tmpaddr);
 						}
-						morphFiles = morphfiles.ToArray();
+						animationFiles = animfiles.ToArray();
 					}
 					else
+						animationFiles = new string[0];
+					string path = Path.GetDirectoryName(filename);
+					List<Animation> anims = new List<Animation>();
+					foreach (string item in animationFiles)
+						anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
+					Animations = anims.AsReadOnly();
+					if (version == 1)
+					{
+						tmpaddr = ByteConverter.ToInt32(file, 0x10);
+						if (tmpaddr != 0)
+						{
+							List<string> morphfiles = new List<string>();
+							int addr = ByteConverter.ToInt32(file, tmpaddr);
+							while (addr != -1)
+							{
+								morphfiles.Add(file.GetCString(addr));
+								tmpaddr += 4;
+								addr = ByteConverter.ToInt32(file, tmpaddr);
+							}
+							morphFiles = morphfiles.ToArray();
+						}
+						else
+							morphFiles = new string[0];
+						List<Animation> morphs = new List<Animation>();
+						foreach (string item in morphFiles)
+							morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
+						Morphs = morphs.AsReadOnly();
+					}
+					else
+					{
 						morphFiles = new string[0];
-					List<Animation> morphs = new List<Animation>();
-					foreach (string item in morphFiles)
-						morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
-					Morphs = morphs.AsReadOnly();
-				}
-				else
-				{
-					morphFiles = new string[0];
-					Morphs = new ReadOnlyCollection<Animation>(new List<Animation>());
+						Morphs = new ReadOnlyCollection<Animation>(new List<Animation>());
+					}
 				}
 			}
 			else
@@ -238,15 +245,18 @@ namespace SonicRetro.SAModel
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
 				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
-				string path = Path.GetDirectoryName(filename);
-				List<Animation> anims = new List<Animation>();
-				foreach (string item in animationFiles)
-					anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
-				Animations = anims.AsReadOnly();
-				List<Animation> morphs = new List<Animation>();
-				foreach (string item in morphFiles)
-					morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
-				Morphs = morphs.AsReadOnly();
+				if (filename != null)
+				{
+					string path = Path.GetDirectoryName(filename);
+					List<Animation> anims = new List<Animation>();
+					foreach (string item in animationFiles)
+						anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
+					Animations = anims.AsReadOnly();
+					List<Animation> morphs = new List<Animation>();
+					foreach (string item in morphFiles)
+						morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
+					Morphs = morphs.AsReadOnly();
+				}
 			}
 			ByteConverter.BigEndian = be;
 		}

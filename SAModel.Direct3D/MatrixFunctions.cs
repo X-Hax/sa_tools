@@ -161,6 +161,14 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public void LoadMatrix(Matrix m) { matrices.Pop(); matrices.Push(m); }
 
+		public void TranslateLocal(Vector3 vector) => LoadMatrix(Top * Matrix.Translation(vector));
+
+		public void TranslateLocal(float x, float y, float z) => LoadMatrix(Top * Matrix.Translation(x, y, z));
+
+		public void ScaleLocal(Vector3 vector) => LoadMatrix(Top * Matrix.Scaling(vector));
+
+		public void ScaleLocal(float x, float y, float z) => LoadMatrix(Top * Matrix.Scaling(x, y, z));
+
 		public void NJTranslate(float x, float y, float z)
 		{
 			Matrix m = Top;

@@ -12,6 +12,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, NJS_OBJECT model = null);
 
+		#region Box
 		private static readonly FVF_PositionNormalTextured[] boxverts =
 		{
 			new FVF_PositionNormalTextured(new Vector3(-0.5f, -0.5f, 0.5f), Vector3.UnitZ, new Vector2(0, 0)),
@@ -50,6 +51,7 @@ namespace SonicRetro.SAModel.Direct3D
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
 			return new Mesh<FVF_PositionNormalTextured>(device, verts.ToArray(), new short[][] { inds.ToArray() });
 		}
+		#endregion
 
 		/*public static Mesh Sphere(Device device)
 		{
