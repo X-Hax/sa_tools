@@ -1,10 +1,12 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -52,7 +54,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override string Name { get { return "Spinner (Float)"; } }
 
-		private PropertySpec[] missionProperties = new PropertySpec[] {
+		private readonly PropertySpec[] missionProperties = new PropertySpec[] {
 			new PropertySpec("Destroy For Mission", typeof(bool), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[4] != 0, (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)((bool)v ? 1 : 0)),
 			new PropertySpec("Items Required", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v)
 		};

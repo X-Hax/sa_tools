@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using System.Drawing;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -23,7 +26,7 @@ namespace SADXObjectDefinitions.Common
 				DiffuseColor = Color.FromArgb(180, 180, 180, 180),
 				UseAlpha = true
 			};
-			texture = new Texture(dev, new Bitmap(2, 2), 0, Pool.Managed);
+			texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -57,7 +60,7 @@ namespace SADXObjectDefinitions.Common
 
 			if (item.Selected)
 			{
-				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.WireFrame, boxSphere);
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
 				result.Add(highlightInfo);
 			}
 
