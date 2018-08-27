@@ -36,14 +36,14 @@ namespace SonicRetro.SAModel.Direct3D
 				MatrixFunctions.Scale(ref matrix, width, height, depth);
 				verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
 				inds.AddRange(boxinds.Select(a => (short)(a + off)));
-				off += 6;
+				off += 4;
 			}
 			matrix = Matrix.Identity;
 			MatrixFunctions.RotateX(ref matrix, 0x4000);
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
 			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
-			off += 6;
+			off += 4;
 			matrix = Matrix.Identity;
 			MatrixFunctions.RotateX(ref matrix, 0xC000);
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
