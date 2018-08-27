@@ -128,37 +128,37 @@ namespace SonicRetro.SAModel.Direct3D
 			frustumPlanes[0].Normal.X = viewMatrix.M14 + viewMatrix.M11;
 			frustumPlanes[0].Normal.Y = viewMatrix.M24 + viewMatrix.M21;
 			frustumPlanes[0].Normal.Z = viewMatrix.M34 + viewMatrix.M31;
-			frustumPlanes[0].D = viewMatrix.M44 + viewMatrix.M41;
+			frustumPlanes[0].D =        viewMatrix.M44 + viewMatrix.M41;
 
 			// Right plane
 			frustumPlanes[1].Normal.X = viewMatrix.M14 - viewMatrix.M11;
 			frustumPlanes[1].Normal.Y = viewMatrix.M24 - viewMatrix.M21;
 			frustumPlanes[1].Normal.Z = viewMatrix.M34 - viewMatrix.M31;
-			frustumPlanes[1].D = viewMatrix.M44 - viewMatrix.M41;
+			frustumPlanes[1].D =        viewMatrix.M44 - viewMatrix.M41;
 
 			// Top plane
 			frustumPlanes[2].Normal.X = viewMatrix.M14 - viewMatrix.M12;
 			frustumPlanes[2].Normal.Y = viewMatrix.M24 - viewMatrix.M22;
 			frustumPlanes[2].Normal.Z = viewMatrix.M34 - viewMatrix.M32;
-			frustumPlanes[2].D = viewMatrix.M44 - viewMatrix.M42;
+			frustumPlanes[2].D =        viewMatrix.M44 - viewMatrix.M42;
 
 			// Bottom plane
 			frustumPlanes[3].Normal.X = viewMatrix.M14 + viewMatrix.M12;
 			frustumPlanes[3].Normal.Y = viewMatrix.M24 + viewMatrix.M22;
 			frustumPlanes[3].Normal.Z = viewMatrix.M34 + viewMatrix.M32;
-			frustumPlanes[3].D = viewMatrix.M44 + viewMatrix.M42;
+			frustumPlanes[3].D =        viewMatrix.M44 + viewMatrix.M42;
 
 			// Near plane
 			frustumPlanes[4].Normal.X = viewMatrix.M13;
 			frustumPlanes[4].Normal.Y = viewMatrix.M23;
 			frustumPlanes[4].Normal.Z = viewMatrix.M33;
-			frustumPlanes[4].D = viewMatrix.M43;
+			frustumPlanes[4].D =        viewMatrix.M43;
 
 			// Far plane
 			frustumPlanes[5].Normal.X = viewMatrix.M14 - viewMatrix.M13;
 			frustumPlanes[5].Normal.Y = viewMatrix.M24 - viewMatrix.M23;
 			frustumPlanes[5].Normal.Z = viewMatrix.M34 - viewMatrix.M33;
-			frustumPlanes[5].D = viewMatrix.M44 - viewMatrix.M43;
+			frustumPlanes[5].D =        viewMatrix.M44 - viewMatrix.M43;
 			#endregion
 
 			// Normalize planes
@@ -172,7 +172,7 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				if (Plane.Dot(frustumPlanes[i], new Vector4(sphere.Center.ToVector3(), 0)) + sphere.Radius < 0)
+				if (Plane.DotCoordinate(frustumPlanes[i], sphere.Center.ToVector3()) + sphere.Radius < 0)
 				{
 					return false;
 				}
