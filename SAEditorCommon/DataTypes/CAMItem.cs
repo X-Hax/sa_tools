@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -172,7 +174,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					IgnoreLighting = true,
 					UseAlpha = false
 				};
-				result.Add(new RenderInfo(VolumeMesh, 0, transform.Top, mat, null, FillMode.WireFrame, Bounds));
+				result.Add(new RenderInfo(VolumeMesh, 0, transform.Top, mat, null, FillMode.Wireframe, Bounds));
 			}
 
 			result.Add(outputInfo);

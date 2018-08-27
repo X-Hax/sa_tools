@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -52,15 +54,14 @@ namespace SADXObjectDefinitions.Common
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x, z;
-			direction.GetRotation(out x, out z);
+			direction.GetRotation(out int x, out int z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
 
 		public override string Name { get { return "Jump Panel"; } }
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Panel Number", typeof(int), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (int)v),
 			new PropertySpec("Next Panel", typeof(int), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (int)v)
 		};

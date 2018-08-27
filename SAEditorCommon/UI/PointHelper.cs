@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -85,15 +86,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			else
 				transform.ScaleLocal(handleSize, handleSize, handleSize);
 
-			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-
-			if (Gizmo.XMoveMesh.Intersect(pos, dir, out IntersectInformation info)) return GizmoSelectedAxes.X_AXIS;
-			if (Gizmo.YMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Y_AXIS;
-			if (Gizmo.ZMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.Z_AXIS;
-			if (Gizmo.XYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XY_AXIS;
-			if (Gizmo.ZXMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.XZ_AXIS;
-			if (Gizmo.ZYMoveMesh.Intersect(pos, dir, out info)) return GizmoSelectedAxes.ZY_AXIS;
+			if (Gizmo.XMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.X_AXIS;
+			if (Gizmo.YMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.Y_AXIS;
+			if (Gizmo.ZMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.Z_AXIS;
+			if (Gizmo.XYMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.XY_AXIS;
+			if (Gizmo.ZXMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.XZ_AXIS;
+			if (Gizmo.ZYMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.ZY_AXIS;
 
 			return GizmoSelectedAxes.NONE;
 		}
@@ -108,7 +106,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if ((affectedPoint == null) || (!enabled))
 				return;
 
-			d3ddevice.RenderState.ZBufferEnable = true;
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
 			RenderInfo.Draw(Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
@@ -145,15 +143,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(affectedPoint.X, affectedPoint.Y, affectedPoint.Z), Radius = (1.0f * Math.Abs(dist)) };
 
 			#region Setting Render States
-			dev.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Point); // no fancy filtering is required because no textures are even being used
-			dev.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Point);
-			dev.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
-			dev.SetRenderState(RenderStates.Lighting, true);
-			dev.SetRenderState(RenderStates.SpecularEnable, false);
-			dev.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
-			dev.SetRenderState(RenderStates.AlphaBlendEnable, false);
-			dev.SetRenderState(RenderStates.ColorVertex, false);
-			dev.Clear(ClearFlags.ZBuffer, 0, 1, 0);
+			dev.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point); // no fancy filtering is required because no textures are even being used
+			dev.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+			dev.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Point);
+			dev.SetRenderState(RenderState.Lighting, true);
+			dev.SetRenderState(RenderState.SpecularEnable, false);
+			dev.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
+			dev.SetRenderState(RenderState.AlphaBlendEnable, false);
+			dev.SetRenderState(RenderState.ColorVertex, false);
+			dev.Clear(ClearFlags.ZBuffer, Color.Transparent.ToRawColorBGRA(), 1, 0);
 			#endregion
 
 			transform.Push();

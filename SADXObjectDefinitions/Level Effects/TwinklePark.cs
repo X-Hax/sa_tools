@@ -1,10 +1,11 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SA_Tools;
+﻿using SA_Tools;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {

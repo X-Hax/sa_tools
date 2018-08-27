@@ -1,10 +1,11 @@
 ﻿using System.Drawing;
 using System.IO;
-using Microsoft.DirectX.Direct3D;
+using SharpDX.Direct3D9;
+using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.Properties;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 //using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-//using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -53,110 +54,77 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public static void InitGizmo(Device d3dDevice)
 		{
-			#region Creating Streams From Resources
-			MemoryStream x_NullStream = new MemoryStream(Resources.x_null);
-			MemoryStream y_NullStream = new MemoryStream(Resources.y_null);
-			MemoryStream z_NullStream = new MemoryStream(Resources.z_null);
-			MemoryStream x_MoveStream = new MemoryStream(Resources.x_move);
-			MemoryStream y_MoveStream = new MemoryStream(Resources.y_move);
-			MemoryStream z_MoveStream = new MemoryStream(Resources.z_move);
-			MemoryStream xy_MoveStream = new MemoryStream(Resources.xy_move);
-			MemoryStream zx_MoveStream = new MemoryStream(Resources.zx_move);
-			MemoryStream zy_MoveStream = new MemoryStream(Resources.zy_move);
+			Attach attach = new ModelFile(Resources.x_null).Model.Attach;
+			attach.ProcessVertexData();
+			XNullMesh = attach.CreateD3DMesh(d3dDevice);
 
-			MemoryStream x_RotationStream = new MemoryStream(Resources.x_rotation);
-			MemoryStream y_RotationStream = new MemoryStream(Resources.y_rotation);
-			MemoryStream z_RotationStream = new MemoryStream(Resources.z_rotation);
+			attach = new ModelFile(Resources.y_null).Model.Attach;
+			attach.ProcessVertexData();
+			YNullMesh = attach.CreateD3DMesh(d3dDevice);
 
-			MemoryStream x_ScaleStream = new MemoryStream(Resources.x_scale);
-			MemoryStream y_ScaleStream = new MemoryStream(Resources.y_scale);
-			MemoryStream z_ScaleStream = new MemoryStream(Resources.z_scale);
-			#endregion
+			attach = new ModelFile(Resources.z_null).Model.Attach;
+			attach.ProcessVertexData();
+			ZNullMesh = attach.CreateD3DMesh(d3dDevice);
 
-			#region Temporary ExtendedMaterials
-			#endregion
+			attach = new ModelFile(Resources.x_move).Model.Attach;
+			attach.ProcessVertexData();
+			XMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			XMaterial = ((BasicAttach)attach).Material[0];
 
-			#region Loading Meshes and Materials from Streams
-			XMoveMesh = Mesh.FromStream(x_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] xMaterials);
-			YMoveMesh = Mesh.FromStream(y_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] yMaterials);
-			ZMoveMesh = Mesh.FromStream(z_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] zMaterials);
+			attach = new ModelFile(Resources.y_move).Model.Attach;
+			attach.ProcessVertexData();
+			YMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			YMaterial = ((BasicAttach)attach).Material[0];
 
-			XNullMesh = Mesh.FromStream(x_NullStream, MeshFlags.Managed, d3dDevice);
-			YNullMesh = Mesh.FromStream(y_NullStream, MeshFlags.Managed, d3dDevice);
-			ZNullMesh = Mesh.FromStream(z_NullStream, MeshFlags.Managed, d3dDevice);
+			attach = new ModelFile(Resources.z_move).Model.Attach;
+			attach.ProcessVertexData();
+			ZMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			ZMaterial = ((BasicAttach)attach).Material[0];
 
-			XYMoveMesh = Mesh.FromStream(xy_MoveStream, MeshFlags.Managed, d3dDevice, out ExtendedMaterial[] doubleAxisMaterials);
-			ZXMoveMesh = Mesh.FromStream(zx_MoveStream, MeshFlags.Managed, d3dDevice);
-			ZYMoveMesh = Mesh.FromStream(zy_MoveStream, MeshFlags.Managed, d3dDevice);
+			attach = new ModelFile(Resources.xy_move).Model.Attach;
+			attach.ProcessVertexData();
+			XYMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			DoubleAxisMaterial = ((BasicAttach)attach).Material[0];
 
-			XRotateMesh = Mesh.FromStream(x_RotationStream, MeshFlags.Managed, d3dDevice);
-			YRotateMesh = Mesh.FromStream(y_RotationStream, MeshFlags.Managed, d3dDevice);
-			ZRotateMesh = Mesh.FromStream(z_RotationStream, MeshFlags.Managed, d3dDevice);
+			attach = new ModelFile(Resources.zx_move).Model.Attach;
+			attach.ProcessVertexData();
+			ZXMoveMesh = attach.CreateD3DMesh(d3dDevice);
 
-			XScaleMesh = Mesh.FromStream(x_ScaleStream, MeshFlags.Managed, d3dDevice);
-			YScaleMesh = Mesh.FromStream(y_ScaleStream, MeshFlags.Managed, d3dDevice);
-			ZScaleMesh = Mesh.FromStream(z_ScaleStream, MeshFlags.Managed, d3dDevice);
+			attach = new ModelFile(Resources.zy_move).Model.Attach;
+			attach.ProcessVertexData();
+			ZYMoveMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.x_rotation).Model.Attach;
+			attach.ProcessVertexData();
+			XRotateMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.y_rotation).Model.Attach;
+			attach.ProcessVertexData();
+			YRotateMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.z_rotation).Model.Attach;
+			attach.ProcessVertexData();
+			ZRotateMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.x_scale).Model.Attach;
+			attach.ProcessVertexData();
+			XScaleMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.y_scale).Model.Attach;
+			attach.ProcessVertexData();
+			YScaleMesh = attach.CreateD3DMesh(d3dDevice);
+
+			attach = new ModelFile(Resources.z_scale).Model.Attach;
+			attach.ProcessVertexData();
+			ZScaleMesh = attach.CreateD3DMesh(d3dDevice);
 
 			BoxMesh = Mesh.Box(d3dDevice, 1, 1, 1);
 
-			Mesh TexturedBox = BoxMesh.Clone(BoxMesh.Options.Value,
-				VertexFormats.Position | VertexFormats.Normal | VertexFormats.Texture0 |
-				VertexFormats.Texture1, BoxMesh.Device);
-
-			//The following code makes the assumption that the vertices of the box are
-			// generated the same way as they are in the April 2005 SDK
-			using (VertexBuffer vb = TexturedBox.VertexBuffer)
-			{
-				CustomVertex.PositionNormalTextured[] verts =
-					(CustomVertex.PositionNormalTextured[])vb.Lock(0,
-					 typeof(CustomVertex.PositionNormalTextured), LockFlags.None,
-					TexturedBox.NumberVertices);
-				try
-				{
-					for (int i = 0; i < verts.Length; i += 4)
-					{
-						verts[i + 0].Tu = 0.0f;
-						verts[i + 0].Tv = 0.0f;
-						verts[i + 1].Tu = 1.0f;
-						verts[i + 1].Tv = 0.0f;
-						verts[i + 2].Tu = 1.0f;
-						verts[i + 2].Tv = 1.0f;
-						verts[i + 3].Tu = 0.0f;
-						verts[i + 3].Tv = 1.0f;
-					}
-				}
-				finally
-				{
-					vb.Unlock();
-				}
-			}
-
-			BoxMesh = TexturedBox;
-
-			XMaterial = new NJS_MATERIAL() { DiffuseColor = xMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			YMaterial = new NJS_MATERIAL() { DiffuseColor = yMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			ZMaterial = new NJS_MATERIAL() { DiffuseColor = zMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
-			DoubleAxisMaterial = new NJS_MATERIAL() { DiffuseColor = doubleAxisMaterials[0].Material3D.Diffuse, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 			HighlightMaterial = new NJS_MATERIAL() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 
-			ATexture = Texture.FromBitmap(d3dDevice, Resources.PointATexture, Usage.AutoGenerateMipMap, Pool.Managed);
-			BTexture = Texture.FromBitmap(d3dDevice, Resources.PointBTexture, Usage.AutoGenerateMipMap, Pool.Managed);
+			ATexture = Resources.PointATexture.ToTexture(d3dDevice);
+			BTexture = Resources.PointBTexture.ToTexture(d3dDevice);
 			StandardMaterial = new NJS_MATERIAL() { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
-			#endregion
-
-			#region Cleanup
-			x_NullStream.Close();
-			y_NullStream.Close();
-			z_NullStream.Close();
-
-			x_MoveStream.Close();
-			y_MoveStream.Close();
-			z_MoveStream.Close();
-
-			x_RotationStream.Close();
-			y_RotationStream.Close();
-			z_RotationStream.Close();
-			#endregion
 		}
 	}
 }
