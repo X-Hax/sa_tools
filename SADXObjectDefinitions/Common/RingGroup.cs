@@ -151,7 +151,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			direction.GetRotation(out int x, out int z);
+			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
