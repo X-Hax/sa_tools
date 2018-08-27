@@ -1116,30 +1116,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 							switch (ext.ToLowerInvariant())
 							{
 								case ".cs":
-									pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+									pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
 									break;
 								case ".vb":
-									pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+									pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
 									break;
 							}
 							if (pr != null)
 							{
-								CompilerParameters para =
-									new CompilerParameters(new string[]
+							// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+							// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+							CompilerParameters para =
+								new CompilerParameters(new string[]
 								{
-									"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-									Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-									Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-									Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-									Assembly.GetAssembly(typeof (Item)).Location
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
 								})
-									{
-										GenerateExecutable = false,
-										GenerateInMemory = false,
-										IncludeDebugInformation = true,
-										OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-									};
-								CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+								{
+									GenerateExecutable = false,
+									GenerateInMemory = false,
+									IncludeDebugInformation = true,
+									OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+								};
+							CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
 								if (!res.Errors.HasErrors)
 									def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 							}
