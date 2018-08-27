@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             comboBox1.Items.Clear();
 
-            for (int i = 0; i < EditorOptions.Direct3DDevice.Lights.Count; i++)
+            for (int i = 0; i < 4; i++)
             {
                 comboBox1.Items.Add(i.ToString());
             }
@@ -24,7 +24,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void SetSelection(int selection)
         {
-            if (selection > -1) propertyGrid1.SelectedObject = EditorOptions.Direct3DDevice.Lights[selection];
+            if (selection > -1) propertyGrid1.SelectedObject = EditorOptions.Direct3DDevice.GetLight(selection);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

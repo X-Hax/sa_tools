@@ -5,12 +5,15 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Point = System.Drawing.Point;
 
 namespace SonicRetro.SAModel.SAMDL
 {
@@ -74,15 +77,15 @@ namespace SonicRetro.SAModel.SAMDL
         private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
 				new PresentParameters
 				{
 					Windowed = true,
 					SwapEffect = SwapEffect.Discard,
 					EnableAutoDepthStencil = true,
-					AutoDepthStencilFormat = DepthFormat.D24X8
+					AutoDepthStencilFormat = Format.D24X8
 				});
-			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
 			EditorOptions.Initialize(d3ddevice);
             optionsEditor = new EditorOptionsEditor(cam);
@@ -116,11 +119,6 @@ namespace SonicRetro.SAModel.SAMDL
             sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
-		}
-
-        private void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
-		{
-			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -320,11 +318,17 @@ namespace SonicRetro.SAModel.SAMDL
 
         private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
-			TreeNode node = nodes.Add(model.Name);
+			int index = 0;
+			AddTreeNode(model, ref index, nodes);
+		}
+
+		private void AddTreeNode(NJS_OBJECT model, ref int index, TreeNodeCollection nodes)
+		{
+			TreeNode node = nodes.Add($"{index++}: {model.Name}");
 			node.Tag = model;
 			nodeDict[model] = node;
 			foreach (NJS_OBJECT child in model.Children)
-				AddTreeNode(child, node.Nodes);
+				AddTreeNode(child, ref index, node.Nodes);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -482,14 +486,14 @@ namespace SonicRetro.SAModel.SAMDL
         internal void DrawEntireModel()
 		{
 			if (!loaded) return;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
             Text = GetStatusString();
-			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
-			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
-			d3ddevice.Material = new Material { Ambient = Color.White };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
-			d3ddevice.RenderState.ZBufferEnable = true;
+			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
+			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
 			//all drawings after this line
@@ -507,10 +511,11 @@ namespace SonicRetro.SAModel.SAMDL
 					DrawSelectedObject(model, transform);
 			}
 
-			d3ddevice.RenderState.AlphaBlendEnable = false;
-			d3ddevice.RenderState.FillMode = FillMode.Solid;
-			d3ddevice.RenderState.Lighting = false;
-			d3ddevice.RenderState.ZBufferEnable = false;
+			d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+			d3ddevice.SetRenderState(RenderState.FillMode, FillMode.Solid);
+			d3ddevice.SetRenderState(RenderState.Lighting, false);
+			d3ddevice.SetRenderState(RenderState.ZEnable, false);
+			d3ddevice.SetTexture(0, null);
 			if (showNodesToolStripMenuItem.Checked)
 				DrawNodes(model, transform);
 
@@ -550,7 +555,7 @@ namespace SonicRetro.SAModel.SAMDL
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
-						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
+						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
 					}
 				transform.Pop();
 				return true;
@@ -581,7 +586,7 @@ namespace SonicRetro.SAModel.SAMDL
 				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
 			else
 				obj.ProcessTransforms(transform);
-			d3ddevice.Transform.World = Matrix.Translation(Vector3.TransformCoordinate(new Vector3(), transform.Top));
+			d3ddevice.SetTransform(TransformState.World, Matrix.Translation(Vector3.TransformCoordinate(new Vector3(), transform.Top)));
 			sphereMesh.DrawSubset(0);
 			foreach (NJS_OBJECT child in obj.Children)
 				DrawNodes(child, transform, ref modelindex, ref animindex);
@@ -595,9 +600,9 @@ namespace SonicRetro.SAModel.SAMDL
 			List<Vector3> points = new List<Vector3>();
 			List<short> indexes = new List<short>();
 			DrawNodeConnections(obj, transform, points, indexes, -1, ref modelnum, ref animindex);
-			d3ddevice.VertexFormat = VertexFormats.Position;
-			d3ddevice.Transform.World = Matrix.Identity;
-			d3ddevice.DrawIndexedUserPrimitives(PrimitiveType.LineList, 0, indexes.Count, indexes.Count / 2, indexes.ToArray(), true, points.ToArray());
+			d3ddevice.SetTransform(TransformState.World, Matrix.Identity);
+			d3ddevice.VertexFormat = VertexFormat.Position;
+			d3ddevice.DrawIndexedUserPrimitives(PrimitiveType.LineList, 0, points.Count, indexes.Count / 2, indexes.ToArray(), Format.Index16, points.ToArray());
 		}
 
 		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform, List<Vector3> points, List<short> indexes, short parentidx, ref int modelindex, ref int animindex)
@@ -1017,7 +1022,7 @@ namespace SonicRetro.SAModel.SAMDL
 					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
 					Textures = new Texture[TextureInfo.Length];
 					for (int j = 0; j < TextureInfo.Length; j++)
-						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.None, Pool.Managed);
+						Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
 
 					DrawEntireModel();
 				}
@@ -1037,11 +1042,11 @@ namespace SonicRetro.SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					model.ToCollada(TextureInfo == null ? null : TextureInfo.Select((item) => item.Name).ToArray()).Save(sd.FileName);
+					model.ToCollada(TextureInfo?.Select((item) => item.Name).ToArray()).Save(sd.FileName);
 					string p = Path.GetDirectoryName(sd.FileName);
 					if (TextureInfo != null)
-						for (int i = 0; i < TextureInfo.Length; i++)
-							TextureInfo[i].Image.Save(Path.Combine(p, TextureInfo[i].Name + ".png"));
+						foreach (BMPInfo img in TextureInfo)
+							img.Image.Save(Path.Combine(p, img.Name + ".png"));
 				}
 		}
 
@@ -1278,9 +1283,8 @@ namespace SonicRetro.SAModel.SAMDL
 			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
 			if (selectedObject.Attach != null)
 				attach.Name = selectedObject.Attach.Name;
-			if (attach is BasicAttach)
+			if (attach is BasicAttach batt)
 			{
-				BasicAttach batt = (BasicAttach)attach;
 				batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
 				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
@@ -1293,9 +1297,8 @@ namespace SonicRetro.SAModel.SAMDL
 					m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
 				}
 			}
-			else if (attach is ChunkAttach)
+			else if (attach is ChunkAttach catt)
 			{
-				ChunkAttach catt = (ChunkAttach)attach;
 				catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 				catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 			}

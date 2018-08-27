@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using System;
+using SharpDX.Direct3D9;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using SharpDX;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
@@ -55,7 +56,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
-			Matrix m = transform.Top;
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
 			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			HitResult result;

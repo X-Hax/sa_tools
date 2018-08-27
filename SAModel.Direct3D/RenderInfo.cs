@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-
-using SonicRetro.SAModel.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -31,20 +28,20 @@ namespace SonicRetro.SAModel.Direct3D
 
         public void Draw(Device device)
         {
-            FillMode mode = device.RenderState.FillMode;
-            TextureFilter magfilter = device.SamplerState[0].MagFilter;
-            TextureFilter minfilter = device.SamplerState[0].MinFilter;
-            TextureFilter mipfilter = device.SamplerState[0].MipFilter;
+            FillMode mode = device.GetRenderState<FillMode>(RenderState.FillMode);
+            TextureFilter magfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MagFilter);
+            TextureFilter minfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MinFilter);
+            TextureFilter mipfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MipFilter);
 
 			Material.SetDeviceStates(device, Texture, Transform, FillMode);
 
             if (Mesh != null)
                 Mesh.DrawSubset(Subset);
-            device.RenderState.Ambient = System.Drawing.Color.Black;
-            device.RenderState.FillMode = mode;
-            device.SamplerState[0].MagFilter = magfilter;
-            device.SamplerState[0].MinFilter = minfilter;
-            device.SamplerState[0].MipFilter = mipfilter;
+            device.SetRenderState(RenderState.Ambient, System.Drawing.Color.Black.ToArgb());
+            device.SetRenderState(RenderState.FillMode, mode);
+            device.SetSamplerState(0, SamplerState.MagFilter, magfilter);
+            device.SetSamplerState(0, SamplerState.MinFilter, minfilter);
+            device.SetSamplerState(0, SamplerState.MipFilter, mipfilter);
         }
 
         public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera)

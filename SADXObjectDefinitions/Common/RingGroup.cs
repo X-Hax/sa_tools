@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -149,8 +151,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x, z;
-			direction.GetRotation(out x, out z);
+			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
@@ -175,7 +176,7 @@ namespace SADXObjectDefinitions.Common
 			}
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Number of Rings", typeof(byte), "Extended", null, 1, (o) => (byte)Math.Min(o.Scale.X + 1, 8), (o, v) => o.Scale.X = Math.Max(Math.Min((byte)v - 1, 8), 0)),
 			new PropertySpec("Size", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
 			new PropertySpec("Group Type", typeof(RingGroupType), "Extended", null, null, (o) => o.Scale.Z == 1 ? RingGroupType.Circle : RingGroupType.Line, (o, v) => o.Scale.Z = (RingGroupType)v == RingGroupType.Circle ? 1 : 0)

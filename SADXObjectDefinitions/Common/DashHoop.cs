@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -53,10 +55,10 @@ namespace SADXObjectDefinitions.Common
 			transform.Pop();
 			if (item.Selected)
 			{
-				CustomVertex.PositionColored[] verts = new CustomVertex.PositionColored[2];
-				verts[0] = new CustomVertex.PositionColored(item.Position.ToVector3(), System.Drawing.Color.Yellow.ToArgb());
-				verts[1] = new CustomVertex.PositionColored(item.Scale.ToVector3(), System.Drawing.Color.Yellow.ToArgb());
-				dev.VertexFormat = VertexFormats.Position | VertexFormats.Diffuse;
+				FVF_PositionColored[] verts = new FVF_PositionColored[2];
+				verts[0] = new FVF_PositionColored(item.Position.ToVector3(), System.Drawing.Color.Yellow);
+				verts[1] = new FVF_PositionColored(item.Scale.ToVector3(), System.Drawing.Color.Yellow);
+				dev.VertexFormat = FVF_PositionColored.Format;
 				dev.DrawUserPrimitives(PrimitiveType.LineList, 1, verts);
 			}
 			return result;
@@ -101,13 +103,13 @@ namespace SADXObjectDefinitions.Common
 
         public override string Name { get { return "Dash Hoop"; } }
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Target", typeof(Vertex), "Extended", null, new Vertex(), (o) => o.Scale, (o, v) => o.Scale = (Vertex)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		private VerbSpec[] customVerbs = new VerbSpec[] {
+		private readonly VerbSpec[] customVerbs = new VerbSpec[] {
 			new VerbSpec("Point To", o => LevelData.BeginPointOperation())
 		};
 

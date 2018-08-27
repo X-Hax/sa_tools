@@ -320,6 +320,7 @@ namespace SonicRetro.SAModel
 		}
 	}
 
+	[Serializable]
 	public abstract class PolyChunkSize : PolyChunk
 	{
 		public ushort Size { get; protected set; }

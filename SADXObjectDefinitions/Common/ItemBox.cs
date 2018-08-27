@@ -1,11 +1,13 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -48,7 +50,7 @@ namespace SADXObjectDefinitions.Common
 
 		internal int[] charTexs = { 31, 0, 4, 0, 0, 1, 3, 2 };
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Item", typeof(Items), "Extended", null, null, (o) => (Items)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
@@ -81,8 +83,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x, z;
-			direction.GetRotation(out x, out z);
+			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}

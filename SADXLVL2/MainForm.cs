@@ -7,9 +7,9 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using SA_Tools;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
@@ -17,6 +17,9 @@ using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -162,26 +165,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (d3ddevice == null)
 			{
-				d3ddevice = new Device(0, DeviceType.Hardware, RenderPanel, CreateFlags.HardwareVertexProcessing,
+				d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 					new PresentParameters
 					{
 						Windowed = true,
 						SwapEffect = SwapEffect.Discard,
 						EnableAutoDepthStencil = true,
-						AutoDepthStencilFormat = DepthFormat.D24X8
+						AutoDepthStencilFormat = Format.D24X8
 					});
-				d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
 				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
 				ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
 			}
-		}
-
-		void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
-		{
-			// HACK: Not so sure we should have to re-initialize this every time...
-			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -459,7 +455,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
 
 				for (int i = 0; i < textureBitmaps.Length; i++)
-					d3dTextures[i] = new Texture(d3ddevice, textureBitmaps[i].Image, Usage.None, Pool.Managed);
+					d3dTextures[i] = textureBitmaps[i].Image.ToTexture(d3ddevice);
 
 				LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
 				LevelData.Textures.Add(pvmName, d3dTextures);
@@ -539,7 +535,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
+							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
 						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
 							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
 						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
@@ -706,24 +702,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 								switch (ext.ToLowerInvariant())
 								{
 									case ".cs":
-										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										pr = new Microsoft.CSharp.CSharpCodeProvider();
 										break;
 									case ".vb":
-										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										pr = new Microsoft.VisualBasic.VBCodeProvider();
 										break;
 								}
 								if (pr != null)
 								{
-									// System, System.Core, System.Drawing, Microsoft.DirectX, Microsoft.DirectX.Direct3D, Microsoft.DirectX.Direct3DX,
+									// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
 									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
 									CompilerParameters para =
 										new CompilerParameters(new string[]
 										{
-												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
 										})
 										{
 											GenerateExecutable = false,
@@ -909,22 +905,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 								switch (ext.ToLowerInvariant())
 								{
 									case ".cs":
-										pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										pr = new Microsoft.CSharp.CSharpCodeProvider();
 										break;
 									case ".vb":
-										pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+										pr = new Microsoft.VisualBasic.VBCodeProvider();
 										break;
 								}
 								if (pr != null)
 								{
+									// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
 									CompilerParameters para =
 										new CompilerParameters(new string[]
 										{
-												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-												Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-												Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-												Assembly.GetAssembly(typeof (ObjectDefinition)).Location
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
 										})
 										{
 											GenerateExecutable = false,
@@ -1164,30 +1162,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 							switch (ext.ToLowerInvariant())
 							{
 								case ".cs":
-									pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+									pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
 									break;
 								case ".vb":
-									pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+									pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
 									break;
 							}
 							if (pr != null)
 							{
-								CompilerParameters para =
-									new CompilerParameters(new string[]
+							// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+							// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+							CompilerParameters para =
+								new CompilerParameters(new string[]
 								{
-									"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof (Vector3)).Location,
-									Assembly.GetAssembly(typeof (Texture)).Location, Assembly.GetAssembly(typeof (D3DX)).Location,
-									Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof (LandTable)).Location,
-									Assembly.GetAssembly(typeof (EditorCamera)).Location, Assembly.GetAssembly(typeof (SA1LevelAct)).Location,
-									Assembly.GetAssembly(typeof (Item)).Location
+												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
 								})
-									{
-										GenerateExecutable = false,
-										GenerateInMemory = false,
-										IncludeDebugInformation = true,
-										OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-									};
-								CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+								{
+									GenerateExecutable = false,
+									GenerateInMemory = false,
+									IncludeDebugInformation = true,
+									OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+								};
+							CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
 								if (!res.Errors.HasErrors)
 									def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 							}
@@ -1260,21 +1260,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						if (lightList.Count > 0)
 						{
-                            EditorOptions.SetDefaultLights(d3ddevice, true);
+							for (int i = 0; i < 4; i++) // clear all default lights
+							{
+								d3ddevice.EnableLight(i, false);
+							}
+
+							EditorOptions.SetDefaultLights(d3ddevice, true);
 
                             for (int i = 0; i < lightList.Count * 2; i++)
                             {
                                 int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
                                 SA1StageLightData lightData = lightList[originalIndex];
 
-								d3ddevice.Lights[i].Enabled = true;
-								d3ddevice.Lights[i].Type = (lightData.UseDirection) ? LightType.Directional : LightType.Point;
-								d3ddevice.Lights[i].Diffuse = lightData.RGB.ToColor();
-								d3ddevice.Lights[i].DiffuseColor = new ColorValue(lightData.RGB.X, lightData.RGB.Y, lightData.RGB.Z, 1.0f);
-								d3ddevice.Lights[i].Ambient = lightData.AmbientRGB.ToColor();
-								d3ddevice.Lights[i].Specular = Color.Black;
-								d3ddevice.Lights[i].Direction = lightData.Direction.ToVector3();
-								d3ddevice.Lights[i].Range = lightData.Dif; // guessing here
+								Light light = new Light()
+								{
+									Type = lightData.UseDirection ? LightType.Directional : LightType.Point,
+									Diffuse = lightData.RGB.ToRawColor4(),
+									Ambient = lightData.AmbientRGB.ToRawColor4(),
+									Specular = Color.Black.ToRawColor4(),
+									Direction = lightData.Direction.ToVector3(),
+									Range = lightData.Dif // guessing here
+								};
+								d3ddevice.SetLight(i, ref light);
+								d3ddevice.EnableLight(i, true);
 							}
 						}
 						else
@@ -1595,13 +1603,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			UpdateTitlebar();
 
 			#region D3D Parameters
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
-			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
-			d3ddevice.Material = new Material { Ambient = Color.White };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
-			d3ddevice.RenderState.ZBufferEnable = true;
+			Matrix projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			Matrix view = cam.ToMatrix();
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
+			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
+			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			#endregion
 
 			d3ddevice.BeginScene();
@@ -1611,9 +1621,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.leveleff.Render(d3ddevice, cam);
 
 			cam.DrawDistance = EditorOptions.RenderDrawDistance;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
+			cam.BuildFrustum(view, projection);
 
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
@@ -2041,14 +2052,13 @@ namespace SonicRetro.SAModel.SADXLVL2
             item = null;
             Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
             Viewport viewport = d3ddevice.Viewport;
-            Matrix proj = d3ddevice.Transform.Projection;
-            Matrix view = d3ddevice.Transform.View;
+            Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+            Matrix view = d3ddevice.GetTransform(TransformState.View);
             Vector3 Near, Far;
             Near = mousepos;
             Near.Z = 0;
             Far = Near;
             Far.Z = -1;
-
 
             #region Picking Level Items
             if (LevelData.LevelItems != null)
@@ -2279,8 +2289,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.None:
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
-					Matrix proj = d3ddevice.Transform.Projection;
-					Matrix view = d3ddevice.Transform.View;
+					Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+					Matrix view = d3ddevice.GetTransform(TransformState.View);
 					Vector3 Near = mousepos;
 					Near.Z = 0;
 					Vector3 Far = Near;
@@ -2454,7 +2464,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Vector3 center = new Vector3();
 
 			foreach (Item item in objs)
-				center.Add(item.Position.ToVector3());
+				center += item.Position.ToVector3();
 
 			center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
 			foreach (Item item in objs)

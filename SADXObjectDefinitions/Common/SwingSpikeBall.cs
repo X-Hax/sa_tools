@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9; using Mesh = SonicRetro.SAModel.Direct3D.Mesh; using BoundingSphere =SonicRetro.SAModel.BoundingSphere;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
@@ -153,7 +153,7 @@ namespace SADXObjectDefinitions.Common
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Chain Length", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X =  (float)v),
 			new PropertySpec("Vertical Distance", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
 			new PropertySpec("One Ball", typeof(bool), "Extended", null, null, GetOneBall, SetOneBall),

@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using System.Globalization;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {
 	class WindyValley2 : LevelDefinition
 	{
-		NJS_OBJECT[] models = new NJS_OBJECT[3];
-		Mesh[][] meshes = new Mesh[3][];
+		readonly NJS_OBJECT[] models = new NJS_OBJECT[3];
+		readonly Mesh[][] meshes = new Mesh[3][];
 
 		public override void Init(IniLevelData data, byte act, Device dev)
 		{

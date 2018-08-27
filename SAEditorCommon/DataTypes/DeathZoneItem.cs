@@ -1,15 +1,16 @@
-﻿using System;
+﻿using SA_Tools;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.UI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SA_Tools;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
