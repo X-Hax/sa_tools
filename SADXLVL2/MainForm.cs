@@ -1265,8 +1265,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 								d3ddevice.EnableLight(i, false);
 							}
 
-							EditorOptions.SetDefaultLights(d3ddevice, true);
-
                             for (int i = 0; i < lightList.Count * 2; i++)
                             {
                                 int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
