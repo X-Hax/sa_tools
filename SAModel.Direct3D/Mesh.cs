@@ -10,6 +10,8 @@ namespace SonicRetro.SAModel.Direct3D
 	{
 		public abstract void DrawSubset(int subset);
 
+		public abstract void DrawAll();
+
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, NJS_OBJECT model = null);
 
 		#region Box
@@ -146,6 +148,12 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			device.VertexFormat = vertexBuffer[0].GetFormat();
 			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
+		}
+
+		public override void DrawAll()
+		{
+			for (int i = 0; i < indexBuffer.Length; i++)
+				DrawSubset(i);
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, NJS_OBJECT model = null)
