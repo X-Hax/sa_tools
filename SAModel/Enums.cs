@@ -148,6 +148,14 @@ namespace SonicRetro.SAModel
         Strip_StripUVH2 = Strip + 11,
         End = 255
     }
+
+	public enum WeightStatus
+	{
+		Start,
+		Middle,
+		End
+	}
+
     public class StructEnums
     {
         const int BIT_0 = (1 << 0);

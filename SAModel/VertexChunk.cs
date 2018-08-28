@@ -21,6 +21,12 @@ namespace SonicRetro.SAModel
 			set { Header1 = (Header1 & 0xFFFF00FFu) | (uint)(value << 8); }
 		}
 
+		public WeightStatus WeightStatus
+		{
+			get { return (WeightStatus)(Flags & 3); }
+			set { Flags = (byte)((Flags & ~3) | (int)value); }
+		}
+
 		public ushort Size
 		{
 			get { return (ushort)(Header1 >> 16); }
@@ -41,11 +47,14 @@ namespace SonicRetro.SAModel
 			set { Header2 = (Header2 & 0xFFFFu) | (uint)(value << 16); }
 		}
 
+		public bool HasWeight { get { return Type == ChunkType.Vertex_VertexNinjaFlags | Type == ChunkType.Vertex_VertexNormalNinjaFlags; } }
+
 		public List<Vertex> Vertices { get; set; }
 		public List<Vertex> Normals { get; set; }
 		public List<Color> Diffuse { get; set; }
 		public List<Color> Specular { get; set; }
-		public List<uint> VertFlags { get; set; }
+		public List<uint> UserFlags { get; set; }
+		public List<uint> NinjaFlags { get; set; }
 
 		public VertexChunk()
 		{
@@ -54,7 +63,8 @@ namespace SonicRetro.SAModel
 			Normals = new List<Vertex>();
 			Diffuse = new List<Color>();
 			Specular = new List<Color>();
-			VertFlags = new List<uint>();
+			UserFlags = new List<uint>();
+			NinjaFlags = new List<uint>();
 		}
 
 		public VertexChunk(ChunkType type)
@@ -115,10 +125,15 @@ namespace SonicRetro.SAModel
 						address += VColor.Size(ColorType.ARGB8888_32);
 						break;
 					case ChunkType.Vertex_VertexUserFlags:
+						Vertices.Add(new Vertex(file, address));
+						address += Vertex.Size;
+						UserFlags.Add(ByteConverter.ToUInt32(file, address));
+						address += sizeof(uint);
+						break;
 					case ChunkType.Vertex_VertexNinjaFlags:
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						VertFlags.Add(ByteConverter.ToUInt32(file, address));
+						NinjaFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
 					case ChunkType.Vertex_VertexDiffuseSpecular5:
@@ -152,12 +167,19 @@ namespace SonicRetro.SAModel
 						address += VColor.Size(ColorType.ARGB8888_32);
 						break;
 					case ChunkType.Vertex_VertexNormalUserFlags:
+						Vertices.Add(new Vertex(file, address));
+						address += Vertex.Size;
+						Normals.Add(new Vertex(file, address));
+						address += Vertex.Size;
+						UserFlags.Add(ByteConverter.ToUInt32(file, address));
+						address += sizeof(uint);
+						break;
 					case ChunkType.Vertex_VertexNormalNinjaFlags:
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						VertFlags.Add(ByteConverter.ToUInt32(file, address));
+						NinjaFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
@@ -213,9 +235,12 @@ namespace SonicRetro.SAModel
 						result.AddRange(VColor.GetBytes(Diffuse[i], ColorType.ARGB8888_32));
 						break;
 					case ChunkType.Vertex_VertexUserFlags:
+						result.AddRange(Vertices[i].GetBytes());
+						result.AddRange(ByteConverter.GetBytes(UserFlags[i]));
+						break;
 					case ChunkType.Vertex_VertexNinjaFlags:
 						result.AddRange(Vertices[i].GetBytes());
-						result.AddRange(ByteConverter.GetBytes(VertFlags[i]));
+						result.AddRange(ByteConverter.GetBytes(NinjaFlags[i]));
 						break;
 					case ChunkType.Vertex_VertexDiffuseSpecular5:
 						result.AddRange(Vertices[i].GetBytes());
@@ -239,10 +264,14 @@ namespace SonicRetro.SAModel
 						result.AddRange(VColor.GetBytes(Diffuse[i], ColorType.ARGB8888_32));
 						break;
 					case ChunkType.Vertex_VertexNormalUserFlags:
+						result.AddRange(Vertices[i].GetBytes());
+						result.AddRange(Normals[i].GetBytes());
+						result.AddRange(ByteConverter.GetBytes(UserFlags[i]));
+						break;
 					case ChunkType.Vertex_VertexNormalNinjaFlags:
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
-						result.AddRange(ByteConverter.GetBytes(VertFlags[i]));
+						result.AddRange(ByteConverter.GetBytes(NinjaFlags[i]));
 						break;
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
 						result.AddRange(Vertices[i].GetBytes());
