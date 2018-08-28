@@ -1,14 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using SharpDX;
+using SharpDX.Direct3D9;
+using SharpDX.Mathematics;
 using SonicRetro.SAModel.Direct3D;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+
+/*using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;*/
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -62,7 +66,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		//private Microsoft.DirectX.Direct3D.Font onscreenFont;
 		private int panSpeed = 0x01;
 		//private Sprite textSprite;
-		private Point screenCenter;
+		private System.Drawing.Point screenCenter;
 		private Texture screenRenderTexture;
 		private Surface defaultRenderTarget;
 		private FillMode renderFillMode = FillMode.Solid;
@@ -70,7 +74,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private float renderDrawDistance = 3500f;
 		private EditorCamera defaultCam; // the default camera is used for rendering the textures
 		private EditorCamera panelCam; // the panel cam is user-controllable and can show an object from any angle.
-		private List<Mesh> meshes;
+		private List<Direct3D.Mesh> meshes;
 		#endregion
 
 		#region Initialization / Construction Methods
@@ -84,7 +88,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
                 modelList = new List<KeyValuePair<int, Attach>>();
                 attachListRenders = new List<KeyValuePair<int, Bitmap>>();
-                meshes = new List<Mesh>();
+                meshes = new List<Direct3D.Mesh>();
                 njs_object = new NJS_OBJECT();
 
                 modelListView.LargeImageList = new ImageList();
@@ -99,76 +103,82 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public void InitRenderer()
 		{
-			d3dDevice = new Device(0, DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
+			d3dDevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0,
+                DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing,
+                    new PresentParameters
+                    {
+                        Windowed = true,
+                        SwapEffect = SwapEffect.Discard,
+                        EnableAutoDepthStencil = true,
+                        AutoDepthStencilFormat = Format.D24X8
+                    });
 			defaultRenderTarget = d3dDevice.GetRenderTarget(0);
-			screenCenter = new Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
+			screenCenter = new System.Drawing.Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
 			//textSprite = new Sprite(d3dDevice);
 
 			renderFailureBitmap = new Bitmap(2, 2, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 			for (int h = 0; h < 2; h++ )
 			{
-				for (int v = 0; v < 2; v++) renderFailureBitmap.SetPixel(h, v, Color.Purple);
+				for (int v = 0; v < 2; v++) renderFailureBitmap.SetPixel(h, v, System.Drawing.Color.Purple);
 			}
 
-			#region Key Light
-				d3dDevice.Lights[0].Type = LightType.Directional;
-			d3dDevice.Lights[0].DiffuseColor = new ColorValue(180, 172, 172, 255);
-			d3dDevice.Lights[0].Diffuse = Color.FromArgb(255, 180, 172, 172);
-			d3dDevice.Lights[0].Ambient = Color.Black;
-			d3dDevice.Lights[0].Specular = Color.White;
-			d3dDevice.Lights[0].Range = 0;
-			d3dDevice.Lights[0].Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f));
-			d3dDevice.Lights[0].Enabled = true;
-			#endregion
-
-			#region Fill Light
-			d3dDevice.Lights[1].Type = LightType.Directional;
-			d3dDevice.Lights[1].DiffuseColor = new ColorValue(132, 132, 132, 255);
-			d3dDevice.Lights[1].Diffuse = Color.FromArgb(255, 132, 132, 132);
-			d3dDevice.Lights[1].Ambient = Color.Black;
-			d3dDevice.Lights[1].Specular = Color.Gray;
-			d3dDevice.Lights[1].Range = 0;
-			d3dDevice.Lights[1].Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f));
-			d3dDevice.Lights[1].Enabled = true;
-			#endregion
-
-			#region Back Light
-			d3dDevice.Lights[2].Type = LightType.Directional;
-			d3dDevice.Lights[2].DiffuseColor = new ColorValue(100, 100, 100, 255);
-			d3dDevice.Lights[2].Diffuse = Color.FromArgb(255, 130, 142, 130);
-			d3dDevice.Lights[2].Ambient = Color.Black;
-			d3dDevice.Lights[2].Specular = Color.Gray;
-			d3dDevice.Lights[2].Range = 0;
-			d3dDevice.Lights[2].Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f));
-			d3dDevice.Lights[2].Enabled = true;
-			#endregion
-
-			#region Setting Renderer States
-			d3dDevice.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
-			d3dDevice.SamplerState[0].MagFilter = TextureFilter.Point;
-			d3dDevice.SamplerState[0].MipFilter = TextureFilter.None;
-			d3dDevice.RenderState.Lighting = true;
-			d3dDevice.RenderState.SpecularEnable = true;
-			d3dDevice.RenderState.Ambient = Color.Black;
-			d3dDevice.RenderState.AlphaBlendEnable = false;
-			d3dDevice.RenderState.BlendOperation = BlendOperation.Add;
-			d3dDevice.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-			d3dDevice.RenderState.SourceBlend = Blend.SourceAlpha;
-			d3dDevice.RenderState.AlphaTestEnable = true;
-			d3dDevice.RenderState.AlphaFunction = Compare.Greater;
-			d3dDevice.RenderState.AmbientMaterialSource = ColorSource.Material;
-			d3dDevice.RenderState.DiffuseMaterialSource = ColorSource.Material;
-			d3dDevice.RenderState.SpecularMaterialSource = ColorSource.Material;
-			d3dDevice.TextureState[0].AlphaOperation = TextureOperation.BlendDiffuseAlpha;
-			d3dDevice.RenderState.ColorVertex = true;
-			d3dDevice.RenderState.ZBufferEnable = true;
-			#endregion
+            SetDefaultLights(d3dDevice);
 
 			#region Setup Font
 			//onscreenFont = new Microsoft.DirectX.Direct3D.Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
         #endregion
+
+        public static void SetDefaultLights(Device d3dDevice)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                d3dDevice.EnableLight(i, false);
+            }
+
+            #region Key Light
+            Light l0 = new Light()
+            {
+                Type = LightType.Directional,
+                Diffuse = System.Drawing.Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
+                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+                Specular = new SharpDX.Mathematics.Interop.RawColor4(1, 1, 1, 1),
+                Range = 0,
+                Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
+            };
+            d3dDevice.SetLight(0, ref l0);
+            d3dDevice.EnableLight(0, true);
+            #endregion
+
+            #region Fill Light
+            Light l1 = new Light()
+            {
+                Type = LightType.Directional,
+                Diffuse = System.Drawing.Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
+                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+                Range = 0,
+                Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
+            };
+            d3dDevice.SetLight(1, ref l1);
+            d3dDevice.EnableLight(1, true);
+            #endregion
+
+            #region Back Light
+            Light l2 = new Light()
+            {
+                Type = LightType.Directional,
+                Diffuse = System.Drawing.Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
+                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+                Range = 0,
+                Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
+            };
+            d3dDevice.SetLight(2, ref l2);
+            d3dDevice.EnableLight(2, true);
+            #endregion
+        }
 
         #region Cleanup / Disposal Methods
         /// <summary>
@@ -291,15 +301,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				camera.Position = new Vector3(0, 0, -modelList[modelToRender].Value.Bounds.Radius * 1.45f);
 			}
 
-			d3dDevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), 1, 1, camera.DrawDistance));
-			d3dDevice.SetTransform(TransformType.View, camera.ToMatrix());
+			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), 1, 1, camera.DrawDistance));
+			d3dDevice.SetTransform(TransformState.View, camera.ToMatrix());
 			UpdateTitleBar(camera);
-			d3dDevice.RenderState.FillMode = EditorOptions.RenderFillMode;
-			d3dDevice.RenderState.CullMode = EditorOptions.RenderCullMode;
-			d3dDevice.Material = new Material { Ambient = Color.White };
-			d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Gray.ToArgb(), 1, 0);
-			d3dDevice.RenderState.ZBufferEnable = true;
-			if (renderToTexture)
+            d3dDevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
+            d3dDevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
+            d3dDevice.Material = new Material { Ambient = System.Drawing.Color.White.ToRawColor4() };
+            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
+            d3dDevice.SetRenderState(RenderState.ZEnable, true);
+            if (renderToTexture)
 			{
 				if (screenRenderTexture == null) // we can't render onto a null surface
 				{
@@ -334,8 +344,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 				// convert our texture into a bitmap, add it to the rendertextures list
 				Surface surface = screenRenderTexture.GetSurfaceLevel(0);
-				GraphicsStream gs = SurfaceLoader.SaveToStream(ImageFileFormat.Bmp, surface);
-				attachListRenders[renderIndex] = new KeyValuePair<int, Bitmap>(modelList[modelToRender].Key, new Bitmap(gs));
+                //GraphicsStream gs = SurfaceLoader.SaveToStream(ImageFileFormat.Bmp, surface);
+                Stream surfaceStream = Surface.ToStream(surface, ImageFileFormat.Bmp);
+				attachListRenders[renderIndex] = new KeyValuePair<int, Bitmap>(modelList[modelToRender].Key, new Bitmap(surfaceStream));
 			}
 		}
 
@@ -390,17 +401,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         #region Input Event Methods
         bool zoomKeyDown = false, lookKeyDown = false;
-		Point mouseLast;
+		System.Drawing.Point mouseLast;
 		private void splitContainer1_Panel2_MouseMove(object sender, MouseEventArgs e)
 		{
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
+            System.Drawing.Point mouseEvent = e.Location;
+			if (mouseLast == System.Drawing.Point.Empty)
 			{
 				mouseLast = mouseEvent;
 				return;
 			}
 
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
+            System.Drawing.Point mouseDelta = mouseEvent - (Size)mouseLast;
 
 			if (panelCam.mode == 1)
 			{
