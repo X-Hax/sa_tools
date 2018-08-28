@@ -37,6 +37,18 @@ namespace SonicRetro.SAModel
 			get { return 0x34; }
 		}
 
+		public bool HasWeight
+		{
+			get
+			{
+				if (Attach is ChunkAttach ca && ca.HasWeight) return true;
+				foreach (NJS_OBJECT child in Children)
+					if (child.HasWeight)
+						return true;
+				return false;
+			}
+		}
+
 		public NJS_OBJECT()
 		{
 			Name = "object_" + Extensions.GenerateIdentifier();
