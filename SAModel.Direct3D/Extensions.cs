@@ -477,7 +477,7 @@ namespace SonicRetro.SAModel.Direct3D
 			modelindex++;
 			obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
-			if (obj.Attach != null)
+			if (obj.Attach != null && mesh[modelindex] != null)
 				result = HitResult.Min(result, mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
@@ -504,7 +504,7 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
-			if (obj.Attach != null)
+			if (obj.Attach != null && mesh[modelindex] != null)
 				result = HitResult.Min(result, mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
