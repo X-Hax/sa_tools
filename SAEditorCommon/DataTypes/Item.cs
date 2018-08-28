@@ -106,7 +106,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             transformMatrix = Matrix.Identity;
 
             MatrixStack matrixStack = new MatrixStack();
-            matrixStack.LoadIdentity();
+            matrixStack.LoadMatrix(Matrix.Identity);
             matrixStack.NJTranslate(Position);
             if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
             else matrixStack.NJRotateZYX(Rotation);

@@ -892,7 +892,7 @@ namespace SonicRetro.SAModel.SAMDL
 
             if (e.Button != MouseButtons.None)
             {
-                Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+                System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
 
                 if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
                 {
@@ -981,8 +981,8 @@ namespace SonicRetro.SAModel.SAMDL
                 HitResult dist;
                 Vector3 mousepos = new Vector3(e.X, e.Y, 0);
                 Viewport viewport = d3ddevice.Viewport;
-                Matrix proj = d3ddevice.Transform.Projection;
-                Matrix view = d3ddevice.Transform.View;
+                Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+                Matrix view = d3ddevice.GetTransform(TransformState.View);
                 Vector3 Near, Far;
                 Near = mousepos;
                 Near.Z = 0;

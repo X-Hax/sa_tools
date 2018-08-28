@@ -103,7 +103,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			float dist = Direct3D.Extensions.Distance(cam.Position, position) * 0.0825f;
 
-
+            MatrixStack transform = new MatrixStack();
 
             transform.Push();
             Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
@@ -264,7 +264,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             position = center;
 
             globalTransformMatrix = Matrix.Identity;
-            globalTransformMatrix.Translate(position);
+            Vector3 tempPosition = position;
+            Matrix.Translation(ref tempPosition, out globalTransformMatrix);
             localTransformMatrix = transformMatrix;
         }
 
@@ -394,7 +395,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
                 objTransform.Push();
                 //objTransform.RotateXYZLocal(xOff, yOff, zOff);
-                objTransform.RotateXYZLocal(rotation.X, rotation.Y, rotation.Z);
+                objTransform.NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
 
                 //Rotation oldRotation = currentItem.Rotation;
                 //Rotation newRotation = SAModel.Direct3D.Extensions.FromMatrix(objTransform.Top);
