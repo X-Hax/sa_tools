@@ -10,6 +10,7 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SharpDX.Mathematics;
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.Properties;
 
 /*using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;*/
@@ -61,6 +62,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		#region Rendering Variables
 		private Bitmap renderFailureBitmap;
+		private Bitmap thumbnailLoadingBitmap;
 		private List<KeyValuePair<int, Bitmap>> attachListRenders; // list of meshes rendered to texture so that users can select them as buttons
 		internal Device d3dDevice;
 		//private Microsoft.DirectX.Direct3D.Font onscreenFont;
@@ -121,6 +123,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				for (int v = 0; v < 2; v++) renderFailureBitmap.SetPixel(h, v, System.Drawing.Color.Purple);
 			}
+
+			thumbnailLoadingBitmap = Resources.Hourglass;
 
             SetDefaultLights(d3dDevice);
 
@@ -344,7 +348,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 				// convert our texture into a bitmap, add it to the rendertextures list
 				Surface surface = screenRenderTexture.GetSurfaceLevel(0);
-                //GraphicsStream gs = SurfaceLoader.SaveToStream(ImageFileFormat.Bmp, surface);
                 Stream surfaceStream = Surface.ToStream(surface, ImageFileFormat.Bmp);
 				attachListRenders[renderIndex] = new KeyValuePair<int, Bitmap>(modelList[modelToRender].Key, new Bitmap(surfaceStream));
 			}
