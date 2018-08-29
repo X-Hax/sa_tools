@@ -28,7 +28,7 @@ namespace ProjectManager
 
         SplitType splitType = SplitType.BinDLL;
 
-        string[] animFiles;
+        string[] animFiles = new string[0];
         bool isBigEndian = false;
 
         public string[] AnimFiles { get { return animFiles; } }
