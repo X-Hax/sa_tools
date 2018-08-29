@@ -183,11 +183,19 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public void MoveToShowBounds(BoundingSphere itemVolume)
 		{
-			Vector3 finalPosition = itemVolume.Center.ToVector3();
+			if (mode == 0)
+			{
+				Vector3 finalPosition = itemVolume.Center.ToVector3();
 
-			finalPosition += (Look * (itemVolume.Radius + (itemVolume.Radius / 4)));
+				finalPosition += (Look * (itemVolume.Radius + (itemVolume.Radius / 4)));
 
-			Position = finalPosition;
+				Position = finalPosition;
+			}
+			else
+			{
+				FocalPoint = itemVolume.Center.ToVector3();
+				Distance = (itemVolume.Radius + (itemVolume.Radius / 4));
+			}
 		}
     }
 }

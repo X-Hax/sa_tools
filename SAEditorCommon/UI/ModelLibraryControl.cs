@@ -12,8 +12,7 @@ using SharpDX.Mathematics;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.Properties;
 
-/*using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;*/
+using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -96,8 +95,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 modelListView.LargeImageList = new ImageList();
                 modelListView.HideSelection = false;
 
-                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
-                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed };
+                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed, Pitch = 0xf5b0 };
+                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed, Pitch = 0xf5b0 };
 
                 splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
             }
@@ -106,7 +105,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public void InitRenderer()
 		{
 			d3dDevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0,
-                DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing,
+                DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded,
                     new PresentParameters
                     {
                         Windowed = true,
@@ -116,6 +115,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                     });
 			defaultRenderTarget = d3dDevice.GetRenderTarget(0);
 			screenCenter = new System.Drawing.Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
+			d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
 			//textSprite = new Sprite(d3dDevice);
 
 			renderFailureBitmap = new Bitmap(2, 2, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
@@ -261,6 +261,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			modelListView.LargeImageList.ImageSize = new System.Drawing.Size(128, 128);
 
+			modelListView.BeginUpdate();
+
 			for (int i = 0; i < modelList.Count; i++)
 			{
 				int renderIndex = -1;
@@ -268,6 +270,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				modelListView.LargeImageList.Images.Add((renderIndex >= 0) ? attachListRenders[renderIndex].Value : renderFailureBitmap);
 				modelListView.Items.Add(new ListViewItem { Name = modelList[i].Value.Name, ImageIndex = i, Text = modelList[i].Value.Name, });
 			}
+
+			modelListView.EndUpdate();
 		}
 
 		/// <summary>
@@ -300,12 +304,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			EditorCamera camera = ((renderToTexture) ? defaultCam : panelCam);
 
+			float cameraDistance = camera.DrawDistance;
+
 			if (renderToTexture && (modelToRender <= 0)) // we're using our default camera, set it to a position that will show the entire model
 			{
-				camera.Position = new Vector3(0, 0, -modelList[modelToRender].Value.Bounds.Radius * 1.45f);
+				camera.MoveToShowBounds(modelList[modelToRender].Value.Bounds);
+
+				cameraDistance = Math.Max(camera.Distance, Vector3.Distance(camera.Position, camera.Position + (camera.Look * modelList[modelToRender].Value.Bounds.Radius * 2)));
+
+				if (cameraDistance < camera.DrawDistance) cameraDistance = camera.DrawDistance;
 			}
 
-			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), 1, 1, camera.DrawDistance));
+			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), 1, 1, cameraDistance));
 			d3dDevice.SetTransform(TransformState.View, camera.ToMatrix());
 			UpdateTitleBar(camera);
             d3dDevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -366,7 +376,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void SetPanelCam()
 		{
-			if(selectedModelIndex >= 0) panelCam.Position = new Vector3(0, 0, -modelList[selectedModelIndex].Value.Bounds.Radius * 1.54f);
+			if(selectedModelIndex >= 0) panelCam.MoveToShowBounds(modelList[selectedModelIndex].Value.Bounds);
 		}
 
 		private void modelListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -383,7 +393,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             if (!IsDesignMode())
             {
-
+				if(Visible) FullReRender();
             }
         }
 
