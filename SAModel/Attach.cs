@@ -15,7 +15,7 @@ namespace SonicRetro.SAModel
 		public MeshInfo[] MeshInfo
 		{
 			get { return meshInfo; }
-			protected set { meshInfo = value; }
+			set { meshInfo = value; }
 		}
 
 		public static int Size(ModelFormat format)

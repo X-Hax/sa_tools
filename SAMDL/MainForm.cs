@@ -212,13 +212,18 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 			}
-			model.ProcessVertexData();
-			NJS_OBJECT[] models = model.GetObjects();
-			meshes = new Mesh[models.Length];
-			for (int i = 0; i < models.Length; i++)
-				if (models[i].Attach != null)
-					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
-					catch { }
+			if (model.HasWeight)
+				meshes = model.ProcessWeightedModel(d3ddevice).ToArray();
+			else
+			{
+				model.ProcessVertexData();
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
+						catch { }
+			}
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
@@ -315,13 +320,35 @@ namespace SonicRetro.SAModel.SAMDL
 			MatrixStack transform = new MatrixStack();
 			if (showModelToolStripMenuItem.Checked)
 			{
-				if (animation != null)
+				if (model.HasWeight)
+					RenderInfo.Draw(model.DrawModelTreeWeighted(d3ddevice, transform.Top, Textures, meshes), d3ddevice, cam);
+				else if (animation != null)
 					RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
 				else
 					RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
 
 				if (selectedObject != null)
-					DrawSelectedObject(model, transform);
+				{
+					if (model.HasWeight)
+					{
+						NJS_OBJECT[] objs = model.GetObjects();
+						if (selectedObject.Attach != null)
+							for (int j = 0; j < selectedObject.Attach.MeshInfo.Length; j++)
+							{
+								Color col = selectedObject.Attach.MeshInfo[j].Material == null ? Color.White : selectedObject.Attach.MeshInfo[j].Material.DiffuseColor;
+								col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+								NJS_MATERIAL mat = new NJS_MATERIAL
+								{
+									DiffuseColor = col,
+									IgnoreLighting = true,
+									UseAlpha = false
+								};
+								new RenderInfo(meshes[Array.IndexOf(objs, selectedObject)], j, transform.Top, mat, null, FillMode.Wireframe, selectedObject.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
+							}
+					}
+					else
+						DrawSelectedObject(model, transform);
+				}
 			}
 
 			d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, false);
@@ -439,6 +466,17 @@ namespace SonicRetro.SAModel.SAMDL
 			transform.Pop();
 		}
 
+		private void UpdateWeightedModel()
+		{
+			if (model.HasWeight)
+			{
+				if (animation != null)
+					meshes = model.ProcessWeightedModelAnimated(d3ddevice, animation, animframe).ToArray();
+				else
+					meshes = model.ProcessWeightedModel(d3ddevice).ToArray();
+			}
+		}
+
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 			DrawLevel();
@@ -535,6 +573,7 @@ namespace SonicRetro.SAModel.SAMDL
 					animation = animations[animnum];
 				else
 					animation = null;
+				UpdateWeightedModel();
 			}
 			if (e.KeyCode == Keys.OemSemicolon & animations != null)
 			{
@@ -545,16 +584,19 @@ namespace SonicRetro.SAModel.SAMDL
 					animation = animations[animnum];
 				else
 					animation = null;
+				UpdateWeightedModel();
 			}
 			if (e.KeyCode == Keys.OemOpenBrackets & animation != null)
 			{
 				animframe--;
 				if (animframe < 0) animframe = animation.Frames - 1;
+				UpdateWeightedModel();
 			}
 			if (e.KeyCode == Keys.OemCloseBrackets & animation != null)
 			{
 				animframe++;
 				if (animframe == animation.Frames) animframe = 0;
+				UpdateWeightedModel();
 			}
 			if (e.KeyCode == Keys.P & animation != null)
 				timer1.Enabled = !timer1.Enabled;
@@ -622,6 +664,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animation == null) return;
 			animframe++;
 			if (animframe == animation.Frames) animframe = 0;
+			UpdateWeightedModel();
 			DrawLevel();
 		}
 
@@ -955,6 +998,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
+			UpdateWeightedModel();
 			DrawLevel();
 		}
 

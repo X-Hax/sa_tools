@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace SonicRetro.SAModel
 {
@@ -13,6 +14,8 @@ namespace SonicRetro.SAModel
 		public string VertexName { get; set; }
 		public List<PolyChunk> Poly { get; set; }
 		public string PolyName { get; set; }
+
+		public bool HasWeight { get { return Vertex != null && Vertex.Any(a => a.HasWeight); } }
 
 		public ChunkAttach()
 		{
@@ -192,8 +195,7 @@ namespace SonicRetro.SAModel
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static Vertex[] VertexBuffer = new Vertex[0];
-		static Vertex[] NormalBuffer = new Vertex[0];
+		static VertexData[] VertexBuffer = new VertexData[0];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public override void ProcessVertexData()
@@ -210,10 +212,14 @@ namespace SonicRetro.SAModel
 #endif
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
-					if (NormalBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
-						Array.Resize(ref NormalBuffer, chunk.IndexOffset + chunk.VertexCount);
-					Array.Copy(chunk.Vertices.ToArray(), 0, VertexBuffer, chunk.IndexOffset, chunk.Vertices.Count);
-					Array.Copy(chunk.Normals.ToArray(), 0, NormalBuffer, chunk.IndexOffset, chunk.Normals.Count);
+					for (int i = 0; i < chunk.VertexCount; i++)
+					{
+						VertexBuffer[i + chunk.IndexOffset] = new VertexData(chunk.Vertices[i]);
+						if (chunk.Normals.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Normal = chunk.Normals[i];
+						if (chunk.Diffuse.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+					}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
@@ -355,9 +361,9 @@ namespace SonicRetro.SAModel
 								for (int k = 0; k < strip.Indexes.Length; k++)
 								{
 									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-										VertexBuffer[strip.Indexes[k]],
-										NormalBuffer[strip.Indexes[k]],
-										hasVColor ? (Color?)strip.VColors[k] : null,
+										VertexBuffer[strip.Indexes[k]].Position,
+										VertexBuffer[strip.Indexes[k]].Normal,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
 										hasUV ? strip.UVs[k] : null));
 								}
 								polys.Add(str);
