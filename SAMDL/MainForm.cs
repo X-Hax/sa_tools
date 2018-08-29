@@ -666,6 +666,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
+			UpdateWeightedModel();
 			DrawEntireModel();
 		}
         #endregion
@@ -859,7 +860,8 @@ namespace SonicRetro.SAModel.SAMDL
 
             if (draw)
             {
-                DrawEntireModel();
+				UpdateWeightedModel();
+				DrawEntireModel();
             }
         }
 
@@ -996,7 +998,8 @@ namespace SonicRetro.SAModel.SAMDL
                     }
                 }
 
-                DrawEntireModel();
+				UpdateWeightedModel();
+				DrawEntireModel();
             }
 
             if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
@@ -1005,41 +1008,6 @@ namespace SonicRetro.SAModel.SAMDL
                 if (e.Button != MouseButtons.None && selectedObject != null) propertyGrid1.Refresh();
                     
             }
-        }
-
-        private void panel1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (!loaded) return;
-
-            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
-
-            if (e.Button == MouseButtons.Left)
-            {
-                HitResult dist;
-                Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-                Viewport viewport = d3ddevice.Viewport;
-                Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
-                Matrix view = d3ddevice.GetTransform(TransformState.View);
-                Vector3 Near, Far;
-                Near = mousepos;
-                Near.Z = 0;
-                Far = Near;
-                Far.Z = -1;
-                dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
-                if (dist.IsHit)
-                {
-                    selectedObject = dist.Model;
-                    SelectedItemChanged();
-                }
-                else
-                {
-                    selectedObject = null;
-                    SelectedItemChanged();
-                }
-            }
-
-            if (e.Button == MouseButtons.Right)
-                contextMenuStrip1.Show(panel1, e.Location);
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
