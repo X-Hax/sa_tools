@@ -863,8 +863,8 @@ namespace SonicRetro.SAModel.Direct3D
 			HitResult result = HitResult.NoHit;
 			NJS_OBJECT[] objs = obj.GetObjects();
 			for (int i = 0; i < objs.Length; i++)
-			if (objs[i].Attach != null && mesh[i] != null)
-				result = HitResult.Min(result, mesh[i].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
+				if (objs[i].Attach != null && mesh[i] != null)
+					result = HitResult.Min(result, mesh[i].CheckHit(Near, Far, Viewport, Projection, View, transform, objs[i]));
 			return result;
 		}
 
