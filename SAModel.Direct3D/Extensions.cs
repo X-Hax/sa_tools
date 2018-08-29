@@ -274,6 +274,266 @@ namespace SonicRetro.SAModel.Direct3D
 			return (float)(BAMS / (65536 / (2 * Math.PI)));
 		}
 
+		private class CachedPoly
+		{
+			public List<PolyChunk> Polys { get; private set; }
+			public int Index { get; private set; }
+
+			public CachedPoly(List<PolyChunk> polys, int index)
+			{
+				Polys = polys;
+				Index = index;
+			}
+		}
+
+		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
+		static VertexData[] VertexBuffer = new VertexData[0];
+		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
+
+		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj, Device device)
+		{
+			List<Mesh> meshes = new List<Mesh>();
+			ProcessWeightedModel(obj, device, new MatrixStack(), meshes);
+			return meshes;
+		}
+
+		private static void ProcessWeightedModel(NJS_OBJECT obj, Device device, MatrixStack transform, List<Mesh> meshes)
+		{
+			transform.Push();
+			obj.ProcessTransforms(transform);
+			if (obj.Attach is ChunkAttach attach)
+				meshes.Add(ProcessWeightedAttach(device, transform, attach));
+			else
+				meshes.Add(null);
+			foreach (NJS_OBJECT child in obj.Children)
+				ProcessWeightedModel(child, device, transform, meshes);
+			transform.Pop();
+		}
+
+		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, Device device, Animation anim, int animframe)
+		{
+			List<Mesh> meshes = new List<Mesh>();
+			int animindex = -1;
+			ProcessWeightedModelAnimated(obj, device, new MatrixStack(), meshes, anim, animframe, ref animindex);
+			return meshes;
+		}
+
+		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, Device device, MatrixStack transform, List<Mesh> meshes, Animation anim, int animframe, ref int animindex)
+		{
+			List<RenderInfo> result = new List<RenderInfo>();
+			transform.Push();
+			bool animate = obj.Animate;
+			if (animate) animindex++;
+			if (!anim.Models.ContainsKey(animindex)) animate = false;
+			if (animate)
+				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			if (obj.Attach is ChunkAttach attach)
+				meshes.Add(ProcessWeightedAttach(device, transform, attach));
+			else
+				meshes.Add(null);
+			foreach (NJS_OBJECT child in obj.Children)
+				ProcessWeightedModelAnimated(child, device, transform, meshes, anim, animframe, ref animindex);
+			transform.Pop();
+		}
+
+		private static Mesh ProcessWeightedAttach(Device device, MatrixStack transform, ChunkAttach attach)
+		{
+			if (attach.Vertex != null)
+			{
+				foreach (VertexChunk chunk in attach.Vertex)
+				{
+					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+					if (chunk.HasWeight)
+					{
+						for (int i = 0; i < chunk.VertexCount; i++)
+						{
+							var weightByte = chunk.NinjaFlags[i] >> 16;
+							var weight = weightByte * (1f / 255f);
+							var position = (Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top) * weight).ToVertex();
+							Vertex normal = null;
+							if (chunk.Normals.Count > 0)
+								normal = (Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top) * weight).ToVertex();
+
+							// Store vertex in cache
+							var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
+							var vertexCacheId = (int)(chunk.IndexOffset + vertexId);
+
+							if (chunk.WeightStatus == WeightStatus.Start)
+							{
+								// Add new vertex to cache
+								VertexBuffer[vertexCacheId] = new VertexData(position, normal);
+								if (chunk.Diffuse.Count > 0)
+									VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
+							}
+							else
+							{
+								// Update cached vertex
+								var cacheVertex = VertexBuffer[vertexCacheId];
+								cacheVertex.Position += position;
+								cacheVertex.Normal += normal;
+								if (chunk.Diffuse.Count > 0)
+									cacheVertex.Color = chunk.Diffuse[i];
+								VertexBuffer[vertexCacheId] = cacheVertex;
+							}
+						}
+					}
+					else
+						for (int i = 0; i < chunk.VertexCount; i++)
+						{
+							var position = Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top).ToVertex();
+							Vertex normal = null;
+							if (chunk.Normals.Count > 0)
+								normal = Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top).ToVertex();
+							VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
+							if (chunk.Diffuse.Count > 0)
+								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+						}
+				}
+			}
+			List<MeshInfo> result = new List<MeshInfo>();
+			if (attach.Poly != null)
+				result = ProcessPolyList(attach.Poly, 0);
+			attach.MeshInfo = result.ToArray();
+			return attach.CreateD3DMesh(device);
+		}
+
+		private static List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start)
+		{
+			List<MeshInfo> result = new List<MeshInfo>();
+			for (int i = start; i < strips.Count; i++)
+			{
+				PolyChunk chunk = strips[i];
+				switch (chunk.Type)
+				{
+					case ChunkType.Bits_BlendAlpha:
+						{
+							PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
+							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
+						}
+						break;
+					case ChunkType.Bits_MipmapDAdjust:
+						break;
+					case ChunkType.Bits_SpecularExponent:
+						MaterialBuffer.Exponent = ((PolyChunkBitsSpecularExponent)chunk).SpecularExponent;
+						break;
+					case ChunkType.Bits_CachePolygonList:
+						byte cachenum = ((PolyChunkBitsCachePolygonList)chunk).List;
+						PolyCache[cachenum] = new CachedPoly(strips, i + 1);
+						return result;
+					case ChunkType.Bits_DrawPolygonList:
+						cachenum = ((PolyChunkBitsDrawPolygonList)chunk).List;
+						CachedPoly cached = PolyCache[cachenum];
+						result.AddRange(ProcessPolyList(cached.Polys, cached.Index));
+						break;
+					case ChunkType.Tiny_TextureID:
+					case ChunkType.Tiny_TextureID2:
+						{
+							PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
+							MaterialBuffer.ClampU = c2.ClampU;
+							MaterialBuffer.ClampV = c2.ClampV;
+							MaterialBuffer.FilterMode = c2.FilterMode;
+							MaterialBuffer.FlipU = c2.FlipU;
+							MaterialBuffer.FlipV = c2.FlipV;
+							MaterialBuffer.SuperSample = c2.SuperSample;
+							MaterialBuffer.TextureID = c2.TextureID;
+						}
+						break;
+					case ChunkType.Material_Diffuse:
+					case ChunkType.Material_Ambient:
+					case ChunkType.Material_DiffuseAmbient:
+					case ChunkType.Material_Specular:
+					case ChunkType.Material_DiffuseSpecular:
+					case ChunkType.Material_AmbientSpecular:
+					case ChunkType.Material_DiffuseAmbientSpecular:
+					case ChunkType.Material_Diffuse2:
+					case ChunkType.Material_Ambient2:
+					case ChunkType.Material_DiffuseAmbient2:
+					case ChunkType.Material_Specular2:
+					case ChunkType.Material_DiffuseSpecular2:
+					case ChunkType.Material_AmbientSpecular2:
+					case ChunkType.Material_DiffuseAmbientSpecular2:
+						{
+							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
+							if (c2.Diffuse.HasValue)
+								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
+							if (c2.Specular.HasValue)
+							{
+								MaterialBuffer.SpecularColor = c2.Specular.Value;
+								MaterialBuffer.Exponent = c2.SpecularExponent;
+							}
+						}
+						break;
+					case ChunkType.Strip_Strip:
+					case ChunkType.Strip_StripUVN:
+					case ChunkType.Strip_StripUVH:
+					case ChunkType.Strip_StripNormal:
+					case ChunkType.Strip_StripUVNNormal:
+					case ChunkType.Strip_StripUVHNormal:
+					case ChunkType.Strip_StripColor:
+					case ChunkType.Strip_StripUVNColor:
+					case ChunkType.Strip_StripUVHColor:
+					case ChunkType.Strip_Strip2:
+					case ChunkType.Strip_StripUVN2:
+					case ChunkType.Strip_StripUVH2:
+						{
+							PolyChunkStrip c2 = (PolyChunkStrip)chunk;
+							MaterialBuffer.DoubleSided = c2.DoubleSide;
+							MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
+							MaterialBuffer.FlatShading = c2.FlatShading;
+							MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
+							MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
+							MaterialBuffer.UseAlpha = c2.UseAlpha;
+							bool hasVColor = false;
+							switch (chunk.Type)
+							{
+								case ChunkType.Strip_StripColor:
+								case ChunkType.Strip_StripUVNColor:
+								case ChunkType.Strip_StripUVHColor:
+									hasVColor = true;
+									break;
+							}
+							bool hasUV = false;
+							switch (chunk.Type)
+							{
+								case ChunkType.Strip_StripUVN:
+								case ChunkType.Strip_StripUVH:
+								case ChunkType.Strip_StripUVNColor:
+								case ChunkType.Strip_StripUVHColor:
+								case ChunkType.Strip_StripUVN2:
+								case ChunkType.Strip_StripUVH2:
+									hasUV = true;
+									break;
+							}
+							List<Poly> polys = new List<Poly>();
+							List<VertexData> verts = new List<VertexData>();
+							foreach (PolyChunkStrip.Strip strip in c2.Strips)
+							{
+								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+								for (int k = 0; k < strip.Indexes.Length; k++)
+								{
+									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
+										VertexBuffer[strip.Indexes[k]].Position,
+										VertexBuffer[strip.Indexes[k]].Normal,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasUV ? strip.UVs[k] : null));
+								}
+								polys.Add(str);
+							}
+							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
+						}
+						break;
+				}
+			}
+			return result;
+		}
+
 		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
@@ -496,6 +756,53 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
+		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, Device device, Matrix transform, Texture[] textures, Mesh[] meshes)
+		{
+			List<RenderInfo> result = new List<RenderInfo>();
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				if (objs[i].Attach != null & meshes[i] != null)
+				{
+					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
+					{
+						Texture texture = null;
+						NJS_MATERIAL mat = objs[i].Attach.MeshInfo[j].Material;
+						if (textures != null && mat != null && mat.TextureID < textures.Length)
+							texture = textures[mat.TextureID];
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), objs[i].Attach.CalculateBounds(j, transform)));
+					}
+				}
+			return result;
+		}
+
+		public static List<RenderInfo> DrawModelTreeWeightedInvert(this NJS_OBJECT obj, Matrix transform, Mesh[] meshes)
+		{
+			List<RenderInfo> result = new List<RenderInfo>();
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				if (objs[i].Attach != null & meshes[i] != null)
+				{
+					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
+					{
+						Color color = Color.Black;
+
+						// HACK: Null material hack 3: Fixes selecting objects in SADXLVL2, Twinkle Park 1.
+						if (objs[i].Attach.MeshInfo[j].Material != null)
+							color = objs[i].Attach.MeshInfo[j].Material.DiffuseColor;
+
+						color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+						NJS_MATERIAL mat = new NJS_MATERIAL
+						{
+							DiffuseColor = color,
+							IgnoreLighting = true,
+							UseAlpha = false
+						};
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, objs[i].Attach.CalculateBounds(j, transform)));
+					}
+				}
+			return result;
+		}
+
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Mesh mesh)
 		{
 			if (mesh == null) return HitResult.NoHit;
@@ -548,6 +855,16 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHitAnimated(child, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
+			return result;
+		}
+
+		public static HitResult CheckHitWeighted(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Matrix transform, Mesh[] mesh)
+		{
+			HitResult result = HitResult.NoHit;
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+			if (objs[i].Attach != null && mesh[i] != null)
+				result = HitResult.Min(result, mesh[i].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
 			return result;
 		}
 
