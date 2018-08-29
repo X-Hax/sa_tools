@@ -758,7 +758,10 @@ namespace SonicRetro.SAModel.SAMDL
 			Near.Z = 0;
 			Far = Near;
 			Far.Z = -1;
-			dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+			if (model.HasWeight)
+				dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
+			else
+				dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
 			if (dist.IsHit)
 			{
 				selectedObject = dist.Model;
