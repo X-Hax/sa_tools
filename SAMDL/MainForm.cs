@@ -1072,6 +1072,7 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe++;
 			if (animframe == animation.Frames) animframe = 0;
 			UpdateWeightedModel();
+			DrawEntireModel();
 		}
 
 		private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
