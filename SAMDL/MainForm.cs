@@ -1152,6 +1152,32 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
+		private void panel1_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (!loaded) return;
+			HitResult dist;
+			Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+			Viewport viewport = d3ddevice.Viewport;
+			Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+			Matrix view = d3ddevice.GetTransform(TransformState.View);
+			Vector3 Near, Far;
+			Near = mousepos;
+			Near.Z = 0;
+			Far = Near;
+			Far.Z = -1;
+			if (model.HasWeight)
+				dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
+			else
+				dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+			if (dist.IsHit)
+			{
+				selectedObject = dist.Model;
+				SelectedItemChanged();
+			}
+			if (e.Button == MouseButtons.Right)
+				contextMenuStrip1.Show(panel1, e.Location);
+		}
+
 		internal Type GetAttachType()
 		{
 			return outfmt == ModelFormat.Chunk ? typeof(ChunkAttach) : typeof(BasicAttach);
