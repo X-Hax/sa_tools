@@ -251,7 +251,7 @@ namespace SonicRetro.SAModel.Direct3D
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static VertexData[] VertexBuffer = new VertexData[0];
+		static VertexData[] VertexBuffer = new VertexData[4095];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj, Device device)
@@ -304,63 +304,66 @@ namespace SonicRetro.SAModel.Direct3D
 
 		private static Mesh ProcessWeightedAttach(Device device, MatrixStack transform, ChunkAttach attach)
 		{
-			if (attach.Vertex != null)
+			if (attach.MeshInfo == null || attach.HasWeight)
 			{
-				foreach (VertexChunk chunk in attach.Vertex)
+				if (attach.Vertex != null)
 				{
-					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
-						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
-					if (chunk.HasWeight)
+					foreach (VertexChunk chunk in attach.Vertex)
 					{
-						for (int i = 0; i < chunk.VertexCount; i++)
+						if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+							Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+						if (chunk.HasWeight)
 						{
-							var weightByte = chunk.NinjaFlags[i] >> 16;
-							var weight = weightByte * (1f / 255f);
-							var position = (Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top) * weight).ToVertex();
-							Vertex normal = null;
-							if (chunk.Normals.Count > 0)
-								normal = (Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top) * weight).ToVertex();
-
-							// Store vertex in cache
-							var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
-							var vertexCacheId = (int)(chunk.IndexOffset + vertexId);
-
-							if (chunk.WeightStatus == WeightStatus.Start)
+							for (int i = 0; i < chunk.VertexCount; i++)
 							{
-								// Add new vertex to cache
-								VertexBuffer[vertexCacheId] = new VertexData(position, normal);
-								if (chunk.Diffuse.Count > 0)
-									VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
-							}
-							else
-							{
-								// Update cached vertex
-								var cacheVertex = VertexBuffer[vertexCacheId];
-								cacheVertex.Position += position;
-								cacheVertex.Normal += normal;
-								if (chunk.Diffuse.Count > 0)
-									cacheVertex.Color = chunk.Diffuse[i];
-								VertexBuffer[vertexCacheId] = cacheVertex;
+								var weightByte = chunk.NinjaFlags[i] >> 16;
+								var weight = weightByte * (1f / 255f);
+								var position = (Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top) * weight).ToVertex();
+								Vertex normal = null;
+								if (chunk.Normals.Count > 0)
+									normal = (Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top) * weight).ToVertex();
+
+								// Store vertex in cache
+								var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
+								var vertexCacheId = (int)(chunk.IndexOffset + vertexId);
+
+								if (chunk.WeightStatus == WeightStatus.Start)
+								{
+									// Add new vertex to cache
+									VertexBuffer[vertexCacheId] = new VertexData(position, normal);
+									if (chunk.Diffuse.Count > 0)
+										VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
+								}
+								else
+								{
+									// Update cached vertex
+									var cacheVertex = VertexBuffer[vertexCacheId];
+									cacheVertex.Position += position;
+									cacheVertex.Normal += normal;
+									if (chunk.Diffuse.Count > 0)
+										cacheVertex.Color = chunk.Diffuse[i];
+									VertexBuffer[vertexCacheId] = cacheVertex;
+								}
 							}
 						}
+						else
+							for (int i = 0; i < chunk.VertexCount; i++)
+							{
+								var position = Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top).ToVertex();
+								Vertex normal = null;
+								if (chunk.Normals.Count > 0)
+									normal = Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top).ToVertex();
+								VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
+								if (chunk.Diffuse.Count > 0)
+									VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+							}
 					}
-					else
-						for (int i = 0; i < chunk.VertexCount; i++)
-						{
-							var position = Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top).ToVertex();
-							Vertex normal = null;
-							if (chunk.Normals.Count > 0)
-								normal = Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top).ToVertex();
-							VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
-							if (chunk.Diffuse.Count > 0)
-								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
-						}
 				}
+				List<MeshInfo> result = new List<MeshInfo>();
+				if (attach.Poly != null)
+					result = ProcessPolyList(attach.Poly, 0);
+				attach.MeshInfo = result.ToArray();
 			}
-			List<MeshInfo> result = new List<MeshInfo>();
-			if (attach.Poly != null)
-				result = ProcessPolyList(attach.Poly, 0);
-			attach.MeshInfo = result.ToArray();
 			return attach.CreateD3DMesh(device);
 		}
 
