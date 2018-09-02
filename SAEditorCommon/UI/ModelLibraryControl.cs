@@ -65,7 +65,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private List<KeyValuePair<int, Bitmap>> attachListRenders; // list of meshes rendered to texture so that users can select them as buttons
 		internal Device d3dDevice;
 		//private Microsoft.DirectX.Direct3D.Font onscreenFont;
-		private int panSpeed = 0x01;
 		//private Sprite textSprite;
 		private System.Drawing.Point screenCenter;
 		private Texture screenRenderTexture;
@@ -76,12 +75,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private EditorCamera defaultCam; // the default camera is used for rendering the textures
 		private EditorCamera panelCam; // the panel cam is user-controllable and can show an object from any angle.
 		private List<Direct3D.Mesh> meshes;
-
-		public Direct3D.Mesh GetSelectedMesh()
-		{
-			if (selectedModelIndex >= 0) return meshes[selectedModelIndex];
-			else return null;
-		}
 		#endregion
 
 		#region Initialization / Construction Methods
@@ -101,8 +94,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 modelListView.LargeImageList = new ImageList();
                 modelListView.HideSelection = false;
 
-                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed, Pitch = 0xf5b0 };
-                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = EditorCamera.DefaultMoveSpeed, Pitch = 0xf5b0 };
+                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
+                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
 
                 splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
             }
@@ -313,6 +306,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			EditorCamera camera = ((renderToTexture) ? defaultCam : panelCam);
 
+			camera.FOV = (float)(Math.PI / 4);
+			camera.Aspect = splitContainer1.Panel2.Width / (float)splitContainer1.Panel2.Height;
 			float cameraDistance = camera.DrawDistance;
 
 			if (renderToTexture && (modelToRender <= 0)) // we're using our default camera, set it to a position that will show the entire model
@@ -324,7 +319,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				if (cameraDistance < camera.DrawDistance) cameraDistance = camera.DrawDistance;
 			}
 
-			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), 1, 1, cameraDistance));
+			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(camera.FOV, camera.Aspect, 1, cameraDistance));
 			d3dDevice.SetTransform(TransformState.View, camera.ToMatrix());
 			UpdateTitleBar(camera);
             d3dDevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -434,18 +429,56 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 
             System.Drawing.Point mouseDelta = mouseEvent - (Size)mouseLast;
+			ushort mouseWrapThreshold = 2;
+			bool mouseWrapScreen = true;
+			bool performedWrap=false;
+
+			if (e.Button != MouseButtons.None)
+			{
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : splitContainer1.Panel2.RectangleToScreen(splitContainer1.Panel2.Bounds);
+
+				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
+				{
+					Cursor.Position = new System.Drawing.Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
+				{
+					Cursor.Position = new System.Drawing.Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
+				{
+					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
+				{
+					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
+					performedWrap = true;
+				}
+			}
 
 			if (panelCam.mode == 1)
 			{
 				if (zoomKeyDown)
 				{
-					panelCam.Distance += (mouseDelta.Y * panelCam.MoveSpeed) * 3;
+					panelCam.Distance += (mouseDelta.Y * panelCam.MoveSpeed);
 				}
 				else if (lookKeyDown)
 				{
-					panelCam.Yaw = unchecked((ushort)(panelCam.Yaw - mouseDelta.X * panSpeed));
-					panelCam.Pitch = unchecked((ushort)(panelCam.Pitch - mouseDelta.Y * panSpeed));
+					panelCam.Yaw = unchecked((ushort)(panelCam.Yaw - mouseDelta.X * panelCam.MoveSpeed));
+					panelCam.Pitch = unchecked((ushort)(panelCam.Pitch - mouseDelta.Y * panelCam.MoveSpeed));
 				}
+			}
+
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * panelCam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * panelCam.MoveSpeed > 0)
+			{
+				mouseLast = mouseEvent;
 			}
 
 			RenderModel(selectedModelIndex, false);

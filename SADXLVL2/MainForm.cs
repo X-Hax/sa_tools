@@ -3210,11 +3210,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         }
 
 		#region Drag and Drop functionality
-		private void DoModelDragEnter(Attach attach, Direct3D.Mesh mesh)
+		private void DoModelDragEnter(Attach attach)
 		{
 			dragPlaceLevelModel = new NJS_OBJECT();
 			dragPlaceLevelModel.Attach = attach;
-			dragPlaceLevelMesh = mesh;
+			dragPlaceLevelMesh = dragPlaceLevelModel.Attach.CreateD3DMesh(d3ddevice);
 			dragType = DragType.Model;
 		}
 
@@ -3228,25 +3228,47 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			Console.WriteLine("DragEnter");
 
-			if (sender is string)
+			string dragType = (string)e.Data.GetData(DataFormats.StringFormat);
+
+			if(dragType == "ModelLibrary")
 			{
-				string dragType = sender as string;
+				Attach model = modelLibraryControl1.SelectedModel;
 
-				if(dragType == "ModelLibrary")
+				if (model != null)
 				{
-					Attach model = modelLibraryControl1.SelectedModel;
-
-					if(model != null)
-					{
-						DoModelDragEnter(model, modelLibraryControl1.GetSelectedMesh());
-					}
+					DoModelDragEnter(model);
+					e.Effect = DragDropEffects.Copy;
 				}
+				else e.Effect = DragDropEffects.None;
 			}
 		}
 
 		private void RenderPanel_DragDrop(object sender, DragEventArgs e)
 		{
-			Console.WriteLine("DragDrop");
+			//Console.WriteLine("DragDrop");
+
+			switch (dragType)
+			{
+				case DragType.None:
+					break;
+
+				case DragType.Model:
+					COL newCollision = new COL() { Model = dragPlaceLevelModel };
+					LevelItem newItem = new LevelItem(d3ddevice, dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
+					LevelData.InvalidateRenderState();
+					selectedItems.Clear();
+					selectedItems.Add(newItem);
+
+					dragPlaceLevelModel = null;
+					dragPlaceLevelMesh = null;
+					dragType = DragType.None;
+					break;
+
+				case DragType.SET:
+					break;
+				default:
+					break;
+			}
 		}
 
 		private void RenderPanel_DragLeave(object sender, EventArgs e)
@@ -3260,15 +3282,33 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			// update our raycast position and re-draw the level
 			Point mouseScreenPoint = new Point(e.X, e.Y);
-			HitResult hitResult = PickItem(mouseScreenPoint);
+
+			Point mousePanelPoint = RenderPanel.PointToClient(mouseScreenPoint);
+			HitResult hitResult = PickItem(mousePanelPoint);
+
+			float objectSize = 0;
+
+			switch (dragType)
+			{
+				case DragType.None:
+					break;
+				case DragType.Model:
+					objectSize = dragPlaceLevelModel.Attach.Bounds.Radius;
+					break;
+				case DragType.SET:
+					break;
+				default:
+					break;
+			}
 
 			if (hitResult.IsHit)
 			{
 				dragPlaceLocation = hitResult.Position;
+				dragPlaceLocation += Vector3.Up * objectSize;
 			}
 			else
 			{
-				Vector3 mousepos = new Vector3(mouseScreenPoint.X, mouseScreenPoint.Y, 0);
+				Vector3 mousepos = new Vector3(mousePanelPoint.X, mousePanelPoint.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
@@ -3292,8 +3332,28 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if(didHitPlane)
 				{
 					dragPlaceLocation = pos + ray.Direction * intersectDistance;
+					dragPlaceLocation += Vector3.Up * objectSize;
+				}
+				else
+				{
+					dragPlaceLocation = cam.Position + (cam.Look * objectSize * 2);
 				}
 			}
+
+			switch (dragType)
+			{
+				case DragType.None:
+					break;
+				case DragType.Model:
+					dragPlaceLevelModel.Position = dragPlaceLocation.ToVertex();
+					break;
+				case DragType.SET:
+					break;
+				default:
+					break;
+			}
+
+			DrawLevel();
 		}
 		#endregion
 	}
