@@ -21,7 +21,9 @@ namespace SonicRetro.SAModel
 		[Browsable(false)]
 		public List<NJS_OBJECT> Children { get; set; }
 
+		[Browsable(false)]
 		public NJS_OBJECT Sibling { get; private set; }
+
 		public string Name { get; set; }
 
 		public bool RotateZYX { get; set; }
