@@ -76,6 +76,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private EditorCamera defaultCam; // the default camera is used for rendering the textures
 		private EditorCamera panelCam; // the panel cam is user-controllable and can show an object from any angle.
 		private List<Direct3D.Mesh> meshes;
+
+		public Direct3D.Mesh GetSelectedMesh()
+		{
+			if (selectedModelIndex >= 0) return meshes[selectedModelIndex];
+			else return null;
+		}
 		#endregion
 
 		#region Initialization / Construction Methods
@@ -233,7 +239,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public void Add(Attach model)
 		{
 			bool foundMatch = false;
-			foundMatch = modelList.Exists(item => item.Key == model.GetHashCode());
+			foundMatch = modelList.Exists(item => item.Value.Name == model.Name); // change this to something more robust when proper hashing of objects is implemented
 
 			if (!foundMatch)
 			{
@@ -263,14 +269,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			modelListView.BeginUpdate();
 
+			ListViewItem[] listViewItems = new ListViewItem[modelList.Count];
+
 			for (int i = 0; i < modelList.Count; i++)
 			{
 				int renderIndex = -1;
 				renderIndex = attachListRenders.FindIndex(item => item.Key == modelList[i].Key);
 				modelListView.LargeImageList.Images.Add((renderIndex >= 0) ? attachListRenders[renderIndex].Value : renderFailureBitmap);
-				modelListView.Items.Add(new ListViewItem { Name = modelList[i].Value.Name, ImageIndex = i, Text = modelList[i].Value.Name, });
+				listViewItems[i] = (new ListViewItem { Name = modelList[i].Value.Name, ImageIndex = i, Text = modelList[i].Value.Name, });
 			}
 
+			modelListView.Items.AddRange(listViewItems);
 			modelListView.EndUpdate();
 		}
 
@@ -393,7 +402,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             if (!IsDesignMode())
             {
-				if(Visible) FullReRender();
+				if (Visible) FullReRender();
             }
         }
 
@@ -462,7 +471,35 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			RenderModel(selectedModelIndex, false);
 		}
 
-        private void splitContainer1_Panel2_MouseUp(object sender, MouseEventArgs e)
+		System.Drawing.Rectangle dragRectangle = System.Drawing.Rectangle.Empty;
+
+		private void modelListView_MouseDown(object sender, MouseEventArgs e)
+		{
+			if(selectedModelIndex >= 0)
+			{
+				// save our drag start position
+				Size dragSize = SystemInformation.DragSize;
+
+				// Create a rectangle using the DragSize, with the mouse position being
+				// at the center of the rectangle.
+				dragRectangle = new System.Drawing.Rectangle(new System.Drawing.Point(e.X - (dragSize.Width / 2),
+															   e.Y - (dragSize.Height / 2)), dragSize);
+			}
+		}
+
+		private void modelListView_MouseMove(object sender, MouseEventArgs e)
+		{
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			{
+				if (dragRectangle != System.Drawing.Rectangle.Empty &&
+					!dragRectangle.Contains(e.X, e.Y))
+				{
+					this.DoDragDrop("ModelLibrary", DragDropEffects.Copy);
+				}
+			}
+		}
+
+		private void splitContainer1_Panel2_MouseUp(object sender, MouseEventArgs e)
 		{
 			if (e.Button == System.Windows.Forms.MouseButtons.Left) lookKeyDown = false;
 		}

@@ -137,7 +137,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override void Paste()
 		{
-            /*LevelData.LevelItems.Add(this);*/
 			LevelData.geo.COL.Add(COL);
 
             LevelData.AddLevelItem(this);
@@ -146,7 +145,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override void Delete()
 		{
             LevelData.geo.COL.Remove(COL);
-			//LevelData.LevelItems.Remove(this);
 
             LevelData.RemoveLevelItem(this);
 		}

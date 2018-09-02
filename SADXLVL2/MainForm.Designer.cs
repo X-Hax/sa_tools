@@ -37,11 +37,15 @@
 			this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toModelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.oBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.levelGeoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.selectedItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.everythingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sA1MDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.selectedItemsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,8 +124,6 @@
 			this.toolTails = new System.Windows.Forms.ToolStripButton();
 			this.toolSonic = new System.Windows.Forms.ToolStripButton();
 			this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-			this.sA1MDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.selectedItemsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -204,11 +206,27 @@
 			// 
 			// importToolStripMenuItem
 			// 
+			this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toStageToolStripMenuItem,
+            this.toModelLibraryToolStripMenuItem});
 			this.importToolStripMenuItem.Enabled = false;
 			this.importToolStripMenuItem.Name = "importToolStripMenuItem";
 			this.importToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
 			this.importToolStripMenuItem.Text = "&Import";
-			this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+			// 
+			// toStageToolStripMenuItem
+			// 
+			this.toStageToolStripMenuItem.Name = "toStageToolStripMenuItem";
+			this.toStageToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.toStageToolStripMenuItem.Text = "To &Stage";
+			this.toStageToolStripMenuItem.Click += new System.EventHandler(this.toStageToolStripMenuItem_Click);
+			// 
+			// toModelLibraryToolStripMenuItem
+			// 
+			this.toModelLibraryToolStripMenuItem.Name = "toModelLibraryToolStripMenuItem";
+			this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.toModelLibraryToolStripMenuItem.Text = "To Model Library";
+			this.toModelLibraryToolStripMenuItem.Click += new System.EventHandler(this.importToModelLibrary_Click);
 			// 
 			// exportToolStripMenuItem
 			// 
@@ -227,29 +245,45 @@
             this.selectedItemsToolStripMenuItem,
             this.everythingToolStripMenuItem});
 			this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
-			this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.oBJToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
 			this.oBJToolStripMenuItem.Text = "OBJ";
 			// 
 			// levelGeoToolStripMenuItem
 			// 
 			this.levelGeoToolStripMenuItem.Name = "levelGeoToolStripMenuItem";
-			this.levelGeoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.levelGeoToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.levelGeoToolStripMenuItem.Text = "&Level Geo";
 			this.levelGeoToolStripMenuItem.Click += new System.EventHandler(this.levelGeoToolStripMenuItem_Click);
 			// 
 			// selectedItemsToolStripMenuItem
 			// 
 			this.selectedItemsToolStripMenuItem.Name = "selectedItemsToolStripMenuItem";
-			this.selectedItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.selectedItemsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.selectedItemsToolStripMenuItem.Text = "&Selected Items";
 			this.selectedItemsToolStripMenuItem.Click += new System.EventHandler(this.selectedItemsToolStripMenuItem_Click);
 			// 
 			// everythingToolStripMenuItem
 			// 
+			this.everythingToolStripMenuItem.Enabled = false;
 			this.everythingToolStripMenuItem.Name = "everythingToolStripMenuItem";
-			this.everythingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.everythingToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.everythingToolStripMenuItem.Text = "&Everything";
 			this.everythingToolStripMenuItem.Click += new System.EventHandler(this.everythingToolStripMenuItem_Click);
+			// 
+			// sA1MDLToolStripMenuItem
+			// 
+			this.sA1MDLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectedItemsToolStripMenuItem1});
+			this.sA1MDLToolStripMenuItem.Name = "sA1MDLToolStripMenuItem";
+			this.sA1MDLToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+			this.sA1MDLToolStripMenuItem.Text = "SA1MDL";
+			// 
+			// selectedItemsToolStripMenuItem1
+			// 
+			this.selectedItemsToolStripMenuItem1.Name = "selectedItemsToolStripMenuItem1";
+			this.selectedItemsToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+			this.selectedItemsToolStripMenuItem1.Text = "&Selected Items";
+			this.selectedItemsToolStripMenuItem1.Click += new System.EventHandler(this.selectedItemsToolStripMenuItem1_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -570,12 +604,17 @@
 			// 
 			// RenderPanel
 			// 
+			this.RenderPanel.AllowDrop = true;
 			this.RenderPanel.BackColor = System.Drawing.Color.Black;
 			this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.RenderPanel.Location = new System.Drawing.Point(0, 0);
 			this.RenderPanel.Name = "RenderPanel";
 			this.RenderPanel.Size = new System.Drawing.Size(721, 506);
 			this.RenderPanel.TabIndex = 1;
+			this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
+			this.RenderPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragEnter);
+			this.RenderPanel.DragOver += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragOver);
+			this.RenderPanel.DragLeave += new System.EventHandler(this.RenderPanel_DragLeave);
 			this.RenderPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
 			this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
 			this.RenderPanel.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyUp);
@@ -995,21 +1034,6 @@
 			this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
 			this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
 			// 
-			// sA1MDLToolStripMenuItem
-			// 
-			this.sA1MDLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectedItemsToolStripMenuItem1});
-			this.sA1MDLToolStripMenuItem.Name = "sA1MDLToolStripMenuItem";
-			this.sA1MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.sA1MDLToolStripMenuItem.Text = "SA1MDL";
-			// 
-			// selectedItemsToolStripMenuItem1
-			// 
-			this.selectedItemsToolStripMenuItem1.Name = "selectedItemsToolStripMenuItem1";
-			this.selectedItemsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-			this.selectedItemsToolStripMenuItem1.Text = "&Selected Items";
-			this.selectedItemsToolStripMenuItem1.Click += new System.EventHandler(this.selectedItemsToolStripMenuItem1_Click);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1144,6 +1168,8 @@
         private System.Windows.Forms.ToolStripMenuItem everythingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sA1MDLToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem selectedItemsToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem toStageToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem toModelLibraryToolStripMenuItem;
 	}
 }
 

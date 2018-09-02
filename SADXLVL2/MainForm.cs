@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -84,6 +85,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
         // project support stuff
         string systemFallback;
+		string currentProjectPath;
         
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -218,7 +220,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			isStageLoaded = false;
 			ini = SAEditorCommon.IniData.Load(filename);
-			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+			currentProjectPath = Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			levelNames = new Dictionary<string, List<string>>();
 
 			foreach (KeyValuePair<string, IniLevelData> item in ini.Levels)
@@ -1693,6 +1695,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
+			if(dragType == DragType.Model)
+			{
+				if (dragPlaceLevelModel != null && dragPlaceLevelMesh != null)
+				{
+					renderlist.AddRange(dragPlaceLevelModel.DrawModel(
+						d3ddevice,
+						transform,
+						LevelData.Textures[LevelData.leveltexs],
+						dragPlaceLevelMesh,
+						true));
+				}
+			}
+
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
@@ -2563,26 +2578,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (importFileDialog.ShowDialog() != DialogResult.OK)
-				return;
-			
-			foreach (string s in importFileDialog.FileNames)
-			{
-
-				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems));
-
-				if (errorFlag)
-					MessageBox.Show(errorMsg);
-			}
-
-			LevelData.InvalidateRenderState();
+			ImportToStage();
 		}
 
-		private void importToolStripMenuItem_Click(object sender, EventArgs e)
+		private void toStageToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			ImportToStage();
+		}
+
+		private void ImportToStage()
+		{
+			importFileDialog.InitialDirectory = currentProjectPath;
 			if (importFileDialog.ShowDialog() != DialogResult.OK)
 				return;
-			
+
 			DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
 
 			if (userClearLevelResult == DialogResult.Cancel)
@@ -2602,7 +2611,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-
 				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
@@ -2610,6 +2618,58 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			LevelData.InvalidateRenderState();
+		}
+
+		private void importToModelLibrary_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog fileDialog = new OpenFileDialog()
+			{
+				DefaultExt = "sa1mdl",
+				Filter = "Model Files|*.sa1mdl;*.obj",
+				InitialDirectory = currentProjectPath
+			})
+			{
+				List<string> fileNames = new List<string>();				
+
+				foreach(string fileName in fileDialog.FileNames)
+				{
+					if (!fileNames.Contains(fileName)) fileNames.Add(fileName);
+				}
+
+				List<KeyValuePair<string, string>> failedFiles = new List<KeyValuePair<string, string>>();
+								
+				foreach (string file in fileNames)
+				{
+					modelLibraryControl1.BeginUpdate();
+					if (File.Exists(file))
+					{
+						string extension = Path.GetExtension(file).ToLower();
+						Attach model=null;
+
+						switch(extension)
+						{
+							case ("obj"):
+								model = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(file);
+								break;
+
+							case ("sa1mdl"):
+								ModelFile modelFile = new ModelFile(file);
+								model = modelFile.Model.Attach;
+								break;
+						}
+
+						if(model != null)
+						{
+							modelLibraryControl1.Add(model);
+						}
+					}
+					else
+					{
+						failedFiles.Add(new KeyValuePair<string, string>(file, "File did not exist"));
+					}
+					modelLibraryControl1.EndUpdate();
+				}
+			}
 		}
 
 		private void objectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2679,22 +2739,33 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportObj(a.FileName);
+					ExportLevelObj(a.FileName, false);
 				}
 			}
         }
 
         private void selectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //ExportObj();
-        }
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "obj",
+				Filter = "OBJ Files|*.obj",
+				InitialDirectory = currentProjectPath
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					ExportLevelObj(a.FileName, true);
+				}
+			}
+		}
 
         private void everythingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //ExportObj();
         }
 
-        private void ExportObj(string fileName)
+        private void ExportLevelObj(string fileName, bool selectedOnly)
         {
 			using (StreamWriter objstream = new StreamWriter(fileName, false))
 			using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(fileName, "mtl"), false))
@@ -2717,17 +2788,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				for (int i = 0; i < LevelData.geo.COL.Count; i++)
 				{
-					Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, ref materials, new MatrixStack(),
-						ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+					LevelItem itemForCol = LevelData.LevelItems.FirstOrDefault<LevelItem>(item => item.CollisionData == LevelData.geo.COL[i]);
+					if (selectedOnly && selectedItems.Items.Contains(itemForCol))
+					{
+						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, ref materials, new MatrixStack(),
+							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
-					progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
-					progress.StepProgress();
-					Application.DoEvents();
+						progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+						progress.StepProgress();
+						Application.DoEvents();
+					}
 				}
 				if (LevelData.geo.Anim != null)
 				{
 					for (int i = 0; i < LevelData.geo.Anim.Count; i++)
 					{
+						if (selectedOnly) continue; // handle these later
 						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, ref materials, new MatrixStack(),
 							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
@@ -3132,5 +3208,93 @@ namespace SonicRetro.SAModel.SADXLVL2
                 test.ShowDialog();
             }
         }
+
+		#region Drag and Drop functionality
+		private void DoModelDragEnter(Attach attach, Direct3D.Mesh mesh)
+		{
+			dragPlaceLevelModel = new NJS_OBJECT();
+			dragPlaceLevelModel.Attach = attach;
+			dragPlaceLevelMesh = mesh;
+			dragType = DragType.Model;
+		}
+
+		NJS_OBJECT dragPlaceLevelModel = null;
+		enum DragType { None, Model, SET }
+		DragType dragType = DragType.None;
+		Vector3 dragPlaceLocation;
+		Direct3D.Mesh dragPlaceLevelMesh = null;
+
+		private void RenderPanel_DragEnter(object sender, DragEventArgs e)
+		{
+			Console.WriteLine("DragEnter");
+
+			if (sender is string)
+			{
+				string dragType = sender as string;
+
+				if(dragType == "ModelLibrary")
+				{
+					Attach model = modelLibraryControl1.SelectedModel;
+
+					if(model != null)
+					{
+						DoModelDragEnter(model, modelLibraryControl1.GetSelectedMesh());
+					}
+				}
+			}
+		}
+
+		private void RenderPanel_DragDrop(object sender, DragEventArgs e)
+		{
+			Console.WriteLine("DragDrop");
+		}
+
+		private void RenderPanel_DragLeave(object sender, EventArgs e)
+		{
+			dragType = DragType.None;
+			dragPlaceLevelMesh = null;
+			dragPlaceLevelModel = null;
+		}
+
+		private void RenderPanel_DragOver(object sender, DragEventArgs e)
+		{
+			// update our raycast position and re-draw the level
+			Point mouseScreenPoint = new Point(e.X, e.Y);
+			HitResult hitResult = PickItem(mouseScreenPoint);
+
+			if (hitResult.IsHit)
+			{
+				dragPlaceLocation = hitResult.Position;
+			}
+			else
+			{
+				Vector3 mousepos = new Vector3(mouseScreenPoint.X, mouseScreenPoint.Y, 0);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Matrix camMatrix = cam.ToMatrix();
+				Vector3 Near, Far;
+				Near = mousepos;
+				Near.Z = 0;
+				Far = Near;
+				Far.Z = -1;
+
+				Vector3 pos = viewport.Unproject(mousepos, proj, view, camMatrix);
+				Vector3 dir = pos - viewport.Unproject(Far, proj, view, camMatrix);
+				Ray ray = new Ray(pos, dir);
+
+				Plane placementPlane = new Plane(cam.Position + Vector3.Down * 10, Vector3.Up);
+
+				float intersectDistance = 0;
+
+				bool didHitPlane = SharpDX.Collision.RayIntersectsPlane(ref ray, ref placementPlane, out intersectDistance);
+
+				if(didHitPlane)
+				{
+					dragPlaceLocation = pos + ray.Direction * intersectDistance;
+				}
+			}
+		}
+		#endregion
 	}
 }
