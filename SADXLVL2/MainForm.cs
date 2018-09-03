@@ -193,6 +193,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewToolStripMenuItem.Enabled = false;
 			statsToolStripMenuItem.Enabled = false;
 			deathZonesToolStripMenuItem.Checked = false;
+
+			// model library stuff
+			addSelectedLevelItemsToolStripMenuItem.Enabled = false;
+			addAllLevelItemsToolStripMenuItem.Enabled = false;
 		}
 
         private void ShowLevelSelect()
@@ -568,14 +572,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
                         LevelData.ClearLevelItems();
 
-                        modelLibraryControl1.BeginUpdate();
-
-                        for (int i = 0; i < LevelData.geo.COL.Count; i++)
-                        {
-                            LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
-                            modelLibraryControl1.Add(LevelData.geo.COL[i].Model.Attach);
-                        }
-
+						for (int i = 0; i < LevelData.geo.COL.Count; i++)
+						{
+							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+						}
 					}
 
 					progress.StepProgress();
@@ -1414,7 +1414,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
-            modelLibraryControl1.EndUpdate();
+			addAllLevelItemsToolStripMenuItem.Enabled = true;
 			toolStrip1.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
             LevelData.InvalidateRenderState();
@@ -2465,6 +2465,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+			addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
             DrawLevel();
         }
@@ -3401,5 +3402,38 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 		#endregion
+
+		private void addSelectedLevelItemsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			modelLibraryControl1.BeginUpdate();
+			foreach (Item _item in selectedItems.Items.Where<Item>(item => item is LevelItem))
+			{
+				LevelItem levelItem = _item as LevelItem;				
+				modelLibraryControl1.Add(levelItem.CollisionData.Model.Attach);
+			}
+			modelLibraryControl1.EndUpdate();
+		}
+
+		private void addAllLevelItemsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show("This operation can be very slow! Are you sure?", "Are you sure?", MessageBoxButtons.YesNo);
+
+			if (result == DialogResult.OK)
+			{
+				modelLibraryControl1.BeginUpdate();
+
+				for (int i = 0; i < LevelData.geo.COL.Count; i++)
+				{
+					modelLibraryControl1.Add(LevelData.geo.COL[i].Model.Attach);
+				}
+
+				modelLibraryControl1.EndUpdate();
+			}
+		}
+
+		private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			modelLibraryControl1.Clear();
+		}
 	}
 }

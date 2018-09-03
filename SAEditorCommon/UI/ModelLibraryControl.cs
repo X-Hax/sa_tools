@@ -397,7 +397,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
         {
             if (!IsDesignMode())
             {
-				if (Visible) FullReRender();
+
             }
         }
 
