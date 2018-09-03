@@ -403,9 +403,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         public void FullReRender()
         {
-            RenderAllModels();
-            PopulateListView();
-            RenderModel(selectedModelIndex, false);
+			RenderAllModels();
+			PopulateListView();
+			RenderModel(selectedModelIndex, false);
         }
 
         private void ModelLibraryControl_Resize(object sender, EventArgs e)

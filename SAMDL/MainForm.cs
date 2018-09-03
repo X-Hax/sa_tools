@@ -270,7 +270,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
             selectedObject = model;
 			SelectedItemChanged();
 
@@ -436,7 +436,7 @@ namespace SonicRetro.SAModel.SAMDL
             AddTreeNode(model, treeView1.Nodes);
             selectedObject = model;
 
-            loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+            loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
             SelectedItemChanged();
 
             currentFileName = "";
@@ -1175,6 +1175,7 @@ namespace SonicRetro.SAModel.SAMDL
                 pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
                 editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
                 importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
                 exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
             }
             else
@@ -1185,8 +1186,9 @@ namespace SonicRetro.SAModel.SAMDL
                 copyModelToolStripMenuItem.Enabled = false;
                 pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
                 editMaterialsToolStripMenuItem.Enabled = false;
-                importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-                exportOBJToolStripMenuItem.Enabled = false;
+				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				exportOBJToolStripMenuItem.Enabled = false;
             }
 
 			DrawEntireModel();
@@ -1378,9 +1380,25 @@ namespace SonicRetro.SAModel.SAMDL
                     modelLibrary.Add(newattach);
 
 					if (selectedObject.Attach != null)
+					{
 						newattach.Name = selectedObject.Attach.Name;
+					}
+
 					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh(d3ddevice);
 					selectedObject.Attach = newattach;
+
+					Matrix m = Matrix.Identity;
+					selectedObject.ProcessTransforms(m);
+					float scale = Math.Max(Math.Max(selectedObject.Scale.X, selectedObject.Scale.Y), selectedObject.Scale.Z);
+					BoundingSphere bounds = new BoundingSphere(Vector3.TransformCoordinate(selectedObject.Attach.Bounds.Center.ToVector3(), m).ToVertex(), selectedObject.Attach.Bounds.Radius * scale);
+
+					bool boundsVisible = !cam.SphereInFrustum(bounds);
+
+					if (!boundsVisible)
+					{
+						cam.MoveToShowBounds(bounds);
+					}
+
 					DrawEntireModel();
 				}
 		}
