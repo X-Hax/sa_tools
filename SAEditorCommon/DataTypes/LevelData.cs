@@ -26,6 +26,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             return changes.Peek();
         }
 
+		private static bool suppressEvents = false;
+		public static bool SuppressEvents { get { return suppressEvents; } set { suppressEvents = value; } }
+
 		public static LandTable geo;
 		public static string leveltexs;
 		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
@@ -80,6 +83,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			setItems = null;
 		}
 
+		public static bool CharHasSETItems(int characterID)
+		{
+			return setItems[characterID] != null && setItems[characterID].Count > 0;
+		}
+
 		public static bool SETItemsIsNull()
 		{
 			return setItems == null;
@@ -95,6 +103,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static int GetSetItemCount(int characterID)
 		{
 			return setItems[characterID].Count;
+		}
+
+		public static SETItem GetSetItemAtIndex(int characterID, int itemIndex)
+		{
+			int setItemCount = GetSetItemCount(characterID);
+
+			if (itemIndex < setItemCount)
+			{
+				return setItems[characterID][itemIndex];
+			}
+			else return null;
 		}
 
 		public static IEnumerable<SETItem> SETItems(int characterID)
@@ -122,7 +141,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void InvalidateRenderState()
 		{
-			StateChanged?.Invoke();
+			if(!suppressEvents) StateChanged?.Invoke();
 		}
 
 		public static void BeginPointOperation()

@@ -37,11 +37,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
             bool changed=false;
 
-            for (int itemIndx = 0; itemIndx < LevelData.SETItems[LevelData.Character].Count; itemIndx++)
+            for (int itemIndx = 0; itemIndx < LevelData.GetSetItemCount(LevelData.Character); itemIndx++)
             {
-                if (LevelData.SETItems[LevelData.Character][itemIndx].ID == findID)
+                if (LevelData.GetSetItemAtIndex(LevelData.Character, itemIndx).ID == findID)
                 {
-                    LevelData.SETItems[LevelData.Character][itemIndx].ID = replaceID;
+					LevelData.GetSetItemAtIndex(LevelData.Character, itemIndx).ID = replaceID;
 
                     changed = true;
                 }

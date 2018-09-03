@@ -476,6 +476,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					++steps;
 
 				toolStrip1.Enabled = false;
+				LevelData.SuppressEvents = true;
 
 				// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
 				// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
@@ -1366,8 +1367,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
             modelLibraryControl1.EndUpdate();
 			toolStrip1.Enabled = isStageLoaded;
+			LevelData.SuppressEvents = false;
             LevelData.InvalidateRenderState();
-			//LevelData_StateChanged();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

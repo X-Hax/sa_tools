@@ -31,8 +31,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         public void InitSceneControl(EditorItemSelection selection)
         {
-            //InitializeComponent();
-
             this.selection = selection;
 
             // subscribe to our editor select change events
@@ -42,7 +40,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
         private void SceneTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-
             suppressSelectionEvents = true;
 
             selection.Clear();
@@ -78,7 +75,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             }
             else if (parent == setNode)
             {
-                return LevelData.SETItems[LevelData.Character][node.Index];
+				return LevelData.GetSetItemAtIndex(LevelData.Character, node.Index);
             }
             else if (parent == camNode)
             {
@@ -126,7 +123,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
                 {
                     SETItem setItem = (SETItem)item;
 
-                    int index = LevelData.SETItems[LevelData.Character].IndexOf(setItem);
+					int index = LevelData.GetIndexOfSETItem(LevelData.Character, setItem);//LevelData.SETItems[LevelData.Character].IndexOf(setItem);
 
                     selectedNodes.Add(setNode.Nodes[index]);
                 }
@@ -214,7 +211,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             }
 
             // set node
-            foreach(SETItem setItem in LevelData.SETItems[LevelData.Character])
+            foreach(SETItem setItem in LevelData.SETItems(LevelData.Character))
             {
                 setNode.Nodes.Add(setItem.Name);
             }
