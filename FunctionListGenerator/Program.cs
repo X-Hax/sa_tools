@@ -191,7 +191,7 @@ namespace FunctionListGenerator
 						{
 							case "size":
 								argname = "_size";
-								argdecl = argdecl.Replace("size", "_size");
+								argdecl = argdecl.Replace("size", "_size").Replace("_size_t", "size_t");
 								break;
 							case "type":
 								argname = "_type";
