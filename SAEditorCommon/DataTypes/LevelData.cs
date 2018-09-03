@@ -46,10 +46,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static string LevelName;
 		public static string SETName;
         public static List<ObjectDefinition> ObjDefs;
-        public static StartPosItem[] StartPositions;
+		public static List<ObjectDefinition> MisnObjDefs;
+		public static LevelDefinition leveleff;
+		public static StartPosItem[] StartPositions;
 
-        // editable objects
-        private static List<LevelItem> levelItems = new List<LevelItem>();
+		#region Editable Objects
+		// level geometry items
+		private static List<LevelItem> levelItems = new List<LevelItem>();
 
         public static int LevelItemCount { get { return levelItems.Count; } }
         public static LevelItem GetLevelitemAtIndex(int index)
@@ -66,13 +69,53 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             else return -1;
         }
 
-		public static List<ObjectDefinition> MisnObjDefs;
-		public static List<SETItem>[] SETItems;
+		// set items
+		public static void InitSETItems()
+		{
+			setItems = new List<SETItem>[LevelData.SETChars.Length];
+		}
+
+		public static void NullifySETItems()
+		{
+			setItems = null;
+		}
+
+		public static bool SETItemsIsNull()
+		{
+			return setItems == null;
+		}
+
+		public static void AssignSetList(int characterID, List<SETItem> list)
+		{
+			setItems[characterID] = list;
+		}
+
+		private static List<SETItem>[] setItems;
+
+		public static int GetSetItemCount(int characterID)
+		{
+			return setItems[characterID].Count;
+		}
+
+		public static IEnumerable<SETItem> SETItems(int characterID)
+		{
+			return (IEnumerable<SETItem>)setItems[characterID];
+		}
+
+		public static int GetIndexOfSETItem(int characterID, SETItem item)
+		{
+			if (characterID < setItems.Length && setItems[characterID].Contains(item))
+			{
+				return setItems[characterID].IndexOf(item);
+			}
+			else return -1;
+		}
+
 		public static List<CAMItem>[] CAMItems;
 		public static List<MissionSETItem>[] MissionSETItems;
 		public static List<DeathZoneItem> DeathZones;
-		public static LevelDefinition leveleff;
 		public static List<SplineData> LevelSplines;
+		#endregion
 
 		/// <summary>
 		/// This invokes the StateChanged event. Call this any time an outside form or control modifies the level data.
@@ -87,6 +130,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			PointOperation();
 		}
 
+		#region Level Geometry Items
 		/// <summary>
 		/// This will clear the level's geometry, letting the user start fresh.
 		/// </summary>
@@ -115,17 +159,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
         public static void RemoveLevelItem(LevelItem item)
         {
             LevelData.levelItems.Remove(item);
-            //LevelData.geo.COL.Remove(item.CollisionData);
 
             changes.Push("Remove level item");
+			InvalidateRenderState();
         }
 
         public static void AddLevelItem(LevelItem item)
         {
             LevelData.levelItems.Add(item);
-            //LevelData.geo.COL.Add(item.CollisionData);
 
             changes.Push("Add level item");
+			InvalidateRenderState();
         }
 
 		/// <summary>
@@ -141,17 +185,33 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
                 changes.Push("Clear Level Animations");
 			}
 		}
+		#endregion
+
+		#region SET Items
+		public static void AddSETItem(int characterID, SETItem item)
+		{
+			setItems[characterID].Add(item);
+			changes.Push("Add SET Item");
+			InvalidateRenderState();
+		}
+
+		public static void RemoveSETItem(int characterID, SETItem item)
+		{
+			setItems[characterID].Remove(item);
+			changes.Push("Remove SET Item");
+			InvalidateRenderState();
+		}
 
 		/// <summary>
 		/// Clears SET Items for all characters.
 		/// </summary>
 		public static void ClearSETItems()
 		{
-			if (SETItems == null)
+			if (setItems == null)
 				return;
 
 			for (uint i = 0; i < SETChars.Length; i++)
-				SETItems[i] = new List<SETItem>();
+				setItems[i] = new List<SETItem>();
 
             changes.Push("Clear SET Items");
 
@@ -164,13 +224,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="character">The ID of the character whose layout you want to clear.</param>
 		public static void ClearSETItems(int character)
 		{
-			if (SETItems == null)
+			if (setItems == null)
 				return;
 
-			SETItems[character] = new List<SETItem>();
+			setItems[character] = new List<SETItem>();
             changes.Push("Clear SET Items");
             InvalidateRenderState();
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Clears CAM Items for all characters.
@@ -252,7 +314,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			int animatedItems = geo.Anim.Count;
 			int cameraItems = 0;
 
-			if (SETItems != null) setItems = SETItems[Character].Count;
+			if (LevelData.setItems != null) setItems = LevelData.GetSetItemCount(LevelData.character);
 			if (CAMItems != null) cameraItems = CAMItems[Character].Count;
 
 			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
@@ -281,7 +343,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					SETItem originalItem = (SETItem)currentItems[i];
 					SETItem newItem = new SETItem(originalItem.GetBytes(), 0, selection);
 
-					SETItems[Character].Add(newItem);
+					//SETItems[Character].Add(newItem);
+					AddSETItem(Character, newItem);
 					newItems.Add(newItem);
 				}
 				else if (currentItems[i] is LevelItem)

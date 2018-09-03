@@ -789,23 +789,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.SETName = level.SETName ?? level.LevelID;
                         string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
                         string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-						LevelData.SETItems = new List<SETItem>[LevelData.SETChars.Length];
+						LevelData.InitSETItems();
 						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
 							List<SETItem> list = new List<SETItem>();
 							byte[] setfile = null;
-
-                            //GamePathChecker.PathOrFallback(setstr, setfallback)
 
                             string formatted = string.Format(setstr, LevelData.SETChars[i]);
                             string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
 
                             string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
 
-							/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-								setfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-							else if (File.Exists(formatted))*/
-								if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
+							if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
 
 							if (setfile != null)
 							{
@@ -822,12 +817,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 									address += 0x20;
 								}
 							}
-							LevelData.SETItems[i] = list;
+							LevelData.AssignSetList(i, list);
 						}
 					}
 					else
 					{
-						LevelData.SETItems = null;
+						LevelData.NullifySETItems();
 					}
 
 					// Checks if there have been any errors added to the error list and does its thing
@@ -863,7 +858,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				else
 				{
-					LevelData.SETItems = null;
+					LevelData.NullifySETItems();
 				}
 
 				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
@@ -1323,7 +1318,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			bool isGeometryPresent = LevelData.geo != null;
-			bool isSETPreset = LevelData.SETItems != null;
+			bool isSETPreset = !LevelData.SETItemsIsNull();
 			bool isDeathZonePresent = LevelData.DeathZones != null;
 
 			// Context menu
@@ -1466,26 +1461,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 			progress.Step = "SET items...";
 			Application.DoEvents();
 
-			if (LevelData.SETItems != null)
+			if (!LevelData.SETItemsIsNull())
 			{
-				for (int i = 0; i < LevelData.SETItems.Length; i++)
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
 				{
 					string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-					/*if (modpath != null)
-						setstr = Path.Combine(modpath, setstr);*/
 
                     // blank the set file
-                    if (File.Exists(setstr) || LevelData.SETItems[i].Count == 0)
+                    if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
                     {
                         byte[] emptyBytes = new byte[0x20];
                         File.WriteAllBytes(setstr, emptyBytes);
                     }
 
-					List<byte> file = new List<byte>(LevelData.SETItems[i].Count*0x20 + 0x20);
-					file.AddRange(BitConverter.GetBytes(LevelData.SETItems[i].Count));
+					List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
+					file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
 					file.Align(0x20);
 
-					foreach (SETItem item in LevelData.SETItems[i])
+					foreach (SETItem item in LevelData.SETItems(i))
 						file.AddRange(item.GetBytes());
 
 					File.WriteAllBytes(setstr, file.ToArray());
@@ -1661,9 +1654,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Adding SET Layout
-			if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
+			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
 			{
-				foreach (SETItem item in LevelData.SETItems[LevelData.Character])
+				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
 					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
@@ -2108,8 +2101,8 @@ namespace SonicRetro.SAModel.SADXLVL2
             #endregion
 
             #region Picking SET Items
-            if (LevelData.SETItems != null && sETITemsToolStripMenuItem.Checked)
-                foreach (SETItem setitem in LevelData.SETItems[LevelData.Character])
+            if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
+                foreach (SETItem setitem in LevelData.SETItems(LevelData.Character))
                 {
                     hit = setitem.CheckHit(Near, Far, viewport, proj, view);
                     if (hit < closesthit)
@@ -2495,8 +2488,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			foreach (Item item in selectedItems.GetSelection())
 			{
-				if (item.CanCopy)
-					item.Delete();
+				item.Delete();
 			}
 
 			selectedItems.Clear();
@@ -2688,7 +2680,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-					LevelData.SETItems[LevelData.Character].Add(item);
+					LevelData.AddSETItem(LevelData.Character, item);
 					selectedItems.Clear();
 					selectedItems.Add(item);
 					LevelData.InvalidateRenderState();

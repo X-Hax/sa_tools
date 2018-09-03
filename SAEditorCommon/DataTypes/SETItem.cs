@@ -118,12 +118,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
         public override void Paste()
 		{
-			LevelData.SETItems[LevelData.Character].Add(this);
+			LevelData.AddSETItem(LevelData.Character, this);
 		}
 
 		public override void Delete()
 		{
-			LevelData.SETItems[LevelData.Character].Remove(this);
+			LevelData.RemoveSETItem(LevelData.Character, this);
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
