@@ -95,6 +95,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			RenderPanel.MouseWheel += panel1_MouseWheel;
             modelLibraryControl1.InitRenderer();
 
+			InitDisableInvalidControls();
+
             systemFallback = Program.SADXGameFolder + "/System/";
 
             if (Program.args.Length > 0)
@@ -140,6 +142,58 @@ namespace SonicRetro.SAModel.SADXLVL2
 
             sceneGraphControl1.InitSceneControl(selectedItems);
         }
+
+		/// <summary>
+		/// I moved these to here instead of setting them to false in the designer,
+		/// because it makes the designer easier to read.
+		/// </summary>
+		private void InitDisableInvalidControls()
+		{
+			// Context menu
+			// Add -> Level Piece
+			// Does this even make sense? This thing prompts the user to import a model,
+			// not select an existing one...
+			levelPieceToolStripMenuItem.Enabled = false;
+			clearLevelToolStripMenuItem.Enabled = false;
+			addToolStripMenuItem.Enabled = false;
+			addToolStripMenuItem1.Enabled = false;
+			duplicateToolStripMenuItem.Enabled = false;
+			pointOneObjectAtAnotherToolStripMenuItem.Enabled = false;
+			advancedToolStripMenuItem.Enabled = false;
+
+			// Add -> Object
+			objectToolStripMenuItem.Enabled = false;
+			// Add -> Mission Object
+			missionObjectToolStripMenuItem.Enabled = false;
+
+			// File menu
+			// Save
+			saveToolStripMenuItem.Enabled = false;
+			// Import
+			importToolStripMenuItem.Enabled = false;
+			// Export
+			exportToolStripMenuItem.Enabled = false;
+
+			// Edit menu
+			// Clear Level
+			clearLevelToolStripMenuItem.Enabled = false;
+			// SET Items submenu
+			// Gotta clear up these names at some point...
+			// Drop the 1, and you get the dropdown menu under View.
+			sETItemsToolStripMenuItem1.Enabled = false;
+			sETITemsToolStripMenuItem.Enabled = false;
+			deleteSelectedToolStripMenuItem.Enabled = false;
+			deleteToolStripMenuItem.Enabled = false;
+			// Duplicate
+			duplicateToolStripMenuItem.Enabled = false;
+			// Calculate All Bounds
+			calculateAllBoundsToolStripMenuItem.Enabled = false;
+
+			// The whole view menu!
+			viewToolStripMenuItem.Enabled = false;
+			statsToolStripMenuItem.Enabled = false;
+			deathZonesToolStripMenuItem.Checked = false;
+		}
 
         private void ShowLevelSelect()
 		{
@@ -1006,16 +1060,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 							string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
 							string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
 
-							/*if (modpath != null && File.Exists(Path.Combine(modpath, setfmt)) && File.Exists(Path.Combine(modpath, prmfmt)))
-							{
-								setfile = File.ReadAllBytes(Path.Combine(modpath, setfmt));
-								prmfile = File.ReadAllBytes(Path.Combine(modpath, prmfmt));
-							}
-							else if (File.Exists(setfmt) && File.Exists(prmfmt))
-							{*/
-								if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-								if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-							//}
+							if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+							if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
 
 							if (setfile != null)
 							{
@@ -1347,8 +1393,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// Gotta clear up these names at some point...
 			// Drop the 1, and you get the dropdown menu under View.
 			sETItemsToolStripMenuItem1.Enabled = true;
-			// Duplicate
-			duplicateToolStripMenuItem.Enabled = true;
+			sETITemsToolStripMenuItem.Enabled = true;
 			// Calculate All Bounds
 			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
 
@@ -1356,6 +1401,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
 			deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+
+			advancedToolStripMenuItem.Enabled = true;
+			addToolStripMenuItem1.Enabled = true;
+			addToolStripMenuItem.Enabled = true;
 
 			isStageLoaded = true;
 			selectedItems.SelectionChanged += SelectionChanged;
@@ -1579,7 +1628,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			#endregion
 		}
-
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -2413,6 +2461,10 @@ namespace SonicRetro.SAModel.SADXLVL2
                     transformGizmo.Enabled = false;
                 }
             }
+
+			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 
             DrawLevel();
         }
