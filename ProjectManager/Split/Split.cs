@@ -71,7 +71,7 @@ namespace ProjectManager.Split
                     switch (type)
                     {
                         case "landtable":
-                            new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key, Tool = "split" }.SaveToFile(fileOutputPath, landfmt);
+                            new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
                             break;
                         case "model":
                             {

@@ -64,7 +64,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GOMBAN.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
-			model.Children = new List<NJS_OBJECT>() { model.Children[0] };
+			NJS_OBJECT child = model.Children[0];
+			model.ClearChildren();
+			model.AddChild(child);
 		}
 
 		public override string Name { get { return "Elastic Railing"; } }

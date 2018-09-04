@@ -19,7 +19,9 @@ namespace SADXObjectDefinitions.WindyValley
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O POLINE.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model, dev);
-			model.Children = new List<NJS_OBJECT>() { model.Children[0] };
+			NJS_OBJECT child = model.Children[0];
+			model.ClearChildren();
+			model.AddChild(child);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
