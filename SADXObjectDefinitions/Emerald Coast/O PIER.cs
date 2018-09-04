@@ -84,7 +84,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			}
 		}
 
-		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+
+        private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (PierVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 

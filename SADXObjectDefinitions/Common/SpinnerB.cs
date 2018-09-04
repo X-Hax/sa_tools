@@ -52,7 +52,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-		public override string Name { get { return "Spinner (Float)"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Spinner (Float)"; } }
 
 		private readonly PropertySpec[] missionProperties = new PropertySpec[] {
 			new PropertySpec("Destroy For Mission", typeof(bool), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[4] != 0, (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)((bool)v ? 1 : 0)),

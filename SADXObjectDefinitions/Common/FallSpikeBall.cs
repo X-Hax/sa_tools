@@ -86,7 +86,17 @@ namespace SADXObjectDefinitions.Common
 			return bounds;
 		}
 
-		public override string Name { get { return "Falling Spike Ball"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Falling Spike Ball"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Distance", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),

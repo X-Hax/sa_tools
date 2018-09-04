@@ -54,37 +54,37 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					break;
 			}
 
-			if (LevelData.SETItems[0] == null)
+			if (!LevelData.CharHasSETItems(0))
 			{
 				sonicCheckBox.Enabled = false;
 				sonicCheckBox.Checked = false;
 			}
 
-			if (LevelData.SETItems[1] == null)
+			if (!LevelData.CharHasSETItems(1))
 			{
 				tailsCheckBox.Enabled = false;
 				tailsCheckBox.Checked = false;
 			}
 
-			if (LevelData.SETItems[2] == null)
+			if (!LevelData.CharHasSETItems(2))
 			{
 				knucklesCheckBox.Enabled = false;
 				knucklesCheckBox.Checked = false;
 			}
 
-			if (LevelData.SETItems[3] == null)
+			if (!LevelData.CharHasSETItems(3))
 			{
 				amyCheckBox.Checked = false;
 				amyCheckBox.Enabled = false;
 			}
 
-			if (LevelData.SETItems[4] == null)
+			if (!LevelData.CharHasSETItems(4))
 			{
 				gammaCheckBox.Enabled = false;
 				gammaCheckBox.Checked = false;
 			}
 
-			if(LevelData.SETItems[5] == null)
+			if(!LevelData.CharHasSETItems(5))
 			{
 				bigCheckBox.Enabled = false;
 				bigCheckBox.Checked = false;
@@ -104,32 +104,32 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 					if (sonicCheckBox.Checked)
 					{
-						LevelData.SETItems[0].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(0, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (tailsCheckBox.Checked)
 					{
-						LevelData.SETItems[1].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(1, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (knucklesCheckBox.Checked)
 					{
-						LevelData.SETItems[2].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(2, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (amyCheckBox.Checked)
 					{
-						LevelData.SETItems[3].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(3, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (gammaCheckBox.Checked)
 					{
-						LevelData.SETItems[4].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(4, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 
 					if (bigCheckBox.Checked)
 					{
-						LevelData.SETItems[5].Add(new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(5, new SETItem(itemConv.GetBytes(), 0, items));
 					}
 				}
 				else if (item is CAMItem)

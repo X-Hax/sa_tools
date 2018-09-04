@@ -46,7 +46,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJRotateObject(item.Rotation);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+    }
 
 	public class GrasA : OGrasa
 	{
@@ -98,7 +108,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.Z + 1.0f));
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+    }
 
 	public class GrasB : OGrasb
 	{

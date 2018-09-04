@@ -69,6 +69,16 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(X, Y));
 		}
 
-		public override string Name { get { return "Solid Cylinder"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Solid Cylinder"; } }
 	}
 }

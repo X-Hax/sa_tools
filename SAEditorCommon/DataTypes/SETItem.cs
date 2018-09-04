@@ -11,7 +11,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class SETItem : Item, ICustomTypeDescriptor
+	public class SETItem : Item, ICustomTypeDescriptor, IScaleable
 	{
 		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
@@ -28,11 +28,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			ID = id;
 			objdef = GetObjectDefinition();
-			Position = new Vertex();
-			Rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			position = new Vertex();
+			rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
 			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
-		}
+
+            GetHandleMatrix();
+        }
 
 		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
 			: base(selectionManager)
@@ -43,12 +45,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ushort xrot = BitConverter.ToUInt16(file, address + 2);
 			ushort yrot = BitConverter.ToUInt16(file, address + 4);
 			ushort zrot = BitConverter.ToUInt16(file, address + 6);
-			Rotation = new Rotation(xrot, yrot, zrot);
-			Position = new Vertex(file, address + 8);
+			rotation = new Rotation(xrot, yrot, zrot);
+			position = new Vertex(file, address + 8);
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
-		}
+
+            GetHandleMatrix();
+        }
 
 		public virtual ObjectDefinition GetObjectDefinition()
 		{
@@ -92,20 +96,34 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { ClipLevel = (ushort)value; }
 		}
 
-		public override Vertex Position { get; set; }
+        public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+        public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+        protected Vertex scale = new Vertex();
+        public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
-		public override Rotation Rotation { get; set; }
+        public Vertex GetScale()
+        {
+            return Scale;
+        }
 
-		public Vertex Scale { get; set; }
+        public void SetScale(Vertex scale)
+        {
+            this.Scale = scale;
+        }
 
-		public override void Paste()
+        protected override void GetHandleMatrix()
+        {
+            transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
+        }
+
+        public override void Paste()
 		{
-			LevelData.SETItems[LevelData.Character].Add(this);
+			LevelData.AddSETItem(LevelData.Character, this);
 		}
 
 		public override void Delete()
 		{
-			LevelData.SETItems[LevelData.Character].Remove(this);
+			LevelData.RemoveSETItem(LevelData.Character, this);
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -245,7 +263,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return this;
 		}
-	}
+    }
 
 	public enum ClipSetting : ushort
 	{

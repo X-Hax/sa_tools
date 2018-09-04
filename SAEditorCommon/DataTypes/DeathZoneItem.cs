@@ -14,7 +14,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	public class DeathZoneItem : Item
+	public class DeathZoneItem : Item, IScaleable
 	{
 		[Browsable(false)]
 		private NJS_OBJECT Model { get; set; }
@@ -22,6 +22,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
+        public string Name { get { return Model.Name; } }
 
 		[Browsable(false)]
 		public override BoundingSphere Bounds
@@ -45,6 +46,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
+
+            rotateZYX = Model.RotateZYX;
+            GetHandleMatrix();
 		}
 
 		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, Device device, EditorItemSelection selectionManager)
@@ -55,13 +59,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Flags = flags;
 			Mesh = Model.Attach.CreateD3DMesh(device);
 			this.device = device;
+
+            rotateZYX = Model.RotateZYX;
+            GetHandleMatrix();
 		}
 
 		public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
 
 		public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
-		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+        protected override void GetHandleMatrix()
+        {
+            position = Model.Position;
+            rotation = Model.Rotation;
+            base.GetHandleMatrix();
+        }
+
+        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
@@ -208,5 +222,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
 			return new DeathZoneFlags() { Flags = Flags };
 		}
-	}
+
+        public Vertex GetScale()
+        {
+            return Model.Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            Model.Scale = scale;
+        }
+    }
 }

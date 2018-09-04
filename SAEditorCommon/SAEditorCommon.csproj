@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="DataTypes\CAMItem.cs" />
     <Compile Include="DataTypes\DeathZoneItem.cs" />
+    <Compile Include="DataTypes\IScaleable.cs" />
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />
@@ -97,6 +98,27 @@
     <Compile Include="StructConverter\StructConverterUI.Designer.cs">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\ActionInputCollector.cs" />
+    <Compile Include="UI\ActionKeybindControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ActionKeybindControl.Designer.cs">
+      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ActionKeybindEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ActionKeybindEditor.Designer.cs">
+      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ActionKeyMapping.cs" />
+    <Compile Include="UI\ActionMappingList.cs" />
+    <Compile Include="UI\ActionMapTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ActionMapTest.Designer.cs">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\BugReportDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +134,21 @@
     <Compile Include="UI\EditorItemSelection.cs" />
     <Compile Include="UI\Gizmo.cs" />
     <Compile Include="UI\HexNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryControl.Designer.cs">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ModelLibraryWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryWindow.Designer.cs">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MultiSelectTreeview.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\NewObjectDialog.cs">
@@ -132,6 +169,12 @@
     </Compile>
     <Compile Include="UI\ProgressDialog.Designer.cs">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SceneGraphControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\SceneGraphControl.Designer.cs">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\SETDeleteType.cs">
       <SubType>Form</SubType>
@@ -196,6 +239,15 @@
     <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionKeybindControl.resx">
+      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionKeybindEditor.resx">
+      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionMapTest.resx">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -218,6 +270,12 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibraryControl.resx">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibraryWindow.resx">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\NewObjectDialog.resx">
       <DependentUpon>NewObjectDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -226,6 +284,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SceneGraphControl.resx">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETDeleteType.resx">
       <DependentUpon>SETDeleteType.cs</DependentUpon>
@@ -276,7 +337,9 @@
   <ItemGroup>
     <None Include="Resources\PointATexture.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Hourglass.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

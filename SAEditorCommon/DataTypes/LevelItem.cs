@@ -12,7 +12,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class LevelItem : Item
+	public class LevelItem : Item, IScaleable
 	{
 		private COL COL { get; set; }
 		[Browsable(false)]
@@ -46,6 +46,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ImportModel(filePath, dev);
 			COL.CalculateBounds();
 			Paste();
+
+            GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -60,6 +62,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			COL = col;
 			col.Model.ProcessVertexData();
 			Mesh = col.Model.Attach.CreateD3DMesh(dev);
+
+            GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -108,11 +112,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; } }
-
-		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; } }
-
-		public override BoundingSphere Bounds { get { return COL.Bounds; } }
+		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; GetHandleMatrix(); } }
+		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
+        public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
@@ -135,14 +137,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override void Paste()
 		{
-			LevelData.LevelItems.Add(this);
 			LevelData.geo.COL.Add(COL);
+
+            LevelData.AddLevelItem(this);
 		}
 
 		public override void Delete()
 		{
-			LevelData.geo.COL.Remove(COL);
-			LevelData.LevelItems.Remove(this);
+            LevelData.geo.COL.Remove(COL);
+
+            LevelData.RemoveLevelItem(this);
 		}
 
 		public void RegenerateMesh(Device dev)
@@ -200,8 +204,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		#region Surface Flag Accessors
-		public bool Solid
+        protected override void GetHandleMatrix()
+        {
+            position = Position;
+            rotation = Rotation;
+            base.GetHandleMatrix();
+        }
+
+        #region Surface Flag Accessors
+        public bool Solid
 		{
 			get { return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0); }
@@ -275,5 +286,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			LevelData.InvalidateRenderState();
 		}
-	}
+
+        public Vertex GetScale()
+        {
+            return COL.Model.Scale;
+        }
+
+        public void SetScale(Vertex scale)
+        {
+            COL.Model.Scale = scale;
+        }
+    }
 }

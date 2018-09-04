@@ -24,7 +24,8 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			{
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				HitResult result = model1.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes1);
+                transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
+                HitResult result = model1.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes1);
 				transform.Pop();
 				return result;
 			}
@@ -32,7 +33,8 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			{
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				HitResult result = model2.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes2);
+                transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
+                HitResult result = model2.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes2);
 				transform.Pop();
 				return result;
 			}
@@ -95,7 +97,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y, item.Rotation.Z);
+
+            return matrix;
+        }
+    }
 
 	public class BigRock : OBigRock
 	{

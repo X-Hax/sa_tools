@@ -103,6 +103,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			}
 		}
 
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+            //MatrixFunctions.Scale(ref matrix, item.Scale);
+            return matrix;
+        }
+
 		public override string Name { get { return name; } }
 
 		public override ushort DefaultXRotation { get { return defxrot ?? base.DefaultXRotation; } }

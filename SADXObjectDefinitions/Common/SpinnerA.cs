@@ -61,7 +61,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-		public override string Name { get { return "Spinner (Attack)"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Spinner (Attack)"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Search Range", typeof(float), "Extended", null, 0, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v)

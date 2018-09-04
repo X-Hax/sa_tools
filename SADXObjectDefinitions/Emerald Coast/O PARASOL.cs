@@ -211,7 +211,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+    }
 
 	public class Parasol : OParasol
 	{

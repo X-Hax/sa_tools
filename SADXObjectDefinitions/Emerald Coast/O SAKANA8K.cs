@@ -67,7 +67,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale(ScaleX, ScaleY, item.Scale.Z);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+    }
 
 	public class Fish2D : SAKANA8K
 	{

@@ -357,15 +357,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				throw new NotSupportedException();
+                return new Rotation();
 			}
 			set
 			{
-				throw new NotSupportedException();
+
 			}
 		}
 
-		void selectionManager_SelectionChanged(EditorItemSelection sender)
+        void selectionManager_SelectionChanged(EditorItemSelection sender)
 		{
 			if (sender.ItemCount != 1)
 			{

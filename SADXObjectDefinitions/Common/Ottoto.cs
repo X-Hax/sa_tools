@@ -56,6 +56,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f), (item.Scale.Z + 10) / 5f));
 		}
 
-		public override string Name { get { return "Ottoto"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+
+        public override string Name { get { return "Ottoto"; } }
 	}
 }

@@ -57,7 +57,17 @@ namespace SADXObjectDefinitions.Mission
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(item.Scale.X, item.Scale.Y), item.Scale.Z));
 		}
 
-		public override string Name { get { return "Mission Sign"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Mission Sign"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Texture", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[8], (o, v) => ((MissionSETItem)o).PRMBytes[8] = (byte)v)

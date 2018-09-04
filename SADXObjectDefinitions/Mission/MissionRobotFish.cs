@@ -61,7 +61,20 @@ namespace SADXObjectDefinitions.Mission
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-		public override string Name { get { return "Mission Robot Fish"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, (ushort)(item.Rotation.Y + 0x8000));
+            MatrixFunctions.RotateZ(ref matrix, item.Rotation.Z);
+            MatrixFunctions.RotateX(ref matrix, item.Rotation.X);
+
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Mission Robot Fish"; } }
 
 		static object GetWeight(SETItem obj)
 		{

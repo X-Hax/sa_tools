@@ -59,7 +59,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+    }
 
 	public class Kasa : OKasa
 	{

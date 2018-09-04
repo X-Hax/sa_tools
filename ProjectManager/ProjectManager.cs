@@ -60,6 +60,7 @@ namespace ProjectManager
 
         private void NewProject_ProjectCreated(SA_Tools.Game game, string projectName, string fullProjectPath)
         {
+            newProject.Hide();
             MessageBox.Show("Project creation complete!");
             projectActions.Init(game, projectName, fullProjectPath);
             projectActions.Show();

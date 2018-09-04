@@ -112,6 +112,16 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(eme_a, transform);
 		}
 
-		public override string Name { get { return "Chaos Emerald (Goal)"; } }
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+            return matrix;
+        }
+
+        public override string Name { get { return "Chaos Emerald (Goal)"; } }
 	}
 }

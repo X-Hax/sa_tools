@@ -50,7 +50,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.Y + 1f), (item.Scale.Z + 1f));
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+            return matrix;
+        }
+    }
 
 	public class Waterfall : O_TAKI
 	{

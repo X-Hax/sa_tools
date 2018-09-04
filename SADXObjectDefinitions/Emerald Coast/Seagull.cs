@@ -61,7 +61,22 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale(1.5f, 1.5f, 1.5f);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+
+            int RotY = item.Rotation.Y + 34;
+            if ((RotY + 24) != 0x4000)
+            {
+                MatrixFunctions.RotateY(ref matrix, (RotY + 24) - 0x4000);
+            }
+
+            return matrix;
+        }
+    }
 
 	public class Kamome : Seagull
 	{

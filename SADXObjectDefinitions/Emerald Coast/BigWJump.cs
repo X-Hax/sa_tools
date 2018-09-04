@@ -47,7 +47,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJScale((item.Scale.X + 10f), (item.Scale.Y + 10f), (item.Scale.Z + 10f));
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
+
+        public override Matrix GetHandleMatrix(SETItem item)
+        {
+            Matrix matrix = Matrix.Identity;
+
+            MatrixFunctions.Translate(ref matrix, item.Position);
+
+            return matrix;
+        }
+    }
 
 	public class BigWJump : BigJump
 	{
