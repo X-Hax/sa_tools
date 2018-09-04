@@ -524,6 +524,85 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
+		private string GetIniFolderForGame(SA_Tools.Game game)
+		{
+			switch (game)
+			{
+				case SA_Tools.Game.SA1:
+					return "SA1";
+
+				case SA_Tools.Game.SADX:
+					return "SADXPC";
+
+				case SA_Tools.Game.SA2:
+					return "SA2";
+
+				case SA_Tools.Game.SA2B:
+					return "SA2PC";
+				default:
+					break;
+			}
+
+			return "";
+		}
+
+		private void CopyFolder(string sourceFolder, string destinationFolder)
+		{
+			string[] files = Directory.GetFiles(sourceFolder);
+
+			Directory.CreateDirectory(destinationFolder);
+
+			foreach (string objdef in files)
+			{
+				System.IO.FileInfo objdefFileInfo = new System.IO.FileInfo(objdef);
+				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
+
+				// copy
+				string filePath = Path.Combine(sourceFolder, objdefFileInfo.Name);
+				string destinationPath = Path.Combine(destinationFolder, objdefFileInfo.Name);
+				File.Copy(filePath, destinationPath, true);
+			}
+
+			string[] directories = Directory.GetDirectories(sourceFolder);
+
+			foreach (string directory in directories)
+			{
+				DirectoryInfo directoryInfo = new DirectoryInfo(directory);
+				if (directoryInfo.Name.Equals("bin") || directoryInfo.Name.Equals("obj")) continue;
+
+				string copySrcDir = Path.Combine(sourceFolder, directoryInfo.Name);
+				string copyDstDir = Path.Combine(destinationFolder, directoryInfo.Name);
+
+				CopyFolder(copySrcDir, copyDstDir);
+			}
+		}
+
+		private string GetObjDefsDirectory()
+		{
+#if DEBUG
+			return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
+#endif
+
+#if !DEBUG
+            return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
+#endif
+		}
+
+		private void CopyDefaultObjectDefintions()
+		{
+			// get our original objdefs folder
+			string originalObjdefsPath = GetObjDefsDirectory();
+
+			// get our project objdefs folder
+			string projectObjdefsPath = Path.Combine(currentProjectPath, "objdefs");
+
+			// clear the project objdefs folder
+			if(Directory.Exists(projectObjdefsPath)) Directory.Delete(projectObjdefsPath, true);
+
+			// recusrively copy the original objdefs folder to project folder
+			CopyFolder(originalObjdefsPath, projectObjdefsPath);
+		}
+
 		bool initerror = false;
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
@@ -750,6 +829,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 								{
 									KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
 										defgroup.CodeFile, errorText);
+
+									compileErrors.Add(errorValue);
 								}
 							}
 							else
@@ -777,6 +858,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
 							def.SetInternalName(objlstini[ID].Name);
+						}
+
+						if(compileErrors.Count > 0)
+						{
+							DialogResult result = MessageBox.Show("There were compile errors. Would you like to try upgrading the object definitions? This will over-write any changes to them that you've made!",
+								"Would you like to try upgrading?", MessageBoxButtons.YesNo);
+
+							if(result == DialogResult.Yes)
+							{
+								CopyDefaultObjectDefintions();
+								initerror = true;
+								MessageBox.Show("Please re-load the level");
+								return;
+							}
 						}
 
 						// Checks if there have been any errors added to the error list and does its thing
@@ -3497,6 +3592,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			modelLibraryControl1.Clear();
+		}
+
+		private void upgradeObjDefsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CopyDefaultObjectDefintions();
 		}
 	}
 }
