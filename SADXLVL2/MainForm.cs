@@ -719,162 +719,139 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					LevelData.MisnObjDefs = new List<ObjectDefinition>();
 
-				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
-				{
-					List<ObjectData> objectErrors = new List<ObjectData>();
-					ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
-					Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
-
-					for (int ID = 0; ID < objlstini.Length; ID++)
+					if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
 					{
-						string codeaddr = objlstini[ID].CodeString;
+						List<ObjectData> objectErrors = new List<ObjectData>();
+						ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
+						Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
 
-						if (!objdefini.ContainsKey(codeaddr))
-							codeaddr = "0";
+						List<KeyValuePair<string, string>> compileErrors = new List<KeyValuePair<string, string>>();
 
-						ObjectData defgroup = objdefini[codeaddr];
-						ObjectDefinition def;
-
-						if (!string.IsNullOrEmpty(defgroup.CodeFile))
+						for (int ID = 0; ID < objlstini.Length; ID++)
 						{
-							progress.SetStep("Compiling: " + defgroup.CodeFile);
+							string codeaddr = objlstini[ID].CodeString;
 
-							// TODO: Split this out to a function
-							#region Compile object code files
+							if (!objdefini.ContainsKey(codeaddr))
+								codeaddr = "0";
 
-							string ty = defgroup.CodeType;
-							string dllfile = Path.Combine("dllcache", ty + ".dll");
-							DateTime modDate = DateTime.MinValue;
-							if (File.Exists(dllfile))
-								modDate = File.GetLastWriteTime(dllfile);
-							string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
-							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
-								def =
-									(ObjectDefinition)
-										Activator.CreateInstance(
-											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-												.GetType(ty));
+							ObjectData defgroup = objdefini[codeaddr];
+							ObjectDefinition def;
+
+							if (!string.IsNullOrEmpty(defgroup.CodeFile))
+							{
+								progress.SetStep("Compiling: " + defgroup.CodeFile);
+
+								bool errorOccured = false;
+								string errorText = "";
+
+								def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
+
+								if (errorOccured)
+								{
+									KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
+										defgroup.CodeFile, errorText);
+								}
+							}
 							else
 							{
-								string ext = Path.GetExtension(fp);
-								CodeDomProvider pr = null;
-								switch (ext.ToLowerInvariant())
-								{
-									case ".cs":
-										pr = new Microsoft.CSharp.CSharpCodeProvider();
-										break;
-									case ".vb":
-										pr = new Microsoft.VisualBasic.VBCodeProvider();
-										break;
-								}
-								if (pr != null)
-								{
-									// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-									CompilerParameters para =
-										new CompilerParameters(new string[]
-										{
-												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
-												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
-												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
-												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
-												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-										})
-										{
-											GenerateExecutable = false,
-											GenerateInMemory = false,
-											IncludeDebugInformation = true,
-											OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-										};
-									CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-									if (res.Errors.HasErrors)
-									{
-										// TODO: Merge with existing object error handler. I add too many ToDos.
-										string errors = null;
-										foreach (CompilerError item in res.Errors)
-											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
-
-										MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
-											"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-										def = new DefaultObjectDefinition();
-									}
-									else
-									{
-										def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-									}
-								}
-								else
-									def = new DefaultObjectDefinition();
+								def = new DefaultObjectDefinition();
 							}
 
+							LevelData.ObjDefs.Add(def);
 
-							#endregion
+							// The only reason .Model is checked for null is for objects that don't yet have any
+							// models defined for them. It would be annoying seeing that error all the time!
+							if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+							{
+								progress.SetStep("Loading: " + defgroup.Model);
+								// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+								// load the "default object" instead ("?").
+								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+									!LevelData.Textures.ContainsKey(defgroup.Texture))
+								{
+									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+									objectErrors.Add(error);
+									defgroup.Model = null;
+								}
+							}
+
+							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+							def.SetInternalName(objlstini[ID].Name);
+						}
+
+						// Checks if there have been any errors added to the error list and does its thing
+						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+						if (objectErrors.Count > 0)
+						{
+							int count = objectErrors.Count;
+							List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+
+							foreach (ObjectData o in objectErrors)
+							{
+								bool texEmpty = string.IsNullOrEmpty(o.Texture);
+								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+								errorStrings.Add("");
+								errorStrings.Add("Object:\t\t" + o.Name);
+								errorStrings.Add("\tModel:");
+								errorStrings.Add("\t\tName:\t" + o.Model);
+								errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+								errorStrings.Add("\tTexture:");
+								errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+								errorStrings.Add("\t\tExists:\t" + texExists);
+							}
+
+							// TODO: Proper logging. Who knows where this file may end up
+							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+
+							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+											+
+											"\nThe level will still display, but the objects in question will not display their proper models." +
+											"\n\nPlease check the log for details.",
+								"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						}
+
+						// Loading SET Layout
+						progress.SetTaskAndStep("Loading SET items", "Initializing...");
+
+						if (LevelData.ObjDefs.Count > 0)
+						{
+							LevelData.SETName = level.SETName ?? level.LevelID;
+							string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
+							string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+							LevelData.InitSETItems();
+							for (int i = 0; i < LevelData.SETChars.Length; i++)
+							{
+								List<SETItem> list = new List<SETItem>();
+								byte[] setfile = null;
+
+								string formatted = string.Format(setstr, LevelData.SETChars[i]);
+								string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+								string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+
+								if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
+
+								if (setfile != null)
+								{
+									progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
+
+									int count = BitConverter.ToInt32(setfile, 0);
+									int address = 0x20;
+									for (int j = 0; j < count; j++)
+									{
+										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+										SETItem ent = new SETItem(setfile, address, selectedItems);
+										list.Add(ent);
+										address += 0x20;
+									}
+								}
+								LevelData.AssignSetList(i, list);
+							}
 						}
 						else
 						{
-							def = new DefaultObjectDefinition();
-						}
-
-						LevelData.ObjDefs.Add(def);
-
-						// The only reason .Model is checked for null is for objects that don't yet have any
-						// models defined for them. It would be annoying seeing that error all the time!
-						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
-						{
-							progress.SetStep("Loading: " + defgroup.Model);
-							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
-							// load the "default object" instead ("?").
-							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-								!LevelData.Textures.ContainsKey(defgroup.Texture))
-							{
-								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-								objectErrors.Add(error);
-								defgroup.Model = null;
-							}
-						}
-
-						def.Init(defgroup, objlstini[ID].Name, d3ddevice);
-						def.SetInternalName(objlstini[ID].Name);
-					}
-
-					// Loading SET Layout
-					progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-					if (LevelData.ObjDefs.Count > 0)
-					{
-						LevelData.SETName = level.SETName ?? level.LevelID;
-                        string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-                        string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-						LevelData.InitSETItems();
-						for (int i = 0; i < LevelData.SETChars.Length; i++)
-						{
-							List<SETItem> list = new List<SETItem>();
-							byte[] setfile = null;
-
-                            string formatted = string.Format(setstr, LevelData.SETChars[i]);
-                            string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
-
-                            string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
-
-							if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
-
-							if (setfile != null)
-							{
-								progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
-
-								int count = BitConverter.ToInt32(setfile, 0);
-								int address = 0x20;
-								for (int j = 0; j < count; j++)
-								{
-									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-									SETItem ent = new SETItem(setfile, address, selectedItems);
-									list.Add(ent);
-									address += 0x20;
-								}
-							}
-							LevelData.AssignSetList(i, list);
+							LevelData.NullifySETItems();
 						}
 					}
 					else
@@ -882,207 +859,207 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.NullifySETItems();
 					}
 
-					// Checks if there have been any errors added to the error list and does its thing
-					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
-					if (objectErrors.Count > 0)
+					if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
 					{
-						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+						List<ObjectData> objectErrors = new List<ObjectData>();
+						ObjectListEntry[] objlstini = ObjectList.Load(ini.MissionObjectList, false);
 
-						foreach (ObjectData o in objectErrors)
+						for (int ID = 0; ID < objlstini.Length; ID++)
 						{
-							bool texEmpty = string.IsNullOrEmpty(o.Texture);
-							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
-							errorStrings.Add("");
-							errorStrings.Add("Object:\t\t" + o.Name);
-							errorStrings.Add("\tModel:");
-							errorStrings.Add("\t\tName:\t" + o.Model);
-							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
-							errorStrings.Add("\tTexture:");
-							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
-							errorStrings.Add("\t\tExists:\t" + texExists);
-						}
+							string codeaddr = objlstini[ID].CodeString;
 
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+							if (!objdefini.ContainsKey(codeaddr))
+								codeaddr = "0";
 
-						MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-										+
-										"\nThe level will still display, but the objects in question will not display their proper models." +
-										"\n\nPlease check the log for details.",
-							"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					}
-				}
-				else
-				{
-					LevelData.NullifySETItems();
-				}
+							ObjectData defgroup = objdefini[codeaddr];
+							ObjectDefinition def;
 
-				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
-				{
-					List<ObjectData> objectErrors = new List<ObjectData>();
-					ObjectListEntry[] objlstini = ObjectList.Load(ini.MissionObjectList, false);
-
-					for (int ID = 0; ID < objlstini.Length; ID++)
-					{
-						string codeaddr = objlstini[ID].CodeString;
-
-						if (!objdefini.ContainsKey(codeaddr))
-							codeaddr = "0";
-
-						ObjectData defgroup = objdefini[codeaddr];
-						ObjectDefinition def;
-
-						if (!string.IsNullOrEmpty(defgroup.CodeFile))
-						{
-							progress.SetStep("Compiling: " + defgroup.CodeFile);
-
-							// TODO: Split this out to a function
-							#region Compile object code files
-
-							string ty = defgroup.CodeType;
-							string dllfile = Path.Combine("dllcache", ty + ".dll");
-							DateTime modDate = DateTime.MinValue;
-							if (File.Exists(dllfile))
-								modDate = File.GetLastWriteTime(dllfile);
-							string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
-							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
-								def =
-									(ObjectDefinition)
-										Activator.CreateInstance(
-											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-												.GetType(ty));
-							else
+							if (!string.IsNullOrEmpty(defgroup.CodeFile))
 							{
-								string ext = Path.GetExtension(fp);
-								CodeDomProvider pr = null;
-								switch (ext.ToLowerInvariant())
+								progress.SetStep("Compiling: " + defgroup.CodeFile);
+
+								// TODO: Split this out to a function
+								#region Compile object code files
+
+								string ty = defgroup.CodeType;
+								string dllfile = Path.Combine("dllcache", ty + ".dll");
+								DateTime modDate = DateTime.MinValue;
+								if (File.Exists(dllfile))
+									modDate = File.GetLastWriteTime(dllfile);
+								string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
+								if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+									def =
+										(ObjectDefinition)
+											Activator.CreateInstance(
+												Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+													.GetType(ty));
+								else
 								{
-									case ".cs":
-										pr = new Microsoft.CSharp.CSharpCodeProvider();
-										break;
-									case ".vb":
-										pr = new Microsoft.VisualBasic.VBCodeProvider();
-										break;
-								}
-								if (pr != null)
-								{
-									// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-									CompilerParameters para =
-										new CompilerParameters(new string[]
-										{
-												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
-												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
-												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
-												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
-												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-										})
-										{
-											GenerateExecutable = false,
-											GenerateInMemory = false,
-											IncludeDebugInformation = true,
-											OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-										};
-									CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-									if (res.Errors.HasErrors)
+									string ext = Path.GetExtension(fp);
+									CodeDomProvider pr = null;
+									switch (ext.ToLowerInvariant())
 									{
-										// TODO: Merge with existing object error handler. I add too many ToDos.
-										string errors = null;
-										foreach (CompilerError item in res.Errors)
-											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+										case ".cs":
+											pr = new Microsoft.CSharp.CSharpCodeProvider();
+											break;
+										case ".vb":
+											pr = new Microsoft.VisualBasic.VBCodeProvider();
+											break;
+									}
+									if (pr != null)
+									{
+										// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+										// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+										CompilerParameters para =
+											new CompilerParameters(new string[]
+											{
+													"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+													Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+													Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+													Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+													Assembly.GetAssembly(typeof(ObjectDefinition)).Location
+											})
+											{
+												GenerateExecutable = false,
+												GenerateInMemory = false,
+												IncludeDebugInformation = true,
+												OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+											};
+										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+										if (res.Errors.HasErrors)
+										{
+											// TODO: Merge with existing object error handler. I add too many ToDos.
+											string errors = null;
+											foreach (CompilerError item in res.Errors)
+												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
 
-										MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
-											"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+											MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
+												"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-										def = new DefaultObjectDefinition();
+											def = new DefaultObjectDefinition();
+										}
+										else
+										{
+											def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+										}
 									}
 									else
-									{
-										def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-									}
+										def = new DefaultObjectDefinition();
 								}
-								else
-									def = new DefaultObjectDefinition();
+
+
+								#endregion
+							}
+							else
+							{
+								def = new DefaultObjectDefinition();
 							}
 
+							LevelData.MisnObjDefs.Add(def);
 
-							#endregion
+							// The only reason .Model is checked for null is for objects that don't yet have any
+							// models defined for them. It would be annoying seeing that error all the time!
+							if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+							{
+								progress.SetStep("Loading: " + defgroup.Model);
+								// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+								// load the "default object" instead ("?").
+								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+									!LevelData.Textures.ContainsKey(defgroup.Texture))
+								{
+									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+									objectErrors.Add(error);
+									defgroup.Model = null;
+								}
+							}
+
+							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+							def.SetInternalName(objlstini[ID].Name);
+						}
+
+						// Loading SET Layout
+						progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+
+						if (LevelData.MisnObjDefs.Count > 0)
+						{
+							string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+							string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
+
+							string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+							string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
+							LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+							for (int i = 0; i < LevelData.SETChars.Length; i++)
+							{
+								List<MissionSETItem> list = new List<MissionSETItem>();
+								byte[] setfile = null;
+								byte[] prmfile = null;
+
+								string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+								string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
+
+								string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+								string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+								string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
+								string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
+
+								if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+								if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+
+								if (setfile != null)
+								{
+									progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
+
+									int count = BitConverter.ToInt32(setfile, 0);
+									int setaddr = 0x20;
+									int prmaddr = 0x20;
+									for (int j = 0; j < count; j++)
+									{
+										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+										MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+										list.Add(ent);
+										setaddr += 0x20;
+										prmaddr += 0xC;
+									}
+								}
+								LevelData.MissionSETItems[i] = list;
+							}
 						}
 						else
 						{
-							def = new DefaultObjectDefinition();
+							LevelData.MissionSETItems = null;
 						}
 
-						LevelData.MisnObjDefs.Add(def);
-
-						// The only reason .Model is checked for null is for objects that don't yet have any
-						// models defined for them. It would be annoying seeing that error all the time!
-						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+						// Checks if there have been any errors added to the error list and does its thing
+						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+						if (objectErrors.Count > 0)
 						{
-							progress.SetStep("Loading: " + defgroup.Model);
-							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
-							// load the "default object" instead ("?").
-							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-								!LevelData.Textures.ContainsKey(defgroup.Texture))
+							int count = objectErrors.Count;
+							List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+
+							foreach (ObjectData o in objectErrors)
 							{
-								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-								objectErrors.Add(error);
-								defgroup.Model = null;
+								bool texEmpty = string.IsNullOrEmpty(o.Texture);
+								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+								errorStrings.Add("");
+								errorStrings.Add("Object:\t\t" + o.Name);
+								errorStrings.Add("\tModel:");
+								errorStrings.Add("\t\tName:\t" + o.Model);
+								errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+								errorStrings.Add("\tTexture:");
+								errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+								errorStrings.Add("\t\tExists:\t" + texExists);
 							}
-						}
 
-						def.Init(defgroup, objlstini[ID].Name, d3ddevice);
-						def.SetInternalName(objlstini[ID].Name);
-					}
+							// TODO: Proper logging. Who knows where this file may end up
+							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
 
-					// Loading SET Layout
-					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
-
-					if (LevelData.MisnObjDefs.Count > 0)
-					{
-                        string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
-                        string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
-
-                        string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
-                        string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
-						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
-						for (int i = 0; i < LevelData.SETChars.Length; i++)
-						{
-							List<MissionSETItem> list = new List<MissionSETItem>();
-							byte[] setfile = null;
-							byte[] prmfile = null;
-
-                            string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
-                            string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
-
-                            string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
-                            string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
-
-							string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
-							string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
-
-							if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-							if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-
-							if (setfile != null)
-							{
-								progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
-
-								int count = BitConverter.ToInt32(setfile, 0);
-								int setaddr = 0x20;
-								int prmaddr = 0x20;
-								for (int j = 0; j < count; j++)
-								{
-									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
-									list.Add(ent);
-									setaddr += 0x20;
-									prmaddr += 0xC;
-								}
-							}
-							LevelData.MissionSETItems[i] = list;
+							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+											+
+											"\nThe level will still display, but the objects in question will not display their proper models." +
+											"\n\nPlease check the log for details.",
+								"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
 						}
 					}
 					else
@@ -1090,43 +1067,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.MissionSETItems = null;
 					}
 
-					// Checks if there have been any errors added to the error list and does its thing
-					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
-					if (objectErrors.Count > 0)
-					{
-						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
-
-						foreach (ObjectData o in objectErrors)
-						{
-							bool texEmpty = string.IsNullOrEmpty(o.Texture);
-							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
-							errorStrings.Add("");
-							errorStrings.Add("Object:\t\t" + o.Name);
-							errorStrings.Add("\tModel:");
-							errorStrings.Add("\t\tName:\t" + o.Model);
-							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
-							errorStrings.Add("\tTexture:");
-							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
-							errorStrings.Add("\t\tExists:\t" + texExists);
-						}
-
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
-
-						MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-										+
-										"\nThe level will still display, but the objects in question will not display their proper models." +
-										"\n\nPlease check the log for details.",
-							"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					}
-				}
-				else
-				{
-					LevelData.MissionSETItems = null;
-				}
-
-				progress.StepProgress();
+					progress.StepProgress();
 
 					#endregion
 
@@ -1356,6 +1297,85 @@ namespace SonicRetro.SAModel.SADXLVL2
 				initerror = true;
 			}
 #endif
+		}
+
+		private static ObjectDefinition CompileObjectDefinition(ObjectData defgroup, out bool errorOccured, out string errorText)
+		{
+			ObjectDefinition def;
+			errorOccured = false;
+			errorText = "";
+
+			string codeType = defgroup.CodeType;
+			string dllfile = Path.Combine("dllcache", codeType + ".dll");
+			DateTime modDate = DateTime.MinValue;
+			if (File.Exists(dllfile)) modDate = File.GetLastWriteTime(dllfile);
+			string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
+			if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+			{
+				def =
+					(ObjectDefinition)
+						Activator.CreateInstance(
+							Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+								.GetType(codeType));
+			}
+			else
+			{
+				string ext = Path.GetExtension(fp);
+				CodeDomProvider pr = null;
+				switch (ext.ToLowerInvariant())
+				{
+					case ".cs":
+						pr = new Microsoft.CSharp.CSharpCodeProvider();
+						break;
+					case ".vb":
+						pr = new Microsoft.VisualBasic.VBCodeProvider();
+						break;
+				}
+				if (pr != null)
+				{
+					// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+					// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+					CompilerParameters para =
+						new CompilerParameters(new string[]
+						{
+							"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
+							Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
+							Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
+							Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
+							Assembly.GetAssembly(typeof(ObjectDefinition)).Location
+						})
+						{
+							GenerateExecutable = false,
+							GenerateInMemory = false,
+							IncludeDebugInformation = true,
+							OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+						};
+					CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+					if (res.Errors.HasErrors)
+					{
+						string errors = null;
+						foreach (CompilerError item in res.Errors)
+							errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+
+						errorText = errors;
+						errorOccured = true;
+
+						def = new DefaultObjectDefinition();
+					}
+					else
+					{
+						def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(codeType));
+					}
+				}
+				else
+				{
+					def = new DefaultObjectDefinition();
+					errorText = "Code DOM Provider was null";
+					errorOccured = true;
+				}
+			}
+
+			return def;
 		}
 
 		private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

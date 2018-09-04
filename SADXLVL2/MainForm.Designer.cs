@@ -91,6 +91,10 @@
 			this.cAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.missionSETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.statsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.boundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.modelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.addSelectedLevelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.addAllLevelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -137,10 +141,6 @@
 			this.toolTails = new System.Windows.Forms.ToolStripButton();
 			this.toolSonic = new System.Windows.Forms.ToolStripButton();
 			this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-			this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.statsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.boundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -543,7 +543,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
 			this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-			this.characterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.characterToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.characterToolStripMenuItem.Text = "&Character";
 			this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -592,7 +592,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
 			this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-			this.levelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.levelToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.levelToolStripMenuItem.Text = "&Level";
 			this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -620,7 +620,7 @@
 			// 
 			this.deathZonesToolStripMenuItem.CheckOnClick = true;
 			this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
-			this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.deathZonesToolStripMenuItem.Text = "&Death Zones";
 			this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
 			// 
@@ -630,7 +630,7 @@
 			this.backgroundToolStripMenuItem.CheckOnClick = true;
 			this.backgroundToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-			this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.backgroundToolStripMenuItem.Text = "&Background";
 			this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
 			// 
@@ -640,7 +640,7 @@
 			this.sETITemsToolStripMenuItem.CheckOnClick = true;
 			this.sETITemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.sETITemsToolStripMenuItem.Name = "sETITemsToolStripMenuItem";
-			this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.sETITemsToolStripMenuItem.Text = "SET Items";
 			this.sETITemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
 			// 
@@ -648,7 +648,7 @@
 			// 
 			this.cAMItemsToolStripMenuItem.CheckOnClick = true;
 			this.cAMItemsToolStripMenuItem.Name = "cAMItemsToolStripMenuItem";
-			this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.cAMItemsToolStripMenuItem.Text = "CAM Items";
 			this.cAMItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.cAMItemsToolStripMenuItem_CheckedChanged);
 			// 
@@ -656,7 +656,7 @@
 			// 
 			this.missionSETItemsToolStripMenuItem.CheckOnClick = true;
 			this.missionSETItemsToolStripMenuItem.Name = "missionSETItemsToolStripMenuItem";
-			this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
 			this.missionSETItemsToolStripMenuItem.Click += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
 			// 
@@ -666,9 +666,37 @@
 			this.splinesToolStripMenuItem.CheckOnClick = true;
 			this.splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
-			this.splinesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.splinesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
 			this.splinesToolStripMenuItem.Text = "Splines";
 			this.splinesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.splinesToolStripMenuItem_CheckedChanged);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(166, 6);
+			// 
+			// debugToolStripMenuItem
+			// 
+			this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statsToolStripMenuItem,
+            this.boundsToolStripMenuItem});
+			this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+			this.debugToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+			this.debugToolStripMenuItem.Text = "Debug";
+			// 
+			// statsToolStripMenuItem
+			// 
+			this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
+			this.statsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.statsToolStripMenuItem.Text = "Stats";
+			this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
+			// 
+			// boundsToolStripMenuItem
+			// 
+			this.boundsToolStripMenuItem.CheckOnClick = true;
+			this.boundsToolStripMenuItem.Name = "boundsToolStripMenuItem";
+			this.boundsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			this.boundsToolStripMenuItem.Text = "Bounds";
 			// 
 			// modelLibraryToolStripMenuItem
 			// 
@@ -922,9 +950,10 @@
 			// 
 			// libraryTabControl
 			// 
-			this.libraryTabControl.Controls.Add(this.setLibraryPage);
 			this.libraryTabControl.Controls.Add(this.modelLibraryPage);
+			this.libraryTabControl.Controls.Add(this.setLibraryPage);
 			this.libraryTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.libraryTabControl.Enabled = false;
 			this.libraryTabControl.Location = new System.Drawing.Point(0, 0);
 			this.libraryTabControl.Name = "libraryTabControl";
 			this.libraryTabControl.SelectedIndex = 0;
@@ -1154,34 +1183,6 @@
 			this.pivotComboBox.Name = "pivotComboBox";
 			this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
 			this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
-			// 
-			// debugToolStripMenuItem
-			// 
-			this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statsToolStripMenuItem,
-            this.boundsToolStripMenuItem});
-			this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-			this.debugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.debugToolStripMenuItem.Text = "Debug";
-			// 
-			// statsToolStripMenuItem
-			// 
-			this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-			this.statsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.statsToolStripMenuItem.Text = "Stats";
-			this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
-			// 
-			// boundsToolStripMenuItem
-			// 
-			this.boundsToolStripMenuItem.CheckOnClick = true;
-			this.boundsToolStripMenuItem.Name = "boundsToolStripMenuItem";
-			this.boundsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.boundsToolStripMenuItem.Text = "Bounds";
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// MainForm
 			// 
