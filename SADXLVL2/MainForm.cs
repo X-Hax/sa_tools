@@ -21,6 +21,7 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
+using System.Text;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -53,10 +54,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         EditorItemSelection selectedItems = new EditorItemSelection();
         EditorOptionsEditor optionsEditor;
         ActionKeybindEditor keybindEditor;
-        #endregion
+		Direct3D.Mesh boundsMesh;
+		#endregion
 
-        #region Stage Variables
-        string levelID;
+		#region Stage Variables
+		string levelID;
 		internal string levelName;
 		bool isStageLoaded;
 
@@ -1737,7 +1739,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
-			if(dragType == DragType.Model)
+			#region Debug Bounds Drawing
+			if (boundsToolStripMenuItem.Checked)
+			{
+				MatrixStack debugBoundsStack = new MatrixStack();
+				List<Item> selection = selectedItems.GetSelection();
+				debugBoundsStack.Push();
+				foreach (Item item in selection)
+				{
+					if (item is LevelItem)
+					{
+						LevelItem lvlItem = (LevelItem)item;
+						boundsMesh = Direct3D.Mesh.Sphere(d3ddevice, lvlItem.CollisionData.Bounds.Radius, 9, 9);
+
+						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
+						renderlist.Add(info);
+					}
+				}
+				debugBoundsStack.Pop();
+			}
+			#endregion
+
+			if (dragType == DragType.Model)
 			{
 				if (dragPlaceLevelModel != null && dragPlaceLevelMesh != null)
 				{
@@ -2672,48 +2696,69 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				DefaultExt = "sa1mdl",
 				Filter = "Model Files|*.sa1mdl;*.obj",
-				InitialDirectory = currentProjectPath
+				InitialDirectory = currentProjectPath,
+				Multiselect = true
 			})
 			{
-				List<string> fileNames = new List<string>();				
+				DialogResult result = fileDialog.ShowDialog();
 
-				foreach(string fileName in fileDialog.FileNames)
+				if (result == DialogResult.OK)
 				{
-					if (!fileNames.Contains(fileName)) fileNames.Add(fileName);
-				}
+					List<string> fileNames = new List<string>();
 
-				List<KeyValuePair<string, string>> failedFiles = new List<KeyValuePair<string, string>>();
-								
-				foreach (string file in fileNames)
-				{
-					modelLibraryControl1.BeginUpdate();
-					if (File.Exists(file))
+					foreach (string fileName in fileDialog.FileNames)
 					{
-						string extension = Path.GetExtension(file).ToLower();
-						Attach model=null;
-
-						switch(extension)
-						{
-							case ("obj"):
-								model = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(file);
-								break;
-
-							case ("sa1mdl"):
-								ModelFile modelFile = new ModelFile(file);
-								model = modelFile.Model.Attach;
-								break;
-						}
-
-						if(model != null)
-						{
-							modelLibraryControl1.Add(model);
-						}
+						if (!fileNames.Contains(fileName)) fileNames.Add(fileName);
 					}
-					else
+
+					List<KeyValuePair<string, string>> failedFiles = new List<KeyValuePair<string, string>>();
+
+					modelLibraryControl1.BeginUpdate();
+					foreach (string file in fileNames)
 					{
-						failedFiles.Add(new KeyValuePair<string, string>(file, "File did not exist"));
+						if (File.Exists(file))
+						{
+							string extension = Path.GetExtension(file).ToLower();
+							Attach model = null;
+
+							switch (extension)
+							{
+								case (".obj"):
+									model = SonicRetro.SAModel.Direct3D.Extensions.obj2nj(file);
+									break;
+
+								case (".sa1mdl"):
+									ModelFile modelFile = new ModelFile(file);
+									model = modelFile.Model.Attach;
+									model.ProcessVertexData();
+									model.CalculateBounds();
+									break;
+							}
+
+							if (model != null)
+							{
+								modelLibraryControl1.Add(model);
+							}
+						}
+						else
+						{
+							failedFiles.Add(new KeyValuePair<string, string>(file, "File did not exist"));
+						}
 					}
 					modelLibraryControl1.EndUpdate();
+
+					if (failedFiles.Count > 0)
+					{
+						StringBuilder failReasons = new StringBuilder();
+						foreach (KeyValuePair<string, string> failure in failedFiles)
+						{
+							failReasons.AppendFormat("{0} failed because: {1}", failure.Key, failure.Value);
+						}
+
+						MessageBox.Show(failReasons.ToString());
+					}
+
+					modelLibraryControl1.FullReRender();
 				}
 			}
 		}
@@ -3291,8 +3336,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void RenderPanel_DragDrop(object sender, DragEventArgs e)
 		{
-			//Console.WriteLine("DragDrop");
-
 			switch (dragType)
 			{
 				case DragType.None:
@@ -3350,7 +3393,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (hitResult.IsHit)
 			{
 				dragPlaceLocation = hitResult.Position;
-				dragPlaceLocation += Vector3.Up * objectSize;
+				//dragPlaceLocation += Vector3.Up * objectSize * 0.5f;
 			}
 			else
 			{
@@ -3377,8 +3420,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				if(didHitPlane)
 				{
-					dragPlaceLocation = pos + ray.Direction * intersectDistance;
-					dragPlaceLocation += Vector3.Up * objectSize;
+					dragPlaceLocation = pos + (ray.Direction * intersectDistance);
+					//dragPlaceLocation += Vector3.Up * objectSize * 0.5f;
 				}
 				else
 				{
