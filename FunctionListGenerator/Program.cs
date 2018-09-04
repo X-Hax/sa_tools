@@ -231,7 +231,7 @@ namespace FunctionListGenerator
 							bool isbyte = false;
 							if (!argdecls[i].Contains("*"))
 							{
-								switch (argdecls[i].Substring(argdecls[i].LastIndexOf(' ')))
+								switch (argdecls[i].Remove(argdecls[i].LastIndexOf(' ')))
 								{
 									case "char":
 									case "unsigned char":
@@ -243,6 +243,10 @@ namespace FunctionListGenerator
 									case "BOOL1":
 									case "uint8_t":
 									case "int8_t":
+									case "__int8":
+									case "signed __int8":
+									case "unsigned __int8":
+									case "_BYTE":
 										isbyte = true;
 										break;
 								}
