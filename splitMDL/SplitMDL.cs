@@ -89,8 +89,8 @@ namespace SplitMDL
                         if (model.Value.CountAnimated() == anim.Value.ModelParts)
                             animlist.Add("../" + animfns[anim.Key]);
                     ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
-                        model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
-                        null, null, null, "splitMDL", null, ModelFormat.Chunk);
+						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
+						null, null, null, null, ModelFormat.Chunk);
                 }
 
                 // save ini file

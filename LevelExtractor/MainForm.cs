@@ -75,7 +75,7 @@ namespace SonicRetro.SAModel.LevelExtractor
             using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" })
                 if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    new LandTable(file, (int)NumericUpDown1.Value, (uint)numericUpDown2.Value, format) { Author = author.Text, Description = description.Text, Tool = "LevelExtractor" }.SaveToFile(sd.FileName, outfmt);
+                    new LandTable(file, (int)NumericUpDown1.Value, (uint)numericUpDown2.Value, format) { Author = author.Text, Description = description.Text }.SaveToFile(sd.FileName, outfmt);
                     Settings.Author = author.Text;
                     Settings.Save();
                 }

@@ -1576,10 +1576,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			progress.SetTaskAndStep("Saving:", "Geometry...");
 
 			if (LevelData.geo != null)
-			{
-				LevelData.geo.Tool = "SADXLVL2";
 				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA1);
-			}
 
 			progress.StepProgress();
 
@@ -3079,8 +3076,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelItem levelItem = selectedItem as LevelItem;
 							string path = Path.Combine(folderBrowser.SelectedPath, levelItem.CollisionData.Model.Name + ".sa1mdl");
 
-							ModelFile.CreateFile(path, levelItem.CollisionData.Model, null, null, "", "", "SADXLVL2", null,
-								ModelFormat.Basic);
+							ModelFile.CreateFile(path, levelItem.CollisionData.Model, null, null, "", "", null, ModelFormat.Basic);
 						}
 					}
 				}

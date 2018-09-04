@@ -170,10 +170,7 @@ namespace SonicRetro.SAModel.SALVL
 				Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
-				{
-					LevelData.geo.Tool = "SALVL";
 					LevelData.geo.SaveToFile(a.FileName, outfmt);
-				}
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)

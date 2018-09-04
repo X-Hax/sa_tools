@@ -20,7 +20,6 @@ namespace SonicRetro.SAModel
 		public ReadOnlyCollection<Animation> Animations { get; private set; }
 		public ReadOnlyCollection<Animation> Morphs { get; private set; }
 		public string Author { get; set; }
-		public string Tool { get; set; }
 		public string Description { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
@@ -168,7 +167,6 @@ namespace SonicRetro.SAModel
 									Author = file.GetCString(tmpaddr);
 									break;
 								case ChunkTypes.Tool:
-									Tool = file.GetCString(tmpaddr);
 									break;
 								case ChunkTypes.Description:
 									Description = file.GetCString(tmpaddr);
@@ -217,7 +215,6 @@ namespace SonicRetro.SAModel
 									Author = chunk.GetCString(chunkaddr);
 									break;
 								case ChunkTypes.Tool:
-									Tool = chunk.GetCString(chunkaddr);
 									break;
 								case ChunkTypes.Description:
 									Description = chunk.GetCString(chunkaddr);
@@ -379,16 +376,6 @@ namespace SonicRetro.SAModel
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}
-			if (!string.IsNullOrEmpty(Tool))
-			{
-				List<byte> chunk = new List<byte>(Tool.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Tool));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Tool));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
 			foreach (KeyValuePair<uint, byte[]> item in Metadata)
 			{
 				file.AddRange(ByteConverter.GetBytes(item.Key));
@@ -402,7 +389,7 @@ namespace SonicRetro.SAModel
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string[] morphFiles,
-			string author, string description, string tool, Dictionary<uint, byte[]> metadata, ModelFormat format)
+			string author, string description, Dictionary<uint, byte[]> metadata, ModelFormat format)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
@@ -501,16 +488,6 @@ namespace SonicRetro.SAModel
 				chunk.Add(0);
 				chunk.Align(4);
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (!string.IsNullOrEmpty(tool))
-			{
-				List<byte> chunk = new List<byte>(tool.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(tool));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Tool));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}

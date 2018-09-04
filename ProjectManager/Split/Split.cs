@@ -82,7 +82,7 @@ namespace ProjectManager.Split
                                 string[] mdlmorphs = new string[0];
                                 if (customProperties.ContainsKey("morphs"))
                                     mdlmorphs = customProperties["morphs"].Split(',');
-                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, modelfmt);
+                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, modelfmt);
                             }
                             break;
                         case "basicmodel":
@@ -94,7 +94,7 @@ namespace ProjectManager.Split
                                 string[] mdlmorphs = new string[0];
                                 if (customProperties.ContainsKey("morphs"))
                                     mdlmorphs = customProperties["morphs"].Split(',');
-                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Basic);
+                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.Basic);
                             }
                             break;
                         case "basicdxmodel":
@@ -106,7 +106,7 @@ namespace ProjectManager.Split
                                 string[] mdlmorphs = new string[0];
                                 if (customProperties.ContainsKey("morphs"))
                                     mdlmorphs = customProperties["morphs"].Split(',');
-                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.BasicDX);
+                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.BasicDX);
                             }
                             break;
                         case "chunkmodel":
@@ -118,7 +118,7 @@ namespace ProjectManager.Split
                                 string[] mdlmorphs = new string[0];
                                 if (customProperties.ContainsKey("morphs"))
                                     mdlmorphs = customProperties["morphs"].Split(',');
-                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, "split", null, ModelFormat.Chunk);
+                                ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.Chunk);
                             }
                             break;
                         case "action":
@@ -240,7 +240,7 @@ namespace ProjectManager.Split
                                 {
                                     flags.Add(new DeathZoneFlags(datafile, address));
                                     string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-                                    ModelFile.CreateFile(file, new SonicRetro.SAModel.NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, "split", null, modelfmt);
+                                    ModelFile.CreateFile(file, new SonicRetro.SAModel.NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, null, modelfmt);
                                     hashes.Add(HelperFunctions.FileHash(file));
                                     address += 8;
                                 }

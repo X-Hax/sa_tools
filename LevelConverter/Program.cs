@@ -173,7 +173,6 @@ namespace LevelConverter
 						level.COL = newcollist;
 					}
 					level.Anim = new List<GeoAnimData>();
-					level.Tool = "SA Tools Level Converter";
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa2lvl"), LandTableFormat.SA2);
 					break;
 				case LandTableFormat.SA2:
@@ -329,7 +328,6 @@ namespace LevelConverter
 						col.Model.Attach = basatt;
 					}
 					level.Anim = new List<GeoAnimData>();
-					level.Tool = "SA Tools Level Converter";
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
 					break;
 			}

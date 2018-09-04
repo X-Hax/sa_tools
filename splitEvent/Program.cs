@@ -165,7 +165,7 @@ namespace splitEvent
 					Console.WriteLine("Event contains no groups.");
 				foreach (var item in modelfiles)
 				{
-					ModelFile.CreateFile(item.Value.Key, item.Value.Value, null, null, null, null, null, null, ModelFormat.Chunk);
+					ModelFile.CreateFile(item.Value.Key, item.Value.Value, null, null, null, null, null, ModelFormat.Chunk);
 					ini.Files.Add(Path.GetFileName(item.Value.Key), HelperFunctions.FileHash(item.Value.Key));
 				}
 				IniSerializer.Serialize(ini, Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".ini")));

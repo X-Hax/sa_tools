@@ -100,7 +100,7 @@ namespace SplitMDL
                     Directory.CreateDirectory(modelOutputFolder);
 
                     ModelFile.CreateFile(modelOutputPath, model.Value, animlist.ToArray(),
-                        null, null, null, "splitMDL", null, ModelFormat.Chunk);
+						null, null, null, null, ModelFormat.Chunk);
                 }
 
                 Environment.CurrentDirectory = Path.GetDirectoryName(outputFolder);

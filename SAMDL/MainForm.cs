@@ -375,13 +375,10 @@ namespace SonicRetro.SAModel.SAMDL
         private void Save(string fileName)
         {
             if (modelFile != null)
-            {
-                modelFile.Tool = "SAMDL";
                 modelFile.SaveToFile(fileName);
-            }
             else
             {
-                ModelFile.CreateFile(fileName, model, null, null, null, null, "SAMDL", null, outfmt);
+                ModelFile.CreateFile(fileName, model, null, null, null, null, null, outfmt);
                 modelFile = new ModelFile(fileName);
             }
 

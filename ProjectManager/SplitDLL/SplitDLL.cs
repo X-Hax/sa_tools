@@ -91,7 +91,7 @@ namespace ProjectManager.SplitDLL
                     {
                         case "landtable":
                             {
-                                LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name, Tool = "splitDLL" };
+                                LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name };
                                 DllItemInfo info = new DllItemInfo()
                                 {
                                     Export = name,
@@ -114,7 +114,7 @@ namespace ProjectManager.SplitDLL
                                 {
                                     ptr = (int)(ptr - imageBase);
                                     string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-                                    LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx, Tool = "splitDLL" };
+                                    LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx };
                                     DllItemInfo info = new DllItemInfo()
                                     {
                                         Export = name,
@@ -397,7 +397,7 @@ namespace ProjectManager.SplitDLL
                                         string animationName = Path.GetFileName(outputFN);
 
                                         ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, null,
-                                            idx + "->object", "splitDLL", null, modelfmt);
+											idx + "->object", null, modelfmt);
                                         output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
                                     }
                                 }
@@ -453,8 +453,8 @@ namespace ProjectManager.SplitDLL
                     string modelOutputPath = string.Concat(projectFolderName, item.Filename);
                     //string modelOutputPath = item.Filename;
 
-                    ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, null, item.Name, "splitDLL",
-                        null, item.Format);
+                    ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, null, item.Name, null,
+						item.Format);
                     string type = "model";
                     switch (item.Format)
                     {

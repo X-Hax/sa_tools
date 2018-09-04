@@ -145,7 +145,7 @@ namespace ModelConverter
 							cnkatt.Poly.Add(strip);
 						}
 					}
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, "SA Tools Model Converter", null, ModelFormat.Chunk);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, null, ModelFormat.Chunk);
 					break;
 				case ModelFormat.Chunk:
 					Vertex[] VertexBuffer = new Vertex[0];
@@ -299,7 +299,7 @@ namespace ModelConverter
 								for (int i = 0; i < poly.Indexes.Length; i++)
 									poly.Indexes[i] = (ushort)(poly.Indexes[i] - minVtx);
 					}
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, "SA Tools Model Converter", null, ModelFormat.Basic);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, null, ModelFormat.Basic);
 					break;
 			}
 		}
