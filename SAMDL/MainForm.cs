@@ -59,7 +59,7 @@ namespace SonicRetro.SAModel.SAMDL
 		ModelFileDialog modelinfo = new ModelFileDialog();
         NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
-		Mesh sphereMesh;
+		Mesh sphereMesh, selectedSphereMesh, modelSphereMesh, selectedModelSphereMesh;
 
         #region UI
         bool lookKeyDown;
@@ -117,6 +117,9 @@ namespace SonicRetro.SAModel.SAMDL
             modelLibrary.SelectionChanged += modelLibrary_SelectionChanged;
 
             sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
+            selectedSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Lime);
+            modelSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Red);
+            selectedModelSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -611,7 +614,17 @@ namespace SonicRetro.SAModel.SAMDL
 			else
 				obj.ProcessTransforms(transform);
 			d3ddevice.SetTransform(TransformState.World, Matrix.Translation(Vector3.TransformCoordinate(new Vector3(), transform.Top)));
-			sphereMesh.DrawSubset(0);
+			if (obj == selectedObject)
+			{
+				if (obj.Attach != null)
+					selectedModelSphereMesh.DrawAll();
+				else
+					selectedSphereMesh.DrawAll();
+			}
+			else if (obj.Attach != null)
+				modelSphereMesh.DrawAll();
+			else
+				sphereMesh.DrawAll();
 			foreach (NJS_OBJECT child in obj.Children)
 				DrawNodes(child, transform, ref modelindex, ref animindex);
 			transform.Pop();
