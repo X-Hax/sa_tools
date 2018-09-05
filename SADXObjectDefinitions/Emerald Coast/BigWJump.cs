@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class BigJump : ObjectDefinition
+	public class BigWJump : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Collision/C CUBE.sa1mdl");
+			mesh = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Big Water Jump"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -57,15 +65,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class BigWJump : BigJump
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Collision/C CUBE.sa1mdl");
-			mesh = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Big Water Jump"; } }
-	}
 }

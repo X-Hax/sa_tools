@@ -10,11 +10,20 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OKasa : ObjectDefinition
+	public class Kasa : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
 		protected Mesh[] meshes2;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KASA.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
+		}
+
+		public override string Name { get { return "Straw Umbrella"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -70,16 +79,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Kasa : OKasa
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KASA.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
-		}
-
-		public override string Name { get { return "Straw Umbrella"; } }
-	}
 }

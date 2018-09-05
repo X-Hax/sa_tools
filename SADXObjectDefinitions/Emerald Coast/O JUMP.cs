@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OJump : ObjectDefinition
+	public class Ramp : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O JUMP.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Launch Ramp"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -57,15 +65,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Ramp : OJump
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O JUMP.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Launch Ramp"; } }
-	}
 }

@@ -69,10 +69,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override string Name { get { return "Horizontal Palm Tree"; } }
 	}
 
-	public abstract class OGrasb : ObjectDefinition
+	public class Grasb : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASB.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Vines"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -119,17 +127,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class GrasB : OGrasb
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASB.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Vines"; } }
-	}
 
 	public class GrasC : OGrasa
 	{

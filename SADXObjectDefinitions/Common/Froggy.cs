@@ -10,7 +10,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
-	public abstract class O_Frog : ObjectDefinition
+	public class OFrog : ObjectDefinition
 	{
 		protected NJS_OBJECT frog;
 		protected Mesh[] frogmsh;
@@ -18,6 +18,18 @@ namespace SADXObjectDefinitions.Common
 		protected Mesh[] bubblemsh;
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
+			frogmsh = ObjectHelper.GetMeshes(frog, dev);
+			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
+			bubblemsh = ObjectHelper.GetMeshes(bubble, dev);
+			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+		}
+
+		public override string Name { get { return "Froggy (Bubble)"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -89,25 +101,18 @@ namespace SADXObjectDefinitions.Common
         }
     }
 
-	public class OFrog : O_Frog
+	public class Froggy : ObjectDefinition
 	{
+		protected NJS_OBJECT frog;
+		protected Mesh[] frogmsh;
+
 		public override void Init(ObjectData data, string name, Device dev)
 		{
 			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
 			frogmsh = ObjectHelper.GetMeshes(frog, dev);
-			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
-			bubblemsh = ObjectHelper.GetMeshes(bubble, dev);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
 		}
 
-		public override string Name { get { return "Froggy (Bubble)"; } }
-	}
-
-	public abstract class Kaeru : ObjectDefinition
-	{
-		protected NJS_OBJECT frog;
-		protected Mesh[] frogmsh;
+		public override string Name { get { return "Froggy"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -155,15 +160,4 @@ namespace SADXObjectDefinitions.Common
             return matrix;
         }
     }
-
-	public class Froggy : Kaeru
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
-			frogmsh = ObjectHelper.GetMeshes(frog, dev);
-		}
-
-		public override string Name { get { return "Froggy"; } }
-	}
 }

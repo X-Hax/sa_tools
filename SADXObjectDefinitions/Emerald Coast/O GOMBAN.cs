@@ -10,10 +10,21 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OGomban : ObjectDefinition
+	public class Gomban : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GOMBAN.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+			NJS_OBJECT child = model.Children[0];
+			model.ClearChildren();
+			model.AddChild(child);
+		}
+
+		public override string Name { get { return "Elastic Railing"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -57,18 +68,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Gomban : OGomban
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GOMBAN.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			NJS_OBJECT child = model.Children[0];
-			model.ClearChildren();
-			model.AddChild(child);
-		}
-
-		public override string Name { get { return "Elastic Railing"; } }
-	}
 }

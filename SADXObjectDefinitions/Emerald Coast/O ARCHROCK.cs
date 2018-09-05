@@ -10,7 +10,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OArchRock1 : ObjectDefinition
+	public class ArchRock : ObjectDefinition
 	{
 		protected NJS_OBJECT arch;
 		protected Mesh[] archmsh;
@@ -18,6 +18,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected Mesh[] side1msh;
 		protected NJS_OBJECT side2;
 		protected Mesh[] side2msh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			arch = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ARCHROCK.sa1mdl");
+			archmsh = ObjectHelper.GetMeshes(arch, dev);
+			side1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
+			side1msh = ObjectHelper.GetMeshes(side1, dev);
+			side2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
+			side2msh = ObjectHelper.GetMeshes(side2, dev);
+		}
+
+		public override string Name { get { return "Arched Rock"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -99,19 +111,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class ArchRock : OArchRock1
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			arch = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ARCHROCK.sa1mdl");
-			archmsh = ObjectHelper.GetMeshes(arch, dev);
-			side1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
-			side1msh = ObjectHelper.GetMeshes(side1, dev);
-			side2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
-			side2msh = ObjectHelper.GetMeshes(side2, dev);
-		}
-
-		public override string Name { get { return "Arched Rock"; } }
-	}
 }

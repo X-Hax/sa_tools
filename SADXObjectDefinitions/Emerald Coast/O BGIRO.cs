@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBGIRO : ObjectDefinition
+	public class IronGate : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BGIRO.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Spike Gate"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -61,16 +69,5 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
-
-	public class IronGate : OBGIRO
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BGIRO.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Spike Gate"; } }
 	}
 }

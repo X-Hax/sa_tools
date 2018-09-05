@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class ORock2 : ObjectDefinition
+	public class Rock2 : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ROCK2.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Rock"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -57,15 +65,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Rock2 : ORock2
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ROCK2.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Rock"; } }
-	}
 }

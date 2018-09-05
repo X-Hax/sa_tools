@@ -10,12 +10,22 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBZ : ObjectDefinition
+	public class Plane : ObjectDefinition
 	{
 		protected NJS_OBJECT plane;
 		protected Mesh[] planemsh;
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
+			planemsh = ObjectHelper.GetMeshes(plane, dev);
+			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+		}
+
+		public override string Name { get { return "Tails' Plane"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -76,17 +86,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Plane : OBZ
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
-			planemsh = ObjectHelper.GetMeshes(plane, dev);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
-		}
-
-		public override string Name { get { return "Tails' Plane"; } }
-	}
 }

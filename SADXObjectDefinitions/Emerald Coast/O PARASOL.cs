@@ -11,7 +11,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OParasol : ObjectDefinition
+	public class Parasol : ObjectDefinition
 	{
 		protected NJS_OBJECT model1;
 		protected Mesh[] meshes1;
@@ -23,6 +23,22 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected Mesh[] meshes4;
 		protected NJS_OBJECT model5;
 		protected Mesh[] meshes5;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_A.sa1mdl");
+			meshes1 = ObjectHelper.GetMeshes(model1, dev);
+			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_B.sa1mdl");
+			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_C.sa1mdl");
+			meshes3 = ObjectHelper.GetMeshes(model3, dev);
+			model4 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_D.sa1mdl");
+			meshes4 = ObjectHelper.GetMeshes(model4, dev);
+			model5 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_E.sa1mdl");
+			meshes5 = ObjectHelper.GetMeshes(model5, dev);
+		}
+
+		public override string Name { get { return "Breakable Parasol, Chair, or Table"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -222,25 +238,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Parasol : OParasol
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
-			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_C.sa1mdl");
-			meshes3 = ObjectHelper.GetMeshes(model3, dev);
-			model4 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_D.sa1mdl");
-			meshes4 = ObjectHelper.GetMeshes(model4, dev);
-			model5 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_E.sa1mdl");
-			meshes5 = ObjectHelper.GetMeshes(model5, dev);
-		}
-
-		public override string Name { get { return "Breakable Parasol, Chair, or Table"; } }
-	}
 
 	public enum ParasolVariants
 	{

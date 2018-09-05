@@ -11,12 +11,22 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBigRock : ObjectDefinition
+	public class BigRock : ObjectDefinition
 	{
 		protected NJS_OBJECT model1;
 		protected Mesh[] meshes1;
 		protected NJS_OBJECT model2;
 		protected Mesh[] meshes2;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
+			meshes1 = ObjectHelper.GetMeshes(model1, dev);
+			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
+			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+		}
+
+		public override string Name { get { return "Big Rock"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -108,19 +118,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class BigRock : OBigRock
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{ 
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
-		}
-
-		public override string Name { get { return "Big Rock"; } }
-	}
 
 	public enum BigRockVars
 	{

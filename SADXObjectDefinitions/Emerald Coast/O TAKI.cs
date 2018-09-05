@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class O_TAKI : ObjectDefinition
+	public class Waterfall : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O TAKI.sa1mdl");
+			mesh = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Waterfall"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -61,15 +69,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Waterfall : O_TAKI
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O TAKI.sa1mdl");
-			mesh = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Waterfall"; } }
-	}
 }

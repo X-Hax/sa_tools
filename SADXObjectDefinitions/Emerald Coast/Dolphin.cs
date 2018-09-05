@@ -10,10 +10,18 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class O_DOLPHIN : ObjectDefinition
+	public class Dolphin : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O DOLPHIN.sa1mdl");
+			mesh = ObjectHelper.GetMeshes(model, dev);
+		}
+
+		public override string Name { get { return "Dolphin"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -59,21 +67,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
         }
     }
 
-	public class Dolphin : O_DOLPHIN
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O DOLPHIN.sa1mdl");
-			mesh = ObjectHelper.GetMeshes(model, dev);
-		}
-
-		public override string Name { get { return "Dolphin"; } }
-	}
-
-	public abstract class O_DOLSW : ObjectDefinition
+	public class Dolsw : ObjectDefinition
 	{
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+		}
+
+		public override string Name { get { return "Dolphin Trigger"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -117,15 +122,4 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Dolsw : O_DOLSW
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
-		}
-
-		public override string Name { get { return "Dolphin Trigger"; } }
-	}
 }

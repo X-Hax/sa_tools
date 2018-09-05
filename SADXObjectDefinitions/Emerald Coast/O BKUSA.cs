@@ -11,7 +11,7 @@ using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBkusa : ObjectDefinition
+	public class Plants : ObjectDefinition
 	{
 		protected NJS_OBJECT model1;
 		protected Mesh[] meshes1;
@@ -19,6 +19,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected Mesh[] meshes2;
 		protected NJS_OBJECT model3;
 		protected Mesh[] meshes3;
+
+		public override void Init(ObjectData data, string name, Device dev)
+		{
+			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_A.sa1mdl");
+			meshes1 = ObjectHelper.GetMeshes(model1, dev);
+			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_B.sa1mdl");
+			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_C.sa1mdl");
+			meshes3 = ObjectHelper.GetMeshes(model3, dev);
+		}
+
+		public override string Name { get { return "Plants"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -139,21 +151,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
             return matrix;
         }
     }
-
-	public class Plants : OBkusa
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{ 
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
-			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_C.sa1mdl");
-			meshes3 = ObjectHelper.GetMeshes(model3, dev);
-		}
-
-		public override string Name { get { return "Plants"; } }
-	}
 
 	public enum PlantVars
 	{
