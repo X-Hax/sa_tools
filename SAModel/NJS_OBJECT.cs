@@ -57,6 +57,22 @@ namespace SonicRetro.SAModel
 			}
 		}
 
+		[DisplayName("Code Path")]
+		[Description("The syntax to access this node from the root node in C++ code.")]
+		public string CodePath
+		{
+			get
+			{
+				if (Parent == null)
+					return "root";
+				StringBuilder result = new StringBuilder("->child");
+				int idx = Parent.Children.IndexOf(this);
+				for (int i = 0; i < idx; i++)
+					result.Append("->sibling");
+				return Parent.CodePath + result.ToString();
+			}
+		}
+
 		public NJS_OBJECT()
 		{
 			Name = "object_" + Extensions.GenerateIdentifier();
