@@ -68,6 +68,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position + item.Scale);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
+			result.Add(new ModelTransform(whale, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
@@ -144,6 +156,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
@@ -215,6 +232,18 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			result.AddRange(whale.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
 			if (item.Selected)
 				result.AddRange(whale.DrawModelTreeInvert(transform, whalemsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x2000);
+			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
+			result.Add(new ModelTransform(whale, transform.Top));
 			transform.Pop();
 			return result;
 		}

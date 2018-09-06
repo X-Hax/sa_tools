@@ -49,6 +49,20 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			((BasicAttach)model.Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
+			((BasicAttach)model.Children[0].Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(item.Scale);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

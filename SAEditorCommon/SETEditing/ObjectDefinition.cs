@@ -13,6 +13,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public abstract void Init(ObjectData data, string name);
 		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
+		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
 		public virtual void PointTo(SETItem item, Vertex location) { }
         public abstract Matrix GetHandleMatrix(SETItem item);
@@ -43,6 +44,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public virtual float DefaultYScale { get { return 1; } }
 		public virtual float DefaultZScale { get { return 1; } }
 		public virtual float DistanceFromGround { get { return 0; } }
+	}
+
+	public class ModelTransform
+	{
+		public NJS_OBJECT Model { get; private set; }
+		public Matrix Transform { get; private set; }
+
+		public ModelTransform(NJS_OBJECT model, Matrix transform)
+		{
+			Model = model;
+			Transform = transform;
+		}
 	}
 
 	/// <summary>

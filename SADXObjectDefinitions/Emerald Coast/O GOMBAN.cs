@@ -50,6 +50,17 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

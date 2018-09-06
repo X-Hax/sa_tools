@@ -104,6 +104,40 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			}
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (item.Scale.Z == 0.0)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.Z <= 5.0)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model2, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model3, transform.Top));
+				transform.Pop();
+				return result;
+			}
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			if (item.Scale.Z == 0.0)

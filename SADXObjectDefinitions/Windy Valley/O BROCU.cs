@@ -113,6 +113,44 @@ namespace SADXObjectDefinitions.WindyValley
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			v5 = (ulong)item.Scale.X;
+			if (v5 != 0)
+			{
+				v6 = (int)v5 - 1;
+				if (v6 == 0)
+				{
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelB, transform.Top));
+					transform.Pop();
+					return result;
+				}
+				if (v6 == 1)
+				{
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelC, transform.Top));
+					transform.Pop();
+					return result;
+				}
+			}
+			else
+			{
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(modelA, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

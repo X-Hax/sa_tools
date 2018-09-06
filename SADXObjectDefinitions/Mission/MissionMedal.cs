@@ -44,7 +44,18 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x4000);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
         {
             Matrix matrix = Matrix.Identity;
 

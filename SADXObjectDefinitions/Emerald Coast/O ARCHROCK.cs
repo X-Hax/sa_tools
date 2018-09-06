@@ -88,6 +88,30 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 110f, 0);
+			result.Add(new ModelTransform(arch, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 0, 73f);
+			result.Add(new ModelTransform(side1, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 0, -57f);
+			result.Add(new ModelTransform(side2, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex((item.Position.X + 0.75f), (item.Position.Y + 55f), item.Position.Z), Radius = 100f };

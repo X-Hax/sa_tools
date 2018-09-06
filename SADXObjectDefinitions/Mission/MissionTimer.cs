@@ -30,6 +30,11 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
+		}
+
 		public override string Name { get { return "Mission Timer"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {

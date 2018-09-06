@@ -117,6 +117,44 @@ namespace SADXObjectDefinitions.WindyValley
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			int ScaleX = (int)item.Scale.X;
+			switch (ScaleX)
+			{
+				case 1:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelB, transform.Top));
+					transform.Pop();
+					break;
+				case 2:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelC, transform.Top));
+					transform.Pop();
+					break;
+				case 3:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelD, transform.Top));
+					transform.Pop();
+					break;
+				default:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelA, transform.Top));
+					transform.Pop();
+					break;
+			}
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex((item.Position.X), (item.Position.Y), item.Position.Z), Radius = 10f };

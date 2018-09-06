@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// TODO: finish implementing this
 using SharpDX;
-using SharpDX.Direct3D9; using Mesh = SonicRetro.SAModel.Direct3D.Mesh; using BoundingSphere =SonicRetro.SAModel.BoundingSphere;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -68,6 +71,17 @@ namespace SADXObjectDefinitions.Common
 			if (selected)
 				result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
 			transform.Pop();*/
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(centermodel, transform.Top));
+			transform.Pop();
 			return result;
 		}
 

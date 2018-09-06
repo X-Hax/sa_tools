@@ -54,6 +54,22 @@ namespace SADXObjectDefinitions.WindyValley
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			int RotY = item.Rotation.Y;
+			if (RotY != 0x4000)
+			{
+				transform.NJRotateY(RotY - 0x4000);
+			}
+			transform.NJScale(1.5f, 1.5f, 1.5f);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

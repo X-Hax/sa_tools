@@ -50,6 +50,20 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY((ushort)(item.Rotation.Y + 0x8000));
+			transform.NJRotateZ(item.Rotation.Z);
+			transform.NJRotateX(item.Rotation.X);
+			transform.NJTranslate(-0.5f, 0, 0);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

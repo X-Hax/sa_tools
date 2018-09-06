@@ -47,6 +47,18 @@ namespace SADXObjectDefinitions.Mission
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

@@ -69,7 +69,12 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
         {
             Matrix matrix = Matrix.Identity;
 

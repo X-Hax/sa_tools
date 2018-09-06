@@ -168,6 +168,70 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			}
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (item.Scale.X == 0 || item.Scale.X == 5 || item.Scale.X == 10 || item.Scale.X == -5)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 1 || item.Scale.X == 6 || item.Scale.X == 11 || item.Scale.X == -1)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model2, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 2 || item.Scale.X == 7 || item.Scale.X == 12 || item.Scale.X == -2)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model3, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 3 || item.Scale.X == 8 || item.Scale.X == 13 || item.Scale.X == -3)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model4, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 4 || item.Scale.X == 9 || item.Scale.X == 14 || item.Scale.X == -4)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model5, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			if (item.Scale.X == 0 || item.Scale.X == 5 || item.Scale.X == 10 || item.Scale.X == -5)

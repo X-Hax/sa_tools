@@ -91,6 +91,11 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			float largestScale = (item.Scale.X + 10) / 5f;

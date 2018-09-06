@@ -72,6 +72,30 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			int rows = (int)Math.Max(item.Scale.X, 1);
+			int cols = (int)Math.Max(item.Scale.Z, 1);
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+			transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
+			for (int i = 0; i < rows; ++i)
+			{
+				transform.Push();
+				for (int j = 0; j < cols; ++j)
+				{
+					result.Add(new ModelTransform(model, transform.Top));
+					transform.NJTranslate(0, 0, 15);
+				}
+				transform.Pop();
+				transform.NJTranslate(15, 0, 0);
+			}
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

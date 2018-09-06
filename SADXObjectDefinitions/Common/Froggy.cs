@@ -82,6 +82,22 @@ namespace SADXObjectDefinitions.Common
 			return result;
 		}
 
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(frog, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(bubble, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
@@ -137,6 +153,18 @@ namespace SADXObjectDefinitions.Common
 			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			transform.NJTranslate(2f, 0f, 0f);
+			result.Add(new ModelTransform(frog, transform.Top));
 			transform.Pop();
 			return result;
 		}

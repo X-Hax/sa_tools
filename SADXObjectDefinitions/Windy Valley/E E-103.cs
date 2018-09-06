@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.WindyValley
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.Z, item.Rotation.Y, item.Rotation.X);
+			transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -36,7 +36,7 @@ namespace SADXObjectDefinitions.WindyValley
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.Z, item.Rotation.Y, item.Rotation.X);
+			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("WINDY_E103"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -44,12 +44,23 @@ namespace SADXObjectDefinitions.WindyValley
 			return result;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
         {
             Matrix matrix = Matrix.Identity;
 
             MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateObject(ref matrix, item.Rotation.Z, item.Rotation.Y, item.Rotation.X);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
 
             return matrix;
         }
@@ -58,7 +69,7 @@ namespace SADXObjectDefinitions.WindyValley
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.Z, item.Rotation.Y, item.Rotation.X);
+			transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
