@@ -15,7 +15,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		/// <param name="filePath">full path to file (with extension) to import data from.</param>
 		/// <param name="errorFlag">Set to TRUE if an error occured.</param>
 		/// <param name="errorMsg">Suggested error message to show to the user.</param>
-		public static void ImportFromFile(Device dev, string filePath, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
+		public static void ImportFromFile(string filePath, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
 		{
 			if (!File.Exists(filePath))
 			{
@@ -159,13 +159,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager);
+						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager);
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager);
+						LevelItem levelItem = new LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager);
 					}
 					#endregion
 
@@ -272,7 +272,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(dev, modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager)
+						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager)
 						{
 							Flags = surfaceFlags
 						};
@@ -281,7 +281,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(dev, instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager)
+						LevelItem levelItem = new LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager)
 						{
 							Flags = surfaceFlags
 						};

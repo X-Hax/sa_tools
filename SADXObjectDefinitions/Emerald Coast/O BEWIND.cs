@@ -17,15 +17,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		private Texture texture;
 		private Mesh mesh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
-			mesh = Mesh.Box(dev, 0.5f, 0.5f, 0.5f);
+			mesh = Mesh.Box(0.5f, 0.5f, 0.5f);
 			material = new NJS_MATERIAL
 			{
 				DiffuseColor = Color.FromArgb(127, 178, 178, 178),
 				UseAlpha = false
 			};
-			texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -78,6 +77,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			// is this even necessary?
+			if (texture == null)
+				texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			float scaleX = item.Scale.X;

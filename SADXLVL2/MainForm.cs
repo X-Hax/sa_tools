@@ -655,7 +655,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
 						{
-							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
 						}
 					}
 
@@ -737,7 +737,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.DeathZones.Add(new DeathZoneItem(
 								new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
 									.Model,
-								dzini[i].Flags, d3ddevice, selectedItems));
+								dzini[i].Flags, selectedItems));
 						}
 					}
 
@@ -856,7 +856,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								}
 							}
 
-							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+							def.Init(defgroup, objlstini[ID].Name);
 							def.SetInternalName(objlstini[ID].Name);
 						}
 
@@ -1068,7 +1068,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 								}
 							}
 
-							def.Init(defgroup, objlstini[ID].Name, d3ddevice);
+							def.Init(defgroup, objlstini[ID].Name);
 							def.SetInternalName(objlstini[ID].Name);
 						}
 
@@ -1208,7 +1208,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.CAMItems[i] = list;
 					}
 
-					CAMItem.Init(d3ddevice);
+					CAMItem.Init();
 
 					progress.StepProgress();
 
@@ -1276,7 +1276,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 
 						if (def != null)
-							def.Init(level, levelact.Act, d3ddevice);
+							def.Init(level, levelact.Act);
 
 						LevelData.leveleff = def;
 					}
@@ -1862,7 +1862,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (item is LevelItem)
 					{
 						LevelItem lvlItem = (LevelItem)item;
-						boundsMesh = Direct3D.Mesh.Sphere(d3ddevice, lvlItem.CollisionData.Bounds.Radius, 9, 9);
+						boundsMesh = Direct3D.Mesh.Sphere(lvlItem.CollisionData.Bounds.Radius, 9, 9);
 
 						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
 						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
@@ -1878,7 +1878,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (dragPlaceLevelModel != null && dragPlaceLevelMesh != null)
 				{
 					renderlist.AddRange(dragPlaceLevelModel.DrawModel(
-						d3ddevice,
+						d3ddevice.GetRenderState<FillMode>(RenderState.FillMode),
 						transform,
 						LevelData.Textures[LevelData.leveltexs],
 						dragPlaceLevelMesh,
@@ -2793,7 +2793,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				selectedItems.Add(LevelData.ImportFromFile(s, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems));
+				selectedItems.Add(LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
 					MessageBox.Show(errorMsg);
@@ -3085,7 +3085,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DeathZoneItem item = new DeathZoneItem(d3ddevice, selectedItems);
+			DeathZoneItem item = new DeathZoneItem(selectedItems);
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			item.Position = new Vertex(pos.X, pos.Y, pos.Z);
 			switch (LevelData.Character)
@@ -3172,7 +3172,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			LevelData.DuplicateSelection(d3ddevice, selectedItems, out bool errorFlag, out string errorMsg);
+			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}
@@ -3416,7 +3416,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			dragPlaceLevelModel = new NJS_OBJECT();
 			dragPlaceLevelModel.Attach = attach;
-			dragPlaceLevelMesh = dragPlaceLevelModel.Attach.CreateD3DMesh(d3ddevice);
+			dragPlaceLevelMesh = dragPlaceLevelModel.Attach.CreateD3DMesh();
 			dragType = DragType.Model;
 		}
 
@@ -3454,7 +3454,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				case DragType.Model:
 					COL newCollision = new COL() { Model = dragPlaceLevelModel };
-					LevelItem newItem = new LevelItem(d3ddevice, dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
+					LevelItem newItem = new LevelItem(dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
 					LevelData.InvalidateRenderState();
 					selectedItems.Clear();
 					selectedItems.Add(newItem);

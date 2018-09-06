@@ -18,12 +18,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT model2;
 		protected Mesh[] meshes2;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PIER_A.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+			meshes2 = ObjectHelper.GetMeshes(model2);
 			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PIER_B.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
+			meshes1 = ObjectHelper.GetMeshes(model1);
 		}
 
 		public override string Name { get { return "Pier"; } }
@@ -56,7 +56,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model2.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
 				if (item.Selected)
 					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
 				transform.Pop();
@@ -68,7 +68,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();

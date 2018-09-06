@@ -16,10 +16,10 @@ namespace SADXObjectDefinitions.Mission
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Mission/Mission End Marker.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -40,7 +40,7 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();

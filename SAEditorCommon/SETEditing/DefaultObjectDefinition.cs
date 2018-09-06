@@ -25,13 +25,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		private int? xrot, yrot, zrot;
 		private ushort? defxrot, defyrot, defzrot;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			this.name = data.Name ?? name;
 			if (!string.IsNullOrEmpty(data.Model))
 			{
 				model = ObjectHelper.LoadModel(data.Model);
-				meshes = ObjectHelper.GetMeshes(model, dev);
+				meshes = ObjectHelper.GetMeshes(model);
 			}
 
 			texture = data.Texture;
@@ -81,7 +81,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			else
 			{
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
-				result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes));
+				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures(texture), meshes));
 				if (item.Selected)
 					result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			}

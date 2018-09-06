@@ -21,14 +21,14 @@ namespace SADXObjectDefinitions.WindyValley
 		private ulong v5;
 		private int v6;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			modelA = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBES.sa1mdl");
-			meshesA = ObjectHelper.GetMeshes(modelA, dev);
+			meshesA = ObjectHelper.GetMeshes(modelA);
 			modelB = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBEM.sa1mdl");
-			meshesB = ObjectHelper.GetMeshes(modelB, dev);
+			meshesB = ObjectHelper.GetMeshes(modelB);
 			modelC = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBEL.sa1mdl");
-			meshesC = ObjectHelper.GetMeshes(modelC, dev);
+			meshesC = ObjectHelper.GetMeshes(modelC);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -81,7 +81,7 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelB.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
+					result.AddRange(modelB.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
 					if (item.Selected)
 						result.AddRange(modelB.DrawModelTreeInvert(transform, meshesB));
 					transform.Pop();
@@ -92,7 +92,7 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelC.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesC));
+					result.AddRange(modelC.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesC));
 					if (item.Selected)
 						result.AddRange(modelC.DrawModelTreeInvert(transform, meshesC));
 					transform.Pop();
@@ -104,7 +104,7 @@ namespace SADXObjectDefinitions.WindyValley
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(modelA.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
+				result.AddRange(modelA.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
 				if (item.Selected)
 					result.AddRange(modelA.DrawModelTreeInvert(transform, meshesA));
 				transform.Pop();

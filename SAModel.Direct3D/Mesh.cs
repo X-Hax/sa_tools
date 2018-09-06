@@ -8,9 +8,9 @@ namespace SonicRetro.SAModel.Direct3D
 {
 	public abstract class Mesh
 	{
-		public abstract void DrawSubset(int subset);
+		public abstract void DrawSubset(Device device, int subset);
 
-		public abstract void DrawAll();
+		public abstract void DrawAll(Device device);
 
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Matrix transform, NJS_OBJECT model = null);
 
@@ -27,7 +27,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		private static readonly short[] boxinds = { 0, 1, 2, 1, 3, 2 };
 
-		public static Mesh Box(Device device, float width, float height, float depth)
+		public static Mesh Box(float width, float height, float depth)
 		{
 			List<FVF_PositionNormalTextured> verts = new List<FVF_PositionNormalTextured>(4 * 6);
 			List<short> inds = new List<short>(6 * 6);
@@ -53,10 +53,10 @@ namespace SonicRetro.SAModel.Direct3D
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
 			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
-			return new Mesh<FVF_PositionNormalTextured>(device, verts.ToArray(), new short[][] { inds.ToArray() });
+			return new Mesh<FVF_PositionNormalTextured>(verts.ToArray(), new short[][] { inds.ToArray() });
 		}
 
-		public static Mesh Box(Device device, float width, float height, float depth, params System.Drawing.Color[] colors)
+		public static Mesh Box(float width, float height, float depth, params System.Drawing.Color[] colors)
 		{
 			System.Drawing.Color[] sidecolors = new System.Drawing.Color[6];
 			if (colors.Length >= 6)
@@ -103,10 +103,10 @@ namespace SonicRetro.SAModel.Direct3D
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
 			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTexturedColored(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV, sidecolors[5])));
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
-			return new Mesh<FVF_PositionNormalTexturedColored>(device, verts.ToArray(), new short[][] { inds.ToArray() });
+			return new Mesh<FVF_PositionNormalTexturedColored>(verts.ToArray(), new short[][] { inds.ToArray() });
 		}
 
-		public static Mesh MultiTextureBox(Device device, float width, float height, float depth)
+		public static Mesh MultiTextureBox(float width, float height, float depth)
 		{
 			List<FVF_PositionNormalTextured> verts = new List<FVF_PositionNormalTextured>(4 * 6);
 			List<short[]> inds = new List<short[]>(6);
@@ -132,10 +132,10 @@ namespace SonicRetro.SAModel.Direct3D
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
 			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
 			inds.Add(boxinds.Select(a => (short)(a + off)).ToArray());
-			return new Mesh<FVF_PositionNormalTextured>(device, verts.ToArray(), inds.ToArray());
+			return new Mesh<FVF_PositionNormalTextured>(verts.ToArray(), inds.ToArray());
 		}
 
-		public static Mesh MultiTextureBox(Device device, float width, float height, float depth, params System.Drawing.Color[] colors)
+		public static Mesh MultiTextureBox(float width, float height, float depth, params System.Drawing.Color[] colors)
 		{
 			System.Drawing.Color[] sidecolors = new System.Drawing.Color[6];
 			if (colors.Length >= 6)
@@ -182,13 +182,13 @@ namespace SonicRetro.SAModel.Direct3D
 			MatrixFunctions.Scale(ref matrix, width, height, depth);
 			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTexturedColored(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV, sidecolors[5])));
 			inds.Add(boxinds.Select(a => (short)(a + off)).ToArray());
-			return new Mesh<FVF_PositionNormalTexturedColored>(device, verts.ToArray(), inds.ToArray());
+			return new Mesh<FVF_PositionNormalTexturedColored>(verts.ToArray(), inds.ToArray());
 		}
 		#endregion
 
 		#region Sphere
 		// http://www.richardssoftware.net/2013/07/shapes-demo-with-direct3d11-and-slimdx.html
-		public static Mesh Sphere(Device device, float radius, int slices, int stacks)
+		public static Mesh Sphere(float radius, int slices, int stacks)
 		{
 			List<FVF_PositionNormalTextured> verts = new List<FVF_PositionNormalTextured>();
 			verts.Add(new FVF_PositionNormalTextured(new Vector3(0, radius, 0), new Vector3(0, 1, 0), new Vector2(0, 0)));
@@ -241,10 +241,10 @@ namespace SonicRetro.SAModel.Direct3D
 				inds.Add((short)(baseIndex + i));
 				inds.Add((short)(baseIndex + i + 1));
 			}
-			return new Mesh<FVF_PositionNormalTextured>(device, verts.ToArray(), new short[][] { inds.ToArray() });
+			return new Mesh<FVF_PositionNormalTextured>(verts.ToArray(), new short[][] { inds.ToArray() });
 		}
 
-		public static Mesh Sphere(Device device, float radius, int slices, int stacks, System.Drawing.Color color)
+		public static Mesh Sphere(float radius, int slices, int stacks, System.Drawing.Color color)
 		{
 			List<FVF_PositionNormalTexturedColored> verts = new List<FVF_PositionNormalTexturedColored>();
 			verts.Add(new FVF_PositionNormalTexturedColored(new Vector3(0, radius, 0), new Vector3(0, 1, 0), new Vector2(0, 0), color));
@@ -297,7 +297,7 @@ namespace SonicRetro.SAModel.Direct3D
 				inds.Add((short)(baseIndex + i));
 				inds.Add((short)(baseIndex + i + 1));
 			}
-			return new Mesh<FVF_PositionNormalTexturedColored>(device, verts.ToArray(), new short[][] { inds.ToArray() });
+			return new Mesh<FVF_PositionNormalTexturedColored>(verts.ToArray(), new short[][] { inds.ToArray() });
 		}
 		#endregion
 	}
@@ -305,13 +305,11 @@ namespace SonicRetro.SAModel.Direct3D
 	public class Mesh<T> : Mesh
 		where T : struct, IVertex
 	{
-		private readonly Device device;
 		private readonly T[] vertexBuffer;
 		private readonly short[][] indexBuffer;
 
-		public Mesh(Attach attach, Device device)
+		public Mesh(Attach attach)
 		{
-			this.device = device;
 			indexBuffer = new short[attach.MeshInfo.Length][];
 			List<T> vb = new List<T>();
 			for (int i = 0; i < attach.MeshInfo.Length; i++)
@@ -324,23 +322,22 @@ namespace SonicRetro.SAModel.Direct3D
 			vertexBuffer = vb.ToArray();
 		}
 
-		public Mesh(Device device, T[] verts, short[][] inds)
+		public Mesh(T[] verts, short[][] inds)
 		{
-			this.device = device;
 			vertexBuffer = verts;
 			indexBuffer = inds;
 		}
 
-		public override void DrawSubset(int subset)
+		public override void DrawSubset(Device device, int subset)
 		{
 			device.VertexFormat = vertexBuffer[0].GetFormat();
 			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
 		}
 
-		public override void DrawAll()
+		public override void DrawAll(Device device)
 		{
 			for (int i = 0; i < indexBuffer.Length; i++)
-				DrawSubset(i);
+				DrawSubset(device, i);
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Matrix transform, NJS_OBJECT model = null)

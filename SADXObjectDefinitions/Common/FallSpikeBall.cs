@@ -19,14 +19,14 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT spheremodel;
 		private Mesh[] spheremeshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			ballmodel = ObjectHelper.LoadModel("Objects/Common/O IRONB_C.sa1mdl");
-			ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
+			ballmeshes = ObjectHelper.GetMeshes(ballmodel);
 			cylindermodel = ObjectHelper.LoadModel("Objects/Collision/C CYLINDER.sa1mdl");
-			cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
+			cylindermeshes = ObjectHelper.GetMeshes(cylindermodel);
 			spheremodel = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremeshes = ObjectHelper.GetMeshes(spheremodel, dev);
+			spheremeshes = ObjectHelper.GetMeshes(spheremodel);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -57,7 +57,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(ballmodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), ballmeshes));
+			result.AddRange(ballmodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), ballmeshes));
 			if (item.Selected)
 				result.AddRange(ballmodel.DrawModelTreeInvert(transform, ballmeshes));
 			transform.Pop();
@@ -66,13 +66,13 @@ namespace SADXObjectDefinitions.Common
 			double v22 = item.Scale.X * 0.5 + item.Position.Y;
 			transform.NJTranslate(item.Position.X, (float)v22, item.Position.Z);
 			transform.NJScale(1.0f, (float)v24, 1.0f);
-			result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
+			result.AddRange(cylindermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylindermeshes));
 			if (item.Selected)
 				result.AddRange(cylindermodel.DrawModelTreeInvert(transform, cylindermeshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + item.Scale.Z, item.Position.Z);
-			result.AddRange(spheremodel.DrawModelTree(dev, transform, null, spheremeshes));
+			result.AddRange(spheremodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremeshes));
 			if (item.Selected)
 				result.AddRange(spheremodel.DrawModelTreeInvert(transform, spheremeshes));
 			transform.Pop();

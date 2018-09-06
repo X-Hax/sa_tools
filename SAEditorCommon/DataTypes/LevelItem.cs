@@ -31,7 +31,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="filePath">location of the file to use.</param>
 		/// <param name="position">Position to place the resulting model (worldspace).</param>
 		/// <param name="rotation">Rotation to apply to the model.</param>
-		public LevelItem(Device dev, string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			this.index = index;
@@ -43,7 +43,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					Rotation = rotation
 				}
 			};
-			ImportModel(filePath, dev);
+			ImportModel(filePath);
 			COL.CalculateBounds();
 			Paste();
 
@@ -55,13 +55,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		/// <param name="col"></param>
 		/// <param name="dev">Current Direct3d Device.</param>
-		public LevelItem(COL col, Device dev, int index, EditorItemSelection selectionManager)
+		public LevelItem(COL col, int index, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			this.index = index;
 			COL = col;
 			col.Model.ProcessVertexData();
-			Mesh = col.Model.Attach.CreateD3DMesh(dev);
+			Mesh = col.Model.Attach.CreateD3DMesh();
 
             GetHandleMatrix();
 		}
@@ -72,7 +72,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="attach">Attach to use for this levelItem</param>
 		/// <param name="position">Position in worldspace to place this LevelItem.</param>
 		/// <param name="rotation">Rotation.</param>
-		public LevelItem(Device dev, Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+		public LevelItem(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			this.index = index;
@@ -88,7 +88,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Visible = true;
 			Solid = true;
 			COL.CalculateBounds();
-			Mesh = COL.Model.Attach.CreateD3DMesh(dev);
+			Mesh = COL.Model.Attach.CreateD3DMesh();
 			Paste();
 		}
 
@@ -127,9 +127,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (!string.IsNullOrEmpty(LevelData.leveltexs))
-				result.AddRange(COL.Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
+				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
 			else
-				result.AddRange(COL.Model.DrawModel(dev, transform, null, Mesh, Visible));
+				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible));
 			if (Selected)
 				result.AddRange(COL.Model.DrawModelInvert(transform, Mesh, Visible));
 			return result;
@@ -149,18 +149,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             LevelData.RemoveLevelItem(this);
 		}
 
-		public void RegenerateMesh(Device dev)
-		{
-			mesh = COL.Model.Attach.CreateD3DMesh(dev);
-		}
+		public void RegenerateMesh() => mesh = COL.Model.Attach.CreateD3DMesh();
 
-		public void ImportModel(string filePath, Device dev)
+		public void ImportModel(string filePath)
 		{
 			COL.Model.Attach = Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
 			Visible = true;
 			Solid = true;
 
-			mesh = COL.Model.Attach.CreateD3DMesh(dev);
+			mesh = COL.Model.Attach.CreateD3DMesh();
 		}
 
 		//[Browsable(true)]

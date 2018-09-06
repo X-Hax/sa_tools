@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class ObjectDefinition
 	{
-		public abstract void Init(ObjectData data, string name, Device dev);
+		public abstract void Init(ObjectData data, string name);
 		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }

@@ -18,15 +18,14 @@ namespace SADXObjectDefinitions.Common
 		Texture texture;
 		Mesh mesh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
-			mesh = Mesh.Box(dev, 1f, 1f, 1f);
+			mesh = Mesh.Box(1f, 1f, 1f);
 			material = new NJS_MATERIAL
 			{
 				DiffuseColor = Color.FromArgb(180, 180, 180, 180),
 				UseAlpha = true
 			};
-			texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -43,6 +42,8 @@ namespace SADXObjectDefinitions.Common
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			if (texture == null)
+				texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);

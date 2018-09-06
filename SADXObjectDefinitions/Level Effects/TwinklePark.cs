@@ -16,13 +16,13 @@ namespace SADXObjectDefinitions.Level_Effects
 		Vector3 Skybox_Scale;
 		bool NoRender;
 
-		public override void Init(IniLevelData data, byte act, Device dev)
+		public override void Init(IniLevelData data, byte act)
 		{
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Twinkle Park/Skybox Data.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model = ObjectHelper.LoadModel("Levels/Twinkle Park/Skybox model.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 			NoRender = act == 1;
 		}
 
@@ -33,7 +33,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position);
 			transform.NJScale(Skybox_Scale);
-			RenderInfo.Draw(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BG_SHAREOBJ"), meshes), dev, cam);
+			RenderInfo.Draw(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BG_SHAREOBJ"), meshes), dev, cam);
 			transform.Pop();
 		}
 	}

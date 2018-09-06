@@ -238,7 +238,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				modelList.Add(new KeyValuePair<int, Attach>(model.GetHashCode(), model));
 				attachListRenders.Add(new KeyValuePair<int, Bitmap>(model.GetHashCode(), renderFailureBitmap));
-				meshes.Add(model.CreateD3DMesh(d3dDevice));
+				meshes.Add(model.CreateD3DMesh());
 
 				if (Visible) RenderModel(modelList.Count - 1, true); // todo: I think these Add calls are getting called while a separate thread is open, and thus causing locking issues
 				// perhaps we could find a way to defer all of this until after the file load operation is complete
@@ -344,7 +344,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				MatrixStack transform = new MatrixStack();
 				njs_object.Attach = modelList[modelToRender].Value;
-				RenderInfo.Draw(njs_object.DrawModel(d3dDevice, transform, null, meshes[modelToRender], true), d3dDevice, camera);
+				RenderInfo.Draw(njs_object.DrawModel(d3dDevice.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes[modelToRender], true), d3dDevice, camera);
 			}
 			else // invalid selection, show a message telling the user to select something
 			{

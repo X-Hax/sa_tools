@@ -9,7 +9,7 @@ namespace SADXObjectDefinitions.Mission
 {
 	class MissionTimer : ObjectDefinition
 	{
-		public override void Init(ObjectData data, string name, Device dev) { }
+		public override void Init(ObjectData data, string name) { }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{

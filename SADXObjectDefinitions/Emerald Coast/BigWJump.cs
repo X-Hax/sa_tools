@@ -15,10 +15,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Collision/C CUBE.sa1mdl");
-			mesh = ObjectHelper.GetMeshes(model, dev);
+			mesh = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Big Water Jump"; } }
@@ -41,7 +41,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale((item.Scale.X + 10f), (item.Scale.Y + 10f), (item.Scale.Z + 10f));
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), mesh));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), mesh));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, mesh));
 			transform.Pop();

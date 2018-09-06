@@ -42,7 +42,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.NJRotateY((RotY + 24) - 0x4000);
 			}
 			transform.NJScale(1.5f, 1.5f, 1.5f);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
@@ -80,10 +80,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Kamome : Seagull
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KAMOME.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Seagull (Animated)"; } }
@@ -91,10 +91,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Kamomel : Seagull
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KAMOMEL.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Seagull"; } }

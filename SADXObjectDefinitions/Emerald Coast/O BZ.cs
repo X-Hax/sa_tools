@@ -17,12 +17,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
-			planemsh = ObjectHelper.GetMeshes(plane, dev);
+			planemsh = ObjectHelper.GetMeshes(plane);
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "Tails' Plane"; } }
@@ -53,7 +53,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate((item.Position.X + 50f), item.Position.Y, item.Position.Z);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(plane.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), planemsh));
+			result.AddRange(plane.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), planemsh));
 			if (item.Selected)
 				result.AddRange(plane.DrawModelTreeInvert(transform, planemsh));
 			transform.Pop();
@@ -61,7 +61,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			transform.NJScale(item.Scale.X, item.Scale.X, item.Scale.X);
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
 			transform.Pop();

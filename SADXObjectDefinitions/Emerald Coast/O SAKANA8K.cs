@@ -15,10 +15,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O SAKANA8K.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "2D Fish"; } }
@@ -54,7 +54,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				ScaleX = ScaleY;
 			}
 			transform.NJScale(ScaleX, ScaleY, item.Scale.Z);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();

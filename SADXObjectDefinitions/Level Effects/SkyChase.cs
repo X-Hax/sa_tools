@@ -13,10 +13,10 @@ namespace SADXObjectDefinitions.Level_Effects
 		NJS_OBJECT carriermdl;
 		Mesh[] carriermesh;
 
-		public override void Init(IniLevelData data, byte act, Device dev)
+		public override void Init(IniLevelData data, byte act)
 		{
 			carriermdl = ObjectHelper.LoadModel("Levels/Sky Chase/Egg Carrier model.sa1mdl");
-			carriermesh = ObjectHelper.GetMeshes(carriermdl, dev);
+			carriermesh = ObjectHelper.GetMeshes(carriermdl);
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -24,7 +24,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			Texture[] texs = ObjectHelper.GetTextures("SHOOTING0");
-			result.AddRange(carriermdl.DrawModelTree(dev, transform, texs, carriermesh));
+			result.AddRange(carriermdl.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, carriermesh));
 			RenderInfo.Draw(result, dev, cam);
 		}
 	}

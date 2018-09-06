@@ -38,14 +38,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(model.Sibling.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+			result.AddRange(model.Sibling.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
 			if (item.Selected)
 				result.AddRange(model.Sibling.DrawModelTreeInvert(transform, meshes2));
 			transform.Pop();
@@ -73,11 +73,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Yasi0 : YasiMain
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI0.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
+			meshes = ObjectHelper.GetMeshes(model);
+			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
 
 		public override string Name { get { return "Palm Tree 1"; } }
@@ -85,11 +85,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Yasi1 : YasiMain
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI1.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
+			meshes = ObjectHelper.GetMeshes(model);
+			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
 
 		public override string Name { get { return "Palm Tree 2"; } }
@@ -97,11 +97,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Yasi2 : YasiMain
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI2.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
+			meshes = ObjectHelper.GetMeshes(model);
+			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
 
 		public override string Name { get { return "Palm Tree 3"; } }
@@ -109,11 +109,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 	public class Yasi3 : YasiMain
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI3.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling, dev);
+			meshes = ObjectHelper.GetMeshes(model);
+			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
 
 		public override string Name { get { return "Palm Tree 4"; } }
