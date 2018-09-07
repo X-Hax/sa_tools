@@ -80,7 +80,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override string Name { get { return "Horizontal Palm Tree"; } }
 	}
 
-	public class Grasb : ObjectDefinition
+	public class GrasB : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
