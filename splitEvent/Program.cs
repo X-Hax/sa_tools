@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace splitEvent
@@ -35,7 +34,6 @@ namespace splitEvent
 				{
 					Console.WriteLine("File is in GC/PC format.");
 					ByteConverter.BigEndian = true;
-					SA_Tools.ByteConverter.BigEndian = true;
 					key = 0x8125FE60;
 					ini.Game = Game.SA2B;
 				}
@@ -43,7 +41,6 @@ namespace splitEvent
 				{
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
-					SA_Tools.ByteConverter.BigEndian = false;
 					key = 0xC600000;
 					ini.Game = Game.SA2;
 				}

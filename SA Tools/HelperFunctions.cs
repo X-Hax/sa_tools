@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace SA_Tools
 {
-    public static class HelperFunctions
+	public static class HelperFunctions
     {
         public static uint? SetupEXE(ref byte[] exefile)
         {
@@ -200,24 +201,9 @@ namespace SA_Tools
             }
         }
 
-        internal static void Align(this List<byte> me, int alignment)
-        {
-            int off = me.Count % alignment;
-            if (off == 0) return;
-            me.AddRange(new byte[alignment - off]);
-        }
-
-        public static string GetCString(this byte[] file, int address, Encoding encoding)
-        {
-            int count = 0;
-            while (file[address + count] != 0)
-                count++;
-            return encoding.GetString(file, address, count);
-        }
-
         public static string GetCString(this byte[] file, int address)
         {
-            return GetCString(file, address, jpenc);
+            return file.GetCString(address, jpenc);
         }
 
         public static int GetPointer(this byte[] file, int address, uint imageBase)
@@ -259,83 +245,6 @@ namespace SA_Tools
         public static string EscapeNewlines(this string line)
         {
             return line.Replace(@"\", @"\\").Replace("\n", @"\n").Replace("\r", @"\r");
-        }
-
-        public static string ToC(this float num)
-        {
-            string result = num.ToLongString();
-            if (result.Contains("."))
-                result += "f";
-            return result;
-        }
-
-        public static string ToLongString(this float input)
-        {
-            string str = input.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
-            // if string representation was collapsed from scientific notation, just return it: 
-            if (!str.Contains("E") & !str.Contains("e"))
-                return str;
-            str = str.ToUpper();
-            char decSeparator = '.';
-            string[] exponentParts = str.Split('E');
-            string[] decimalParts = exponentParts[0].Split(decSeparator);
-            // fix missing decimal point: 
-            if (decimalParts.Length == 1)
-                decimalParts = new string[] {
-				exponentParts[0],
-				"0"
-			};
-            int exponentValue = int.Parse(exponentParts[1]);
-            string newNumber = decimalParts[0] + decimalParts[1];
-            string result = null;
-            if (exponentValue > 0)
-            {
-                result = newNumber + GetZeros(exponentValue - decimalParts[1].Length);
-            }
-            else
-            {
-                // negative exponent 
-                result = string.Empty;
-                if (newNumber.StartsWith("-"))
-                {
-                    result = "-";
-                    newNumber = newNumber.Substring(1);
-                }
-                result += "0" + decSeparator + GetZeros(exponentValue + decimalParts[0].Length) + newNumber;
-                result = result.TrimEnd('0');
-            }
-            return result;
-        }
-
-        public static string GetZeros(int zeroCount)
-        {
-            if (zeroCount < 0)
-                zeroCount = System.Math.Abs(zeroCount);
-            return new string('0', zeroCount);
-        }
-
-        public static string ToCHex(this int i)
-        {
-            if (i < 10 && i > -1)
-                return i.ToString(NumberFormatInfo.InvariantInfo);
-            else
-                return "0x" + i.ToString("X");
-        }
-
-        public static string ToCHex(this uint i)
-        {
-            if (i < 10)
-                return i.ToString(NumberFormatInfo.InvariantInfo);
-            else
-                return "0x" + i.ToString("X");
-        }
-
-        public static string ToCHex(this ulong i)
-        {
-            if (i < 10)
-                return i.ToString(NumberFormatInfo.InvariantInfo);
-            else
-                return "0x" + i.ToString("X");
         }
 
         public static string ToCHex(this ushort i)

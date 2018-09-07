@@ -57,6 +57,13 @@ namespace SonicRetro.SAModel
 			return y;
 		}
 
+		public static byte[] GetBytes(double value)
+		{
+			byte[] y = BitConverter.GetBytes(value);
+			SwapEndian(y);
+			return y;
+		}
+
 		public static ushort ToUInt16(byte[] value, int startIndex)
 		{
 			byte[] y = new byte[2];
@@ -111,6 +118,14 @@ namespace SonicRetro.SAModel
 			Array.Copy(value, startIndex, y, 0, 4);
 			SwapEndian(y);
 			return BitConverter.ToSingle(y, 0);
+		}
+
+		public static double ToDouble(byte[] value, int startIndex)
+		{
+			byte[] y = new byte[8];
+			Array.Copy(value, startIndex, y, 0, 8);
+			SwapEndian(y);
+			return BitConverter.ToDouble(y, 0);
 		}
 
 		private static void SwapEndian(byte[] value)

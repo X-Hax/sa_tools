@@ -26,7 +26,7 @@ namespace ProjectManager.Split
                         return (int)ERRORVALUE.InvalidDataMapping;
                     }
                 }
-                SA_Tools.ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
+                ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
                 Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
                 if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);
                 uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
@@ -236,7 +236,7 @@ namespace ProjectManager.Split
                                 string path = Path.GetDirectoryName(fileOutputPath);
                                 List<string> hashes = new List<string>();
                                 int num = 0;
-                                while (SA_Tools.ByteConverter.ToUInt32(datafile, address + 4) != 0)
+                                while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
                                 {
                                     flags.Add(new DeathZoneFlags(datafile, address));
                                     string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
@@ -280,10 +280,10 @@ namespace ProjectManager.Split
                         case "levelpathlist":
                             {
                                 List<string> hashes = new List<string>();
-                                ushort lvlnum = (ushort)SA_Tools.ByteConverter.ToUInt32(datafile, address);
+                                ushort lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
                                 while (lvlnum != 0xFFFF)
                                 {
-                                    int ptr = SA_Tools.ByteConverter.ToInt32(datafile, address + 4);
+                                    int ptr = ByteConverter.ToInt32(datafile, address + 4);
                                     if (ptr != 0)
                                     {
                                         ptr = (int)((uint)ptr - imageBase);
@@ -293,7 +293,7 @@ namespace ProjectManager.Split
                                         hashes.Add(level.ToString() + ":" + string.Join(",", lvlhashes));
                                     }
                                     address += 8;
-                                    lvlnum = (ushort)SA_Tools.ByteConverter.ToUInt32(datafile, address);
+                                    lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
                                 }
                                 data.MD5Hash = string.Join("|", hashes.ToArray());
                                 nohash = true;
@@ -322,14 +322,14 @@ namespace ProjectManager.Split
 							{
 								Directory.CreateDirectory(fileOutputPath);
 								List<string> hashes = new List<string>();
-								int i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
-									new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, SA_Tools.ByteConverter.ToInt16(datafile, address + 2))
+									new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
 										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
-									i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+									i = ByteConverter.ToInt16(datafile, address);
 								}
 								data.MD5Hash = string.Join("|", hashes.ToArray());
 								nohash = true;

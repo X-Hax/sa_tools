@@ -1,12 +1,12 @@
-﻿using System;
+﻿using FraGag.Compression;
+using SA_Tools;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using FraGag.Compression;
-using SA_Tools;
 
 namespace SA2MessageFileEditor
 {
@@ -113,7 +113,7 @@ namespace SA2MessageFileEditor
 			int off = ByteConverter.ToInt32(fc, 0);
 			while (off != -1)
 			{
-				messages.Add(Message.FromString(HelperFunctions.GetCString(fc, off, encoding)));
+				messages.Add(Message.FromString(fc.GetCString(off, encoding)));
 				address += 4;
 				off = ByteConverter.ToInt32(fc, address);
 			}

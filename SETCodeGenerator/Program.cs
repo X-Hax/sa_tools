@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using Vertex = SonicRetro.SAModel.Vertex;
 using Rotation = SonicRetro.SAModel.Rotation;
+using SonicRetro.SAModel;
 
 namespace SETCodeGenerator
 {

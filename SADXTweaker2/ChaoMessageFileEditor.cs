@@ -1,14 +1,14 @@
-﻿using System;
+﻿using SA_Tools;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SA_Tools;
 
 namespace SADXTweaker2
 {
-    public partial class ChaoMessageFileEditor : Form
+	public partial class ChaoMessageFileEditor : Form
     {
         static readonly string[] langs = { "J", "E", "F", "S", "G" };
         static readonly string filepattern = "{0}_{1}.BIN";
@@ -47,7 +47,7 @@ namespace SADXTweaker2
             int off = ReadInt32BE(file, 0);
             while (off != -1)
             {
-                Messages.Add(HelperFunctions.GetCString(file, off, HelperFunctions.GetEncoding((Languages)language.SelectedIndex)));
+                Messages.Add(file.GetCString(off, HelperFunctions.GetEncoding((Languages)language.SelectedIndex)));
                 address += 4;
                 off = ReadInt32BE(file, address);
             }

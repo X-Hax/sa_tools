@@ -30,7 +30,7 @@ namespace ProjectManager.SplitDLL
                     int ordaddr = dir.AddressOfNameOrdinals;
                     for (int i = 0; i < dir.NumberOfNames; i++)
                     {
-                        string name = HelperFunctions.GetCString(datafile, BitConverter.ToInt32(datafile, nameaddr),
+                        string name = datafile.GetCString(BitConverter.ToInt32(datafile, nameaddr),
                             System.Text.Encoding.ASCII);
                         int addr = BitConverter.ToInt32(datafile,
                             dir.AddressOfFunctions + (BitConverter.ToInt16(datafile, ordaddr) * 4));
@@ -423,13 +423,13 @@ namespace ProjectManager.SplitDLL
 						case "animindexlist":
 							{
 								int c = 0;
-								int i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
 									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 
-									Animation anim = new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, SA_Tools.ByteConverter.ToInt16(datafile, address + 2));
+									Animation anim = new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
 									DllItemInfo info = new DllItemInfo()
 									{
 										Export = name,
@@ -440,7 +440,7 @@ namespace ProjectManager.SplitDLL
 									anim.Save(outputFN);
 									output.Files[fileName] = new FileTypeHash("animindex", HelperFunctions.FileHash(outputFN));
 									address += 8;
-									i = SA_Tools.ByteConverter.ToInt16(datafile, address);
+									i = ByteConverter.ToInt16(datafile, address);
 									++c;
 								}
 							}

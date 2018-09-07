@@ -1,12 +1,12 @@
-﻿using System;
+﻿using FraGag.Compression;
+using SA_Tools;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using FraGag.Compression;
-using SA_Tools;
 
 namespace SA2CutsceneTextEditor
 {
