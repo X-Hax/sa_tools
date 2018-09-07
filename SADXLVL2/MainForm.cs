@@ -916,32 +916,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelData.InitSETItems();
 							for (int i = 0; i < LevelData.SETChars.Length; i++)
 							{
-								List<SETItem> list = new List<SETItem>();
-								byte[] setfile = null;
-
 								string formatted = string.Format(setstr, LevelData.SETChars[i]);
 								string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
 
 								string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
 
-								if(File.Exists(useSetPath)) setfile = File.ReadAllBytes(useSetPath);
-
-								if (setfile != null)
+								if (File.Exists(useSetPath))
 								{
 									progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
-
-									int count = BitConverter.ToInt32(setfile, 0);
-									int address = 0x20;
-									for (int j = 0; j < count; j++)
-									{
-										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-										SETItem ent = new SETItem(setfile, address, selectedItems);
-										list.Add(ent);
-										address += 0x20;
-									}
+									LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
 								}
-								LevelData.AssignSetList(i, list);
+								else
+									LevelData.AssignSetList(i, new List<SETItem>());
 							}
 						}
 						else
