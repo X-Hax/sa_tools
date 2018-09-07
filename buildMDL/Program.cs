@@ -1,13 +1,14 @@
-﻿using System;
+﻿using SA_Tools;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SplitMDLIniFile;
-using SonicRetro.SAModel;
+using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace buildMDL
 {
-    class Program
+	class Program
     {
         static void Main(string[] args)
         {
