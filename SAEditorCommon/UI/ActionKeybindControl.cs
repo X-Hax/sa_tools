@@ -29,7 +29,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
             this.actionName = actionName;
 
             groupBox1.Text = actionName;
-            descriptionLabel.Text = string.Format("Description: {0}", description);
+            descriptionTextBox.Text = description;
 
             // fill our key controls
             mainKeyDropDown.Items.Clear();
