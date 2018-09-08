@@ -16,7 +16,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
 		public virtual void PointTo(SETItem item, Vertex location) { }
-        public abstract Matrix GetHandleMatrix(SETItem item);
+		public abstract Matrix GetHandleMatrix(SETItem item);
 		public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }
@@ -149,7 +149,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, Type type, string category, string description, object defaultValue, string typeConverter, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), getMethod, setMethod) { }
+			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -167,7 +168,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, string type, string category, string description, object defaultValue, Type typeConverter, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, getMethod, setMethod) { }
+			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -226,7 +228,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, Type type, string category, string description, object defaultValue, string typeConverter, Dictionary<string, int> @enum, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), @enum, getMethod, setMethod) { }
+			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), @enum, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -245,7 +248,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, string type, string category, string description, object defaultValue, Type typeConverter, Dictionary<string, int> @enum, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, @enum, getMethod, setMethod) { }
+			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, @enum, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -438,7 +442,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="name">The name of the verb displayed in the property grid.</param>
 		/// <param name="method">The method called when clicked.</param>
 		public VerbSpec(string name, Action<SETItem> method)
-		{ 
+		{
 			this.name = name;
 			this.method = method;
 		}

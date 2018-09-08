@@ -56,16 +56,16 @@ namespace SADXObjectDefinitions.WindyValley
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position);

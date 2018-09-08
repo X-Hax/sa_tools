@@ -1,18 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SharpDX.Mathematics;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.Properties;
-
-using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -36,27 +30,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		// state tracking variables
 		private int selectedModelIndex = -1;
 		public Attach SelectedModel
-        {
-            get { return (selectedModelIndex >= 0) ? modelList[selectedModelIndex].Value : null; }
-            set 
-		    {
-                if (!IsDesignMode())
-                {
-                    selectedModelIndex = -1;
-                    selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
+		{
+			get { return (selectedModelIndex >= 0) ? modelList[selectedModelIndex].Value : null; }
+			set
+			{
+				if (!IsDesignMode())
+				{
+					selectedModelIndex = -1;
+					selectedModelIndex = modelList.FindIndex(item => item.Key == value.GetHashCode());
 
-                    if (selectedModelIndex >= 0)
-                    {
-                        modelListView.SelectedItems.Clear();
-                        modelListView.Items[selectedModelIndex].Selected = true;
-                        modelListView.Select();
-                    }
-                    else
-                    {
-                        modelListView.SelectedItems.Clear();
-                    }
-                }
-		    }
+					if (selectedModelIndex >= 0)
+					{
+						modelListView.SelectedItems.Clear();
+						modelListView.Items[selectedModelIndex].Selected = true;
+						modelListView.Select();
+					}
+					else
+					{
+						modelListView.SelectedItems.Clear();
+					}
+				}
+			}
 		}
 
 		#region Rendering Variables
@@ -82,135 +76,135 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			InitializeComponent();
 
-            if (!IsDesignMode())
-            {
+			if (!IsDesignMode())
+			{
 
-                SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-                modelList = new List<KeyValuePair<int, Attach>>();
-                attachListRenders = new List<KeyValuePair<int, Bitmap>>();
-                meshes = new List<Direct3D.Mesh>();
-                njs_object = new NJS_OBJECT();
+				SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+				modelList = new List<KeyValuePair<int, Attach>>();
+				attachListRenders = new List<KeyValuePair<int, Bitmap>>();
+				meshes = new List<Direct3D.Mesh>();
+				njs_object = new NJS_OBJECT();
 
-                modelListView.LargeImageList = new ImageList();
-                modelListView.HideSelection = false;
+				modelListView.LargeImageList = new ImageList();
+				modelListView.HideSelection = false;
 
-                panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
-                defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
+				panelCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
+				defaultCam = new EditorCamera(1000) { mode = 1, MoveSpeed = 6, Pitch = 0xf5b0 };
 
-                splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
-            }
+				splitContainer1.Panel2.MouseWheel += Panel2_MouseWheel;
+			}
 		}
 
 		public void InitRenderer()
 		{
 			d3dDevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0,
-                DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded,
-                    new PresentParameters
-                    {
-                        Windowed = true,
-                        SwapEffect = SwapEffect.Discard,
-                        EnableAutoDepthStencil = true,
-                        AutoDepthStencilFormat = Format.D24X8
-                    });
+				DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded,
+					new PresentParameters
+					{
+						Windowed = true,
+						SwapEffect = SwapEffect.Discard,
+						EnableAutoDepthStencil = true,
+						AutoDepthStencilFormat = Format.D24X8
+					});
 			defaultRenderTarget = d3dDevice.GetRenderTarget(0);
 			screenCenter = new System.Drawing.Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
 			d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
 			//textSprite = new Sprite(d3dDevice);
 
 			renderFailureBitmap = new Bitmap(2, 2, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-			for (int h = 0; h < 2; h++ )
+			for (int h = 0; h < 2; h++)
 			{
 				for (int v = 0; v < 2; v++) renderFailureBitmap.SetPixel(h, v, System.Drawing.Color.Purple);
 			}
 
 			thumbnailLoadingBitmap = Resources.Hourglass;
 
-            SetDefaultLights(d3dDevice);
+			SetDefaultLights(d3dDevice);
 
 			#region Setup Font
 			//onscreenFont = new Microsoft.DirectX.Direct3D.Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, CharacterSet.Oem, Precision.Default, FontQuality.Default, PitchAndFamily.FamilyDoNotCare, "Verdana");
 			#endregion
 		}
-        #endregion
+		#endregion
 
-        public static void SetDefaultLights(Device d3dDevice)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                d3dDevice.EnableLight(i, false);
-            }
+		public static void SetDefaultLights(Device d3dDevice)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				d3dDevice.EnableLight(i, false);
+			}
 
-            #region Key Light
-            Light l0 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = System.Drawing.Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(1, 1, 1, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
-            };
-            d3dDevice.SetLight(0, ref l0);
-            d3dDevice.EnableLight(0, true);
-            #endregion
+			#region Key Light
+			Light l0 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = System.Drawing.Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(1, 1, 1, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
+			};
+			d3dDevice.SetLight(0, ref l0);
+			d3dDevice.EnableLight(0, true);
+			#endregion
 
-            #region Fill Light
-            Light l1 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = System.Drawing.Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
-            };
-            d3dDevice.SetLight(1, ref l1);
-            d3dDevice.EnableLight(1, true);
-            #endregion
+			#region Fill Light
+			Light l1 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = System.Drawing.Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
+			};
+			d3dDevice.SetLight(1, ref l1);
+			d3dDevice.EnableLight(1, true);
+			#endregion
 
-            #region Back Light
-            Light l2 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = System.Drawing.Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
-            };
-            d3dDevice.SetLight(2, ref l2);
-            d3dDevice.EnableLight(2, true);
-            #endregion
-        }
+			#region Back Light
+			Light l2 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = System.Drawing.Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
+			};
+			d3dDevice.SetLight(2, ref l2);
+			d3dDevice.EnableLight(2, true);
+			#endregion
+		}
 
-        #region Cleanup / Disposal Methods
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+		#region Cleanup / Disposal Methods
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
 
-            if(disposing)
-            {
-                if(renderFailureBitmap != null) renderFailureBitmap.Dispose();
-                //if(textSprite != null) textSprite.Dispose();
-                if(screenRenderTexture != null) screenRenderTexture.Dispose();
-                if(defaultRenderTarget != null) defaultRenderTarget.Dispose();
-                //if(onscreenFont != null) onscreenFont.Dispose();
-                if(d3dDevice != null) d3dDevice.Dispose();
-            }
+			if (disposing)
+			{
+				if (renderFailureBitmap != null) renderFailureBitmap.Dispose();
+				//if(textSprite != null) textSprite.Dispose();
+				if (screenRenderTexture != null) screenRenderTexture.Dispose();
+				if (defaultRenderTarget != null) defaultRenderTarget.Dispose();
+				//if(onscreenFont != null) onscreenFont.Dispose();
+				if (d3dDevice != null) d3dDevice.Dispose();
+			}
 
-            base.Dispose(disposing);
-        }
-        #endregion
+			base.Dispose(disposing);
+		}
+		#endregion
 
-        #region State Management Methods
-        public void Clear()
+		#region State Management Methods
+		public void Clear()
 		{
 			modelList.Clear();
 			attachListRenders.Clear();
@@ -241,7 +235,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				meshes.Add(model.CreateD3DMesh());
 
 				if (Visible) RenderModel(modelList.Count - 1, true); // todo: I think these Add calls are getting called while a separate thread is open, and thus causing locking issues
-				// perhaps we could find a way to defer all of this until after the file load operation is complete
+																	 // perhaps we could find a way to defer all of this until after the file load operation is complete
 
 				if (!suppressingListUpateEvents)
 				{
@@ -289,16 +283,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			suppressingListUpateEvents = false;
 		}
 
-        private bool IsDesignMode()
-        {
-            //return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+		private bool IsDesignMode()
+		{
+			//return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
-            if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
-            {
-                return true;
-            }
-            return false;
-        }
+			if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
+			{
+				return true;
+			}
+			return false;
+		}
 		#endregion
 
 		#region Rendering Methods
@@ -322,12 +316,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			d3dDevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(camera.FOV, camera.Aspect, 1, cameraDistance));
 			d3dDevice.SetTransform(TransformState.View, camera.ToMatrix());
 			UpdateTitleBar(camera);
-            d3dDevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
-            d3dDevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
-            d3dDevice.Material = new Material { Ambient = System.Drawing.Color.White.ToRawColor4() };
-            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
-            d3dDevice.SetRenderState(RenderState.ZEnable, true);
-            if (renderToTexture)
+			d3dDevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
+			d3dDevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
+			d3dDevice.Material = new Material { Ambient = System.Drawing.Color.White.ToRawColor4() };
+			d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
+			d3dDevice.SetRenderState(RenderState.ZEnable, true);
+			if (renderToTexture)
 			{
 				if (screenRenderTexture == null) // we can't render onto a null surface
 				{
@@ -348,21 +342,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 			else // invalid selection, show a message telling the user to select something
 			{
-                // see if we can hide the panel's picture and/or draw an actual label here
+				// see if we can hide the panel's picture and/or draw an actual label here
 				//onscreenFont.DrawText(textSprite, "No model selected.", screenCenter, Color.Black);
 			}
 
 			d3dDevice.EndScene(); //all drawings before this line
 			d3dDevice.Present();
 
-			if(renderToTexture)
+			if (renderToTexture)
 			{
 				int renderIndex = -1;
 				renderIndex = attachListRenders.FindIndex(item => item.Key == modelList[modelToRender].Key);
 
 				// convert our texture into a bitmap, add it to the rendertextures list
 				Surface surface = screenRenderTexture.GetSurfaceLevel(0);
-                Stream surfaceStream = Surface.ToStream(surface, ImageFileFormat.Bmp);
+				Stream surfaceStream = Surface.ToStream(surface, ImageFileFormat.Bmp);
 				attachListRenders[renderIndex] = new KeyValuePair<int, Bitmap>(modelList[modelToRender].Key, new Bitmap(surfaceStream));
 			}
 		}
@@ -380,12 +374,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void SetPanelCam()
 		{
-			if(selectedModelIndex >= 0) panelCam.MoveToShowBounds(modelList[selectedModelIndex].Value.Bounds);
+			if (selectedModelIndex >= 0) panelCam.MoveToShowBounds(modelList[selectedModelIndex].Value.Bounds);
 		}
 
 		private void modelListView_SelectedIndexChanged(object sender, EventArgs e)
 		{
-            selectedModelIndex = (modelListView.SelectedIndices.Count > 0) ? modelListView.SelectedIndices[0] : -1;
+			selectedModelIndex = (modelListView.SelectedIndices.Count > 0) ? modelListView.SelectedIndices[0] : -1;
 
 			SetPanelCam();
 			RenderModel(selectedModelIndex, false);
@@ -393,45 +387,45 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (SelectionChanged != null) SelectionChanged(this, selectedModelIndex, SelectedModel);
 		}
 
-        private void ModelLibraryControl_VisibleChanged(object sender, EventArgs e)
-        {
-            if (!IsDesignMode())
-            {
+		private void ModelLibraryControl_VisibleChanged(object sender, EventArgs e)
+		{
+			if (!IsDesignMode())
+			{
 
-            }
-        }
+			}
+		}
 
-        public void FullReRender()
-        {
+		public void FullReRender()
+		{
 			RenderAllModels();
 			PopulateListView();
 			RenderModel(selectedModelIndex, false);
-        }
+		}
 
-        private void ModelLibraryControl_Resize(object sender, EventArgs e)
-        {
-            if (!IsDesignMode())
-            {
-                if(d3dDevice != null) RenderModel(selectedModelIndex, false);
-            }
-        }
+		private void ModelLibraryControl_Resize(object sender, EventArgs e)
+		{
+			if (!IsDesignMode())
+			{
+				if (d3dDevice != null) RenderModel(selectedModelIndex, false);
+			}
+		}
 
-        #region Input Event Methods
-        bool zoomKeyDown = false, lookKeyDown = false;
+		#region Input Event Methods
+		bool zoomKeyDown = false, lookKeyDown = false;
 		System.Drawing.Point mouseLast;
 		private void splitContainer1_Panel2_MouseMove(object sender, MouseEventArgs e)
 		{
-            System.Drawing.Point mouseEvent = e.Location;
+			System.Drawing.Point mouseEvent = e.Location;
 			if (mouseLast == System.Drawing.Point.Empty)
 			{
 				mouseLast = mouseEvent;
 				return;
 			}
 
-            System.Drawing.Point mouseDelta = mouseEvent - (Size)mouseLast;
+			System.Drawing.Point mouseDelta = mouseEvent - (Size)mouseLast;
 			ushort mouseWrapThreshold = 2;
 			bool mouseWrapScreen = true;
-			bool performedWrap=false;
+			bool performedWrap = false;
 
 			if (e.Button != MouseButtons.None)
 			{
@@ -508,7 +502,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void modelListView_MouseDown(object sender, MouseEventArgs e)
 		{
-			if(selectedModelIndex >= 0)
+			if (selectedModelIndex >= 0)
 			{
 				// save our drag start position
 				Size dragSize = SystemInformation.DragSize;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using SharpDX;
@@ -17,14 +16,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Events
 		public static event Action StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
 		public static event Action PointOperation = delegate { };
-        public static event Action CharacterChanged = delegate { };
-        #endregion
+		public static event Action CharacterChanged = delegate { };
+		#endregion
 
-        private static Stack<string> changes = new Stack<string>();
-        public static string GetRecentChange()
-        {
-            return changes.Peek();
-        }
+		private static Stack<string> changes = new Stack<string>();
+		public static string GetRecentChange()
+		{
+			return changes.Peek();
+		}
 
 		private static bool suppressEvents = false;
 		public static bool SuppressEvents { get { return suppressEvents; } set { suppressEvents = value; } }
@@ -35,20 +34,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static Dictionary<string, Texture[]> Textures;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
-        private static int character;
+		private static int character;
 		public static int Character
-        {
-            get { return character; }
-            set
-            {
-                int oldCharacter = character;
-                character = value;
-                if (oldCharacter != character) CharacterChanged.Invoke();
-            }
-        }
+		{
+			get { return character; }
+			set
+			{
+				int oldCharacter = character;
+				character = value;
+				if (oldCharacter != character) CharacterChanged.Invoke();
+			}
+		}
 		public static string LevelName;
 		public static string SETName;
-        public static List<ObjectDefinition> ObjDefs;
+		public static List<ObjectDefinition> ObjDefs;
 		public static List<ObjectDefinition> MisnObjDefs;
 		public static LevelDefinition leveleff;
 		public static StartPosItem[] StartPositions;
@@ -57,20 +56,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		// level geometry items
 		private static List<LevelItem> levelItems = new List<LevelItem>();
 
-        public static int LevelItemCount { get { return levelItems.Count; } }
-        public static LevelItem GetLevelitemAtIndex(int index)
-        {
-            return levelItems[index];
-        }
-        public static IEnumerable<LevelItem> LevelItems { get { return levelItems; } }
-        public static int GetIndexOfItem(LevelItem item)
-        {
-            if (levelItems.Contains(item))
-            {
-                return levelItems.IndexOf(item);
-            }
-            else return -1;
-        }
+		public static int LevelItemCount { get { return levelItems.Count; } }
+		public static LevelItem GetLevelitemAtIndex(int index)
+		{
+			return levelItems[index];
+		}
+		public static IEnumerable<LevelItem> LevelItems { get { return levelItems; } }
+		public static int GetIndexOfItem(LevelItem item)
+		{
+			if (levelItems.Contains(item))
+			{
+				return levelItems.IndexOf(item);
+			}
+			else return -1;
+		}
 
 		// set items
 		public static void InitSETItems()
@@ -141,7 +140,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		public static void InvalidateRenderState()
 		{
-			if(!suppressEvents) StateChanged?.Invoke();
+			if (!suppressEvents) StateChanged?.Invoke();
 		}
 
 		public static void BeginPointOperation()
@@ -160,36 +159,36 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (geo != null && geo.COL != null)
 				geo.COL.Clear();
 
-            changes.Push("Clear Level Geometry");
+			changes.Push("Clear Level Geometry");
 			InvalidateRenderState();
 		}
 
-        public static void ClearLevelItems()
-        {
-            if (levelItems != null)
-            {
-                levelItems.Clear();
-            }
-            else levelItems = new List<LevelItem>();
+		public static void ClearLevelItems()
+		{
+			if (levelItems != null)
+			{
+				levelItems.Clear();
+			}
+			else levelItems = new List<LevelItem>();
 
-            changes.Push("Clear Level Items");
-        }
+			changes.Push("Clear Level Items");
+		}
 
-        public static void RemoveLevelItem(LevelItem item)
-        {
-            LevelData.levelItems.Remove(item);
+		public static void RemoveLevelItem(LevelItem item)
+		{
+			LevelData.levelItems.Remove(item);
 
-            changes.Push("Remove level item");
+			changes.Push("Remove level item");
 			InvalidateRenderState();
-        }
+		}
 
-        public static void AddLevelItem(LevelItem item)
-        {
-            LevelData.levelItems.Add(item);
+		public static void AddLevelItem(LevelItem item)
+		{
+			LevelData.levelItems.Add(item);
 
-            changes.Push("Add level item");
+			changes.Push("Add level item");
 			InvalidateRenderState();
-        }
+		}
 
 		/// <summary>
 		/// This will clear all animated level models.
@@ -201,7 +200,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				geo.Anim.Clear();
 				InvalidateRenderState();
 
-                changes.Push("Clear Level Animations");
+				changes.Push("Clear Level Animations");
 			}
 		}
 		#endregion
@@ -232,9 +231,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			for (uint i = 0; i < SETChars.Length; i++)
 				setItems[i] = new List<SETItem>();
 
-            changes.Push("Clear SET Items");
+			changes.Push("Clear SET Items");
 
-            InvalidateRenderState();
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -247,8 +246,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return;
 
 			setItems[character] = new List<SETItem>();
-            changes.Push("Clear SET Items");
-            InvalidateRenderState();
+			changes.Push("Clear SET Items");
+			InvalidateRenderState();
 		}
 
 		#endregion
@@ -264,8 +263,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			for (uint i = 0; i < SETChars.Length; i++)
 				CAMItems[i] = new List<CAMItem>();
 
-            changes.Push("Clear CAM Items");
-            InvalidateRenderState();
+			changes.Push("Clear CAM Items");
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -278,8 +277,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return;
 
 			CAMItems[character] = new List<CAMItem>();
-            changes.Push("Clear CAM Items");
-            InvalidateRenderState();
+			changes.Push("Clear CAM Items");
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -293,8 +292,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			for (uint i = 0; i < SETChars.Length; i++)
 				MissionSETItems[i] = new List<MissionSETItem>();
 
-            changes.Push("Clear MI SET Items");
-            InvalidateRenderState();
+			changes.Push("Clear MI SET Items");
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -307,8 +306,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return;
 
 			MissionSETItems[character] = new List<MissionSETItem>();
-            changes.Push("Clear MI SET Items");
-            InvalidateRenderState();
+			changes.Push("Clear MI SET Items");
+			InvalidateRenderState();
 		}
 
 		/// <summary>
@@ -322,7 +321,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ClearLevelGeoAnims();
 			ClearLevelGeometry();
 
-            changes.Push("Clear Stage");
+			changes.Push("Clear Stage");
 		}
 
 		public static string GetStats()
@@ -387,7 +386,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			selection.Clear();
 			selection.Add(newItems);
 
-            changes.Push("Duplicate Item");
+			changes.Push("Duplicate Item");
 
 			InvalidateRenderState();
 

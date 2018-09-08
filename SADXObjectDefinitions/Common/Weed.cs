@@ -63,17 +63,17 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override void SetOrientation(SETItem item, Vertex direction)
+		public override void SetOrientation(SETItem item, Vertex direction)
 		{
 			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;

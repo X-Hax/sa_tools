@@ -47,7 +47,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			COL.CalculateBounds();
 			Paste();
 
-            GetHandleMatrix();
+			GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			col.Model.ProcessVertexData();
 			Mesh = col.Model.Attach.CreateD3DMesh();
 
-            GetHandleMatrix();
+			GetHandleMatrix();
 		}
 
 		/// <summary>
@@ -114,7 +114,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; GetHandleMatrix(); } }
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
-        public override BoundingSphere Bounds { get { return COL.Bounds; } }
+		public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
@@ -139,14 +139,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			LevelData.geo.COL.Add(COL);
 
-            LevelData.AddLevelItem(this);
+			LevelData.AddLevelItem(this);
 		}
 
 		public override void Delete()
 		{
-            LevelData.geo.COL.Remove(COL);
+			LevelData.geo.COL.Remove(COL);
 
-            LevelData.RemoveLevelItem(this);
+			LevelData.RemoveLevelItem(this);
 		}
 
 		public void RegenerateMesh() => mesh = COL.Model.Attach.CreateD3DMesh();
@@ -201,15 +201,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-        protected override void GetHandleMatrix()
-        {
-            position = Position;
-            rotation = Rotation;
-            base.GetHandleMatrix();
-        }
+		protected override void GetHandleMatrix()
+		{
+			position = Position;
+			rotation = Rotation;
+			base.GetHandleMatrix();
+		}
 
-        #region Surface Flag Accessors
-        public bool Solid
+		#region Surface Flag Accessors
+		public bool Solid
 		{
 			get { return (COL.SurfaceFlags & SurfaceFlags.Solid) == SurfaceFlags.Solid; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SurfaceFlags.Solid) | (value ? SurfaceFlags.Solid : 0); }
@@ -284,14 +284,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			LevelData.InvalidateRenderState();
 		}
 
-        public Vertex GetScale()
-        {
-            return COL.Model.Scale;
-        }
+		public Vertex GetScale()
+		{
+			return COL.Model.Scale;
+		}
 
-        public void SetScale(Vertex scale)
-        {
-            COL.Model.Scale = scale;
-        }
-    }
+		public void SetScale(Vertex scale)
+		{
+			COL.Model.Scale = scale;
+		}
+	}
 }

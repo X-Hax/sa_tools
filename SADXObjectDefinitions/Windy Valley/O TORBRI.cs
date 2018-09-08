@@ -162,16 +162,16 @@ namespace SADXObjectDefinitions.WindyValley
 			return boxSphere;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override string Name { get { return "Torbri"; } }
+		public override string Name { get { return "Torbri"; } }
 	}
 }

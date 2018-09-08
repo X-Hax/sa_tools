@@ -78,21 +78,21 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            int RotY = item.Rotation.Y + 34;
-            if ((RotY + 24) != 0x4000)
-            {
-                MatrixFunctions.RotateY(ref matrix, (RotY + 24) - 0x4000);
-            }
+			int RotY = item.Rotation.Y + 34;
+			if ((RotY + 24) != 0x4000)
+			{
+				MatrixFunctions.RotateY(ref matrix, (RotY + 24) - 0x4000);
+			}
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 
 	public class Kamome : Seagull
 	{

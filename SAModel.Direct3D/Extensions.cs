@@ -17,43 +17,43 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Vector3 ToVector3(this Rotation rotation) => new Vector3(rotation.XDeg, rotation.YDeg, rotation.ZDeg);
 
-        #region Project Point On Plane
-        // acquired from here: https://stackoverflow.com/questions/28653628/getting-closest-point-on-a-plane
-        public static Vector3 ProjectPointOnPlane(Vector3 planeNormal, Vector3 planePoint, Vector3 point)
-        {
-            float distance;
-            Vector3 translationVector;
+		#region Project Point On Plane
+		// acquired from here: https://stackoverflow.com/questions/28653628/getting-closest-point-on-a-plane
+		public static Vector3 ProjectPointOnPlane(Vector3 planeNormal, Vector3 planePoint, Vector3 point)
+		{
+			float distance;
+			Vector3 translationVector;
 
-            //First calculate the distance from the point to the plane:
-            distance = SignedDistancePlanePoint(planeNormal, planePoint, point);
+			//First calculate the distance from the point to the plane:
+			distance = SignedDistancePlanePoint(planeNormal, planePoint, point);
 
-            //Reverse the sign of the distance
-            distance *= -1;
+			//Reverse the sign of the distance
+			distance *= -1;
 
-            //Get a translation vector
-            translationVector = SetVectorLength(planeNormal, distance);
+			//Get a translation vector
+			translationVector = SetVectorLength(planeNormal, distance);
 
-            //Translate the point to form a projection
-            return point + translationVector;
-        }
+			//Translate the point to form a projection
+			return point + translationVector;
+		}
 
-        //Get the shortest distance between a point and a plane. The output is signed so it holds information
-        //as to which side of the plane normal the point is.
-        public static float SignedDistancePlanePoint(Vector3 planeNormal, Vector3 planePoint, Vector3 point)
-        {
-            return Vector3.Dot(planeNormal, (point - planePoint));
-        }
+		//Get the shortest distance between a point and a plane. The output is signed so it holds information
+		//as to which side of the plane normal the point is.
+		public static float SignedDistancePlanePoint(Vector3 planeNormal, Vector3 planePoint, Vector3 point)
+		{
+			return Vector3.Dot(planeNormal, (point - planePoint));
+		}
 
-        //create a vector of direction "vector" with length "size"
-        public static Vector3 SetVectorLength(Vector3 vector, float size)
-        {
-            //normalize the vector
-            Vector3 vectorNormalized = Vector3.Normalize(vector);
+		//create a vector of direction "vector" with length "size"
+		public static Vector3 SetVectorLength(Vector3 vector, float size)
+		{
+			//normalize the vector
+			Vector3 vectorNormalized = Vector3.Normalize(vector);
 
-            //scale the vector
-            return vectorNormalized *= size;
-        }
-        #endregion
+			//scale the vector
+			return vectorNormalized *= size;
+		}
+		#endregion
 
 		public static Vertex ToVertex(this Vector3 input) => new Vertex(input.X, input.Y, input.Z);
 
@@ -409,12 +409,12 @@ namespace SonicRetro.SAModel.Direct3D
 				switch (chunk.Type)
 				{
 					case ChunkType.Bits_BlendAlpha:
-						{
-							PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
-							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
-							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
-						}
-						break;
+					{
+						PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
+						MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+						MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
+					}
+					break;
 					case ChunkType.Bits_MipmapDAdjust:
 						break;
 					case ChunkType.Bits_SpecularExponent:
@@ -431,17 +431,17 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 					case ChunkType.Tiny_TextureID:
 					case ChunkType.Tiny_TextureID2:
-						{
-							PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
-							MaterialBuffer.ClampU = c2.ClampU;
-							MaterialBuffer.ClampV = c2.ClampV;
-							MaterialBuffer.FilterMode = c2.FilterMode;
-							MaterialBuffer.FlipU = c2.FlipU;
-							MaterialBuffer.FlipV = c2.FlipV;
-							MaterialBuffer.SuperSample = c2.SuperSample;
-							MaterialBuffer.TextureID = c2.TextureID;
-						}
-						break;
+					{
+						PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
+						MaterialBuffer.ClampU = c2.ClampU;
+						MaterialBuffer.ClampV = c2.ClampV;
+						MaterialBuffer.FilterMode = c2.FilterMode;
+						MaterialBuffer.FlipU = c2.FlipU;
+						MaterialBuffer.FlipV = c2.FlipV;
+						MaterialBuffer.SuperSample = c2.SuperSample;
+						MaterialBuffer.TextureID = c2.TextureID;
+					}
+					break;
 					case ChunkType.Material_Diffuse:
 					case ChunkType.Material_Ambient:
 					case ChunkType.Material_DiffuseAmbient:
@@ -456,19 +456,19 @@ namespace SonicRetro.SAModel.Direct3D
 					case ChunkType.Material_DiffuseSpecular2:
 					case ChunkType.Material_AmbientSpecular2:
 					case ChunkType.Material_DiffuseAmbientSpecular2:
+					{
+						PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+						MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+						MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
+						if (c2.Diffuse.HasValue)
+							MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
+						if (c2.Specular.HasValue)
 						{
-							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
-							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
-							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
-							if (c2.Diffuse.HasValue)
-								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
-							if (c2.Specular.HasValue)
-							{
-								MaterialBuffer.SpecularColor = c2.Specular.Value;
-								MaterialBuffer.Exponent = c2.SpecularExponent;
-							}
+							MaterialBuffer.SpecularColor = c2.Specular.Value;
+							MaterialBuffer.Exponent = c2.SpecularExponent;
 						}
-						break;
+					}
+					break;
 					case ChunkType.Strip_Strip:
 					case ChunkType.Strip_StripUVN:
 					case ChunkType.Strip_StripUVH:
@@ -481,54 +481,54 @@ namespace SonicRetro.SAModel.Direct3D
 					case ChunkType.Strip_Strip2:
 					case ChunkType.Strip_StripUVN2:
 					case ChunkType.Strip_StripUVH2:
+					{
+						PolyChunkStrip c2 = (PolyChunkStrip)chunk;
+						MaterialBuffer.DoubleSided = c2.DoubleSide;
+						MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
+						MaterialBuffer.FlatShading = c2.FlatShading;
+						MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
+						MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
+						MaterialBuffer.UseAlpha = c2.UseAlpha;
+						bool hasVColor = false;
+						switch (chunk.Type)
 						{
-							PolyChunkStrip c2 = (PolyChunkStrip)chunk;
-							MaterialBuffer.DoubleSided = c2.DoubleSide;
-							MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
-							MaterialBuffer.FlatShading = c2.FlatShading;
-							MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
-							MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
-							MaterialBuffer.UseAlpha = c2.UseAlpha;
-							bool hasVColor = false;
-							switch (chunk.Type)
-							{
-								case ChunkType.Strip_StripColor:
-								case ChunkType.Strip_StripUVNColor:
-								case ChunkType.Strip_StripUVHColor:
-									hasVColor = true;
-									break;
-							}
-							bool hasUV = false;
-							switch (chunk.Type)
-							{
-								case ChunkType.Strip_StripUVN:
-								case ChunkType.Strip_StripUVH:
-								case ChunkType.Strip_StripUVNColor:
-								case ChunkType.Strip_StripUVHColor:
-								case ChunkType.Strip_StripUVN2:
-								case ChunkType.Strip_StripUVH2:
-									hasUV = true;
-									break;
-							}
-							List<Poly> polys = new List<Poly>();
-							List<VertexData> verts = new List<VertexData>();
-							foreach (PolyChunkStrip.Strip strip in c2.Strips)
-							{
-								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
-								for (int k = 0; k < strip.Indexes.Length; k++)
-								{
-									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-										VertexBuffer[strip.Indexes[k]].Position,
-										VertexBuffer[strip.Indexes[k]].Normal,
-										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
-										hasUV ? strip.UVs[k] : null));
-								}
-								polys.Add(str);
-							}
-							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
-							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
+							case ChunkType.Strip_StripColor:
+							case ChunkType.Strip_StripUVNColor:
+							case ChunkType.Strip_StripUVHColor:
+								hasVColor = true;
+								break;
 						}
-						break;
+						bool hasUV = false;
+						switch (chunk.Type)
+						{
+							case ChunkType.Strip_StripUVN:
+							case ChunkType.Strip_StripUVH:
+							case ChunkType.Strip_StripUVNColor:
+							case ChunkType.Strip_StripUVHColor:
+							case ChunkType.Strip_StripUVN2:
+							case ChunkType.Strip_StripUVH2:
+								hasUV = true;
+								break;
+						}
+						List<Poly> polys = new List<Poly>();
+						List<VertexData> verts = new List<VertexData>();
+						foreach (PolyChunkStrip.Strip strip in c2.Strips)
+						{
+							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+							for (int k = 0; k < strip.Indexes.Length; k++)
+							{
+								str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
+									VertexBuffer[strip.Indexes[k]].Position,
+									VertexBuffer[strip.Indexes[k]].Normal,
+									hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+									hasUV ? strip.UVs[k] : null));
+							}
+							polys.Add(str);
+						}
+						result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+						MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
+					}
+					break;
 				}
 			}
 			return result;
@@ -622,8 +622,8 @@ namespace SonicRetro.SAModel.Direct3D
 			modelindex++;
 			obj.ProcessTransforms(transform);
 
-            bool attachValid = obj.Attach != null;
-            bool meshValid = modelindex >= 0 && modelindex < meshes.Length && meshes[modelindex] != null;
+			bool attachValid = obj.Attach != null;
+			bool meshValid = modelindex >= 0 && modelindex < meshes.Length && meshes[modelindex] != null;
 
 			if (attachValid & meshValid)
 			{
@@ -1339,32 +1339,32 @@ namespace SonicRetro.SAModel.Direct3D
 					}
 					wroteNormals = true;
 				}
-                #endregion
+				#endregion
 
-                #region Outputting Meshes
-                int meshID = 0;
+				#region Outputting Meshes
+				int meshID = 0;
 				foreach (NJS_MESHSET set in basicAttach.Mesh)
 				{
 					if (basicAttach.Material.Count > 0)
 					{
-                        /*if (basicAttach.Material[set.MaterialID].UseTexture)
+						/*if (basicAttach.Material[set.MaterialID].UseTexture)
 						{
 							objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, basicAttach.Material[set.MaterialID].TextureID);
 						}*/
 
 
-                        int materialIndexInList = 0;
+						int materialIndexInList = 0;
 
-                        NJS_MATERIAL material = basicAttach.Material[meshID];
+						NJS_MATERIAL material = basicAttach.Material[meshID];
 
-                        if(!materials.Contains(material))
-                        {
-                            materials.Add(material);
-                        }
+						if (!materials.Contains(material))
+						{
+							materials.Add(material);
+						}
 
-                        materialIndexInList = materials.IndexOf(material);
+						materialIndexInList = materials.IndexOf(material);
 
-                        objstream.WriteLine("usemtl material_{0}", materialIndexInList);                        
+						objstream.WriteLine("usemtl material_{0}", materialIndexInList);
 					}
 
 					if (set.UV != null)
@@ -1607,7 +1607,7 @@ namespace SonicRetro.SAModel.Direct3D
 						totalUVs += set.UV.Length;
 					}
 
-                    meshID++;
+					meshID++;
 				}
 				#endregion
 
@@ -1764,7 +1764,7 @@ namespace SonicRetro.SAModel.Direct3D
 						else if (polyChunk is PolyChunkTinyTextureID chunkTexID)
 						{
 							//objstream.WriteLine("usemtl {0}_material_{1}", materialPrefix, chunkTexID.TextureID);
-                            // no behavior defined yet
+							// no behavior defined yet
 						}
 					}
 					#endregion

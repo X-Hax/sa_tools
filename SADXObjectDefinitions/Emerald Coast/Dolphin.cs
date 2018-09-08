@@ -67,16 +67,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 
 	public class Dolsw : ObjectDefinition
 	{
@@ -129,13 +129,13 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 }

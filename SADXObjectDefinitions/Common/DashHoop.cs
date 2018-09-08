@@ -100,25 +100,25 @@ namespace SADXObjectDefinitions.Common
 			item.Scale = location;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            int x = item.Rotation.X;
-            int y = item.Rotation.Y;
-            if (!item.Scale.IsEmpty)
-                (item.Position - item.Scale).GetRotation(out x, out y);
+			int x = item.Rotation.X;
+			int y = item.Rotation.Y;
+			if (!item.Scale.IsEmpty)
+				(item.Position - item.Scale).GetRotation(out x, out y);
 
-            MatrixFunctions.RotateY(ref matrix, x);
-            MatrixFunctions.RotateY(ref matrix, y);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Z);
+			MatrixFunctions.RotateY(ref matrix, x);
+			MatrixFunctions.RotateY(ref matrix, y);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Z);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override string Name { get { return "Dash Hoop"; } }
+		public override string Name { get { return "Dash Hoop"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Target", typeof(Vertex), "Extended", null, new Vertex(), (o) => o.Scale, (o, v) => o.Scale = (Vertex)v)

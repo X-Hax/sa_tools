@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SA_Tools;
-using SonicRetro.SAModel;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 {
@@ -16,78 +13,78 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 			InitializeComponent();
 		}
 
-        private string projectFolder = "";
-        private string modFolder = "";
-        private string fileName = "";
+		private string projectFolder = "";
+		private string modFolder = "";
+		private string fileName = "";
 
-        DllIniData IniData;
-        Dictionary<string, bool> itemsToExport = new Dictionary<string, bool>();
+		DllIniData IniData;
+		Dictionary<string, bool> itemsToExport = new Dictionary<string, bool>();
 
-        public void SetProjectFolder(string projectFolder)
-        {
-            this.projectFolder = projectFolder;
-        }
+		public void SetProjectFolder(string projectFolder)
+		{
+			this.projectFolder = projectFolder;
+		}
 
-        public void SetModFolder(string modFolder)
-        {
-            this.modFolder = modFolder;
-        }
+		public void SetModFolder(string modFolder)
+		{
+			this.modFolder = modFolder;
+		}
 
-        public void OpenFile(string fileName)
-        {
-            this.fileName = fileName;
+		public void OpenFile(string fileName)
+		{
+			this.fileName = fileName;
 
-            LoadINIFile(Path.Combine(projectFolder, fileName));
-            ShowDialog();
-        }
+			LoadINIFile(Path.Combine(projectFolder, fileName));
+			ShowDialog();
+		}
 
-        private void LoadINIFile(string fileName)
-        {
-            IniData = DLLModGen.LoadINI(fileName, ref itemsToExport);
-            UpdateListView();
-        }
+		private void LoadINIFile(string fileName)
+		{
+			IniData = DLLModGen.LoadINI(fileName, ref itemsToExport);
+			UpdateListView();
+		}
 
-        private void MainForm_Load(object sender, EventArgs e)
+		private void MainForm_Load(object sender, EventArgs e)
 		{
 
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            using (OpenFileDialog fileDialog = new OpenFileDialog()
-            {
-                DefaultExt = "ini",
-                Filter = "INI Files|*.ini|All Files|*.*"
-            })
-            {
-                fileDialog.InitialDirectory = projectFolder;
-                fileDialog.FileName = fileName + "_data.ini";
+			using (OpenFileDialog fileDialog = new OpenFileDialog()
+			{
+				DefaultExt = "ini",
+				Filter = "INI Files|*.ini|All Files|*.*"
+			})
+			{
+				fileDialog.InitialDirectory = projectFolder;
+				fileDialog.FileName = fileName + "_data.ini";
 
-                if (fileDialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    LoadINIFile(fileDialog.FileName);
-                }
-            }
+				if (fileDialog.ShowDialog(this) == DialogResult.OK)
+				{
+					LoadINIFile(fileDialog.FileName);
+				}
+			}
 		}
 
-        private void UpdateListView()
-        {
-            listView1.BeginUpdate();
-            listView1.Items.Clear();
+		private void UpdateListView()
+		{
+			listView1.BeginUpdate();
+			listView1.Items.Clear();
 
-            foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
-            {
-                KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
+			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
+			{
+				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
 
-                bool modified = exportStatus.Value;
+				bool modified = exportStatus.Value;
 
-                listView1.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); ;
-            }
+				listView1.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); ;
+			}
 
-            listView1.EndUpdate();
-        }
+			listView1.EndUpdate();
+		}
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -118,39 +115,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 
 		private void ExportCPPButton_Click(object sender, EventArgs e)
 		{
-            using (SaveFileDialog fileDialog = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
-            {
-                fileDialog.InitialDirectory = modFolder;
-                fileDialog.FileName = fileName;
+			using (SaveFileDialog fileDialog = new SaveFileDialog() { DefaultExt = "cpp", Filter = "C++ source files|*.cpp", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
+			{
+				fileDialog.InitialDirectory = modFolder;
+				fileDialog.FileName = fileName;
 
-                if (fileDialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    DLLModGen.ExportCPP(IniData, itemsToExport, fileDialog.FileName);
-                }
-            }
+				if (fileDialog.ShowDialog(this) == DialogResult.OK)
+				{
+					DLLModGen.ExportCPP(IniData, itemsToExport, fileDialog.FileName);
+				}
+			}
 		}
 
 		private void ExportINIButton_Click(object sender, EventArgs e)
 		{
-            using (SaveFileDialog fileDialog = new SaveFileDialog() { DefaultExt = "ini", Filter = "INI files|*.ini", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
-            {
-                fileDialog.InitialDirectory = modFolder;
-                fileDialog.FileName = fileName;
+			using (SaveFileDialog fileDialog = new SaveFileDialog() { DefaultExt = "ini", Filter = "INI files|*.ini", InitialDirectory = Environment.CurrentDirectory, RestoreDirectory = true })
+			{
+				fileDialog.InitialDirectory = modFolder;
+				fileDialog.FileName = fileName;
 
-                if (fileDialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    DLLModGen.ExportINI(IniData, itemsToExport, fileDialog.FileName);
-                }
-            }
+				if (fileDialog.ShowDialog(this) == DialogResult.OK)
+				{
+					DLLModGen.ExportINI(IniData, itemsToExport, fileDialog.FileName);
+				}
+			}
 		}
 
-        private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            itemsToExport[e.Item.Text] = e.Item.Checked;
-        }
-    }
+		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+		{
+			itemsToExport[e.Item.Text] = e.Item.Checked;
+		}
+	}
 
-    static class Extensions
+	static class Extensions
 	{
 		internal static List<string> GetLabels(this LandTable land)
 		{

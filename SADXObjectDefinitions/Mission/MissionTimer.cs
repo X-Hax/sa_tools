@@ -44,15 +44,15 @@ namespace SADXObjectDefinitions.Mission
 			new PropertySpec("Frames", typeof(byte), null, null, true, (o) => ((MissionSETItem)o).PRMBytes[7], (o, v) => ((MissionSETItem)o).PRMBytes[7] = (byte)v)
 		};
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 	}
 }

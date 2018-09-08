@@ -33,8 +33,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
 
-            GetHandleMatrix();
-        }
+			GetHandleMatrix();
+		}
 
 		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
 			: base(selectionManager)
@@ -51,8 +51,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			isLoaded = true;
 			objdef = GetObjectDefinition();
 
-            GetHandleMatrix();
-        }
+			GetHandleMatrix();
+		}
 
 		public virtual ObjectDefinition GetObjectDefinition()
 		{
@@ -96,27 +96,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { ClipLevel = (ushort)value; }
 		}
 
-        public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
-        public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
-        protected Vertex scale = new Vertex();
-        public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
+		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		protected Vertex scale = new Vertex();
+		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
-        public Vertex GetScale()
-        {
-            return Scale;
-        }
+		public Vertex GetScale()
+		{
+			return Scale;
+		}
 
-        public void SetScale(Vertex scale)
-        {
-            this.Scale = scale;
-        }
+		public void SetScale(Vertex scale)
+		{
+			this.Scale = scale;
+		}
 
-        protected override void GetHandleMatrix()
-        {
-            transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
-        }
+		protected override void GetHandleMatrix()
+		{
+			transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
+		}
 
-        public override void Paste()
+		public override void Paste()
 		{
 			LevelData.AddSETItem(LevelData.Character, this);
 		}
@@ -293,7 +293,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return this;
 		}
-    }
+	}
 
 	public enum ClipSetting : ushort
 	{

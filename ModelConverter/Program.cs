@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SonicRetro.SAModel;
 using System.Drawing;
 
@@ -173,12 +172,12 @@ namespace ModelConverter
 							switch (chunk.Type)
 							{
 								case ChunkType.Bits_BlendAlpha:
-									{
-										PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
-										material.SourceAlpha = c2.SourceAlpha;
-										material.DestinationAlpha = c2.DestinationAlpha;
-									}
-									break;
+								{
+									PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
+									material.SourceAlpha = c2.SourceAlpha;
+									material.DestinationAlpha = c2.DestinationAlpha;
+								}
+								break;
 								case ChunkType.Bits_MipmapDAdjust:
 									break;
 								case ChunkType.Bits_SpecularExponent:
@@ -186,17 +185,17 @@ namespace ModelConverter
 									break;
 								case ChunkType.Tiny_TextureID:
 								case ChunkType.Tiny_TextureID2:
-									{
-										PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
-										material.ClampU = c2.ClampU;
-										material.ClampV = c2.ClampV;
-										material.FilterMode = c2.FilterMode;
-										material.FlipU = c2.FlipU;
-										material.FlipV = c2.FlipV;
-										material.SuperSample = c2.SuperSample;
-										material.TextureID = c2.TextureID;
-									}
-									break;
+								{
+									PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
+									material.ClampU = c2.ClampU;
+									material.ClampV = c2.ClampV;
+									material.FilterMode = c2.FilterMode;
+									material.FlipU = c2.FlipU;
+									material.FlipV = c2.FlipV;
+									material.SuperSample = c2.SuperSample;
+									material.TextureID = c2.TextureID;
+								}
+								break;
 								case ChunkType.Material_Diffuse:
 								case ChunkType.Material_Ambient:
 								case ChunkType.Material_DiffuseAmbient:
@@ -211,19 +210,19 @@ namespace ModelConverter
 								case ChunkType.Material_DiffuseSpecular2:
 								case ChunkType.Material_AmbientSpecular2:
 								case ChunkType.Material_DiffuseAmbientSpecular2:
+								{
+									PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+									material.SourceAlpha = c2.SourceAlpha;
+									material.DestinationAlpha = c2.DestinationAlpha;
+									if (c2.Diffuse.HasValue)
+										material.DiffuseColor = c2.Diffuse.Value;
+									if (c2.Specular.HasValue)
 									{
-										PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
-										material.SourceAlpha = c2.SourceAlpha;
-										material.DestinationAlpha = c2.DestinationAlpha;
-										if (c2.Diffuse.HasValue)
-											material.DiffuseColor = c2.Diffuse.Value;
-										if (c2.Specular.HasValue)
-										{
-											material.SpecularColor = c2.Specular.Value;
-											material.Exponent = c2.SpecularExponent;
-										}
+										material.SpecularColor = c2.Specular.Value;
+										material.Exponent = c2.SpecularExponent;
 									}
-									break;
+								}
+								break;
 								case ChunkType.Strip_Strip:
 								case ChunkType.Strip_StripUVN:
 								case ChunkType.Strip_StripUVH:
@@ -236,59 +235,59 @@ namespace ModelConverter
 								case ChunkType.Strip_Strip2:
 								case ChunkType.Strip_StripUVN2:
 								case ChunkType.Strip_StripUVH2:
+								{
+									PolyChunkStrip c2 = (PolyChunkStrip)chunk;
+									material.DoubleSided = c2.DoubleSide;
+									material.EnvironmentMap = c2.EnvironmentMapping;
+									material.FlatShading = c2.FlatShading;
+									material.IgnoreLighting = c2.IgnoreLight;
+									material.IgnoreSpecular = c2.IgnoreSpecular;
+									material.UseAlpha = c2.UseAlpha;
+									bool hasVColor = false;
+									switch (chunk.Type)
 									{
-										PolyChunkStrip c2 = (PolyChunkStrip)chunk;
-										material.DoubleSided = c2.DoubleSide;
-										material.EnvironmentMap = c2.EnvironmentMapping;
-										material.FlatShading = c2.FlatShading;
-										material.IgnoreLighting = c2.IgnoreLight;
-										material.IgnoreSpecular = c2.IgnoreSpecular;
-										material.UseAlpha = c2.UseAlpha;
-										bool hasVColor = false;
-										switch (chunk.Type)
-										{
-											case ChunkType.Strip_StripColor:
-											case ChunkType.Strip_StripUVNColor:
-											case ChunkType.Strip_StripUVHColor:
-												hasVColor = true;
-												break;
-										}
-										bool hasUV = false;
-										switch (chunk.Type)
-										{
-											case ChunkType.Strip_StripUVN:
-											case ChunkType.Strip_StripUVH:
-											case ChunkType.Strip_StripUVNColor:
-											case ChunkType.Strip_StripUVHColor:
-											case ChunkType.Strip_StripUVN2:
-											case ChunkType.Strip_StripUVH2:
-												hasUV = true;
-												break;
-										}
-										List<Strip> strips = new List<Strip>(c2.StripCount);
-										List<UV> uvs = hasUV ? new List<UV>() : null;
-										List<Color> vcolors = hasVColor ? new List<Color>() : null;
-										foreach (PolyChunkStrip.Strip strip in c2.Strips)
-										{
-											minVtx = Math.Min(minVtx, strip.Indexes.Min());
-											maxVtx = Math.Max(maxVtx, strip.Indexes.Max());
-											strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
-											if (hasUV)
-												uvs.AddRange(strip.UVs);
-											if (hasVColor)
-												vcolors.AddRange(strip.VColors);
-										}
-										NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
-										if (hasUV)
-											uvs.CopyTo(mesh.UV);
-										if (hasVColor)
-											vcolors.CopyTo(mesh.VColor);
-										mesh.MaterialID = (ushort)basatt.Material.Count;
-										basatt.Mesh.Add(mesh);
-										basatt.Material.Add(material);
-										material = new NJS_MATERIAL(material.GetBytes(), 0);
+										case ChunkType.Strip_StripColor:
+										case ChunkType.Strip_StripUVNColor:
+										case ChunkType.Strip_StripUVHColor:
+											hasVColor = true;
+											break;
 									}
-									break;
+									bool hasUV = false;
+									switch (chunk.Type)
+									{
+										case ChunkType.Strip_StripUVN:
+										case ChunkType.Strip_StripUVH:
+										case ChunkType.Strip_StripUVNColor:
+										case ChunkType.Strip_StripUVHColor:
+										case ChunkType.Strip_StripUVN2:
+										case ChunkType.Strip_StripUVH2:
+											hasUV = true;
+											break;
+									}
+									List<Strip> strips = new List<Strip>(c2.StripCount);
+									List<UV> uvs = hasUV ? new List<UV>() : null;
+									List<Color> vcolors = hasVColor ? new List<Color>() : null;
+									foreach (PolyChunkStrip.Strip strip in c2.Strips)
+									{
+										minVtx = Math.Min(minVtx, strip.Indexes.Min());
+										maxVtx = Math.Max(maxVtx, strip.Indexes.Max());
+										strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
+										if (hasUV)
+											uvs.AddRange(strip.UVs);
+										if (hasVColor)
+											vcolors.AddRange(strip.VColors);
+									}
+									NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
+									if (hasUV)
+										uvs.CopyTo(mesh.UV);
+									if (hasVColor)
+										vcolors.CopyTo(mesh.VColor);
+									mesh.MaterialID = (ushort)basatt.Material.Count;
+									basatt.Mesh.Add(mesh);
+									basatt.Material.Add(material);
+									material = new NJS_MATERIAL(material.GetBytes(), 0);
+								}
+								break;
 							}
 						int numVtx = maxVtx - minVtx + 1;
 						basatt.ResizeVertexes(numVtx);

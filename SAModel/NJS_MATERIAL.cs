@@ -10,11 +10,11 @@ namespace SonicRetro.SAModel
 	{
 		#region Basic Variables (internal use)
 
-		public Color DiffuseColor { get; set; }
+		public Color DiffuseColor  { get; set; }
 		public Color SpecularColor { get; set; }
-		public float Exponent { get; set; }
-		public int TextureID { get; set; }
-		public uint Flags { get; set; }
+		public float Exponent      { get; set; }
+		public int   TextureID     { get; set; }
+		public uint  Flags         { get; set; }
 
 		#endregion
 

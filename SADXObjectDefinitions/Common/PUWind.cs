@@ -5,7 +5,6 @@ using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
-using System.Drawing;
 using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
 using Color = System.Drawing.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -75,16 +74,16 @@ namespace SADXObjectDefinitions.Common
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y - 0x5772);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y - 0x5772);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override BoundingSphere GetBounds(SETItem item)
+		public override BoundingSphere GetBounds(SETItem item)
 		{
 			float largestScale = item.Scale.X;
 			if (item.Scale.Y > largestScale) largestScale = item.Scale.Y;

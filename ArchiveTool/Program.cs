@@ -19,7 +19,7 @@ namespace ArchiveTool
 			}
 			string filePath = args[0];
 			bool IsPRS = false;
-            		if (args.Length > 1 && args[1] == "-prs") IsPRS = true;
+			if (args.Length > 1 && args[1] == "-prs") IsPRS = true;
 			string directoryName = Path.GetDirectoryName(filePath);
 			string extension = Path.GetExtension(filePath).ToLowerInvariant();
 			switch (extension)
@@ -58,10 +58,10 @@ namespace ArchiveTool
 						}
 						if (IsPRS == true)
 						{
-                            			byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
-                            			pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
-                            			File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), pvmdata);
-                            			File.Delete(Path.ChangeExtension(filePath, ".pvm"));
+							byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
+							pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+							File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), pvmdata);
+							File.Delete(Path.ChangeExtension(filePath, ".pvm"));
 						}
 						Console.WriteLine("Archive was compiled successfully!");
 					}

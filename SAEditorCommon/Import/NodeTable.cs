@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D9;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;

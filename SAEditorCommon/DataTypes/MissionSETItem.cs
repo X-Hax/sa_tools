@@ -18,7 +18,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
 
-            GetHandleMatrix();
+			GetHandleMatrix();
 		}
 
 		public MissionSETItem(byte[] setfile, int setaddress, byte[] prmfile, int prmaddress, EditorItemSelection selectionManager)
@@ -37,18 +37,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			isLoaded = true;
 			objdef = GetObjectDefinition();
 
-            GetHandleMatrix();
-        }
+			GetHandleMatrix();
+		}
 
-        public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
-        public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 
-        protected override void GetHandleMatrix()
-        {
-            transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
-        }
+		protected override void GetHandleMatrix()
+		{
+			transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
+		}
 
-        public override ObjectDefinition GetObjectDefinition()
+		public override ObjectDefinition GetObjectDefinition()
 		{
 			switch (ObjectList)
 			{
@@ -115,7 +115,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			return PRMBytes;
 		}
-    }
+	}
 
 	public enum Appear
 	{

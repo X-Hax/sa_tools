@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private List<Item> selection;
 
 		public int ItemCount { get { return selection.Count(); } }
-        public IEnumerable<Item> Items { get { return (IEnumerable<Item>)selection; } }
+		public IEnumerable<Item> Items { get { return (IEnumerable<Item>)selection; } }
 
 		public EditorItemSelection()
 		{

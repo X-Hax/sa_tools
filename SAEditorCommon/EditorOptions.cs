@@ -32,64 +32,64 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			direct3DDevice = d3dDevice;
 
-            SetDefaultLights(d3dDevice, false);
+			SetDefaultLights(d3dDevice, false);
 		}
 
-        public static void SetDefaultLights(Device d3dDevice, bool reset)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                d3dDevice.EnableLight(i, false);
-            }
+		public static void SetDefaultLights(Device d3dDevice, bool reset)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				d3dDevice.EnableLight(i, false);
+			}
 
-            #region Key Light
-            Light l0 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(1, 1, 1, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
-            };
-            d3dDevice.SetLight(0, ref l0);
-            d3dDevice.EnableLight(0, true);
-            #endregion
+			#region Key Light
+			Light l0 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(1, 1, 1, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
+			};
+			d3dDevice.SetLight(0, ref l0);
+			d3dDevice.EnableLight(0, true);
+			#endregion
 
-            #region Fill Light
-            Light l1 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
-            };
-            d3dDevice.SetLight(1, ref l1);
-            d3dDevice.EnableLight(1, true);
-            #endregion
+			#region Fill Light
+			Light l1 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
+			};
+			d3dDevice.SetLight(1, ref l1);
+			d3dDevice.EnableLight(1, true);
+			#endregion
 
-            #region Back Light
-            Light l2 = new Light()
-            {
-                Type = LightType.Directional,
-                Diffuse = Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
-                Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
-                Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
-                Range = 0,
-                Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
-            };
-            d3dDevice.SetLight(2, ref l2);
-            d3dDevice.EnableLight(2, true);
-            #endregion
+			#region Back Light
+			Light l2 = new Light()
+			{
+				Type = LightType.Directional,
+				Diffuse = Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
+				Range = 0,
+				Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
+			};
+			d3dDevice.SetLight(2, ref l2);
+			d3dDevice.EnableLight(2, true);
+			#endregion
 
-            #region Font Setup
-            onscreenFont = new Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, FontCharacterSet.Oem, FontPrecision.Default, FontQuality.Default, FontPitchAndFamily.DontCare, "Verdana");
-            #endregion
-        }
+			#region Font Setup
+			onscreenFont = new Font(d3dDevice, 14, 14, FontWeight.DoNotCare, 0, false, FontCharacterSet.Oem, FontPrecision.Default, FontQuality.Default, FontPitchAndFamily.DontCare, "Verdana");
+			#endregion
+		}
 
-        public static void Load()
+		public static void Load()
 		{
 			throw new NotImplementedException();
 		}
