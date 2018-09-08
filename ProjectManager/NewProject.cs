@@ -320,7 +320,22 @@ namespace ProjectManager
 
         void SetControls()
         {
-            SADXPCButton.Enabled = (sadxIsValid);
+			// check valid states again
+			sadxIsValid = GamePathChecker.CheckSADXPCValid(
+				Program.Settings.SADXPCPath, out string sadxInvalidReason);
+
+			sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
+				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
+
+			ProjectNameBox.Enabled = true;
+			SA2RadioButton.Enabled = sa2pcIsValid;
+			SADXPCButton.Enabled = sadxIsValid;
+			BackButton.Enabled = true;
+			AuthorTextBox.Enabled = true;
+			DescriptionTextBox.Enabled = true;
+			ControlBox = true;
+
+			SADXPCButton.Enabled = (sadxIsValid);
             SA2RadioButton.Enabled = (sa2pcIsValid);
 
             NextButton.Enabled = (ProjectNameBox.Text.Length > 0);
@@ -685,22 +700,15 @@ namespace ProjectManager
 #endif
 		}
 
+		public void ResetControl()
+		{
+			ProjectNameBox.Text = "";
+			AuthorTextBox.Text = "";
+			DescriptionTextBox.Text = "";
+		}
+
         private void NewProject_Shown(object sender, EventArgs e)
         {
-			// check valid states again
-			sadxIsValid = GamePathChecker.CheckSADXPCValid(
-				Program.Settings.SADXPCPath, out string sadxInvalidReason);
-
-			sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
-				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
-
-			ProjectNameBox.Enabled = true;
-            SA2RadioButton.Enabled = sa2pcIsValid;
-            SADXPCButton.Enabled = sadxIsValid;
-            BackButton.Enabled = true;
-            NextButton.Enabled = ProjectNameBox.Text.Length > 0;
-            ControlBox = true;
-
             SetControls();
         }
 
