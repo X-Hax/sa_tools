@@ -125,14 +125,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override float DefaultZScale { get { return 0; } }
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);            
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);			
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 }

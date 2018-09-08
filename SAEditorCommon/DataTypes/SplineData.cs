@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using SA_Tools;
 using SharpDX;
@@ -30,7 +29,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[NonSerialized]
 		private BoundingSphere bounds;
 		[Browsable(false)]
-		public override BoundingSphere Bounds { get	{ return bounds; }	}
+		public override BoundingSphere Bounds { get { return bounds; } }
 		[NonSerialized]
 		private Mesh mesh;
 
@@ -88,7 +87,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		public SplineData(EditorItemSelection selectionManager)
-			: base (selectionManager)
+			: base(selectionManager)
 		{
 			splineData = new PathData();
 
@@ -150,7 +149,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				vert2_3 = new FVF_PositionColored(vert2_1.Position - (up * splineMeshRadius), Color.White);
 				vert2_4 = new FVF_PositionColored(vert2_2.Position - (up * splineMeshRadius), Color.White);
 
-				List<short> thisKnotFaceIndexes = new List<short> 
+				List<short> thisKnotFaceIndexes = new List<short>
 				{
 					// far side
 					4,0,6,
@@ -357,7 +356,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-                return new Rotation();
+				return new Rotation();
 			}
 			set
 			{
@@ -365,7 +364,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-        void selectionManager_SelectionChanged(EditorItemSelection sender)
+		void selectionManager_SelectionChanged(EditorItemSelection sender)
 		{
 			if (sender.ItemCount != 1)
 			{

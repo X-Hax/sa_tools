@@ -197,15 +197,15 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			new PropertySpec("Power", typeof(float), "Extended", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v)
 		};
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
 		public override string Name { get { return "Updraft"; } }
 	}

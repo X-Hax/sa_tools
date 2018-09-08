@@ -12,38 +12,38 @@ namespace SonicRetro.SAModel.Direct3D
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-    public struct FVF_PositionNormal : IVertex
-    {
-        [FieldOffset(0x00)]
-        public Vector3 Position;
-        [FieldOffset(0x0C)]
-        public Vector3 Normal;
+	public struct FVF_PositionNormal : IVertex
+	{
+		[FieldOffset(0x00)]
+		public Vector3 Position;
+		[FieldOffset(0x0C)]
+		public Vector3 Normal;
 
-        public static VertexElement[] Elements
-        {
-            get
-            {
-                return new VertexElement[] {
-                    new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-                    new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-                    VertexElement.VertexDeclarationEnd
-                };
-            }
-        }
+		public static VertexElement[] Elements
+		{
+			get
+			{
+				return new VertexElement[] {
+					new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
+					new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+					VertexElement.VertexDeclarationEnd
+				};
+			}
+		}
 
-        public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal;
+		public const VertexFormat Format = VertexFormat.Position | VertexFormat.Normal;
 
-        public FVF_PositionNormal(Vector3 Pos, Vector3 Nor)
-        {
-            Position = Pos;
-            Normal = Nor;
-        }
+		public FVF_PositionNormal(Vector3 Pos, Vector3 Nor)
+		{
+			Position = Pos;
+			Normal = Nor;
+		}
 
-        public FVF_PositionNormal(VertexData data)
-        {
-            Position = data.Position.ToVector3();
-            Normal = data.Normal.ToVector3();
-        }
+		public FVF_PositionNormal(VertexData data)
+		{
+			Position = data.Position.ToVector3();
+			Normal = data.Normal.ToVector3();
+		}
 
 		public Vector3 GetPosition() => Position;
 
@@ -146,11 +146,11 @@ namespace SonicRetro.SAModel.Direct3D
 			get
 			{
 				return new VertexElement[] {
-                    new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-                    new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-                    new VertexElement(0, 0x18, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-                    VertexElement.VertexDeclarationEnd
-                };
+					new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
+					new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+					new VertexElement(0, 0x18, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
+					VertexElement.VertexDeclarationEnd
+				};
 			}
 		}
 
@@ -193,11 +193,11 @@ namespace SonicRetro.SAModel.Direct3D
 			get
 			{
 				return new VertexElement[] {
-                    new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-                    new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-                    new VertexElement(0, 0x18, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-                    VertexElement.VertexDeclarationEnd
-                };
+					new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
+					new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+					new VertexElement(0, 0x18, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
+					VertexElement.VertexDeclarationEnd
+				};
 			}
 		}
 
@@ -239,12 +239,12 @@ namespace SonicRetro.SAModel.Direct3D
 			get
 			{
 				return new VertexElement[] {
-                    new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-                    new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-                    new VertexElement(0, 0x18, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-                    new VertexElement(0, 0x1C, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
-                    VertexElement.VertexDeclarationEnd
-                };
+					new VertexElement(0, 0x00, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
+					new VertexElement(0, 0x0C, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+					new VertexElement(0, 0x18, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
+					new VertexElement(0, 0x1C, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
+					VertexElement.VertexDeclarationEnd
+				};
 			}
 		}
 

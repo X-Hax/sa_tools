@@ -64,16 +64,16 @@ namespace SADXObjectDefinitions.Mission
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(item.Scale.X, item.Scale.Y), item.Scale.Z));
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override string Name { get { return "Mission Balloon"; } }
+		public override string Name { get { return "Mission Balloon"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Goal", typeof(GoalType), null, null, 0, (o) => (GoalType)((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)(GoalType)v),

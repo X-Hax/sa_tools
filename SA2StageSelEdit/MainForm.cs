@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using PAKLib;
 using SonicRetro.SAModel.Direct3D.TextureSystem;

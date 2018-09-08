@@ -3,20 +3,20 @@ using System;
 
 namespace SonicRetro.SAModel.Direct3D
 {
-    public class EditorCamera
-    {
-        public float Distance { get; set; }
-        public Vector3 Position { get; set; }
-        public ushort Yaw { get; set; }
-        public ushort Pitch { get; set; }
-        public Vector3 Up { get; private set; }
-        public Vector3 Look { get; private set; }
-        public Vector3 Right { get; private set; }
-        public int mode { get; set; }
-        public Vector3 FocalPoint { get; set; }
-        public float DrawDistance { get; set; }
-        public float MoveSpeed { get; set; }
-        public float RotateSpeed { get; set; }
+	public class EditorCamera
+	{
+		public float Distance { get; set; }
+		public Vector3 Position { get; set; }
+		public ushort Yaw { get; set; }
+		public ushort Pitch { get; set; }
+		public Vector3 Up { get; private set; }
+		public Vector3 Look { get; private set; }
+		public Vector3 Right { get; private set; }
+		public int mode { get; set; }
+		public Vector3 FocalPoint { get; set; }
+		public float DrawDistance { get; set; }
+		public float MoveSpeed { get; set; }
+		public float RotateSpeed { get; set; }
 
 		public float FOV { get; set; }
 		public float Aspect { get; set; }
@@ -42,46 +42,46 @@ namespace SonicRetro.SAModel.Direct3D
 			DrawDistance = drawDistance;
 		}
 
-        public Matrix ToMatrix()
-        {
-            if (mode == 0)
-            {
-                Up = new Vector3(0, 1, 0);
-                Look = new Vector3(0, 0, 1);
-                Right = new Vector3(1, 0, 0);
-                Matrix yawm = Matrix.RotationAxis(Up, Extensions.BAMSToRad(Yaw));
-                Look = Vector3.TransformCoordinate(Look, yawm);
-                Right = Vector3.TransformCoordinate(Right, yawm);
-                Matrix pitchm = Matrix.RotationAxis(Right, Extensions.BAMSToRad(Pitch));
-                Look = Vector3.TransformCoordinate(Look, pitchm);
-                Up = Vector3.TransformCoordinate(Up, pitchm);
-                Matrix ViewMatrix = Matrix.Identity;
-                ViewMatrix.M11 = Right.X;
-                ViewMatrix.M12 = Up.X;
-                ViewMatrix.M13 = Look.X;
-                ViewMatrix.M21 = Right.Y;
-                ViewMatrix.M22 = Up.Y;
-                ViewMatrix.M23 = Look.Y;
-                ViewMatrix.M31 = Right.Z;
-                ViewMatrix.M32 = Up.Z;
-                ViewMatrix.M33 = Look.Z;
-                ViewMatrix.M41 = -Vector3.Dot(Position, Right);
-                ViewMatrix.M42 = -Vector3.Dot(Position, Up);
+		public Matrix ToMatrix()
+		{
+			if (mode == 0)
+			{
+				Up = new Vector3(0, 1, 0);
+				Look = new Vector3(0, 0, 1);
+				Right = new Vector3(1, 0, 0);
+				Matrix yawm = Matrix.RotationAxis(Up, Extensions.BAMSToRad(Yaw));
+				Look = Vector3.TransformCoordinate(Look, yawm);
+				Right = Vector3.TransformCoordinate(Right, yawm);
+				Matrix pitchm = Matrix.RotationAxis(Right, Extensions.BAMSToRad(Pitch));
+				Look = Vector3.TransformCoordinate(Look, pitchm);
+				Up = Vector3.TransformCoordinate(Up, pitchm);
+				Matrix ViewMatrix = Matrix.Identity;
+				ViewMatrix.M11 = Right.X;
+				ViewMatrix.M12 = Up.X;
+				ViewMatrix.M13 = Look.X;
+				ViewMatrix.M21 = Right.Y;
+				ViewMatrix.M22 = Up.Y;
+				ViewMatrix.M23 = Look.Y;
+				ViewMatrix.M31 = Right.Z;
+				ViewMatrix.M32 = Up.Z;
+				ViewMatrix.M33 = Look.Z;
+				ViewMatrix.M41 = -Vector3.Dot(Position, Right);
+				ViewMatrix.M42 = -Vector3.Dot(Position, Up);
 				ViewMatrix.M43 = -Vector3.Dot(Position, Look);
 
-                return ViewMatrix;
-            }
-            else
-            {
-                Vector3 distvec = Vector3.TransformCoordinate(new Vector3(0, 0, Distance), Matrix.RotationYawPitchRoll(Extensions.BAMSToRad(Yaw), Extensions.BAMSToRad(Pitch), 0));
-                Position = distvec + FocalPoint;
-                Matrix ViewMatrix = Matrix.LookAtRH(Position, FocalPoint, new Vector3(0, 1, 0));
-                Up = new Vector3(ViewMatrix.M12, ViewMatrix.M22, ViewMatrix.M32);
-                Look = new Vector3(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33);
-                Right = new Vector3(ViewMatrix.M11, ViewMatrix.M21, ViewMatrix.M31);
-                return ViewMatrix;
-            }
-        }
+				return ViewMatrix;
+			}
+			else
+			{
+				Vector3 distvec = Vector3.TransformCoordinate(new Vector3(0, 0, Distance), Matrix.RotationYawPitchRoll(Extensions.BAMSToRad(Yaw), Extensions.BAMSToRad(Pitch), 0));
+				Position = distvec + FocalPoint;
+				Matrix ViewMatrix = Matrix.LookAtRH(Position, FocalPoint, new Vector3(0, 1, 0));
+				Up = new Vector3(ViewMatrix.M12, ViewMatrix.M22, ViewMatrix.M32);
+				Look = new Vector3(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33);
+				Right = new Vector3(ViewMatrix.M11, ViewMatrix.M21, ViewMatrix.M31);
+				return ViewMatrix;
+			}
+		}
 
 		/// <summary>
 		/// Calculates the near and far plane dimensions, as well as the vertices for the entire frustum.
@@ -104,11 +104,11 @@ namespace SonicRetro.SAModel.Direct3D
 			Vector3 ftl = fc + (Up * (HFar / 2)) - (Right * (WFar / 2));
 			farTopLeft = ftl.ToVertex();
 
-			Vector3 ftr = fc + (Up * (HFar/2)) + (Right * (WFar/2));
+			Vector3 ftr = fc + (Up * (HFar / 2)) + (Right * (WFar / 2));
 			farTopRight = ftr.ToVertex();
-			Vector3 fbl = fc - (Up * (HFar/2)) - (Right * (WFar/2));
+			Vector3 fbl = fc - (Up * (HFar / 2)) - (Right * (WFar / 2));
 			farBottomLeft = fbl.ToVertex();
-			Vector3 fbr = fc - (Up * (HFar/2)) + (Right * (WFar/2));
+			Vector3 fbr = fc - (Up * (HFar / 2)) + (Right * (WFar / 2));
 			farBottomRight = fbr.ToVertex();
 
 			Vector3 nc = Position + Look * 1f;
@@ -128,37 +128,37 @@ namespace SonicRetro.SAModel.Direct3D
 			frustumPlanes[0].Normal.X = viewMatrix.M14 + viewMatrix.M11;
 			frustumPlanes[0].Normal.Y = viewMatrix.M24 + viewMatrix.M21;
 			frustumPlanes[0].Normal.Z = viewMatrix.M34 + viewMatrix.M31;
-			frustumPlanes[0].D =        viewMatrix.M44 + viewMatrix.M41;
+			frustumPlanes[0].D        = viewMatrix.M44 + viewMatrix.M41;
 
 			// Right plane
 			frustumPlanes[1].Normal.X = viewMatrix.M14 - viewMatrix.M11;
 			frustumPlanes[1].Normal.Y = viewMatrix.M24 - viewMatrix.M21;
 			frustumPlanes[1].Normal.Z = viewMatrix.M34 - viewMatrix.M31;
-			frustumPlanes[1].D =        viewMatrix.M44 - viewMatrix.M41;
+			frustumPlanes[1].D        = viewMatrix.M44 - viewMatrix.M41;
 
 			// Top plane
 			frustumPlanes[2].Normal.X = viewMatrix.M14 - viewMatrix.M12;
 			frustumPlanes[2].Normal.Y = viewMatrix.M24 - viewMatrix.M22;
 			frustumPlanes[2].Normal.Z = viewMatrix.M34 - viewMatrix.M32;
-			frustumPlanes[2].D =        viewMatrix.M44 - viewMatrix.M42;
+			frustumPlanes[2].D        = viewMatrix.M44 - viewMatrix.M42;
 
 			// Bottom plane
 			frustumPlanes[3].Normal.X = viewMatrix.M14 + viewMatrix.M12;
 			frustumPlanes[3].Normal.Y = viewMatrix.M24 + viewMatrix.M22;
 			frustumPlanes[3].Normal.Z = viewMatrix.M34 + viewMatrix.M32;
-			frustumPlanes[3].D =        viewMatrix.M44 + viewMatrix.M42;
+			frustumPlanes[3].D        = viewMatrix.M44 + viewMatrix.M42;
 
 			// Near plane
 			frustumPlanes[4].Normal.X = viewMatrix.M13;
 			frustumPlanes[4].Normal.Y = viewMatrix.M23;
 			frustumPlanes[4].Normal.Z = viewMatrix.M33;
-			frustumPlanes[4].D =        viewMatrix.M43;
+			frustumPlanes[4].D        = viewMatrix.M43;
 
 			// Far plane
 			frustumPlanes[5].Normal.X = viewMatrix.M14 - viewMatrix.M13;
 			frustumPlanes[5].Normal.Y = viewMatrix.M24 - viewMatrix.M23;
 			frustumPlanes[5].Normal.Z = viewMatrix.M34 - viewMatrix.M33;
-			frustumPlanes[5].D =        viewMatrix.M44 - viewMatrix.M43;
+			frustumPlanes[5].D        = viewMatrix.M44 - viewMatrix.M43;
 			#endregion
 
 			// Normalize planes
@@ -197,5 +197,5 @@ namespace SonicRetro.SAModel.Direct3D
 				Distance = (itemVolume.Radius + (itemVolume.Radius / 4));
 			}
 		}
-    }
+	}
 }

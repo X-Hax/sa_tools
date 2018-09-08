@@ -22,7 +22,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
-        public string Name { get { return Model.Name; } }
+		public string Name { get { return Model.Name; } }
 
 		[Browsable(false)]
 		public override BoundingSphere Bounds
@@ -37,14 +37,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		public DeathZoneItem(EditorItemSelection selectionManager)
-			: base (selectionManager)
+			: base(selectionManager)
 		{
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
 
-            rotateZYX = Model.RotateZYX;
-            GetHandleMatrix();
+			rotateZYX = Model.RotateZYX;
+			GetHandleMatrix();
 		}
 
 		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, EditorItemSelection selectionManager)
@@ -55,22 +55,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Flags = flags;
 			Mesh = Model.Attach.CreateD3DMesh();
 
-            rotateZYX = Model.RotateZYX;
-            GetHandleMatrix();
+			rotateZYX = Model.RotateZYX;
+			GetHandleMatrix();
 		}
 
 		public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
 
 		public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
 
-        protected override void GetHandleMatrix()
-        {
-            position = Model.Position;
-            rotation = Model.Rotation;
-            base.GetHandleMatrix();
-        }
+		protected override void GetHandleMatrix()
+		{
+			position = Model.Position;
+			rotation = Model.Rotation;
+			base.GetHandleMatrix();
+		}
 
-        public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
+		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
@@ -218,14 +218,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return new DeathZoneFlags() { Flags = Flags };
 		}
 
-        public Vertex GetScale()
-        {
-            return Model.Scale;
-        }
+		public Vertex GetScale()
+		{
+			return Model.Scale;
+		}
 
-        public void SetScale(Vertex scale)
-        {
-            Model.Scale = scale;
-        }
-    }
+		public void SetScale(Vertex scale)
+		{
+			Model.Scale = scale;
+		}
+	}
 }

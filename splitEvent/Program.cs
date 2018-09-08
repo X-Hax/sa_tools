@@ -3,7 +3,6 @@ using SA_Tools;
 using SonicRetro.SAModel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using ByteConverter = SonicRetro.SAModel.ByteConverter;
@@ -45,7 +44,7 @@ namespace splitEvent
 					ini.Game = Game.SA2;
 				}
 				List<string> nodenames = new List<string>();
-				Dictionary<string, KeyValuePair<string,NJS_OBJECT>> modelfiles = new Dictionary<string, KeyValuePair<string, NJS_OBJECT>>();
+				Dictionary<string, KeyValuePair<string, NJS_OBJECT>> modelfiles = new Dictionary<string, KeyValuePair<string, NJS_OBJECT>>();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
 					for (int i = 0; i < 18; i++)

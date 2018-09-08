@@ -83,21 +83,21 @@ namespace SADXObjectDefinitions.WindyValley
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.Translate(ref matrix, item.Position);
 
-            int RotY = item.Rotation.Y;
-            if (RotY != 0x4000)
-            {
-                MatrixFunctions.RotateY(ref matrix, item.Rotation.Y - 0x4000);
-            }
+			int RotY = item.Rotation.Y;
+			if (RotY != 0x4000)
+			{
+				MatrixFunctions.RotateY(ref matrix, item.Rotation.Y - 0x4000);
+			}
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override string Name { get { return "Eagle"; } }
+		public override string Name { get { return "Eagle"; } }
 	}
 }

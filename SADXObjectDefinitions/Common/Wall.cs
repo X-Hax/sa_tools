@@ -107,16 +107,16 @@ namespace SADXObjectDefinitions.Common
 			return boxSphere;
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
 
-            return matrix;
-        }
+			return matrix;
+		}
 
-        public override string Name { get { return "Wall that pushes you"; } }
+		public override string Name { get { return "Wall that pushes you"; } }
 	}
 }

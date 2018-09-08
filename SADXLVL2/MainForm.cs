@@ -2,7 +2,6 @@
 using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -48,12 +47,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal Device d3ddevice;
 
-        #region Editor-Specific Variables
-        SAEditorCommon.IniData ini;
+		#region Editor-Specific Variables
+		SAEditorCommon.IniData ini;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
-        EditorItemSelection selectedItems = new EditorItemSelection();
-        EditorOptionsEditor optionsEditor;
-        ActionKeybindEditor keybindEditor;
+		EditorItemSelection selectedItems = new EditorItemSelection();
+		EditorOptionsEditor optionsEditor;
+		ActionKeybindEditor keybindEditor;
 		Direct3D.Mesh boundsMesh;
 		#endregion
 
@@ -64,14 +63,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		Dictionary<string, List<string>> levelNames;
 
-        // light list
-        List<SA1StageLightData> stageLightList;
-        #endregion
+		// light list
+		List<SA1StageLightData> stageLightList;
+		#endregion
 
-        #region UI & Customization
-        bool lookKeyDown;
+		#region UI & Customization
+		bool lookKeyDown;
 		bool zoomKeyDown;
-        bool cameraKeyDown;
+		bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
 
@@ -80,70 +79,70 @@ namespace SonicRetro.SAModel.SADXLVL2
 		ushort mouseWrapThreshold = 2;
 
 		TransformGizmo transformGizmo;
-        ActionMappingList actionList;
-        ActionInputCollector actionInputCollector;
+		ActionMappingList actionList;
+		ActionInputCollector actionInputCollector;
 
-        #endregion
+		#endregion
 
-        // project support stuff
-        string systemFallback;
+		// project support stuff
+		string systemFallback;
 		string currentProjectPath;
-        
+		
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
-            modelLibraryControl1.InitRenderer();
+			modelLibraryControl1.InitRenderer();
 
 			InitDisableInvalidControls();
 
-            systemFallback = Program.SADXGameFolder + "/System/";
+			systemFallback = Program.SADXGameFolder + "/System/";
 
-            if (Program.args.Length > 0)
-            {
-                LoadINI(Program.args[0]);
-                ShowLevelSelect();
-            }
-            else
-            {
-                using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-                {
-                    projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+			if (Program.args.Length > 0)
+			{
+				LoadINI(Program.args[0]);
+				ShowLevelSelect();
+			}
+			else
+			{
+				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+				{
+					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
 
-                    if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        LoadProject(projectSelectDialog.SelectedProject);
-                    }
-                }
-            }
+					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+					{
+						LoadProject(projectSelectDialog.SelectedProject);
+					}
+				}
+			}
 
-            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
-                DefaultActionList.DefaultActionMapping);
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+				DefaultActionList.DefaultActionMapping);
 
-            actionInputCollector = new ActionInputCollector();
-            actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-            actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
-            actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+			actionInputCollector = new ActionInputCollector();
+			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-            optionsEditor = new EditorOptionsEditor(cam);
-            optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-            optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
-            optionsEditor.ResetDefaultKeybindsCommand += () =>
-            {
-                actionList.ActionKeyMappings.Clear();
+			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+			optionsEditor.ResetDefaultKeybindsCommand += () =>
+			{
+				actionList.ActionKeyMappings.Clear();
 
-                foreach(ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
-                {
-                    actionList.ActionKeyMappings.Add(keymapping);
-                }
+				foreach(ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
+				{
+					actionList.ActionKeyMappings.Add(keymapping);
+				}
 
-                actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-            };
+				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			};
 
-            sceneGraphControl1.InitSceneControl(selectedItems);
-        }
+			sceneGraphControl1.InitSceneControl(selectedItems);
+		}
 
 		/// <summary>
 		/// I moved these to here instead of setting them to false in the designer,
@@ -201,7 +200,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
 		}
 
-        private void ShowLevelSelect()
+		private void ShowLevelSelect()
 		{
 			string stageToLoad = string.Empty;
 			using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
@@ -247,12 +246,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			OpenNewProject();
 		}
 
-        private void LoadProject(string projectName)
-        {
-            string projectPath = Path.Combine(Program.SADXGameFolder, string.Format("projects/{0}/sadxlvl.ini", projectName));
-            LoadINI(projectPath);
-            ShowLevelSelect();
-        }
+		private void LoadProject(string projectName)
+		{
+			string projectPath = Path.Combine(Program.SADXGameFolder, string.Format("projects/{0}/sadxlvl.ini", projectName));
+			LoadINI(projectPath);
+			ShowLevelSelect();
+		}
 
 		public bool OpenNewProject()
 		{
@@ -262,18 +261,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return false;
 			}
 
-            using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-            {
-                projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+			{
+				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
 
-                if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-                {
-                    LoadProject(projectSelectDialog.SelectedProject);
+				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+				{
+					LoadProject(projectSelectDialog.SelectedProject);
 
-                    return true;
-                }
-                else return false;
-            }
+					return true;
+				}
+				else return false;
+			}
 		}
 
 		private void LoadINI(string filename)
@@ -510,8 +509,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (!LevelData.TextureBitmaps.ContainsKey(pvmName))
 			{
-                string textureFallbackPath = Path.Combine(systemFallback, pvmName) + ".PVM";
-                string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
+				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + ".PVM";
+				string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
 
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
@@ -584,7 +583,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 #endif
 
 #if !DEBUG
-            return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
+			return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
 #endif
 		}
 
@@ -651,7 +650,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 					{
 						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
-                        LevelData.ClearLevelItems();
+						LevelData.ClearLevelItems();
 
 						for (int i = 0; i < LevelData.geo.COL.Count; i++)
 						{
@@ -666,10 +665,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.Textures = new Dictionary<string, Texture[]>();
 					if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					{
-                        string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) +".PVM";
-                        string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
+						string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) +".PVM";
+						string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
 
-                        BMPInfo[] TexBmps =
+						BMPInfo[] TexBmps =
 							TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
 						Texture[] texs = new Texture[TexBmps.Length];
 						for (int j = 0; j < TexBmps.Length; j++)
@@ -1156,8 +1155,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-                    string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
-                    string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
+					string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
+					string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
 
 					LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
 					for (int i = 0; i < LevelData.SETChars.Length; i++)
@@ -1165,10 +1164,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 						List<CAMItem> list = new List<CAMItem>();
 						byte[] camfile = null;
 
-                        string camfmt = string.Format(camstr, LevelData.SETChars[i]);
+						string camfmt = string.Format(camstr, LevelData.SETChars[i]);
 						string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
 
-                        string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
+						string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
 
 						/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
 							camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
@@ -1333,10 +1332,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 								d3ddevice.EnableLight(i, false);
 							}
 
-                            for (int i = 0; i < lightList.Count * 2; i++)
-                            {
-                                int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
-                                SA1StageLightData lightData = lightList[originalIndex];
+							for (int i = 0; i < lightList.Count * 2; i++)
+							{
+								int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
+								SA1StageLightData lightData = lightList[originalIndex];
 
 								Light light = new Light()
 								{
@@ -1356,7 +1355,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							MessageBox.Show("No lights were found for this stage. Using default lights instead.", "No lights found",
 								MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                            EditorOptions.SetDefaultLights(d3ddevice, false);
+							EditorOptions.SetDefaultLights(d3ddevice, false);
 						}
 					}
 
@@ -1520,7 +1519,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addAllLevelItemsToolStripMenuItem.Enabled = true;
 			toolStrip1.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
-            LevelData.InvalidateRenderState();
+			LevelData.InvalidateRenderState();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1555,7 +1554,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			IniLevelData level = ini.Levels[levelID];
 			string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-            Directory.CreateDirectory(syspath);
+			Directory.CreateDirectory(syspath);
 			//string modpath = ini.ModPath;
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 
@@ -1578,7 +1577,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					posini.Remove(levelact);
 
 				if (LevelData.StartPositions[i].Position.X != 0 || LevelData.StartPositions[i].Position.Y != 0 ||
-				    LevelData.StartPositions[i].Position.Z != 0 || LevelData.StartPositions[i].Rotation.Y != 0)
+					LevelData.StartPositions[i].Position.Z != 0 || LevelData.StartPositions[i].Rotation.Y != 0)
 				{
 					posini.Add(levelact,
 						new SA1StartPosInfo()
@@ -1617,12 +1616,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
 
-                    // blank the set file
-                    if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
-                    {
-                        byte[] emptyBytes = new byte[0x20];
-                        File.WriteAllBytes(setstr, emptyBytes);
-                    }
+					// blank the set file
+					if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
+					{
+						byte[] emptyBytes = new byte[0x20];
+						File.WriteAllBytes(setstr, emptyBytes);
+					}
 
 					List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
 					file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
@@ -1912,29 +1911,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		#region User Keyboard / Mouse Methods
-        void CustomizeControls()
-        {
-            ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
+		void CustomizeControls()
+		{
+			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
 
-            editor.ShowDialog();
+			editor.ShowDialog();
 
-            // copy all our mappings back
-            actionList.ActionKeyMappings.Clear();
+			// copy all our mappings back
+			actionList.ActionKeyMappings.Clear();
 
-            ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
-            foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
+			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
 
-            actionInputCollector.SetActions(newMappings);
+			actionInputCollector.SetActions(newMappings);
 
-            // save our controls
-            string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			// save our controls
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
 
-            actionList.Save(saveControlsPath);
+			actionList.Save(saveControlsPath);
 
-            this.BringToFront();
-            optionsEditor.BringToFront();
-            optionsEditor.Focus();
-        }
+			this.BringToFront();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
+		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
@@ -1951,414 +1950,414 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void panel1_KeyUp(object sender, KeyEventArgs e)
 		{
-            actionInputCollector.KeyUp(e.KeyCode);
+			actionInputCollector.KeyUp(e.KeyCode);
 		}
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
-            actionInputCollector.KeyDown(e.KeyCode);
+			actionInputCollector.KeyDown(e.KeyCode);
 		}
 
-        private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
-        {
-            if (!isStageLoaded)
-                return;
+		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
+		{
+			if (!isStageLoaded)
+				return;
 
-            bool draw = false; // should the scene redraw after this action
+			bool draw = false; // should the scene redraw after this action
 
-            switch (actionName)
-            {
-                case ("Camera Mode"):
-                    cam.mode = (cam.mode + 1) % 2;
+			switch (actionName)
+			{
+				case ("Camera Mode"):
+					cam.mode = (cam.mode + 1) % 2;
 
-                    if (cam.mode == 1)
-                    {
-                        if (selectedItems.GetSelection().Count > 0)
-                            cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
-                        else
-                            cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
-                    }
+					if (cam.mode == 1)
+					{
+						if (selectedItems.GetSelection().Count > 0)
+							cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+						else
+							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+					}
 
-                    draw = true;
-                    break;
+					draw = true;
+					break;
 
-                case ("Zoom to target"):
-                    if (selectedItems.ItemCount > 1)
-                    {
-                        BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
+				case ("Zoom to target"):
+					if (selectedItems.ItemCount > 1)
+					{
+						BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
 
-                        for (int i = 0; i < selectedItems.ItemCount; i++)
-                        {
-                            combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
-                        }
+						for (int i = 0; i < selectedItems.ItemCount; i++)
+						{
+							combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
+						}
 
-                        cam.MoveToShowBounds(combinedBounds);
-                    }
-                    else if (selectedItems.ItemCount == 1)
-                    {
-                        cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
-                    }
+						cam.MoveToShowBounds(combinedBounds);
+					}
+					else if (selectedItems.ItemCount == 1)
+					{
+						cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
+					}
 
-                    draw = true;
-                    break;
+					draw = true;
+					break;
 
-                case ("Change Render Mode"):
-                    if (EditorOptions.RenderFillMode == FillMode.Solid)
-                        EditorOptions.RenderFillMode = FillMode.Point;
-                    else
-                        EditorOptions.RenderFillMode += 1;
+				case ("Change Render Mode"):
+					if (EditorOptions.RenderFillMode == FillMode.Solid)
+						EditorOptions.RenderFillMode = FillMode.Point;
+					else
+						EditorOptions.RenderFillMode += 1;
 
-                    draw = true;
-                    break;
+					draw = true;
+					break;
 
-                case ("Delete"):
-                    foreach (Item item in selectedItems.GetSelection())
-                        item.Delete();
-                    selectedItems.Clear();
-                    draw = true;
-                    break;
+				case ("Delete"):
+					foreach (Item item in selectedItems.GetSelection())
+						item.Delete();
+					selectedItems.Clear();
+					draw = true;
+					break;
 
-                case ("Increase camera move speed"):
-                    cam.MoveSpeed += 0.0625f;
-                    UpdateTitlebar();
-                    break;
+				case ("Increase camera move speed"):
+					cam.MoveSpeed += 0.0625f;
+					UpdateTitlebar();
+					break;
 
-                case ("Decrease camera move speed"):
-                    cam.MoveSpeed -= 0.0625f;
-                    UpdateTitlebar();
-                    break;
+				case ("Decrease camera move speed"):
+					cam.MoveSpeed -= 0.0625f;
+					UpdateTitlebar();
+					break;
 
-                case ("Reset camera move speed"):
-                    cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
-                    UpdateTitlebar();
-                    break;
+				case ("Reset camera move speed"):
+					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					UpdateTitlebar();
+					break;
 
-                case ("Reset Camera Position"):
-                    if (cam.mode == 0)
-                    {
-                        cam.Position = new Vector3();
-                        draw = true;
-                    }
-                    break;
+				case ("Reset Camera Position"):
+					if (cam.mode == 0)
+					{
+						cam.Position = new Vector3();
+						draw = true;
+					}
+					break;
 
-                case ("Reset Camera Rotation"):
-                    if (cam.mode == 0)
-                    {
-                        cam.Pitch = 0;
-                        cam.Yaw = 0;
-                        draw = true;
-                    }
-                    break;
+				case ("Reset Camera Rotation"):
+					if (cam.mode == 0)
+					{
+						cam.Pitch = 0;
+						cam.Yaw = 0;
+						draw = true;
+					}
+					break;
 
-                case ("Next Character"):
-                    if (isStageLoaded)
-                    {
-                        LevelData.Character = (LevelData.Character + 1) % 6;
+				case ("Next Character"):
+					if (isStageLoaded)
+					{
+						LevelData.Character = (LevelData.Character + 1) % 6;
 
-                        if (LevelData.Character < 0)
-                            LevelData.Character = 5;
+						if (LevelData.Character < 0)
+							LevelData.Character = 5;
 
-                        characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
-                    }
-                    break;
+						characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
+					}
+					break;
 
-                case ("Previous Character"):
-                    if (isStageLoaded)
-                    {
-                        --LevelData.Character;
+				case ("Previous Character"):
+					if (isStageLoaded)
+					{
+						--LevelData.Character;
 
-                        if (LevelData.Character < 0)
-                            LevelData.Character = 5;
+						if (LevelData.Character < 0)
+							LevelData.Character = 5;
 
-                        characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
-                    }
-                    break;
+						characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
+					}
+					break;
 
-                case ("Camera Move"):
-                    cameraKeyDown = false;
-                    break;
+				case ("Camera Move"):
+					cameraKeyDown = false;
+					break;
 
-                case ("Camera Zoom"):
-                    zoomKeyDown = false;
-                    break;
+				case ("Camera Zoom"):
+					zoomKeyDown = false;
+					break;
 
-                case ("Camera Look"):
-                    lookKeyDown = false;
-                    break;
+				case ("Camera Look"):
+					lookKeyDown = false;
+					break;
 
-                default:
-                    break;
-            }
+				default:
+					break;
+			}
 
-            if (draw)
-            {
-                DrawLevel();
-            }
-        }
+			if (draw)
+			{
+				DrawLevel();
+			}
+		}
 
-        private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
-        {
-            switch (actionName)
-            {
-                case ("Camera Move"):
-                    cameraKeyDown = true;
-                    break;
+		private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
+		{
+			switch (actionName)
+			{
+				case ("Camera Move"):
+					cameraKeyDown = true;
+					break;
 
-                case ("Camera Zoom"):
-                    zoomKeyDown = true;
-                    break;
+				case ("Camera Zoom"):
+					zoomKeyDown = true;
+					break;
 
-                case ("Camera Look"):
-                    lookKeyDown = true;
-                    break;
+				case ("Camera Look"):
+					lookKeyDown = true;
+					break;
 
-                default:
-                    break;
-            }
+				default:
+					break;
+			}
 
-            //lookKeyDown = e.Alt; // move these to the action handling
-            //zoomKeyDown = e.Control;
-        }
+			//lookKeyDown = e.Alt; // move these to the action handling
+			//zoomKeyDown = e.Control;
+		}
 
-        // mouse
+		// mouse
 
-        private void panel1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
+		private void panel1_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
 
-            if (!isStageLoaded)
-                return;
+			if (!isStageLoaded)
+				return;
 
-            switch (e.Button)
-            {
-                // If the mouse button pressed is not one we're looking for,
-                // we can avoid re-drawing the scene by bailing out.
-                default:
-                    return;
+			switch (e.Button)
+			{
+				// If the mouse button pressed is not one we're looking for,
+				// we can avoid re-drawing the scene by bailing out.
+				default:
+					return;
 
-                case MouseButtons.Left:
-                    Item item;
-                    if (isPointOperation)
-                    {
-                        HitResult res = PickItem(e.Location, out item);
-                        if (item != null)
-                        {
-                            using (PointToDialog dlg = new PointToDialog(res.Position.ToVertex(), item.Position))
-                                if (dlg.ShowDialog(this) == DialogResult.OK)
-                                    foreach (SETItem it in System.Linq.Enumerable.OfType<SETItem>(selectedItems.GetSelection()))
-                                        it.PointTo(dlg.SelectedLocation);
-                            isPointOperation = false;
+				case MouseButtons.Left:
+					Item item;
+					if (isPointOperation)
+					{
+						HitResult res = PickItem(e.Location, out item);
+						if (item != null)
+						{
+							using (PointToDialog dlg = new PointToDialog(res.Position.ToVertex(), item.Position))
+								if (dlg.ShowDialog(this) == DialogResult.OK)
+									foreach (SETItem it in System.Linq.Enumerable.OfType<SETItem>(selectedItems.GetSelection()))
+										it.PointTo(dlg.SelectedLocation);
+							isPointOperation = false;
 
-                            LevelData.InvalidateRenderState();
-                        }
-                        return;
-                    }
-                    // If we have any helpers selected, don't execute the rest of the method!
-                    if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
+							LevelData.InvalidateRenderState();
+						}
+						return;
+					}
+					// If we have any helpers selected, don't execute the rest of the method!
+					if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
-                    foreach (PointHelper pointHelper in PointHelper.Instances) if (pointHelper.SelectedAxes != GizmoSelectedAxes.NONE) return;
+					foreach (PointHelper pointHelper in PointHelper.Instances) if (pointHelper.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
-                    PickItem(e.Location, out item);
+					PickItem(e.Location, out item);
 
-                    if (item != null)
-                    {
-                        if (ModifierKeys == Keys.Control)
-                        {
-                            if (selectedItems.GetSelection().Contains(item))
-                                selectedItems.Remove(item);
-                            else
-                                selectedItems.Add(item);
-                        }
-                        else if (!selectedItems.GetSelection().Contains(item))
-                        {
-                            selectedItems.Clear();
-                            selectedItems.Add(item);
-                        }
-                    }
-                    else if ((ModifierKeys & Keys.Control) == 0)
-                    {
-                        selectedItems.Clear();
-                    }
-                    break;
+					if (item != null)
+					{
+						if (ModifierKeys == Keys.Control)
+						{
+							if (selectedItems.GetSelection().Contains(item))
+								selectedItems.Remove(item);
+							else
+								selectedItems.Add(item);
+						}
+						else if (!selectedItems.GetSelection().Contains(item))
+						{
+							selectedItems.Clear();
+							selectedItems.Add(item);
+						}
+					}
+					else if ((ModifierKeys & Keys.Control) == 0)
+					{
+						selectedItems.Clear();
+					}
+					break;
 
-                case MouseButtons.Right:
-                    if (isPointOperation)
-                    {
-                        isPointOperation = false;
-                        return;
-                    }
-                    bool cancopy = false;
-                    foreach (Item obj in selectedItems.GetSelection())
-                    {
-                        if (obj.CanCopy)
-                            cancopy = true;
-                    }
-                    if (cancopy)
-                    {
-                        /*cutToolStripMenuItem.Enabled = true;
+				case MouseButtons.Right:
+					if (isPointOperation)
+					{
+						isPointOperation = false;
+						return;
+					}
+					bool cancopy = false;
+					foreach (Item obj in selectedItems.GetSelection())
+					{
+						if (obj.CanCopy)
+							cancopy = true;
+					}
+					if (cancopy)
+					{
+						/*cutToolStripMenuItem.Enabled = true;
 						copyToolStripMenuItem.Enabled = true;*/
-                        deleteToolStripMenuItem.Enabled = true;
+						deleteToolStripMenuItem.Enabled = true;
 
-                        cutToolStripMenuItem.Enabled = false;
-                        copyToolStripMenuItem.Enabled = false;
-                    }
-                    else
-                    {
-                        cutToolStripMenuItem.Enabled = false;
-                        copyToolStripMenuItem.Enabled = false;
-                        deleteToolStripMenuItem.Enabled = false;
-                    }
-                    pasteToolStripMenuItem.Enabled = false;
-                    menuLocation = e.Location;
-                    contextMenuStrip1.Show(RenderPanel, e.Location);
-                    break;
-            }
+						cutToolStripMenuItem.Enabled = false;
+						copyToolStripMenuItem.Enabled = false;
+					}
+					else
+					{
+						cutToolStripMenuItem.Enabled = false;
+						copyToolStripMenuItem.Enabled = false;
+						deleteToolStripMenuItem.Enabled = false;
+					}
+					pasteToolStripMenuItem.Enabled = false;
+					menuLocation = e.Location;
+					contextMenuStrip1.Show(RenderPanel, e.Location);
+					break;
+			}
 
-            DrawLevel();
-        }
+			DrawLevel();
+		}
 
-        private HitResult PickItem(Point mouse)
-        {
-            return PickItem(mouse, out Item item);
-        }
+		private HitResult PickItem(Point mouse)
+		{
+			return PickItem(mouse, out Item item);
+		}
 
-        private HitResult PickItem(Point mouse, out Item item)
-        {
-            HitResult closesthit = HitResult.NoHit;
-            HitResult hit;
-            item = null;
-            Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
-            Viewport viewport = d3ddevice.Viewport;
-            Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
-            Matrix view = d3ddevice.GetTransform(TransformState.View);
-            Vector3 Near, Far;
-            Near = mousepos;
-            Near.Z = 0;
-            Far = Near;
-            Far.Z = -1;
+		private HitResult PickItem(Point mouse, out Item item)
+		{
+			HitResult closesthit = HitResult.NoHit;
+			HitResult hit;
+			item = null;
+			Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
+			Viewport viewport = d3ddevice.Viewport;
+			Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+			Matrix view = d3ddevice.GetTransform(TransformState.View);
+			Vector3 Near, Far;
+			Near = mousepos;
+			Near.Z = 0;
+			Far = Near;
+			Far.Z = -1;
 
-            #region Picking Level Items
-            if (LevelData.LevelItems != null)
-            {
-                for (int i = 0; i < LevelData.LevelItemCount; i++)
-                {
-                    bool display = false;
-                    if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
-                        display = true;
-                    else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
-                        display = true;
-                    else if (allToolStripMenuItem.Checked)
-                        display = true;
-                    if (display)
-                    {
-                        hit = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
-                        if (hit < closesthit)
-                        {
-                            closesthit = hit;
-                            item = LevelData.GetLevelitemAtIndex(i);
-                        }
-                    }
-                }
-            }
-            #endregion
+			#region Picking Level Items
+			if (LevelData.LevelItems != null)
+			{
+				for (int i = 0; i < LevelData.LevelItemCount; i++)
+				{
+					bool display = false;
+					if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
+						display = true;
+					else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
+						display = true;
+					else if (allToolStripMenuItem.Checked)
+						display = true;
+					if (display)
+					{
+						hit = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = LevelData.GetLevelitemAtIndex(i);
+						}
+					}
+				}
+			}
+			#endregion
 
-            #region Picking Start Positions
-            hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
-            if (hit < closesthit)
-            {
-                closesthit = hit;
-                item = LevelData.StartPositions[LevelData.Character];
-            }
-            #endregion
+			#region Picking Start Positions
+			hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
+			if (hit < closesthit)
+			{
+				closesthit = hit;
+				item = LevelData.StartPositions[LevelData.Character];
+			}
+			#endregion
 
-            #region Picking SET Items
-            if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
-                foreach (SETItem setitem in LevelData.SETItems(LevelData.Character))
-                {
-                    hit = setitem.CheckHit(Near, Far, viewport, proj, view);
-                    if (hit < closesthit)
-                    {
-                        closesthit = hit;
-                        item = setitem;
-                    }
-                }
-            #endregion
+			#region Picking SET Items
+			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
+				foreach (SETItem setitem in LevelData.SETItems(LevelData.Character))
+				{
+					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = setitem;
+					}
+				}
+			#endregion
 
-            #region Picking CAM Items
-            if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
-            {
-                foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
-                {
-                    hit = camItem.CheckHit(Near, Far, viewport, proj, view);
-                    if (hit < closesthit)
-                    {
-                        closesthit = hit;
-                        item = camItem;
-                    }
-                }
-            }
-            #endregion
+			#region Picking CAM Items
+			if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
+			{
+				foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+				{
+					hit = camItem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = camItem;
+					}
+				}
+			}
+			#endregion
 
-            #region Picking Death Zones
+			#region Picking Death Zones
 
-            if (LevelData.DeathZones != null)
-            {
-                foreach (DeathZoneItem dzitem in LevelData.DeathZones)
-                {
-                    if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
-                    {
-                        hit = dzitem.CheckHit(Near, Far, viewport, proj, view);
-                        if (hit < closesthit)
-                        {
-                            closesthit = hit;
-                            item = dzitem;
-                        }
-                    }
-                }
-            }
+			if (LevelData.DeathZones != null)
+			{
+				foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+				{
+					if (dzitem.Visible & deathZonesToolStripMenuItem.Checked)
+					{
+						hit = dzitem.CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = dzitem;
+						}
+					}
+				}
+			}
 
-            #endregion
+			#endregion
 
-            #region Picking Mission SET Items
-            if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
-                foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
-                {
-                    hit = setitem.CheckHit(Near, Far, viewport, proj, view);
-                    if (hit < closesthit)
-                    {
-                        closesthit = hit;
-                        item = setitem;
-                    }
-                }
-            #endregion
+			#region Picking Mission SET Items
+			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
+				foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
+				{
+					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = setitem;
+					}
+				}
+			#endregion
 
-            #region Picking Splines
-            if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
-            {
-                foreach (SplineData spline in LevelData.LevelSplines)
-                {
-                    hit = spline.CheckHit(Near, Far, viewport, proj, view);
+			#region Picking Splines
+			if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+				{
+					hit = spline.CheckHit(Near, Far, viewport, proj, view);
 
-                    if (hit < closesthit)
-                    {
-                        closesthit = hit;
-                        item = spline;
-                    }
-                }
-            }
-            #endregion
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = spline;
+					}
+				}
+			}
+			#endregion
 
-            return closesthit;
-        }
+			return closesthit;
+		}
 
-        private void panel1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
 
-            UpdatePropertyGrid();
-        }
+			UpdatePropertyGrid();
+		}
 
-        Point mouseLast;
+		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!isStageLoaded)
@@ -2415,52 +2414,52 @@ namespace SonicRetro.SAModel.SADXLVL2
 						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-                    if (transformGizmo.Enabled)
-                    {
-                        Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
+					if (transformGizmo.Enabled)
+					{
+						Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
 
-                        switch (transformGizmo.Mode)
-                        {
-                            case TransformMode.NONE:
-                                break;
-                            case TransformMode.TRANFORM_MOVE:
-                                // move all of our editor selected items
-                                foreach (Item item in selectedItems.Items)
-                                {
-                                    item.Position = transformGizmo.Move(gizmoMouseInput,
-                                        item.Position.ToVector3(), cam).ToVertex();
-                                }
+						switch (transformGizmo.Mode)
+						{
+							case TransformMode.NONE:
+								break;
+							case TransformMode.TRANFORM_MOVE:
+								// move all of our editor selected items
+								foreach (Item item in selectedItems.Items)
+								{
+									item.Position = transformGizmo.Move(gizmoMouseInput,
+										item.Position.ToVector3(), cam).ToVertex();
+								}
 
-                                Item firstItem = selectedItems.Get(0);
-                                transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-                                break;
-                            case TransformMode.TRANSFORM_ROTATE:
-                                // rotate all of our editor selected items
-                                foreach (Item item in selectedItems.Items)
-                                {
-                                    item.Rotation = transformGizmo.Rotate(gizmoMouseInput, cam, item.Rotation);
-                                }
+								Item firstItem = selectedItems.Get(0);
+								transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
+								break;
+							case TransformMode.TRANSFORM_ROTATE:
+								// rotate all of our editor selected items
+								foreach (Item item in selectedItems.Items)
+								{
+									item.Rotation = transformGizmo.Rotate(gizmoMouseInput, cam, item.Rotation);
+								}
 
-                                firstItem = selectedItems.Get(0);
-                                transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-                                break;
-                            case TransformMode.TRANSFORM_SCALE:
-                                // scale all of our editor selected items
-                                foreach(Item item in selectedItems.Items)
-                                {
-                                    if (item is IScaleable scalableItem)
-                                    {
-                                        scalableItem.SetScale(transformGizmo.Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+								firstItem = selectedItems.Get(0);
+								transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
+								break;
+							case TransformMode.TRANSFORM_SCALE:
+								// scale all of our editor selected items
+								foreach(Item item in selectedItems.Items)
+								{
+									if (item is IScaleable scalableItem)
+									{
+										scalableItem.SetScale(transformGizmo.Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
+									}
+								}
+								break;
+							default:
+								break;
+						}
+					}
 
 
-                    DrawLevel();
+					DrawLevel();
 					break;
 
 				case MouseButtons.None:
@@ -2493,48 +2492,48 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-            if (cameraKeyDown)
-            {
-                // all cam controls are now bound to the middle mouse button
-                if (cam.mode == 0)
-                {
-                    if (zoomKeyDown)
-                    {
-                        cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-                    }
-                    else if (lookKeyDown)
-                    {
-                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-                    }
-                    else if (!lookKeyDown && !zoomKeyDown) // pan
-                    {
-                        cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-                        cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-                    }
-                }
-                else if (cam.mode == 1)
-                {
-                    if (zoomKeyDown)
-                    {
-                        cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-                    }
-                    else if (lookKeyDown)
-                    {
-                        cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-                        cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-                    }
-                    else if (!lookKeyDown && !zoomKeyDown) // pan
-                    {
-                        cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-                        cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-                    }
-                }
+			if (cameraKeyDown)
+			{
+				// all cam controls are now bound to the middle mouse button
+				if (cam.mode == 0)
+				{
+					if (zoomKeyDown)
+					{
+						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
+					}
+					else if (lookKeyDown)
+					{
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+					}
+					else if (!lookKeyDown && !zoomKeyDown) // pan
+					{
+						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+					}
+				}
+				else if (cam.mode == 1)
+				{
+					if (zoomKeyDown)
+					{
+						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
+					}
+					else if (lookKeyDown)
+					{
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+					}
+					else if (!lookKeyDown && !zoomKeyDown) // pan
+					{
+						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+					}
+				}
 
-                DrawLevel();
-            }
+				DrawLevel();
+			}
 
-            if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
 			{
 				mouseLast = mouseEvent;
 				if (e.Button != MouseButtons.None && selectedItems.ItemCount > 0)
@@ -2570,27 +2569,27 @@ namespace SonicRetro.SAModel.SADXLVL2
 				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 			}
 
-            if (sender.ItemCount > 0) // set up gizmo
-            {
-                transformGizmo.Enabled = true;
-                transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
-                    selectedItems.Get(0).TransformMatrix);
-            }
-            else
-            {
-                if (transformGizmo != null)
-                {
-                    transformGizmo.Enabled = false;
-                }
-            }
+			if (sender.ItemCount > 0) // set up gizmo
+			{
+				transformGizmo.Enabled = true;
+				transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
+					selectedItems.Get(0).TransformMatrix);
+			}
+			else
+			{
+				if (transformGizmo != null)
+				{
+					transformGizmo.Enabled = false;
+				}
+			}
 
 			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 			addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
-            DrawLevel();
-        }
+			DrawLevel();
+		}
 
 		/// <summary>
 		/// Refreshes the properties for the currently selected items.
@@ -2891,7 +2890,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.CAMItems[LevelData.Character].Add(item);
 			selectedItems.Clear();
 			selectedItems.Add(item);
-            LevelData.InvalidateRenderState();
+			LevelData.InvalidateRenderState();
 			//LevelData_StateChanged();
 		}
 
@@ -2918,8 +2917,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 		}
 
-        private void levelGeoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+		private void levelGeoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "obj",
@@ -2931,10 +2930,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					ExportLevelObj(a.FileName, false);
 				}
 			}
-        }
+		}
 
-        private void selectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+		private void selectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "obj",
@@ -2949,13 +2948,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-        private void everythingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //ExportObj();
-        }
+		private void everythingToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			//ExportObj();
+		}
 
-        private void ExportLevelObj(string fileName, bool selectedOnly)
-        {
+		private void ExportLevelObj(string fileName, bool selectedOnly)
+		{
 			using (StreamWriter objstream = new StreamWriter(fileName, false))
 			using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(fileName, "mtl"), false))
 			{
@@ -3047,7 +3046,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				progress.SetTaskAndStep("Export complete!");
 			}
-        }
+		}
 
 		private void selectedItemsToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
@@ -3103,7 +3102,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-            LevelData.InvalidateRenderState();
+			LevelData.InvalidateRenderState();
 			propertyGrid1.Refresh();
 		}
 
@@ -3120,7 +3119,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void LevelData_StateChanged()
 		{
-            transformGizmo.Enabled = selectedItems.ItemCount > 0;
+			transformGizmo.Enabled = selectedItems.ItemCount > 0;
 
 			DrawLevel();
 		}
@@ -3166,8 +3165,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			optionsEditor.Show();
-            optionsEditor.BringToFront();
-            optionsEditor.Focus();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
 		}
 
 		void optionsEditor_FormUpdated()
@@ -3225,16 +3224,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-        private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            if (transformGizmo != null)
-            {
-                transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
-                DrawLevel();
-            }
-        }
+		private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
+		{
+			if (transformGizmo != null)
+			{
+				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+				DrawLevel();
+			}
+		}
 
-        private void scaleModeButton_Click(object sender, EventArgs e)
+		private void scaleModeButton_Click(object sender, EventArgs e)
 		{
 			if (transformGizmo != null)
 			{
@@ -3389,13 +3388,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 				item.CalculateBounds();
 		}
 
-        private void inputTestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (ActionMapTest test = new ActionMapTest())
-            {
-                test.ShowDialog();
-            }
-        }
+		private void inputTestToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ActionMapTest test = new ActionMapTest())
+			{
+				test.ShowDialog();
+			}
+		}
 
 		#region Drag and Drop functionality
 		private void DoModelDragEnter(Attach attach)

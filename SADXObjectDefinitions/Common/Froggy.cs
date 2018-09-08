@@ -106,16 +106,16 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + item.Scale.Y, + item.Position.Z);
-            MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+			MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + item.Scale.Y, + item.Position.Z);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 
 	public class Froggy : ObjectDefinition
 	{
@@ -178,14 +178,14 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(frog, transform);
 		}
 
-        public override Matrix GetHandleMatrix(SETItem item)
-        {
-            Matrix matrix = Matrix.Identity;
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
 
-            MatrixFunctions.Translate(ref matrix, item.Position);
-            MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
-            return matrix;
-        }
-    }
+			return matrix;
+		}
+	}
 }

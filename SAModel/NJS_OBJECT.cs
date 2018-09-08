@@ -304,7 +304,7 @@ namespace SonicRetro.SAModel
 			return ToCollada(texs);
 		}
 
-        public COLLADA ToCollada(string[] textures)
+		public COLLADA ToCollada(string[] textures)
 		{
 			COLLADA result = new COLLADA
 			{
@@ -392,8 +392,8 @@ namespace SonicRetro.SAModel
 									{
 										sid = "material_" + attach.Name + "_" + m + "_eff_surface",
 										/*Item = new Collada141.fx_sampler2D_common()
-                                         { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
-                                         ItemElementName = Collada141.ItemChoiceType.sampler2D*/
+										 { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
+										 ItemElementName = Collada141.ItemChoiceType.sampler2D*/
 										Item = new fx_surface_common
 										{
 											type = fx_surface_type_enum.Item2D,

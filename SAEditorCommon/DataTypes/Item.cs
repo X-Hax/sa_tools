@@ -9,30 +9,30 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-    [Serializable]
-    public abstract class Item : IComponent
-    {
-        [ReadOnly(true)]
-        [ParenthesizePropertyName(true)]
-        public string Type { get { return GetType().Name; } }
+	[Serializable]
+	public abstract class Item : IComponent
+	{
+		[ReadOnly(true)]
+		[ParenthesizePropertyName(true)]
+		public string Type { get { return GetType().Name; } }
 
-        private bool selected;
-        [Browsable(false)]
-        public bool Selected { get { return selected; } }
-        private BoundingSphere bounds = new BoundingSphere();
-        [ParenthesizePropertyName(true)]
-        public virtual BoundingSphere Bounds { get { return bounds; } }
+		private bool selected;
+		[Browsable(false)]
+		public bool Selected { get { return selected; } }
+		private BoundingSphere bounds = new BoundingSphere();
+		[ParenthesizePropertyName(true)]
+		public virtual BoundingSphere Bounds { get { return bounds; } }
 
-        protected Matrix transformMatrix = Matrix.Identity;
-        protected Vertex position = new Vertex();
-        protected Rotation rotation = new Rotation();
-        protected bool rotateZYX = false;
+		protected Matrix transformMatrix = Matrix.Identity;
+		protected Vertex position = new Vertex();
+		protected Rotation rotation = new Rotation();
+		protected bool rotateZYX = false;
 
-        public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
-        public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
-        public Matrix TransformMatrix { get { return transformMatrix; } }
+		public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		public Matrix TransformMatrix { get { return transformMatrix; } }
 
-        [Browsable(false)]
+		[Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
 		public abstract void Paste();
 		public abstract void Delete();
@@ -99,19 +99,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 
 			return Vertex.CenterOfPoints(vertList);
-        }
+		}
 
-        protected virtual void GetHandleMatrix()
+		protected virtual void GetHandleMatrix()
 		{
-            transformMatrix = Matrix.Identity;
+			transformMatrix = Matrix.Identity;
 
-            MatrixStack matrixStack = new MatrixStack();
-            matrixStack.LoadMatrix(Matrix.Identity);
-            matrixStack.NJTranslate(Position);
-            if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
-            else matrixStack.NJRotateZYX(Rotation);
+			MatrixStack matrixStack = new MatrixStack();
+			matrixStack.LoadMatrix(Matrix.Identity);
+			matrixStack.NJTranslate(Position);
+			if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
+			else matrixStack.NJRotateZYX(Rotation);
 
-            transformMatrix = matrixStack.Top;
+			transformMatrix = matrixStack.Top;
 		}
 	}
 }
