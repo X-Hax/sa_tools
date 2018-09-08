@@ -291,7 +291,6 @@ namespace ProjectManager
         {
             InitializeComponent();
 
-
 			sadxIsValid = GamePathChecker.CheckSADXPCValid(
 				Program.Settings.SADXPCPath, out string sadxInvalidReason);
 
@@ -688,7 +687,14 @@ namespace ProjectManager
 
         private void NewProject_Shown(object sender, EventArgs e)
         {
-            ProjectNameBox.Enabled = true;
+			// check valid states again
+			sadxIsValid = GamePathChecker.CheckSADXPCValid(
+				Program.Settings.SADXPCPath, out string sadxInvalidReason);
+
+			sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
+				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
+
+			ProjectNameBox.Enabled = true;
             SA2RadioButton.Enabled = sa2pcIsValid;
             SADXPCButton.Enabled = sadxIsValid;
             BackButton.Enabled = true;
