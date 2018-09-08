@@ -697,6 +697,8 @@ namespace ProjectManager
 			ProjectNameBox.Text = "";
 			AuthorTextBox.Text = "";
 			DescriptionTextBox.Text = "";
+
+			SetControls();
 		}
 
         private void NewProject_Shown(object sender, EventArgs e)
