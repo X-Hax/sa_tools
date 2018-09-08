@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.Direct3D
 			Material.SetDeviceStates(device, Texture, Transform, FillMode);
 
             if (Mesh != null)
-                Mesh.DrawSubset(Subset);
+                Mesh.DrawSubset(device, Subset);
             device.SetRenderState(RenderState.Ambient, System.Drawing.Color.Black.ToArgb());
             device.SetRenderState(RenderState.FillMode, mode);
             device.SetSamplerState(0, SamplerState.MagFilter, magfilter);

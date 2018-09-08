@@ -25,7 +25,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
 		public static void Init(Device device, Bitmap unknownBitmap)
 		{
-			SquareMesh = new Mesh<FVF_PositionTextured>(device, SquareVerts, new short[][] { SquareInds });
+			SquareMesh = new Mesh<FVF_PositionTextured>(SquareVerts, new short[][] { SquareInds });
 			SquareBounds = SharpDX.BoundingSphere.FromPoints(SquareVerts.Select(a => a.Position).ToArray()).ToSAModel();
 
 			QuestionMark = unknownBitmap != null ? unknownBitmap.ToTexture(device) : new Texture(device, 16, 16, 0, Usage.None, Format.A8R8G8B8, Pool.Managed);
@@ -38,14 +38,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return new ModelFile(file).Model;
 		}
 
-		public static Mesh[] GetMeshes(NJS_OBJECT model, Device dev)
+		public static Mesh[] GetMeshes(NJS_OBJECT model)
 		{
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
 			Mesh[] Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
-					Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
+					Meshes[i] = models[i].Attach.CreateD3DMesh();
 			return Meshes;
 		}
 

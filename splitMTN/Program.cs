@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using SA_Tools;
 using SonicRetro.SAModel;
 
 namespace splitMTN
@@ -36,17 +37,26 @@ namespace splitMTN
                 if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     file = FraGag.Compression.Prs.Decompress(file);
                 Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename));
+				Dictionary<int, int> processedanims = new Dictionary<int, int>();
+				Dictionary<int, string> ini = new Dictionary<int, string>();
                 int address = 0;
                 int i = ByteConverter.ToInt16(file, address);
                 while (i != -1)
                 {
-                    new Animation(file, ByteConverter.ToInt32(file, address + 4), 0, ByteConverter.ToInt16(file, address + 2))
+					int aniaddr = ByteConverter.ToInt32(file, address + 4);
+					if (!processedanims.ContainsKey(aniaddr))
+					{
+						new Animation(file, aniaddr, 0, ByteConverter.ToInt16(file, address + 2))
                         .Save(Path.GetFileNameWithoutExtension(filename) + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-                    address += 8;
+						processedanims[aniaddr] = i;
+					}
+					ini[i]= "animation_" + aniaddr.ToString("X8");
+					address += 8;
                     i = ByteConverter.ToInt16(file, address);
                 }
-            }
-            finally
+				IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(Path.GetFileNameWithoutExtension(filename), Path.GetFileNameWithoutExtension(filename) + ".ini"));
+			}
+			finally
             {
                 Environment.CurrentDirectory = dir;
             }

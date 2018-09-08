@@ -243,7 +243,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return SharpDX.BoundingSphere.Merge(sphereA.ToSharpDX(), sphereB.ToSharpDX()).ToSAModel();
 		}
 
-		public static Mesh CreateD3DMesh(this Attach attach, Device dev)
+		public static Mesh CreateD3DMesh(this Attach attach)
 		{
 			int numverts = 0;
 			byte data = 0;
@@ -259,13 +259,13 @@ namespace SonicRetro.SAModel.Direct3D
 			switch (data)
 			{
 				case 3:
-					return new Mesh<FVF_PositionNormalTexturedColored>(attach, dev);
+					return new Mesh<FVF_PositionNormalTexturedColored>(attach);
 				case 2:
-					return new Mesh<FVF_PositionNormalColored>(attach, dev);
+					return new Mesh<FVF_PositionNormalColored>(attach);
 				case 1:
-					return new Mesh<FVF_PositionNormalTextured>(attach, dev);
+					return new Mesh<FVF_PositionNormalTextured>(attach);
 				default:
-					return new Mesh<FVF_PositionNormal>(attach, dev);
+					return new Mesh<FVF_PositionNormal>(attach);
 			}
 		}
 
@@ -290,35 +290,35 @@ namespace SonicRetro.SAModel.Direct3D
 		static VertexData[] VertexBuffer = new VertexData[4095];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
-		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj, Device device)
+		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
 		{
 			List<Mesh> meshes = new List<Mesh>();
-			ProcessWeightedModel(obj, device, new MatrixStack(), meshes);
+			ProcessWeightedModel(obj, new MatrixStack(), meshes);
 			return meshes;
 		}
 
-		private static void ProcessWeightedModel(NJS_OBJECT obj, Device device, MatrixStack transform, List<Mesh> meshes)
+		private static void ProcessWeightedModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes)
 		{
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(device, transform, attach));
+				meshes.Add(ProcessWeightedAttach(attach, transform));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModel(child, device, transform, meshes);
+				ProcessWeightedModel(child, transform, meshes);
 			transform.Pop();
 		}
 
-		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, Device device, Animation anim, int animframe)
+		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, Animation anim, int animframe)
 		{
 			List<Mesh> meshes = new List<Mesh>();
 			int animindex = -1;
-			ProcessWeightedModelAnimated(obj, device, new MatrixStack(), meshes, anim, animframe, ref animindex);
+			ProcessWeightedModelAnimated(obj, new MatrixStack(), meshes, anim, animframe, ref animindex);
 			return meshes;
 		}
 
-		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, Device device, MatrixStack transform, List<Mesh> meshes, Animation anim, int animframe, ref int animindex)
+		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, Animation anim, int animframe, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -330,15 +330,15 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				obj.ProcessTransforms(transform);
 			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(device, transform, attach));
+				meshes.Add(ProcessWeightedAttach(attach, transform));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModelAnimated(child, device, transform, meshes, anim, animframe, ref animindex);
+				ProcessWeightedModelAnimated(child, transform, meshes, anim, animframe, ref animindex);
 			transform.Pop();
 		}
 
-		private static Mesh ProcessWeightedAttach(Device device, MatrixStack transform, ChunkAttach attach)
+		private static Mesh ProcessWeightedAttach(ChunkAttach attach, MatrixStack transform)
 		{
 			if (attach.Vertex != null)
 			{
@@ -397,7 +397,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (attach.Poly != null)
 				result = ProcessPolyList(attach.Poly, 0);
 			attach.MeshInfo = result.ToArray();
-			return attach.CreateD3DMesh(device);
+			return attach.CreateD3DMesh();
 		}
 
 		private static List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start)
@@ -534,7 +534,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -574,7 +574,7 @@ namespace SonicRetro.SAModel.Direct3D
 							obj.Attach.MeshInfo[j] = new MeshInfo(mat, old.Polys, old.Vertices, old.HasUV, old.HasVC);
 						}
 					}
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -609,13 +609,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes)
 		{
 			int modelindex = -1;
-			return obj.DrawModelTree(device, transform, textures, meshes, ref modelindex);
+			return obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -634,12 +634,12 @@ namespace SonicRetro.SAModel.Direct3D
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTree(child, device, transform, textures, meshes, ref modelindex));
+				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex));
 			transform.Pop();
 			return result;
 		}
@@ -684,14 +684,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
-			return obj.DrawModelTreeAnimated(device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
+			return obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, Device device, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -710,10 +710,10 @@ namespace SonicRetro.SAModel.Direct3D
 					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTreeAnimated(child, device, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
+				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
 			return result;
 		}
@@ -756,7 +756,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, Device device, Matrix transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			NJS_OBJECT[] objs = obj.GetObjects();
@@ -769,7 +769,7 @@ namespace SonicRetro.SAModel.Direct3D
 						NJS_MATERIAL mat = objs[i].Attach.MeshInfo[j].Material;
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
-						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, device.GetRenderState<FillMode>(RenderState.FillMode), objs[i].Attach.CalculateBounds(j, transform)));
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
 					}
 				}
 			return result;

@@ -1,15 +1,15 @@
-﻿using System;
+﻿using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
-using SonicRetro.SAModel;
+using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace SA_Tools
 {
-    public class IniData
+	public class IniData
     {
         [IniName("key")]
 		[TypeConverter(typeof(UInt32HexConverter))]

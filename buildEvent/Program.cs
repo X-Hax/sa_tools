@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace buildEvent
@@ -32,13 +31,11 @@ namespace buildEvent
 				if (fc[0] == 0x81)
 				{
 					ByteConverter.BigEndian = true;
-					SA_Tools.ByteConverter.BigEndian = true;
 					key = 0x8125FE60;
 				}
 				else
 				{
 					ByteConverter.BigEndian = false;
-					SA_Tools.ByteConverter.BigEndian = false;
 					key = 0xC600000;
 				}
 				List<byte> modelbytes = new List<byte>(fc);

@@ -9,7 +9,7 @@ namespace SADXObjectDefinitions.Mission
 {
 	class MissionTimer : ObjectDefinition
 	{
-		public override void Init(ObjectData data, string name, Device dev) { }
+		public override void Init(ObjectData data, string name) { }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -28,6 +28,11 @@ namespace SADXObjectDefinitions.Mission
 			result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			transform.Pop();
 			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
 		}
 
 		public override string Name { get { return "Mission Timer"; } }

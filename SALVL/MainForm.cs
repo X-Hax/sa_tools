@@ -105,7 +105,7 @@ namespace SonicRetro.SAModel.SALVL
 
             for (int i = 0; i < LevelData.geo.COL.Count; i++)
             {
-                LevelData.AddLevelItem((new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems)));
+                LevelData.AddLevelItem((new LevelItem(LevelData.geo.COL[i], i, selectedItems)));
             }
 
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
@@ -635,7 +635,7 @@ namespace SonicRetro.SAModel.SALVL
 				string filePath = importFileDialog.FileName;
 
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -665,7 +665,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -940,7 +940,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			LevelData.DuplicateSelection(d3ddevice, selectedItems, out bool errorFlag, out string errorMsg);
+			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}

@@ -25,7 +25,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
-					Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
+					Meshes[i] = models[i].Attach.CreateD3DMesh();
 			texture = textures;
 			this.offset = offset;
 			Position = position;
@@ -77,7 +77,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
 			transform.NJRotateY(YRotation);
-			result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
+			result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes));
 			if (Selected)
 				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes));
 			transform.Pop();

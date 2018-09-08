@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SonicRetro.SAModel;
+using System;
 using System.IO;
 using System.Text;
 

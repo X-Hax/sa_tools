@@ -20,14 +20,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT model3;
 		protected Mesh[] meshes3;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
+			meshes1 = ObjectHelper.GetMeshes(model1);
 			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+			meshes2 = ObjectHelper.GetMeshes(model2);
 			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_C.sa1mdl");
-			meshes3 = ObjectHelper.GetMeshes(model3, dev);
+			meshes3 = ObjectHelper.GetMeshes(model3);
 		}
 
 		public override string Name { get { return "Plants"; } }
@@ -72,7 +72,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();
@@ -84,7 +84,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model2.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
 				if (item.Selected)
 					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
 				transform.Pop();
@@ -96,9 +96,43 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model3.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3));
+				result.AddRange(model3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3));
 				if (item.Selected)
 					result.AddRange(model3.DrawModelTreeInvert(transform, meshes3));
+				transform.Pop();
+				return result;
+			}
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (item.Scale.Z == 0.0)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.Z <= 5.0)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model2, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model3, transform.Top));
 				transform.Pop();
 				return result;
 			}

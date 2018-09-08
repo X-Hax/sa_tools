@@ -17,12 +17,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
-			whalemsh = ObjectHelper.GetMeshes(whale, dev);
+			whalemsh = ObjectHelper.GetMeshes(whale);
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "Whale Spawner"; } }
@@ -53,7 +53,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale(4.5f, 4.5f, 4.5f);
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
 			transform.Pop();
@@ -61,9 +61,21 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position + item.Scale);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
-			result.AddRange(whale.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
+			result.AddRange(whale.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
 			if (item.Selected)
 				result.AddRange(whale.DrawModelTreeInvert(transform, whalemsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position + item.Scale);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
+			result.Add(new ModelTransform(whale, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -94,12 +106,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
-			whalemsh = ObjectHelper.GetMeshes(whale, dev);
+			whalemsh = ObjectHelper.GetMeshes(whale);
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "Whale Despawner"; } }
@@ -129,7 +141,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale(4.5f, 4.5f, 4.5f);
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
 			transform.Pop();
@@ -137,11 +149,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateZ(0x8000);
 			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
-			result.AddRange(whale.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
+			result.AddRange(whale.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
 			if (item.Selected)
 				result.AddRange(whale.DrawModelTreeInvert(transform, whalemsh));
 			transform.Pop();
 			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
@@ -169,12 +186,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
-			whalemsh = ObjectHelper.GetMeshes(whale, dev);
+			whalemsh = ObjectHelper.GetMeshes(whale);
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "PO Whale Spawner"; } }
@@ -204,7 +221,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale(4.5f, 4.5f, 4.5f);
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
 			transform.Pop();
@@ -212,9 +229,21 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateX(0x2000);
 			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
-			result.AddRange(whale.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
+			result.AddRange(whale.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), whalemsh));
 			if (item.Selected)
 				result.AddRange(whale.DrawModelTreeInvert(transform, whalemsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(0x2000);
+			transform.NJScale(0.40000001f, 0.40000001f, 0.40000001f);
+			result.Add(new ModelTransform(whale, transform.Top));
 			transform.Pop();
 			return result;
 		}

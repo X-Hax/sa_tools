@@ -21,16 +21,16 @@ namespace SADXObjectDefinitions.WindyValley
 		private NJS_OBJECT modelD;
 		private Mesh[] meshesD;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			modelA = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TORBRI_A.sa1mdl");
-			meshesA = ObjectHelper.GetMeshes(modelA, dev);
+			meshesA = ObjectHelper.GetMeshes(modelA);
 			modelB = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TORBRI_B.sa1mdl");
-			meshesB = ObjectHelper.GetMeshes(modelB, dev);
+			meshesB = ObjectHelper.GetMeshes(modelB);
 			modelC = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TORBRI_C.sa1mdl");
-			meshesC = ObjectHelper.GetMeshes(modelC, dev);
+			meshesC = ObjectHelper.GetMeshes(modelC);
 			modelD = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TORBRI_D.sa1mdl");
-			meshesD = ObjectHelper.GetMeshes(modelD, dev);
+			meshesD = ObjectHelper.GetMeshes(modelD);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -81,7 +81,7 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelB.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
+					result.AddRange(modelB.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
 					if (item.Selected)
 						result.AddRange(modelB.DrawModelTreeInvert(transform, meshesB));
 					transform.Pop();
@@ -90,7 +90,7 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelC.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesC));
+					result.AddRange(modelC.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesC));
 					if (item.Selected)
 						result.AddRange(modelC.DrawModelTreeInvert(transform, meshesC));
 					transform.Pop();
@@ -99,7 +99,7 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelD.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesD));
+					result.AddRange(modelD.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesD));
 					if (item.Selected)
 						result.AddRange(modelD.DrawModelTreeInvert(transform, meshesD));
 					transform.Pop();
@@ -108,9 +108,47 @@ namespace SADXObjectDefinitions.WindyValley
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(modelA.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
+					result.AddRange(modelA.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
 					if (item.Selected)
 						result.AddRange(modelA.DrawModelTreeInvert(transform, meshesA));
+					transform.Pop();
+					break;
+			}
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			int ScaleX = (int)item.Scale.X;
+			switch (ScaleX)
+			{
+				case 1:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelB, transform.Top));
+					transform.Pop();
+					break;
+				case 2:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelC, transform.Top));
+					transform.Pop();
+					break;
+				case 3:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelD, transform.Top));
+					transform.Pop();
+					break;
+				default:
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					result.Add(new ModelTransform(modelA, transform.Top));
 					transform.Pop();
 					break;
 			}

@@ -116,10 +116,10 @@ namespace SonicRetro.SAModel.SAMDL
             modelLibrary.InitRenderer();
             modelLibrary.SelectionChanged += modelLibrary_SelectionChanged;
 
-            sphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10);
-            selectedSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Lime);
-            modelSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Red);
-            selectedModelSphereMesh = Mesh.Sphere(d3ddevice, 0.0625f, 10, 10, Color.Yellow);
+            sphereMesh = Mesh.Sphere(0.0625f, 10, 10);
+            selectedSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Lime);
+            modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
+            selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 		}
@@ -167,7 +167,7 @@ namespace SonicRetro.SAModel.SAMDL
 				byte[] file = File.ReadAllBytes(filename);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
-				SA_Tools.ByteConverter.BigEndian = false;
+				ByteConverter.BigEndian = false;
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
 				if (baseaddr.HasValue)
 				{
@@ -179,7 +179,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
-					SA_Tools.ByteConverter.BigEndian = true;
+					ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
 					modelinfo.numericUpDown2.Value = 0;
 					modelinfo.numericUpDown2.Enabled = false;
@@ -259,7 +259,7 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 			}
 			if (model.HasWeight)
-				meshes = model.ProcessWeightedModel(d3ddevice).ToArray();
+				meshes = model.ProcessWeightedModel().ToArray();
 			else
 			{
 				model.ProcessVertexData();
@@ -267,7 +267,7 @@ namespace SonicRetro.SAModel.SAMDL
 				meshes = new Mesh[models.Length];
 				for (int i = 0; i < models.Length; i++)
 					if (models[i].Attach != null)
-						try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
 						catch { }
 			}
 			treeView1.Nodes.Clear();
@@ -315,7 +315,7 @@ namespace SonicRetro.SAModel.SAMDL
             {
                 if (models[i].Attach != null)
                 {
-                    try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
+                    try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
                     catch { }
 
                     modelLibrary.Add(models[i].Attach);
@@ -508,11 +508,11 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showModelToolStripMenuItem.Checked)
 			{
 				if (model.HasWeight)
-					RenderInfo.Draw(model.DrawModelTreeWeighted(d3ddevice, transform.Top, Textures, meshes), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes), d3ddevice, cam);
 				else if (animation != null)
-					RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
 				else
-					RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes), d3ddevice, cam);
 
 				if (selectedObject != null)
 				{
@@ -617,14 +617,14 @@ namespace SonicRetro.SAModel.SAMDL
 			if (obj == selectedObject)
 			{
 				if (obj.Attach != null)
-					selectedModelSphereMesh.DrawAll();
+					selectedModelSphereMesh.DrawAll(d3ddevice);
 				else
-					selectedSphereMesh.DrawAll();
+					selectedSphereMesh.DrawAll(d3ddevice);
 			}
 			else if (obj.Attach != null)
-				modelSphereMesh.DrawAll();
+				modelSphereMesh.DrawAll(d3ddevice);
 			else
-				sphereMesh.DrawAll();
+				sphereMesh.DrawAll(d3ddevice);
 			foreach (NJS_OBJECT child in obj.Children)
 				DrawNodes(child, transform, ref modelindex, ref animindex);
 			transform.Pop();
@@ -668,9 +668,9 @@ namespace SonicRetro.SAModel.SAMDL
 			if (model.HasWeight)
 			{
 				if (animation != null)
-					meshes = model.ProcessWeightedModelAnimated(d3ddevice, animation, animframe).ToArray();
+					meshes = model.ProcessWeightedModelAnimated(animation, animframe).ToArray();
 				else
-					meshes = model.ProcessWeightedModel(d3ddevice).ToArray();
+					meshes = model.ProcessWeightedModel().ToArray();
 			}
 		}
 
@@ -1360,7 +1360,7 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedObject.Attach = attach;
 			attach.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
-			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
+			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(); }
 			catch { }
 			DrawEntireModel();
 		}
@@ -1394,7 +1394,7 @@ namespace SonicRetro.SAModel.SAMDL
 						newattach.Name = selectedObject.Attach.Name;
 					}
 
-					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh(d3ddevice);
+					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh();
 					selectedObject.Attach = newattach;
 
 					Matrix m = Matrix.Identity;
@@ -1546,7 +1546,7 @@ namespace SonicRetro.SAModel.SAMDL
                 selectedObject.Attach = selectedModel;
                 selectedObject.Attach.ProcessVertexData();
                 NJS_OBJECT[] models = model.GetObjects();
-                try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(d3ddevice); }
+                try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(); }
                 catch { }
                 DrawEntireModel();
             }

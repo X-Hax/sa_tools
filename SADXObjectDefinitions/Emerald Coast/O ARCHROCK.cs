@@ -19,14 +19,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT side2;
 		protected Mesh[] side2msh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			arch = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ARCHROCK.sa1mdl");
-			archmsh = ObjectHelper.GetMeshes(arch, dev);
+			archmsh = ObjectHelper.GetMeshes(arch);
 			side1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
-			side1msh = ObjectHelper.GetMeshes(side1, dev);
+			side1msh = ObjectHelper.GetMeshes(side1);
 			side2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
-			side2msh = ObjectHelper.GetMeshes(side2, dev);
+			side2msh = ObjectHelper.GetMeshes(side2);
 		}
 
 		public override string Name { get { return "Arched Rock"; } }
@@ -65,7 +65,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.TranslateLocal(0, 110f, 0);
-			result.AddRange(arch.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), archmsh));
+			result.AddRange(arch.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), archmsh));
 			if (item.Selected)
 				result.AddRange(arch.DrawModelTreeInvert(transform, archmsh));
 			transform.Pop();
@@ -73,7 +73,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.TranslateLocal(0, 0, 73f);
-			result.AddRange(side1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), side1msh));
+			result.AddRange(side1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side1msh));
 			if (item.Selected)
 				result.AddRange(side1.DrawModelTreeInvert(transform, side1msh));
 			transform.Pop();
@@ -81,9 +81,33 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.TranslateLocal(0, 0, -57f);
-			result.AddRange(side2.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), side2msh));
+			result.AddRange(side2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side2msh));
 			if (item.Selected)
 				result.AddRange(side2.DrawModelTreeInvert(transform, side2msh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 110f, 0);
+			result.Add(new ModelTransform(arch, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 0, 73f);
+			result.Add(new ModelTransform(side1, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.TranslateLocal(0, 0, -57f);
+			result.Add(new ModelTransform(side2, transform.Top));
 			transform.Pop();
 			return result;
 		}

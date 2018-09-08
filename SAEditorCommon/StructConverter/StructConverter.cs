@@ -833,7 +833,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                                         writer.WriteLine("LoopHead {0}_{1}_{2} = {{ {3}, LengthOfArray<int16_t>({0}_{1}_{2}_Entries), {4}, {0}_{1}_{2}_Entries, (ObjectFuncPtr){5} }};",
                                             name, level.ToString().MakeIdentifier(), i, paths[i].Unknown,
                                             HelperFunctions.ToC(paths[i].TotalDistance),
-                                            HelperFunctions.ToCHex(paths[i].Code));
+                                            paths[i].Code.ToCHex());
                                         writer.WriteLine();
                                     }
                                     writer.WriteLine("LoopHead *{0}_{1}[] = {{", name, level.ToString().MakeIdentifier());
@@ -867,7 +867,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 									writer.WriteLine("LoopHead {0}_{1} = {{ {2}, LengthOfArray<int16_t>({0}_{1}_Entries), {3}, {0}_{1}_Entries, (ObjectFuncPtr){4} }};",
 										name, i, paths[i].Unknown,
 										HelperFunctions.ToC(paths[i].TotalDistance),
-										HelperFunctions.ToCHex(paths[i].Code));
+										paths[i].Code.ToCHex());
 									writer.WriteLine();
 								}
 								writer.WriteLine("LoopHead *{0}[] = {{", name);
@@ -978,7 +978,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
                     writer.WriteLine("PointerInfo pointers[] = {");
                     List<string> ptrs = new List<string>(pointers.Count);
                     foreach (KeyValuePair<uint, string> ptr in pointers)
-                        ptrs.Add(string.Format("ptrdecl({0}, &{1})", HelperFunctions.ToCHex(ptr.Key), ptr.Value));
+                        ptrs.Add(string.Format("ptrdecl({0}, &{1})", ptr.Key.ToCHex(), ptr.Value));
                     writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", ptrs.ToArray()));
                     writer.WriteLine("};");
                     writer.WriteLine();

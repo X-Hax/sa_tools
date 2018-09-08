@@ -19,14 +19,14 @@ namespace SADXObjectDefinitions.Common
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
-			frogmsh = ObjectHelper.GetMeshes(frog, dev);
+			frogmsh = ObjectHelper.GetMeshes(frog);
 			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
-			bubblemsh = ObjectHelper.GetMeshes(bubble, dev);
+			bubblemsh = ObjectHelper.GetMeshes(bubble);
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "Froggy (Bubble)"; } }
@@ -61,23 +61,39 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(frog.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
+			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(bubble.DrawModelTree(dev, transform, null, bubblemsh));
+			result.AddRange(bubble.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, bubblemsh));
 			if (item.Selected)
 				result.AddRange(bubble.DrawModelTreeInvert(transform, bubblemsh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(frog, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(bubble, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -106,10 +122,10 @@ namespace SADXObjectDefinitions.Common
 		protected NJS_OBJECT frog;
 		protected Mesh[] frogmsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
-			frogmsh = ObjectHelper.GetMeshes(frog, dev);
+			frogmsh = ObjectHelper.GetMeshes(frog);
 		}
 
 		public override string Name { get { return "Froggy"; } }
@@ -134,9 +150,21 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			transform.NJTranslate(2f, 0f, 0f);
-			result.AddRange(frog.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
+			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			transform.NJTranslate(2f, 0f, 0f);
+			result.Add(new ModelTransform(frog, transform.Top));
 			transform.Pop();
 			return result;
 		}

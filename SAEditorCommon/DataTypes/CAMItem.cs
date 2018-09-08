@@ -200,9 +200,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             GetHandleMatrix();
 		}
 
-		public static void Init(Device dev)
+		public static void Init()
 		{
-			VolumeMesh = Mesh.Box(dev, 2f, 2f, 2f);
+			VolumeMesh = Mesh.Box(2f, 2f, 2f);
 			Material = new NJS_MATERIAL
 			{
 				DiffuseColor = Color.FromArgb(200, Color.Purple),

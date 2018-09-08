@@ -32,9 +32,20 @@ namespace SADXObjectDefinitions.Common
 			((BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			((BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), 8)];
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -74,16 +85,18 @@ namespace SADXObjectDefinitions.Common
 
 	public class ItemBox : ItemBoxBase
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/O ITEMBOX.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 2;
 		}
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x; int z; direction.GetRotation(out x, out z);
+			int x;
+			int z;
+			direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
@@ -93,10 +106,10 @@ namespace SADXObjectDefinitions.Common
 
 	public class FloatingItemBox : ItemBoxBase
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/O ItemBoxAir.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 1;
 		}
 

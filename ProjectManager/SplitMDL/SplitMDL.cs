@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using SA_Tools;
 using SonicRetro.SAModel;
+using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace SplitMDL
 {
@@ -66,7 +68,9 @@ namespace SplitMDL
                 Dictionary<int, Animation> anims = new Dictionary<int, Animation>();
                 foreach (string anifilename in anifilenames)
                 {
-                    byte[] anifile = File.ReadAllBytes(anifilename);
+					Dictionary<int, int> processedanims = new Dictionary<int, int>();
+					Dictionary<int, string> ini = new Dictionary<int, string>();
+					byte[] anifile = File.ReadAllBytes(anifilename);
                     if (Path.GetExtension(anifilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                         anifile = FraGag.Compression.Prs.Decompress(anifile);
 
@@ -77,15 +81,23 @@ namespace SplitMDL
                     i = ByteConverter.ToInt16(anifile, address);
                     while (i != -1)
                     {
-                        anims[i] = new Animation(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
-                        animfns[i] = Path.Combine(Path.GetFileNameWithoutExtension(anifilename), i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-                        address += 8;
+						int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
+						if (!processedanims.ContainsKey(aniaddr))
+						{
+							anims[i] = new Animation(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
+							animfns[i] = Path.Combine(aniOutputDir, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+							anims[i].Save(animfns[i]);
+							processedanims[aniaddr] = i;
+						}
+						ini[i] = "animation_" + aniaddr.ToString("X8");
+						address += 8;
                         i = ByteConverter.ToInt16(anifile, address);
                     }
-                }
+					IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(aniOutputDir, Path.GetFileNameWithoutExtension(anifilename) + ".ini"));
+				}
 
-                // save output model files
-                foreach (KeyValuePair<int, NJS_OBJECT> model in models)
+				// save output model files
+				foreach (KeyValuePair<int, NJS_OBJECT> model in models)
                 {
                     List<string> animlist = new List<string>();
                     foreach (KeyValuePair<int, Animation> anim in anims)
@@ -105,10 +117,8 @@ namespace SplitMDL
 
                 Environment.CurrentDirectory = Path.GetDirectoryName(outputFolder);
                 // save ini file
-                MDLIniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
+                IniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
                     Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
-                foreach (KeyValuePair<int, Animation> anim in anims)
-                    anim.Value.Save(animfns[anim.Key]);
             }
             finally
             {

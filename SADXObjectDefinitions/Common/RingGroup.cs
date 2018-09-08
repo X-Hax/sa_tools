@@ -16,10 +16,10 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/RING.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -82,7 +82,7 @@ namespace SADXObjectDefinitions.Common
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
-					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 				}
@@ -99,9 +99,50 @@ namespace SADXObjectDefinitions.Common
 					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
-					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				}
+				transform.Pop();
+			}
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			{
+				transform.Push();
+				if (item.Scale.Z == 1) // circle
+				{
+					double v4 = i * 360.0;
+					Vector3 v7 = new Vector3(
+						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						0,
+						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
+					transform.Pop();
+					transform.NJTranslate(pos);
+					result.Add(new ModelTransform(model, transform.Top));
+				}
+				else // line
+				{
+					transform.Push();
+					transform.NJTranslate(item.Position);
+					transform.NJRotateObject(item.Rotation);
+					double v5;
+					if (i % 2 == 1)
+						v5 = i * item.Scale.Y * -0.5;
+					else
+						v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
+					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
+					transform.Pop();
+					transform.NJTranslate(pos);
+					result.Add(new ModelTransform(model, transform.Top));
 				}
 				transform.Pop();
 			}

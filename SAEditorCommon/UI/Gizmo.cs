@@ -56,69 +56,69 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			Attach attach = new ModelFile(Resources.x_null).Model.Attach;
 			attach.ProcessVertexData();
-			XNullMesh = attach.CreateD3DMesh(d3dDevice);
+			XNullMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.y_null).Model.Attach;
 			attach.ProcessVertexData();
-			YNullMesh = attach.CreateD3DMesh(d3dDevice);
+			YNullMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.z_null).Model.Attach;
 			attach.ProcessVertexData();
-			ZNullMesh = attach.CreateD3DMesh(d3dDevice);
+			ZNullMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.x_move).Model.Attach;
 			attach.ProcessVertexData();
-			XMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			XMoveMesh = attach.CreateD3DMesh();
 			XMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.y_move).Model.Attach;
 			attach.ProcessVertexData();
-			YMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			YMoveMesh = attach.CreateD3DMesh();
 			YMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.z_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			ZMoveMesh = attach.CreateD3DMesh();
 			ZMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.xy_move).Model.Attach;
 			attach.ProcessVertexData();
-			XYMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			XYMoveMesh = attach.CreateD3DMesh();
 			DoubleAxisMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.zx_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZXMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			ZXMoveMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.zy_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZYMoveMesh = attach.CreateD3DMesh(d3dDevice);
+			ZYMoveMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.x_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			XRotateMesh = attach.CreateD3DMesh(d3dDevice);
+			XRotateMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.y_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			YRotateMesh = attach.CreateD3DMesh(d3dDevice);
+			YRotateMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.z_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			ZRotateMesh = attach.CreateD3DMesh(d3dDevice);
+			ZRotateMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.x_scale).Model.Attach;
 			attach.ProcessVertexData();
-			XScaleMesh = attach.CreateD3DMesh(d3dDevice);
+			XScaleMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.y_scale).Model.Attach;
 			attach.ProcessVertexData();
-			YScaleMesh = attach.CreateD3DMesh(d3dDevice);
+			YScaleMesh = attach.CreateD3DMesh();
 
 			attach = new ModelFile(Resources.z_scale).Model.Attach;
 			attach.ProcessVertexData();
-			ZScaleMesh = attach.CreateD3DMesh(d3dDevice);
+			ZScaleMesh = attach.CreateD3DMesh();
 
-			BoxMesh = Mesh.Box(d3dDevice, 1, 1, 1);
+			BoxMesh = Mesh.Box(1, 1, 1);
 
 			HighlightMaterial = new NJS_MATERIAL() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 

@@ -5,7 +5,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class LevelDefinition
     {
-        public abstract void Init(IniLevelData data, byte act, Device dev);
+        public abstract void Init(IniLevelData data, byte act);
         public abstract void Render(Device dev, EditorCamera cam);
     }
 }

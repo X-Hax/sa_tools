@@ -16,10 +16,10 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/O TOGE.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -60,9 +60,33 @@ namespace SADXObjectDefinitions.Common
 				transform.Push();
 				for (int j = 0; j < cols; ++j)
 				{
-					result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+					transform.NJTranslate(0, 0, 15);
+				}
+				transform.Pop();
+				transform.NJTranslate(15, 0, 0);
+			}
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			int rows = (int)Math.Max(item.Scale.X, 1);
+			int cols = (int)Math.Max(item.Scale.Z, 1);
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X & 0xC000, item.Rotation.Y, 0);
+			transform.NJTranslate((1 - rows) * 7.5f, 0, (1 - cols) * 7.5f);
+			for (int i = 0; i < rows; ++i)
+			{
+				transform.Push();
+				for (int j = 0; j < cols; ++j)
+				{
+					result.Add(new ModelTransform(model, transform.Top));
 					transform.NJTranslate(0, 0, 15);
 				}
 				transform.Pop();

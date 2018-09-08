@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		readonly Mesh[][] meshes = new Mesh[5][];
 		Vector3 Skybox_Scale;
 
-		public override void Init(IniLevelData data, byte act, Device dev)
+		public override void Init(IniLevelData data, byte act)
 		{
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Windy Valley/Skybox Data.ini");
 			if (skyboxdata.Length > act)
@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			for (int i = 0; i < 5; i++)
 			{
 				models[i] = ObjectHelper.LoadModel("Levels/Windy Valley/Act 1/Skybox model " + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
-				meshes[i] = ObjectHelper.GetMeshes(models[i], dev);
+				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
 		}
 
@@ -38,7 +38,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.NJScale(Skybox_Scale);
 			Texture[] texs = ObjectHelper.GetTextures("WINDY_BACK");
 			for (int i = 0; i < 5; i++)
-				result.AddRange(models[i].DrawModelTree(dev, transform, texs, meshes[i]));
+				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

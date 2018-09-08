@@ -15,10 +15,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O DOLPHIN.sa1mdl");
-			mesh = ObjectHelper.GetMeshes(model, dev);
+			mesh = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Dolphin"; } }
@@ -41,9 +41,20 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), mesh));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), mesh));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, mesh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -72,10 +83,10 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
+			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
 		public override string Name { get { return "Dolphin Trigger"; } }
@@ -98,11 +109,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
 			transform.Pop();
 			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)

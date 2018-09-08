@@ -339,7 +339,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
 		}
 
-		public static void DuplicateSelection(Device d3ddevice, EditorItemSelection selection, out bool errorFlag, out string errorMsg)
+		public static void DuplicateSelection(EditorItemSelection selection, out bool errorFlag, out string errorMsg)
 		{
 			if (selection.ItemCount < 0) { errorFlag = true; errorMsg = "Negative selection count... what did you do?!?"; return; }
 
@@ -369,7 +369,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				else if (currentItems[i] is LevelItem)
 				{
 					LevelItem originalItem = (LevelItem)currentItems[0];
-					LevelItem newItem = new LevelItem(d3ddevice, originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection);
+					LevelItem newItem = new LevelItem(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection);
 
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
 					newItems.Add(newItem);
@@ -395,7 +395,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			errorMsg = "";
 		}
 
-		public static List<Item> ImportFromFile(string filePath, Device d3ddevice, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
+		public static List<Item> ImportFromFile(string filePath, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
 		{
 			List<Item> createdItems = new List<Item>();
 
@@ -416,7 +416,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				case ".obj":
 				case ".objf":
 					Vector3 pos = camera.Position + (-20 * camera.Look);
-					LevelItem item = new LevelItem(d3ddevice, filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
+					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
 					{
 						Visible = true
 					};
@@ -425,7 +425,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					break;
 
 				case ".txt":
-					NodeTable.ImportFromFile(d3ddevice, filePath, out importError, out importErrorMsg, selectionManager);
+					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
 					break;
 
 				default:

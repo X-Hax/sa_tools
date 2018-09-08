@@ -17,12 +17,12 @@ namespace SADXObjectDefinitions.WindyValley
 		private NJS_OBJECT modelB;
 		private Mesh[] meshesB;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			modelA = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_VCROK_A.sa1mdl");
-			meshesA = ObjectHelper.GetMeshes(modelA, dev);
+			meshesA = ObjectHelper.GetMeshes(modelA);
 			modelB = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_VCROK_B.sa1mdl");
-			meshesB = ObjectHelper.GetMeshes(modelB, dev);
+			meshesB = ObjectHelper.GetMeshes(modelB);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -55,7 +55,7 @@ namespace SADXObjectDefinitions.WindyValley
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(modelB.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
+				result.AddRange(modelB.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesB));
 				if (item.Selected)
 					result.AddRange(modelB.DrawModelTreeInvert(transform, meshesB));
 				transform.Pop();
@@ -66,9 +66,32 @@ namespace SADXObjectDefinitions.WindyValley
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(modelA.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
+				result.AddRange(modelA.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshesA));
 				if (item.Selected)
 					result.AddRange(modelA.DrawModelTreeInvert(transform, meshesA));
+				transform.Pop();
+				return result;
+			}
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			if (item.Scale.X == 1)
+			{
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(modelB, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(modelA, transform.Top));
 				transform.Pop();
 				return result;
 			}

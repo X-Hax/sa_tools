@@ -36,13 +36,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		[NonSerialized]
-		private Device device;
-
-		public DeathZoneItem(Device device, EditorItemSelection selectionManager)
+		public DeathZoneItem(EditorItemSelection selectionManager)
 			: base (selectionManager)
 		{
-			this.device = device;
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
@@ -51,14 +47,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             GetHandleMatrix();
 		}
 
-		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, Device device, EditorItemSelection selectionManager)
+		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
 			Flags = flags;
-			Mesh = Model.Attach.CreateD3DMesh(device);
-			this.device = device;
+			Mesh = Model.Attach.CreateD3DMesh();
 
             rotateZYX = Model.RotateZYX;
             GetHandleMatrix();
@@ -83,7 +78,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
-			result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
+			result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
 			if (Selected)
 				result.AddRange(Model.DrawModelInvert(transform, Mesh, false));
 			return result;
@@ -108,7 +103,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{
 				Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
-				Mesh = Model.Attach.CreateD3DMesh(device);
+				Mesh = Model.Attach.CreateD3DMesh();
 			}
 		}
 

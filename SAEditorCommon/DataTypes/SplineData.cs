@@ -196,10 +196,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bounds = SharpDX.BoundingSphere.FromPoints(vertices.Select(a => a.Position).ToArray()).ToSAModel();
 
 			// build actual mesh from face index array and vbuf
-			mesh = new Mesh<FVF_PositionColored>(device, vertices, new short[][] { faceIndeces });
+			mesh = new Mesh<FVF_PositionColored>(vertices, new short[][] { faceIndeces });
 
 			// create a vertexHandle
-			if (vertexHandleMesh == null) vertexHandleMesh = Mesh.Box(device, 1, 1, 1);
+			if (vertexHandleMesh == null) vertexHandleMesh = Mesh.Box(1, 1, 1);
 
 			textSprite = new Sprite(device); // todo: do we really have to create this so often? Look into storing a cache list statically?
 		}

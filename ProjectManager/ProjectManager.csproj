@@ -108,8 +108,6 @@
     </Compile>
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />
-    <Compile Include="SplitMDL\MDLIniFile.cs" />
-    <Compile Include="SplitMDL\MDLIniSerializer.cs" />
     <Compile Include="SplitMDL\SplitMDL.cs" />
     <Compile Include="SplitMDL\SplitMDLGUI.cs">
       <SubType>Form</SubType>
