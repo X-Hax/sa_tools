@@ -68,6 +68,7 @@ namespace ProjectManager
 		private void NewProjectButton_Click(object sender, EventArgs e)
 		{
 			Hide();
+			newProject.ResetControl();
 			newProject.Show();
 		}
 
