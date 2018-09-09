@@ -98,7 +98,12 @@ namespace SplitMDL
 					List<string> animlist = new List<string>();
 					foreach (KeyValuePair<int, Animation> anim in anims)
 						if (model.Value.CountAnimated() == anim.Value.ModelParts)
-							animlist.Add("../" + animfns[anim.Key]);
+						{
+							string rel = animfns[anim.Key].Replace(outputFolder, string.Empty);
+							if (rel.Length > 1 && rel[1] != ':') rel = "../" + rel;
+							animlist.Add(rel);
+						}
+
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
 						null, null, null, null, ModelFormat.Chunk);

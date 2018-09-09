@@ -28,7 +28,6 @@ namespace SplitMDL
 				if (fileDialog.ShowDialog() == DialogResult.OK)
 				{
 					listBox1.BeginUpdate();
-					listBox1.Items.Clear();
 
 					foreach (string path in fileDialog.FileNames)
 					{
@@ -38,6 +37,11 @@ namespace SplitMDL
 					listBox1.EndUpdate();
 				}
 			}
+		}
+
+		private void animFilesClear_Click(object sender, EventArgs e)
+		{
+			listBox1.Items.Clear();
 		}
 
 		private void outputFolderBrowseButton_Click(object sender, EventArgs e)
