@@ -421,5 +421,24 @@ namespace SonicRetro.SAModel
 		{
 			return this;
 		}
+
+		public override Attach Clone()
+		{
+			ChunkAttach result = (ChunkAttach)MemberwiseClone();
+			if (Vertex != null)
+			{
+				result.Vertex = new List<VertexChunk>(Vertex.Count);
+				foreach (VertexChunk item in Vertex)
+					result.Vertex.Add(item.Clone());
+			}
+			if (Poly != null)
+			{
+				result.Poly = new List<PolyChunk>(Poly.Count);
+				foreach (PolyChunk item in Poly)
+					result.Poly.Add(item.Clone());
+			}
+			result.Bounds = Bounds.Clone();
+			return result;
+		}
 	}
 }

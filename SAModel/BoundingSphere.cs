@@ -6,7 +6,7 @@ using System.Text;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class BoundingSphere
+	public class BoundingSphere : ICloneable
 	{
 		public Vertex Center { get; set; }
 		public float Radius { get; set; }
@@ -112,5 +112,9 @@ namespace SonicRetro.SAModel
 				}
 			}
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public BoundingSphere Clone() => new BoundingSphere(Center.Clone(), Radius);
 	}
 }

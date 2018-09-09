@@ -7,7 +7,7 @@ using System.Text;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class NJS_MESHSET
+	public class NJS_MESHSET : ICloneable
 	{
 		public ushort MaterialID { get; set; }
 		public Basic_PolyType PolyType { get; private set; }
@@ -198,6 +198,32 @@ namespace SonicRetro.SAModel
 				result.Append(", NULL");
 			result.Append(" }");
 			return result.ToString();
+		}
+
+		object ICloneable.Clone() => Clone();
+
+		public NJS_MESHSET Clone()
+		{
+			NJS_MESHSET result = (NJS_MESHSET)MemberwiseClone();
+			List<Poly> polys = new List<Poly>(Poly.Count);
+			foreach (Poly item in Poly)
+				polys.Add(item.Clone());
+			result.Poly = new ReadOnlyCollection<Poly>(polys);
+			if (PolyNormal != null)
+			{
+				result.PolyNormal = new Vertex[PolyNormal.Length];
+				for (int i = 0; i < PolyNormal.Length; i++)
+					result.PolyNormal[i] = PolyNormal[i].Clone();
+			}
+			if (VColor != null)
+				result.VColor = (Color[])VColor.Clone();
+			if (UV != null)
+			{
+				result.UV = new UV[UV.Length];
+				for (int i = 0; i < UV.Length; i++)
+					result.UV[i] = UV[i].Clone();
+			}
+			return result;
 		}
 	}
 }

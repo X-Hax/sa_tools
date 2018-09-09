@@ -480,5 +480,25 @@ namespace SonicRetro.SAModel
 		{
 			throw new NotImplementedException(); // TODO
 		}
+
+		public override Attach Clone()
+		{
+			BasicAttach result = (BasicAttach)MemberwiseClone();
+			result.Vertex = new Vertex[Vertex.Length];
+			result.Normal = new Vertex[Normal.Length];
+			for (int i = 0; i < Vertex.Length; i++)
+			{
+				result.Vertex[i] = Vertex[i].Clone();
+				result.Normal[i] = Normal[i].Clone();
+			}
+			result.Material = new List<NJS_MATERIAL>(Material.Count);
+			foreach (NJS_MATERIAL item in Material)
+				result.Material.Add(item.Clone());
+			result.Mesh = new List<NJS_MESHSET>(Mesh.Count);
+			foreach (NJS_MESHSET item in Mesh)
+				result.Mesh.Add(item.Clone());
+			result.Bounds = Bounds.Clone();
+			return result;
+		}
 	}
 }

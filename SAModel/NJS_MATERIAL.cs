@@ -6,7 +6,7 @@ using System.Text;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class NJS_MATERIAL
+	public class NJS_MATERIAL : ICloneable
 	{
 		#region Basic Variables (internal use)
 
@@ -245,5 +245,9 @@ namespace SonicRetro.SAModel
 			return DiffuseColor.GetHashCode() ^ SpecularColor.GetHashCode() ^ Exponent.GetHashCode() ^ TextureID.GetHashCode() ^
 			       Flags.GetHashCode();
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public NJS_MATERIAL Clone() => (NJS_MATERIAL)MemberwiseClone();
 	}
 }

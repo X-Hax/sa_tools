@@ -7,7 +7,7 @@ namespace SonicRetro.SAModel
 {
 	[Serializable]
 	[TypeConverter(typeof (VertexConverter))]
-	public class Vertex : IEquatable<Vertex>
+	public class Vertex : IEquatable<Vertex>, ICloneable
 	{
 		public float X { get; set; }
 		public float Y { get; set; }
@@ -193,15 +193,16 @@ namespace SonicRetro.SAModel
 			return new Vertex(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 		}
 
-		public static Vertex operator -(Vertex v)
-		{
-			return new Vertex(-v.X, -v.Y, -v.Z);
-		}
+		public static Vertex operator -(Vertex v) => new Vertex(-v.X, -v.Y, -v.Z);
 
 		public static Vertex operator *(Vertex v, float f)
 		{
 			return new Vertex(v.X * f, v.Y * f, v.Z * f);
 		}
+
+		public Vertex Clone() => new Vertex(X, Y, Z);
+
+		object ICloneable.Clone() => Clone();
 	}
 
 	public class VertexConverter : ExpandableObjectConverter

@@ -5,7 +5,7 @@ using System.Drawing;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class VertexChunk
+	public class VertexChunk : ICloneable
 	{
 		public uint Header1 { get; set; }
 
@@ -292,6 +292,24 @@ namespace SonicRetro.SAModel
 				}
 			}
 			return result.ToArray();
+		}
+
+		object ICloneable.Clone() => Clone();
+
+		public VertexChunk Clone()
+		{
+			VertexChunk result = (VertexChunk)MemberwiseClone();
+			result.Vertices = new List<Vertex>(Vertices.Count);
+			foreach (Vertex item in Vertices)
+				result.Vertices.Add(item.Clone());
+			result.Normals = new List<Vertex>(Normals.Count);
+			foreach (Vertex item in Normals)
+				result.Normals.Add(item.Clone());
+			result.Diffuse = new List<Color>(Diffuse);
+			result.Specular = new List<Color>(Specular);
+			result.UserFlags = new List<uint>(UserFlags);
+			result.NinjaFlags = new List<uint>(NinjaFlags);
+			return result;
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.IO;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public abstract class Attach
+	public abstract class Attach : ICloneable
 	{
 		public string Name { get; set; }
 		public BoundingSphere Bounds { get; set; }
@@ -93,5 +93,9 @@ namespace SonicRetro.SAModel
 		public abstract BasicAttach ToBasicModel();
 
 		public abstract ChunkAttach ToChunkModel();
+
+		object ICloneable.Clone() => Clone();
+
+		public abstract Attach Clone();
 	}
 }

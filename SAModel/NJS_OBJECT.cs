@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class NJS_OBJECT
+	public class NJS_OBJECT : ICloneable
 	{
 		[Browsable(false)]
 		public Attach Attach { get; set; }
@@ -804,6 +804,32 @@ namespace SonicRetro.SAModel
 				ToStructVariables(sw, DX, labels, textures);
 				return sw.ToString();
 			}
+		}
+
+		object ICloneable.Clone() => Clone();
+
+		public NJS_OBJECT Clone()
+		{
+			NJS_OBJECT result = (NJS_OBJECT)MemberwiseClone();
+			if (Attach != null)
+				result.Attach = Attach.Clone();
+			result.Position = Position.Clone();
+			result.Rotation = Rotation.Clone();
+			result.Scale = Scale.Clone();
+			result.children = new List<NJS_OBJECT>(children.Count);
+			result.Children = new ReadOnlyCollection<NJS_OBJECT>(result.children);
+			if (children.Count > 0)
+			{
+				NJS_OBJECT child = children[0].Clone();
+				while (child != null)
+				{
+					result.children.Add(child);
+					child = child.Sibling;
+				}
+			}
+			if (Sibling != null)
+				result.Sibling = Sibling.Clone();
+			return result;
 		}
 	}
 }

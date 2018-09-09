@@ -5,7 +5,7 @@ using System.Drawing;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public abstract class PolyChunk
+	public abstract class PolyChunk : ICloneable
 	{
 		public ushort Header { get; set; }
 
@@ -82,6 +82,10 @@ namespace SonicRetro.SAModel
 		}
 
 		public abstract byte[] GetBytes();
+
+		object ICloneable.Clone() => Clone();
+
+		public virtual PolyChunk Clone() => (PolyChunk)MemberwiseClone();
 	}
 
 	[Serializable]
@@ -757,10 +761,22 @@ namespace SonicRetro.SAModel
 				}
 				return result.ToArray();
 			}
+
+			public override Poly Clone()
+			{
+				Strip result = (Strip)base.Clone();
+				if (result.UserFlags1 != null)
+					result.UserFlags1 = (ushort[])UserFlags1.Clone();
+				if (result.UserFlags2 != null)
+					result.UserFlags2 = (ushort[])UserFlags2.Clone();
+				if (result.UserFlags3 != null)
+					result.UserFlags3 = (ushort[])UserFlags3.Clone();
+				return result;
+			}
 		}
 
 		[Serializable]
-		public abstract class Poly
+		public abstract class Poly : ICloneable
 		{
 			public ushort[] Indexes { get; protected set; }
 
@@ -801,6 +817,15 @@ namespace SonicRetro.SAModel
 			public abstract int Size { get; }
 
 			public abstract byte[] GetBytes();
+
+			object ICloneable.Clone() => Clone();
+
+			public virtual Poly Clone()
+			{
+				Poly result = (Poly)MemberwiseClone();
+				Indexes = (ushort[])Indexes.Clone();
+				return result;
+			}
 		}
 
 		public ushort Header2 { get; private set; }
@@ -813,7 +838,7 @@ namespace SonicRetro.SAModel
 
 		public ushort PolyCount
 		{
-			get { return (ushort)(Header2 & 0x3FFF); }
+			get { return (ushort)Polys.Count; }
 			private set { Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF)); }
 		}
 
@@ -827,8 +852,9 @@ namespace SonicRetro.SAModel
 			address += sizeof(ushort);
 			Header2 = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
-			Polys = new List<Poly>(PolyCount);
-			for (int i = 0; i < PolyCount; i++)
+			int polyCount = Header2 & 0x3FFF;
+			Polys = new List<Poly>(polyCount);
+			for (int i = 0; i < polyCount; i++)
 			{
 				Poly str = Poly.CreatePoly(Type, file, address, UserFlags);
 				Polys.Add(str);
@@ -838,6 +864,7 @@ namespace SonicRetro.SAModel
 
 		public override byte[] GetBytes()
 		{
+			PolyCount = (ushort)Polys.Count;
 			Size = 1;
 			foreach (Poly str in Polys)
 				Size += (ushort)(str.Size / 2);
@@ -847,13 +874,22 @@ namespace SonicRetro.SAModel
 				result.AddRange(str.GetBytes());
 			return result.ToArray();
 		}
+
+		public override PolyChunk Clone()
+		{
+			PolyChunkVolume result = (PolyChunkVolume)base.Clone();
+			result.Polys = new List<Poly>(Polys.Count);
+			foreach (Poly item in Polys)
+				result.Polys.Add(item.Clone());
+			return result;
+		}
 	}
 
 	[Serializable]
 	public class PolyChunkStrip : PolyChunkSize
 	{
 		[Serializable]
-		public class Strip
+		public class Strip : ICloneable
 		{
 			public bool Reversed { get; private set; }
 			public ushort[] Indexes { get; private set; }
@@ -1019,6 +1055,25 @@ namespace SonicRetro.SAModel
 					return size;
 				}
 			}
+
+			object ICloneable.Clone() => Clone();
+
+			public Strip Clone()
+			{
+				Strip result = (Strip)MemberwiseClone();
+				result.Indexes = (ushort[])Indexes.Clone();
+				if (UVs != null)
+				{
+					result.UVs = new UV[UVs.Length];
+					for (int i = 0; i < UVs.Length; i++)
+						result.UVs[i] = UVs[i].Clone();
+				}
+				if (VColors != null) result.VColors = (Color[])VColors.Clone();
+				if (UserFlags1 != null) result.UserFlags1 = (ushort[])UserFlags1.Clone();
+				if (UserFlags2 != null) result.UserFlags2 = (ushort[])UserFlags2.Clone();
+				if (UserFlags3 != null) result.UserFlags3 = (ushort[])UserFlags3.Clone();
+				return result;
+			}
 		}
 
 		public bool IgnoreLight
@@ -1114,6 +1169,15 @@ namespace SonicRetro.SAModel
 			foreach (Strip str in Strips)
 				result.AddRange(str.GetBytes(Type));
 			return result.ToArray();
+		}
+
+		public override PolyChunk Clone()
+		{
+			PolyChunkStrip result = (PolyChunkStrip)base.Clone();
+			result.Strips = new List<Strip>(StripCount);
+			foreach (Strip item in Strips)
+				result.Strips.Add(item.Clone());
+			return result;
 		}
 	}
 }
