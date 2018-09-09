@@ -35,6 +35,14 @@ namespace PVMEditSharp
 			Text = "PVM Editor - " + filename;
 		}
 
+		private void UpdateTextureCount()
+		{
+			if (textures.Count == 1)
+				toolStripStatusLabel1.Text = "1 texture";
+			else
+				toolStripStatusLabel1.Text = textures.Count + " textures";
+		}
+
 		private bool GetTextures(string filename)
 		{
 			byte[] pvmdata = File.ReadAllBytes(filename);
@@ -77,6 +85,7 @@ namespace PVMEditSharp
 			textures.AddRange(newtextures);
 			listBox1.Items.Clear();
 			listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
+			UpdateTextureCount();
 			SetFilename(Path.GetFullPath(filename));
 			return true;
 		}
@@ -109,6 +118,7 @@ namespace PVMEditSharp
 			listBox1.Items.Clear();
 			filename = null;
 			Text = "PVM Editor";
+			UpdateTextureCount();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -312,6 +322,7 @@ namespace PVMEditSharp
 				textures.Add(new TextureInfo(tex.Value.Key, gbix, tex.Value.Value));
 				listBox1.Items.Add(tex.Value.Key);
 				listBox1.SelectedIndex = textures.Count - 1;
+				UpdateTextureCount();
 			}
 		}
 
@@ -320,6 +331,7 @@ namespace PVMEditSharp
 			int i = listBox1.SelectedIndex;
 			textures.RemoveAt(i);
 			listBox1.Items.RemoveAt(i);
+			UpdateTextureCount();
 		}
 
 		private void textureName_TextChanged(object sender, EventArgs e)
