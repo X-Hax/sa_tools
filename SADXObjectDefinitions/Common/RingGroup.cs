@@ -32,9 +32,9 @@ namespace SADXObjectDefinitions.Common
 				{
 					double v4 = i * 360.0;
 					Vector3 v7 = new Vector3(
-						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
 						0,
-						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+						ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
@@ -73,9 +73,9 @@ namespace SADXObjectDefinitions.Common
 				{
 					double v4 = i * 360.0;
 					Vector3 v7 = new Vector3(
-						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
 						0,
-						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+						ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
@@ -118,9 +118,9 @@ namespace SADXObjectDefinitions.Common
 				{
 					double v4 = i * 360.0;
 					Vector3 v7 = new Vector3(
-						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
 						0,
-						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+						ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);
@@ -160,9 +160,9 @@ namespace SADXObjectDefinitions.Common
 				{
 					double v4 = i * 360.0;
 					Vector3 v7 = new Vector3(
-						ObjectHelper.ConvertBAMS((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
+						ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
 						0,
-						ObjectHelper.ConvertBAMSInv((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
+						ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
 					transform.Push();
 					transform.NJTranslate(item.Position);
 					transform.NJRotateObject(item.Rotation);

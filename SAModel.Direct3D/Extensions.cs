@@ -2905,7 +2905,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="angle">The angle in BAMS.</param>
 		/// <returns>The sine of the angle.</returns>
-		public static float BAMSSin(int angle)
+		public static float NJSin(int angle)
 		{
 			int a1 = angle;
 			float v8 = a1;
@@ -2973,7 +2973,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="angle">The angle in BAMS.</param>
 		/// <returns>The inverse sine of the angle.</returns>
-		public static float BAMSSinInv(int angle)
+		public static float NJCos(int angle)
 		{
 			int a1 = angle;
 			float v8 = a1;
