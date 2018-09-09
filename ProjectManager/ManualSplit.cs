@@ -92,7 +92,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoSourceFile.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 
@@ -102,7 +102,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoDataMapping.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoDataMapping.ToString());
 				//return (int)ERRORVALUE.NoDataMapping;
 			}
 
@@ -128,7 +128,7 @@ namespace ProjectManager
 					Console.WriteLine("Press any key to exit.");
 					Console.ReadLine();
 
-					throw new Exception(ERRORVALUE.InvalidProject.ToString());
+					throw new Exception(SA_Tools.Split.SplitERRORVALUE.InvalidProject.ToString());
 					//return (int)ERRORVALUE.InvalidProject;
 				}
 			}
@@ -137,8 +137,8 @@ namespace ProjectManager
 			// switch on file extension - if dll, use dll splitter
 			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
 
-			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-				Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
+				SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
 		}
 
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -173,7 +173,7 @@ namespace ProjectManager
 							break;
 
 						case SplitType.MDL:
-							SplitMDL.SplitMDL.Split(splitControl.IsBigEndian(), splitControl.GetFilePath(),
+							SA_Tools.SplitMDL.SplitMDL.Split(splitControl.IsBigEndian(), splitControl.GetFilePath(),
 								outputFolder, splitControl.AnimFiles);
 							break;
 

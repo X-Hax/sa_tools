@@ -106,16 +106,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SplitDLL\IniData.cs" />
-    <Compile Include="SplitDLL\SplitDLL.cs" />
-    <Compile Include="SplitMDL\SplitMDL.cs" />
     <Compile Include="SplitUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SplitUIControl.Designer.cs">
       <DependentUpon>SplitUIControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Split\Split.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SA Tools\SA Tools.csproj">
