@@ -313,16 +313,79 @@ namespace PVMEditSharp
 
 		private void addTextureButton_Click(object sender, EventArgs e)
 		{
-			KeyValuePair<string, Bitmap>? tex = BrowseForTexture();
-			if (tex.HasValue)
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.prs;*.pvm;*.pvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp", Multiselect = true })
 			{
-				uint gbix = textures.Count == 0 ? 0 : textures.Max((item) => item.GlobalIndex);
-				if (gbix != uint.MaxValue)
-					gbix++;
-				textures.Add(new TextureInfo(tex.Value.Key, gbix, tex.Value.Value));
-				listBox1.Items.Add(tex.Value.Key);
-				listBox1.SelectedIndex = textures.Count - 1;
-				UpdateTextureCount();
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					uint gbix = textures.Count == 0 ? 0 : textures.Max((item) => item.GlobalIndex);
+					if (gbix != uint.MaxValue)
+						gbix++;
+					listBox1.BeginUpdate();
+					foreach (string file in dlg.FileNames)
+					{
+						switch (Path.GetExtension(file).ToLowerInvariant())
+						{
+							case ".prs":
+							case ".pvm":
+								byte[] pvmdata = File.ReadAllBytes(file);
+								if (Path.GetExtension(file).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+									pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
+								ArchiveBase pvmfile = new PvmArchive();
+								if (!pvmfile.Is(pvmdata, file))
+								{
+									MessageBox.Show(this, "Could not open file \"" + file + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+									continue;
+								}
+								PvpPalette pvp = null;
+								ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
+								List<TextureInfo> newtextures = new List<TextureInfo>(pvmentries.Count);
+								foreach (ArchiveEntry entry in pvmentries)
+								{
+									PvrTexture vrfile = new PvrTexture(entry.Open());
+									if (vrfile.NeedsExternalPalette)
+									{
+										if (pvp == null)
+											using (OpenFileDialog a = new OpenFileDialog
+											{
+												DefaultExt = "pvp",
+												Filter = "PVP Files|*.pvp",
+												InitialDirectory = Path.GetDirectoryName(file),
+												Title = "External palette file"
+											})
+												if (a.ShowDialog(this) == DialogResult.OK)
+													pvp = new PvpPalette(a.FileName);
+												else
+												{
+													MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+													continue;
+												}
+										vrfile.SetPalette(pvp);
+									}
+									string name = Path.GetFileNameWithoutExtension(entry.Name);
+									textures.Add(new TextureInfo(name, vrfile));
+									listBox1.Items.Add(name);
+								}
+								break;
+							default:
+								{
+									string name = Path.GetFileNameWithoutExtension(file);
+									if (PvrTexture.Is(file))
+										textures.Add(new TextureInfo(name, new PvrTexture(file)));
+									else
+									{
+										textures.Add(new TextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+										if (gbix != uint.MaxValue)
+											gbix++;
+									}
+									listBox1.Items.Add(name);
+								}
+								break;
+						}
+					}
+					listBox1.EndUpdate();
+					listBox1.SelectedIndex = textures.Count - 1;
+					UpdateTextureCount();
+				}
 			}
 		}
 

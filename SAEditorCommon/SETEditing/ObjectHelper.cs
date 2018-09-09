@@ -113,14 +113,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return (int)(deg * (65536 / 360.0));
 		}
 
-		public static float ConvertBAMS(int BAMS)
+		public static float NJSin(int BAMS)
 		{
-			return Direct3D.Extensions.BAMSSin(BAMS);
+			return Direct3D.Extensions.NJSin(BAMS);
 		}
 
-		public static float ConvertBAMSInv(int BAMS)
+		public static float NJCos(int BAMS)
 		{
-			return Direct3D.Extensions.BAMSSinInv(BAMS);
+			return Direct3D.Extensions.NJCos(BAMS);
 		}
 
 		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform)
