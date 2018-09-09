@@ -7,9 +7,9 @@ using System.Linq;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace ProjectManager.Split
+namespace SA_Tools.Split
 {
-	static class Split
+	public static class Split
 	{
 		public static int SplitFile(string datafilename, string inifilename, string projectFolderName)
 		{
@@ -23,7 +23,7 @@ namespace ProjectManager.Split
 					if (!inifile.MD5.Any(h => h.Equals(datahash, StringComparison.OrdinalIgnoreCase)))
 					{
 						Console.WriteLine("The file {0} is not valid for use with the INI {1}.", datafilename, inifilename);
-						return (int)ERRORVALUE.InvalidDataMapping;
+						return (int)SplitERRORVALUE.InvalidDataMapping;
 					}
 				}
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
@@ -374,10 +374,10 @@ namespace ProjectManager.Split
 				Console.WriteLine(e.StackTrace);
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
-				return (int)ERRORVALUE.UnhandledException;
+				return (int)SplitERRORVALUE.UnhandledException;
 			}
 
-			return (int)ERRORVALUE.Success;
+			return (int)SplitERRORVALUE.Success;
 		}
 	}
 }

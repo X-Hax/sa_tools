@@ -402,7 +402,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoSourceFile.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 
@@ -412,7 +412,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoDataMapping.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoDataMapping.ToString());
 				//return (int)ERRORVALUE.NoDataMapping;
 			}
 
@@ -438,7 +438,7 @@ namespace ProjectManager
 					Console.WriteLine("Press any key to exit.");
 					Console.ReadLine();
 
-					throw new Exception(ERRORVALUE.InvalidProject.ToString());
+					throw new Exception(SA_Tools.Split.SplitERRORVALUE.InvalidProject.ToString());
 					//return (int)ERRORVALUE.InvalidProject;
 				}
 			}
@@ -447,8 +447,8 @@ namespace ProjectManager
 			// switch on file extension - if dll, use dll splitter
 			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
 
-			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-				Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
+				SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
 		}
 
 		private void DoSADXSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -598,7 +598,7 @@ namespace ProjectManager
 				string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
 				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
 
-				SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
+				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
 					fileOutputFolder, splitMDL.animationFiles);
 			}
 

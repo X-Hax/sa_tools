@@ -4,18 +4,6 @@ using SonicRetro.SAModel.SAEditorCommon;
 
 namespace ProjectManager
 {
-	enum ERRORVALUE
-	{
-		Success = 0,
-		NoProject = -1,
-		InvalidProject = -2,
-		NoSourceFile = -3,
-		NoDataMapping = -4,
-		InvalidDataMapping = -5,
-		UnhandledException = -6,
-		InvalidConfig = -7
-	}
-
 	static class Program
 	{
 		private static ProjectManagerSettings settings;
@@ -69,7 +57,7 @@ namespace ProjectManager
 					GameConfig gameConfig = new GameConfig();
 					DialogResult configResult = gameConfig.ShowDialog();
 
-					if (configResult == DialogResult.Abort) return (int)ERRORVALUE.InvalidConfig;
+					if (configResult == DialogResult.Abort) return (int)SA_Tools.Split.SplitERRORVALUE.InvalidConfig;
 					gameConfig.Dispose();
 				}
 

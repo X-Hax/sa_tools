@@ -6,7 +6,7 @@ using System.Linq;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace SplitMDL
+namespace SA_Tools.SplitMDL
 {
 	public static class SplitMDL
 	{
