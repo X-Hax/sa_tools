@@ -91,7 +91,7 @@ namespace LevelConverter
 													if (hasUV)
 														us = new List<List<UV>>();
 
-													System.Diagnostics.Debug.Assert(nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups));
+													nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 
 													// Add strips
 													for (var i = 0; i < primitiveGroups.Length; i++)
@@ -145,7 +145,7 @@ namespace LevelConverter
 													if (hasUV)
 														us = new List<List<UV>>();
 
-													System.Diagnostics.Debug.Assert(nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups));
+													nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 
 													// Add strips
 													for (var i = 0; i < primitiveGroups.Length; i++)
