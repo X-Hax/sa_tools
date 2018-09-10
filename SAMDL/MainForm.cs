@@ -1246,7 +1246,7 @@ namespace SonicRetro.SAModel.SAMDL
 								material.SpecularColor.B / 255));
 							mtlstream.WriteLine("illum 1");
 
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+							if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
 							{
 								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
 
