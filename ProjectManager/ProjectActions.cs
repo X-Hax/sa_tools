@@ -519,5 +519,10 @@ namespace ProjectManager
 				configEditor.ShowDialog();
 			}
 		}
+
+		private void openProjectFolderButton_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("explorer.exe", projectFolder);
+		}
 	}
 }
