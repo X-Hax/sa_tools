@@ -343,7 +343,7 @@ namespace SonicRetro.SAModel.Direct3D
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, Matrix transform, NJS_OBJECT model = null)
 		{
 			Vector3 pos = Viewport.Unproject(Near, Projection, View, transform);
-			Vector3 dir = Vector3.Subtract(pos, Viewport.Unproject(Far, Projection, View, transform));
+			Vector3 dir = Vector3.Normalize(Vector3.Subtract(pos, Viewport.Unproject(Far, Projection, View, transform)));
 			Ray ray = new Ray(pos, dir);
 			foreach (short[] sub in indexBuffer)
 				for (int i = 0; i < sub.Length; i += 3)
@@ -351,10 +351,10 @@ namespace SonicRetro.SAModel.Direct3D
 					Vector3 v1 = vertexBuffer[sub[i]].GetPosition();
 					Vector3 v2 = vertexBuffer[sub[i + 1]].GetPosition();
 					Vector3 v3 = vertexBuffer[sub[i + 2]].GetPosition();
-					if (Collision.RayIntersectsTriangle(ref ray, ref v1, ref v2, ref v3, out Vector3 point))
+					if (Collision.RayIntersectsTriangle(ref ray, ref v1, ref v2, ref v3, out float distance))
 					{
 						Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1)), transform);
-						return new HitResult(model, pos.Distance(point), point, norm);
+						return new HitResult(model, distance, ray.Position + (ray.Direction * distance), norm);
 					}
 				}
 			return HitResult.NoHit;
