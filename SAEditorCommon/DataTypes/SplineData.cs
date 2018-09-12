@@ -47,6 +47,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#endregion
 
 		#region Accessors
+		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint Code { get { return splineData.Code; } set { splineData.Code = value; } }
 		#endregion
 
