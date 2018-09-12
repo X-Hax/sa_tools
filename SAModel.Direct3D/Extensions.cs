@@ -4,10 +4,11 @@ using System.IO;
 using System.Globalization;
 using SharpDX;
 using Color = System.Drawing.Color;
-using SharpDX.Direct3D9;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -67,18 +68,53 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static SharpDX.Mathematics.Interop.RawColor4 ToRawColor4(this Vertex vertex) => new SharpDX.Mathematics.Interop.RawColor4(vertex.X, vertex.Y, vertex.Z, 1);
 
-		public static Texture ToTexture(this Bitmap bitmap, Device device)
+		static void CopyToTexture(SharpDX.Direct3D11.Device device, Texture2D texture, Bitmap bitmap, int level)
 		{
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
-			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
-			bitmap.UnlockBits(bitmapData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
-			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
-			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
-			texture.UnlockRectangle(0);
-			return texture;
+			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+			                                     ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+			var buffer = new byte[bmpData.Stride * bitmap.Height];
+			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
+			bitmap.UnlockBits(bmpData);
+
+			device.ImmediateContext.UpdateSubresource(buffer, texture, level, 4 * bitmap.Width, 4 * bitmap.Height);
+		}
+
+		public static SceneTexture ToTexture(this Bitmap bitmap, SharpDX.Direct3D11.Device device, Bitmap[] mipmaps, int levels)
+		{
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+			{
+				bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
+			}
+
+			var texDesc = new Texture2DDescription
+			{
+				ArraySize         = 1,
+				BindFlags         = BindFlags.ShaderResource,
+				CpuAccessFlags    = CpuAccessFlags.Write,
+				Format            = Format.B8G8R8A8_UNorm,
+				Width             = bitmap.Width,
+				Height            = bitmap.Height,
+				MipLevels         = levels,
+				Usage             = ResourceUsage.Default,
+				SampleDescription = new SampleDescription(1, 0)
+			};
+
+			var texture = new Texture2D(device, texDesc);
+
+			if (mipmaps?.Length > 0)
+			{
+				for (var i = 0; i < levels; i++)
+				{
+					CopyToTexture(device, texture, mipmaps[i], i);
+				}
+			}
+			else
+			{
+				CopyToTexture(device, texture, bitmap, 0);
+			}
+
+			return new SceneTexture(texture, new ShaderResourceView(device, texture));
 		}
 
 		public static void CalculateBounds(this Attach attach)
