@@ -247,6 +247,17 @@ namespace FunctionListGenerator
 									case "signed __int8":
 									case "unsigned __int8":
 									case "_BYTE":
+									case "short":
+									case "unsigned short":
+									case "signed short":
+									case "Sint16":
+									case "Uint16":
+									case "uint16_t":
+									case "int16_t":
+									case "__int16":
+									case "signed __int16":
+									case "unsigned __int16":
+									case "_WORD":
 										isbyte = true;
 										break;
 								}

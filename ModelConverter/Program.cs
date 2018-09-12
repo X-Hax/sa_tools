@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NvTriStripDotNet;
 using SonicRetro.SAModel;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace ModelConverter
 {
 	static class Program
 	{
+		static NvStripifier nvStripifier = new NvStripifier() { StitchStrips = false, UseRestart = false };
 		static void Main(string[] args)
 		{
 			string filename;
@@ -40,23 +42,143 @@ namespace ModelConverter
 						else
 							vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
 						List<CachedVertex> cache = new List<CachedVertex>(basatt.Vertex.Length);
-						List<List<ushort[]>> strips = new List<List<ushort[]>>();
+						List<List<Strip>> strips = new List<List<Strip>>();
+						List<List<List<UV>>> uvs = new List<List<List<UV>>>();
 						foreach (NJS_MESHSET mesh in basatt.Mesh)
 						{
-							List<ushort[]> polys = new List<ushort[]>();
+							List<Strip> polys = new List<Strip>();
+							List<List<UV>> us = null;
+							bool hasUV = mesh.UV != null;
 							bool hasVColor = mesh.VColor != null;
 							int currentstriptotal = 0;
-							foreach (Poly poly in mesh.Poly)
+							switch (mesh.PolyType)
 							{
-								ushort[] inds = (ushort[])poly.Indexes.Clone();
-								for (int i = 0; i < poly.Indexes.Length; i++)
-									inds[i] = (ushort)cache.AddUnique(new CachedVertex(
-										basatt.Vertex[poly.Indexes[i]],
-										basatt.Normal?[poly.Indexes[i]] ?? Vertex.UpNormal,
-										hasVColor ? mesh.VColor[currentstriptotal++] : Color.White));
-								polys.Add(inds);
+								case Basic_PolyType.Triangles:
+									{
+										List<ushort> tris = new List<ushort>();
+										Dictionary<ushort, UV> uvmap = new Dictionary<ushort, UV>();
+										foreach (Poly poly in mesh.Poly)
+											for (int i = 0; i < 3; i++)
+											{
+												ushort ind = (ushort)cache.AddUnique(new CachedVertex(
+													basatt.Vertex[poly.Indexes[i]],
+													basatt.Normal[poly.Indexes[i]],
+													hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
+													mesh.UV?[currentstriptotal]));
+												if (hasUV)
+													uvmap[ind] = mesh.UV[currentstriptotal];
+												++currentstriptotal;
+												tris.Add(ind);
+											}
+
+										if (hasUV)
+											us = new List<List<UV>>();
+
+										nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+
+										// Add strips
+										for (var i = 0; i < primitiveGroups.Length; i++)
+										{
+											var primitiveGroup = primitiveGroups[i];
+											System.Diagnostics.Debug.Assert(primitiveGroup.Type == PrimitiveType.TriangleStrip);
+
+											var stripIndices = new ushort[primitiveGroup.Indices.Length];
+											List<UV> stripuv = new List<UV>();
+											for (var j = 0; j < primitiveGroup.Indices.Length; j++)
+											{
+												var vertexIndex = primitiveGroup.Indices[j];
+												stripIndices[j] = vertexIndex;
+												if (hasUV)
+													stripuv.Add(uvmap[vertexIndex]);
+											}
+
+											polys.Add(new Strip(stripIndices, false));
+											if (hasUV)
+												us.Add(stripuv);
+										}
+									}
+									break;
+								case Basic_PolyType.Quads:
+									{
+										List<ushort> tris = new List<ushort>();
+										Dictionary<ushort, UV> uvmap = new Dictionary<ushort, UV>();
+										foreach (Poly poly in mesh.Poly)
+										{
+											ushort[] quad = new ushort[4];
+											for (int i = 0; i < 4; i++)
+											{
+												ushort ind = (ushort)cache.AddUnique(new CachedVertex(
+													basatt.Vertex[poly.Indexes[i]],
+													basatt.Normal[poly.Indexes[i]],
+													hasVColor ? mesh.VColor[currentstriptotal] : Color.White,
+													mesh.UV?[currentstriptotal]));
+												if (hasUV)
+													uvmap[ind] = mesh.UV[currentstriptotal];
+												++currentstriptotal;
+												quad[i] = ind;
+											}
+											tris.Add(quad[0]);
+											tris.Add(quad[1]);
+											tris.Add(quad[2]);
+											tris.Add(quad[2]);
+											tris.Add(quad[1]);
+											tris.Add(quad[3]);
+										}
+
+										if (hasUV)
+											us = new List<List<UV>>();
+
+										nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+
+										// Add strips
+										for (var i = 0; i < primitiveGroups.Length; i++)
+										{
+											var primitiveGroup = primitiveGroups[i];
+											System.Diagnostics.Debug.Assert(primitiveGroup.Type == PrimitiveType.TriangleStrip);
+
+											var stripIndices = new ushort[primitiveGroup.Indices.Length];
+											List<UV> stripuv = new List<UV>();
+											for (var j = 0; j < primitiveGroup.Indices.Length; j++)
+											{
+												var vertexIndex = primitiveGroup.Indices[j];
+												stripIndices[j] = vertexIndex;
+												if (hasUV)
+													stripuv.Add(uvmap[vertexIndex]);
+											}
+
+											polys.Add(new Strip(stripIndices, false));
+											if (hasUV)
+												us.Add(stripuv);
+										}
+									}
+									break;
+								case Basic_PolyType.NPoly:
+								case Basic_PolyType.Strips:
+									if (hasUV)
+										us = new List<List<UV>>();
+									foreach (Strip poly in mesh.Poly.Cast<Strip>())
+									{
+										List<UV> stripuv = new List<UV>();
+										ushort[] inds = (ushort[])poly.Indexes.Clone();
+										for (int i = 0; i < poly.Indexes.Length; i++)
+										{
+											inds[i] = (ushort)cache.AddUnique(new CachedVertex(
+												basatt.Vertex[poly.Indexes[i]],
+												basatt.Normal[poly.Indexes[i]],
+												hasVColor ? mesh.VColor[currentstriptotal] : Color.White));
+											if (hasUV)
+												stripuv.Add(mesh.UV[currentstriptotal]);
+											++currentstriptotal;
+										}
+
+										polys.Add(new Strip(inds, poly.Reversed));
+										if (hasUV)
+											us.Add(stripuv);
+									}
+									break;
 							}
 							strips.Add(polys);
+							uvs.Add(us);
 						}
 						foreach (var item in cache)
 						{
@@ -86,11 +208,6 @@ namespace ModelConverter
 						for (int i = 0; i < basatt.Mesh.Count; i++)
 						{
 							NJS_MESHSET mesh = basatt.Mesh[i];
-							if (mesh.PolyType != Basic_PolyType.Strips)
-							{
-								Console.WriteLine("Warning: Skipping non-strip mesh in {0} ({1}).", basatt.MeshName, mesh.PolyType);
-								continue;
-							}
 							NJS_MATERIAL mat = null;
 							if (basatt.Material != null && mesh.MaterialID < basatt.Material.Count)
 							{
@@ -128,18 +245,13 @@ namespace ModelConverter
 								strip.FlatShading = mat.FlatShading;
 								strip.EnvironmentMapping = mat.EnvironmentMap;
 							}
-							int striptotal = 0;
-							for (int i1 = 0; i1 < mesh.Poly.Count; i1++)
+							for (int i1 = 0; i1 < strips[i].Count; i1++)
 							{
-								Strip item = (Strip)mesh.Poly[i1];
-								UV[] uvs = null;
+								Strip item = strips[i][i1];
+								UV[] uv2 = null;
 								if (mesh.UV != null)
-								{
-									uvs = new UV[item.Indexes.Length];
-									Array.Copy(mesh.UV, striptotal, uvs, 0, item.Indexes.Length);
-								}
-								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, strips[i][i1], uvs, null));
-								striptotal += item.Indexes.Length;
+									uv2 = uvs[i][i1].ToArray();
+								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uv2, null));
 							}
 							cnkatt.Poly.Add(strip);
 						}
@@ -309,6 +421,7 @@ namespace ModelConverter
 		public Vertex vertex;
 		public Vertex normal;
 		public Color color;
+		public UV uv;
 
 		public CachedVertex(Vertex v, Vertex n, Color c)
 		{
@@ -317,11 +430,22 @@ namespace ModelConverter
 			color = c;
 		}
 
+		public CachedVertex(Vertex v, Vertex n, Color c, UV u)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+			uv = u;
+		}
+
 		public bool Equals(CachedVertex other)
 		{
 			if (!vertex.Equals(other.vertex)) return false;
 			if (!normal.Equals(other.normal)) return false;
 			if (!color.Equals(other.color)) return false;
+			if (uv == null && other.uv != null) return false;
+			if (other.uv == null) return false;
+			if (!uv.Equals(other.uv)) return false;
 			return true;
 		}
 	}
