@@ -30,6 +30,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
 		public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		[Browsable(false)]
 		public Matrix TransformMatrix { get { return transformMatrix; } }
 
 		[Browsable(false)]

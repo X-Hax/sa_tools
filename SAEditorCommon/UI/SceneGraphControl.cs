@@ -219,7 +219,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			foreach (SplineData splineData in LevelData.LevelSplines)
 			{
-				splineNode.Nodes.Add("spline_" + splineData.Code.ToString());
+				splineNode.Nodes.Add("spline_" + splineData.Code.ToString("X"));
 			}
 
 			foreach (MissionSETItem missionSet in LevelData.MissionSETItems[LevelData.Character])
