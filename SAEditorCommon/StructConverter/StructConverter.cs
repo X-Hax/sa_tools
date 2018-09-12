@@ -593,7 +593,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								{
 									RecapScreen scr = texts[j][l];
 									objs.Add(string.Format("{{ {0}, arraylengthandptrT({1}_{2}_{3}_Text, int) }}",
-										HelperFunctions.ToC(scr.Speed), name, (Languages)l, j));
+										scr.Speed.ToC(), name, (Languages)l, j));
 								}
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
@@ -831,7 +831,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 									writer.WriteLine();
 									writer.WriteLine("LoopHead {0}_{1}_{2} = {{ {3}, LengthOfArray<int16_t>({0}_{1}_{2}_Entries), {4}, {0}_{1}_{2}_Entries, (ObjectFuncPtr){5} }};",
 										name, level.ToString().MakeIdentifier(), i, paths[i].Unknown,
-										HelperFunctions.ToC(paths[i].TotalDistance),
+										paths[i].TotalDistance.ToC(),
 										paths[i].Code.ToCHex());
 									writer.WriteLine();
 								}
@@ -865,7 +865,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine();
 								writer.WriteLine("LoopHead {0}_{1} = {{ {2}, LengthOfArray<int16_t>({0}_{1}_Entries), {3}, {0}_{1}_Entries, (ObjectFuncPtr){4} }};",
 									name, i, paths[i].Unknown,
-									HelperFunctions.ToC(paths[i].TotalDistance),
+									paths[i].TotalDistance.ToC(),
 									paths[i].Code.ToCHex());
 								writer.WriteLine();
 							}
