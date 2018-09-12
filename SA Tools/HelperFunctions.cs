@@ -337,16 +337,15 @@ namespace SA_Tools
 		}
 
 		public static string ToC<T>(this T item)
-			where T : struct, IConvertible
+			where T : Enum
 		{
 			return item.ToC(typeof(T).Name);
 		}
 
 		public static string ToC<T>(this T item, string enumname)
-			where T : struct, IConvertible
+			where T : Enum
 		{
 			Type type = typeof(T);
-			if (!type.IsEnum) return null;
 			if (type.GetCustomAttributes(typeof(FlagsAttribute), false).Length == 0)
 				if (Enum.IsDefined(typeof(T), item))
 					return enumname + "_" + item.ToString();
