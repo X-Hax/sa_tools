@@ -2342,7 +2342,8 @@ namespace SA_Tools
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort XRotation { get; set; }
 		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort YRotation { get; set; }
+		public ushort ZRotation { get; set; }
+		public ushort? YRotation { get { return null; } set { if (value.HasValue) ZRotation = value.Value; } }
 		public float Distance { get; set; }
 		public Vertex Position { get; set; }
 
@@ -2359,7 +2360,7 @@ namespace SA_Tools
 		{
 			XRotation = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
-			YRotation = ByteConverter.ToUInt16(file, address);
+			ZRotation = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
 			Distance = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
@@ -2370,7 +2371,7 @@ namespace SA_Tools
 		{
 			List<byte> result = new List<byte>();
 			result.AddRange(ByteConverter.GetBytes(XRotation));
-			result.AddRange(ByteConverter.GetBytes(YRotation));
+			result.AddRange(ByteConverter.GetBytes(ZRotation));
 			result.AddRange(ByteConverter.GetBytes(Distance));
 			result.AddRange(Position.GetBytes());
 			return result.ToArray();
@@ -2378,7 +2379,7 @@ namespace SA_Tools
 
 		public string ToStruct()
 		{
-			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), YRotation.ToCHex(), Distance.ToC(),
+			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), ZRotation.ToCHex(), Distance.ToC(),
 				Position.ToStruct());
 		}
 	}
