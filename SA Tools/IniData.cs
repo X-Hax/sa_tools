@@ -2168,9 +2168,11 @@ namespace SA_Tools
 		[IniAlwaysInclude]
 		public ushort Animation { get; set; }
 		[IniAlwaysInclude]
-		public ushort Unknown1 { get; set; }
+		public ushort Model { get; set; }
+		public ushort? Unknown1 { get { return null; } set { if (value.HasValue) Model = value.Value; } }
 		[IniAlwaysInclude]
-		public ushort Unknown2 { get; set; }
+		public ushort Property { get; set; }
+		public ushort? Unknown2 { get { return null; } set { if (value.HasValue) Property = value.Value; } }
 		[IniAlwaysInclude]
 		public ushort NextAnimation { get; set; }
 		[IniAlwaysInclude]
@@ -2186,9 +2188,9 @@ namespace SA_Tools
 		{
 			Animation = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
-			Unknown1 = ByteConverter.ToUInt16(file, address);
+			Model = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
-			Unknown2 = ByteConverter.ToUInt16(file, address);
+			Property = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
 			NextAnimation = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
@@ -2202,8 +2204,8 @@ namespace SA_Tools
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(Animation));
-			result.AddRange(ByteConverter.GetBytes(Unknown1));
-			result.AddRange(ByteConverter.GetBytes(Unknown2));
+			result.AddRange(ByteConverter.GetBytes(Model));
+			result.AddRange(ByteConverter.GetBytes(Property));
 			result.AddRange(ByteConverter.GetBytes(NextAnimation));
 			result.AddRange(ByteConverter.GetBytes(TransitionSpeed));
 			result.AddRange(ByteConverter.GetBytes(AnimationSpeed));
@@ -2212,7 +2214,7 @@ namespace SA_Tools
 
 		public string ToStruct()
 		{
-			return string.Format("{{ {0}, {1}, {2}, {3}, {4}, {5} }}", Animation, Unknown1, Unknown2, NextAnimation,
+			return string.Format("{{ {0}, {1}, {2}, {3}, {4}, {5} }}", Animation, Model, Property, NextAnimation,
 				TransitionSpeed.ToC(), AnimationSpeed.ToC());
 		}
 	}
