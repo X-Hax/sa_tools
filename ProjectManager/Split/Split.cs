@@ -123,13 +123,13 @@ namespace ProjectManager.Split
 							break;
 						case "action":
 							{
-								AnimationHeader ani = new AnimationHeader(datafile, address, imageBase, modelfmt);
+								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt);
 								ani.Animation.Name = filedesc;
 								ani.Animation.Save(fileOutputPath);
 							}
 							break;
 						case "animation":
-							new Animation(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
+							new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
 								.Save(fileOutputPath);
 							break;
 						case "objlist":
@@ -325,7 +325,7 @@ namespace ProjectManager.Split
 								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
-									new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
+									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
 										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;

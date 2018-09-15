@@ -310,7 +310,7 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Pop();
 		}
 
-		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, Animation anim, int animframe)
+		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, NJS_MOTION anim, int animframe)
 		{
 			List<Mesh> meshes = new List<Mesh>();
 			int animindex = -1;
@@ -318,7 +318,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return meshes;
 		}
 
-		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, Animation anim, int animframe, ref int animindex)
+		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, NJS_MOTION anim, int animframe, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -684,14 +684,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -718,14 +718,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimatedInvert(transform, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -831,14 +831,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, Animation anim, int animframe)
+		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, Animation anim, int animframe, ref int modelindex, ref int animindex)
+		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			transform.Push();
 			modelindex++;

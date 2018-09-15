@@ -44,7 +44,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			Bitmap bmp = new Bitmap(newsize.Width, newsize.Height);
 			Graphics gfx = Graphics.FromImage(bmp);
 			gfx.CompositingQuality = CompositingQuality.HighQuality;
-			gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
+			gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 			gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 			gfx.SmoothingMode = SmoothingMode.HighQuality;
 			gfx.Clear(Color.Transparent);

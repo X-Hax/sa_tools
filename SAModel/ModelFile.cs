@@ -17,8 +17,8 @@ namespace SonicRetro.SAModel
 
 		public ModelFormat Format { get; private set; }
 		public NJS_OBJECT Model { get; private set; }
-		public ReadOnlyCollection<Animation> Animations { get; private set; }
-		public ReadOnlyCollection<Animation> Morphs { get; private set; }
+		public ReadOnlyCollection<NJS_MOTION> Animations { get; private set; }
+		public ReadOnlyCollection<NJS_MOTION> Morphs { get; private set; }
 		public string Author { get; set; }
 		public string Description { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
@@ -87,9 +87,9 @@ namespace SonicRetro.SAModel
 					else
 						animationFiles = new string[0];
 					string path = Path.GetDirectoryName(filename);
-					List<Animation> anims = new List<Animation>();
+					List<NJS_MOTION> anims = new List<NJS_MOTION>();
 					foreach (string item in animationFiles)
-						anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
+						anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
 					Animations = anims.AsReadOnly();
 					if (version == 1)
 					{
@@ -108,15 +108,15 @@ namespace SonicRetro.SAModel
 						}
 						else
 							morphFiles = new string[0];
-						List<Animation> morphs = new List<Animation>();
+						List<NJS_MOTION> morphs = new List<NJS_MOTION>();
 						foreach (string item in morphFiles)
-							morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
+							morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
 						Morphs = morphs.AsReadOnly();
 					}
 					else
 					{
 						morphFiles = new string[0];
-						Morphs = new ReadOnlyCollection<Animation>(new List<Animation>());
+						Morphs = new ReadOnlyCollection<NJS_MOTION>(new List<NJS_MOTION>());
 					}
 				}
 			}
@@ -245,13 +245,13 @@ namespace SonicRetro.SAModel
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);
-					List<Animation> anims = new List<Animation>();
+					List<NJS_MOTION> anims = new List<NJS_MOTION>();
 					foreach (string item in animationFiles)
-						anims.Add(Animation.Load(Path.Combine(path, item), Model.CountAnimated()));
+						anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
 					Animations = anims.AsReadOnly();
-					List<Animation> morphs = new List<Animation>();
+					List<NJS_MOTION> morphs = new List<NJS_MOTION>();
 					foreach (string item in morphFiles)
-						morphs.Add(Animation.Load(Path.Combine(path, item), Model.CountMorph()));
+						morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
 					Morphs = morphs.AsReadOnly();
 				}
 			}

@@ -64,7 +64,7 @@ namespace SplitMDL
 
 				// load animations
 				Dictionary<int, string> animfns = new Dictionary<int, string>();
-				Dictionary<int, Animation> anims = new Dictionary<int, Animation>();
+				Dictionary<int, NJS_MOTION> anims = new Dictionary<int, NJS_MOTION>();
 				foreach (string anifilename in anifilenames)
 				{
 					Dictionary<int, int> processedanims = new Dictionary<int, int>();
@@ -80,7 +80,7 @@ namespace SplitMDL
 						int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
-							anims[i] = new Animation(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
+							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
 							animfns[i] = Path.Combine(Path.GetFileNameWithoutExtension(anifilename), i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 							anims[i].Save(animfns[i]);
 							processedanims[aniaddr] = i;
@@ -96,7 +96,7 @@ namespace SplitMDL
 				foreach (KeyValuePair<int, NJS_OBJECT> model in models)
 				{
 					List<string> animlist = new List<string>();
-					foreach (KeyValuePair<int, Animation> anim in anims)
+					foreach (KeyValuePair<int, NJS_MOTION> anim in anims)
 						if (model.Value.CountAnimated() == anim.Value.ModelParts)
 						{
 							string rel = animfns[anim.Key].Replace(outputFolder, string.Empty);
