@@ -23,14 +23,19 @@ namespace SplitMDL
 
 				mdlfilename = Path.GetFullPath(mdlfilename);
 
-				// look through the argumetns for animationfiles
-				string[] anifilenames = animationPaths;
-
 				// load model file
-				Environment.CurrentDirectory = (outputFolder.Length != 0) ? outputFolder : Path.GetDirectoryName(mdlfilename);
 				byte[] mdlfile = File.ReadAllBytes(mdlfilename);
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
+				(string filename, byte[] data)[] animfiles = new (string, byte[])[animationPaths.Length];
+				for (int j = 0; j < animationPaths.Length; j++)
+				{
+					byte[] data = File.ReadAllBytes(animationPaths[j]);
+					if (Path.GetExtension(animationPaths[j]).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+						data = FraGag.Compression.Prs.Decompress(data);
+					animfiles[j] = (Path.GetFileNameWithoutExtension(animationPaths[j]), data);
+				}
+				Environment.CurrentDirectory = (outputFolder.Length != 0) ? outputFolder : Path.GetDirectoryName(mdlfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
 
 				// getting model pointers
@@ -65,14 +70,11 @@ namespace SplitMDL
 				// load animations
 				Dictionary<int, string> animfns = new Dictionary<int, string>();
 				Dictionary<int, NJS_MOTION> anims = new Dictionary<int, NJS_MOTION>();
-				foreach (string anifilename in anifilenames)
+				foreach ((string anifilename, byte[] anifile) in animfiles)
 				{
 					Dictionary<int, int> processedanims = new Dictionary<int, int>();
 					Dictionary<int, string> ini = new Dictionary<int, string>();
-					byte[] anifile = File.ReadAllBytes(anifilename);
-					if (Path.GetExtension(anifilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-						anifile = FraGag.Compression.Prs.Decompress(anifile);
-					Directory.CreateDirectory(Path.GetFileNameWithoutExtension(anifilename));
+					Directory.CreateDirectory(anifilename);
 					address = 0;
 					i = ByteConverter.ToInt16(anifile, address);
 					while (i != -1)
@@ -81,7 +83,7 @@ namespace SplitMDL
 						if (!processedanims.ContainsKey(aniaddr))
 						{
 							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
-							animfns[i] = Path.Combine(Path.GetFileNameWithoutExtension(anifilename), i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+							animfns[i] = Path.Combine(anifilename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 							anims[i].Save(animfns[i]);
 							processedanims[aniaddr] = i;
 						}
@@ -89,7 +91,7 @@ namespace SplitMDL
 						address += 8;
 						i = ByteConverter.ToInt16(anifile, address);
 					}
-					IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(Path.GetFileNameWithoutExtension(anifilename), Path.GetFileNameWithoutExtension(anifilename) + ".ini"));
+					IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(anifilename, anifilename + ".ini"));
 				}
 
 				// save output model files
