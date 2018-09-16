@@ -46,7 +46,7 @@ namespace splitMTN
 					int aniaddr = ByteConverter.ToInt32(file, address + 4);
 					if (!processedanims.ContainsKey(aniaddr))
 					{
-						new Animation(file, aniaddr, 0, ByteConverter.ToInt16(file, address + 2))
+						new NJS_MOTION(file, aniaddr, 0, ByteConverter.ToInt16(file, address + 2))
 						.Save(Path.GetFileNameWithoutExtension(filename) + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 						processedanims[aniaddr] = i;
 					}

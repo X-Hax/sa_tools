@@ -378,14 +378,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "action":
-							Animation ani = Animation.Load(data.Filename);
+							NJS_MOTION ani = NJS_MOTION.Load(data.Filename);
 							name = "action_" + ani.Name.MakeIdentifier();
 							ani.ToStructVariables(writer);
 							writer.WriteLine();
 							writer.WriteLine("NJS_ACTION {0} = {{ &{1}, &{2} }};", name, models[data.CustomProperties["model"]], ani.Name.MakeIdentifier());
 							break;
 						case "animation":
-							ani = Animation.Load(data.Filename);
+							ani = NJS_MOTION.Load(data.Filename);
 							name = ani.Name.MakeIdentifier();
 							writer.WriteLine(ani.ToStructVariables());
 							break;
@@ -947,18 +947,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 						break;
 						case "animindexlist":
 						{
-							SortedDictionary<short, Animation> anims = new SortedDictionary<short, Animation>();
+							SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
 							foreach (string file in Directory.GetFiles(data.Filename, "*.saanim"))
 								if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
-									anims.Add(i, Animation.Load(file));
-							foreach (KeyValuePair<short, Animation> obj in anims)
+									anims.Add(i, NJS_MOTION.Load(file));
+							foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
 							{
 								obj.Value.ToStructVariables(writer);
 								writer.WriteLine();
 							}
 							writer.WriteLine("AnimationIndex {0}[] = {{", name);
 							List<string> objs = new List<string>(anims.Count);
-							foreach (KeyValuePair<short, Animation> obj in anims)
+							foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
 								objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, {obj.Value.Name} }}");
 							objs.Add("{ -1 }");
 							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));

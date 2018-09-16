@@ -45,8 +45,8 @@ namespace SonicRetro.SAModel.SAMDL
 		bool loaded;
 		string currentFileName = "";
 		NJS_OBJECT model;
-		Animation[] animations;
-		Animation animation;
+		NJS_MOTION[] animations;
+		NJS_MOTION animation;
 		ModelFile modelFile;
 		ModelFormat outfmt;
 		int animnum = -1;
@@ -158,7 +158,7 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile = new ModelFile(filename);
 				outfmt = modelFile.Format;
 				model = modelFile.Model;
-				animations = new Animation[modelFile.Animations.Count];
+				animations = new NJS_MOTION[modelFile.Animations.Count];
 				modelFile.Animations.CopyTo(animations, 0);
 			}
 			else
@@ -241,15 +241,15 @@ namespace SonicRetro.SAModel.SAMDL
 											if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 												anifile = FraGag.Compression.Prs.Decompress(anifile);
 											address = 0;
-											SortedDictionary<int, Animation> anis = new SortedDictionary<int, Animation>();
+											SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
 											i = ByteConverter.ToInt32(file, address);
 											while (i != -1)
 											{
-												anis.Add(i, new Animation(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+												anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
 												address += 8;
 												i = ByteConverter.ToInt32(file, address);
 											}
-											animations = new List<Animation>(anis.Values).ToArray();
+											animations = new List<NJS_MOTION>(anis.Values).ToArray();
 										}
 									}
 								}
@@ -286,7 +286,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelinfo.ShowDialog(this);
 			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
 			if (modelinfo.checkBox1.Checked)
-				animations = new Animation[] { Animation.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
+				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
 			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
 			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 			{
@@ -298,8 +298,6 @@ namespace SonicRetro.SAModel.SAMDL
 					outfmt = ModelFormat.Chunk;
 					break;
 			}
-
-			AddModelToLibrary(model, false);
 		}
 
 		private void AddModelToLibrary(NJS_OBJECT objectToAdd, bool additive)
@@ -424,7 +422,7 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe = 0;
 
 			outfmt = modelFormat;
-			animations = new Animation[0];
+			animations = new NJS_MOTION[0];
 
 			model = new NJS_OBJECT();
 			model.Morph = false;

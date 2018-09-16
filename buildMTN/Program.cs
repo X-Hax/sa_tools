@@ -33,10 +33,10 @@ namespace buildMTN
 				}
 				mtnfilename = Path.Combine(Environment.CurrentDirectory, mtnfilename);
 				Environment.CurrentDirectory = Path.GetDirectoryName(mtnfilename);
-				SortedDictionary<short, Animation> anims = new SortedDictionary<short, Animation>();
+				SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
 				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mtnfilename), "*.saanim"))
 					if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
-						anims.Add(i, Animation.Load(file));
+						anims.Add(i, NJS_MOTION.Load(file));
 				Dictionary<short, string> animnames = IniSerializer.Deserialize<Dictionary<short, string>>(
 					Path.Combine(Path.GetFileNameWithoutExtension(mtnfilename), Path.GetFileNameWithoutExtension(mtnfilename) + ".ini"),
 					new IniCollectionSettings(IniCollectionMode.IndexOnly));
@@ -44,7 +44,7 @@ namespace buildMTN
 				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
 				Dictionary<string, short> animparts = new Dictionary<string, short>();
 				uint imageBase = (uint)(animnames.Count * 8) + 8;
-				foreach (KeyValuePair<short, Animation> item in anims)
+				foreach (KeyValuePair<short, NJS_MOTION> item in anims)
 				{
 					animbytes.AddRange(item.Value.GetBytes((uint)(imageBase), out uint address));
 					animaddrs[item.Value.Name] = (int)(address + imageBase);

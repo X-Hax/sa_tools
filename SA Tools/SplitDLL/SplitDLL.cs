@@ -360,7 +360,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									AnimationHeader ani = new AnimationHeader(datafile, ptr, imageBase, modelfmt);
+									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt);
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									ani.Animation.Name = item.Key + "_" + i;
 									DllItemInfo info = new DllItemInfo()
@@ -429,7 +429,7 @@ namespace SA_Tools.SplitDLL
 									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 
-									Animation anim = new Animation(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
+									NJS_MOTION anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
 									DllItemInfo info = new DllItemInfo()
 									{
 										Export = name,

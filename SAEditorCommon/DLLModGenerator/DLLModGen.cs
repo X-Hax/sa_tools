@@ -78,7 +78,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 						break;
 					case "animation":
 					case "animindex":
-						Animation ani = Animation.Load(item.Key);
+						NJS_MOTION ani = NJS_MOTION.Load(item.Key);
 						labels.Add(ani.Name);
 						break;
 				}
@@ -134,7 +134,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							break;
 						case "animation":
 						case "animindex":
-							Animation ani = Animation.Load(item.Key);
+							NJS_MOTION ani = NJS_MOTION.Load(item.Key);
 							ani.ToStructVariables(writer);
 							labels.Add(ani.Name);
 							break;

@@ -21,12 +21,12 @@ namespace AnimJSONConverter
 				case ".saanim":
 					using (TextWriter tw = File.CreateText(Path.ChangeExtension(filename, ".json")))
 					using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
-						js.Serialize(jtw, Animation.Load(filename));
+						js.Serialize(jtw, NJS_MOTION.Load(filename));
 					break;
 				case ".json":
 					using (TextReader tr = File.OpenText(filename))
 					using (JsonTextReader jtr = new JsonTextReader(tr))
-						js.Deserialize<Animation>(jtr).Save(Path.ChangeExtension(filename, ".saanim"));
+						js.Deserialize<NJS_MOTION>(jtr).Save(Path.ChangeExtension(filename, ".saanim"));
 						break;
 				default:
 					Console.WriteLine("Unknown file type.");

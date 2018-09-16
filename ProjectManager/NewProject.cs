@@ -226,7 +226,8 @@ namespace ProjectManager
 				dataFile = "resource\\gd_PC\\sshadowmdl.prs",
 				animationFiles = new string[]
 				{
-					"plcommtn.prs"
+					"plcommtn.prs",
+					"sshadowmtn.prs"
 				}
 			},
 			new SplitMDLData()
@@ -235,7 +236,8 @@ namespace ProjectManager
 				dataFile = "resource\\gd_PC\\ssonicmdl.prs",
 				animationFiles = new string[]
 				{
-					"plcommtn.prs"
+					"plcommtn.prs",
+					"ssonicmtn.prs"
 				}
 			},
 			new SplitMDLData()
@@ -597,6 +599,7 @@ namespace ProjectManager
 			{
 				string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
 				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
+				Directory.CreateDirectory(fileOutputFolder);
 
 				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
 					fileOutputFolder, splitMDL.animationFiles);
