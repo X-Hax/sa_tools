@@ -112,12 +112,12 @@ namespace SonicRetro.SAModel
 						rotoff = rotoff - imageBase;
 					address += 4;
 				}
-				uint scaoff = 0;
+				uint scloff = 0;
 				if (animtype.HasFlag(AnimFlags.Scale))
 				{
-					scaoff = ByteConverter.ToUInt32(file, address);
-					if (scaoff > 0)
-						scaoff = scaoff - imageBase;
+					scloff = ByteConverter.ToUInt32(file, address);
+					if (scloff > 0)
+						scloff = scloff - imageBase;
 					address += 4;
 				}
 				uint vecoff = 0;
@@ -201,10 +201,10 @@ namespace SonicRetro.SAModel
 					address += 4;
 				}
 				int tmpaddr;
-				if (posoff != 0)
+				if (animtype.HasFlag(AnimFlags.Position))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (posoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)posoff;
@@ -216,10 +216,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (rotoff != 0)
+				if (animtype.HasFlag(AnimFlags.Rotation))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (rotoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)rotoff;
@@ -231,13 +231,13 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (scaoff != 0)
+				if (animtype.HasFlag(AnimFlags.Scale))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (scloff != 0 && frames > 0)
 					{
 						hasdata = true;
-						tmpaddr = (int)scaoff;
+						tmpaddr = (int)scloff;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -246,10 +246,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (vecoff != 0)
+				if (animtype.HasFlag(AnimFlags.Vector))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (vecoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)vecoff;
@@ -261,10 +261,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (vertoff != 0)
+				if (animtype.HasFlag(AnimFlags.Vertex))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (vertoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)(vertoff + (8 * (frames - 1)));
@@ -285,10 +285,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (normoff != 0)
+				if (animtype.HasFlag(AnimFlags.Normal))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (normoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)(normoff + (8 * (frames - 1)));
@@ -309,10 +309,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (targoff != 0)
+				if (animtype.HasFlag(AnimFlags.Target))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (targoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)targoff;
@@ -324,10 +324,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (rolloff != 0)
+				if (animtype.HasFlag(AnimFlags.Roll))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (rolloff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)rolloff;
@@ -339,10 +339,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (angoff != 0)
+				if (animtype.HasFlag(AnimFlags.Angle))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (angoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)angoff;
@@ -354,10 +354,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (coloff != 0)
+				if (animtype.HasFlag(AnimFlags.Color))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (coloff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)coloff;
@@ -369,10 +369,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (intoff != 0)
+				if (animtype.HasFlag(AnimFlags.Intensity))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (intoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)intoff;
@@ -384,10 +384,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (spotoff != 0)
+				if (animtype.HasFlag(AnimFlags.Spot))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (spotoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)spotoff;
@@ -399,10 +399,10 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
-				if (pntoff != 0)
+				if (animtype.HasFlag(AnimFlags.Point))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (frames > 0)
+					if (pntoff != 0 && frames > 0)
 					{
 						hasdata = true;
 						tmpaddr = (int)pntoff;
