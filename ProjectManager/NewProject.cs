@@ -599,6 +599,7 @@ namespace ProjectManager
 			{
 				string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
 				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
+				Directory.CreateDirectory(fileOutputFolder);
 
 				SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
 					fileOutputFolder, splitMDL.animationFiles);
