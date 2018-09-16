@@ -98,10 +98,18 @@ namespace SA2CutsceneTextEditor
 			uint le = ByteConverter.ToUInt32(fc, 0);
 			ByteConverter.BigEndian = true;
 			uint be = ByteConverter.ToUInt32(fc, 0);
+			uint imageBase;
 			if (be > le)
+			{
 				bigEndian = false;
+				imageBase = 0xCBD0000u;
+			}
 			else if (be < le)
+			{
 				bigEndian = true;
+				imageBase = 0x817AFE60u;
+			}
+
 			ByteConverter.BigEndian = bigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
 			useSJIS = Path.GetFileNameWithoutExtension(filename).Last() == '0';
@@ -113,7 +121,7 @@ namespace SA2CutsceneTextEditor
 			int id = ByteConverter.ToInt32(fc, 0);
 			while (id != -1)
 			{
-				scenes.Add(new Scene(fc, address, encoding));
+				scenes.Add(new Scene(fc, address, imageBase, encoding));
 				address += Scene.Size;
 				id = ByteConverter.ToInt32(fc, address);
 			}
@@ -170,7 +178,7 @@ namespace SA2CutsceneTextEditor
 		private void SaveFile()
 		{
 			ByteConverter.BigEndian = bigEndian;
-			uint addr = (uint)((scenes.Count + 1) * Scene.Size) + 0x817AFE60u;
+			uint addr = (uint)((scenes.Count + 1) * Scene.Size) + (bigEndian ? 0x817AFE60u : 0xCBD0000u);
 			List<byte> fc = new List<byte>();
 			Encoding encoding = useSJIS ? jpenc : euenc;
 			foreach (Scene scene in scenes)
@@ -387,15 +395,15 @@ namespace SA2CutsceneTextEditor
 
 		public Scene() { }
 
-		public Scene(byte[] file, int address, Encoding encoding)
+		public Scene(byte[] file, int address, uint imageBase, Encoding encoding)
 		{
 			SceneNumber = ByteConverter.ToInt32(file, address);
-			int ptr = (int)(ByteConverter.ToUInt32(file, address + 4) - 0x817AFE60u);
+			int ptr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
 			int cnt = ByteConverter.ToInt32(file, address + 8);
 			Messages.Capacity = cnt;
 			for (int i = 0; i < cnt; i++)
 			{
-				Messages.Add(new Message(file, ptr, encoding));
+				Messages.Add(new Message(file, ptr, imageBase, encoding));
 				ptr += Message.Size;
 			}
 		}
@@ -415,10 +423,10 @@ namespace SA2CutsceneTextEditor
 
 		public Message() { }
 
-		public Message(byte[] file, int address, Encoding encoding)
+		public Message(byte[] file, int address, uint imageBase, Encoding encoding)
 		{
 			Character = ByteConverter.ToInt32(file, address);
-			Text = file.GetCString((int)(ByteConverter.ToUInt32(file, address + 4) - 0x817AFE60u), encoding);
+			Text = file.GetCString((int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), encoding);
 		}
 
 		public string GetPreview()
