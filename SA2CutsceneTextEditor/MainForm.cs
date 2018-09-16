@@ -98,7 +98,7 @@ namespace SA2CutsceneTextEditor
 			uint le = ByteConverter.ToUInt32(fc, 0);
 			ByteConverter.BigEndian = true;
 			uint be = ByteConverter.ToUInt32(fc, 0);
-			uint imageBase;
+			uint imageBase = 0;
 			if (be > le)
 			{
 				bigEndian = false;
