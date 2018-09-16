@@ -298,8 +298,6 @@ namespace SonicRetro.SAModel.SAMDL
 					outfmt = ModelFormat.Chunk;
 					break;
 			}
-
-			AddModelToLibrary(model, false);
 		}
 
 		private void AddModelToLibrary(NJS_OBJECT objectToAdd, bool additive)
