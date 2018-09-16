@@ -27,6 +27,7 @@ namespace SplitMDL
 				byte[] mdlfile = File.ReadAllBytes(mdlfilename);
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
+				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				(string filename, byte[] data)[] animfiles = new (string, byte[])[animationPaths.Length];
 				for (int j = 0; j < animationPaths.Length; j++)
 				{
