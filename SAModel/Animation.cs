@@ -75,10 +75,9 @@ namespace SonicRetro.SAModel
 				Name = labels[address];
 			else
 				Name = "animation_" + address.ToString("X8");
-			int ptr = address;
-			Frames = ByteConverter.ToInt32(file, ptr + 4);
-			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, ptr + 8);
-			ushort tmp = ByteConverter.ToUInt16(file, ptr + 10);
+			Frames = ByteConverter.ToInt32(file, address + 4);
+			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
+			ushort tmp = ByteConverter.ToUInt16(file, address + 10);
 			switch ((StructEnums.NJD_MTYPE_FN)tmp & StructEnums.NJD_MTYPE_FN.NJD_MTYPE_MASK)
 			{
 				case StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER:
@@ -92,7 +91,7 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			int framesize = (tmp & 0xF) * 8;
-			ptr = (int)(ByteConverter.ToUInt32(file, ptr) - imageBase);
+			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 			for (int i = 0; i < nummodels; i++)
 			{
 				AnimModelData data = new AnimModelData();
