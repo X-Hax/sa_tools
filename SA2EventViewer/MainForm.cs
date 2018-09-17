@@ -112,7 +112,7 @@ namespace SA2EventViewer
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Event Files|e????.prs;e????.bin|All Files|*.*"
+				Filter = "Event Files|e????.prs|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadFile(a.FileName);
@@ -148,6 +148,14 @@ namespace SA2EventViewer
 				}
 				meshes.Add(scenemeshes);
 			}
+
+			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
+			TextureInfo = TextureArchive.GetTextures(TexturePackName);
+
+			Textures = new Texture[TextureInfo.Length];
+			for (int j = 0; j < TextureInfo.Length; j++)
+				Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
+
 			loaded = exportToolStripMenuItem.Enabled = true;
 			selectedObject = null;
 			SelectedItemChanged();
@@ -186,13 +194,10 @@ namespace SA2EventViewer
 			MatrixStack transform = new MatrixStack();
 			for (int i = 0; i < @event.Scenes[0].Entities.Count; i++)
 			{
-				transform.Push();
-				transform.NJTranslate(@event.Scenes[0].Entities[i].Position);
 				if (@event.Scenes[0].Entities[i].Model.HasWeight)
 					RenderInfo.Draw(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[0][i]), d3ddevice, cam);
 				else
 					RenderInfo.Draw(@event.Scenes[0].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[0][i]), d3ddevice, cam);
-				transform.Pop();
 			}
 
 
