@@ -269,15 +269,23 @@ namespace SonicRetro.SAModel
 						hasdata = true;
 						tmpaddr = (int)(vertoff + (8 * (frames - 1)));
 						int lastaddr = (int)vertoff;
+						Dictionary<int, Vertex[]> founddata = new Dictionary<int, Vertex[]>();
 						for (int j = frames - 1; j >= 0; j--)
 						{
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
-							lastaddr = newaddr;
-							for (int k = 0; k < verts.Length; k++)
+							Vertex[] verts;
+							if (founddata.ContainsKey(newaddr))
+								verts = founddata[newaddr];
+							else
 							{
-								verts[k] = new Vertex(file, newaddr);
-								newaddr += Vertex.Size;
+								verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
+								lastaddr = newaddr;
+								for (int k = 0; k < verts.Length; k++)
+								{
+									verts[k] = new Vertex(file, newaddr);
+									newaddr += Vertex.Size;
+								}
+								founddata[newaddr] = verts;
 							}
 							data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
 							tmpaddr -= 8;
@@ -293,15 +301,23 @@ namespace SonicRetro.SAModel
 						hasdata = true;
 						tmpaddr = (int)(normoff + (8 * (frames - 1)));
 						int lastaddr = (int)normoff;
+						Dictionary<int, Vertex[]> founddata = new Dictionary<int, Vertex[]>();
 						for (int j = frames - 1; j >= 0; j--)
 						{
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
-							lastaddr = newaddr;
-							for (int k = 0; k < verts.Length; k++)
+							Vertex[] verts;
+							if (founddata.ContainsKey(newaddr))
+								verts = founddata[newaddr];
+							else
 							{
-								verts[k] = new Vertex(file, newaddr);
-								newaddr += Vertex.Size;
+								verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
+								lastaddr = newaddr;
+								for (int k = 0; k < verts.Length; k++)
+								{
+									verts[k] = new Vertex(file, newaddr);
+									newaddr += Vertex.Size;
+								}
+								founddata[newaddr] = verts;
 							}
 							data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
 							tmpaddr -= 8;
