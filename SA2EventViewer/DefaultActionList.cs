@@ -14,11 +14,11 @@ namespace SA2EventViewer
 				Name = "Camera Mode",
 				MainKey = Keys.X,
 				AltKey = Keys.None,
-				Description = "Switch between normal cam mode and orbit cam mode",
+				Description = "Switch between event camera and free camera modes",
 				FireType = ActionFireType.OnPress,
 				IsSearchable = true,
 				Modifiers = Keys.None,
-				Synonyms = new string[] { "orbit" }
+				Synonyms = new string[] { }
 			},
 			new ActionKeyMapping()
 			{
@@ -146,10 +146,10 @@ namespace SA2EventViewer
 			#region Animation hotkeys
 			new ActionKeyMapping()
 			{
-				Name = "Next Animation",
+				Name = "Next Scene",
 				MainKey = Keys.OemQuotes,
 				AltKey = Keys.None,
-				Description = "Switch to the next animation.",
+				Description = "Switch to the next scene.",
 				FireType = ActionFireType.OnPress,
 				IsSearchable = true,
 				Modifiers = Keys.None,
@@ -157,10 +157,10 @@ namespace SA2EventViewer
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Previous Animation",
+				Name = "Previous Scene",
 				MainKey = Keys.OemSemicolon,
 				AltKey = Keys.None,
-				Description = "Switch to the previous animation.",
+				Description = "Switch to the previous scene.",
 				FireType = ActionFireType.OnPress,
 				IsSearchable = true,
 				Modifiers = Keys.None,

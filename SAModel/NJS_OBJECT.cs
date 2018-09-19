@@ -296,6 +296,22 @@ namespace SonicRetro.SAModel
 				item.ProcessVertexData();
 		}
 
+		public void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame)
+		{
+			int animindex = -1;
+			ProcessShapeMotionVertexData(motion, frame, ref animindex);
+		}
+		
+		private void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, ref int animindex)
+		{
+			if (Morph)
+				animindex++;
+			if (Attach != null)
+				Attach.ProcessShapeMotionVertexData(motion, frame, animindex);
+			foreach (NJS_OBJECT item in Children)
+				item.ProcessShapeMotionVertexData(motion, frame, ref animindex);
+		}
+
 		public COLLADA ToCollada(int texcount)
 		{
 			string[] texs = new string[texcount];

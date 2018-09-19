@@ -228,6 +228,48 @@ namespace SonicRetro.SAModel
 			MeshInfo = result.ToArray();
 		}
 
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		{
+			if (!motion.Models.ContainsKey(animindex))
+			{
+				ProcessVertexData();
+				return;
+			}
+#if modellog
+			Extensions.Log("Processing Chunk Attach " + Name + Environment.NewLine);
+#endif
+			if (Vertex != null)
+			{
+				foreach (VertexChunk chunk in Vertex)
+				{
+#if modellog
+					Extensions.Log("Vertex Declaration: " + chunk.IndexOffset + "-" + (chunk.IndexOffset + chunk.VertexCount - 1) + Environment.NewLine);
+#endif
+					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+					Vertex[] vertdata = chunk.Vertices.ToArray();
+					Vertex[] normdata = chunk.Normals.ToArray();
+					AnimModelData data = motion.Models[animindex];
+					if (data.Vertex.Count > 0)
+						vertdata = data.GetVertex(frame);
+					if (data.Normal.Count > 0)
+						normdata = data.GetNormal(frame);
+					for (int i = 0; i < chunk.VertexCount; i++)
+					{
+						VertexBuffer[i + chunk.IndexOffset] = new VertexData(vertdata[i]);
+						if (normdata.Length > 0)
+							VertexBuffer[i + chunk.IndexOffset].Normal = normdata[i];
+						if (chunk.Diffuse.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+					}
+				}
+			}
+			List<MeshInfo> result = new List<MeshInfo>();
+			if (Poly != null)
+				result = ProcessPolyList(PolyName, Poly, 0);
+			MeshInfo = result.ToArray();
+		}
+
 		private List<MeshInfo> ProcessPolyList(string name, List<PolyChunk> strips, int start)
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
@@ -360,7 +402,8 @@ namespace SonicRetro.SAModel
 								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 								for (int k = 0; k < strip.Indexes.Length; k++)
 								{
-									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
+									str.Indexes[k] = (ushort)verts.Count;
+									verts.Add(new VertexData(
 										VertexBuffer[strip.Indexes[k]].Position,
 										VertexBuffer[strip.Indexes[k]].Normal,
 										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,

@@ -30,30 +30,31 @@ namespace SA2EventViewer
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
 			File.WriteAllText("SA2EventViewer.log", e.Exception.ToString());
-			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SA2EventViewer Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SA2 Event Viewer Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
 		void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			File.WriteAllText("SA2EventViewer.log", e.ExceptionObject.ToString());
-			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SA2EventViewer Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SA2 Event Viewer Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+		EditorCamera cam = new EditorCamera(10000);
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;
 		string currentFileName = "";
 		Event @event;
-		NJS_MOTION[] animations;
-		int animframe = 0;
+		int scenenum = 0;
+		int animframe = -1;
 		List<List<Mesh[]>> meshes;
 		string TexturePackName;
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
-		NJS_OBJECT selectedObject;
+		EventEntity selectedObject;
+		bool eventcamera = true;
 
 		#region UI
 		bool lookKeyDown;
@@ -80,6 +81,8 @@ namespace SA2EventViewer
 				});
 
 			EditorOptions.Initialize(d3ddevice);
+			EditorOptions.OverrideLighting = true;
+			EditorOptions.RenderDrawDistance = 10000;
 			optionsEditor = new EditorOptionsEditor(cam);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
@@ -123,8 +126,8 @@ namespace SA2EventViewer
 			loaded = false;
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			timer1.Stop();
-			animations = null;
-			animframe = 0;
+			scenenum = 0;
+			animframe = -1;
 			@event = new Event(filename);
 			meshes = new List<List<Mesh[]>>();
 			foreach (EventScene scene in @event.Scenes)
@@ -132,19 +135,22 @@ namespace SA2EventViewer
 				List<Mesh[]> scenemeshes = new List<Mesh[]>();
 				foreach (EventEntity entity in scene.Entities)
 				{
-					if (entity.Model.HasWeight)
-						scenemeshes.Add(entity.Model.ProcessWeightedModel().ToArray());
+					if (entity.Model != null)
+						if (entity.Model.HasWeight)
+							scenemeshes.Add(entity.Model.ProcessWeightedModel().ToArray());
+						else
+						{
+							entity.Model.ProcessVertexData();
+							NJS_OBJECT[] models = entity.Model.GetObjects();
+							Mesh[] entmesh = new Mesh[models.Length];
+							for (int i = 0; i < models.Length; i++)
+								if (models[i].Attach != null)
+									try { entmesh[i] = models[i].Attach.CreateD3DMesh(); }
+									catch { }
+							scenemeshes.Add(entmesh);
+						}
 					else
-					{
-						entity.Model.ProcessVertexData();
-						NJS_OBJECT[] models = entity.Model.GetObjects();
-						Mesh[] entmesh = new Mesh[models.Length];
-						for (int i = 0; i < models.Length; i++)
-							if (models[i].Attach != null)
-								try { entmesh[i] = models[i].Attach.CreateD3DMesh(); }
-								catch { }
-						scenemeshes.Add(entmesh);
-					}
+						scenemeshes.Add(null);
 				}
 				meshes.Add(scenemeshes);
 			}
@@ -168,10 +174,13 @@ namespace SA2EventViewer
 			Close();
 		}
 
-		string GetStatusString()
+		private void UpdateStatusString()
 		{
-			return "SA2EventViewer: " + currentFileName;
-			// + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
+			Text = "SA2 Event Viewer: " + currentFileName;
+			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
+			cameraAngLabel.Text = $"Camera Ang: {cam.Yaw:X4} {cam.Pitch:X4}";
+			sceneNumLabel.Text = $"Scene: {scenenum}";
+			animFrameLabel.Text = $"Frame: {animframe}";
 		}
 
 		#region Rendering Methods
@@ -180,7 +189,7 @@ namespace SA2EventViewer
 			if (!loaded) return;
 			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
-			Text = GetStatusString();
+			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
@@ -192,65 +201,95 @@ namespace SA2EventViewer
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			MatrixStack transform = new MatrixStack();
+			List<RenderInfo> renderList = new List<RenderInfo>();
 			for (int i = 0; i < @event.Scenes[0].Entities.Count; i++)
 			{
-				if (@event.Scenes[0].Entities[i].Model.HasWeight)
-					RenderInfo.Draw(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[0][i]), d3ddevice, cam);
-				else
-					RenderInfo.Draw(@event.Scenes[0].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[0][i]), d3ddevice, cam);
+				if (@event.Scenes[0].Entities[i].Model != null)
+					if (@event.Scenes[0].Entities[i].Model.HasWeight)
+					{
+						renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[0][i]));
+						if (@event.Scenes[0].Entities[i] == selectedObject)
+							renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeightedInvert(transform.Top, meshes[0][i]));
+					}
+					else
+					{
+						renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[0][i]));
+						if (@event.Scenes[0].Entities[i] == selectedObject)
+							renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeInvert(transform, meshes[0][i]));
+					}
 			}
+			if (scenenum > 0)
+				for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
+				{
+					if (@event.Scenes[scenenum].Entities[i].Model != null)
+						if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
+						{
+							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[scenenum][i]));
+							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
+								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeightedInvert(transform.Top, meshes[scenenum][i]));
+						}
+						else if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
+						{
+							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i]));
+							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
+								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeInvert(transform, meshes[scenenum][i]));
+						}
+						else
+						{
+							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
+							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
+								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeAnimatedInvert(transform, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
+						}
+				}
 
-
+			RenderInfo.Draw(renderList, d3ddevice, cam);
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
 
-		private void DrawSelectedObject(NJS_OBJECT obj, MatrixStack transform)
+		private void UpdateWeightedModels()
 		{
-			int modelnum = -1;
-			int animindex = -1;
-			DrawSelectedObject(obj, transform, ref modelnum, ref animindex);
-		}
-
-		private bool DrawSelectedObject(NJS_OBJECT obj, MatrixStack transform, ref int modelindex, ref int animindex)
-		{
-			/*transform.Push();
-			modelindex++;
-			if (obj.Animate) animindex++;
-			if (animation != null && animation.Models.ContainsKey(animindex))
-				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
-			else
-				obj.ProcessTransforms(transform);
-			if (obj == selectedObject)
+			if (scenenum > 0)
 			{
-				if (obj.Attach != null)
-					for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
-					{
-						Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
-						col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
-						NJS_MATERIAL mat = new NJS_MATERIAL
+				for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
+					if (@event.Scenes[scenenum].Entities[i].Model != null)
+						if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
 						{
-							DiffuseColor = col,
-							IgnoreLighting = true,
-							UseAlpha = false
-						};
-						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
-					}
-				transform.Pop();
-				return true;
-			}
-			foreach (NJS_OBJECT child in obj.Children)
-				if (DrawSelectedObject(child, transform, ref modelindex, ref animindex))
+							if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
+								meshes[scenenum][i] = @event.Scenes[scenenum].Entities[i].Model.ProcessWeightedModel().ToArray();
+							else
+								meshes[scenenum][i] = @event.Scenes[scenenum].Entities[i].Model.ProcessWeightedModelAnimated(@event.Scenes[scenenum].Entities[i].Motion, animframe).ToArray();
+						}
+						else if (@event.Scenes[scenenum].Entities[i].ShapeMotion != null)
+						{
+							if (animframe == -1)
+								@event.Scenes[scenenum].Entities[i].Model.ProcessVertexData();
+							else
+								@event.Scenes[scenenum].Entities[i].Model.ProcessShapeMotionVertexData(@event.Scenes[scenenum].Entities[i].ShapeMotion, animframe);
+							NJS_OBJECT[] models = @event.Scenes[scenenum].Entities[i].Model.GetObjects();
+							for (int j = 0; j < models.Length; j++)
+								if (models[j].Attach != null)
+									try { meshes[scenenum][i][j] = models[j].Attach.CreateD3DMesh(); }
+									catch { }
+						}
+				if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
 				{
-					transform.Pop();
-					return true;
+					int an = 0;
+					int fr = animframe;
+					while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
+					{
+						fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
+						an++;
+					}
+					AnimModelData data = @event.Scenes[scenenum].CameraMotions[an].Models[0];
+					cam.Position = data.GetPosition(fr).ToVector3();
+					Vector3 dir;
+					if (data.Vector.Count > 0)
+						dir = data.GetVector(fr).ToVector3();
+					else
+						dir = Vector3.Normalize(cam.Position - data.GetTarget(fr).ToVector3());
 				}
-			transform.Pop();*/
-			return false;
-		}
-
-		private void UpdateWeightedModel()
-		{
+			}
 		}
 
 		private void panel1_Paint(object sender, PaintEventArgs e)
@@ -295,19 +334,7 @@ namespace SA2EventViewer
 			switch (actionName)
 			{
 				case ("Camera Mode"):
-					cam.mode = (cam.mode + 1) % 2;
-
-					if (cam.mode == 1)
-					{
-						if (selectedObject != null)
-						{
-							cam.FocalPoint = selectedObject.Position.ToVector3();
-						}
-						else
-						{
-							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
-						}
-					}
+					eventcamera = !eventcamera;
 
 					draw = true;
 					break;
@@ -315,7 +342,7 @@ namespace SA2EventViewer
 				case ("Zoom to target"):
 					if (selectedObject != null)
 					{
-						BoundingSphere bounds = (selectedObject.Attach != null) ? selectedObject.Attach.Bounds :
+						BoundingSphere bounds = (selectedObject.Model?.Attach != null) ? selectedObject.Model.Attach.Bounds :
 							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
 
 						bounds.Center += selectedObject.Position;
@@ -358,7 +385,7 @@ namespace SA2EventViewer
 					break;
 
 				case ("Reset Camera Position"):
-					if (cam.mode == 0)
+					if (!eventcamera)
 					{
 						cam.Position = new Vector3();
 						draw = true;
@@ -366,7 +393,7 @@ namespace SA2EventViewer
 					break;
 
 				case ("Reset Camera Rotation"):
-					if (cam.mode == 0)
+					if (!eventcamera)
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
@@ -386,61 +413,71 @@ namespace SA2EventViewer
 					lookKeyDown = false;
 					break;
 
-				/*case ("Next Animation"):
-					if (animations != null)
+				case ("Next Scene"):
+					scenenum++;
+					animframe = (timer1.Enabled ? 0 : -1);
+					if (scenenum == @event.Scenes.Count)
 					{
-						animnum++;
-						animframe = 0;
-						if (animnum == animations.Length) animnum = -1;
-						if (animnum > -1)
-							animation = animations[animnum];
+						if (timer1.Enabled)
+							scenenum = 1;
 						else
-							animation = null;
-
-						draw = true;
+							scenenum = 0;
 					}
+
+					draw = true;
 					break;
 
-				case ("Previous Animation"):
-					if (animations != null)
-					{
-						animnum--;
-						animframe = 0;
-						if (animnum == -2) animnum = animations.Length - 1;
-						if (animnum > -1)
-							animation = animations[animnum];
-						else
-							animation = null;
+				case ("Previous Scene"):
+					scenenum--;
+					animframe = (timer1.Enabled ? 0 : -1);
+					if (scenenum == -1 || (timer1.Enabled && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
 
-						draw = true;
-					}
+					draw = true;
 					break;
 
 				case ("Previous Frame"):
-					if (animation != null)
+					if (scenenum > 0 && !timer1.Enabled)
 					{
 						animframe--;
-						if (animframe < 0) animframe = animation.Frames - 1;
+						if (animframe < -1)
+						{
+							scenenum--;
+							if (scenenum == 0)
+								scenenum = @event.Scenes.Count - 1;
+							animframe = @event.Scenes[scenenum].FrameCount - 1;
+						}
+
 						draw = true;
 					}
 					break;
 
 				case ("Next Frame"):
-					if (animation != null)
+					if (scenenum > 0 && !timer1.Enabled)
 					{
 						animframe++;
-						if (animframe == animation.Frames) animframe = 0;
+						if (animframe == @event.Scenes[scenenum].FrameCount)
+						{
+							scenenum++;
+							if (scenenum == @event.Scenes.Count)
+								scenenum = 1;
+							animframe = -1;
+						}
+
 						draw = true;
 					}
 					break;
 
 				case ("Play/Pause Animation"):
-					if (animation != null)
+					if (!timer1.Enabled)
 					{
-						timer1.Enabled = !timer1.Enabled;
-						draw = true;
+						if (scenenum == 0)
+							scenenum = 1;
+						if (animframe == -1)
+							animframe = 0;
 					}
-					break;*/
+					timer1.Enabled = !timer1.Enabled;
+					draw = true;
+					break;
 
 				default:
 					break;
@@ -448,7 +485,7 @@ namespace SA2EventViewer
 
 			if (draw)
 			{
-				UpdateWeightedModel();
+				UpdateWeightedModels();
 				DrawEntireModel();
 			}
 		}
@@ -548,7 +585,7 @@ namespace SA2EventViewer
 			}
 			#endregion
 
-			if (cameraKeyDown)
+			if (cameraKeyDown && (!eventcamera || animframe == -1))
 			{
 				// all cam controls are now bound to the middle mouse button
 				if (cam.mode == 0)
@@ -586,7 +623,7 @@ namespace SA2EventViewer
 					}
 				}
 
-				UpdateWeightedModel();
+				UpdateWeightedModels();
 				DrawEntireModel();
 			}
 
@@ -604,24 +641,30 @@ namespace SA2EventViewer
 		}
 		#endregion
 
-		private void timer1_Tick(object sender, EventArgs e)
+		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			/*if (animation == null) return;
 			animframe++;
-			if (animframe == animation.Frames) animframe = 0;
-			UpdateWeightedModel();
-			DrawEntireModel();*/
+			if (animframe == @event.Scenes[scenenum].FrameCount)
+			{
+				scenenum++;
+				if (scenenum == @event.Scenes.Count)
+					scenenum = 1;
+				animframe = 0;
+			}
+			UpdateWeightedModels();
+			DrawEntireModel();
 		}
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
-			/*if (!loaded) return;
+			if (!loaded) return;
 
 			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
 
 			if (e.Button == MouseButtons.Left)
 			{
-				HitResult dist;
+				HitResult dist = HitResult.NoHit;
+				EventEntity entity = null;
 				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
@@ -631,13 +674,44 @@ namespace SA2EventViewer
 				Near.Z = 0;
 				Far = Near;
 				Far.Z = -1;
-				if (model.HasWeight)
-					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
-				else
-					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+				for (int i = 0; i < @event.Scenes[0].Entities.Count; i++)
+				{
+					if (@event.Scenes[0].Entities[i].Model != null)
+					{
+						HitResult hit;
+						if (@event.Scenes[0].Entities[i].Model.HasWeight)
+							hit = @event.Scenes[0].Entities[i].Model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes[0][i]);
+						else
+							hit = @event.Scenes[0].Entities[i].Model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes[0][i]);
+						if (hit < dist)
+						{
+							dist = hit;
+							entity = @event.Scenes[0].Entities[i];
+						}
+					}
+				}
+				if (scenenum > 0)
+					for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
+					{
+						if (@event.Scenes[scenenum].Entities[i].Model != null)
+						{
+							HitResult hit;
+							if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
+								hit = @event.Scenes[scenenum].Entities[i].Model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes[scenenum][i]);
+							else if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
+								hit = @event.Scenes[scenenum].Entities[i].Model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes[scenenum][i]);
+							else
+								hit = @event.Scenes[scenenum].Entities[i].Model.CheckHitAnimated(Near, Far, viewport, proj, view, new MatrixStack(), meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe);
+							if (hit < dist)
+							{
+								dist = hit;
+								entity = @event.Scenes[scenenum].Entities[i];
+							}
+						}
+					}
 				if (dist.IsHit)
 				{
-					selectedObject = dist.Model;
+					selectedObject = entity;
 					SelectedItemChanged();
 				}
 				else
@@ -648,7 +722,7 @@ namespace SA2EventViewer
 			}
 
 			if (e.Button == MouseButtons.Right)
-				contextMenuStrip1.Show(panel1, e.Location);*/
+				contextMenuStrip1.Show(panel1, e.Location);
 		}
 
 		internal void SelectedItemChanged()
@@ -656,7 +730,7 @@ namespace SA2EventViewer
 			if (selectedObject != null)
 			{
 				propertyGrid1.SelectedObject = selectedObject;
-				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				exportOBJToolStripMenuItem.Enabled = selectedObject.Model != null;
 			}
 			else
 			{
@@ -796,13 +870,13 @@ namespace SA2EventViewer
 			{
 				DefaultExt = "obj",
 				Filter = "OBJ Files|*.obj",
-				FileName = selectedObject.Name
+				FileName = selectedObject.Model.Name
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					string objFileName = a.FileName;
-					NJS_OBJECT obj = selectedObject;
+					NJS_OBJECT obj = selectedObject.Model;
 					using (StreamWriter objstream = new StreamWriter(objFileName, false))
 					{
 						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
@@ -852,7 +926,7 @@ namespace SA2EventViewer
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			UpdateWeightedModel();
+			//UpdateWeightedModel();
 		}
 
 		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)

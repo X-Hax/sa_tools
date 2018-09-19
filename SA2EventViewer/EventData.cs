@@ -21,26 +21,35 @@ namespace SA2EventViewer
 				fc = Prs.Decompress(filename);
 			else
 				fc = File.ReadAllBytes(filename);
+			bool battle = false;
 			uint key;
 			if (fc[0] == 0x81)
 			{
 				ByteConverter.BigEndian = true;
 				key = 0x8125FE60;
+				battle = true;
 			}
 			else
 			{
 				ByteConverter.BigEndian = false;
 				key = 0xC600000;
 			}
+			List<NJS_MOTION> motions = null;
+			if (battle)
+				motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
 			Dictionary<string, NJS_OBJECT> models = new Dictionary<string, NJS_OBJECT>();
-			int ptr = fc.GetPointer(0x20, key);
-			if (ptr != 0)
+			int ptr;
+			if (battle)
 			{
-				Upgrades = new EventUpgrade[18];
-				for (int i = 0; i < 18; i++)
+				ptr = fc.GetPointer(0x20, key);
+				if (ptr != 0)
 				{
-					Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
-					ptr += EventUpgrade.Size;
+					Upgrades = new EventUpgrade[18];
+					for (int i = 0; i < 18; i++)
+					{
+						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+						ptr += EventUpgrade.Size;
+					}
 				}
 			}
 			int gcnt = ByteConverter.ToInt32(fc, 8);
@@ -50,10 +59,27 @@ namespace SA2EventViewer
 				Scenes = new List<EventScene>();
 				for (int gn = 0; gn <= gcnt; gn++)
 				{
-					Scenes.Add(new EventScene(fc, ptr, key, models));
+					Scenes.Add(new EventScene(fc, ptr, key, battle, models, motions));
 					ptr += EventScene.Size;
 				}
 			}
+		}
+
+		public static List<NJS_MOTION> ReadMotionFile(string filename)
+		{
+			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			byte[] fc = File.ReadAllBytes(filename);
+			int addr = 0;
+			while (ByteConverter.ToInt64(fc, addr) != 0)
+			{
+				int ptr = ByteConverter.ToInt32(fc, addr);
+				if (ptr == -1)
+					motions.Add(null);
+				else
+					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
+				addr += 8;
+			}
+			return motions;
 		}
 
 		public static NJS_OBJECT GetModel(byte[] file, int address, uint imageBase, Dictionary<string, NJS_OBJECT> models)
@@ -76,13 +102,12 @@ namespace SA2EventViewer
 	public class EventScene
 	{
 		public List<EventEntity> Entities { get; set; }
-		public List<int> CameraMotionIDs { get; set; }
-		public List<int> UnknownMotionIDs { get; set; }
+		public List<NJS_MOTION> CameraMotions { get; set; }
 		public int FrameCount { get; set; }
 
 		public const int Size = 32;
 
-		public EventScene(byte[] file, int address, uint imageBase, Dictionary<string, NJS_OBJECT> models)
+		public EventScene(byte[] file, int address, uint imageBase, bool battle, Dictionary<string, NJS_OBJECT> models, List<NJS_MOTION> motions)
 		{
 			int ptr = file.GetPointer(address, imageBase);
 			if (ptr != 0)
@@ -91,29 +116,21 @@ namespace SA2EventViewer
 				Entities = new List<EventEntity>(cnt);
 				for (int i = 0; i < cnt; i++)
 				{
-					Entities.Add(new EventEntity(file, ptr, imageBase, models));
-					ptr += EventEntity.Size;
+					Entities.Add(new EventEntity(file, ptr, imageBase, battle, models, motions));
+					ptr += EventEntity.Size(battle);
 				}
 			}
 			ptr = file.GetPointer(address + 8, imageBase);
 			if (ptr != 0)
 			{
 				int cnt = ByteConverter.ToInt32(file, address + 12);
-				CameraMotionIDs = new List<int>(cnt);
+				CameraMotions = new List<NJS_MOTION>(cnt);
 				for (int i = 0; i < cnt; i++)
 				{
-					CameraMotionIDs.Add(ByteConverter.ToInt32(file, ptr));
-					ptr += sizeof(int);
-				}
-			}
-			ptr = file.GetPointer(address + 16, imageBase);
-			if (ptr != 0)
-			{
-				int cnt = ByteConverter.ToInt32(file, address + 20);
-				UnknownMotionIDs = new List<int>(cnt);
-				for (int i = 0; i < cnt; i++)
-				{
-					UnknownMotionIDs.Add(ByteConverter.ToInt32(file, ptr));
+					if (battle)
+						CameraMotions.Add(motions[ByteConverter.ToInt32(file, ptr)]);
+					else
+						CameraMotions.Add(new NJS_MOTION(file, file.GetPointer(ptr, imageBase), imageBase, 1));
 					ptr += sizeof(int);
 				}
 			}
@@ -125,27 +142,40 @@ namespace SA2EventViewer
 	{
 		[Browsable(false)]
 		public NJS_OBJECT Model { get; set; }
-		public int MotionID { get; set; }
-		public int ShapeMotionID { get; set; }
 		[Browsable(false)]
-		public NJS_OBJECT Model2 { get; set; }
+		public NJS_MOTION Motion { get; set; }
+		[Browsable(false)]
+		public NJS_MOTION ShapeMotion { get; set; }
+		[Browsable(false)]
+		public NJS_OBJECT ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public int field_24 { get; set; }
-		[TypeConverter(typeof(UInt32HexConverter))]
-		public int field_28 { get; set; }
+		public uint Flags { get; set; }
 
-		public const int Size = 44;
+		public static int Size(bool battle) => battle ? 44 : 32;
 
-		public EventEntity(byte[] file, int address, uint imageBase, Dictionary<string, NJS_OBJECT> models)
+		public EventEntity(byte[] file, int address, uint imageBase, bool battle, Dictionary<string, NJS_OBJECT> models, List<NJS_MOTION> motions)
 		{
 			Model = Event.GetModel(file, address, imageBase, models);
-			MotionID = ByteConverter.ToInt32(file, address + 4);
-			ShapeMotionID = ByteConverter.ToInt32(file, address + 8);
-			Model2 = Event.GetModel(file, address + 16, imageBase, models);
-			Position = new Vertex(file, address + 24);
-			field_24 = ByteConverter.ToInt32(file, address + 36);
-			field_28 = ByteConverter.ToInt32(file, address + 40);
+			if (battle)
+			{
+				Motion = motions[ByteConverter.ToInt32(file, address + 4)];
+				ShapeMotion = motions[ByteConverter.ToInt32(file, address + 8)];
+				ShadowModel = Event.GetModel(file, address + 16, imageBase, models);
+				Position = new Vertex(file, address + 24);
+				Flags = ByteConverter.ToUInt32(file, address + 40);
+			}
+			else
+			{
+				int ptr = file.GetPointer(address + 4, imageBase);
+				if (ptr != 0)
+					Motion = new NJS_MOTION(file, ptr, imageBase, Model.CountAnimated());
+				ptr = file.GetPointer(address + 8, imageBase);
+				if (ptr != 0)
+					ShapeMotion = new NJS_MOTION(file, ptr, imageBase, Model.CountMorph());
+				Position = new Vertex(file, address + 16);
+				Flags = ByteConverter.ToUInt32(file, address + 28);
+			}
 		}
 	}
 
