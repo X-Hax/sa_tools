@@ -45,10 +45,14 @@
 			this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.cameraAngLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.timer1 = new System.Timers.Timer();
+			this.camModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.currentSceneOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.label1 = new System.Windows.Forms.Label();
+			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -57,6 +61,8 @@
 			this.contextMenuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
+			this.tableLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -90,9 +96,11 @@
 			// 
 			// exportToolStripMenuItem
 			// 
+			this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.currentSceneOBJToolStripMenuItem});
 			this.exportToolStripMenuItem.Enabled = false;
 			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.exportToolStripMenuItem.Text = "&Export";
 			// 
 			// exitToolStripMenuItem
@@ -151,20 +159,21 @@
 			// 
 			// splitContainer1.Panel2
 			// 
-			this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+			this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
 			this.splitContainer1.Size = new System.Drawing.Size(584, 514);
 			this.splitContainer1.SplitterDistance = 320;
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// propertyGrid1
 			// 
+			this.tableLayoutPanel1.SetColumnSpan(this.propertyGrid1, 2);
 			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid1.Location = new System.Drawing.Point(0, 26);
 			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
 			this.propertyGrid1.Name = "propertyGrid1";
 			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-			this.propertyGrid1.Size = new System.Drawing.Size(260, 514);
+			this.propertyGrid1.Size = new System.Drawing.Size(260, 488);
 			this.propertyGrid1.TabIndex = 14;
 			this.propertyGrid1.ToolbarVisible = false;
 			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -187,8 +196,8 @@
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.camModeLabel,
             this.cameraPosLabel,
-            this.cameraAngLabel,
             this.sceneNumLabel,
             this.animFrameLabel});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 538);
@@ -199,16 +208,10 @@
 			// 
 			// cameraPosLabel
 			// 
+			this.cameraPosLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
 			this.cameraPosLabel.Name = "cameraPosLabel";
-			this.cameraPosLabel.Size = new System.Drawing.Size(106, 19);
+			this.cameraPosLabel.Size = new System.Drawing.Size(110, 19);
 			this.cameraPosLabel.Text = "Camera Pos: 0, 0, 0";
-			// 
-			// cameraAngLabel
-			// 
-			this.cameraAngLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-			this.cameraAngLabel.Name = "cameraAngLabel";
-			this.cameraAngLabel.Size = new System.Drawing.Size(134, 19);
-			this.cameraAngLabel.Text = "Camera Ang: 0000 0000";
 			// 
 			// sceneNumLabel
 			// 
@@ -229,6 +232,75 @@
 			this.timer1.Interval = 16.666666666666668D;
 			this.timer1.SynchronizingObject = this;
 			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
+			// 
+			// camModeLabel
+			// 
+			this.camModeLabel.Name = "camModeLabel";
+			this.camModeLabel.Size = new System.Drawing.Size(64, 19);
+			this.camModeLabel.Text = "Event Cam";
+			// 
+			// currentSceneOBJToolStripMenuItem
+			// 
+			this.currentSceneOBJToolStripMenuItem.Name = "currentSceneOBJToolStripMenuItem";
+			this.currentSceneOBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.currentSceneOBJToolStripMenuItem.Text = "Current Scene (OBJ)";
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.Controls.Add(this.propertyGrid1, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.numericUpDown1, 1, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 2;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(260, 514);
+			this.tableLayoutPanel1.TabIndex = 0;
+			// 
+			// label1
+			// 
+			this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(3, 6);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(58, 13);
+			this.label1.TabIndex = 15;
+			this.label1.Text = "Timescale:";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// numericUpDown1
+			// 
+			this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.numericUpDown1.DecimalPlaces = 2;
+			this.numericUpDown1.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+			this.numericUpDown1.Location = new System.Drawing.Point(67, 3);
+			this.numericUpDown1.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.numericUpDown1.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+			this.numericUpDown1.Name = "numericUpDown1";
+			this.numericUpDown1.Size = new System.Drawing.Size(78, 20);
+			this.numericUpDown1.TabIndex = 16;
+			this.numericUpDown1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
 			// 
 			// MainForm
 			// 
@@ -254,6 +326,9 @@
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
+			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -277,10 +352,14 @@
 		private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel cameraPosLabel;
-		private System.Windows.Forms.ToolStripStatusLabel cameraAngLabel;
 		private System.Windows.Forms.ToolStripStatusLabel sceneNumLabel;
 		private System.Windows.Forms.ToolStripStatusLabel animFrameLabel;
 		private System.Timers.Timer timer1;
+		private System.Windows.Forms.ToolStripStatusLabel camModeLabel;
+		private System.Windows.Forms.ToolStripMenuItem currentSceneOBJToolStripMenuItem;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.NumericUpDown numericUpDown1;
 	}
 }
 

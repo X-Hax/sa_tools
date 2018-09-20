@@ -1250,7 +1250,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static int RadToBAMS(float rad)
 		{
-			return (int)(rad * (65536 / (2 * Math.PI)));
+			return (int)(rad * 65536.0 / (2 * Math.PI));
 		}
 
 		/// <summary>

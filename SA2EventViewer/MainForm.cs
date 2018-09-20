@@ -41,7 +41,7 @@ namespace SA2EventViewer
 		}
 
 		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera(10000);
+		EditorCamera cam = new EditorCamera(50000);
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;
@@ -49,6 +49,7 @@ namespace SA2EventViewer
 		Event @event;
 		int scenenum = 0;
 		int animframe = -1;
+		decimal decframe = -1;
 		List<List<Mesh[]>> meshes;
 		string TexturePackName;
 		BMPInfo[] TextureInfo;
@@ -162,7 +163,7 @@ namespace SA2EventViewer
 			for (int j = 0; j < TextureInfo.Length; j++)
 				Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
 
-			loaded = exportToolStripMenuItem.Enabled = true;
+			loaded = true;
 			selectedObject = null;
 			SelectedItemChanged();
 
@@ -177,8 +178,8 @@ namespace SA2EventViewer
 		private void UpdateStatusString()
 		{
 			Text = "SA2 Event Viewer: " + currentFileName;
+			camModeLabel.Text = eventcamera ? "Event Cam" : "Free Cam";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
-			cameraAngLabel.Text = $"Camera Ang: {cam.Yaw:X4} {cam.Pitch:X4}";
 			sceneNumLabel.Text = $"Scene: {scenenum}";
 			animFrameLabel.Text = $"Frame: {animframe}";
 		}
@@ -187,7 +188,19 @@ namespace SA2EventViewer
 		internal void DrawEntireModel()
 		{
 			if (!loaded) return;
-			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			float fov = (float)(Math.PI / 4);
+			if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
+			{
+				int an = 0;
+				int fr = animframe;
+				while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
+				{
+					fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
+					an++;
+				}
+				fov = SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(@event.Scenes[scenenum].CameraMotions[an].Models[0].GetAngle(fr));
+			}
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(fov, panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -274,6 +287,7 @@ namespace SA2EventViewer
 						}
 				if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
 				{
+					cam.mode = 2;
 					int an = 0;
 					int fr = animframe;
 					while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
@@ -288,7 +302,11 @@ namespace SA2EventViewer
 						dir = data.GetVector(fr).ToVector3();
 					else
 						dir = Vector3.Normalize(cam.Position - data.GetTarget(fr).ToVector3());
+					cam.Direction = dir;
+					cam.Roll = data.GetRoll(fr);
 				}
+				else
+					cam.mode = 0;
 			}
 		}
 
@@ -416,6 +434,7 @@ namespace SA2EventViewer
 				case ("Next Scene"):
 					scenenum++;
 					animframe = (timer1.Enabled ? 0 : -1);
+					decframe = animframe;
 					if (scenenum == @event.Scenes.Count)
 					{
 						if (timer1.Enabled)
@@ -430,6 +449,7 @@ namespace SA2EventViewer
 				case ("Previous Scene"):
 					scenenum--;
 					animframe = (timer1.Enabled ? 0 : -1);
+					decframe = animframe;
 					if (scenenum == -1 || (timer1.Enabled && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
 
 					draw = true;
@@ -446,6 +466,7 @@ namespace SA2EventViewer
 								scenenum = @event.Scenes.Count - 1;
 							animframe = @event.Scenes[scenenum].FrameCount - 1;
 						}
+						decframe = animframe;
 
 						draw = true;
 					}
@@ -462,6 +483,7 @@ namespace SA2EventViewer
 								scenenum = 1;
 							animframe = -1;
 						}
+						decframe = animframe;
 
 						draw = true;
 					}
@@ -473,7 +495,7 @@ namespace SA2EventViewer
 						if (scenenum == 0)
 							scenenum = 1;
 						if (animframe == -1)
-							animframe = 0;
+							decframe = animframe = 0;
 					}
 					timer1.Enabled = !timer1.Enabled;
 					draw = true;
@@ -643,16 +665,29 @@ namespace SA2EventViewer
 
 		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			animframe++;
-			if (animframe == @event.Scenes[scenenum].FrameCount)
+			decframe += numericUpDown1.Value;
+			int oldanimframe = animframe;
+			animframe = (int)decframe;
+			if (animframe != oldanimframe)
 			{
-				scenenum++;
-				if (scenenum == @event.Scenes.Count)
-					scenenum = 1;
-				animframe = 0;
+				if (animframe < 0)
+				{
+					scenenum--;
+					if (scenenum == 0)
+						scenenum = @event.Scenes.Count - 1;
+					animframe = @event.Scenes[scenenum].FrameCount - 1;
+					decframe = animframe + 0.99m;
+				}
+				else if (animframe >= @event.Scenes[scenenum].FrameCount)
+				{
+					scenenum++;
+					if (scenenum == @event.Scenes.Count)
+						scenenum = 1;
+					decframe = animframe = 0;
+				}
+				UpdateWeightedModels();
+				DrawEntireModel();
 			}
-			UpdateWeightedModels();
-			DrawEntireModel();
 		}
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
@@ -730,7 +765,7 @@ namespace SA2EventViewer
 			if (selectedObject != null)
 			{
 				propertyGrid1.SelectedObject = selectedObject;
-				exportOBJToolStripMenuItem.Enabled = selectedObject.Model != null;
+				//exportOBJToolStripMenuItem.Enabled = selectedObject.Model != null;
 			}
 			else
 			{
@@ -761,7 +796,10 @@ namespace SA2EventViewer
 
 						bool errorFlag = false;
 
-						//SonicRetro.SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+						for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
+							if (@event.Scenes[scenenum].Entities[i].Model != null)
+								SonicRetro.SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, @event.Scenes[scenenum].Entities[i].Model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+						
 
 						#region Material Exporting
 						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
@@ -804,66 +842,6 @@ namespace SA2EventViewer
 				}
 		}
 
-		private void multiObjToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (FolderBrowserDialog dlg = new FolderBrowserDialog()
-			{
-				SelectedPath = Environment.CurrentDirectory,
-				ShowNewFolderButton = true
-			})
-			{
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					/*foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
-					{
-						string objFileName = Path.Combine(dlg.SelectedPath, obj.Name + ".obj");
-						using (StreamWriter objstream = new StreamWriter(objFileName, false))
-						{
-							List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-							bool errorFlag = false;
-
-							SonicRetro.SAModel.Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
-
-							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-
-							using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
-							{
-								for (int i = 0; i < materials.Count; i++)
-								{
-									int texIndx = materials[i].TextureID;
-
-									NJS_MATERIAL material = materials[i];
-									mtlstream.WriteLine("newmtl material_{0}", i);
-									mtlstream.WriteLine("Ka 1 1 1");
-									mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-										material.DiffuseColor.R / 255,
-										material.DiffuseColor.G / 255,
-										material.DiffuseColor.B / 255));
-
-									mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-										material.SpecularColor.R / 255,
-										material.SpecularColor.G / 255,
-										material.SpecularColor.B / 255));
-									mtlstream.WriteLine("illum 1");
-
-									if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-									{
-										mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-										// save texture
-										string mypath = Path.GetDirectoryName(objFileName);
-										TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-									}
-								}
-							}
-						}
-					}*/
-				}
-			}
-		}
-
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog a = new SaveFileDialog
@@ -876,15 +854,17 @@ namespace SA2EventViewer
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					string objFileName = a.FileName;
-					NJS_OBJECT obj = selectedObject.Model;
 					using (StreamWriter objstream = new StreamWriter(objFileName, false))
 					{
 						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
 
 						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
+						int totalVerts = 0;
+						int totalNorms = 0;
+						int totalUVs = 0;
 						bool errorFlag = false;
 
-						SonicRetro.SAModel.Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
+						SonicRetro.SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, selectedObject.Model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 
@@ -926,7 +906,6 @@ namespace SA2EventViewer
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			//UpdateWeightedModel();
 		}
 
 		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)
