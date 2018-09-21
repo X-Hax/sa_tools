@@ -305,19 +305,11 @@ namespace SonicRetro.SAModel.SAMDL
 			if (additive) modelLibrary.Clear();
 
 			NJS_OBJECT[] models = objectToAdd.GetObjects();
-			meshes = new Mesh[models.Length];
 
 			modelLibrary.BeginUpdate();
 			for (int i = 0; i < models.Length; i++)
-			{
 				if (models[i].Attach != null)
-				{
-					try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-					catch { }
-
 					modelLibrary.Add(models[i].Attach);
-				}
-			}
 			modelLibrary.EndUpdate();
 		}
 
