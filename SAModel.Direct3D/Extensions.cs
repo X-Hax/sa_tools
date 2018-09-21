@@ -517,13 +517,14 @@ namespace SonicRetro.SAModel.Direct3D
 							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 							for (int k = 0; k < strip.Indexes.Length; k++)
 							{
-								str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-									VertexBuffer[strip.Indexes[k]].Position,
-									VertexBuffer[strip.Indexes[k]].Normal,
-									hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
-									hasUV ? strip.UVs[k] : null));
-							}
-							polys.Add(str);
+									str.Indexes[k] = (ushort)verts.Count;
+									verts.Add(new VertexData(
+										VertexBuffer[strip.Indexes[k]].Position,
+										VertexBuffer[strip.Indexes[k]].Normal,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasUV ? strip.UVs[k] : null));
+								}
+								polys.Add(str);
 						}
 						result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 						MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
