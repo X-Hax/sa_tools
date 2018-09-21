@@ -103,6 +103,7 @@ namespace SA2EventViewer
 	{
 		public List<EventEntity> Entities { get; set; }
 		public List<NJS_MOTION> CameraMotions { get; set; }
+		public EventBig Big { get; set; }
 		public int FrameCount { get; set; }
 
 		public const int Size = 32;
@@ -134,6 +135,9 @@ namespace SA2EventViewer
 					ptr += sizeof(int);
 				}
 			}
+			ptr = file.GetPointer(address + 24, imageBase);
+			if (ptr != 0)
+				Big = new EventBig(file, ptr, imageBase, battle, models, motions);
 			FrameCount = ByteConverter.ToInt32(file, address + 28);
 		}
 	}
@@ -176,6 +180,43 @@ namespace SA2EventViewer
 				Position = new Vertex(file, address + 16);
 				Flags = ByteConverter.ToUInt32(file, address + 28);
 			}
+		}
+	}
+
+	public class EventBig
+	{
+		public NJS_OBJECT Model { get; set; }
+		public List<(NJS_MOTION a, NJS_MOTION b)> Motions { get; set; }
+		public int Unknown { get; set; }
+
+		public EventBig(byte[] file, int address, uint imageBase, bool battle, Dictionary<string, NJS_OBJECT> models, List<NJS_MOTION> motions)
+		{
+			Model = Event.GetModel(file, address, imageBase, models);
+			int ptr = file.GetPointer(address + 4, imageBase);
+			if (ptr != 0)
+			{
+				int cnt = ByteConverter.ToInt32(file, address + 8);
+				Motions = new List<(NJS_MOTION a, NJS_MOTION b)>(cnt);
+				for (int i = 0; i < cnt; i++)
+				{
+					if (battle)
+						Motions.Add((motions[ByteConverter.ToInt32(file, ptr)], motions[ByteConverter.ToInt32(file, ptr + 4)]));
+					else
+					{
+						NJS_MOTION a = null;
+						int ptr2 = file.GetPointer(ptr, imageBase);
+						if (ptr2 != 0)
+							a = new NJS_MOTION(file, ptr2, imageBase, Model.CountAnimated());
+						NJS_MOTION b = null;
+						ptr2 = file.GetPointer(ptr + 4, imageBase);
+						if (ptr2 != 0)
+							b = new NJS_MOTION(file, ptr2, imageBase, Model.CountAnimated());
+						Motions.Add((a, b));
+					}
+					ptr += 8;
+				}
+			}
+			Unknown = ByteConverter.ToInt32(file, address + 12);
 		}
 	}
 

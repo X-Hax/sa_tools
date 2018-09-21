@@ -51,6 +51,7 @@ namespace SA2EventViewer
 		int animframe = -1;
 		decimal decframe = -1;
 		List<List<Mesh[]>> meshes;
+		List<Mesh[]> bigmeshes;
 		string TexturePackName;
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
@@ -131,6 +132,7 @@ namespace SA2EventViewer
 			animframe = -1;
 			@event = new Event(filename);
 			meshes = new List<List<Mesh[]>>();
+			bigmeshes = new List<Mesh[]>();
 			foreach (EventScene scene in @event.Scenes)
 			{
 				List<Mesh[]> scenemeshes = new List<Mesh[]>();
@@ -154,6 +156,24 @@ namespace SA2EventViewer
 						scenemeshes.Add(null);
 				}
 				meshes.Add(scenemeshes);
+				if (scene.Big?.Model != null)
+				{
+					if (scene.Big.Model.HasWeight)
+						bigmeshes.Add(scene.Big.Model.ProcessWeightedModel().ToArray());
+					else
+					{
+						scene.Big.Model.ProcessVertexData();
+						NJS_OBJECT[] models = scene.Big.Model.GetObjects();
+						Mesh[] entmesh = new Mesh[models.Length];
+						for (int i = 0; i < models.Length; i++)
+							if (models[i].Attach != null)
+								try { entmesh[i] = models[i].Attach.CreateD3DMesh(); }
+								catch { }
+						bigmeshes.Add(entmesh);
+					}
+				}
+				else
+					bigmeshes.Add(null);
 			}
 
 			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
@@ -232,6 +252,7 @@ namespace SA2EventViewer
 					}
 			}
 			if (scenenum > 0)
+			{
 				for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
 				{
 					if (@event.Scenes[scenenum].Entities[i].Model != null)
@@ -254,6 +275,24 @@ namespace SA2EventViewer
 								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeAnimatedInvert(transform, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
 						}
 				}
+				if (@event.Scenes[scenenum].Big?.Model != null)
+					if (@event.Scenes[scenenum].Big.Model.HasWeight)
+						renderList.AddRange(@event.Scenes[scenenum].Big.Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, bigmeshes[scenenum]));
+					else if (animframe == -1)
+						renderList.AddRange(@event.Scenes[scenenum].Big.Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, bigmeshes[scenenum]));
+					else
+					{
+						int an = 0;
+						int fr = animframe;
+						while (an < @event.Scenes[scenenum].Big.Motions.Count && @event.Scenes[scenenum].Big.Motions[an].a.Frames < fr)
+						{
+							fr -= @event.Scenes[scenenum].Big.Motions[an].a.Frames;
+							an++;
+						}
+						if (an < @event.Scenes[scenenum].Big.Motions.Count)
+							renderList.AddRange(@event.Scenes[scenenum].Big.Model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, bigmeshes[scenenum], @event.Scenes[scenenum].Big.Motions[an].a, fr));
+					}
+			}
 
 			RenderInfo.Draw(renderList, d3ddevice, cam);
 			d3ddevice.EndScene(); //all drawings before this line
@@ -285,6 +324,24 @@ namespace SA2EventViewer
 									try { meshes[scenenum][i][j] = models[j].Attach.CreateD3DMesh(); }
 									catch { }
 						}
+				if (@event.Scenes[scenenum].Big?.Model != null)
+					if (@event.Scenes[scenenum].Big.Model.HasWeight)
+					{
+						if (animframe == -1)
+							bigmeshes[scenenum] = @event.Scenes[scenenum].Big.Model.ProcessWeightedModel().ToArray();
+						else
+						{
+							int an = 0;
+							int fr = animframe;
+							while (an < @event.Scenes[scenenum].Big.Motions.Count && @event.Scenes[scenenum].Big.Motions[an].a.Frames < fr)
+							{
+								fr -= @event.Scenes[scenenum].Big.Motions[an].a.Frames;
+								an++;
+							}
+							if (an < @event.Scenes[scenenum].Big.Motions.Count)
+								bigmeshes[scenenum] = @event.Scenes[scenenum].Big.Model.ProcessWeightedModelAnimated(@event.Scenes[scenenum].Big.Motions[an].a, fr).ToArray();
+						}
+					}
 				if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
 				{
 					cam.mode = 2;
