@@ -52,6 +52,9 @@ namespace SA2EventViewer
 		decimal decframe = -1;
 		List<List<Mesh[]>> meshes;
 		List<Mesh[]> bigmeshes;
+		NJS_OBJECT cammodel;
+		Mesh cammesh;
+		Matrix cammatrix;
 		string TexturePackName;
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
@@ -107,6 +110,10 @@ namespace SA2EventViewer
 			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+			cammodel = new ModelFile(Properties.Resources.camera).Model;
+			cammodel.Attach.ProcessVertexData();
+			cammesh = cammodel.Attach.CreateD3DMesh();
 
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
@@ -292,6 +299,13 @@ namespace SA2EventViewer
 						if (an < @event.Scenes[scenenum].Big.Motions.Count)
 							renderList.AddRange(@event.Scenes[scenenum].Big.Model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, bigmeshes[scenenum], @event.Scenes[scenenum].Big.Motions[an].a, fr));
 					}
+				if (!eventcamera && animframe != -1 && showCameraToolStripMenuItem.Checked)
+				{
+					transform.Push();
+					transform.LoadMatrix(cammatrix);
+					renderList.AddRange(cammodel.DrawModel(EditorOptions.RenderFillMode, transform, null, cammesh, true));
+					transform.Pop();
+				}
 			}
 
 			RenderInfo.Draw(renderList, d3ddevice, cam);
@@ -363,7 +377,69 @@ namespace SA2EventViewer
 					cam.Roll = data.GetRoll(fr);
 				}
 				else
+				{
 					cam.mode = 0;
+					if (animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
+					{
+						int an = 0;
+						int fr = animframe;
+						while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
+						{
+							fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
+							an++;
+						}
+						AnimModelData data = @event.Scenes[scenenum].CameraMotions[an].Models[0];
+						Vector3 pos = data.GetPosition(fr).ToVector3();
+						Vector3 dir;
+						if (data.Vector.Count > 0)
+							dir = data.GetVector(fr).ToVector3();
+						else
+							dir = Vector3.Normalize(pos - data.GetTarget(fr).ToVector3());
+						int roll = data.GetRoll(fr);
+						float bams_sin = SonicRetro.SAModel.Direct3D.Extensions.NJSin(roll);
+						float bams_cos = SonicRetro.SAModel.Direct3D.Extensions.NJCos(-roll);
+						float thing = dir.X * dir.X + dir.Z * dir.Z;
+						double sqrt = Math.Sqrt(thing);
+						float v3 = dir.Y * dir.Y + thing;
+						double v4 = 1.0 / Math.Sqrt(v3);
+						double sqrt__ = sqrt * v4;
+						double sqrt___ = v4 * dir.Y;
+						double v7, v8;
+						if (thing <= 0.000001)
+						{
+							v7 = 1.0;
+							v8 = 0.0;
+						}
+						else
+						{
+							double v5 = 1.0 / Math.Sqrt(thing);
+							double v6 = v5;
+							v7 = v5 * dir.Z;
+							v8 = -(v6 * dir.X);
+						}
+						double v9 = sqrt___ * v8;
+						cammatrix.M14 = 0;
+						cammatrix.M23 = (float)sqrt___;
+						cammatrix.M24 = 0;
+						cammatrix.M34 = 0;
+						cammatrix.M11 = (float)(v7 * bams_cos - v9 * bams_sin);
+						cammatrix.M12 = (float)(v9 * bams_cos + v7 * bams_sin);
+						cammatrix.M13 = -(float)(sqrt__ * v8);
+						cammatrix.M21 = -(float)(sqrt__ * bams_sin);
+						cammatrix.M22 = (float)(sqrt__ * bams_cos);
+						double v10 = v7 * sqrt___;
+						cammatrix.M31 = (float)(bams_sin * v10 + v8 * bams_cos);
+						cammatrix.M32 = (float)(v8 * bams_sin - v10 * bams_cos);
+						cammatrix.M33 = (float)(v7 * sqrt__);
+						cammatrix.M41 = -(cammatrix.M31 * pos.Z) - cammatrix.M11 * pos.X - cammatrix.M21 * pos.Y;
+						cammatrix.M42 = -(cammatrix.M32 * pos.Z) - cammatrix.M12 * pos.X - cammatrix.M22 * pos.Y;
+						float v12 = -(cammatrix.M33 * pos.Z) - cammatrix.M13 * pos.X;
+						double v13 = sqrt___ * pos.Y;
+						cammatrix.M44 = 1;
+						cammatrix.M43 = (float)(v12 - v13);
+						cammatrix.Invert();
+					}
+				}
 			}
 		}
 
@@ -970,6 +1046,11 @@ namespace SA2EventViewer
 		}
 
 		void optionsEditor_FormUpdated()
+		{
+			DrawEntireModel();
+		}
+
+		private void showCameraToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DrawEntireModel();
 		}

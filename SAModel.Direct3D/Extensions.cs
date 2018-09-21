@@ -590,7 +590,7 @@ namespace SonicRetro.SAModel.Direct3D
 			obj.GetMatricesAnimated(transform, anim, animframe, ref animindex, matrices);
 		}
 
-		public static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, ref int animindex, List<Matrix> matrices)
+		private static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, ref int animindex, List<Matrix> matrices)
 		{
 			transform.Push();
 			bool animate = obj.Animate;
