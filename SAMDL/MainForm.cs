@@ -665,9 +665,9 @@ namespace SonicRetro.SAModel.SAMDL
 			if (model.HasWeight)
 			{
 				if (animation != null)
-					meshes = model.ProcessWeightedModelAnimated(animation, animframe).ToArray();
+					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
 				else
-					meshes = model.ProcessWeightedModel().ToArray();
+					model.UpdateWeightedModel(new MatrixStack(), meshes);
 			}
 		}
 

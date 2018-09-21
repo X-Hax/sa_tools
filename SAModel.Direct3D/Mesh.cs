@@ -305,8 +305,13 @@ namespace SonicRetro.SAModel.Direct3D
 	public class Mesh<T> : Mesh
 		where T : struct, IVertex
 	{
-		private readonly T[] vertexBuffer;
+		static readonly System.Reflection.ConstructorInfo ctor;
+		static Mesh() => ctor = typeof(T).GetConstructor(new[] { typeof(VertexData) });
+
+		protected readonly T[] vertexBuffer;
 		private readonly short[][] indexBuffer;
+
+		protected Mesh() { }
 
 		public Mesh(Attach attach)
 		{
@@ -315,7 +320,7 @@ namespace SonicRetro.SAModel.Direct3D
 			for (int i = 0; i < attach.MeshInfo.Length; i++)
 			{
 				int off = vb.Count;
-				vb.AddRange(attach.MeshInfo[i].Vertices.Select(v => (T)Activator.CreateInstance(typeof(T), v)));
+				vb.AddRange(attach.MeshInfo[i].Vertices.Select(v => (T)ctor.Invoke(new object[] { v })));
 				ushort[] tris = attach.MeshInfo[i].ToTriangles();
 				indexBuffer[i] = tris.Select(t => (short)(t + off)).ToArray();
 			}
@@ -358,6 +363,40 @@ namespace SonicRetro.SAModel.Direct3D
 					}
 				}
 			return HitResult.NoHit;
+		}
+	}
+
+	public interface IWeightedMesh
+	{
+		void Update(IList<Matrix> matrices);
+	}
+
+	public class WeightedMesh<T> : Mesh<T>, IWeightedMesh
+		where T : struct, IVertexNormal
+	{
+		private readonly List<List<WeightData>> weights;
+
+		internal WeightedMesh(Attach attach, List<List<WeightData>> weights)
+			: base(attach)
+		{
+			this.weights = weights;
+		}
+
+		public void Update(IList<Matrix> matrices)
+		{
+			for (int i = 0; i < weights.Count; i++)
+				if (weights[i] != null)
+				{
+					Vector3 pos = Vector3.Zero;
+					Vector3 nor = Vector3.Zero;
+					foreach (var weight in weights[i])
+					{
+						pos += Vector3.TransformCoordinate(weight.Position, matrices[weight.Index]) * weight.Weight;
+						nor += Vector3.TransformNormal(weight.Normal, matrices[weight.Index]) * weight.Weight;
+					}
+					vertexBuffer[i].SetPosition(pos);
+					vertexBuffer[i].SetNormal(nor);
+				}
 		}
 	}
 }

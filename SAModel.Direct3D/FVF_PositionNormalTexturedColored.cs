@@ -8,11 +8,18 @@ namespace SonicRetro.SAModel.Direct3D
 	public interface IVertex
 	{
 		Vector3 GetPosition();
+		void SetPosition(Vector3 v);
 		VertexFormat GetFormat();
 	}
 
+	public interface IVertexNormal : IVertex
+	{
+		Vector3 GetNormal();
+		void SetNormal(Vector3 v);
+	}
+
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormal : IVertex
+	public struct FVF_PositionNormal : IVertexNormal
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -46,6 +53,12 @@ namespace SonicRetro.SAModel.Direct3D
 		}
 
 		public Vector3 GetPosition() => Position;
+
+		public void SetPosition(Vector3 v) => Position = v;
+
+		public Vector3 GetNormal() => Normal;
+
+		public void SetNormal(Vector3 v) => Normal = v;
 
 		public VertexFormat GetFormat() => Format;
 	}
@@ -89,6 +102,8 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public Vector3 GetPosition() => Position;
 
+		public void SetPosition(Vector3 v) => Position = v;
+
 		public VertexFormat GetFormat() => Format;
 	}
 
@@ -128,11 +143,13 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public Vector3 GetPosition() => Position;
 
+		public void SetPosition(Vector3 v) => Position = v;
+
 		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalTextured : IVertex
+	public struct FVF_PositionNormalTextured : IVertexNormal
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -175,11 +192,17 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public Vector3 GetPosition() => Position;
 
+		public void SetPosition(Vector3 v) => Position = v;
+
+		public Vector3 GetNormal() => Normal;
+
+		public void SetNormal(Vector3 v) => Normal = v;
+
 		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalColored : IVertex
+	public struct FVF_PositionNormalColored : IVertexNormal
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -219,11 +242,17 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public Vector3 GetPosition() => Position;
 
+		public void SetPosition(Vector3 v) => Position = v;
+
+		public Vector3 GetNormal() => Normal;
+
+		public void SetNormal(Vector3 v) => Normal = v;
+
 		public VertexFormat GetFormat() => Format;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalTexturedColored : IVertex
+	public struct FVF_PositionNormalTexturedColored : IVertexNormal
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -270,6 +299,12 @@ namespace SonicRetro.SAModel.Direct3D
 		}
 
 		public Vector3 GetPosition() => Position;
+
+		public void SetPosition(Vector3 v) => Position = v;
+
+		public Vector3 GetNormal() => Normal;
+
+		public void SetNormal(Vector3 v) => Normal = v;
 
 		public VertexFormat GetFormat() => Format;
 	}

@@ -308,9 +308,9 @@ namespace SA2EventViewer
 						if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
 						{
 							if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
-								meshes[scenenum][i] = @event.Scenes[scenenum].Entities[i].Model.ProcessWeightedModel().ToArray();
+								@event.Scenes[scenenum].Entities[i].Model.UpdateWeightedModel(new MatrixStack(), meshes[scenenum][i]);
 							else
-								meshes[scenenum][i] = @event.Scenes[scenenum].Entities[i].Model.ProcessWeightedModelAnimated(@event.Scenes[scenenum].Entities[i].Motion, animframe).ToArray();
+								@event.Scenes[scenenum].Entities[i].Model.UpdateWeightedModelAnimated(new MatrixStack(), @event.Scenes[scenenum].Entities[i].Motion, animframe, meshes[scenenum][i]);
 						}
 						else if (@event.Scenes[scenenum].Entities[i].ShapeMotion != null)
 						{
@@ -328,7 +328,7 @@ namespace SA2EventViewer
 					if (@event.Scenes[scenenum].Big.Model.HasWeight)
 					{
 						if (animframe == -1)
-							bigmeshes[scenenum] = @event.Scenes[scenenum].Big.Model.ProcessWeightedModel().ToArray();
+							@event.Scenes[scenenum].Big.Model.UpdateWeightedModel(new MatrixStack(), bigmeshes[scenenum]);
 						else
 						{
 							int an = 0;
@@ -339,7 +339,7 @@ namespace SA2EventViewer
 								an++;
 							}
 							if (an < @event.Scenes[scenenum].Big.Motions.Count)
-								bigmeshes[scenenum] = @event.Scenes[scenenum].Big.Model.ProcessWeightedModelAnimated(@event.Scenes[scenenum].Big.Motions[an].a, fr).ToArray();
+								@event.Scenes[scenenum].Big.Model.UpdateWeightedModelAnimated(new MatrixStack(), @event.Scenes[scenenum].Big.Motions[an].a, fr, bigmeshes[scenenum]);
 						}
 					}
 				if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
@@ -433,14 +433,6 @@ namespace SA2EventViewer
 					else
 						EditorOptions.RenderFillMode += 1;
 
-					draw = true;
-					break;
-
-				case ("Delete"):
-					/*foreach (Item item in selectedItems.GetSelection())
-						item.Delete();
-					selectedItems.Clear();*/
-					throw new System.NotImplementedException();
 					draw = true;
 					break;
 
