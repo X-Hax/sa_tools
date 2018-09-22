@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Globalization;
-using SharpDX;
-using Color = System.Drawing.Color;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
+using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -126,19 +126,38 @@ namespace SonicRetro.SAModel.Direct3D
 			attach.Bounds = SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
 		}
 
-		public static void SetDeviceStates(this NJS_MATERIAL material, Device device, Texture texture, Matrix transform, FillMode fillMode)
+		public static ShaderMaterial ToShaderMaterial(this NJS_MATERIAL material)
 		{
-			device.SetRenderState(RenderState.FillMode, fillMode);
+			Color diffuse = material.DiffuseColor;
+			Color specular = material.SpecularColor;
+
+			return new ShaderMaterial
+			{
+				Diffuse     = new Color4(diffuse.R / 255.0f,  diffuse.G / 255.0f,  diffuse.B / 255.0f,  diffuse.A / 255.0f),
+				Specular    = new Color4(specular.R / 255.0f, specular.G / 255.0f, specular.B / 255.0f, specular.A / 255.0f),
+				Exponent    = material.Exponent,
+				UseAlpha    = material.UseAlpha,
+				UseEnv      = material.EnvironmentMap,
+				UseTexture  = material.UseTexture,
+				UseSpecular = !material.IgnoreSpecular,
+				UseLight    = !material.IgnoreLighting
+			};
+		}
+
+		public static void SetDeviceStates(this NJS_MATERIAL material, Renderer device, SceneTexture texture, Matrix transform, FillMode fillMode)
+		{
+			device.FillMode = fillMode;
 			device.SetTransform(TransformState.World, transform);
+
 			if (material != null)
 			{
-				device.Material = new Material
+				var material_ = new ShaderMaterial
 				{
-					Diffuse = material.DiffuseColor.ToRawColor4(),
-					Ambient = material.DiffuseColor.ToRawColor4(),
+					Diffuse  = material.DiffuseColor.ToRawColor4(),
 					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
-					Power = material.Exponent * material.Exponent
+					Exponent = material.Exponent * material.Exponent
 				};
+
 				if (!material.SuperSample)
 				{
 					device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
@@ -642,7 +661,7 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Pop();
 		}
 
-		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, SceneTexture[] textures, Mesh mesh, bool useMat)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -657,7 +676,7 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					NJS_MATERIAL mat;
-					Texture texture = null;
+					SceneTexture texture = null;
 					// HACK: When useMat is true, mat shouldn't be null. However, checking it anyway ensures Sky Deck 3 loads.
 					// If it is in fact null, it applies a placeholder so that the editor doesn't crash.
 					if (useMat && obj.Attach.MeshInfo[j].Material != null)
@@ -717,13 +736,13 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, SceneTexture[] textures, Mesh[] meshes)
 		{
 			int modelindex = -1;
 			return obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex);
 		}
 
-		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, SceneTexture[] textures, Mesh[] meshes, ref int modelindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -737,7 +756,7 @@ namespace SonicRetro.SAModel.Direct3D
 			{
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					Texture texture = null;
+					SceneTexture texture = null;
 					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
@@ -792,14 +811,14 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, SceneTexture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			return obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, SceneTexture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -814,7 +833,7 @@ namespace SonicRetro.SAModel.Direct3D
 			if (obj.Attach != null & meshes[modelindex] != null)
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
-					Texture texture = null;
+					SceneTexture texture = null;
 					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
@@ -864,7 +883,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, SceneTexture[] textures, Mesh[] meshes)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			NJS_OBJECT[] objs = obj.GetObjects();
@@ -873,7 +892,7 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
 					{
-						Texture texture = null;
+						SceneTexture texture = null;
 						NJS_MATERIAL mat = objs[i].Attach.MeshInfo[j].Material;
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
@@ -3142,6 +3161,12 @@ namespace SonicRetro.SAModel.Direct3D
 					return -sineTable[-1024 + v3];
 			}
 			return v8;
+		}
+
+		public static int RoundToMultiple(this int value, int multiple)
+		{
+			var m = (double)multiple;
+			return (int)(Math.Ceiling(value / m) * m);
 		}
 	}
 

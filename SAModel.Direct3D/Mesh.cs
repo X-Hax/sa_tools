@@ -1,8 +1,9 @@
 ﻿using SharpDX;
-using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX.DXGI;
+using Device = SharpDX.Direct3D11.Device;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -336,7 +337,7 @@ namespace SonicRetro.SAModel.Direct3D
 		public override void DrawSubset(Device device, int subset)
 		{
 			device.VertexFormat = vertexBuffer[0].GetFormat();
-			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
+			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.R16_SInt, vertexBuffer);
 		}
 
 		public override void DrawAll(Device device)

@@ -5,16 +5,37 @@ using System.Text;
 
 namespace SonicRetro.SAModel
 {
+	/// <summary>
+	/// Flags used for materials.
+	/// </summary>
+	[Flags]
+	public enum NJD_FLAG : uint
+	{
+		Pick           = 0x80,
+		UseAnisotropic = 0x1000,
+		ClampV         = 0x8000,
+		ClampU         = 0x10000,
+		FlipV          = 0x20000,
+		FlipU          = 0x40000,
+		IgnoreSpecular = 0x80000,
+		UseAlpha       = 0x100000,
+		UseTexture     = 0x200000,
+		UseEnv         = 0x400000,
+		DoubleSide     = 0x800000,
+		UseFlat        = 0x1000000,
+		IgnoreLight    = 0x2000000
+	}
+
 	[Serializable]
 	public class NJS_MATERIAL : ICloneable
 	{
 		#region Basic Variables (internal use)
 
-		public Color DiffuseColor  { get; set; }
-		public Color SpecularColor { get; set; }
-		public float Exponent      { get; set; }
-		public int   TextureID     { get; set; }
-		public uint  Flags         { get; set; }
+		public Color    DiffuseColor  { get; set; }
+		public Color    SpecularColor { get; set; }
+		public float    Exponent      { get; set; }
+		public int      TextureID     { get; set; }
+		public NJD_FLAG Flags         { get; set; }
 
 		#endregion
 
@@ -22,132 +43,259 @@ namespace SonicRetro.SAModel
 
 		public byte UserFlags
 		{
-			get { return (byte)(Flags & 0x7F); }
-			set { Flags = (uint)((Flags & ~0x7F) | (value & 0x7Fu)); }
+			get => (byte)((uint)Flags & 0x7F);
+			set => Flags = (NJD_FLAG)(((uint)Flags & ~0x7F) | (value & 0x7Fu));
 		}
 
 		public bool PickStatus
 		{
-			get { return (Flags & 0x80) == 0x80; }
-			set { Flags = (uint)((Flags & ~0x80) | (value ? 0x80u : 0)); }
+			get => (Flags & NJD_FLAG.Pick) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.Pick;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.Pick);
+				}
+			}
 		}
 
 		public bool SuperSample
 		{
-			get { return (Flags & 0x1000) == 0x1000; }
-			set { Flags = (uint)((Flags & ~0x1000) | (value ? 0x1000u : 0)); }
+			get => (Flags & NJD_FLAG.UseAnisotropic) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.UseAnisotropic;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.UseAnisotropic);
+				}
+			}
 		}
 
 		public FilterMode FilterMode
 		{
-			get { return (FilterMode)((Flags >> 13) & 3); }
-			set { Flags = (uint)((Flags & ~0x6000) | ((uint)value << 13)); }
-		}
-
-		public bool ClampV
-		{
-			get { return (Flags & 0x8000) == 0x8000; }
-			set { Flags = (uint)((Flags & ~0x8000) | (value ? 0x8000u : 0)); }
+			get => (FilterMode)(((uint)Flags >> 13) & 3);
+			set => Flags = (NJD_FLAG)(((uint)Flags & ~0x6000) | ((uint)value << 13));
 		}
 
 		public bool ClampU
 		{
-			get { return (Flags & 0x10000) == 0x10000; }
-			set { Flags = (uint)((Flags & ~0x10000) | (value ? 0x10000u : 0)); }
+			get => (Flags & NJD_FLAG.ClampU) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.ClampU;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.ClampU);
+				}
+			}
 		}
 
-		public bool FlipV
+		public bool ClampV
 		{
-			get { return (Flags & 0x20000) == 0x20000; }
-			set { Flags = (uint)((Flags & ~0x20000) | (value ? 0x20000u : 0)); }
+			get => (Flags & NJD_FLAG.ClampV) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.ClampV;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.ClampV);
+				}
+			}
 		}
 
 		public bool FlipU
 		{
-			get { return (Flags & 0x40000) == 0x40000; }
-			set { Flags = (uint)((Flags & ~0x40000) | (value ? 0x40000u : 0)); }
+			get => (Flags & NJD_FLAG.FlipU) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.FlipU;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.FlipU);
+				}
+			}
+		}
+
+		public bool FlipV
+		{
+			get => (Flags & NJD_FLAG.FlipV) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.FlipV;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.FlipV);
+				}
+			}
 		}
 
 		public bool IgnoreSpecular
 		{
-			get { return (Flags & 0x80000) == 0x80000; }
-			set { Flags = (uint)((Flags & ~0x80000) | (value ? 0x80000u : 0)); }
+			get => (Flags & NJD_FLAG.IgnoreSpecular) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.IgnoreSpecular;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.IgnoreSpecular);
+				}
+			}
 		}
 
 		public bool UseAlpha
 		{
-			get { return (Flags & 0x100000) == 0x100000; }
-			set { Flags = (uint)((Flags & ~0x100000) | (value ? 0x100000u : 0)); }
+			get => (Flags & NJD_FLAG.UseAlpha) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.UseAlpha;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.UseAlpha);
+				}
+			}
 		}
 
 		public bool UseTexture
 		{
-			get { return (Flags & 0x200000) == 0x200000; }
-			set { Flags = (uint)((Flags & ~0x200000) | (value ? 0x200000u : 0)); }
+			get => (Flags & NJD_FLAG.UseTexture) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.UseTexture;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.UseTexture);
+				}
+			}
 		}
 
 		public bool EnvironmentMap
 		{
-			get { return (Flags & 0x400000) == 0x400000; }
-			set { Flags = (uint)((Flags & ~0x400000) | (value ? 0x400000u : 0)); }
+			get => (Flags & NJD_FLAG.UseEnv) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.UseEnv;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.UseEnv);
+				}
+			}
 		}
 
 		public bool DoubleSided
 		{
-			get { return (Flags & 0x800000) == 0x800000; }
-			set { Flags = (uint)((Flags & ~0x800000) | (value ? 0x800000u : 0)); }
+			get => (Flags & NJD_FLAG.DoubleSide) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.DoubleSide;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.DoubleSide);
+				}
+			}
 		}
 
 		public bool FlatShading
 		{
-			get { return (Flags & 0x1000000) == 0x1000000; }
-			set { Flags = (uint)((Flags & ~0x1000000) | (value ? 0x1000000u : 0)); }
+			get => (Flags & NJD_FLAG.UseFlat) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.UseFlat;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.UseFlat);
+				}
+			}
 		}
 
 		public bool IgnoreLighting
 		{
-			get { return (Flags & 0x2000000) == 0x2000000; }
-			set { Flags = (uint)((Flags & ~0x2000000) | (value ? 0x2000000u : 0)); }
+			get => (Flags & NJD_FLAG.IgnoreLight) != 0;
+			set
+			{
+				if (value)
+				{
+					Flags |= NJD_FLAG.IgnoreLight;
+				}
+				else
+				{
+					Flags = (NJD_FLAG)((uint)Flags & ~(uint)NJD_FLAG.IgnoreLight);
+				}
+			}
 		}
 
 		public AlphaInstruction DestinationAlpha
 		{
-			get { return (AlphaInstruction)((Flags >> 26) & 7); }
-			set { Flags = (uint)((Flags & ~0x1C000000) | ((uint)value << 26)); }
+			get => (AlphaInstruction)(((uint)Flags >> 26) & 7);
+			set => Flags = (NJD_FLAG)(((uint)Flags & ~0x1C000000) | ((uint)value << 26));
 		}
 
 		public AlphaInstruction SourceAlpha
 		{
-			get { return (AlphaInstruction)((Flags >> 29) & 7); }
-			set { Flags = (Flags & ~0xE0000000) | ((uint)value << 29); }
+			get => (AlphaInstruction)(((uint)Flags >> 29) & 7);
+			set => Flags = (NJD_FLAG)(((uint)Flags & ~0xE0000000) | ((uint)value << 29));
 		}
 
 		#endregion
 
-		public static int Size
-		{
-			get { return 0x14; }
-		}
+		public static int Size => 0x14;
 
 		/// <summary>
 		/// Create a new material.
 		/// </summary>
 		public NJS_MATERIAL()
 		{
-			DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
-			SpecularColor = Color.Transparent;
-			UseAlpha = true;
-			UseTexture = true;
-			DoubleSided = false;
-			FlatShading = false;
-			IgnoreLighting = false;
-			ClampU = false;
-			ClampV = false;
-			FlipU = false;
-			FlipV = false;
-			EnvironmentMap = false;
+			DiffuseColor     = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			SpecularColor    = Color.Transparent;
+			UseAlpha         = true;
+			UseTexture       = true;
+			DoubleSided      = false;
+			FlatShading      = false;
+			IgnoreLighting   = false;
+			ClampU           = false;
+			ClampV           = false;
+			FlipU            = false;
+			FlipV            = false;
+			EnvironmentMap   = false;
 			DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
-			SourceAlpha = AlphaInstruction.SourceAlpha;
+			SourceAlpha      = AlphaInstruction.SourceAlpha;
 		}
 
 		/// <summary>
@@ -156,11 +304,11 @@ namespace SonicRetro.SAModel
 		/// <param name="copy"></param>
 		public NJS_MATERIAL(NJS_MATERIAL copy)
 		{
-			DiffuseColor = copy.DiffuseColor;
+			DiffuseColor  = copy.DiffuseColor;
 			SpecularColor = copy.SpecularColor;
-			Exponent = copy.Exponent;
-			TextureID = copy.TextureID;
-			Flags = copy.Flags;
+			Exponent      = copy.Exponent;
+			TextureID     = copy.TextureID;
+			Flags         = copy.Flags;
 		}
 
 		/// <summary>
@@ -181,11 +329,11 @@ namespace SonicRetro.SAModel
 		/// <param name="labels"></param>
 		public NJS_MATERIAL(byte[] file, int address, Dictionary<int, string> labels)
 		{
-			DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, address));
+			DiffuseColor  = Color.FromArgb(ByteConverter.ToInt32(file, address));
 			SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, address + 4));
-			Exponent = ByteConverter.ToSingle(file, address + 8);
-			TextureID = ByteConverter.ToInt32(file, address + 0xC);
-			Flags = ByteConverter.ToUInt32(file, address + 0x10);
+			Exponent      = ByteConverter.ToSingle(file, address + 8);
+			TextureID     = ByteConverter.ToInt32(file, address + 0xC);
+			Flags         = (NJD_FLAG)ByteConverter.ToUInt32(file, address + 0x10);
 		}
 
 		public byte[] GetBytes()
@@ -195,7 +343,7 @@ namespace SonicRetro.SAModel
 			result.AddRange(ByteConverter.GetBytes(SpecularColor.ToArgb()));
 			result.AddRange(ByteConverter.GetBytes(Exponent));
 			result.AddRange(ByteConverter.GetBytes(TextureID));
-			result.AddRange(ByteConverter.GetBytes(Flags));
+			result.AddRange(ByteConverter.GetBytes((uint)Flags));
 			return result.ToArray();
 		}
 
@@ -211,7 +359,7 @@ namespace SonicRetro.SAModel
 			result.Append(Exponent.ToC());
 			result.Append(", ");
 			int callback = (int)(TextureID & 0xC0000000);
-			int texid = (int)(TextureID & ~0xC0000000);
+			int texid    = (int)(TextureID & ~0xC0000000);
 			if (callback != 0)
 				result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + " | ");
 			if (textures == null || texid >= textures.Length)
@@ -219,7 +367,7 @@ namespace SonicRetro.SAModel
 			else
 				result.Append(textures[texid].MakeIdentifier());
 			result.Append(", ");
-			result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
+			result.Append(((StructEnums.MaterialFlags)((uint)Flags & ~0x7F)).ToString().Replace(", ", " | "));
 			if (UserFlags != 0)
 				result.Append(" | 0x" + UserFlags.ToString("X"));
 			result.Append(" }");

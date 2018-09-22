@@ -1,6 +1,6 @@
 ﻿using SharpDX;
-using SharpDX.Direct3D9;
 using System.Collections.Generic;
+using SharpDX.Direct3D11;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -10,11 +10,11 @@ namespace SonicRetro.SAModel.Direct3D
 		public int Subset { get; private set; }
 		public Matrix Transform { get; private set; }
 		public NJS_MATERIAL Material { get; private set; }
-		public Texture Texture { get; private set; }
+		public SceneTexture Texture { get; private set; }
 		public FillMode FillMode { get; private set; }
 		public BoundingSphere Bounds { get; private set; }
 
-		public RenderInfo(Mesh mesh, int subset, Matrix transform, NJS_MATERIAL material, Texture texture, FillMode fillMode, BoundingSphere bounds)
+		public RenderInfo(Mesh mesh, int subset, Matrix transform, NJS_MATERIAL material, SceneTexture texture, FillMode fillMode, BoundingSphere bounds)
 		{
 			Mesh = mesh;
 			Subset = subset;
@@ -26,17 +26,17 @@ namespace SonicRetro.SAModel.Direct3D
 			Bounds = bounds;
 		}
 
-		public void Draw(Device device)
+		public void Draw(Renderer device)
 		{
 			FillMode mode = device.GetRenderState<FillMode>(RenderState.FillMode);
 			TextureFilter magfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MagFilter);
 			TextureFilter minfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MinFilter);
 			TextureFilter mipfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MipFilter);
 
+			device.SetMaterial(Material);
 			Material.SetDeviceStates(device, Texture, Transform, FillMode);
 
-			if (Mesh != null)
-				Mesh.DrawSubset(device, Subset);
+			Mesh?.DrawSubset(device, Subset);
 			device.SetRenderState(RenderState.Ambient, System.Drawing.Color.Black.ToArgb());
 			device.SetRenderState(RenderState.FillMode, mode);
 			device.SetSamplerState(0, SamplerState.MagFilter, magfilter);
@@ -49,7 +49,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<KeyValuePair<float, RenderInfo>> drawList = new List<KeyValuePair<float, RenderInfo>>();
 			foreach (RenderInfo item in items)
 			{
-				float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+				float dist = camera.Position.Distance(item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
 				if (dist > camera.DrawDistance) continue;
 
 				if (item.Material != null && item.Material.UseAlpha)
