@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using Color = System.Drawing.Color;
+using Color = SharpDX.Color;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -52,7 +52,7 @@ namespace SonicRetro.SAModel.Direct3D
 			Vector3 vectorNormalized = Vector3.Normalize(vector);
 
 			//scale the vector
-			return vectorNormalized *= size;
+			return vectorNormalized * size;
 		}
 		#endregion
 
@@ -144,131 +144,6 @@ namespace SonicRetro.SAModel.Direct3D
 			};
 		}
 
-		public static void SetDeviceStates(this NJS_MATERIAL material, Renderer device, SceneTexture texture, Matrix transform, FillMode fillMode)
-		{
-			device.FillMode = fillMode;
-			device.SetTransform(TransformState.World, transform);
-
-			if (material != null)
-			{
-				var material_ = new ShaderMaterial
-				{
-					Diffuse  = material.DiffuseColor.ToRawColor4(),
-					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
-					Exponent = material.Exponent * material.Exponent
-				};
-
-				if (!material.SuperSample)
-				{
-					device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
-					device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-					device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-				}
-				device.SetTexture(0, material.UseTexture ? texture : null);
-				device.SetRenderState(RenderState.Ambient, (material.IgnoreLighting ? Color.White : Color.Black).ToArgb());
-				device.SetRenderState(RenderState.AlphaBlendEnable, material.UseAlpha);
-
-				if (material.UseAlpha)
-					device.SetRenderState(RenderState.Ambient, material.DiffuseColor.ToArgb());
-
-				switch (material.DestinationAlpha)
-				{
-					case AlphaInstruction.Zero:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.Zero);
-						break;
-
-					case AlphaInstruction.One:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.One);
-						break;
-
-					case AlphaInstruction.OtherColor:
-						break;
-
-					case AlphaInstruction.InverseOtherColor:
-						break;
-
-					case AlphaInstruction.SourceAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.SourceAlpha);
-						break;
-
-					case AlphaInstruction.InverseSourceAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseSourceAlpha);
-						break;
-
-					case AlphaInstruction.DestinationAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.DestinationAlpha);
-						break;
-
-					case AlphaInstruction.InverseDestinationAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseDestinationAlpha);
-						break;
-				}
-				switch (material.SourceAlpha)
-				{
-					case AlphaInstruction.Zero:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.Zero);
-						break;
-
-					case AlphaInstruction.One:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
-						break;
-
-					case AlphaInstruction.OtherColor:
-						break;
-
-					case AlphaInstruction.InverseOtherColor:
-						break;
-
-					case AlphaInstruction.SourceAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
-						break;
-
-					case AlphaInstruction.InverseSourceAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseSourceAlpha);
-						break;
-
-					case AlphaInstruction.DestinationAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.DestinationAlpha);
-						break;
-
-					case AlphaInstruction.InverseDestinationAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseDestinationAlpha);
-						break;
-				}
-				device.SetTextureStageState(0, TextureStage.TexCoordIndex, material.EnvironmentMap ? (int)TextureCoordIndex.SphereMap : 0);
-				if (material.ClampU)
-					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-				else if (material.FlipU)
-					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Mirror);
-				else
-					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-				if (material.ClampV)
-					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-				else if (material.FlipV)
-					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Mirror);
-				else
-					device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-			}
-			else
-			{
-				device.Material = new Material
-				{
-					Diffuse = Color.White.ToRawColor4(),
-					Ambient = Color.White.ToRawColor4(),
-					Specular = Color.Transparent.ToRawColor4()
-				};
-				device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
-				device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
-				device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-				device.SetTexture(0, null);
-				device.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
-				device.SetRenderState(RenderState.AlphaBlendEnable, false);
-				device.SetTextureStageState(0, TextureStage.TexCoordIndex, 0);
-				device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Wrap);
-				device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Wrap);
-			}
-		}
-
 		public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
 		{
 			List<Vector3> verts = new List<Vector3>();
@@ -298,7 +173,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return SharpDX.BoundingSphere.Merge(sphereA.ToSharpDX(), sphereB.ToSharpDX()).ToSAModel();
 		}
 
-		public static Mesh CreateD3DMesh(this Attach attach)
+		public static Mesh CreateD3DMesh(this Attach attach, Renderer device)
 		{
 			int numverts = 0;
 			byte data = 0;
@@ -314,13 +189,13 @@ namespace SonicRetro.SAModel.Direct3D
 			switch (data)
 			{
 				case 3:
-					return new Mesh<FVF_PositionNormalTexturedColored>(attach);
+					return new Mesh<FVF_PositionNormalTexturedColored>(attach, device);
 				case 2:
-					return new Mesh<FVF_PositionNormalColored>(attach);
+					return new Mesh<FVF_PositionNormalColored>(attach, device);
 				case 1:
-					return new Mesh<FVF_PositionNormalTextured>(attach);
+					return new Mesh<FVF_PositionNormalTextured>(attach, device);
 				default:
-					return new Mesh<FVF_PositionNormal>(attach);
+					return new Mesh<FVF_PositionNormal>(attach, device);
 			}
 		}
 
@@ -346,29 +221,29 @@ namespace SonicRetro.SAModel.Direct3D
 		static List<WeightData>[] WeightBuffer = new List<WeightData>[4095];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
-		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
+		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj, Renderer device)
 		{
 			List<Mesh> meshes = new List<Mesh>();
 			int mdlindex = -1;
-			ProcessWeightedModel(obj, new MatrixStack(), meshes, ref mdlindex);
+			ProcessWeightedModel(device, obj, new MatrixStack(), meshes, ref mdlindex);
 			return meshes;
 		}
 
-		private static void ProcessWeightedModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
+		private static void ProcessWeightedModel(Renderer device, NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
 		{
 			mdlindex++;
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(attach, transform, mdlindex));
+				meshes.Add(ProcessWeightedAttach(device, attach, transform, mdlindex));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModel(child, transform, meshes, ref mdlindex);
+				ProcessWeightedModel(device, child, transform, meshes, ref mdlindex);
 			transform.Pop();
 		}
 
-		private static Mesh ProcessWeightedAttach(ChunkAttach attach, MatrixStack transform, int mdlindex)
+		private static Mesh ProcessWeightedAttach(Renderer device, ChunkAttach attach, MatrixStack transform, int mdlindex)
 		{
 			if (attach.Vertex != null)
 			{
@@ -465,13 +340,13 @@ namespace SonicRetro.SAModel.Direct3D
 			switch (data)
 			{
 				case 3:
-					return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
+					return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights, device);
 				case 2:
-					return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
+					return new WeightedMesh<FVF_PositionNormalColored>(attach, weights, device);
 				case 1:
-					return new WeightedMesh<FVF_PositionNormalTextured>(attach, weights);
+					return new WeightedMesh<FVF_PositionNormalTextured>(attach, weights, device);
 				default:
-					return new WeightedMesh<FVF_PositionNormal>(attach, weights);
+					return new WeightedMesh<FVF_PositionNormal>(attach, weights, device);
 			}
 		}
 
@@ -596,7 +471,7 @@ namespace SonicRetro.SAModel.Direct3D
 									verts.Add(new VertexData(
 										VertexBuffer[strip.Indexes[k]].Position,
 										VertexBuffer[strip.Indexes[k]].Normal,
-										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasVColor ? strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
 										hasUV ? strip.UVs[k] : null));
 									weights.Add(WeightBuffer[strip.Indexes[k]]);
 								}
@@ -723,7 +598,7 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					Color col = Color.White;
 					if (useMat) col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					col = new Color(255 - col.R, 255 - col.G, 255 - col.B);
 					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = col,
@@ -794,7 +669,7 @@ namespace SonicRetro.SAModel.Direct3D
 					if (obj.Attach.MeshInfo[j].Material != null)
 						color = obj.Attach.MeshInfo[j].Material.DiffuseColor;
 
-					color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+					color = new Color(255 - color.R, 255 - color.G, 255 - color.B);
 					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = color,
@@ -868,7 +743,7 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
-					col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+					col = new Color(255 - col.R, 255 - col.G, 255 - col.B);
 					NJS_MATERIAL mat = new NJS_MATERIAL
 					{
 						DiffuseColor = col,
@@ -917,7 +792,7 @@ namespace SonicRetro.SAModel.Direct3D
 						if (objs[i].Attach.MeshInfo[j].Material != null)
 							color = objs[i].Attach.MeshInfo[j].Material.DiffuseColor;
 
-						color = Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
+						color = new Color(255 - color.R, 255 - color.G, 255 - color.B);
 						NJS_MATERIAL mat = new NJS_MATERIAL
 						{
 							DiffuseColor = color,
@@ -1053,7 +928,7 @@ namespace SonicRetro.SAModel.Direct3D
 									break;
 
 								case "kd":
-									lastMaterial.DiffuseColor = Color.FromArgb(
+									lastMaterial.DiffuseColor = new Color(
 										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
 										(int)Math.Round(float.Parse(mlin[2], CultureInfo.InvariantCulture) * 255),
 										(int)Math.Round(float.Parse(mlin[3], CultureInfo.InvariantCulture) * 255));
@@ -1101,13 +976,15 @@ namespace SonicRetro.SAModel.Direct3D
 
 								case "d":
 								case "tr":
-									lastMaterial.DiffuseColor = Color.FromArgb(
-										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
-										lastMaterial.DiffuseColor);
+								{
+									var c = lastMaterial.DiffuseColor;
+									c.R = (byte)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255);
+									lastMaterial.DiffuseColor = c;
 									break;
+								}
 
 								case "ks":
-									lastMaterial.SpecularColor = Color.FromArgb(
+									lastMaterial.SpecularColor = new Color(
 										(int)Math.Round(float.Parse(mlin[1], CultureInfo.InvariantCulture) * 255),
 										(int)Math.Round(float.Parse(mlin[2], CultureInfo.InvariantCulture) * 255),
 										(int)Math.Round(float.Parse(mlin[3], CultureInfo.InvariantCulture) * 255));
@@ -1189,10 +1066,10 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case "vc":
-						vcolors.Add(Color.FromArgb((int)Math.Round(float.Parse(lin[1], CultureInfo.InvariantCulture)),
-							(int)Math.Round(float.Parse(lin[2], CultureInfo.InvariantCulture)),
+						vcolors.Add(new Color((int)Math.Round(float.Parse(lin[2], CultureInfo.InvariantCulture)),
 							(int)Math.Round(float.Parse(lin[3], CultureInfo.InvariantCulture)),
-							(int)Math.Round(float.Parse(lin[4], CultureInfo.InvariantCulture))));
+							(int)Math.Round(float.Parse(lin[4], CultureInfo.InvariantCulture)),
+							(int)Math.Round(float.Parse(lin[1], CultureInfo.InvariantCulture))));
 						break;
 
 					case "usemtl":
@@ -1437,7 +1314,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
-		/// <param name="materialPrefix">idk</param>
+		/// <param name="materials">wow nice docs guys</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
@@ -1480,8 +1357,6 @@ namespace SonicRetro.SAModel.Direct3D
 						}*/
 
 
-						int materialIndexInList = 0;
-
 						NJS_MATERIAL material = basicAttach.Material[meshID];
 
 						if (!materials.Contains(material))
@@ -1489,7 +1364,7 @@ namespace SonicRetro.SAModel.Direct3D
 							materials.Add(material);
 						}
 
-						materialIndexInList = materials.IndexOf(material);
+						int materialIndexInList = materials.IndexOf(material);
 
 						objstream.WriteLine("usemtl material_{0}", materialIndexInList);
 					}
@@ -1751,7 +1626,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
-		/// <param name="materialPrefix">idk</param>
+		/// <param name="materials">impressive</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
@@ -1912,7 +1787,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
-		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+		/// <param name="materials">the copy-paste is strong</param>
 		/// <param name="transform">Used for calculating transforms.</param>
 		/// <param name="totalVerts">This keeps track of how many verts have been exported to the current file. This is necessary because *.obj vertex indeces are file-level, not object-level.</param>
 		/// <param name="totalNorms">This keeps track of how many vert normals have been exported to the current file. This is necessary because *.obj vertex normal indeces are file-level, not object-level.</param>
@@ -1936,7 +1811,7 @@ namespace SonicRetro.SAModel.Direct3D
 		/// </summary>
 		/// <param name="objstream">stream representing a wavefront obj file to export to</param>
 		/// <param name="obj">Model to export.</param>
-		/// <param name="materialPrefix">used to prevent name collisions if mixing/matching outputs.</param>
+		/// <param name="materials">make it stop</param>
 		/// <param name="errorFlag">Set this to TRUE if you encounter an issue. The user will be alerted.</param>
 		public static void WriteSingleModelAsObj(StreamWriter objstream, NJS_OBJECT obj, ref List<NJS_MATERIAL> materials, ref bool errorFlag)
 		{

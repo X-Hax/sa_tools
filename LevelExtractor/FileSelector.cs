@@ -182,7 +182,7 @@ namespace SonicRetro.SAModel.LevelExtractor
 			{
 				if (value < FileSelectorMode.Open || value > FileSelectorMode.Save)
 				{
-					throw new ArgumentOutOfRangeException("value");
+					throw new ArgumentOutOfRangeException(nameof(value));
 				}
 
 				if (this.init == null)

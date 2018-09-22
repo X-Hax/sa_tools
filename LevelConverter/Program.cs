@@ -2,8 +2,8 @@
 using SonicRetro.SAModel;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using SharpDX;
 
 namespace LevelConverter
 {

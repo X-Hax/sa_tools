@@ -152,9 +152,9 @@ namespace SonicRetro.SAModel
 				case Basic_PolyType.Strips:
 					throw new ArgumentException(
 						"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
-						"type");
+						nameof(type));
 			}
-			throw new ArgumentException("Unknown poly type!", "type");
+			throw new ArgumentException("Unknown poly type!", nameof(type));
 		}
 
 		public static Poly CreatePoly(Basic_PolyType type, byte[] file, int address)
@@ -169,7 +169,7 @@ namespace SonicRetro.SAModel
 				case Basic_PolyType.Strips:
 					return new Strip(file, address);
 			}
-			throw new ArgumentException("Unknown poly type!", "type");
+			throw new ArgumentException("Unknown poly type!", nameof(type));
 		}
 
 		object ICloneable.Clone() => Clone();

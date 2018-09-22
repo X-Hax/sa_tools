@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 using SharpDX;
+using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -18,7 +15,7 @@ using Resource = SharpDX.Direct3D11.Resource;
 
 namespace SonicRetro.SAModel.Direct3D
 {
-	public partial class Renderer : IDisposable
+	public class Renderer : IDisposable
 	{
 		static readonly NJS_MATERIAL nullMaterial = new NJS_MATERIAL();
 
@@ -33,8 +30,6 @@ namespace SonicRetro.SAModel.Direct3D
 			BlendOption.DestinationAlpha,
 			BlendOption.InverseDestinationAlpha,
 		};
-
-		public FlowControl FlowControl;
 
 		CullMode defaultCullMode = CullMode.None;
 
@@ -96,8 +91,6 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public Renderer(int w, int h, IntPtr sceneHandle)
 		{
-			FlowControl.Reset();
-
 			var desc = new SwapChainDescription
 			{
 				BufferCount       = 1,
@@ -264,7 +257,7 @@ namespace SonicRetro.SAModel.Direct3D
 				return;
 			}
 
-			meshQueue.Clear();
+			//meshQueue.Clear();
 
 			device.ImmediateContext.Rasterizer.State = rasterizerState;
 			device.ImmediateContext.ClearRenderTargetView(backBuffer, new RawColor4(0.0f, 1.0f, 1.0f, 1.0f));
@@ -274,96 +267,6 @@ namespace SonicRetro.SAModel.Direct3D
 #else
 			device.ImmediateContext.ClearDepthStencilView(depthView, DepthStencilClearFlags.Depth, 1.0f, 0);
 #endif
-		}
-
-		public void Draw(Camera camera, NJS_OBJECT @object)
-		{
-			while (!(@object is null))
-			{
-				MatrixStack.Push();
-				@object.PushTransform();
-				Matrix m = MatrixStack.Peek();
-				SetTransform(TransformState.World, in m);
-
-				if (!@object.SkipDraw && @object.Model != null)
-				{
-					Draw(camera, @object, @object.Model);
-				}
-
-				if (!@object.SkipChildren)
-				{
-					Draw(camera, @object.Child);
-				}
-
-				MatrixStack.Pop();
-				@object = @object.Sibling;
-			}
-		}
-
-		public void Draw(Camera camera, NJS_OBJECT @object, NJS_MODEL model)
-		{
-			foreach (NJS_MESHSET set in model.meshsets)
-			{
-				meshQueue.Enqueue(this, camera, @object, model, set);
-			}
-		}
-
-		void DrawSet(NJS_MODEL parent, NJS_MESHSET set)
-		{
-			List<NJS_MATERIAL> mats = parent.mats;
-
-			ushort       materialId = set.MaterialId;
-			NJS_MATERIAL njMaterial = mats.Count > 0 && materialId < mats.Count ? mats[materialId] : nullMaterial;
-
-			FlowControl flowControl = FlowControl;
-
-			if (texturePool.Count < 1)
-			{
-				if (!FlowControl.UseMaterialFlags)
-				{
-					FlowControl.Reset();
-					FlowControl.UseMaterialFlags = true;
-				}
-
-				FlowControl.Set(FlowControl.AndFlags & ~NJD_FLAG.UseTexture, FlowControl.OrFlags);
-			}
-
-			ShaderMaterial shaderMaterial = NJS_MODEL.GetSADXMaterial(this, njMaterial);
-			SetShaderMaterial(in shaderMaterial);
-
-			DisplayState state = GetSADXDisplayState(njMaterial);
-
-			FlowControl = flowControl;
-
-			if (state.Blend != lastBlend)
-			{
-				device.ImmediateContext.OutputMerger.SetBlendState(state.Blend);
-				lastBlend = state.Blend;
-			}
-
-			if (state.Sampler != lastSamplerState)
-			{
-				device.ImmediateContext.PixelShader.SetSampler(0, state.Sampler);
-				lastSamplerState = state.Sampler;
-			}
-
-			if (state.Raster != lastRasterizerState)
-			{
-				device.ImmediateContext.Rasterizer.State = state.Raster;
-				lastRasterizerState                      = state.Raster;
-			}
-
-			CommitPerModelData();
-
-			if (parent.VertexBuffer != lastVertexBuffer)
-			{
-				var binding = new VertexBufferBinding(parent.VertexBuffer, Vertex.SizeInBytes, 0);
-				device.ImmediateContext.InputAssembler.SetVertexBuffers(0, binding);
-				lastVertexBuffer = parent.VertexBuffer;
-			}
-
-			device.ImmediateContext.InputAssembler.SetIndexBuffer(set.IndexBuffer, Format.R16_UInt, 0);
-			device.ImmediateContext.DrawIndexed(set.IndexCount, 0, 0);
 		}
 
 		void CommitPerModelData()
@@ -416,16 +319,17 @@ namespace SonicRetro.SAModel.Direct3D
 			device.ImmediateContext.UnmapSubresource(perSceneBuffer, 0);
 		}
 
-		public void Present(Camera camera)
+		public void Present(/*Camera camera*/)
 		{
-			var visibleCount = 0;
-			zWrite = true;
+			//var visibleCount = 0;
+			//zWrite = true;
 
-			perSceneData.CameraPosition.Value = camera.Position;
-			CommitPerSceneData();
+			//perSceneData.CameraPosition.Value = camera.Position;
+			//CommitPerSceneData();
 
 			//meshTree.SortOpaque();
 
+			/*
 			foreach (MeshsetQueueElement e in meshQueue.OpaqueSets)
 			{
 				++visibleCount;
@@ -455,23 +359,14 @@ namespace SonicRetro.SAModel.Direct3D
 				device.ImmediateContext.OutputMerger.SetDepthStencilState(depthStateRW);
 				zWrite = true;
 			}
+			*/
 
 			DrawDebugHelpers();
-			meshQueue.Clear();
+			//meshQueue.Clear();
 			swapChain.Present(0, 0);
 
-			if (!MatrixStack.Empty)
-			{
-				throw new Exception("Matrix stack still contains data");
-			}
-
-			if (visibleCount != lastVisibleCount)
-			{
-				lastVisibleCount = visibleCount;
-				Debug.WriteLine(visibleCount);
-			}
-
 			lastVertexBuffer = null;
+			lastIndexBuffer = null;
 		}
 
 		static void WriteToStream(in DebugPoint point, DataStream stream)
@@ -569,17 +464,27 @@ namespace SonicRetro.SAModel.Direct3D
 			device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 		}
 
-		void DrawMeshsetQueueElement(MeshsetQueueElement e)
+		private Buffer lastIndexBuffer;
+
+		public void Draw(Buffer vertexBuffer, Buffer indexBuffer, int indexCount)
 		{
-			FlowControl = e.FlowControl;
+			CommitPerSceneData();
+			CommitPerModelData();
 
-			Matrix m = e.Transform;
-			SetTransform(TransformState.World, in m);
-
-			if (!e.Object.SkipDraw)
+			if (vertexBuffer != lastVertexBuffer)
 			{
-				DrawSet(e.Model, e.Set);
+				lastVertexBuffer = vertexBuffer;
+				var binding = new VertexBufferBinding(vertexBuffer, GraphicsVertex.SizeInBytes, 0);
+				device.ImmediateContext.InputAssembler.SetVertexBuffers(0, binding);
 			}
+
+			if (indexBuffer != lastIndexBuffer)
+			{
+				device.ImmediateContext.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
+				lastIndexBuffer = indexBuffer;
+			}
+
+			device.ImmediateContext.DrawIndexed(indexCount, 0, 0);
 		}
 
 		void CreateRenderTarget()
@@ -612,14 +517,6 @@ namespace SonicRetro.SAModel.Direct3D
 
 			viewPort = vp;
 			device.ImmediateContext.Rasterizer.SetViewport(viewPort);
-		}
-
-		public void Draw(IEnumerable<MeshsetQueueElementBase> visible, Camera camera)
-		{
-			foreach (MeshsetQueueElement e in visible.Select(x => new MeshsetQueueElement(x, camera)))
-			{
-				meshQueue.Enqueue(e);
-			}
 		}
 
 		public void RefreshDevice(int w, int h)
@@ -725,115 +622,36 @@ namespace SonicRetro.SAModel.Direct3D
 			device.ImmediateContext.Rasterizer.State = rasterizerState;
 		}
 
-		void CopyToTexture(Texture2D texture, Bitmap bitmap, int level)
+		struct GraphicsVertex
 		{
-			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			var        buffer  = new byte[bmpData.Stride * bitmap.Height];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
-			bitmap.UnlockBits(bmpData);
-
-			device.ImmediateContext.UpdateSubresource(buffer, texture, level, 4 * bitmap.Width, 4 * bitmap.Height);
+			public static int     SizeInBytes => Vector4.SizeInBytes * 4;
+			public        Vector4 Position;
+			public        Vector4 Normal;
+			public        Color   Diffuse;
+			public        Vector2 Texture;
 		}
 
-		public void CreateTextureFromBitMap(Bitmap bitmap, Bitmap[] mipmaps, int levels)
+		public Buffer CreateVertexBuffer(IReadOnlyCollection<IVertex> vertices)
 		{
-			var texDesc = new Texture2DDescription
-			{
-				ArraySize         = 1,
-				BindFlags         = BindFlags.ShaderResource,
-				CpuAccessFlags    = CpuAccessFlags.Write,
-				Format            = Format.B8G8R8A8_UNorm,
-				Width             = bitmap.Width,
-				Height            = bitmap.Height,
-				MipLevels         = levels,
-				Usage             = ResourceUsage.Default,
-				SampleDescription = new SampleDescription(1, 0)
-			};
-
-			var texture = new Texture2D(device, texDesc);
-
-			if (mipmaps?.Length > 0)
-			{
-				for (var i = 0; i < levels; i++)
-				{
-					CopyToTexture(texture, mipmaps[i], i);
-				}
-			}
-			else
-			{
-				CopyToTexture(texture, bitmap, 0);
-			}
-
-			var pair = new SceneTexture(texture, new ShaderResourceView(device, texture));
-			texturePool.Add(pair);
-		}
-
-		// TODO: generate mipmaps mod loader style
-		public void CreateTextureFromBitmapSource(BitmapSource bitmapSource)
-		{
-			int stride = bitmapSource.Size.Width * 4;
-			using (var buffer = new DataStream(bitmapSource.Size.Height * stride, true, true))
-			{
-				bitmapSource.CopyPixels(stride, buffer);
-
-				var texture = new Texture2D(device, new Texture2DDescription
-				{
-					Width             = bitmapSource.Size.Width,
-					Height            = bitmapSource.Size.Height,
-					ArraySize         = 1,
-					BindFlags         = BindFlags.ShaderResource,
-					Usage             = ResourceUsage.Immutable,
-					CpuAccessFlags    = CpuAccessFlags.None,
-					Format            = Format.R8G8B8A8_UNorm,
-					MipLevels         = 1,
-					OptionFlags       = ResourceOptionFlags.None,
-					SampleDescription = new SampleDescription(1, 0)
-				}, new DataRectangle(buffer.DataPointer, stride));
-
-				texturePool.Add(new SceneTexture(texture, new ShaderResourceView(device, texture)));
-			}
-		}
-
-		public void ClearTexturePool()
-		{
-			foreach (SceneTexture texture in texturePool)
-			{
-				texture.Dispose();
-			}
-
-			texturePool.Clear();
-			SetTexture(0, -1);
-		}
-
-		public Buffer CreateVertexBuffer(IReadOnlyCollection<Vertex> vertices)
-		{
-			int vertexSize = vertices.Count * Vertex.SizeInBytes;
+			int vertexSize = vertices.Count * GraphicsVertex.SizeInBytes;
 
 			var desc = new BufferDescription(vertexSize, BindFlags.VertexBuffer, ResourceUsage.Immutable);
 
 			using (var stream = new DataStream(vertexSize, true, true))
 			{
-				foreach (Vertex v in vertices)
+				foreach (IVertex v in vertices)
 				{
-					stream.Write(v.Position.X);
-					stream.Write(v.Position.Y);
-					stream.Write(v.Position.Z);
+					RawVector3 position = v.GetPosition();
+					stream.Write(position);
 
-					stream.Write(v.Normal.X);
-					stream.Write(v.Normal.Y);
-					stream.Write(v.Normal.Z);
+					RawVector3 normal = v.GetNormal();
+					stream.Write(normal);
 
-					RawColorBGRA color = v.Diffuse ?? Color.White;
+					RawColorBGRA color = v.GetColor();
+					stream.Write(color);
 
-					stream.Write(color.B);
-					stream.Write(color.G);
-					stream.Write(color.R);
-					stream.Write(color.A);
-
-					RawVector2 uv = v.UV ?? (RawVector2)Vector2.Zero;
-
-					stream.Write(uv.X);
-					stream.Write(uv.Y);
+					RawVector2 uv = v.GetUV();
+					stream.Write(uv);
 				}
 
 				if (stream.RemainingLength != 0)
@@ -919,7 +737,7 @@ namespace SonicRetro.SAModel.Direct3D
 			                            | NJD_FLAG.DoubleSide | NJD_FLAG.UseAlpha
 			                            | (NJD_FLAG)0xFC000000 /* blend modes */;
 
-			NJD_FLAG flags = FlowControl.Apply(material.attrflags) & state_mask;
+			NJD_FLAG flags = material.Flags & state_mask;
 
 			if (displayStates.TryGetValue(flags, out DisplayState state))
 			{
@@ -979,15 +797,15 @@ namespace SonicRetro.SAModel.Direct3D
 
 			var raster = new RasterizerState(device, rasterDesc) { DebugName = $"Rasterizer: {flags.ToString()}" };
 
-			var                              blendDesc = new BlendStateDescription();
-			ref RenderTargetBlendDescription rt        = ref blendDesc.RenderTarget[0];
+			var blendDesc = new BlendStateDescription();
+			ref RenderTargetBlendDescription rt = ref blendDesc.RenderTarget[0];
 
 			rt.IsBlendEnabled        = (flags & NJD_FLAG.UseAlpha) != 0;
-			rt.SourceBlend           = blendModes[material.SourceBlend];
-			rt.DestinationBlend      = blendModes[material.DestinationBlend];
+			rt.SourceBlend           = blendModes[(int)material.SourceAlpha];
+			rt.DestinationBlend      = blendModes[(int)material.DestinationAlpha];
 			rt.BlendOperation        = BlendOperation.Add;
-			rt.SourceAlphaBlend      = blendModes[material.SourceBlend];
-			rt.DestinationAlphaBlend = blendModes[material.DestinationBlend];
+			rt.SourceAlphaBlend      = blendModes[(int)material.SourceAlpha];
+			rt.DestinationAlphaBlend = blendModes[(int)material.DestinationAlpha];
 			rt.AlphaBlendOperation   = BlendOperation.Add;
 			rt.RenderTargetWriteMask = ColorWriteMaskFlags.All;
 
@@ -1054,7 +872,6 @@ namespace SonicRetro.SAModel.Direct3D
 			perModelBuffer?.Dispose();
 			materialBuffer?.Dispose();
 
-			ClearTexturePool();
 			ClearDisplayStates();
 
 #if DEBUG
@@ -1096,6 +913,26 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			var shaderMaterial = material?.ToShaderMaterial() ?? nullMaterial.ToShaderMaterial();
 			SetShaderMaterial(shaderMaterial);
+
+			DisplayState state = GetSADXDisplayState(material);
+
+			if (state.Blend != lastBlend)
+			{
+				device.ImmediateContext.OutputMerger.SetBlendState(state.Blend);
+				lastBlend = state.Blend;
+			}
+
+			if (state.Sampler != lastSamplerState)
+			{
+				device.ImmediateContext.PixelShader.SetSampler(0, state.Sampler);
+				lastSamplerState = state.Sampler;
+			}
+
+			if (state.Raster != lastRasterizerState)
+			{
+				device.ImmediateContext.Rasterizer.State = state.Raster;
+				lastRasterizerState = state.Raster;
+			}
 		}
 	}
 

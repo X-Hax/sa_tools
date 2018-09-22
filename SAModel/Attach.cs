@@ -42,7 +42,7 @@ namespace SonicRetro.SAModel
 				case ModelFormat.Chunk:
 					return new ChunkAttach();
 			}
-			throw new ArgumentOutOfRangeException("format");
+			throw new ArgumentOutOfRangeException(nameof(format));
 		}
 
 		public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format)
@@ -60,7 +60,7 @@ namespace SonicRetro.SAModel
 				case ModelFormat.Chunk:
 					return new ChunkAttach(file, address, imageBase, labels);
 			}
-			throw new ArgumentOutOfRangeException("format");
+			throw new ArgumentOutOfRangeException(nameof(format));
 		}
 
 		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address);

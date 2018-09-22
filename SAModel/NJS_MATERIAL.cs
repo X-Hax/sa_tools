@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
+using SharpDX;
 
 namespace SonicRetro.SAModel
 {
@@ -282,7 +282,7 @@ namespace SonicRetro.SAModel
 		/// </summary>
 		public NJS_MATERIAL()
 		{
-			DiffuseColor     = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			DiffuseColor     = new Color(0xB2, 0xB2, 0xB2, 0xFF);
 			SpecularColor    = Color.Transparent;
 			UseAlpha         = true;
 			UseTexture       = true;
@@ -329,8 +329,8 @@ namespace SonicRetro.SAModel
 		/// <param name="labels"></param>
 		public NJS_MATERIAL(byte[] file, int address, Dictionary<int, string> labels)
 		{
-			DiffuseColor  = Color.FromArgb(ByteConverter.ToInt32(file, address));
-			SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, address + 4));
+			DiffuseColor  = Color.FromRgba(ByteConverter.ToInt32(file, address));
+			SpecularColor = Color.FromRgba(ByteConverter.ToInt32(file, address + 4));
 			Exponent      = ByteConverter.ToSingle(file, address + 8);
 			TextureID     = ByteConverter.ToInt32(file, address + 0xC);
 			Flags         = (NJD_FLAG)ByteConverter.ToUInt32(file, address + 0x10);
@@ -339,8 +339,8 @@ namespace SonicRetro.SAModel
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(DiffuseColor.ToArgb()));
-			result.AddRange(ByteConverter.GetBytes(SpecularColor.ToArgb()));
+			result.AddRange(ByteConverter.GetBytes(DiffuseColor.ToRgba()));
+			result.AddRange(ByteConverter.GetBytes(SpecularColor.ToRgba()));
 			result.AddRange(ByteConverter.GetBytes(Exponent));
 			result.AddRange(ByteConverter.GetBytes(TextureID));
 			result.AddRange(ByteConverter.GetBytes((uint)Flags));
@@ -349,7 +349,7 @@ namespace SonicRetro.SAModel
 
 		public string ToStruct(string[] textures)
 		{
-			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+			if (DiffuseColor == Color.Zero && SpecularColor == Color.Zero && Exponent == 0 && TextureID == 0 && Flags == 0)
 				return "{ 0 }";
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(DiffuseColor.ToStruct());

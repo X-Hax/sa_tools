@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using SharpDX;
 
 namespace SonicRetro.SAModel
 {
@@ -367,7 +367,7 @@ namespace SonicRetro.SAModel
 		public PolyChunkMaterial()
 		{
 			Type = ChunkType.Material_Diffuse;
-			Diffuse = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			Diffuse = new Color(0xB2, 0xB2, 0xB2, 0xFF);
 		}
 
 		public PolyChunkMaterial(byte[] file, int address)
@@ -462,7 +462,7 @@ namespace SonicRetro.SAModel
 				result.AddRange(VColor.GetBytes(Ambient.Value, ColorType.XRGB8888_16));
 			if (Specular.HasValue)
 			{
-				int i = Specular.Value.ToArgb();
+				int i = Specular.Value.ToRgba();
 				result.AddRange(ByteConverter.GetBytes((ushort)(i & 0xFFFF)));
 				result.AddRange(ByteConverter.GetBytes((ushort)(((i >> 16) & 0xFF) | SpecularExponent << 8)));
 			}
@@ -795,9 +795,9 @@ namespace SonicRetro.SAModel
 					case ChunkType.Volume_Strip:
 						throw new ArgumentException(
 							"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
-							"type");
+							nameof(type));
 				}
-				throw new ArgumentException("Unknown poly type!", "type");
+				throw new ArgumentException("Unknown poly type!", nameof(type));
 			}
 
 			public static Poly CreatePoly(ChunkType type, byte[] file, int address, byte userFlags)
@@ -811,7 +811,7 @@ namespace SonicRetro.SAModel
 					case ChunkType.Volume_Strip:
 						return new Strip(file, address, userFlags);
 				}
-				throw new ArgumentException("Unknown poly type!", "type");
+				throw new ArgumentException("Unknown poly type!", nameof(type));
 			}
 
 			public abstract int Size { get; }

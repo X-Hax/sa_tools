@@ -407,7 +407,7 @@ namespace SonicRetro.SAModel
 					magic = SA2MDLVer;
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
+					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", nameof(format));
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();

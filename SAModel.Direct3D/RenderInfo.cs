@@ -28,20 +28,24 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public void Draw(Renderer device)
 		{
-			FillMode mode = device.GetRenderState<FillMode>(RenderState.FillMode);
-			TextureFilter magfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MagFilter);
-			TextureFilter minfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MinFilter);
-			TextureFilter mipfilter = device.GetSamplerState<TextureFilter>(0, SamplerState.MipFilter);
+			FillMode lastFillMode = device.FillMode;
+			device.FillMode = FillMode;
+
+			device.SetTransform(TransformState.World, Transform);
 
 			device.SetMaterial(Material);
-			Material.SetDeviceStates(device, Texture, Transform, FillMode);
+
+			if (Material == null || !Material.UseTexture)
+			{
+				device.SetTexture(0, null);
+			}
+			else
+			{
+				device.SetTexture(0, Texture);
+			}
 
 			Mesh?.DrawSubset(device, Subset);
-			device.SetRenderState(RenderState.Ambient, System.Drawing.Color.Black.ToArgb());
-			device.SetRenderState(RenderState.FillMode, mode);
-			device.SetSamplerState(0, SamplerState.MagFilter, magfilter);
-			device.SetSamplerState(0, SamplerState.MinFilter, minfilter);
-			device.SetSamplerState(0, SamplerState.MipFilter, mipfilter);
+			device.FillMode = lastFillMode;
 		}
 
 		public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera)

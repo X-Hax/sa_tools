@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
+using SharpDX;
 
 namespace SonicRetro.SAModel
 {
