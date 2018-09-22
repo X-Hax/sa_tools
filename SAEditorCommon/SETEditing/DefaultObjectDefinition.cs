@@ -2,7 +2,6 @@
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using System;
-using SharpDX.Direct3D9;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 using SharpDX;
 
@@ -70,7 +69,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(SETItem item, Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();

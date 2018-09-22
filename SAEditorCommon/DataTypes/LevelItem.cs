@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -121,7 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
 

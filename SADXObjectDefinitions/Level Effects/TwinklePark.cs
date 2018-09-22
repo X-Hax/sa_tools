@@ -1,6 +1,5 @@
 ﻿using SA_Tools;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon;

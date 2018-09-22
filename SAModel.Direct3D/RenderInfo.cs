@@ -1,5 +1,5 @@
-﻿using SharpDX;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SharpDX;
 using SharpDX.Direct3D11;
 
 namespace SonicRetro.SAModel.Direct3D
@@ -48,7 +48,7 @@ namespace SonicRetro.SAModel.Direct3D
 			device.FillMode = lastFillMode;
 		}
 
-		public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera)
+		public static void Draw(IEnumerable<RenderInfo> items, Renderer device, EditorCamera camera)
 		{
 			List<KeyValuePair<float, RenderInfo>> drawList = new List<KeyValuePair<float, RenderInfo>>();
 			foreach (RenderInfo item in items)

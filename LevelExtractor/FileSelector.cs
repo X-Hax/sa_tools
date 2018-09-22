@@ -300,10 +300,7 @@ namespace SonicRetro.SAModel.LevelExtractor
 		protected virtual void OnFileNameChanged(EventArgs e)
 		{
 			EventHandler handler = this.Events[EventFileNameChanged] as EventHandler;
-			if (handler != null)
-			{
-				handler(this, e);
-			}
+			handler?.Invoke(this, e);
 		}
 
 		private void fileNameTextBox_TextChanged(object sender, EventArgs e)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
@@ -12,7 +11,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 	{
 		public abstract void Init(ObjectData data, string name);
 		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
-		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
+		public abstract List<RenderInfo> Render(SETItem item, Renderer dev, EditorCamera camera, MatrixStack transform);
 		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
 		public virtual void PointTo(SETItem item, Vertex location) { }

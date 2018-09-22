@@ -359,8 +359,7 @@ namespace PAKtool
 						PropertyInfo property = (PropertyInfo)collection;
 						object propval = DeserializeInternal(collection.Name, property.PropertyType, property.PropertyType.GetDefaultValue(), ini, fullname, false, false);
 						MethodInfo setmethod = property.GetSetMethod();
-						if (setmethod == null) break;
-						setmethod.Invoke(result, new object[] { propval });
+						setmethod?.Invoke(result, new object[] { propval });
 						break;
 				}
 			ini.Remove(rootObject ? string.Empty : name);
@@ -438,9 +437,7 @@ namespace PAKtool
 			if (converter != null && !(converter is ComponentConverter) && converter.GetType() != typeof(TypeConverter))
 				if (converter.CanConvertTo(typeof(string)))
 					return converter.ConvertToInvariantString(@object);
-			if (@object is Type)
-				return ((Type)@object).AssemblyQualifiedName;
-			return null;
+			return (@object as Type)?.AssemblyQualifiedName;
 		}
 
 		private static object ConvertFromString(this Type type, string value)

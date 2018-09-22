@@ -1,9 +1,8 @@
 ﻿using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using System;
+using SharpDX.Direct3D11;
 using Color = System.Drawing.Color;
-using Font = SharpDX.Direct3D9.Font;
 
 namespace SonicRetro.SAModel.SAEditorCommon
 {
@@ -14,14 +13,14 @@ namespace SonicRetro.SAModel.SAEditorCommon
 	{
 		#region Render Options
 		private static FillMode renderFillMode = FillMode.Solid;
-		private static Cull renderCullMode = Cull.None;
+		private static CullMode renderCullMode = CullMode.None;
 		private static float renderDrawDistance = 3500f;
 		private static bool overrideLighting = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
 
 		public static FillMode RenderFillMode { get { return renderFillMode; } set { renderFillMode = value; } }
-		public static Cull RenderCullMode { get { return renderCullMode; } set { renderCullMode = value; } }
+		public static CullMode RenderCullMode { get { return renderCullMode; } set { renderCullMode = value; } }
 		public static float RenderDrawDistance { get { return renderDrawDistance; } set { renderDrawDistance = value; } }
 		public static bool OverrideLighting { get { return overrideLighting; } set { overrideLighting = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }

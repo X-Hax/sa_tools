@@ -57,6 +57,8 @@ namespace SonicRetro.SAModel.Direct3D
 		RasterizerState              rasterizerState;
 		RasterizerStateDescription   rasterizerDescription;
 
+		public Device Device => device;
+
 		readonly Buffer debugHelperVertexBuffer;
 		readonly Buffer perSceneBuffer;
 		readonly Buffer perModelBuffer;

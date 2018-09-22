@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpDX;
-using SharpDX.Direct3D9;
+using SharpDX.Direct3D11;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
-using Color = System.Drawing.Color;
+using Color = SharpDX.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
@@ -154,7 +154,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <summary>
 		///  Create a new CAM Item from within the editor.
 		/// </summary>
-		/// <param name="dev">An active Direct3D device for meshing/material/rendering purposes.</param>
 		public CAMItem(Vertex position, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
@@ -202,18 +201,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			GetHandleMatrix();
 		}
 
-		public static void Init()
+		public static void Init(Renderer device)
 		{
-			VolumeMesh = Mesh.Box(2f, 2f, 2f);
+			VolumeMesh = Mesh.Box(device, 2f, 2f, 2f);
 			Material = new NJS_MATERIAL
 			{
-				DiffuseColor = Color.FromArgb(200, Color.Purple),
-				SpecularColor = Color.Black,
-				UseAlpha = true,
-				DoubleSided = false,
-				Exponent = 10,
+				DiffuseColor   = new Color(Color.Purple.R, Color.Purple.G, Color.Purple.B, (byte)200),
+				SpecularColor  = Color.Black,
+				UseAlpha       = true,
+				DoubleSided    = false,
+				Exponent       = 10,
 				IgnoreSpecular = false,
-				UseTexture = false
+				UseTexture     = false
 			};
 
 			pointHelperA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
@@ -259,7 +258,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#endregion
 
 		#region Rendering / Picking
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Renderer device, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;

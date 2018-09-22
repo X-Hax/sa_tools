@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using Color = System.Drawing.Color;
 

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using SharpDX;
-using SharpDX.Direct3D9;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.Properties;
+using Device = SharpDX.DXGI.Device;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -57,14 +59,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private Bitmap renderFailureBitmap;
 		private Bitmap thumbnailLoadingBitmap;
 		private List<KeyValuePair<int, Bitmap>> attachListRenders; // list of meshes rendered to texture so that users can select them as buttons
-		internal Device d3dDevice;
+		internal Renderer renderer;
 		//private Microsoft.DirectX.Direct3D.Font onscreenFont;
 		//private Sprite textSprite;
 		private System.Drawing.Point screenCenter;
-		private Texture screenRenderTexture;
+		private SceneTexture screenRenderTexture;
 		private Surface defaultRenderTarget;
 		private FillMode renderFillMode = FillMode.Solid;
-		private Cull renderCullMode = Cull.None;
+		private CullMode renderCullMode = CullMode.None;
 		private float renderDrawDistance = 3500f;
 		private EditorCamera defaultCam; // the default camera is used for rendering the textures
 		private EditorCamera panelCam; // the panel cam is user-controllable and can show an object from any angle.
@@ -97,18 +99,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public void InitRenderer()
 		{
-			d3dDevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0,
-				DeviceType.Hardware, splitContainer1.Panel2.Handle, CreateFlags.HardwareVertexProcessing | CreateFlags.Multithreaded,
-					new PresentParameters
-					{
-						Windowed = true,
-						SwapEffect = SwapEffect.Discard,
-						EnableAutoDepthStencil = true,
-						AutoDepthStencilFormat = Format.D24X8
-					});
+			renderer = new Renderer(640, 480, splitContainer1.Panel2.Handle);
 			defaultRenderTarget = d3dDevice.GetRenderTarget(0);
 			screenCenter = new System.Drawing.Point(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
-			d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Gray.ToRawColorBGRA(), 1, 0);
+
+			renderer.Clear();
 			//textSprite = new Sprite(d3dDevice);
 
 			renderFailureBitmap = new Bitmap(2, 2, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
@@ -184,19 +179,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				components?.Dispose();
 			}
 
 			if (disposing)
 			{
-				if (renderFailureBitmap != null) renderFailureBitmap.Dispose();
+				renderFailureBitmap?.Dispose();
 				//if(textSprite != null) textSprite.Dispose();
-				if (screenRenderTexture != null) screenRenderTexture.Dispose();
-				if (defaultRenderTarget != null) defaultRenderTarget.Dispose();
+				screenRenderTexture?.Dispose();
+				defaultRenderTarget?.Dispose();
 				//if(onscreenFont != null) onscreenFont.Dispose();
-				if (d3dDevice != null) d3dDevice.Dispose();
+				renderer?.Dispose();
 			}
 
 			base.Dispose(disposing);
@@ -232,7 +227,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				modelList.Add(new KeyValuePair<int, Attach>(model.GetHashCode(), model));
 				attachListRenders.Add(new KeyValuePair<int, Bitmap>(model.GetHashCode(), renderFailureBitmap));
-				meshes.Add(model.CreateD3DMesh());
+				meshes.Add(model.CreateD3DMesh(renderer));
 
 				if (Visible) RenderModel(modelList.Count - 1, true); // todo: I think these Add calls are getting called while a separate thread is open, and thus causing locking issues
 																	 // perhaps we could find a way to defer all of this until after the file load operation is complete
@@ -384,7 +379,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			SetPanelCam();
 			RenderModel(selectedModelIndex, false);
 
-			if (SelectionChanged != null) SelectionChanged(this, selectedModelIndex, SelectedModel);
+			SelectionChanged?.Invoke(this, selectedModelIndex, SelectedModel);
 		}
 
 		private void ModelLibraryControl_VisibleChanged(object sender, EventArgs e)
@@ -404,9 +399,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void ModelLibraryControl_Resize(object sender, EventArgs e)
 		{
-			if (!IsDesignMode())
+			if (!IsDesignMode() && renderer != null)
 			{
-				if (d3dDevice != null) RenderModel(selectedModelIndex, false);
+				RenderModel(selectedModelIndex, false);
 			}
 		}
 

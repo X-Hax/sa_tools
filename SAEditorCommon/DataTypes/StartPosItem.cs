@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -67,7 +66,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			float dist = Direct3D.Extensions.Distance(camera.Position, Position.ToVector3());
 			if (dist > camera.DrawDistance) return EmptyRenderInfo;

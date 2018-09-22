@@ -290,8 +290,7 @@ namespace SonicRetro.SAModel
 #if modellog
 			Extensions.Log("Processing Object " + Name + Environment.NewLine);
 #endif
-			if (Attach != null)
-				Attach.ProcessVertexData();
+			Attach?.ProcessVertexData();
 			foreach (NJS_OBJECT item in Children)
 				item.ProcessVertexData();
 		}
@@ -306,8 +305,7 @@ namespace SonicRetro.SAModel
 		{
 			if (Morph)
 				animindex++;
-			if (Attach != null)
-				Attach.ProcessShapeMotionVertexData(motion, frame, animindex);
+			Attach?.ProcessShapeMotionVertexData(motion, frame, animindex);
 			foreach (NJS_OBJECT item in Children)
 				item.ProcessShapeMotionVertexData(motion, frame, ref animindex);
 		}

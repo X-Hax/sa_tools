@@ -1,10 +1,9 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
+﻿using System.Collections.Generic;
+using SharpDX;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using System.Collections.Generic;
 using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
@@ -71,7 +70,7 @@ namespace SADXObjectDefinitions.WindyValley
 			return result;
 		}
 
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(SETItem item, Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			int ScaleX = (int)item.Scale.X;

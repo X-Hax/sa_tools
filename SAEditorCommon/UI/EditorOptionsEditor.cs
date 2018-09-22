@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI

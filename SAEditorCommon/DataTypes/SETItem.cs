@@ -1,5 +1,4 @@
 ﻿using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.UI;
@@ -131,7 +130,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return objdef.CheckHit(this, Near, Far, Viewport, Projection, View, new MatrixStack());
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;

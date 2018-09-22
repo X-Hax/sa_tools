@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using SA_Tools;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
@@ -283,7 +282,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Renderer dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;

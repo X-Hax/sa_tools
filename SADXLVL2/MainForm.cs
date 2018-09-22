@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using SA_Tools;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
@@ -1260,8 +1259,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							}
 						}
 
-						if (def != null)
-							def.Init(level, levelact.Act);
+						def?.Init(level, levelact.Act);
 
 						LevelData.leveleff = def;
 					}

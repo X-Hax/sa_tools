@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using SharpDX.Direct3D9;
+﻿using SharpDX;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.Properties;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -48,82 +47,82 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public static NJS_MATERIAL StandardMaterial { get; set; }
 
-		public static Texture ATexture { get; set; }
-		public static Texture BTexture { get; set; }
+		public static SceneTexture ATexture { get; set; }
+		public static SceneTexture BTexture { get; set; }
 
-		public static void InitGizmo(Device d3dDevice)
+		public static void InitGizmo(Renderer renderer)
 		{
 			Attach attach = new ModelFile(Resources.x_null).Model.Attach;
 			attach.ProcessVertexData();
-			XNullMesh = attach.CreateD3DMesh();
+			XNullMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.y_null).Model.Attach;
 			attach.ProcessVertexData();
-			YNullMesh = attach.CreateD3DMesh();
+			YNullMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.z_null).Model.Attach;
 			attach.ProcessVertexData();
-			ZNullMesh = attach.CreateD3DMesh();
+			ZNullMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.x_move).Model.Attach;
 			attach.ProcessVertexData();
-			XMoveMesh = attach.CreateD3DMesh();
+			XMoveMesh = attach.CreateD3DMesh(renderer);
 			XMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.y_move).Model.Attach;
 			attach.ProcessVertexData();
-			YMoveMesh = attach.CreateD3DMesh();
+			YMoveMesh = attach.CreateD3DMesh(renderer);
 			YMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.z_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZMoveMesh = attach.CreateD3DMesh();
+			ZMoveMesh = attach.CreateD3DMesh(renderer);
 			ZMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.xy_move).Model.Attach;
 			attach.ProcessVertexData();
-			XYMoveMesh = attach.CreateD3DMesh();
+			XYMoveMesh = attach.CreateD3DMesh(renderer);
 			DoubleAxisMaterial = ((BasicAttach)attach).Material[0];
 
 			attach = new ModelFile(Resources.zx_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZXMoveMesh = attach.CreateD3DMesh();
+			ZXMoveMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.zy_move).Model.Attach;
 			attach.ProcessVertexData();
-			ZYMoveMesh = attach.CreateD3DMesh();
+			ZYMoveMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.x_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			XRotateMesh = attach.CreateD3DMesh();
+			XRotateMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.y_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			YRotateMesh = attach.CreateD3DMesh();
+			YRotateMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.z_rotation).Model.Attach;
 			attach.ProcessVertexData();
-			ZRotateMesh = attach.CreateD3DMesh();
+			ZRotateMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.x_scale).Model.Attach;
 			attach.ProcessVertexData();
-			XScaleMesh = attach.CreateD3DMesh();
+			XScaleMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.y_scale).Model.Attach;
 			attach.ProcessVertexData();
-			YScaleMesh = attach.CreateD3DMesh();
+			YScaleMesh = attach.CreateD3DMesh(renderer);
 
 			attach = new ModelFile(Resources.z_scale).Model.Attach;
 			attach.ProcessVertexData();
-			ZScaleMesh = attach.CreateD3DMesh();
+			ZScaleMesh = attach.CreateD3DMesh(renderer);
 
-			BoxMesh = Mesh.Box(1, 1, 1);
+			BoxMesh = Mesh.Box(renderer, 1, 1, 1);
 
-			HighlightMaterial = new NJS_MATERIAL() { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
+			HighlightMaterial = new NJS_MATERIAL { DiffuseColor = Color.LightGoldenrodYellow, Exponent = 0f, UseTexture = false, IgnoreLighting = true, IgnoreSpecular = true };
 
-			ATexture = Resources.PointATexture.ToTexture(d3dDevice);
-			BTexture = Resources.PointBTexture.ToTexture(d3dDevice);
-			StandardMaterial = new NJS_MATERIAL() { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
+			ATexture = Resources.PointATexture.ToTexture(renderer.Device, null, 0);
+			BTexture = Resources.PointBTexture.ToTexture(renderer.Device, null, 0);
+			StandardMaterial = new NJS_MATERIAL { DiffuseColor = Color.Gray, IgnoreLighting = true, IgnoreSpecular = true, UseAlpha = false, UseTexture = true, Exponent = 100f };
 		}
 	}
 }

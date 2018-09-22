@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon.Import;
@@ -31,7 +30,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public static LandTable geo;
 		public static string leveltexs;
 		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
-		public static Dictionary<string, Texture[]> Textures;
+		public static Dictionary<string, SceneTexture[]> Textures;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
 		private static int character;
@@ -156,8 +155,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			if (LevelItems != null)
 				levelItems.Clear();
-			if (geo != null && geo.COL != null)
-				geo.COL.Clear();
+			if (geo != null)
+				geo.COL?.Clear();
 
 			changes.Push("Clear Level Geometry");
 			InvalidateRenderState();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using SharpDX;
-using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
 using SonicRetro.SAModel.SAEditorCommon.UI;
@@ -38,7 +37,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public abstract void Paste();
 		public abstract void Delete();
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform);
+		public abstract List<RenderInfo> Render(Renderer dev, EditorCamera camera, MatrixStack transform);
 
 		public Item(EditorItemSelection selectionManager)
 		{
@@ -73,8 +72,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			// never called in this specific context with the PropertyGrid
 			// but just reference the required Disposed event to avoid warnings
-			if (Disposed != null)
-				Disposed(this, EventArgs.Empty);
+			Disposed?.Invoke(this, EventArgs.Empty);
 		}
 		#endregion
 

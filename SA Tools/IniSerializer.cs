@@ -584,9 +584,7 @@ namespace SA_Tools
 			if (converter != null && !(converter is ComponentConverter) && converter.GetType() != typeof(TypeConverter))
 				if (converter.CanConvertTo(typeof(string)))
 					return converter.ConvertToInvariantString(@object);
-			if (@object is Type)
-				return ((Type)@object).AssemblyQualifiedName;
-			return null;
+			return (@object as Type)?.AssemblyQualifiedName;
 		}
 
 		private static object ConvertFromString(this Type type, string value, TypeConverter converter)
