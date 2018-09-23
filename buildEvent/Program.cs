@@ -45,7 +45,7 @@ namespace buildEvent
 				fc = modelbytes.ToArray();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
-					for (int i = 0; i < 18; i++)
+					for (int i = 0; i < (ini.Game == Game.SA2B ? 18 : 16); i++)
 					{
 						UpgradeInfo info = ini.Upgrades[i];
 						if (info.RootNode != null)
@@ -76,8 +76,11 @@ namespace buildEvent
 							{
 								if (labels.ContainsKey(info.Entities[en]))
 									ByteConverter.GetBytes(labels[info.Entities[en]]).CopyTo(fc, ptr2);
-								ptr2 += 0x2C;
+								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
 							}
+						ptr2 = fc.GetPointer(ptr + 0x18, key);
+						if (ptr2 != 0 && labels.ContainsKey(info.Big))
+							ByteConverter.GetBytes(labels[info.Big]).CopyTo(fc, ptr2);
 						ptr += 0x20;
 					}
 				ptr = fc.GetPointer(0x18, key);
@@ -202,6 +205,7 @@ namespace buildEvent
 		[IniName("Entity")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<string> Entities { get; set; }
+		public string Big { get; set; }
 
 		public GroupInfo()
 		{

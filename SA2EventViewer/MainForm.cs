@@ -41,7 +41,7 @@ namespace SA2EventViewer
 		}
 
 		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera(50000);
+		EditorCamera cam = new EditorCamera(100000);
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;

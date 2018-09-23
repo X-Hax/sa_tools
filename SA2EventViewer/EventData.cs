@@ -38,18 +38,15 @@ namespace SA2EventViewer
 			if (battle)
 				motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
 			Dictionary<string, NJS_OBJECT> models = new Dictionary<string, NJS_OBJECT>();
-			int ptr;
-			if (battle)
+			int ptr = fc.GetPointer(0x20, key);
+			if (ptr != 0)
 			{
-				ptr = fc.GetPointer(0x20, key);
-				if (ptr != 0)
+				int cnt = battle ? 18 : 16;
+				Upgrades = new EventUpgrade[cnt];
+				for (int i = 0; i < cnt; i++)
 				{
-					Upgrades = new EventUpgrade[18];
-					for (int i = 0; i < 18; i++)
-					{
-						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
-						ptr += EventUpgrade.Size;
-					}
+					Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+					ptr += EventUpgrade.Size;
 				}
 			}
 			int gcnt = ByteConverter.ToInt32(fc, 8);

@@ -47,7 +47,7 @@ namespace splitEvent
 				Dictionary<string, KeyValuePair<string, NJS_OBJECT>> modelfiles = new Dictionary<string, KeyValuePair<string, NJS_OBJECT>>();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
-					for (int i = 0; i < 18; i++)
+					for (int i = 0; i < (ini.Game == Game.SA2B ? 18 : 16); i++)
 					{
 						UpgradeInfo info = new UpgradeInfo();
 						info.RootNode = GetModel(fc, ptr, key, Path.Combine(path, $"Upgrade {i + 1} Root.sa2mdl"), nodenames, modelfiles);
@@ -85,11 +85,14 @@ namespace splitEvent
 								string name = GetModel(fc, ptr2, key, Path.Combine(path, $"Group {gn + 1} Entity {en + 1} Model.sa2mdl"), nodenames, modelfiles);
 								if (name != null)
 									info.Entities.Add(name);
-								ptr2 += 0x2C;
+								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
 							}
 						}
 						else
 							Console.WriteLine("Group {0} contains no entities.", gn + 1);
+						ptr2 = fc.GetPointer(ptr + 0x18, key);
+						if (ptr2 != 0)
+							info.Big = GetModel(fc,ptr2, key, Path.Combine(path, $"Group {gn + 1} Big Model.sa2mdl"), nodenames, modelfiles);
 						ini.Groups.Add(info);
 						ptr += 0x20;
 					}
@@ -247,6 +250,7 @@ namespace splitEvent
 		[IniName("Entity")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<string> Entities { get; set; }
+		public string Big { get; set; }
 
 		public GroupInfo()
 		{
