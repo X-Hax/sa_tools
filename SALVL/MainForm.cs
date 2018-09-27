@@ -473,7 +473,7 @@ namespace SonicRetro.SAModel.SALVL
 				if (transformGizmo != null)
 				{
 					//transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
-					throw new System.NotImplementedException();
+					//throw new System.NotImplementedException();
 				}
 
 				DrawLevel();
