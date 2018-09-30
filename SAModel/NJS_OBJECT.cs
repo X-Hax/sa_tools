@@ -53,6 +53,8 @@ namespace SonicRetro.SAModel
 				foreach (NJS_OBJECT child in Children)
 					if (child.HasWeight)
 						return true;
+				if (Parent == null && Sibling != null && Sibling.HasWeight)
+					return true;
 				return false;
 			}
 		}
@@ -228,6 +230,8 @@ namespace SonicRetro.SAModel
 			List<NJS_OBJECT> result = new List<NJS_OBJECT> { this };
 			foreach (NJS_OBJECT item in Children)
 				result.AddRange(item.GetObjects());
+			if (Parent == null && Sibling != null)
+				result.AddRange(Sibling.GetObjects());
 			return result.ToArray();
 		}
 
@@ -236,6 +240,8 @@ namespace SonicRetro.SAModel
 			int result = Animate ? 1 : 0;
 			foreach (NJS_OBJECT item in Children)
 				result += item.CountAnimated();
+			if (Parent == null && Sibling != null)
+				result += Sibling.CountAnimated();
 			return result;
 		}
 
@@ -244,6 +250,8 @@ namespace SonicRetro.SAModel
 			int result = Morph ? 1 : 0;
 			foreach (NJS_OBJECT item in Children)
 				result += item.CountMorph();
+			if (Parent == null && Sibling != null)
+				result += Sibling.CountMorph();
 			return result;
 		}
 
@@ -294,12 +302,19 @@ namespace SonicRetro.SAModel
 				Attach.ProcessVertexData();
 			foreach (NJS_OBJECT item in Children)
 				item.ProcessVertexData();
+			if (Parent == null && Sibling != null)
+				Sibling.ProcessVertexData();
 		}
 
 		public void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame)
 		{
 			int animindex = -1;
-			ProcessShapeMotionVertexData(motion, frame, ref animindex);
+			NJS_OBJECT obj = this;
+			do
+			{
+				obj.ProcessShapeMotionVertexData(motion, frame, ref animindex);
+				obj = obj.Sibling;
+			} while (obj != null);
 		}
 		
 		private void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, ref int animindex)
@@ -799,6 +814,12 @@ namespace SonicRetro.SAModel
 					Children[i].ToStructVariables(writer, DX, labels, textures);
 					writer.WriteLine();
 				}
+			}
+			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
+			{
+				labels.Add(Sibling.Name);
+				Sibling.ToStructVariables(writer, DX, labels, textures);
+				writer.WriteLine();
 			}
 			if (Attach != null && !labels.Contains(Attach.Name))
 			{
