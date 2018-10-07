@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Globalization;
-using SharpDX;
-using Color = System.Drawing.Color;
+﻿using SharpDX;
 using SharpDX.Direct3D9;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.Direct3D
 {
