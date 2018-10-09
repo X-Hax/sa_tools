@@ -19,10 +19,10 @@ namespace SonicRetro.SAModel.Direct3D
 		#region Box
 		private static readonly FVF_PositionNormalTextured[] boxverts =
 		{
-			new FVF_PositionNormalTextured(new Vector3(-0.5f, -0.5f, 0.5f), Vector3.UnitZ, new Vector2(0, 0)),
-			new FVF_PositionNormalTextured(new Vector3(0.5f, -0.5f, 0.5f), Vector3.UnitZ, new Vector2(1, 0)),
-			new FVF_PositionNormalTextured(new Vector3(-0.5f, 0.5f, 0.5f), Vector3.UnitZ, new Vector2(0, 1)),
-			new FVF_PositionNormalTextured(new Vector3(0.5f, 0.5f, 0.5f), Vector3.UnitZ, new Vector2(1, 1))
+			new FVF_PositionNormalTextured(new Vector3(-0.5f, -0.5f, 0.5f), Vector3.UnitZ, new Vector2(0, 1)),
+			new FVF_PositionNormalTextured(new Vector3(0.5f, -0.5f, 0.5f), Vector3.UnitZ, new Vector2(1, 1)),
+			new FVF_PositionNormalTextured(new Vector3(-0.5f, 0.5f, 0.5f), Vector3.UnitZ, new Vector2(0, 0)),
+			new FVF_PositionNormalTextured(new Vector3(0.5f, 0.5f, 0.5f), Vector3.UnitZ, new Vector2(1, 0))
 		};
 
 		private static readonly short[] boxinds = { 0, 1, 2, 1, 3, 2 };
@@ -32,26 +32,27 @@ namespace SonicRetro.SAModel.Direct3D
 			List<FVF_PositionNormalTextured> verts = new List<FVF_PositionNormalTextured>(4 * 6);
 			List<short> inds = new List<short>(6 * 6);
 			short off = 0;
-			Matrix matrix;
+			MatrixStack transform = new MatrixStack();
+			transform.NJScale(width, height, depth);
 			for (int i = 0; i < 0x10000; i += 0x4000)
 			{
-				matrix = Matrix.Identity;
-				MatrixFunctions.RotateY(ref matrix, i);
-				MatrixFunctions.Scale(ref matrix, width, height, depth);
-				verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
+				transform.Push();
+				transform.NJRotateY(i);
+				verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, transform.Top), Vector3.TransformNormal(v.Normal, transform.Top), v.UV)));
+				transform.Pop();
 				inds.AddRange(boxinds.Select(a => (short)(a + off)));
 				off += 4;
 			}
-			matrix = Matrix.Identity;
-			MatrixFunctions.RotateX(ref matrix, 0x4000);
-			MatrixFunctions.Scale(ref matrix, width, height, depth);
-			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
+			transform.Push();
+			transform.NJRotateX(0x4000);
+			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, transform.Top), Vector3.TransformNormal(v.Normal, transform.Top), v.UV)));
+			transform.Pop();
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
 			off += 4;
-			matrix = Matrix.Identity;
-			MatrixFunctions.RotateX(ref matrix, 0xC000);
-			MatrixFunctions.Scale(ref matrix, width, height, depth);
-			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, matrix), Vector3.TransformNormal(v.Normal, matrix), v.UV)));
+			transform.Push();
+			transform.NJRotateX(0xC000);
+			verts.AddRange(boxverts.Select(v => new FVF_PositionNormalTextured(Vector3.TransformCoordinate(v.Position, transform.Top), Vector3.TransformNormal(v.Normal, transform.Top), v.UV)));
+			transform.Pop();
 			inds.AddRange(boxinds.Select(a => (short)(a + off)));
 			return new Mesh<FVF_PositionNormalTextured>(verts.ToArray(), new short[][] { inds.ToArray() });
 		}
