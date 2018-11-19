@@ -92,8 +92,7 @@ namespace buildEvent
 						ptr += 4;
 					}
 				ptr = fc.GetPointer(0x1C, key);
-				if (ptr != 0)
-					if (labels.ContainsKey(ini.TailsTails))
+				if (ptr != 0 && ini.TailsTails != null && labels.ContainsKey(ini.TailsTails))
 						ByteConverter.GetBytes(labels[ini.TailsTails]).CopyTo(fc, ptr);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					Prs.Compress(fc, filename);
