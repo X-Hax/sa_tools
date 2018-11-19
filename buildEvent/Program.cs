@@ -40,7 +40,7 @@ namespace buildEvent
 				}
 				List<byte> modelbytes = new List<byte>(fc);
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(a.Key) != a.Value).Select(a => a.Key))
+				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
 					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint address));
 				fc = modelbytes.ToArray();
 				int ptr = fc.GetPointer(0x20, key);
