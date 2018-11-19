@@ -92,7 +92,7 @@ namespace splitEvent
 							Console.WriteLine("Group {0} contains no entities.", gn + 1);
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
 						if (ptr2 != 0)
-							info.Big = GetModel(fc,ptr2, key, Path.Combine(path, $"Group {gn + 1} Big Model.sa2mdl"), nodenames, modelfiles);
+							info.Big = GetModel(fc, ptr2, key, Path.Combine(path, $"Group {gn + 1} Big Model.sa2mdl"), nodenames, modelfiles);
 						ini.Groups.Add(info);
 						ptr += 0x20;
 					}

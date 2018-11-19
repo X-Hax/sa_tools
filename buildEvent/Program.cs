@@ -79,7 +79,7 @@ namespace buildEvent
 								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
 							}
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
-						if (ptr2 != 0 && labels.ContainsKey(info.Big))
+						if (ptr2 != 0 && info.Big != null && labels.ContainsKey(info.Big))
 							ByteConverter.GetBytes(labels[info.Big]).CopyTo(fc, ptr2);
 						ptr += 0x20;
 					}
