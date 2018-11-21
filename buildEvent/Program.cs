@@ -71,7 +71,7 @@ namespace buildEvent
 						GroupInfo info = ini.Groups[gn];
 						int ptr2 = fc.GetPointer(ptr, key);
 						int ecnt = ByteConverter.ToInt32(fc, ptr + 4);
-						if (ptr2 != 0)
+						if (ptr2 != 0 && info.Entities?.Count > 0)
 							for (int en = 0; en < ecnt; en++)
 							{
 								if (labels.ContainsKey(info.Entities[en]))
