@@ -1473,7 +1473,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 						int materialIndexInList = 0;
 
-						NJS_MATERIAL material = basicAttach.Material[meshID];
+						NJS_MATERIAL material = basicAttach.Material[set.MaterialID];
 
 						if (!materials.Contains(material))
 						{
