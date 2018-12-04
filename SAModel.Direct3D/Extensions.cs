@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Globalization;
-using SharpDX;
-using Color = System.Drawing.Color;
+﻿using SharpDX;
 using SharpDX.Direct3D9;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -288,74 +288,61 @@ namespace SonicRetro.SAModel.Direct3D
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
 		static VertexData[] VertexBuffer = new VertexData[4095];
+		static List<WeightData>[] WeightBuffer = new List<WeightData>[4095];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
 		{
 			List<Mesh> meshes = new List<Mesh>();
-			ProcessWeightedModel(obj, new MatrixStack(), meshes);
+			int mdlindex = -1;
+			do
+			{
+				ProcessWeightedModel(obj, new MatrixStack(), meshes, ref mdlindex);
+				obj = obj.Sibling;
+			} while (obj != null);
 			return meshes;
 		}
 
-		private static void ProcessWeightedModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes)
+		private static void ProcessWeightedModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
 		{
+			mdlindex++;
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(attach, transform));
+				meshes.Add(ProcessWeightedAttach(attach, transform, mdlindex));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModel(child, transform, meshes);
+				ProcessWeightedModel(child, transform, meshes, ref mdlindex);
 			transform.Pop();
 		}
 
-		public static List<Mesh> ProcessWeightedModelAnimated(this NJS_OBJECT obj, NJS_MOTION anim, int animframe)
-		{
-			List<Mesh> meshes = new List<Mesh>();
-			int animindex = -1;
-			ProcessWeightedModelAnimated(obj, new MatrixStack(), meshes, anim, animframe, ref animindex);
-			return meshes;
-		}
-
-		private static void ProcessWeightedModelAnimated(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, NJS_MOTION anim, int animframe, ref int animindex)
-		{
-			List<RenderInfo> result = new List<RenderInfo>();
-			transform.Push();
-			bool animate = obj.Animate;
-			if (animate) animindex++;
-			if (!anim.Models.ContainsKey(animindex)) animate = false;
-			if (animate)
-				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
-			else
-				obj.ProcessTransforms(transform);
-			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(attach, transform));
-			else
-				meshes.Add(null);
-			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModelAnimated(child, transform, meshes, anim, animframe, ref animindex);
-			transform.Pop();
-		}
-
-		private static Mesh ProcessWeightedAttach(ChunkAttach attach, MatrixStack transform)
+		private static Mesh ProcessWeightedAttach(ChunkAttach attach, MatrixStack transform, int mdlindex)
 		{
 			if (attach.Vertex != null)
 			{
 				foreach (VertexChunk chunk in attach.Vertex)
 				{
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+					{
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+						Array.Resize(ref WeightBuffer, chunk.IndexOffset + chunk.VertexCount);
+					}
 					if (chunk.HasWeight)
 					{
 						for (int i = 0; i < chunk.VertexCount; i++)
 						{
 							var weightByte = chunk.NinjaFlags[i] >> 16;
 							var weight = weightByte * (1f / 255f);
-							var position = (Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top) * weight).ToVertex();
+							var origpos = chunk.Vertices[i].ToVector3();
+							var position = (Vector3.TransformCoordinate(origpos, transform.Top) * weight).ToVertex();
+							var orignor = Vector3.Up;
 							Vertex normal = null;
 							if (chunk.Normals.Count > 0)
-								normal = (Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top) * weight).ToVertex();
+							{
+								orignor = chunk.Normals[i].ToVector3();
+								normal = (Vector3.TransformNormal(orignor, transform.Top) * weight).ToVertex();
+							}
 
 							// Store vertex in cache
 							var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
@@ -365,6 +352,10 @@ namespace SonicRetro.SAModel.Direct3D
 							{
 								// Add new vertex to cache
 								VertexBuffer[vertexCacheId] = new VertexData(position, normal);
+								WeightBuffer[vertexCacheId] = new List<WeightData>
+								{
+									new WeightData(mdlindex, origpos, orignor, weight)
+								};
 								if (chunk.Diffuse.Count > 0)
 									VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
 							}
@@ -377,30 +368,63 @@ namespace SonicRetro.SAModel.Direct3D
 								if (chunk.Diffuse.Count > 0)
 									cacheVertex.Color = chunk.Diffuse[i];
 								VertexBuffer[vertexCacheId] = cacheVertex;
+								WeightBuffer[vertexCacheId].Add(new WeightData(mdlindex, origpos, orignor, weight));
 							}
 						}
 					}
 					else
 						for (int i = 0; i < chunk.VertexCount; i++)
 						{
-							var position = Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), transform.Top).ToVertex();
+							var origpos = chunk.Vertices[i].ToVector3();
+							var position = Vector3.TransformCoordinate(origpos, transform.Top).ToVertex();
+							var orignor = Vector3.Up;
 							Vertex normal = null;
 							if (chunk.Normals.Count > 0)
-								normal = Vector3.TransformNormal(chunk.Normals[i].ToVector3(), transform.Top).ToVertex();
+							{
+								orignor = chunk.Normals[i].ToVector3();
+								normal = Vector3.TransformNormal(orignor, transform.Top).ToVertex();
+							}
 							VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
 							if (chunk.Diffuse.Count > 0)
 								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+							WeightBuffer[i + chunk.IndexOffset] = null;
+							WeightBuffer[i + chunk.IndexOffset] = new List<WeightData>
+							{
+								new WeightData(mdlindex, origpos, orignor, 1)
+							};
 						}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
+			List<List<WeightData>> weights = new List<List<WeightData>>();
 			if (attach.Poly != null)
-				result = ProcessPolyList(attach.Poly, 0);
+				result = ProcessPolyList(attach.Poly, 0, weights);
 			attach.MeshInfo = result.ToArray();
-			return attach.CreateD3DMesh();
+			int numverts = 0;
+			byte data = 0;
+			foreach (MeshInfo item in attach.MeshInfo)
+			{
+				numverts += item.Vertices.Length;
+				if (item.HasUV)
+					data |= 1;
+				if (item.HasVC)
+					data |= 2;
+			}
+			if (numverts == 0) return null;
+			switch (data)
+			{
+				case 3:
+					return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
+				case 2:
+					return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
+				case 1:
+					return new WeightedMesh<FVF_PositionNormalTextured>(attach, weights);
+				default:
+					return new WeightedMesh<FVF_PositionNormal>(attach, weights);
+			}
 		}
 
-		private static List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start)
+		private static List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start, List<List<WeightData>> weights)
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
 			for (int i = start; i < strips.Count; i++)
@@ -427,7 +451,7 @@ namespace SonicRetro.SAModel.Direct3D
 					case ChunkType.Bits_DrawPolygonList:
 						cachenum = ((PolyChunkBitsDrawPolygonList)chunk).List;
 						CachedPoly cached = PolyCache[cachenum];
-						result.AddRange(ProcessPolyList(cached.Polys, cached.Index));
+						result.AddRange(ProcessPolyList(cached.Polys, cached.Index, weights));
 						break;
 					case ChunkType.Tiny_TextureID:
 					case ChunkType.Tiny_TextureID2:
@@ -517,13 +541,15 @@ namespace SonicRetro.SAModel.Direct3D
 							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 							for (int k = 0; k < strip.Indexes.Length; k++)
 							{
-								str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-									VertexBuffer[strip.Indexes[k]].Position,
-									VertexBuffer[strip.Indexes[k]].Normal,
-									hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
-									hasUV ? strip.UVs[k] : null));
-							}
-							polys.Add(str);
+									str.Indexes[k] = (ushort)verts.Count;
+									verts.Add(new VertexData(
+										VertexBuffer[strip.Indexes[k]].Position,
+										VertexBuffer[strip.Indexes[k]].Normal,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasUV ? strip.UVs[k] : null));
+									weights.Add(WeightBuffer[strip.Indexes[k]]);
+								}
+								polys.Add(str);
 						}
 						result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 						MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
@@ -532,6 +558,62 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 			}
 			return result;
+		}
+
+		public static void UpdateWeightedModel(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes)
+		{
+			List<Matrix> matrices = new List<Matrix>();
+			obj.GetMatrices(transform, matrices);
+			for (int i = 0; i < meshes.Length; i++)
+				if (meshes[i] is IWeightedMesh mesh)
+					mesh.Update(matrices);
+		}
+
+		public static void GetMatrices(this NJS_OBJECT obj, MatrixStack transform, List<Matrix> matrices)
+		{
+			transform.Push();
+			obj.ProcessTransforms(transform);
+			matrices.Add(transform.Top);
+			foreach (NJS_OBJECT child in obj.Children)
+				child.GetMatrices(transform, matrices);
+			transform.Pop();
+			if (obj.Parent == null && obj.Sibling != null)
+				obj.Sibling.GetMatrices(transform, matrices);
+		}
+
+		public static void UpdateWeightedModelAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, Mesh[] meshes)
+		{
+			List<Matrix> matrices = new List<Matrix>();
+			obj.GetMatricesAnimated(transform, anim, animframe, matrices);
+			for (int i = 0; i < meshes.Length; i++)
+				if (meshes[i] is IWeightedMesh mesh)
+					mesh.Update(matrices);
+		}
+
+		public static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, List<Matrix> matrices)
+		{
+			int animindex = -1;
+			do
+			{
+				obj.GetMatricesAnimated(transform, anim, animframe, ref animindex, matrices);
+				obj = obj.Sibling;
+			} while (obj != null);
+		}
+
+		private static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, ref int animindex, List<Matrix> matrices)
+		{
+			transform.Push();
+			bool animate = obj.Animate;
+			if (animate) animindex++;
+			if (!anim.Models.ContainsKey(animindex)) animate = false;
+			if (animate)
+				obj.ProcessTransforms(anim.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			matrices.Add(transform.Top);
+			foreach (NJS_OBJECT child in obj.Children)
+				child.GetMatricesAnimated(transform, anim, animframe, ref animindex, matrices);
+			transform.Pop();
 		}
 
 		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
@@ -612,7 +694,13 @@ namespace SonicRetro.SAModel.Direct3D
 		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes)
 		{
 			int modelindex = -1;
-			return obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex);
+			List<RenderInfo> result = new List<RenderInfo>();
+			do
+			{
+				result.AddRange(obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
@@ -647,7 +735,13 @@ namespace SonicRetro.SAModel.Direct3D
 		public static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes)
 		{
 			int modelindex = -1;
-			return obj.DrawModelTreeInvert(transform, meshes, ref modelindex);
+			List<RenderInfo> result = new List<RenderInfo>();
+			do
+			{
+				result.AddRange(obj.DrawModelTreeInvert(transform, meshes, ref modelindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, ref int modelindex)
@@ -688,7 +782,13 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			int modelindex = -1;
 			int animindex = -1;
-			return obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex);
+			List<RenderInfo> result = new List<RenderInfo>();
+			do
+			{
+				result.AddRange(obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
@@ -722,7 +822,13 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			int modelindex = -1;
 			int animindex = -1;
-			return obj.DrawModelTreeAnimatedInvert(transform, meshes, anim, animframe, ref modelindex, ref animindex);
+			List<RenderInfo> result = new List<RenderInfo>();
+			do
+			{
+				result.AddRange(obj.DrawModelTreeAnimatedInvert(transform, meshes, anim, animframe, ref modelindex, ref animindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
@@ -814,7 +920,13 @@ namespace SonicRetro.SAModel.Direct3D
 		public static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh)
 		{
 			int modelindex = -1;
-			return CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex);
+			HitResult result = HitResult.NoHit;
+			do
+			{
+				result = HitResult.Min(result, CheckHit(obj, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static HitResult CheckHit(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, ref int modelindex)
@@ -824,7 +936,7 @@ namespace SonicRetro.SAModel.Direct3D
 			obj.ProcessTransforms(transform);
 			HitResult result = HitResult.NoHit;
 			if (obj.Attach != null && mesh[modelindex] != null && !obj.Scale.IsEmpty)
-				result = HitResult.Min(result, mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj));
+				result = mesh[modelindex].CheckHit(Near, Far, Viewport, Projection, View, transform, obj);
 			foreach (NJS_OBJECT child in obj.Children)
 				result = HitResult.Min(result, CheckHit(child, Near, Far, Viewport, Projection, View, transform, mesh, ref modelindex));
 			transform.Pop();
@@ -835,7 +947,13 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			int modelindex = -1;
 			int animindex = -1;
-			return CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex);
+			HitResult result = HitResult.NoHit;
+			do
+			{
+				result = HitResult.Min(result, CheckHitAnimated(obj, Near, Far, Viewport, Projection, View, transform, mesh, anim, animframe, ref modelindex, ref animindex));
+				obj = obj.Sibling;
+			} while (obj != null);
+			return result;
 		}
 
 		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
@@ -1250,7 +1368,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static int RadToBAMS(float rad)
 		{
-			return (int)(rad * (65536 / (2 * Math.PI)));
+			return (int)(rad * 65536.0 / (2 * Math.PI));
 		}
 
 		/// <summary>
@@ -1355,7 +1473,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 						int materialIndexInList = 0;
 
-						NJS_MATERIAL material = basicAttach.Material[meshID];
+						NJS_MATERIAL material = basicAttach.Material[set.MaterialID];
 
 						if (!materials.Contains(material))
 						{
@@ -3034,6 +3152,22 @@ namespace SonicRetro.SAModel.Direct3D
 					return -sineTable[-1024 + v3];
 			}
 			return v8;
+		}
+	}
+
+	internal class WeightData
+	{
+		public int Index { get; private set; }
+		public Vector3 Position { get; private set; }
+		public Vector3 Normal { get; private set; }
+		public float Weight { get; private set; }
+
+		public WeightData(int index, Vector3 position, Vector3 normal, float weight)
+		{
+			Index = index;
+			Position = position;
+			Normal = normal;
+			Weight = weight;
 		}
 	}
 }

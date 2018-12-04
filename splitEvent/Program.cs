@@ -47,68 +47,20 @@ namespace splitEvent
 				Dictionary<string, KeyValuePair<string, NJS_OBJECT>> modelfiles = new Dictionary<string, KeyValuePair<string, NJS_OBJECT>>();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
-					for (int i = 0; i < 18; i++)
+					for (int i = 0; i < (ini.Game == Game.SA2B ? 18 : 16); i++)
 					{
 						UpgradeInfo info = new UpgradeInfo();
-						int ptr2 = fc.GetPointer(ptr, key);
-						if (ptr2 != 0)
+						info.RootNode = GetModel(fc, ptr, key, Path.Combine(path, $"Upgrade {i + 1} Root.sa2mdl"), nodenames, modelfiles);
+						if (info.RootNode != null)
 						{
-							string name = $"object_{ptr2:X8}";
-							if (!nodenames.Contains(name))
-							{
-								NJS_OBJECT obj = new NJS_OBJECT(fc, ptr2, key, ModelFormat.Chunk);
-								info.RootNode = obj.Name;
-								List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
-								foreach (string s in names)
-									if (modelfiles.ContainsKey(s))
-										modelfiles.Remove(s);
-								nodenames.AddRange(names);
-								modelfiles.Add(obj.Name, new KeyValuePair<string, NJS_OBJECT>(Path.Combine(path, $"Upgrade {i + 1} Root.sa2mdl"), obj));
-							}
-							else
-								info.RootNode = name;
-							ptr2 = fc.GetPointer(ptr + 4, key);
+							int ptr2 = fc.GetPointer(ptr + 4, key);
 							if (ptr2 != 0)
 								info.AttachNode1 = $"object_{ptr2:X8}";
-							ptr2 = fc.GetPointer(ptr + 8, key);
-							if (ptr2 != 0)
-							{
-								name = $"object_{ptr2:X8}";
-								if (!nodenames.Contains(name))
-								{
-									NJS_OBJECT obj = new NJS_OBJECT(fc, ptr2, key, ModelFormat.Chunk);
-									info.Model1 = obj.Name;
-									List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
-									foreach (string s in names)
-										if (modelfiles.ContainsKey(s))
-											modelfiles.Remove(s);
-									nodenames.AddRange(names);
-									modelfiles.Add(obj.Name, new KeyValuePair<string, NJS_OBJECT>(Path.Combine(path, $"Upgrade {i + 1} Model 1.sa2mdl"), obj));
-								}
-								else
-									info.Model1 = name;
-							}
-							ptr2 = fc.GetPointer(ptr + 12, key);
+							info.Model1 = GetModel(fc, ptr + 8, key, Path.Combine(path, $"Upgrade {i + 1} Model 1.sa2mdl"), nodenames, modelfiles);
+							ptr2 = fc.GetPointer(ptr + 0xC, key);
 							if (ptr2 != 0)
 								info.AttachNode2 = $"object_{ptr2:X8}";
-							ptr2 = fc.GetPointer(ptr + 16, key);
-							if (ptr2 != 0)
-							{
-								name = $"object_{ptr2:X8}";
-								if (!nodenames.Contains(name))
-								{
-									NJS_OBJECT obj = new NJS_OBJECT(fc, ptr2, key, ModelFormat.Chunk);
-									info.Model2 = obj.Name;
-									List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
-									foreach (string s in names)
-										if (modelfiles.ContainsKey(s))
-											modelfiles.Remove(s);
-									nodenames.AddRange(names);
-									modelfiles.Add(obj.Name, new KeyValuePair<string, NJS_OBJECT>(Path.Combine(path, $"Upgrade {i + 1} Model 2.sa2mdl"), obj));
-								}
-								else
-									info.Model2 = name;
-							}
+							info.Model2 = GetModel(fc, ptr + 0x10, key, Path.Combine(path, $"Upgrade {i + 1} Model 2.sa2mdl"), nodenames, modelfiles);
 						}
 						ini.Upgrades.Add(info);
 						ptr += 0x14;
@@ -130,35 +82,39 @@ namespace splitEvent
 							Console.WriteLine("Group {0} contains {1} entit{2}.", gn + 1, ecnt, ecnt == 1 ? "y" : "ies");
 							for (int en = 0; en < ecnt; en++)
 							{
-								int ptr3 = fc.GetPointer(ptr2, key);
-								if (ptr3 != 0)
-								{
-									string name = $"object_{ptr3:X8}";
-									if (!nodenames.Contains(name))
-									{
-										NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk);
-										info.Entities.Add(obj.Name);
-										List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
-										foreach (string s in names)
-											if (modelfiles.ContainsKey(s))
-												modelfiles.Remove(s);
-										nodenames.AddRange(names);
-										modelfiles.Add(obj.Name, new KeyValuePair<string, NJS_OBJECT>(Path.Combine(path, $"Group {gn + 1} Entity {en + 1} Model.sa2mdl"), obj));
-									}
-									else
-										info.Entities.Add(name);
-								}
-								ptr2 += 0x2C;
+								string name = GetModel(fc, ptr2, key, Path.Combine(path, $"Group {gn + 1} Entity {en + 1} Model.sa2mdl"), nodenames, modelfiles);
+								if (name != null)
+									info.Entities.Add(name);
+								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
 							}
 						}
 						else
 							Console.WriteLine("Group {0} contains no entities.", gn + 1);
+						ptr2 = fc.GetPointer(ptr + 0x18, key);
+						if (ptr2 != 0)
+							info.Big = GetModel(fc, ptr2, key, Path.Combine(path, $"Group {gn + 1} Big Model.sa2mdl"), nodenames, modelfiles);
 						ini.Groups.Add(info);
 						ptr += 0x20;
 					}
 				}
 				else
 					Console.WriteLine("Event contains no groups.");
+				ptr = fc.GetPointer(0x18, key);
+				if (ptr != 0)
+					for (int i = 0; i < 93; i++)
+					{
+						string name = GetModel(fc, ptr, key, Path.Combine(path, $"Mech Part {i + 1}.sa2mdl"), nodenames, modelfiles);
+						if (name != null)
+							ini.MechParts.Add(i, name);
+						ptr += 4;
+					}
+				else
+					Console.WriteLine("Event contains no mech parts.");
+				ptr = fc.GetPointer(0x1C, key);
+				if (ptr != 0)
+					ini.TailsTails = GetModel(fc, ptr, key, Path.Combine(path, $"Tails tails.sa2mdl"), nodenames, modelfiles);
+				else
+					Console.WriteLine("Event does not contain Tails' tails.");
 				foreach (var item in modelfiles)
 				{
 					ModelFile.CreateFile(item.Value.Key, item.Value.Value, null, null, null, null, null, ModelFormat.Chunk);
@@ -167,6 +123,29 @@ namespace splitEvent
 				IniSerializer.Serialize(ini, Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
 			}
 		}
+
+		private static string GetModel(byte[] fc, int address, uint key, string fn, List<string> nodenames, Dictionary<string, KeyValuePair<string, NJS_OBJECT>> modelfiles)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"object_{ptr3:X8}";
+				if (!nodenames.Contains(name))
+				{
+					NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk);
+					name = obj.Name;
+					List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
+					foreach (string s in names)
+						if (modelfiles.ContainsKey(s))
+							modelfiles.Remove(s);
+					nodenames.AddRange(names);
+					modelfiles.Add(obj.Name, new KeyValuePair<string, NJS_OBJECT>(fn, obj));
+				}
+			}
+
+			return name;
+		}
 	}
 
 	public class EventIniData
@@ -174,53 +153,56 @@ namespace splitEvent
 		public string Name { get; set; }
 		[IniAlwaysInclude]
 		public Game Game { get; set; }
-		public DictionaryContainer<string> Files { get; set; }
+		public DictionaryContainer<string, string> Files { get; set; }
 		[IniName("Upgrade")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<UpgradeInfo> Upgrades { get; set; }
 		[IniName("Group")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<GroupInfo> Groups { get; set; }
+		public DictionaryContainer<int, string> MechParts { get; set; }
+		public string TailsTails { get; set; }
 
 		public EventIniData()
 		{
-			Files = new DictionaryContainer<string>();
+			Files = new DictionaryContainer<string, string>();
 			Upgrades = new List<UpgradeInfo>();
 			Groups = new List<GroupInfo>();
+			MechParts = new DictionaryContainer<int, string>();
 		}
 	}
 
-	public class DictionaryContainer<T> : IEnumerable<KeyValuePair<string, T>>
+	public class DictionaryContainer<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
 	{
 		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, T> Items { get; set; }
+		public Dictionary<TKey, TValue> Items { get; set; }
 
 		public DictionaryContainer()
 		{
-			Items = new Dictionary<string, T>();
+			Items = new Dictionary<TKey, TValue>();
 		}
 
-		public void Add(string key, T value)
+		public void Add(TKey key, TValue value)
 		{
 			Items.Add(key, value);
 		}
 
-		public bool ContainsKey(string key)
+		public bool ContainsKey(TKey key)
 		{
 			return Items.ContainsKey(key);
 		}
 
-		public bool Remove(string key)
+		public bool Remove(TKey key)
 		{
 			return Items.Remove(key);
 		}
 
-		public bool TryGetValue(string key, out T value)
+		public bool TryGetValue(TKey key, out TValue value)
 		{
 			return Items.TryGetValue(key, out value);
 		}
 
-		public T this[string key]
+		public TValue this[TKey key]
 		{
 			get
 			{
@@ -243,7 +225,7 @@ namespace splitEvent
 			get { return Items.Count; }
 		}
 
-		public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
+		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
 		{
 			return Items.GetEnumerator();
 		}
@@ -267,7 +249,8 @@ namespace splitEvent
 	{
 		[IniName("Entity")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
-		public List<String> Entities { get; set; }
+		public List<string> Entities { get; set; }
+		public string Big { get; set; }
 
 		public GroupInfo()
 		{

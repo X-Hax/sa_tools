@@ -305,19 +305,11 @@ namespace SonicRetro.SAModel.SAMDL
 			if (additive) modelLibrary.Clear();
 
 			NJS_OBJECT[] models = objectToAdd.GetObjects();
-			meshes = new Mesh[models.Length];
 
 			modelLibrary.BeginUpdate();
 			for (int i = 0; i < models.Length; i++)
-			{
 				if (models[i].Attach != null)
-				{
-					try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-					catch { }
-
 					modelLibrary.Add(models[i].Attach);
-				}
-			}
 			modelLibrary.EndUpdate();
 		}
 
@@ -665,9 +657,9 @@ namespace SonicRetro.SAModel.SAMDL
 			if (model.HasWeight)
 			{
 				if (animation != null)
-					meshes = model.ProcessWeightedModelAnimated(animation, animframe).ToArray();
+					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
 				else
-					meshes = model.ProcessWeightedModel().ToArray();
+					model.UpdateWeightedModel(new MatrixStack(), meshes);
 			}
 		}
 

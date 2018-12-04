@@ -46,10 +46,10 @@ namespace buildMTN
 				uint imageBase = (uint)(animnames.Count * 8) + 8;
 				foreach (KeyValuePair<short, NJS_MOTION> item in anims)
 				{
-					animbytes.AddRange(item.Value.GetBytes((uint)(imageBase), out uint address));
+					animbytes.AddRange(item.Value.GetBytes(imageBase, out uint address));
 					animaddrs[item.Value.Name] = (int)(address + imageBase);
 					animparts[item.Value.Name] = (short)item.Value.ModelParts;
-					imageBase = (uint)(anims.Count * 8) + 8 + (uint)animbytes.Count;
+					imageBase = (uint)(animnames.Count * 8) + 8 + (uint)animbytes.Count;
 				}
 				List<byte> mtnfile = new List<byte>();
 				foreach (KeyValuePair<short, string> item in animnames)

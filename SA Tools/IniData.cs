@@ -2345,6 +2345,7 @@ namespace SA_Tools
 		public ushort XRotation { get; set; }
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort ZRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort? YRotation { get { return null; } set { if (value.HasValue) ZRotation = value.Value; } }
 		public float Distance { get; set; }
 		public Vertex Position { get; set; }

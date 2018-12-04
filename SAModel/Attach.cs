@@ -90,6 +90,8 @@ namespace SonicRetro.SAModel
 
 		public abstract void ProcessVertexData();
 
+		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex);
+
 		public abstract BasicAttach ToBasicModel();
 
 		public abstract ChunkAttach ToChunkModel();

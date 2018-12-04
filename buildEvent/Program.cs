@@ -40,12 +40,12 @@ namespace buildEvent
 				}
 				List<byte> modelbytes = new List<byte>(fc);
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(a.Key) != a.Value).Select(a => a.Key))
+				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
 					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint address));
 				fc = modelbytes.ToArray();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
-					for (int i = 0; i < 18; i++)
+					for (int i = 0; i < (ini.Game == Game.SA2B ? 18 : 16); i++)
 					{
 						UpgradeInfo info = ini.Upgrades[i];
 						if (info.RootNode != null)
@@ -70,16 +70,30 @@ namespace buildEvent
 					{
 						GroupInfo info = ini.Groups[gn];
 						int ptr2 = fc.GetPointer(ptr, key);
-						int ecnt = ByteConverter.ToInt32(fc, ptr + 4);
+						int ecnt = Math.Min(ByteConverter.ToInt32(fc, ptr + 4), info.Entities?.Count ?? 0);
 						if (ptr2 != 0)
 							for (int en = 0; en < ecnt; en++)
 							{
 								if (labels.ContainsKey(info.Entities[en]))
 									ByteConverter.GetBytes(labels[info.Entities[en]]).CopyTo(fc, ptr2);
-								ptr2 += 0x2C;
+								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
 							}
+						ptr2 = fc.GetPointer(ptr + 0x18, key);
+						if (ptr2 != 0 && info.Big != null && labels.ContainsKey(info.Big))
+							ByteConverter.GetBytes(labels[info.Big]).CopyTo(fc, ptr2);
 						ptr += 0x20;
 					}
+				ptr = fc.GetPointer(0x18, key);
+				if (ptr != 0)
+					for (int i = 0; i < 18; i++)
+					{
+						if (ini.MechParts.ContainsKey(i) && labels.ContainsKey(ini.MechParts[i]))
+							ByteConverter.GetBytes(labels[ini.MechParts[i]]).CopyTo(fc, ptr);
+						ptr += 4;
+					}
+				ptr = fc.GetPointer(0x1C, key);
+				if (ptr != 0 && ini.TailsTails != null && labels.ContainsKey(ini.TailsTails))
+						ByteConverter.GetBytes(labels[ini.TailsTails]).CopyTo(fc, ptr);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					Prs.Compress(fc, filename);
 				else
@@ -93,53 +107,56 @@ namespace buildEvent
 		public string Name { get; set; }
 		[IniAlwaysInclude]
 		public Game Game { get; set; }
-		public DictionaryContainer<string> Files { get; set; }
+		public DictionaryContainer<string, string> Files { get; set; }
 		[IniName("Upgrade")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<UpgradeInfo> Upgrades { get; set; }
 		[IniName("Group")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<GroupInfo> Groups { get; set; }
+		public DictionaryContainer<int, string> MechParts { get; set; }
+		public string TailsTails { get; set; }
 
 		public EventIniData()
 		{
-			Files = new DictionaryContainer<string>();
+			Files = new DictionaryContainer<string, string>();
 			Upgrades = new List<UpgradeInfo>();
 			Groups = new List<GroupInfo>();
+			MechParts = new DictionaryContainer<int, string>();
 		}
 	}
 
-	public class DictionaryContainer<T> : IEnumerable<KeyValuePair<string, T>>
+	public class DictionaryContainer<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
 	{
 		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, T> Items { get; set; }
+		public Dictionary<TKey, TValue> Items { get; set; }
 
 		public DictionaryContainer()
 		{
-			Items = new Dictionary<string, T>();
+			Items = new Dictionary<TKey, TValue>();
 		}
 
-		public void Add(string key, T value)
+		public void Add(TKey key, TValue value)
 		{
 			Items.Add(key, value);
 		}
 
-		public bool ContainsKey(string key)
+		public bool ContainsKey(TKey key)
 		{
 			return Items.ContainsKey(key);
 		}
 
-		public bool Remove(string key)
+		public bool Remove(TKey key)
 		{
 			return Items.Remove(key);
 		}
 
-		public bool TryGetValue(string key, out T value)
+		public bool TryGetValue(TKey key, out TValue value)
 		{
 			return Items.TryGetValue(key, out value);
 		}
 
-		public T this[string key]
+		public TValue this[TKey key]
 		{
 			get
 			{
@@ -162,7 +179,7 @@ namespace buildEvent
 			get { return Items.Count; }
 		}
 
-		public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
+		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
 		{
 			return Items.GetEnumerator();
 		}
@@ -186,7 +203,8 @@ namespace buildEvent
 	{
 		[IniName("Entity")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
-		public List<String> Entities { get; set; }
+		public List<string> Entities { get; set; }
+		public string Big { get; set; }
 
 		public GroupInfo()
 		{

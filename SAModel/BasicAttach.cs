@@ -445,9 +445,67 @@ namespace SonicRetro.SAModel
 					}
 					for (int i = 0; i < poly.Indexes.Length; i++)
 					{
-						newpoly.Indexes[i] = (ushort)verts.AddUnique(new VertexData(
+						newpoly.Indexes[i] = (ushort)verts.Count;
+						verts.Add(new VertexData(
 							Vertex[poly.Indexes[i]],
 							Normal[poly.Indexes[i]],
+							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+							hasUV ? mesh.UV[currentstriptotal++] : null));
+					}
+					polys.Add(newpoly);
+				}
+				NJS_MATERIAL mat = null;
+				if (Material != null && mesh.MaterialID < Material.Count)
+					mat = Material[mesh.MaterialID];
+				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+			}
+			MeshInfo = result.ToArray();
+		}
+
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		{
+			if (!motion.Models.ContainsKey(animindex))
+			{
+				ProcessVertexData();
+				return;
+			}
+			Vertex[] vertdata = Vertex;
+			Vertex[] normdata = Normal;
+			AnimModelData data = motion.Models[animindex];
+			if (data.Vertex.Count > 0)
+				vertdata = data.GetVertex(frame);
+			if (data.Normal.Count > 0)
+				normdata = data.GetNormal(frame);
+			List<MeshInfo> result = new List<MeshInfo>();
+			foreach (NJS_MESHSET mesh in Mesh)
+			{
+				bool hasVColor = mesh.VColor != null;
+				bool hasUV = mesh.UV != null;
+				List<Poly> polys = new List<Poly>();
+				List<VertexData> verts = new List<VertexData>();
+				int currentstriptotal = 0;
+				foreach (Poly poly in mesh.Poly)
+				{
+					Poly newpoly = null;
+					switch (mesh.PolyType)
+					{
+						case Basic_PolyType.Triangles:
+							newpoly = new Triangle();
+							break;
+						case Basic_PolyType.Quads:
+							newpoly = new Quad();
+							break;
+						case Basic_PolyType.NPoly:
+						case Basic_PolyType.Strips:
+							newpoly = new Strip(poly.Indexes.Length, ((Strip)poly).Reversed);
+							break;
+					}
+					for (int i = 0; i < poly.Indexes.Length; i++)
+					{
+						newpoly.Indexes[i] = (ushort)verts.Count;
+						verts.Add(new VertexData(
+							vertdata[poly.Indexes[i]],
+							normdata[poly.Indexes[i]],
 							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
 							hasUV ? mesh.UV[currentstriptotal++] : null));
 					}

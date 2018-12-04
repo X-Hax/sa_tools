@@ -46,6 +46,16 @@ namespace SonicRetro.SAModel
 			}
 		}
 
+		public LandTable()
+		{
+			Name = "landtable_" + Extensions.GenerateIdentifier();
+			COL = new List<COL>();
+			COLName = "collist_" + Extensions.GenerateIdentifier();
+			Anim = new List<GeoAnimData>();
+			AnimName = "animlist_" + Extensions.GenerateIdentifier();
+			Metadata = new Dictionary<uint, byte[]>();
+		}
+
 		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
 		{

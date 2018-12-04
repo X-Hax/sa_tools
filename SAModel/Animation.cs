@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SonicRetro.SAModel
@@ -267,21 +268,32 @@ namespace SonicRetro.SAModel
 					if (vertoff != 0 && frames > 0)
 					{
 						hasdata = true;
-						tmpaddr = (int)(vertoff + (8 * (frames - 1)));
-						int lastaddr = (int)vertoff;
-						for (int j = frames - 1; j >= 0; j--)
+						tmpaddr = (int)vertoff;
+						List<(int frame, int ptr)> frameptrs = new List<(int frame, int ptr)>();
+						List<int> ptrs = new List<int>();
+						for (int j = 0; j < frames; j++)
 						{
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
+							frameptrs.Add((ByteConverter.ToInt32(file, tmpaddr), newaddr));
+							ptrs.AddUnique(newaddr);
+							tmpaddr += 8;
+						}
+						int lastaddr = (int)vertoff;
+						Dictionary<int, Vertex[]> vertdata = new Dictionary<int, Vertex[]>();
+						foreach (int newaddr in ptrs.OrderByDescending(a=>a))
+						{
 							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
 							lastaddr = newaddr;
+							tmpaddr = newaddr;
 							for (int k = 0; k < verts.Length; k++)
 							{
-								verts[k] = new Vertex(file, newaddr);
-								newaddr += Vertex.Size;
+								verts[k] = new Vertex(file, tmpaddr);
+								tmpaddr += Vertex.Size;
 							}
-							data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
-							tmpaddr -= 8;
+							vertdata[newaddr] = verts;
 						}
+						foreach (var (frame, ptr) in frameptrs)
+							data.Vertex.Add(frame, vertdata[ptr]);
 					}
 					address += 4;
 				}
@@ -291,21 +303,32 @@ namespace SonicRetro.SAModel
 					if (normoff != 0 && frames > 0)
 					{
 						hasdata = true;
-						tmpaddr = (int)(normoff + (8 * (frames - 1)));
-						int lastaddr = (int)normoff;
-						for (int j = frames - 1; j >= 0; j--)
+						tmpaddr = (int)normoff;
+						List<(int frame, int ptr)> frameptrs = new List<(int frame, int ptr)>();
+						List<int> ptrs = new List<int>();
+						for (int j = 0; j < frames; j++)
 						{
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
+							frameptrs.Add((ByteConverter.ToInt32(file, tmpaddr), newaddr));
+							ptrs.AddUnique(newaddr);
+							tmpaddr += 8;
+						}
+						int lastaddr = (int)normoff;
+						Dictionary<int, Vertex[]> vertdata = new Dictionary<int, Vertex[]>();
+						foreach (int newaddr in ptrs.OrderByDescending(a => a))
+						{
 							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
 							lastaddr = newaddr;
+							tmpaddr = newaddr;
 							for (int k = 0; k < verts.Length; k++)
 							{
-								verts[k] = new Vertex(file, newaddr);
-								newaddr += Vertex.Size;
+								verts[k] = new Vertex(file, tmpaddr);
+								tmpaddr += Vertex.Size;
 							}
-							data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
-							tmpaddr -= 8;
+							vertdata[newaddr] = verts;
 						}
+						foreach (var (frame, ptr) in frameptrs)
+							data.Normal.Add(frame, vertdata[ptr]);
 					}
 					address += 4;
 				}
@@ -1607,6 +1630,178 @@ namespace SonicRetro.SAModel
 				Z = (((Scale[f2].Z - Scale[f1].Z) / (f2 - f1)) * (frame - f1)) + Scale[f1].Z
 			};
 			return val;
+		}
+
+		public Vertex GetVector(int frame)
+		{
+			if (Vector.ContainsKey(frame))
+				return Vector[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Vector.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Vector.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Vector.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetVector(0);
+			Vertex val = new Vertex()
+			{
+				X = (((Vector[f2].X - Vector[f1].X) / (f2 - f1)) * (frame - f1)) + Vector[f1].X,
+				Y = (((Vector[f2].Y - Vector[f1].Y) / (f2 - f1)) * (frame - f1)) + Vector[f1].Y,
+				Z = (((Vector[f2].Z - Vector[f1].Z) / (f2 - f1)) * (frame - f1)) + Vector[f1].Z
+			};
+			return val;
+		}
+
+		public Vertex[] GetVertex(int frame)
+		{
+			if (Vertex.ContainsKey(frame))
+				return Vertex[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Vertex.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Vertex.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Vertex.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetVertex(0);
+			Vertex[] result = new Vertex[Vertex[f1].Length];
+			for (int i = 0; i < Vertex[f1].Length; i++)
+				result[i] = new Vertex()
+				{
+					X = (((Vertex[f2][i].X - Vertex[f1][i].X) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].X,
+					Y = (((Vertex[f2][i].Y - Vertex[f1][i].Y) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].Y,
+					Z = (((Vertex[f2][i].Z - Vertex[f1][i].Z) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].Z
+				};
+			return result;
+		}
+
+		public Vertex[] GetNormal(int frame)
+		{
+			if (Normal.ContainsKey(frame))
+				return Normal[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Normal.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Normal.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Normal.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetNormal(0);
+			Vertex[] result = new Vertex[Normal[f1].Length];
+			for (int i = 0; i < Normal[f1].Length; i++)
+				result[i] = new Vertex()
+				{
+					X = (((Normal[f2][i].X - Normal[f1][i].X) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].X,
+					Y = (((Normal[f2][i].Y - Normal[f1][i].Y) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].Y,
+					Z = (((Normal[f2][i].Z - Normal[f1][i].Z) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].Z
+				};
+			return result;
+		}
+
+		public Vertex GetTarget(int frame)
+		{
+			if (Target.ContainsKey(frame))
+				return Target[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Target.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Target.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Target.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetTarget(0);
+			Vertex val = new Vertex()
+			{
+				X = (((Target[f2].X - Target[f1].X) / (f2 - f1)) * (frame - f1)) + Target[f1].X,
+				Y = (((Target[f2].Y - Target[f1].Y) / (f2 - f1)) * (frame - f1)) + Target[f1].Y,
+				Z = (((Target[f2].Z - Target[f1].Z) / (f2 - f1)) * (frame - f1)) + Target[f1].Z
+			};
+			return val;
+		}
+
+		public int GetRoll(int frame)
+		{
+			if (Roll.ContainsKey(frame))
+				return Roll[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Roll.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Roll.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Roll.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetRoll(0);
+			return (int)Math.Round((((Roll[f2] - Roll[f1]) / (double)(f2 - f1)) * (frame - f1)) + Roll[f1], MidpointRounding.AwayFromZero);
+		}
+
+		public int GetAngle(int frame)
+		{
+			if (Angle.ContainsKey(frame))
+				return Angle[frame];
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Angle.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Angle.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Angle.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			if (f2 == 0)
+				return GetAngle(0);
+			return (int)Math.Round((((Angle[f2] - Angle[f1]) / (double)(f2 - f1)) * (frame - f1)) + Angle[f1], MidpointRounding.AwayFromZero);
 		}
 	}
 
