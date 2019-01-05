@@ -2748,6 +2748,119 @@ namespace SA_Tools
 		}
 	}
 
+	public static class SA2StoryList
+	{
+		public static List<SA2StoryEntry> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2StoryEntry>>(filename);
+		}
+
+		public static List<SA2StoryEntry> Load(byte[] file, int address)
+		{
+			List<SA2StoryEntry> result = new List<SA2StoryEntry>();
+			while (file[address] != 2)
+			{
+				result.Add(new SA2StoryEntry(file, address));
+				address += SA2StoryEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2StoryEntry> startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+
+		public static byte[] GetBytes(this List<SA2StoryEntry> startpos)
+		{
+			List<byte> result = new List<byte>(SA2StoryEntry.Size * (startpos.Count + 1));
+			foreach (SA2StoryEntry item in startpos)
+				result.AddRange(item.GetBytes());
+			result.Add(2);
+			result.AddRange(new byte[SA2StoryEntry.Size - 1]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class SA2StoryEntry
+	{
+		public SA2StoryEntry() { }
+
+		public SA2StoryEntry(byte[] file, int address)
+		{
+			Type = (SA2StoryEntryType)file[address++];
+			Character = (SA2Characters)file[address++];
+			Level = (SA2LevelIDs)ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Events = new List<int>();
+			for (int i = 0; i < 4; i++)
+			{
+				int tmp = ByteConverter.ToInt16(file, address);
+				address += sizeof(short);
+				if (tmp == -1)
+					break;
+				Events.Add(tmp);
+			}
+			if (Events.Count == 0) Events = null;
+		}
+
+		[IniAlwaysInclude]
+		public SA2StoryEntryType Type { get; set; }
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		[IniAlwaysInclude]
+		public SA2LevelIDs Level { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
+		public List<int> Events { get; set; }
+
+		public static int Size { get { return 0xC; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size)
+			{
+				(byte)Type,
+				(byte)Character
+			};
+			result.AddRange(ByteConverter.GetBytes((short)Level));
+			if (Events != null)
+				for (int i = 0; i < 4; i++)
+					result.AddRange(ByteConverter.GetBytes((short)(i < Events.Count ? Events[i] : -1)));
+			else
+				result.AddRange(System.Linq.Enumerable.Repeat((byte)0xFF, 8));
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type.ToC("StoryEntryType"));
+			result.Append(", ");
+			result.Append(Character.ToC("Characters"));
+			result.Append(", ");
+			result.Append(Level.ToC("LevelIDs"));
+			if (Events != null)
+				for (int i = 0; i < 4; i++)
+				{
+					result.Append(", ");
+					result.Append(i < Events.Count ? Events[i] : -1);
+				}
+			else
+				result.Append(", -1, -1, -1, -1");
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	public enum SA2StoryEntryType
+	{
+		Event,
+		Level,
+		End,
+		Credits
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>
