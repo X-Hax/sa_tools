@@ -6,6 +6,10 @@ using System.Text;
 using Collada141;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
 
 namespace SonicRetro.SAModel
 {
@@ -82,7 +86,38 @@ namespace SonicRetro.SAModel
 			Rotation = new Rotation();
 			Scale = new Vertex(1, 1, 1);
 			children = new List<NJS_OBJECT>();
-			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
+			Children = new ReadOnlyCollection<NJS_OBJECT>(children);		
+		}
+		
+		void AssimpLoad(Scene scene, Node node)
+		{
+			Name = node.Name;
+			Vector3D translation;
+			Vector3D scaling;
+			Quaternion rotation;
+			node.Transform.Decompose(out scaling, out rotation, out translation);
+			Vector3D rotationConverted = Extensions.FromQ2(rotation);
+			Position = new Vertex(translation.X, -translation.Z, translation.Y);
+			Rotation = new Rotation((int)(rotationConverted.X * 65536.0 / (2 * Math.PI)), -(int)(rotationConverted.Z * 65536.0 / (2 * Math.PI)), (int)(rotationConverted.Y* 65536.0 / (2 * Math.PI)));
+			Scale = new Vertex(scaling.X, -scaling.Z, scaling.Y);
+			List<Mesh> meshes = new List<Mesh>();
+			foreach (int i in node.MeshIndices)
+				meshes.Add(scene.Meshes[i]);
+			List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>(scene.Materials.Select(a => new NJS_MATERIAL(a)));
+			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
+			if (node.HasMeshes)
+				Attach = new BasicAttach(materials, meshes);
+			else Attach = null;
+			if (node.HasChildren)
+			{
+				List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a)));
+				Children = new ReadOnlyCollection<NJS_OBJECT>(list.ToArray());
+			}
+			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
+		}
+		public NJS_OBJECT(Scene scene, Node node)
+		{
+			AssimpLoad(scene, node);
 		}
 
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
@@ -133,6 +168,10 @@ namespace SonicRetro.SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels);
 			}
+
+			//Assimp.AssimpContext context = new AssimpContext();
+			//Scene scene = context.ImportFile("F:\\untitled.obj", PostProcessSteps.Triangulate);
+			//AssimpLoad(scene, scene.RootNode);
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)

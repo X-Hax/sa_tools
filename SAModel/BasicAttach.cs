@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
+using NvTriStripDotNet;
+using PrimitiveType = Assimp.PrimitiveType;
 
 namespace SonicRetro.SAModel
 {
@@ -109,6 +115,7 @@ namespace SonicRetro.SAModel
 				}
 			}
 			Bounds = new BoundingSphere(file, address + 0x18);
+
 		}
 
 		public BasicAttach(Vertex[] vertex, Vertex[] normal, IEnumerable<NJS_MESHSET> mesh, IEnumerable<NJS_MATERIAL> material)
@@ -120,6 +127,77 @@ namespace SonicRetro.SAModel
 			Material = new List<NJS_MATERIAL>(material);
 
 			Name = "attach_" + Extensions.GenerateIdentifier();
+		}
+
+		public BasicAttach(List<NJS_MATERIAL> materials, List<Mesh> meshes)
+		{
+			Name = "attach_" + Extensions.GenerateIdentifier();
+			Bounds = new BoundingSphere();
+			Material = new List<NJS_MATERIAL>();
+			MaterialName = "matlist_" + Extensions.GenerateIdentifier();
+			Mesh = new List<NJS_MESHSET>();
+			MeshName = "meshlist_" + Extensions.GenerateIdentifier();
+			Vertex = new Vertex[0];
+			VertexName = "vertex_" + Extensions.GenerateIdentifier();
+			Normal = new Vertex[0];
+			NormalName = "normal_" + Extensions.GenerateIdentifier();
+
+			List<Vertex> vertices = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Vertices)
+				{
+					vertices.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Vertex = vertices.ToArray();
+
+			List<Vertex> normals = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Normals)
+				{
+					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Normal = normals.ToArray();
+
+			Material = materials;
+
+			int polyIndex = 0;
+			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
+			for (int i = 0; i < meshes.Count; i++)
+			{
+				NJS_MESHSET meshset;//= new NJS_MESHSET(polyType, meshes[i].Faces.Count, false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
+
+				List<Poly> polys = new List<Poly>();
+
+				//i noticed the primitiveType of the Assimp Mesh is always triangles so...
+				foreach (Face f in meshes[i].Faces)
+				{
+					Triangle triangle = new Triangle();
+					triangle.Indexes[0] = (ushort)(f.Indices[0] + polyIndex);
+					triangle.Indexes[1] = (ushort)(f.Indices[1] + polyIndex);
+					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
+					polys.Add(triangle);
+				}
+				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), false); //hasVColor = meshes[i].HasVertexColors(0);
+				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+				meshset.MaterialID = (ushort)meshes[i].MaterialIndex;
+
+				if (meshes[i].HasTextureCoords(0))
+				{
+					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
+					{
+						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
+					}
+				}
+				
+				if (meshes[i].HasVertexColors(0))
+					throw new NotImplementedException();
+				polyIndex += meshes[i].VertexCount;
+				meshsets.Add(meshset);//4B4834
+			}
+			Mesh = meshsets;
+			Bounds = new BoundingSphere() { Radius = 1.0f };
+
 		}
 
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
