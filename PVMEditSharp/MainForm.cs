@@ -153,10 +153,6 @@ namespace PVMEditSharp
 				this.Close();
 		}
 
-		private void newToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-		}
-
 		private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			textures.Clear();
