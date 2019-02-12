@@ -342,7 +342,7 @@ namespace PVMEditSharp
 				if (filename != null)
 					dlg.SelectedPath = Path.GetDirectoryName(filename);
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-					foreach (PvrTextureInfo tex in textures)
+					foreach (TextureInfo tex in textures)
 						tex.Image.Save(Path.Combine(dlg.SelectedPath, tex.Name + ".png"));
 			}
 		}
@@ -363,7 +363,7 @@ namespace PVMEditSharp
 
 					using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
 					{
-						foreach (PvrTextureInfo tex in textures)
+						foreach (TextureInfo tex in textures)
 						{
 							tex.Image.Save(Path.Combine(path, tex.Name + ".png"));
 							texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
