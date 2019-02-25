@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace VariableListGenerator
 {
-	class Program
+	static class Program
 	{
 		static readonly Regex arrayLengthExp = new Regex(@"\[(\d+)?\]", RegexOptions.CultureInvariant);
 
-		// TODO: exclusions
+		private static readonly HashSet<long> excludedAddresses = new HashSet<long>();
+
 		static void Main(string[] args)
 		{
 			bool outputD = args.Any(x => x == "-d");
@@ -32,6 +34,14 @@ namespace VariableListGenerator
 				return;
 			}
 
+			if (args.Length > 1)
+			{
+				foreach (string address in File.ReadAllLines(args[1]).Where(x => !string.IsNullOrEmpty(x)))
+				{
+					excludedAddresses.Add(Convert.ToInt64(address, 16));
+				}
+			}
+
 			string[] lines = File.ReadAllLines(filename);
 
 			using (StreamWriter writer = File.CreateText(Path.ChangeExtension(filename, outputD ? "d" : "h")))
@@ -52,6 +62,13 @@ namespace VariableListGenerator
 					string address = fields[0];
 					string name    = fields[1];
 					string type    = fields[2];
+
+					long addressValue = Convert.ToInt64(address, 16);
+
+					if (excludedAddresses.Contains(addressValue))
+					{
+						continue;
+					}
 
 					MatchCollection matches = arrayLengthExp.Matches(type);
 					bool isArray = matches.Count == 1;
