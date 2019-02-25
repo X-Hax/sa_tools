@@ -9,8 +9,8 @@ namespace FunctionListGenerator
 	static class Program
 	{
 		static readonly Regex functiontype = new Regex(@"^(?<returntype>(?:const )?(?:signed |unsigned )?[A-Za-z_][A-Za-z_0-9]*(?: ?\*)?) ?(?<callconv>__cdecl|__stdcall|__fastcall|__thiscall|__usercall|__userpurge)?(?:@<(?<returnreg>[^>]+)>)?\((?<arguments>.*)\)$", RegexOptions.CultureInvariant);
-		static readonly Regex argument     = new Regex(@"(?<name>[^<@]+)(?:@<(?<register>[^>]+)>)?", RegexOptions.CultureInvariant);
-		static readonly Regex functionptr  = new Regex(@"\((?<callconv>__cdecl|__stdcall|__fastcall|__thiscall)?\*(?<name>[A-Za-z_][A-Za-z_0-9]*)\)", RegexOptions.CultureInvariant);
+		static readonly Regex argument     = new Regex(@"(?<name>[^<@]+)(?:@<(?<register>[^>]+)>)?",                                                                                                                                                                      RegexOptions.CultureInvariant);
+		static readonly Regex functionptr  = new Regex(@"\((?<callconv>__cdecl|__stdcall|__fastcall|__thiscall)?\*(?<name>[A-Za-z_][A-Za-z_0-9]*)\)",                                                                                                                     RegexOptions.CultureInvariant);
 		static readonly Regex objfunc      = new Regex(@"^ObjectMaster\s*\*\s*[^\s,]*$");
 
 		static readonly Dictionary<string, string> boolregs = new Dictionary<string, string>
@@ -163,7 +163,7 @@ namespace FunctionListGenerator
 
 					if (i == 0 && callconv == "__thiscall" && string.IsNullOrEmpty(argName))
 					{
-						argName = "_this";
+						argName =  "_this";
 						argDecl += " _this";
 					}
 
@@ -183,21 +183,21 @@ namespace FunctionListGenerator
 						string[] s = functionptr.Split(argDecl);
 
 						string ptrReturnType = string.Empty;
-						string ptrConention  = string.Empty;
-						string theRest       = string.Empty;
+						string ptrConention = string.Empty;
+						string theRest = string.Empty;
 
 						switch (s.Length)
 						{
 							case 3:
 								ptrReturnType = s[0].Trim();
-								ptrConention  = "__cdecl";
-								theRest       = s[2].Trim();
+								ptrConention = "__cdecl";
+								theRest = s[2].Trim();
 								break;
 
 							case 4:
 								ptrReturnType = s[0].Trim();
-								ptrConention  = s[1].Trim();
-								theRest       = s[3];
+								ptrConention = s[1].Trim();
+								theRest = s[3];
 								break;
 
 							default:
@@ -262,23 +262,23 @@ namespace FunctionListGenerator
 						}
 
 						writer.WriteLine("mixin FunctionPointer!({0}, \"{1}\", [ {2} ], {3});",
-										 returntype, name, dArgString, address);
+						                 returntype, name, dArgString, address);
 						break;
 
 					case "__stdcall":
 						// TODO !!!
 						writer.WriteLine("mixin StdcallFunctionPointer!({0}, \"{1}\", [ {2} ], {3});",
-										 returntype, name, dArgString, address);
+						                 returntype, name, dArgString, address);
 						break;
 
 					case "__fastcall":
 						writer.WriteLine("mixin FastcallFunctionPointer!({0}, \"{1}\", [ {2} ], {3});",
-										 returntype, name, dArgString, address);
+						                 returntype, name, dArgString, address);
 						break;
 
 					case "__thiscall":
 						writer.WriteLine("mixin ThiscallFunctionPointer!({0}, \"{1}\", [ {2} ], {3});",
-										 returntype, name, dArgString, address);
+						                 returntype, name, dArgString, address);
 						break;
 
 					case "__usercall":
@@ -318,8 +318,8 @@ namespace FunctionListGenerator
 				Match match = functiontype.Match(type);
 
 				string returntype = match.Groups["returntype"].Value;
-				string callconv = match.Groups["callconv"].Value;
-				string arguments = match.Groups["arguments"].Value;
+				string callconv   = match.Groups["callconv"].Value;
+				string arguments  = match.Groups["arguments"].Value;
 
 				switch (callconv)
 				{
@@ -359,8 +359,8 @@ namespace FunctionListGenerator
 
 			foreach (string line in nonStandard)
 			{
-				string[] split = line.Split('|');
-				string address = split[0];
+				string[] split   = line.Split('|');
+				string   address = split[0];
 
 				if (excludefuncs.Contains(address))
 				{
@@ -377,16 +377,16 @@ namespace FunctionListGenerator
 				Match match = functiontype.Match(type);
 
 				string returntype = match.Groups["returntype"].Value;
-				string returnreg = match.Groups["returnreg"].Value;
-				string callconv = match.Groups["callconv"].Value; // TODO: handle userpurge (clean up stack)
-				string arguments = match.Groups["arguments"].Value;
+				string returnreg  = match.Groups["returnreg"].Value;
+				string callconv   = match.Groups["callconv"].Value; // TODO: handle userpurge (clean up stack)
+				string arguments  = match.Groups["arguments"].Value;
 
 				var arglist = new List<string>();
 				getArgList(arguments, arglist);
 
 				var argnames = new List<string>();
 				var argdecls = new List<string>();
-				var argregs = new List<string>();
+				var argregs  = new List<string>();
 
 				giveMeTheThings(arglist, argdecls, argnames, argregs);
 
@@ -409,7 +409,7 @@ namespace FunctionListGenerator
 						bool isbyte = false;
 						if (!argdecls[i].Contains("*"))
 						{
-							switch (argdecls[i].Substring(argdecls[i].LastIndexOf(' ')))
+							switch (argdecls[i].Remove(argdecls[i].LastIndexOf(' ')))
 							{
 								case "char":
 								case "unsigned char":
@@ -421,6 +421,21 @@ namespace FunctionListGenerator
 								case "BOOL1":
 								case "uint8_t":
 								case "int8_t":
+								case "__int8":
+								case "signed __int8":
+								case "unsigned __int8":
+								case "_BYTE":
+								case "short":
+								case "unsigned short":
+								case "signed short":
+								case "Sint16":
+								case "Uint16":
+								case "uint16_t":
+								case "int16_t":
+								case "__int16":
+								case "signed __int16":
+								case "unsigned __int16":
+								case "_WORD":
 									isbyte = true;
 									break;
 							}
@@ -497,7 +512,7 @@ namespace FunctionListGenerator
 				{
 					case "size":
 						argname = "_size";
-						argdecl = argdecl.Replace("size", "_size");
+						argdecl = argdecl.Replace("size", "_size").Replace("_size_t", "size_t");
 						break;
 
 					case "type":
