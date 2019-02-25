@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿// TODO: finish implementing this
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -18,14 +21,14 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT ballmodel;
 		private Mesh[] ballmeshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			centermodel = ObjectHelper.LoadModel("Objects/Common/O IRONB_A.sa1mdl");
-			centermeshes = ObjectHelper.GetMeshes(centermodel, dev);
+			centermeshes = ObjectHelper.GetMeshes(centermodel);
 			cylindermodel = ObjectHelper.LoadModel("Objects/Collision/C CYLINDER.sa1mdl");
-			cylindermeshes = ObjectHelper.GetMeshes(cylindermodel, dev);
+			cylindermeshes = ObjectHelper.GetMeshes(cylindermodel);
 			ballmodel = ObjectHelper.LoadModel("Objects/Common/O IRONB_C.sa1mdl");
-			ballmeshes = ObjectHelper.GetMeshes(ballmodel, dev);
+			ballmeshes = ObjectHelper.GetMeshes(ballmodel);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -45,7 +48,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(centermodel.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
+			result.AddRange(centermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), centermeshes));
 			if (item.Selected)
 				result.AddRange(centermodel.DrawModelTreeInvert(transform, centermeshes));
 			transform.Pop();
@@ -55,7 +58,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position.X, (float)v8, item.Position.Z);
 			double v9 = item.Scale.Y * 0.05000000074505806;
 			transform.NJScale((float)v14, (float)v9, (float)v14);
-			result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
+			result.AddRange(cylindermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylindermeshes));
 			if (selected)
 				result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
 			transform.Pop();
@@ -64,10 +67,21 @@ namespace SADXObjectDefinitions.Common
 			double v13 = item.Scale.Y * 0.5;
 			transform.NJTranslate(item.Position.X, (float)v13, item.Position.Z);
 			transform.NJScale((float)v15, 0.1000000014901161f, (float)v15);
-			result.AddRange(cylindermodel.DrawModelTree(dev, transform, null, cylindermeshes));
+			result.AddRange(cylindermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylindermeshes));
 			if (selected)
 				result.AddRange(cylindermodel.DrawModelTreeInvert(dev, transform, cylindermeshes));
 			transform.Pop();*/
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(centermodel, transform.Top));
+			transform.Pop();
 			return result;
 		}
 
@@ -77,6 +91,16 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			return ObjectHelper.GetModelBounds(centermodel, transform);
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+			return matrix;
 		}
 
 		public override string Name { get { return "Swinging Spike Ball"; } }
@@ -143,7 +167,7 @@ namespace SADXObjectDefinitions.Common
 			UpdateZScale(item, (bool)GetOneBall(item), (ShadowType)GetShadow(item), (bool)GetChain(item), (long)value);
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Chain Length", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X =  (float)v),
 			new PropertySpec("Vertical Distance", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
 			new PropertySpec("One Ball", typeof(bool), "Extended", null, null, GetOneBall, SetOneBall),

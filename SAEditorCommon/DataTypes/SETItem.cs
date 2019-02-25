@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing.Design;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class SETItem : Item, ICustomTypeDescriptor
+	public class SETItem : Item, ICustomTypeDescriptor, IScaleable
 	{
 		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
@@ -28,10 +28,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			ID = id;
 			objdef = GetObjectDefinition();
-			Position = new Vertex();
-			Rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			position = new Vertex();
+			rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
 			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
+
+			GetHandleMatrix();
 		}
 
 		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
@@ -40,14 +42,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
 			ClipLevel = (byte)(_id >> 12);
-			ushort xrot = BitConverter.ToUInt16(file, address + 2);
-			ushort yrot = BitConverter.ToUInt16(file, address + 4);
-			ushort zrot = BitConverter.ToUInt16(file, address + 6);
-			Rotation = new Rotation(xrot, yrot, zrot);
-			Position = new Vertex(file, address + 8);
+			ushort xrot = ByteConverter.ToUInt16(file, address + 2);
+			ushort yrot = ByteConverter.ToUInt16(file, address + 4);
+			ushort zrot = ByteConverter.ToUInt16(file, address + 6);
+			rotation = new Rotation(xrot, yrot, zrot);
+			position = new Vertex(file, address + 8);
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
+
+			GetHandleMatrix();
 		}
 
 		public virtual ObjectDefinition GetObjectDefinition()
@@ -92,20 +96,34 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { ClipLevel = (ushort)value; }
 		}
 
-		public override Vertex Position { get; set; }
+		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		protected Vertex scale = new Vertex();
+		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
-		public override Rotation Rotation { get; set; }
+		public Vertex GetScale()
+		{
+			return Scale;
+		}
 
-		public Vertex Scale { get; set; }
+		public void SetScale(Vertex scale)
+		{
+			this.Scale = scale;
+		}
+
+		protected override void GetHandleMatrix()
+		{
+			transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
+		}
 
 		public override void Paste()
 		{
-			LevelData.SETItems[LevelData.Character].Add(this);
+			LevelData.AddSETItem(LevelData.Character, this);
 		}
 
 		public override void Delete()
 		{
-			LevelData.SETItems[LevelData.Character].Remove(this);
+			LevelData.RemoveSETItem(LevelData.Character, this);
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -134,16 +152,46 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public byte[] GetBytes()
 		{
 			List<byte> bytes = new List<byte>(0x20);
-			bytes.AddRange(BitConverter.GetBytes((ushort)(id | (cliplevel << 12))));
+			bytes.AddRange(ByteConverter.GetBytes((ushort)(id | (cliplevel << 12))));
 			unchecked
 			{
-				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.X));
-				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Y));
-				bytes.AddRange(BitConverter.GetBytes((ushort)Rotation.Z));
+				bytes.AddRange(ByteConverter.GetBytes((ushort)Rotation.X));
+				bytes.AddRange(ByteConverter.GetBytes((ushort)Rotation.Y));
+				bytes.AddRange(ByteConverter.GetBytes((ushort)Rotation.Z));
 			}
 			bytes.AddRange(Position.GetBytes());
 			bytes.AddRange(Scale.GetBytes());
 			return bytes.ToArray();
+		}
+
+		public static List<SETItem> Load(string filename, EditorItemSelection selectionManager) => Load(System.IO.File.ReadAllBytes(filename), selectionManager);
+
+		public static List<SETItem> Load(byte[] setfile, EditorItemSelection selectionManager)
+		{
+			int count = ByteConverter.ToInt32(setfile, 0);
+			List<SETItem> list = new List<SETItem>(count);
+			int address = 0x20;
+			for (int j = 0; j < count; j++)
+			{
+				SETItem ent = new SETItem(setfile, address, selectionManager);
+				list.Add(ent);
+				address += 0x20;
+			}
+			return list;
+		}
+
+		public static void Save(List<SETItem> items, string filename) => System.IO.File.WriteAllBytes(filename, Save(items));
+
+		public static byte[] Save(List<SETItem> items)
+		{
+			List<byte> file = new List<byte>(items.Count * 0x20 + 0x20);
+			file.AddRange(ByteConverter.GetBytes(items.Count));
+			file.Align(0x20);
+
+			foreach (SETItem item in items)
+				file.AddRange(item.GetBytes());
+
+			return file.ToArray();
 		}
 
 		AttributeCollection ICustomTypeDescriptor.GetAttributes()

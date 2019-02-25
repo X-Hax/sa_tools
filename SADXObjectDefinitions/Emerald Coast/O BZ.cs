@@ -1,20 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBZ : ObjectDefinition
+	public class Plane : ObjectDefinition
 	{
 		protected NJS_OBJECT plane;
 		protected Mesh[] planemsh;
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
+
+		public override void Init(ObjectData data, string name)
+		{
+			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
+			planemsh = ObjectHelper.GetMeshes(plane);
+			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			spheremsh = ObjectHelper.GetMeshes(sphere);
+		}
+
+		public override string Name { get { return "Tails' Plane"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -42,7 +53,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate((item.Position.X + 50f), item.Position.Y, item.Position.Z);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(plane.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), planemsh));
+			result.AddRange(plane.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), planemsh));
 			if (item.Selected)
 				result.AddRange(plane.DrawModelTreeInvert(transform, planemsh));
 			transform.Pop();
@@ -50,9 +61,20 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			transform.NJScale(item.Scale.X, item.Scale.X, item.Scale.X);
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate((item.Position.X + 50f), item.Position.Y, item.Position.Z);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(plane, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -64,18 +86,15 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform1.NJScale(item.Scale.X, item.Scale.X, item.Scale.X);
 			return ObjectHelper.GetModelBounds(sphere, transform1);
 		}
-	}
 
-	public class Plane : OBZ
-	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override Matrix GetHandleMatrix(SETItem item)
 		{
-			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
-			planemsh = ObjectHelper.GetMeshes(plane, dev);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
-		}
+			Matrix matrix = Matrix.Identity;
 
-		public override string Name { get { return "Tails' Plane"; } }
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+			return matrix;
+		}
 	}
 }

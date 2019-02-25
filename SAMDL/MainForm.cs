@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Point = System.Drawing.Point;
 
 namespace SonicRetro.SAModel.SAMDL
 {
@@ -38,11 +40,13 @@ namespace SonicRetro.SAModel.SAMDL
 
 		internal Device d3ddevice;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+		EditorOptionsEditor optionsEditor;
+
 		bool loaded;
-		int interval = 1;
+		string currentFileName = "";
 		NJS_OBJECT model;
-		Animation[] animations;
-		Animation animation;
+		NJS_MOTION[] animations;
+		NJS_MOTION animation;
 		ModelFile modelFile;
 		ModelFormat outfmt;
 		int animnum = -1;
@@ -54,28 +58,69 @@ namespace SonicRetro.SAModel.SAMDL
 		ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
+		Mesh sphereMesh, selectedSphereMesh, modelSphereMesh, selectedModelSphereMesh;
+
+		#region UI
+		bool lookKeyDown;
+		bool zoomKeyDown;
+		bool cameraKeyDown;
+
+		int cameraMotionInterval = 1;
+
+		ActionMappingList actionList;
+		ActionInputCollector actionInputCollector;
+		ModelLibraryWindow modelLibraryWindow;
+		ModelLibraryControl modelLibrary;
+		#endregion
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1, CreateFlags.HardwareVertexProcessing,
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
 				new PresentParameters
 				{
 					Windowed = true,
 					SwapEffect = SwapEffect.Discard,
 					EnableAutoDepthStencil = true,
-					AutoDepthStencilFormat = DepthFormat.D24X8
+					AutoDepthStencilFormat = Format.D24X8
 				});
-			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
 
 			EditorOptions.Initialize(d3ddevice);
+			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+			optionsEditor.ResetDefaultKeybindsCommand += () =>
+			{
+				actionList.ActionKeyMappings.Clear();
+
+				foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
+				{
+					actionList.ActionKeyMappings.Add(keymapping);
+				}
+
+				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			};
+
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+				DefaultActionList.DefaultActionMapping);
+
+			actionInputCollector = new ActionInputCollector();
+			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+			modelLibraryWindow = new ModelLibraryWindow();
+			modelLibrary = modelLibraryWindow.modelLibraryControl1;
+			modelLibrary.InitRenderer();
+			modelLibrary.SelectionChanged += modelLibrary_SelectionChanged;
+
+			sphereMesh = Mesh.Sphere(0.0625f, 10, 10);
+			selectedSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Lime);
+			modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
+			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
-		}
-
-		private void d3ddevice_DeviceResizing(object sender, CancelEventArgs e)
-		{
-			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -84,7 +129,7 @@ namespace SonicRetro.SAModel.SAMDL
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
+						saveAsToolStripMenuItem_Click(this, EventArgs.Empty);
 						break;
 					case DialogResult.Cancel:
 						return;
@@ -113,7 +158,7 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile = new ModelFile(filename);
 				outfmt = modelFile.Format;
 				model = modelFile.Model;
-				animations = new Animation[modelFile.Animations.Count];
+				animations = new NJS_MOTION[modelFile.Animations.Count];
 				modelFile.Animations.CopyTo(animations, 0);
 			}
 			else
@@ -121,7 +166,7 @@ namespace SonicRetro.SAModel.SAMDL
 				byte[] file = File.ReadAllBytes(filename);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
-				SA_Tools.ByteConverter.BigEndian = false;
+				ByteConverter.BigEndian = false;
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
 				if (baseaddr.HasValue)
 				{
@@ -133,7 +178,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
-					SA_Tools.ByteConverter.BigEndian = true;
+					ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
 					modelinfo.numericUpDown2.Value = 0;
 					modelinfo.numericUpDown2.Enabled = false;
@@ -196,15 +241,15 @@ namespace SonicRetro.SAModel.SAMDL
 											if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 												anifile = FraGag.Compression.Prs.Decompress(anifile);
 											address = 0;
-											SortedDictionary<int, Animation> anis = new SortedDictionary<int, Animation>();
+											SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
 											i = ByteConverter.ToInt32(file, address);
 											while (i != -1)
 											{
-												anis.Add(i, new Animation(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+												anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
 												address += 8;
 												i = ByteConverter.ToInt32(file, address);
 											}
-											animations = new List<Animation>(anis.Values).ToArray();
+											animations = new List<NJS_MOTION>(anis.Values).ToArray();
 										}
 									}
 								}
@@ -212,19 +257,28 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 			}
-			model.ProcessVertexData();
-			NJS_OBJECT[] models = model.GetObjects();
-			meshes = new Mesh[models.Length];
-			for (int i = 0; i < models.Length; i++)
-				if (models[i].Attach != null)
-					try { meshes[i] = models[i].Attach.CreateD3DMesh(d3ddevice); }
-					catch { }
+			if (model.HasWeight)
+				meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				model.ProcessVertexData();
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+						catch { }
+			}
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			selectedObject = model;
 			SelectedItemChanged();
+
+			currentFileName = filename;
+
+			AddModelToLibrary(model, false);
 		}
 
 		private void LoadBinFile(byte[] file)
@@ -232,7 +286,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelinfo.ShowDialog(this);
 			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
 			if (modelinfo.checkBox1.Checked)
-				animations = new Animation[] { Animation.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
+				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
 			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
 			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 			{
@@ -246,13 +300,32 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 		}
 
+		private void AddModelToLibrary(NJS_OBJECT objectToAdd, bool additive)
+		{
+			if (additive) modelLibrary.Clear();
+
+			NJS_OBJECT[] models = objectToAdd.GetObjects();
+
+			modelLibrary.BeginUpdate();
+			for (int i = 0; i < models.Length; i++)
+				if (models[i].Attach != null)
+					modelLibrary.Add(models[i].Attach);
+			modelLibrary.EndUpdate();
+		}
+
 		private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
-			TreeNode node = nodes.Add(model.Name);
+			int index = 0;
+			AddTreeNode(model, ref index, nodes);
+		}
+
+		private void AddTreeNode(NJS_OBJECT model, ref int index, TreeNodeCollection nodes)
+		{
+			TreeNode node = nodes.Add($"{index++}: {model.Name}");
 			node.Tag = model;
 			nodeDict[model] = node;
 			foreach (NJS_OBJECT child in model.Children)
-				AddTreeNode(child, node.Nodes);
+				AddTreeNode(child, ref index, node.Nodes);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -261,7 +334,7 @@ namespace SonicRetro.SAModel.SAMDL
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
-						saveToolStripMenuItem_Click(this, EventArgs.Empty);
+						saveAsToolStripMenuItem_Click(this, EventArgs.Empty);
 						break;
 					case DialogResult.Cancel:
 						e.Cancel = true;
@@ -269,21 +342,127 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
-		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveAs();
+		}
+
+		private void SaveAs()
 		{
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
 				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
 				Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
 			})
+			{
+				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
+
 				if (a.ShowDialog(this) == DialogResult.OK)
-					if (modelFile != null)
-					{
-						modelFile.Tool = "SAMDL";
-						modelFile.SaveToFile(a.FileName);
-					}
-					else
-						ModelFile.CreateFile(a.FileName, model, null, null, null, null, "SAMDL", null, outfmt);
+				{
+					Save(a.FileName);
+				}
+			}
+		}
+
+		private void Save(string fileName)
+		{
+			if (modelFile != null)
+				modelFile.SaveToFile(fileName);
+			else
+			{
+				ModelFile.CreateFile(fileName, model, null, null, null, null, null, outfmt);
+				modelFile = new ModelFile(fileName);
+			}
+
+			currentFileName = fileName;
+			Text = GetStatusString();
+		}
+
+		private void saveMenuItem_Click(object sender, EventArgs e)
+		{
+			if (File.Exists(currentFileName))
+			{
+				// ask if we want to over-write
+				bool doOperation = false;
+
+				if (!doOperation)
+				{
+					// ask if we're sure we want to over-write
+					DialogResult dialogResult = MessageBox.Show("Are you sure? You will lose any unsaved work.", "Are you sure?", MessageBoxButtons.YesNo);
+
+					doOperation = dialogResult == DialogResult.Yes;
+				}
+
+				if (doOperation) Save(currentFileName);
+			}
+			else
+			{
+				// ask us where to save
+				SaveAs();
+			}
+		}
+
+		private void NewFile(ModelFormat modelFormat)
+		{
+			loaded = false;
+			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
+			timer1.Stop();
+			modelFile = null;
+			animation = null;
+			animations = null;
+			animnum = -1;
+			animframe = 0;
+
+			outfmt = modelFormat;
+			animations = new NJS_MOTION[0];
+
+			model = new NJS_OBJECT();
+			model.Morph = false;
+			model.ProcessVertexData();
+			meshes = new Mesh[1];
+			treeView1.Nodes.Clear();
+			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+			AddTreeNode(model, treeView1.Nodes);
+			selectedObject = model;
+
+			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			SelectedItemChanged();
+
+			currentFileName = "";
+			Text = GetStatusString();
+		}
+
+		private void NewFileOperation(ModelFormat modelFormat)
+		{
+			bool doOperation = !loaded;
+
+			if (!doOperation)
+			{
+				// ask if we're sure we want to over-write
+				DialogResult dialogResult = MessageBox.Show("Are you sure? You will lose any unsaved work.", "Are you sure?", MessageBoxButtons.YesNo);
+
+				doOperation = dialogResult == DialogResult.Yes;
+			}
+
+			if (doOperation)
+			{
+				NewFile(modelFormat);
+			}
+		}
+
+		private void basicModelDXToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.BasicDX);
+		}
+
+		private void basicModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.Basic);
+		}
+
+		private void chunkModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.Chunk);
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -291,29 +470,73 @@ namespace SonicRetro.SAModel.SAMDL
 			Close();
 		}
 
-		internal void DrawLevel()
+		string GetStatusString()
+		{
+			return "SAMDL: " + currentFileName;
+			// + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
+		}
+
+		#region Rendering Methods
+		internal void DrawEntireModel()
 		{
 			if (!loaded) return;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
-			d3ddevice.RenderState.FillMode = EditorOptions.RenderFillMode;
-			d3ddevice.RenderState.CullMode = EditorOptions.RenderCullMode;
-			d3ddevice.Material = new Material { Ambient = Color.White };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
-			d3ddevice.RenderState.ZBufferEnable = true;
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
+			Text = GetStatusString();
+			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
+			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
+
 			//all drawings after this line
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			MatrixStack transform = new MatrixStack();
-			if (animation != null)
-				RenderInfo.Draw(model.DrawModelTreeAnimated(d3ddevice, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
-			else
-				RenderInfo.Draw(model.DrawModelTree(d3ddevice, transform, Textures, meshes), d3ddevice, cam);
+			if (showModelToolStripMenuItem.Checked)
+			{
+				if (model.HasWeight)
+					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes), d3ddevice, cam);
+				else if (animation != null)
+					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
+				else
+					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes), d3ddevice, cam);
 
-			if (selectedObject != null)
-				DrawSelectedObject(model, transform);
+				if (selectedObject != null)
+				{
+					if (model.HasWeight)
+					{
+						NJS_OBJECT[] objs = model.GetObjects();
+						if (selectedObject.Attach != null)
+							for (int j = 0; j < selectedObject.Attach.MeshInfo.Length; j++)
+							{
+								Color col = selectedObject.Attach.MeshInfo[j].Material == null ? Color.White : selectedObject.Attach.MeshInfo[j].Material.DiffuseColor;
+								col = Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B);
+								NJS_MATERIAL mat = new NJS_MATERIAL
+								{
+									DiffuseColor = col,
+									IgnoreLighting = true,
+									UseAlpha = false
+								};
+								new RenderInfo(meshes[Array.IndexOf(objs, selectedObject)], j, transform.Top, mat, null, FillMode.Wireframe, selectedObject.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
+							}
+					}
+					else
+						DrawSelectedObject(model, transform);
+				}
+			}
+
+			d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+			d3ddevice.SetRenderState(RenderState.FillMode, FillMode.Solid);
+			d3ddevice.SetRenderState(RenderState.Lighting, false);
+			d3ddevice.SetRenderState(RenderState.ZEnable, false);
+			d3ddevice.SetTexture(0, null);
+			if (showNodesToolStripMenuItem.Checked)
+				DrawNodes(model, transform);
+
+			if (showNodeConnectionsToolStripMenuItem.Checked)
+				DrawNodeConnections(model, transform);
 
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
@@ -348,7 +571,7 @@ namespace SonicRetro.SAModel.SAMDL
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
-						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.WireFrame, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
+						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
 					}
 				transform.Pop();
 				return true;
@@ -363,136 +586,318 @@ namespace SonicRetro.SAModel.SAMDL
 			return false;
 		}
 
+		private void DrawNodes(NJS_OBJECT obj, MatrixStack transform)
+		{
+			int modelnum = -1;
+			int animindex = -1;
+			DrawNodes(obj, transform, ref modelnum, ref animindex);
+		}
+
+		private void DrawNodes(NJS_OBJECT obj, MatrixStack transform, ref int modelindex, ref int animindex)
+		{
+			transform.Push();
+			modelindex++;
+			if (obj.Animate) animindex++;
+			if (animation != null && animation.Models.ContainsKey(animindex))
+				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			d3ddevice.SetTransform(TransformState.World, Matrix.Translation(Vector3.TransformCoordinate(new Vector3(), transform.Top)));
+			if (obj == selectedObject)
+			{
+				if (obj.Attach != null)
+					selectedModelSphereMesh.DrawAll(d3ddevice);
+				else
+					selectedSphereMesh.DrawAll(d3ddevice);
+			}
+			else if (obj.Attach != null)
+				modelSphereMesh.DrawAll(d3ddevice);
+			else
+				sphereMesh.DrawAll(d3ddevice);
+			foreach (NJS_OBJECT child in obj.Children)
+				DrawNodes(child, transform, ref modelindex, ref animindex);
+			transform.Pop();
+		}
+
+		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform)
+		{
+			int modelnum = -1;
+			int animindex = -1;
+			List<Vector3> points = new List<Vector3>();
+			List<short> indexes = new List<short>();
+			DrawNodeConnections(obj, transform, points, indexes, -1, ref modelnum, ref animindex);
+			d3ddevice.SetTransform(TransformState.World, Matrix.Identity);
+			d3ddevice.VertexFormat = VertexFormat.Position;
+			d3ddevice.DrawIndexedUserPrimitives(PrimitiveType.LineList, 0, points.Count, indexes.Count / 2, indexes.ToArray(), Format.Index16, points.ToArray());
+		}
+
+		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform, List<Vector3> points, List<short> indexes, short parentidx, ref int modelindex, ref int animindex)
+		{
+			transform.Push();
+			modelindex++;
+			if (obj.Animate) animindex++;
+			if (animation != null && animation.Models.ContainsKey(animindex))
+				obj.ProcessTransforms(animation.Models[animindex], animframe, transform);
+			else
+				obj.ProcessTransforms(transform);
+			short newidx = (short)points.Count;
+			points.Add(Vector3.TransformCoordinate(new Vector3(), transform.Top));
+			if (parentidx != -1)
+			{
+				indexes.Add(parentidx);
+				indexes.Add(newidx);
+			}
+			foreach (NJS_OBJECT child in obj.Children)
+				DrawNodeConnections(child, transform, points, indexes, newidx, ref modelindex, ref animindex);
+			transform.Pop();
+		}
+
+		private void UpdateWeightedModel()
+		{
+			if (model.HasWeight)
+			{
+				if (animation != null)
+					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
+				else
+					model.UpdateWeightedModel(new MatrixStack(), meshes);
+			}
+		}
+
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
-			DrawLevel();
+			DrawEntireModel();
+		}
+		#endregion
+
+		#region Keyboard/Mouse Methods
+		void CustomizeControls()
+		{
+			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
+
+			editor.ShowDialog();
+
+			// copy all our mappings back
+			actionList.ActionKeyMappings.Clear();
+
+			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
+
+			actionInputCollector.SetActions(newMappings);
+
+			// save our controls
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+
+			actionList.Save(saveControlsPath);
+
+			this.BringToFront();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
+			//this.panel1.Focus();
+		}
+
+		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
+		{
+			if (!loaded)
+				return;
+
+			bool draw = false; // should the scene redraw after this action
+
+			switch (actionName)
+			{
+				case ("Camera Mode"):
+					cam.mode = (cam.mode + 1) % 2;
+
+					if (cam.mode == 1)
+					{
+						if (selectedObject != null)
+						{
+							cam.FocalPoint = selectedObject.Position.ToVector3();
+						}
+						else
+						{
+							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+						}
+					}
+
+					draw = true;
+					break;
+
+				case ("Zoom to target"):
+					if (selectedObject != null)
+					{
+						BoundingSphere bounds = (selectedObject.Attach != null) ? selectedObject.Attach.Bounds :
+							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
+
+						bounds.Center += selectedObject.Position;
+						cam.MoveToShowBounds(bounds);
+					}
+
+					draw = true;
+					break;
+
+				case ("Change Render Mode"):
+					if (EditorOptions.RenderFillMode == FillMode.Solid)
+						EditorOptions.RenderFillMode = FillMode.Point;
+					else
+						EditorOptions.RenderFillMode += 1;
+
+					draw = true;
+					break;
+
+				case ("Delete"):
+					/*foreach (Item item in selectedItems.GetSelection())
+						item.Delete();
+					selectedItems.Clear();*/
+					throw new System.NotImplementedException();
+					draw = true;
+					break;
+
+				case ("Increase camera move speed"):
+					cam.MoveSpeed += 0.0625f;
+					//UpdateTitlebar();
+					break;
+
+				case ("Decrease camera move speed"):
+					cam.MoveSpeed -= 0.0625f;
+					//UpdateTitlebar();
+					break;
+
+				case ("Reset camera move speed"):
+					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					//UpdateTitlebar();
+					break;
+
+				case ("Reset Camera Position"):
+					if (cam.mode == 0)
+					{
+						cam.Position = new Vector3();
+						draw = true;
+					}
+					break;
+
+				case ("Reset Camera Rotation"):
+					if (cam.mode == 0)
+					{
+						cam.Pitch = 0;
+						cam.Yaw = 0;
+						draw = true;
+					}
+					break;
+
+				case ("Camera Move"):
+					cameraKeyDown = false;
+					break;
+
+				case ("Camera Zoom"):
+					zoomKeyDown = false;
+					break;
+
+				case ("Camera Look"):
+					lookKeyDown = false;
+					break;
+
+				case ("Next Animation"):
+					if (animations != null)
+					{
+						animnum++;
+						animframe = 0;
+						if (animnum == animations.Length) animnum = -1;
+						if (animnum > -1)
+							animation = animations[animnum];
+						else
+							animation = null;
+
+						draw = true;
+					}
+					break;
+
+				case ("Previous Animation"):
+					if (animations != null)
+					{
+						animnum--;
+						animframe = 0;
+						if (animnum == -2) animnum = animations.Length - 1;
+						if (animnum > -1)
+							animation = animations[animnum];
+						else
+							animation = null;
+
+						draw = true;
+					}
+					break;
+
+				case ("Previous Frame"):
+					if (animation != null)
+					{
+						animframe--;
+						if (animframe < 0) animframe = animation.Frames - 1;
+						draw = true;
+					}
+					break;
+
+				case ("Next Frame"):
+					if (animation != null)
+					{
+						animframe++;
+						if (animframe == animation.Frames) animframe = 0;
+						draw = true;
+					}
+					break;
+
+				case ("Play/Pause Animation"):
+					if (animation != null)
+					{
+						timer1.Enabled = !timer1.Enabled;
+						draw = true;
+					}
+					break;
+
+				default:
+					break;
+			}
+
+			if (draw)
+			{
+				UpdateWeightedModel();
+				DrawEntireModel();
+			}
+		}
+
+		private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
+		{
+			switch (actionName)
+			{
+				case ("Camera Move"):
+					cameraKeyDown = true;
+					break;
+
+				case ("Camera Zoom"):
+					zoomKeyDown = true;
+					break;
+
+				case ("Camera Look"):
+					lookKeyDown = true;
+					break;
+
+				default:
+					break;
+			}
 		}
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!loaded) return;
-			if (cam.mode == 0)
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Position += cam.Up * -interval;
-					else
-						cam.Position += cam.Look * interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Position += cam.Up * interval;
-					else
-						cam.Position += cam.Look * -interval;
-				if (e.KeyCode == Keys.Left)
-					cam.Position += cam.Right * -interval;
-				if (e.KeyCode == Keys.Right)
-					cam.Position += cam.Right * interval;
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.E)
-					cam.Position = new Vector3();
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			else
-			{
-				if (e.KeyCode == Keys.Down)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-					else
-						cam.Distance += interval;
-				if (e.KeyCode == Keys.Up)
-					if (e.Shift)
-						cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-					else
-					{
-						cam.Distance -= interval;
-						cam.Distance = Math.Max(cam.Distance, interval);
-					}
-				if (e.KeyCode == Keys.Left)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.Right)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.K)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x100));
-				if (e.KeyCode == Keys.J)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x100));
-				if (e.KeyCode == Keys.H)
-					cam.Yaw = unchecked((ushort)(cam.Yaw + 0x4000));
-				if (e.KeyCode == Keys.L)
-					cam.Yaw = unchecked((ushort)(cam.Yaw - 0x4000));
-				if (e.KeyCode == Keys.M)
-					cam.Pitch = unchecked((ushort)(cam.Pitch - 0x100));
-				if (e.KeyCode == Keys.I)
-					cam.Pitch = unchecked((ushort)(cam.Pitch + 0x100));
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-				}
-			}
-			if (e.KeyCode == Keys.X)
-				cam.mode = (cam.mode + 1) % 2;
-			if (e.KeyCode == Keys.Q)
-				interval += 1;
-			if (e.KeyCode == Keys.W)
-				interval -= 1;
-			if (e.KeyCode == Keys.OemQuotes & animations != null)
-			{
-				animnum++;
-				animframe = 0;
-				if (animnum == animations.Length) animnum = -1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-			}
-			if (e.KeyCode == Keys.OemSemicolon & animations != null)
-			{
-				animnum--;
-				animframe = 0;
-				if (animnum == -2) animnum = animations.Length - 1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-			}
-			if (e.KeyCode == Keys.OemOpenBrackets & animation != null)
-			{
-				animframe--;
-				if (animframe < 0) animframe = animation.Frames - 1;
-			}
-			if (e.KeyCode == Keys.OemCloseBrackets & animation != null)
-			{
-				animframe++;
-				if (animframe == animation.Frames) animframe = 0;
-			}
-			if (e.KeyCode == Keys.P & animation != null)
-				timer1.Enabled = !timer1.Enabled;
-			if (e.KeyCode == Keys.N)
-				if (EditorOptions.RenderFillMode == FillMode.Solid)
-					EditorOptions.RenderFillMode = FillMode.Point;
-				else
-					EditorOptions.RenderFillMode++;
-			DrawLevel();
+			actionInputCollector.KeyDown(e.KeyCode);
+		}
+
+		private void panel1_KeyUp(object sender, KeyEventArgs e)
+		{
+			actionInputCollector.KeyUp(e.KeyCode);
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			switch (e.KeyCode)
+			/*switch (e.KeyCode)
 			{
 				case Keys.Down:
 				case Keys.Left:
@@ -500,28 +905,114 @@ namespace SonicRetro.SAModel.SAMDL
 				case Keys.Up:
 					e.IsInputKey = true;
 					break;
-			}
+			}*/
 		}
 
-		Point lastmouse;
+		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			Point evloc = e.Location;
-			if (lastmouse == Point.Empty)
+
+			#region Motion Handling
+			Point mouseEvent = e.Location;
+			if (mouseLast == Point.Empty)
 			{
-				lastmouse = evloc;
+				mouseLast = mouseEvent;
 				return;
 			}
-			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == MouseButtons.Middle)
+
+			bool mouseWrapScreen = true;
+			ushort mouseWrapThreshold = 2;
+
+			Point mouseDelta = mouseEvent - (Size)mouseLast;
+			bool performedWrap = false;
+
+			if (e.Button != MouseButtons.None)
 			{
-				cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-				cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
-				DrawLevel();
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+
+				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
+				{
+					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
+					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
+					performedWrap = true;
+				}
 			}
-			lastmouse = evloc;
+			#endregion
+
+			if (cameraKeyDown)
+			{
+				// all cam controls are now bound to the middle mouse button
+				if (cam.mode == 0)
+				{
+					if (zoomKeyDown)
+					{
+						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
+					}
+					else if (lookKeyDown)
+					{
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+					}
+					else if (!lookKeyDown && !zoomKeyDown) // pan
+					{
+						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+					}
+				}
+				else if (cam.mode == 1)
+				{
+					if (zoomKeyDown)
+					{
+						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
+					}
+					else if (lookKeyDown)
+					{
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+					}
+					else if (!lookKeyDown && !zoomKeyDown) // pan
+					{
+						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+					}
+				}
+
+				UpdateWeightedModel();
+				DrawEntireModel();
+			}
+
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
+			{
+				mouseLast = mouseEvent;
+				if (e.Button != MouseButtons.None && selectedObject != null) propertyGrid1.Refresh();
+
+			}
 		}
+
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+		}
+		#endregion
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -534,9 +1025,9 @@ namespace SonicRetro.SAModel.SAMDL
 					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
 					Textures = new Texture[TextureInfo.Length];
 					for (int j = 0; j < TextureInfo.Length; j++)
-						Textures[j] = new Texture(d3ddevice, TextureInfo[j].Image, Usage.None, Pool.Managed);
+						Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
 
-					DrawLevel();
+					DrawEntireModel();
 				}
 			}
 		}
@@ -546,7 +1037,8 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animation == null) return;
 			animframe++;
 			if (animframe == animation.Frames) animframe = 0;
-			DrawLevel();
+			UpdateWeightedModel();
+			DrawEntireModel();
 		}
 
 		private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -554,11 +1046,11 @@ namespace SonicRetro.SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					model.ToCollada(TextureInfo == null ? null : TextureInfo.Select((item) => item.Name).ToArray()).Save(sd.FileName);
+					model.ToCollada(TextureInfo?.Select((item) => item.Name).ToArray()).Save(sd.FileName);
 					string p = Path.GetDirectoryName(sd.FileName);
 					if (TextureInfo != null)
-						for (int i = 0; i < TextureInfo.Length; i++)
-							TextureInfo[i].Image.Save(Path.Combine(p, TextureInfo[i].Name + ".png"));
+						foreach (BMPInfo img in TextureInfo)
+							img.Image.Save(Path.Combine(p, img.Name + ".png"));
 				}
 		}
 
@@ -629,22 +1121,37 @@ namespace SonicRetro.SAModel.SAMDL
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			HitResult dist;
-			Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-			Viewport viewport = d3ddevice.Viewport;
-			Matrix proj = d3ddevice.Transform.Projection;
-			Matrix view = d3ddevice.Transform.View;
-			Vector3 Near, Far;
-			Near = mousepos;
-			Near.Z = 0;
-			Far = Near;
-			Far.Z = -1;
-			dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
-			if (dist.IsHit)
+
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
+
+			if (e.Button == MouseButtons.Left)
 			{
-				selectedObject = dist.Model;
-				SelectedItemChanged();
+				HitResult dist;
+				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Vector3 Near, Far;
+				Near = mousepos;
+				Near.Z = 0;
+				Far = Near;
+				Far.Z = -1;
+				if (model.HasWeight)
+					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
+				else
+					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
+				if (dist.IsHit)
+				{
+					selectedObject = dist.Model;
+					SelectedItemChanged();
+				}
+				else
+				{
+					selectedObject = null;
+					SelectedItemChanged();
+				}
 			}
+
 			if (e.Button == MouseButtons.Right)
 				contextMenuStrip1.Show(panel1, e.Location);
 		}
@@ -658,15 +1165,32 @@ namespace SonicRetro.SAModel.SAMDL
 		internal void SelectedItemChanged()
 		{
 			suppressTreeEvent = true;
-			treeView1.SelectedNode = nodeDict[selectedObject];
-			suppressTreeEvent = false;
-			propertyGrid1.SelectedObject = selectedObject;
-			copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
-			pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-			editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach && TextureInfo != null;
-			importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-			exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
-			DrawLevel();
+			if (selectedObject != null)
+			{
+				treeView1.SelectedNode = nodeDict[selectedObject];
+				suppressTreeEvent = false;
+				propertyGrid1.SelectedObject = selectedObject;
+				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
+				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+			}
+			else
+			{
+				treeView1.SelectedNode = null;
+				suppressTreeEvent = false;
+				propertyGrid1.SelectedObject = null;
+				copyModelToolStripMenuItem.Enabled = false;
+				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+				editMaterialsToolStripMenuItem.Enabled = false;
+				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				exportOBJToolStripMenuItem.Enabled = false;
+			}
+
+			DrawEntireModel();
 		}
 
 		private void objToolStripMenuItem_Click(object sender, EventArgs e)
@@ -681,31 +1205,7 @@ namespace SonicRetro.SAModel.SAMDL
 					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
 					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
 					{
-						#region Material Exporting
-						string materialPrefix = model.Name;
-
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
-
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-						#endregion
+						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
 
 						int totalVerts = 0;
 						int totalNorms = 0;
@@ -713,7 +1213,43 @@ namespace SonicRetro.SAModel.SAMDL
 
 						bool errorFlag = false;
 
-						Direct3D.Extensions.WriteModelAsObj(objstream, model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+						Direct3D.Extensions.WriteModelAsObj(objstream, model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+						#region Material Exporting
+						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+						for (int i = 0; i < materials.Count; i++)
+						{
+							int texIndx = materials[i].TextureID;
+
+							NJS_MATERIAL material = materials[i];
+							mtlstream.WriteLine("newmtl material_{0}", i);
+							mtlstream.WriteLine("Ka 1 1 1");
+							mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+								material.DiffuseColor.R / 255,
+								material.DiffuseColor.G / 255,
+								material.DiffuseColor.B / 255));
+
+							mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+								material.SpecularColor.R / 255,
+								material.SpecularColor.G / 255,
+								material.SpecularColor.B / 255));
+							mtlstream.WriteLine("illum 1");
+
+							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+							{
+								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+								// save texture
+								string mypath = Path.GetDirectoryName(a.FileName);
+								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+							}
+
+							//progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
+							//progress.StepProgress();
+							Application.DoEvents();
+						}
+						#endregion
 
 						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
 					}
@@ -727,41 +1263,57 @@ namespace SonicRetro.SAModel.SAMDL
 				SelectedPath = Environment.CurrentDirectory,
 				ShowNewFolderButton = true
 			})
+			{
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					
-					using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
-					{
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", TexturePackName, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
-
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								TextureInfo[texIndx].Image.Save(Path.Combine(dlg.SelectedPath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-					}
 					foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
-						using (StreamWriter objstream = new StreamWriter(Path.Combine(dlg.SelectedPath, obj.Name + ".obj"), false))
+					{
+						string objFileName = Path.Combine(dlg.SelectedPath, obj.Name + ".obj");
+						using (StreamWriter objstream = new StreamWriter(objFileName, false))
 						{
+							List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
+
 							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
 							bool errorFlag = false;
 
-							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, TexturePackName, ref errorFlag);
+							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
 
 							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+
+							using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
+							{
+								for (int i = 0; i < materials.Count; i++)
+								{
+									int texIndx = materials[i].TextureID;
+
+									NJS_MATERIAL material = materials[i];
+									mtlstream.WriteLine("newmtl material_{0}", i);
+									mtlstream.WriteLine("Ka 1 1 1");
+									mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+										material.DiffuseColor.R / 255,
+										material.DiffuseColor.G / 255,
+										material.DiffuseColor.B / 255));
+
+									mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+										material.SpecularColor.R / 255,
+										material.SpecularColor.G / 255,
+										material.SpecularColor.B / 255));
+									mtlstream.WriteLine("illum 1");
+
+									if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+									{
+										mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+										// save texture
+										string mypath = Path.GetDirectoryName(objFileName);
+										TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+									}
+								}
+							}
 						}
+					}
 				}
+			}
 		}
 
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -775,9 +1327,8 @@ namespace SonicRetro.SAModel.SAMDL
 			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
 			if (selectedObject.Attach != null)
 				attach.Name = selectedObject.Attach.Name;
-			if (attach is BasicAttach)
+			if (attach is BasicAttach batt)
 			{
-				BasicAttach batt = (BasicAttach)attach;
 				batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
 				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
@@ -790,25 +1341,24 @@ namespace SonicRetro.SAModel.SAMDL
 					m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
 				}
 			}
-			else if (attach is ChunkAttach)
+			else if (attach is ChunkAttach catt)
 			{
-				ChunkAttach catt = (ChunkAttach)attach;
 				catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 				catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 			}
 			selectedObject.Attach = attach;
 			attach.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
-			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(d3ddevice); }
+			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(); }
 			catch { }
-			DrawLevel();
+			DrawEntireModel();
 		}
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material, TextureInfo))
 			{
-				dlg.FormUpdated += (s, ev) => DrawLevel();
+				dlg.FormUpdated += (s, ev) => DrawEntireModel();
 				dlg.ShowDialog(this);
 			}
 		}
@@ -823,11 +1373,32 @@ namespace SonicRetro.SAModel.SAMDL
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
+
+					editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
+
+					modelLibrary.Add(newattach);
+
 					if (selectedObject.Attach != null)
+					{
 						newattach.Name = selectedObject.Attach.Name;
-					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh(d3ddevice);
+					}
+
+					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh();
 					selectedObject.Attach = newattach;
-					DrawLevel();
+
+					Matrix m = Matrix.Identity;
+					selectedObject.ProcessTransforms(m);
+					float scale = Math.Max(Math.Max(selectedObject.Scale.X, selectedObject.Scale.Y), selectedObject.Scale.Z);
+					BoundingSphere bounds = new BoundingSphere(Vector3.TransformCoordinate(selectedObject.Attach.Bounds.Center.ToVector3(), m).ToVertex(), selectedObject.Attach.Bounds.Radius * scale);
+
+					bool boundsVisible = !cam.SphereInFrustum(bounds);
+
+					if (!boundsVisible)
+					{
+						cam.MoveToShowBounds(bounds);
+					}
+
+					DrawEntireModel();
 				}
 		}
 
@@ -839,49 +1410,61 @@ namespace SonicRetro.SAModel.SAMDL
 				Filter = "OBJ Files|*.obj",
 				FileName = selectedObject.Name
 			})
+			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+					string objFileName = a.FileName;
+					NJS_OBJECT obj = selectedObject;
+					using (StreamWriter objstream = new StreamWriter(objFileName, false))
 					{
-						#region Material Exporting
-						string materialPrefix = selectedObject.Name;
+						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
 
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-						// This is admittedly not an accurate representation of the materials used in the model - HOWEVER, it makes the materials more managable in MAX
-						// So we're doing it this way. In the future we should come back and add an option to do it this way or the original way.
-						for (int texIndx = 0; texIndx < TextureInfo.Length; texIndx++)
-						{
-							mtlstream.WriteLine(String.Format("newmtl {0}_material_{1}", materialPrefix, texIndx));
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine("Kd 1 1 1");
-							mtlstream.WriteLine("Ks 0 0 0");
-							mtlstream.WriteLine("illum 1");
-
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name))
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-						}
-						#endregion
-
+						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
 						bool errorFlag = false;
 
-						Direct3D.Extensions.WriteSingleModelAsObj(objstream, selectedObject, materialPrefix, ref errorFlag);
+						Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
 
 						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+
+						string mypath = Path.GetDirectoryName(objFileName);
+						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
+						{
+							for (int i = 0; i < materials.Count; i++)
+							{
+								int texIndx = materials[i].TextureID;
+
+								NJS_MATERIAL material = materials[i];
+								mtlstream.WriteLine("newmtl material_{0}", i);
+								mtlstream.WriteLine("Ka 1 1 1");
+								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+									material.DiffuseColor.R / 255,
+									material.DiffuseColor.G / 255,
+									material.DiffuseColor.B / 255));
+
+								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+									material.SpecularColor.R / 255,
+									material.SpecularColor.G / 255,
+									material.SpecularColor.B / 255));
+								mtlstream.WriteLine("illum 1");
+
+								if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+								{
+									mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+									// save texture
+
+									TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+								}
+							}
+						}
 					}
 				}
+			}
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			DrawLevel();
+			UpdateWeightedModel();
 		}
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -893,19 +1476,19 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DrawLevel();
+			DrawEntireModel();
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
 		}
 
 		void optionsEditor_FormUpdated()
 		{
-			DrawLevel();
+			DrawEntireModel();
 		}
 
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
@@ -922,6 +1505,40 @@ namespace SonicRetro.SAModel.SAMDL
 					else
 						MessageBox.Show(this, "Not found.", "SAMDL");
 				}
+		}
+
+		private void showModelToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawEntireModel();
+		}
+
+		private void showNodesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawEntireModel();
+		}
+
+		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			DrawEntireModel();
+		}
+
+		private void modelLibraryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			// show model library
+			modelLibraryWindow.Show();
+		}
+
+		void modelLibrary_SelectionChanged(ModelLibraryControl sender, int selectionIndex, Attach selectedModel)
+		{
+			if ((selectionIndex >= 0) && (selectedModel != null) && selectedObject != null)
+			{
+				selectedObject.Attach = selectedModel;
+				selectedObject.Attach.ProcessVertexData();
+				NJS_OBJECT[] models = model.GetObjects();
+				try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(); }
+				catch { }
+				DrawEntireModel();
+			}
 		}
 	}
 }

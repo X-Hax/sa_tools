@@ -13,10 +13,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ObjectList = list;
 			ID = id;
 			objdef = GetObjectDefinition();
-			Position = new Vertex();
-			Rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
-			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
+			position = new Vertex();
+			rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
+
+			GetHandleMatrix();
 		}
 
 		public MissionSETItem(byte[] setfile, int setaddress, byte[] prmfile, int prmaddress, EditorItemSelection selectionManager)
@@ -28,12 +30,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			ushort xrot = BitConverter.ToUInt16(setfile, setaddress + 2);
 			ushort yrot = BitConverter.ToUInt16(setfile, setaddress + 4);
 			ushort zrot = BitConverter.ToUInt16(setfile, setaddress + 6);
-			Rotation = new Rotation(xrot, yrot, zrot);
-			Position = new Vertex(setfile, setaddress + 8);
-			Scale = new Vertex(setfile, setaddress + 0x14);
+			rotation = new Rotation(xrot, yrot, zrot);
+			position = new Vertex(setfile, setaddress + 8);
+			scale = new Vertex(setfile, setaddress + 0x14);
 			Array.Copy(prmfile, prmaddress, PRMBytes, 0, 0xC);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
+
+			GetHandleMatrix();
+		}
+
+		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+
+		protected override void GetHandleMatrix()
+		{
+			transformMatrix = GetObjectDefinition().GetHandleMatrix(this);
 		}
 
 		public override ObjectDefinition GetObjectDefinition()

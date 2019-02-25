@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
 	public static class ObjectHelper
 	{
-		internal static readonly CustomVertex.PositionTextured[] SquareVerts = {
-		new CustomVertex.PositionTextured(-8, 8, 0, 1, 0),
-		new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
-		new CustomVertex.PositionTextured(8, 8, 0, 0, 0),
-		new CustomVertex.PositionTextured(-8, -8, 0, 1, 1),
-		new CustomVertex.PositionTextured(8, -8, 0, 0, 1),
-		new CustomVertex.PositionTextured(8, 8, 0, 0, 0)};
-		internal static Mesh SquareMesh;
-		internal static BoundingSphere SquareBounds;
+		private static readonly FVF_PositionTextured[] SquareVerts = {
+			new FVF_PositionTextured(new Vector3(-8, 8, 0), new Vector2(1, 0)),
+			new FVF_PositionTextured(new Vector3(-8, -8, 0), new Vector2(1, 1)),
+			new FVF_PositionTextured(new Vector3(8, 8, 0), new Vector2(0, 0)),
+			new FVF_PositionTextured(new Vector3(8, -8, 0), new Vector2(0, 1))
+		};
+		private static readonly short[] SquareInds = { 0, 1, 2, 1, 3, 2 };
+		private static Mesh SquareMesh;
+		private static BoundingSphere SquareBounds;
 
 		public static void Init(Device device, Bitmap unknownBitmap)
 		{
-			SquareMesh = new Mesh(2, 6, MeshFlags.Managed, CustomVertex.PositionTextured.Format, device);
-			List<short> ib = new List<short>();
-			for (int i = 0; i < SquareVerts.Length; i++)
-				ib.Add((short)(i));
-			SquareMesh.SetVertexBufferData(SquareVerts, LockFlags.None);
-			SquareMesh.SetIndexBufferData(ib.ToArray(), LockFlags.None);
-			float radius = Geometry.ComputeBoundingSphere(SquareVerts, CustomVertex.PositionTextured.Format, out Vector3 center);
-			SquareBounds = new BoundingSphere(center.ToVertex(), radius);
+			SquareMesh = new Mesh<FVF_PositionTextured>(SquareVerts, new short[][] { SquareInds });
+			SquareBounds = SharpDX.BoundingSphere.FromPoints(SquareVerts.Select(a => a.Position).ToArray()).ToSAModel();
 
-			QuestionMark = unknownBitmap != null ? new Texture(device, unknownBitmap, Usage.None, Pool.Managed) : new Texture(device, 16, 16, 0, Usage.None, Format.A16B16G16R16, Pool.Managed);
+			QuestionMark = unknownBitmap != null ? unknownBitmap.ToTexture(device) : new Texture(device, 16, 16, 0, Usage.None, Format.A8R8G8B8, Pool.Managed);
 		}
 
 		internal static Texture QuestionMark;
@@ -41,14 +38,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return new ModelFile(file).Model;
 		}
 
-		public static Mesh[] GetMeshes(NJS_OBJECT model, Device dev)
+		public static Mesh[] GetMeshes(NJS_OBJECT model)
 		{
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
 			Mesh[] Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
-					Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
+					Meshes[i] = models[i].Attach.CreateD3DMesh();
 			return Meshes;
 		}
 
@@ -73,7 +70,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			};
 			if (texture == null)
 				texture = QuestionMark;
-			result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, texture, dev.RenderState.FillMode, new BoundingSphere(center.X, center.Y, center.Z, 8)));
+			result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, texture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			if (selected)
 			{
 				mat = new NJS_MATERIAL
@@ -81,7 +78,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 					DiffuseColor = Color.Yellow,
 					UseAlpha = false
 				};
-				result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, null, FillMode.WireFrame, new BoundingSphere(center.X, center.Y, center.Z, 8)));
+				result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, null, FillMode.Wireframe, new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			}
 			return result.ToArray();
 		}
@@ -116,14 +113,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			return (int)(deg * (65536 / 360.0));
 		}
 
-		public static float ConvertBAMS(int BAMS)
+		public static float NJSin(int BAMS)
 		{
-			return Direct3D.Extensions.BAMSSin(BAMS);
+			return Direct3D.Extensions.NJSin(BAMS);
 		}
 
-		public static float ConvertBAMSInv(int BAMS)
+		public static float NJCos(int BAMS)
 		{
-			return Direct3D.Extensions.BAMSSinInv(BAMS);
+			return Direct3D.Extensions.NJCos(BAMS);
 		}
 
 		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform)

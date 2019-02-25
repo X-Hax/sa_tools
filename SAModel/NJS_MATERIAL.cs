@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
+
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class NJS_MATERIAL
+	public class NJS_MATERIAL : ICloneable
 	{
 		#region Basic Variables (internal use)
 
-		public Color DiffuseColor { get; set; }
+		public Color DiffuseColor  { get; set; }
 		public Color SpecularColor { get; set; }
-		public float Exponent { get; set; }
-		public int TextureID { get; set; }
-		public uint Flags { get; set; }
+		public float Exponent      { get; set; }
+		public int   TextureID     { get; set; }
+		public uint  Flags         { get; set; }
 
 		#endregion
 
@@ -163,6 +167,21 @@ namespace SonicRetro.SAModel
 			Flags = copy.Flags;
 		}
 
+		Color FromColor4D(Color4D c)
+		{
+			return Color.FromArgb((int)(c.A * 255.0f), (int)(c.R * 255.0f), (int)(c.G * 255.0f), (int)(c.B * 255.0f));
+		}
+
+		public NJS_MATERIAL(Material mat)
+		{
+			if(mat.HasColorDiffuse)
+				DiffuseColor = FromColor4D(mat.ColorDiffuse);
+			if(mat.HasColorSpecular)
+				SpecularColor = FromColor4D(mat.ColorSpecular);
+			Exponent = mat.Shininess;
+
+		}
+
 		/// <summary>
 		/// Load a material from a file buffer
 		/// </summary>
@@ -245,5 +264,9 @@ namespace SonicRetro.SAModel
 			return DiffuseColor.GetHashCode() ^ SpecularColor.GetHashCode() ^ Exponent.GetHashCode() ^ TextureID.GetHashCode() ^
 			       Flags.GetHashCode();
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public NJS_MATERIAL Clone() => (NJS_MATERIAL)MemberwiseClone();
 	}
 }

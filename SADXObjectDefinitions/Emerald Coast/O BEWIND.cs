@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Color = System.Drawing.Color;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -15,15 +17,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		private Texture texture;
 		private Mesh mesh;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
-			mesh = Mesh.Box(dev, 0.5f, 0.5f, 0.5f);
+			mesh = Mesh.Box(0.5f, 0.5f, 0.5f);
 			material = new NJS_MATERIAL
 			{
 				DiffuseColor = Color.FromArgb(127, 178, 178, 178),
 				UseAlpha = false
 			};
-			texture = new Texture(dev, new Bitmap(2, 2), 0, Pool.Managed);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -76,6 +77,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			// is this even necessary?
+			if (texture == null)
+				texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			float scaleX = item.Scale.X;
@@ -124,17 +128,22 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale};
 
-			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.WireFrame, boxSphere);
+			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
 			result.Add(outputInfo);
 
 			if (item.Selected)
 			{
-				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.WireFrame, boxSphere);
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
 				result.Add(highlightInfo);
 			}
 
 			transform.Pop();
 			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
@@ -184,9 +193,19 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return boxSphere;
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Power", typeof(float), "Extended", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v)
 		};
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
+		}
 
 		public override string Name { get { return "Updraft"; } }
 	}

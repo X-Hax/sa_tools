@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
+using NvTriStripDotNet;
+using PrimitiveType = Assimp.PrimitiveType;
 
 namespace SonicRetro.SAModel
 {
@@ -109,6 +115,7 @@ namespace SonicRetro.SAModel
 				}
 			}
 			Bounds = new BoundingSphere(file, address + 0x18);
+
 		}
 
 		public BasicAttach(Vertex[] vertex, Vertex[] normal, IEnumerable<NJS_MESHSET> mesh, IEnumerable<NJS_MATERIAL> material)
@@ -120,6 +127,77 @@ namespace SonicRetro.SAModel
 			Material = new List<NJS_MATERIAL>(material);
 
 			Name = "attach_" + Extensions.GenerateIdentifier();
+		}
+
+		public BasicAttach(List<NJS_MATERIAL> materials, List<Mesh> meshes)
+		{
+			Name = "attach_" + Extensions.GenerateIdentifier();
+			Bounds = new BoundingSphere();
+			Material = new List<NJS_MATERIAL>();
+			MaterialName = "matlist_" + Extensions.GenerateIdentifier();
+			Mesh = new List<NJS_MESHSET>();
+			MeshName = "meshlist_" + Extensions.GenerateIdentifier();
+			Vertex = new Vertex[0];
+			VertexName = "vertex_" + Extensions.GenerateIdentifier();
+			Normal = new Vertex[0];
+			NormalName = "normal_" + Extensions.GenerateIdentifier();
+
+			List<Vertex> vertices = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Vertices)
+				{
+					vertices.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Vertex = vertices.ToArray();
+
+			List<Vertex> normals = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Normals)
+				{
+					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Normal = normals.ToArray();
+
+			Material = materials;
+
+			int polyIndex = 0;
+			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
+			for (int i = 0; i < meshes.Count; i++)
+			{
+				NJS_MESHSET meshset;//= new NJS_MESHSET(polyType, meshes[i].Faces.Count, false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
+
+				List<Poly> polys = new List<Poly>();
+
+				//i noticed the primitiveType of the Assimp Mesh is always triangles so...
+				foreach (Face f in meshes[i].Faces)
+				{
+					Triangle triangle = new Triangle();
+					triangle.Indexes[0] = (ushort)(f.Indices[0] + polyIndex);
+					triangle.Indexes[1] = (ushort)(f.Indices[1] + polyIndex);
+					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
+					polys.Add(triangle);
+				}
+				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), false); //hasVColor = meshes[i].HasVertexColors(0);
+				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+				meshset.MaterialID = (ushort)meshes[i].MaterialIndex;
+
+				if (meshes[i].HasTextureCoords(0))
+				{
+					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
+					{
+						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
+					}
+				}
+				
+				if (meshes[i].HasVertexColors(0))
+					throw new NotImplementedException();
+				polyIndex += meshes[i].VertexCount;
+				meshsets.Add(meshset);//4B4834
+			}
+			Mesh = meshsets;
+			Bounds = new BoundingSphere() { Radius = 1.0f };
+
 		}
 
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
@@ -445,9 +523,67 @@ namespace SonicRetro.SAModel
 					}
 					for (int i = 0; i < poly.Indexes.Length; i++)
 					{
-						newpoly.Indexes[i] = (ushort)verts.AddUnique(new VertexData(
+						newpoly.Indexes[i] = (ushort)verts.Count;
+						verts.Add(new VertexData(
 							Vertex[poly.Indexes[i]],
 							Normal[poly.Indexes[i]],
+							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+							hasUV ? mesh.UV[currentstriptotal++] : null));
+					}
+					polys.Add(newpoly);
+				}
+				NJS_MATERIAL mat = null;
+				if (Material != null && mesh.MaterialID < Material.Count)
+					mat = Material[mesh.MaterialID];
+				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+			}
+			MeshInfo = result.ToArray();
+		}
+
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		{
+			if (!motion.Models.ContainsKey(animindex))
+			{
+				ProcessVertexData();
+				return;
+			}
+			Vertex[] vertdata = Vertex;
+			Vertex[] normdata = Normal;
+			AnimModelData data = motion.Models[animindex];
+			if (data.Vertex.Count > 0)
+				vertdata = data.GetVertex(frame);
+			if (data.Normal.Count > 0)
+				normdata = data.GetNormal(frame);
+			List<MeshInfo> result = new List<MeshInfo>();
+			foreach (NJS_MESHSET mesh in Mesh)
+			{
+				bool hasVColor = mesh.VColor != null;
+				bool hasUV = mesh.UV != null;
+				List<Poly> polys = new List<Poly>();
+				List<VertexData> verts = new List<VertexData>();
+				int currentstriptotal = 0;
+				foreach (Poly poly in mesh.Poly)
+				{
+					Poly newpoly = null;
+					switch (mesh.PolyType)
+					{
+						case Basic_PolyType.Triangles:
+							newpoly = new Triangle();
+							break;
+						case Basic_PolyType.Quads:
+							newpoly = new Quad();
+							break;
+						case Basic_PolyType.NPoly:
+						case Basic_PolyType.Strips:
+							newpoly = new Strip(poly.Indexes.Length, ((Strip)poly).Reversed);
+							break;
+					}
+					for (int i = 0; i < poly.Indexes.Length; i++)
+					{
+						newpoly.Indexes[i] = (ushort)verts.Count;
+						verts.Add(new VertexData(
+							vertdata[poly.Indexes[i]],
+							normdata[poly.Indexes[i]],
 							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
 							hasUV ? mesh.UV[currentstriptotal++] : null));
 					}
@@ -479,6 +615,26 @@ namespace SonicRetro.SAModel
 		public override ChunkAttach ToChunkModel()
 		{
 			throw new NotImplementedException(); // TODO
+		}
+
+		public override Attach Clone()
+		{
+			BasicAttach result = (BasicAttach)MemberwiseClone();
+			result.Vertex = new Vertex[Vertex.Length];
+			result.Normal = new Vertex[Normal.Length];
+			for (int i = 0; i < Vertex.Length; i++)
+			{
+				result.Vertex[i] = Vertex[i].Clone();
+				result.Normal[i] = Normal[i].Clone();
+			}
+			result.Material = new List<NJS_MATERIAL>(Material.Count);
+			foreach (NJS_MATERIAL item in Material)
+				result.Material.Add(item.Clone());
+			result.Mesh = new List<NJS_MESHSET>(Mesh.Count);
+			foreach (NJS_MESHSET item in Mesh)
+				result.Mesh.Add(item.Clone());
+			result.Bounds = Bounds.Clone();
+			return result;
 		}
 	}
 }

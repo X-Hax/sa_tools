@@ -29,7 +29,6 @@ namespace SonicRetro.SAModel
 		public string Name { get; set; }
 		public LandTableFormat Format { get; private set; }
 		public string Author { get; set; }
-		public string Tool { get; set; }
 		public string Description { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 
@@ -45,6 +44,16 @@ namespace SonicRetro.SAModel
 				default:
 					throw new ArgumentOutOfRangeException("format");
 			}
+		}
+
+		public LandTable()
+		{
+			Name = "landtable_" + Extensions.GenerateIdentifier();
+			COL = new List<COL>();
+			COLName = "collist_" + Extensions.GenerateIdentifier();
+			Anim = new List<GeoAnimData>();
+			AnimName = "animlist_" + Extensions.GenerateIdentifier();
+			Metadata = new Dictionary<uint, byte[]>();
 		}
 
 		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format)
@@ -155,7 +164,7 @@ namespace SonicRetro.SAModel
 			if (version > CurrentVersion)
 				throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
 			Dictionary<int, string> labels = new Dictionary<int, string>();
-			string author = null, description = null, tool = null;
+			string author = null, description = null;
 			Dictionary<uint, byte[]> meta = new Dictionary<uint, byte[]>();
 			if (version < 2)
 			{
@@ -201,7 +210,6 @@ namespace SonicRetro.SAModel
 									author = file.GetCString(tmpaddr);
 									break;
 								case ChunkTypes.Tool:
-									tool = file.GetCString(tmpaddr);
 									break;
 								case ChunkTypes.Description:
 									description = file.GetCString(tmpaddr);
@@ -230,7 +238,6 @@ namespace SonicRetro.SAModel
 									author = chunk.GetCString(0);
 									break;
 								case ChunkTypes.Tool:
-									tool = chunk.GetCString(0);
 									break;
 								case ChunkTypes.Description:
 									description = chunk.GetCString(0);
@@ -253,7 +260,6 @@ namespace SonicRetro.SAModel
 				{
 					Author = author,
 					Description = description,
-					Tool = tool,
 					Metadata = meta
 				};
 				ByteConverter.BigEndian = be;
@@ -265,7 +271,6 @@ namespace SonicRetro.SAModel
 				{
 					Author = author,
 					Description = description,
-					Tool = tool,
 					Metadata = meta
 				};
 				ByteConverter.BigEndian = be;
@@ -615,16 +620,6 @@ namespace SonicRetro.SAModel
 				chunk.Add(0);
 				chunk.Align(4);
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (!string.IsNullOrEmpty(Tool))
-			{
-				List<byte> chunk = new List<byte>(Tool.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Tool));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Tool));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}

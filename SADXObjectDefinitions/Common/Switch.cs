@@ -1,10 +1,12 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -13,10 +15,10 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/O SWITCH.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -39,9 +41,22 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateX(item.Rotation.X);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJRotateZ(item.Rotation.Z);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateX(item.Rotation.X);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJRotateZ(item.Rotation.Z);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -56,17 +71,28 @@ namespace SADXObjectDefinitions.Common
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateX(ref matrix, item.Rotation.X);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+			MatrixFunctions.RotateZ(ref matrix, item.Rotation.Z);
+
+			return matrix;
+		}
+
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x, z;
-			direction.GetRotation(out x, out z);
+			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
 
 		public override string Name { get { return "Switch"; } }
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Type", typeof(SwitchType), "Extended", null, SwitchType.Toggle, (o) => (SwitchType)o.Scale.X, (o, v) => o.Scale.X = (float)(SwitchType)v),
 			new PropertySpec("Switch ID", typeof(byte), "Extended", null, 0, o => (byte)o.Scale.Y, (o, v) => o.Scale.Y = (byte)v),
 			new PropertySpec("Active Time", typeof(ushort), "Extended", null, 5, o => (ushort)o.Scale.Z, (o, v) => o.Scale.Z = (ushort)v)
@@ -74,7 +100,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		private PropertySpec[] missionProperties = new PropertySpec[] {
+		private readonly PropertySpec[] missionProperties = new PropertySpec[] {
 			new PropertySpec("Switch ID", typeof(byte), null, "Overrides regular Switch ID setting for mission mode.", 0, (o) => ((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)v)
 		};
 

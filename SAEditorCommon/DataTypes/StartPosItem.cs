@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
@@ -24,14 +25,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
-					Meshes[i] = models[i].Attach.CreateD3DMesh(dev);
+					Meshes[i] = models[i].Attach.CreateD3DMesh();
 			texture = textures;
 			this.offset = offset;
 			Position = position;
 			YRotation = yrot;
 		}
-
-		public override Vertex Position { get; set; }
 
 		[Browsable(false)]
 		public int YRotation { get; set; }
@@ -44,7 +43,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[Browsable(false)]
-		public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; } }
+		public override Rotation Rotation { get { return new Rotation(0, YRotation, 0); } set { YRotation = value.Y; GetHandleMatrix(); } }
 
 		public override bool CanCopy { get { return false; } }
 
@@ -78,7 +77,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
 			transform.NJRotateY(YRotation);
-			result.AddRange(Model.DrawModelTree(dev, transform, LevelData.Textures[texture], Meshes));
+			result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes));
 			if (Selected)
 				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes));
 			transform.Pop();

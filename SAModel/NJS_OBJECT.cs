@@ -5,11 +5,16 @@ using System.Globalization;
 using System.Text;
 using Collada141;
 using System.IO;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
 
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public class NJS_OBJECT
+	public class NJS_OBJECT : ICloneable
 	{
 		[Browsable(false)]
 		public Attach Attach { get; set; }
@@ -19,9 +24,15 @@ namespace SonicRetro.SAModel
 		public Vertex Scale { get; set; }
 
 		[Browsable(false)]
-		public List<NJS_OBJECT> Children { get; set; }
+		public NJS_OBJECT Parent { get; private set; }
 
+		private List<NJS_OBJECT> children;
+		[Browsable(false)]
+		public ReadOnlyCollection<NJS_OBJECT> Children { get; private set; }
+
+		[Browsable(false)]
 		public NJS_OBJECT Sibling { get; private set; }
+
 		public string Name { get; set; }
 
 		public bool RotateZYX { get; set; }
@@ -37,21 +48,87 @@ namespace SonicRetro.SAModel
 			get { return 0x34; }
 		}
 
+		[Browsable(false)]
+		public bool HasWeight
+		{
+			get
+			{
+				if (Attach is ChunkAttach ca && ca.HasWeight) return true;
+				foreach (NJS_OBJECT child in Children)
+					if (child.HasWeight)
+						return true;
+				if (Parent == null && Sibling != null && Sibling.HasWeight)
+					return true;
+				return false;
+			}
+		}
+
+		[DisplayName("Code Path")]
+		[Description("The syntax to access this node from the root node in C++ code.")]
+		public string CodePath
+		{
+			get
+			{
+				if (Parent == null)
+					return "root";
+				StringBuilder result = new StringBuilder("->child");
+				int idx = Parent.Children.IndexOf(this);
+				for (int i = 0; i < idx; i++)
+					result.Append("->sibling");
+				return Parent.CodePath + result.ToString();
+			}
+		}
+
 		public NJS_OBJECT()
 		{
 			Name = "object_" + Extensions.GenerateIdentifier();
 			Position = new Vertex();
 			Rotation = new Rotation();
 			Scale = new Vertex(1, 1, 1);
-			Children = new List<NJS_OBJECT>();
+			children = new List<NJS_OBJECT>();
+			Children = new ReadOnlyCollection<NJS_OBJECT>(children);		
+		}
+		
+		void AssimpLoad(Scene scene, Node node)
+		{
+			Name = node.Name;
+			Vector3D translation;
+			Vector3D scaling;
+			Quaternion rotation;
+			node.Transform.Decompose(out scaling, out rotation, out translation);
+			Vector3D rotationConverted = Extensions.FromQ2(rotation);
+			Position = new Vertex(translation.X, -translation.Z, translation.Y);
+			Rotation = new Rotation((int)(rotationConverted.X * 65536.0 / (2 * Math.PI)), -(int)(rotationConverted.Z * 65536.0 / (2 * Math.PI)), (int)(rotationConverted.Y* 65536.0 / (2 * Math.PI)));
+			Scale = new Vertex(scaling.X, -scaling.Z, scaling.Y);
+			List<Mesh> meshes = new List<Mesh>();
+			foreach (int i in node.MeshIndices)
+				meshes.Add(scene.Meshes[i]);
+			List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>(scene.Materials.Select(a => new NJS_MATERIAL(a)));
+			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
+			if (node.HasMeshes)
+				Attach = new BasicAttach(materials, meshes);
+			else Attach = null;
+			if (node.HasChildren)
+			{
+				List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a)));
+				Children = new ReadOnlyCollection<NJS_OBJECT>(list.ToArray());
+			}
+			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
+		}
+		public NJS_OBJECT(Scene scene, Node node)
+		{
+			AssimpLoad(scene, node);
 		}
 
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
-		{
-		}
+		{ }
 
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+			: this(file, address, imageBase, format, null, labels)
+		{ }
+
+		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels)
 		{
 			if (labels.ContainsKey(address))
 				Name = labels[address];
@@ -70,25 +147,31 @@ namespace SonicRetro.SAModel
 			Position = new Vertex(file, address + 8);
 			Rotation = new Rotation(file, address + 0x14);
 			Scale = new Vertex(file, address + 0x20);
-			Children = new List<NJS_OBJECT>();
+			Parent = parent;
+			children = new List<NJS_OBJECT>();
+			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 			NJS_OBJECT child = null;
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x2C);
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, labels);
+				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, this, labels);
 			}
 			while (child != null)
 			{
-				Children.Add(child);
+				children.Add(child);
 				child = child.Sibling;
 			}
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x30);
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, labels);
+				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels);
 			}
+
+			//Assimp.AssimpContext context = new AssimpContext();
+			//Scene scene = context.ImportFile("F:\\untitled.obj", PostProcessSteps.Triangulate);
+			//AssimpLoad(scene, scene.RootNode);
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
@@ -186,6 +269,8 @@ namespace SonicRetro.SAModel
 			List<NJS_OBJECT> result = new List<NJS_OBJECT> { this };
 			foreach (NJS_OBJECT item in Children)
 				result.AddRange(item.GetObjects());
+			if (Parent == null && Sibling != null)
+				result.AddRange(Sibling.GetObjects());
 			return result.ToArray();
 		}
 
@@ -194,6 +279,8 @@ namespace SonicRetro.SAModel
 			int result = Animate ? 1 : 0;
 			foreach (NJS_OBJECT item in Children)
 				result += item.CountAnimated();
+			if (Parent == null && Sibling != null)
+				result += Sibling.CountAnimated();
 			return result;
 		}
 
@@ -202,7 +289,47 @@ namespace SonicRetro.SAModel
 			int result = Morph ? 1 : 0;
 			foreach (NJS_OBJECT item in Children)
 				result += item.CountMorph();
+			if (Parent == null && Sibling != null)
+				result += Sibling.CountMorph();
 			return result;
+		}
+
+		public void AddChild(NJS_OBJECT child)
+		{
+			children.Add(child);
+			child.Parent = this;
+		}
+
+		public void AddChildren(IEnumerable<NJS_OBJECT> children)
+		{
+			foreach (NJS_OBJECT child in children)
+				AddChild(child);
+		}
+
+		public void InsertChild(int index, NJS_OBJECT child)
+		{
+			children.Insert(index, child);
+			child.Parent = this;
+		}
+
+		public void RemoveChild(NJS_OBJECT child)
+		{
+			children.Remove(child);
+			child.Parent = null;
+		}
+
+		public void RemoveChildAt(int index)
+		{
+			NJS_OBJECT child = children[index];
+			children.RemoveAt(index);
+			child.Parent = null;
+		}
+
+		public void ClearChildren()
+		{
+			foreach (NJS_OBJECT child in children)
+				child.Parent = null;
+			children.Clear();
 		}
 
 		public void ProcessVertexData()
@@ -214,6 +341,29 @@ namespace SonicRetro.SAModel
 				Attach.ProcessVertexData();
 			foreach (NJS_OBJECT item in Children)
 				item.ProcessVertexData();
+			if (Parent == null && Sibling != null)
+				Sibling.ProcessVertexData();
+		}
+
+		public void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame)
+		{
+			int animindex = -1;
+			NJS_OBJECT obj = this;
+			do
+			{
+				obj.ProcessShapeMotionVertexData(motion, frame, ref animindex);
+				obj = obj.Sibling;
+			} while (obj != null);
+		}
+		
+		private void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, ref int animindex)
+		{
+			if (Morph)
+				animindex++;
+			if (Attach != null)
+				Attach.ProcessShapeMotionVertexData(motion, frame, animindex);
+			foreach (NJS_OBJECT item in Children)
+				item.ProcessShapeMotionVertexData(motion, frame, ref animindex);
 		}
 
 		public COLLADA ToCollada(int texcount)
@@ -255,7 +405,8 @@ namespace SonicRetro.SAModel
 			List<effect> effects = new List<effect>();
 			List<geometry> geometries = new List<geometry>();
 			List<string> visitedAttaches = new List<string>();
-			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null);
+			int nodeID = -1;
+			node node = AddToCollada(materials, effects, geometries, visitedAttaches, textures != null, ref nodeID);
 			libraries.Add(new library_materials { material = materials.ToArray() });
 			libraries.Add(new library_effects { effect = effects.ToArray() });
 			libraries.Add(new library_geometries { geometry = geometries.ToArray() });
@@ -276,8 +427,9 @@ namespace SonicRetro.SAModel
 		}
 
 		protected node AddToCollada(List<material> materials, List<effect> effects, List<geometry> geometries,
-			List<string> visitedAttaches, bool hasTextures)
+			   List<string> visitedAttaches, bool hasTextures, ref int nodeID)
 		{
+
 			BasicAttach attach = Attach as BasicAttach;
 			if (attach == null || visitedAttaches.Contains(attach.Name))
 				goto skipAttach;
@@ -310,8 +462,8 @@ namespace SonicRetro.SAModel
 									{
 										sid = "material_" + attach.Name + "_" + m + "_eff_surface",
 										/*Item = new Collada141.fx_sampler2D_common()
-                                         { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
-                                         ItemElementName = Collada141.ItemChoiceType.sampler2D*/
+										 { instance_image = new Collada141.instance_image() { url = "#image_" + (item.TextureID + 1).ToString(System.Globalization.NumberFormatInfo.InvariantInfo) } },
+										 ItemElementName = Collada141.ItemChoiceType.sampler2D*/
 										Item = new fx_surface_common
 										{
 											type = fx_surface_type_enum.Item2D,
@@ -611,10 +763,11 @@ namespace SonicRetro.SAModel
 				}
 			});
 			skipAttach:
+			++nodeID;
 			node node = new node
 			{
-				id = Name,
-				name = Name,
+				id = $"{nodeID:000}_{Name}",
+				name = $"{nodeID:000}_{Name}",
 				Items = new object[]
 				{
 					new TargetableFloat3 { sid = "translate", Values = new double[] { Position.X, Position.Y, Position.Z } },
@@ -654,39 +807,9 @@ namespace SonicRetro.SAModel
 			}
 			List<node> childnodes = new List<node>();
 			foreach (NJS_OBJECT item in Children)
-				childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures));
+				childnodes.Add(item.AddToCollada(materials, effects, geometries, visitedAttaches, hasTextures, ref nodeID));
 			node.node1 = childnodes.ToArray();
 			return node;
-		}
-
-		public NJS_OBJECT ToBasicModel()
-		{
-			List<NJS_OBJECT> newchildren = new List<NJS_OBJECT>(Children.Count);
-			foreach (NJS_OBJECT item in Children)
-				newchildren.Add(item.ToBasicModel());
-			NJS_OBJECT result = new NJS_OBJECT();
-			if (Attach != null)
-				result.Attach = Attach.ToBasicModel();
-			result.Position = Position;
-			result.Rotation = Rotation;
-			result.Scale = Scale;
-			result.Children = newchildren;
-			return result;
-		}
-
-		public NJS_OBJECT ToChunkModel()
-		{
-			List<NJS_OBJECT> newchildren = new List<NJS_OBJECT>(Children.Count);
-			foreach (NJS_OBJECT item in Children)
-				newchildren.Add(item.ToBasicModel());
-			NJS_OBJECT result = new NJS_OBJECT();
-			if (Attach != null)
-				result.Attach = Attach.ToChunkModel();
-			result.Position = Position;
-			result.Rotation = Rotation;
-			result.Scale = Scale;
-			result.Children = newchildren;
-			return result;
 		}
 
 		public string ToStruct()
@@ -731,6 +854,12 @@ namespace SonicRetro.SAModel
 					writer.WriteLine();
 				}
 			}
+			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
+			{
+				labels.Add(Sibling.Name);
+				Sibling.ToStructVariables(writer, DX, labels, textures);
+				writer.WriteLine();
+			}
 			if (Attach != null && !labels.Contains(Attach.Name))
 			{
 				labels.Add(Attach.Name);
@@ -751,6 +880,32 @@ namespace SonicRetro.SAModel
 				ToStructVariables(sw, DX, labels, textures);
 				return sw.ToString();
 			}
+		}
+
+		object ICloneable.Clone() => Clone();
+
+		public NJS_OBJECT Clone()
+		{
+			NJS_OBJECT result = (NJS_OBJECT)MemberwiseClone();
+			if (Attach != null)
+				result.Attach = Attach.Clone();
+			result.Position = Position.Clone();
+			result.Rotation = Rotation.Clone();
+			result.Scale = Scale.Clone();
+			result.children = new List<NJS_OBJECT>(children.Count);
+			result.Children = new ReadOnlyCollection<NJS_OBJECT>(result.children);
+			if (children.Count > 0)
+			{
+				NJS_OBJECT child = children[0].Clone();
+				while (child != null)
+				{
+					result.children.Add(child);
+					child = child.Sibling;
+				}
+			}
+			if (Sibling != null)
+				result.Sibling = Sibling.Clone();
+			return result;
 		}
 	}
 }

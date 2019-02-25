@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using Color = System.Drawing.Color;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -48,8 +51,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			d3ddevice = new Device(0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-			d3ddevice.DeviceResizing += d3ddevice_DeviceResizing;
+			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
 			Gizmo.InitGizmo(d3ddevice);
 			if (Program.Arguments.Length > 0)
@@ -57,12 +59,6 @@ namespace SonicRetro.SAModel.SALVL
 
 			LevelData.StateChanged += LevelData_StateChanged;
 			panel1.MouseWheel += panel1_MouseWheel;
-		}
-
-		void d3ddevice_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			// HACK: Not so sure we should have to re-initialize this every time...
-			EditorOptions.Initialize(d3ddevice);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -105,10 +101,12 @@ namespace SonicRetro.SAModel.SALVL
 					LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (LandTableFormat)dlg.comboBox2.SelectedIndex);
 				}
 			}
-			LevelData.LevelItems = new List<LevelItem>();
+			LevelData.ClearLevelItems();
 
 			for (int i = 0; i < LevelData.geo.COL.Count; i++)
-				LevelData.LevelItems.Add(new LevelItem(LevelData.geo.COL[i], d3ddevice, i, selectedItems));
+			{
+				LevelData.AddLevelItem((new LevelItem(LevelData.geo.COL[i], i, selectedItems)));
+			}
 
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
@@ -123,7 +121,7 @@ namespace SonicRetro.SAModel.SALVL
 					BMPInfo[] TexBmps = TextureArchive.GetTextures(a.FileName);
 					Texture[] texs = new Texture[TexBmps.Length];
 					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = new Texture(d3ddevice, TexBmps[j].Image, Usage.None, Pool.Managed);
+						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
 					string texname = Path.GetFileNameWithoutExtension(a.FileName);
 					if (!LevelData.TextureBitmaps.ContainsKey(texname))
 						LevelData.TextureBitmaps.Add(texname, TexBmps);
@@ -172,10 +170,7 @@ namespace SonicRetro.SAModel.SALVL
 				Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
-				{
-					LevelData.geo.Tool = "SALVL";
 					LevelData.geo.SaveToFile(a.FileName, outfmt);
-				}
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -189,37 +184,37 @@ namespace SonicRetro.SAModel.SALVL
 			cam.FOV = (float)(Math.PI / 4);
 			cam.Aspect = panel1.Width / (float)panel1.Height;
 			cam.DrawDistance = 10000;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
+			Matrix projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			Matrix view = cam.ToMatrix();
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
 			Text = "X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + interval + (cam.mode == 1 ? " Distance=" + cam.Distance : "");
-			d3ddevice.SetRenderState(RenderStates.FillMode, (int)EditorOptions.RenderFillMode);
-			d3ddevice.SetRenderState(RenderStates.CullMode, (int)EditorOptions.RenderCullMode);
-			d3ddevice.Material = new Material { Ambient = Color.White };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToArgb(), 1, 0);
-			d3ddevice.RenderState.ZBufferEnable = true;
+			d3ddevice.SetRenderState(RenderState.FillMode, (int)EditorOptions.RenderFillMode);
+			d3ddevice.SetRenderState(RenderState.CullMode, (int)EditorOptions.RenderCullMode);
+			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 			//all drawings after this line
 			cam.DrawDistance = EditorOptions.RenderDrawDistance;
-			d3ddevice.SetTransform(TransformType.Projection, Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance));
-			d3ddevice.SetTransform(TransformType.View, cam.ToMatrix());
-			cam.BuildFrustum(d3ddevice.Transform.View, d3ddevice.Transform.Projection);
+			cam.BuildFrustum(view, projection);
 
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			MatrixStack transform = new MatrixStack();
 			List<RenderInfo> renderlist = new List<RenderInfo>();
 			if (LevelData.LevelItems != null)
-				for (int i = 0; i < LevelData.LevelItems.Count; i++)
+				for (int i = 0; i < LevelData.LevelItemCount; i++)
 				{
 					bool display = false;
-					if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+					if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
 						display = true;
-					else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+					else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
 						display = true;
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
-						renderlist.AddRange(LevelData.LevelItems[i].Render(d3ddevice, cam, transform));
+						renderlist.AddRange(LevelData.GetLevelitemAtIndex(i).Render(d3ddevice, cam, transform));
 				}
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 
@@ -263,8 +258,8 @@ namespace SonicRetro.SAModel.SALVL
 					Item item = null;
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
-					Matrix proj = d3ddevice.Transform.Projection;
-					Matrix view = d3ddevice.Transform.View;
+					Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+					Matrix view = d3ddevice.GetTransform(TransformState.View);
 					Vector3 Near, Far;
 					Near = mousepos;
 					Near.Z = 0;
@@ -277,22 +272,22 @@ namespace SonicRetro.SAModel.SALVL
 						{
 							if (LevelData.LevelItems != null)
 							{
-								for (int i = 0; i < LevelData.LevelItems.Count; i++)
+								for (int i = 0; i < LevelData.LevelItemCount; i++)
 								{
 									bool display = false;
-									if (visibleToolStripMenuItem.Checked && LevelData.LevelItems[i].Visible)
+									if (visibleToolStripMenuItem.Checked && LevelData.GetLevelitemAtIndex(i).Visible)
 										display = true;
-									else if (invisibleToolStripMenuItem.Checked && !LevelData.LevelItems[i].Visible)
+									else if (invisibleToolStripMenuItem.Checked && !LevelData.GetLevelitemAtIndex(i).Visible)
 										display = true;
 									else if (allToolStripMenuItem.Checked)
 										display = true;
 									if (display)
 									{
-										dist = LevelData.LevelItems[i].CheckHit(Near, Far, viewport, proj, view);
+										dist = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
 										if (dist.IsHit & dist.Distance < mindist)
 										{
 											mindist = dist.Distance;
-											item = LevelData.LevelItems[i];
+											item = LevelData.GetLevelitemAtIndex(i);
 										}
 									}
 								}
@@ -475,7 +470,12 @@ namespace SonicRetro.SAModel.SALVL
 			}
 			if (e.Button == MouseButtons.Left)
 			{
-				if (transformGizmo != null) transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+				if (transformGizmo != null)
+				{
+					//transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
+					//throw new System.NotImplementedException();
+				}
+
 				DrawLevel();
 
 				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
@@ -505,8 +505,8 @@ namespace SonicRetro.SAModel.SALVL
 				float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
 				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
-				Matrix proj = d3ddevice.Transform.Projection;
-				Matrix view = d3ddevice.Transform.View;
+				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Vector3 Near, Far;
 				Near = mousepos;
 				Near.Z = 0;
@@ -551,13 +551,13 @@ namespace SonicRetro.SAModel.SALVL
 			if (sender.ItemCount > 0) // set up gizmo
 			{
 				transformGizmo.Enabled = true;
-				transformGizmo.AffectedItems = sender.GetSelection();
+				transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
+					selectedItems.Get(0).TransformMatrix);
 			}
 			else
 			{
 				if (transformGizmo != null)
 				{
-					transformGizmo.AffectedItems = new List<Item>();
 					transformGizmo.Enabled = false;
 				}
 			}
@@ -600,7 +600,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			Vector3 center = new Vector3();
 			foreach (Item item in objs)
-				center.Add(item.Position.ToVector3());
+				center += item.Position.ToVector3();
 			center = new Vector3(center.X / objs.Count, center.Y / objs.Count, center.Z / objs.Count);
 			foreach (Item item in objs)
 			{
@@ -635,7 +635,7 @@ namespace SonicRetro.SAModel.SALVL
 				string filePath = importFileDialog.FileName;
 
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -665,7 +665,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 
 
-				LevelData.ImportFromFile(filePath, d3ddevice, cam, out bool errorFlag, out string errorMsg, selectedItems);
+				LevelData.ImportFromFile(filePath, cam, out bool errorFlag, out string errorMsg, selectedItems);
 
 				if (errorFlag)
 				{
@@ -676,7 +676,8 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveFileDialog a = new SaveFileDialog
+			#region Old Code
+			/*SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "obj",
 				Filter = "OBJ Files|*.obj"
@@ -726,6 +727,107 @@ namespace SonicRetro.SAModel.SALVL
 							Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, materialPrefix, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
 
 					if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+				}
+			}*/
+			#endregion
+
+			ExportObj();
+		}
+
+		private void ExportObj()
+		{
+			SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "obj",
+				Filter = "OBJ Files|*.obj"
+			};
+			if (a.ShowDialog() == DialogResult.OK)
+			{
+				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
+				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
+				{
+					int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+					if (LevelData.geo.Anim != null)
+						stepCount += LevelData.geo.Anim.Count;
+
+					List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
+
+					ProgressDialog progress = new ProgressDialog("Exporting stage", stepCount, true, false);
+					progress.Show(this);
+					progress.SetTaskAndStep("Exporting...");
+
+					int totalVerts = 0;
+					int totalNorms = 0;
+					int totalUVs = 0;
+
+					bool errorFlag = false;
+
+					for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					{
+						Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.COL[i].Model, ref materials, new MatrixStack(),
+							ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+						progress.Step = String.Format("Mesh {0}/{1}", i + 1, LevelData.geo.COL.Count);
+						progress.StepProgress();
+						Application.DoEvents();
+					}
+					if (LevelData.geo.Anim != null)
+					{
+						for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+						{
+							Direct3D.Extensions.WriteModelAsObj(objstream, LevelData.geo.Anim[i].Model, ref materials, new MatrixStack(),
+								ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
+
+							progress.Step = String.Format("Animation {0}/{1}", i + 1, LevelData.geo.Anim.Count);
+							progress.StepProgress();
+							Application.DoEvents();
+						}
+					}
+
+					if (errorFlag)
+					{
+						MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.", "Failure",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+
+					#region Material Exporting
+					string materialPrefix = LevelData.leveltexs;
+
+					objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
+
+					for (int i = 0; i < materials.Count; i++)
+					{
+						NJS_MATERIAL material = materials[i];
+						mtlstream.WriteLine("newmtl material_{0}", i);
+						mtlstream.WriteLine("Ka 1 1 1");
+						mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+							material.DiffuseColor.R / 255,
+							material.DiffuseColor.G / 255,
+							material.DiffuseColor.B / 255));
+
+						mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+							material.SpecularColor.R / 255,
+							material.SpecularColor.G / 255,
+							material.SpecularColor.B / 255));
+						mtlstream.WriteLine("illum 1");
+
+						if (!string.IsNullOrEmpty(LevelData.leveltexs) && material.UseTexture)
+						{
+							mtlstream.WriteLine("Map_Kd " + LevelData.TextureBitmaps[LevelData.leveltexs][material.TextureID].Name + ".png");
+
+							// save texture
+							string mypath = Path.GetDirectoryName(a.FileName);
+							BMPInfo item = LevelData.TextureBitmaps[LevelData.leveltexs][material.TextureID];
+							item.Image.Save(Path.Combine(mypath, item.Name + ".png"));
+						}
+
+						//progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
+						//progress.StepProgress();
+						Application.DoEvents();
+					}
+					#endregion
+
+					progress.SetTaskAndStep("Export complete!");
 				}
 			}
 		}
@@ -813,7 +915,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo != null) transformGizmo.AffectedItems = selectedItems.GetSelection();
+			if (transformGizmo != null) transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			DrawLevel();
 		}
 
@@ -838,7 +940,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			LevelData.DuplicateSelection(d3ddevice, selectedItems, out bool errorFlag, out string errorMsg);
+			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) MessageBox.Show(errorMsg);
 		}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace SonicRetro.SAModel
 {
@@ -13,6 +14,8 @@ namespace SonicRetro.SAModel
 		public string VertexName { get; set; }
 		public List<PolyChunk> Poly { get; set; }
 		public string PolyName { get; set; }
+
+		public bool HasWeight { get { return Vertex != null && Vertex.Any(a => a.HasWeight); } }
 
 		public ChunkAttach()
 		{
@@ -192,8 +195,7 @@ namespace SonicRetro.SAModel
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static Vertex[] VertexBuffer = new Vertex[0];
-		static Vertex[] NormalBuffer = new Vertex[0];
+		static VertexData[] VertexBuffer = new VertexData[4095];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public override void ProcessVertexData()
@@ -210,10 +212,56 @@ namespace SonicRetro.SAModel
 #endif
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
-					if (NormalBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
-						Array.Resize(ref NormalBuffer, chunk.IndexOffset + chunk.VertexCount);
-					Array.Copy(chunk.Vertices.ToArray(), 0, VertexBuffer, chunk.IndexOffset, chunk.Vertices.Count);
-					Array.Copy(chunk.Normals.ToArray(), 0, NormalBuffer, chunk.IndexOffset, chunk.Normals.Count);
+					for (int i = 0; i < chunk.VertexCount; i++)
+					{
+						VertexBuffer[i + chunk.IndexOffset] = new VertexData(chunk.Vertices[i]);
+						if (chunk.Normals.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Normal = chunk.Normals[i];
+						if (chunk.Diffuse.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+					}
+				}
+			}
+			List<MeshInfo> result = new List<MeshInfo>();
+			if (Poly != null)
+				result = ProcessPolyList(PolyName, Poly, 0);
+			MeshInfo = result.ToArray();
+		}
+
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		{
+			if (!motion.Models.ContainsKey(animindex))
+			{
+				ProcessVertexData();
+				return;
+			}
+#if modellog
+			Extensions.Log("Processing Chunk Attach " + Name + Environment.NewLine);
+#endif
+			if (Vertex != null)
+			{
+				foreach (VertexChunk chunk in Vertex)
+				{
+#if modellog
+					Extensions.Log("Vertex Declaration: " + chunk.IndexOffset + "-" + (chunk.IndexOffset + chunk.VertexCount - 1) + Environment.NewLine);
+#endif
+					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+					Vertex[] vertdata = chunk.Vertices.ToArray();
+					Vertex[] normdata = chunk.Normals.ToArray();
+					AnimModelData data = motion.Models[animindex];
+					if (data.Vertex.Count > 0)
+						vertdata = data.GetVertex(frame);
+					if (data.Normal.Count > 0)
+						normdata = data.GetNormal(frame);
+					for (int i = 0; i < chunk.VertexCount; i++)
+					{
+						VertexBuffer[i + chunk.IndexOffset] = new VertexData(vertdata[i]);
+						if (normdata.Length > 0)
+							VertexBuffer[i + chunk.IndexOffset].Normal = normdata[i];
+						if (chunk.Diffuse.Count > 0)
+							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+					}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
@@ -286,6 +334,8 @@ namespace SonicRetro.SAModel
 					case ChunkType.Material_DiffuseAmbientSpecular2:
 						{
 							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
+							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
+							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
 							if (c2.Diffuse.HasValue)
 								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
 							if (c2.Specular.HasValue)
@@ -352,10 +402,11 @@ namespace SonicRetro.SAModel
 								Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 								for (int k = 0; k < strip.Indexes.Length; k++)
 								{
-									str.Indexes[k] = (ushort)verts.AddUnique(new VertexData(
-										VertexBuffer[strip.Indexes[k]],
-										NormalBuffer[strip.Indexes[k]],
-										hasVColor ? (Color?)strip.VColors[k] : null,
+									str.Indexes[k] = (ushort)verts.Count;
+									verts.Add(new VertexData(
+										VertexBuffer[strip.Indexes[k]].Position,
+										VertexBuffer[strip.Indexes[k]].Normal,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
 										hasUV ? strip.UVs[k] : null));
 								}
 								polys.Add(str);
@@ -412,6 +463,25 @@ namespace SonicRetro.SAModel
 		public override ChunkAttach ToChunkModel()
 		{
 			return this;
+		}
+
+		public override Attach Clone()
+		{
+			ChunkAttach result = (ChunkAttach)MemberwiseClone();
+			if (Vertex != null)
+			{
+				result.Vertex = new List<VertexChunk>(Vertex.Count);
+				foreach (VertexChunk item in Vertex)
+					result.Vertex.Add(item.Clone());
+			}
+			if (Poly != null)
+			{
+				result.Poly = new List<PolyChunk>(Poly.Count);
+				foreach (PolyChunk item in Poly)
+					result.Poly.Add(item.Clone());
+			}
+			result.Bounds = Bounds.Clone();
+			return result;
 		}
 	}
 }

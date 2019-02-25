@@ -50,23 +50,30 @@ namespace ModelRelabeler
 						BasicAttach attach = (BasicAttach)objects[i].Attach;
 						BasicAttach repattach = (BasicAttach)repobjects[i].Attach;
 						attach.VertexName = repattach.VertexName;
-						attach.NormalName = repattach.NormalName;
-						attach.MaterialName = repattach.MaterialName;
+						if (repattach.NormalName != null)
+							attach.NormalName = repattach.NormalName;
+						if (repattach.MaterialName != null)
+							attach.MaterialName = repattach.MaterialName;
 						attach.MeshName = repattach.MeshName;
 						for (int j = 0; j < Math.Min(attach.Mesh.Count, repattach.Mesh.Count); j++)
 						{
 							attach.Mesh[j].PolyName = repattach.Mesh[j].PolyName;
-							attach.Mesh[j].PolyNormalName = repattach.Mesh[j].PolyNormalName;
-							attach.Mesh[j].UVName = repattach.Mesh[j].UVName;
-							attach.Mesh[j].VColorName = repattach.Mesh[j].VColorName;
+							if (repattach.Mesh[j].PolyNormalName != null)
+								attach.Mesh[j].PolyNormalName = repattach.Mesh[j].PolyNormalName;
+							if (repattach.Mesh[j].UVName != null)
+								attach.Mesh[j].UVName = repattach.Mesh[j].UVName;
+							if (repattach.Mesh[j].VColorName != null)
+								attach.Mesh[j].VColorName = repattach.Mesh[j].VColorName;
 						}
 					}
 					else if (objects[i].Attach is ChunkAttach && repobjects[i].Attach is ChunkAttach)
 					{
 						ChunkAttach attach = (ChunkAttach)objects[i].Attach;
 						ChunkAttach repattach = (ChunkAttach)repobjects[i].Attach;
-						attach.VertexName = repattach.VertexName;
-						attach.PolyName = repattach.PolyName;
+						if (repattach.VertexName != null)
+							attach.VertexName = repattach.VertexName;
+						if (repattach.PolyName != null)
+							attach.PolyName = repattach.PolyName;
 					}
 				}
 			}

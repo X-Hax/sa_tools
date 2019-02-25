@@ -7,7 +7,7 @@ namespace SonicRetro.SAModel
 {
 	[TypeConverter(typeof (UVConverter))]
 	[Serializable]
-	public class UV : IEquatable<UV>
+	public class UV : IEquatable<UV>, ICloneable
 	{
 		public float U { get; set; }
 		public float V { get; set; }
@@ -82,6 +82,10 @@ namespace SonicRetro.SAModel
 				return false;
 			return U == other.U && V == other.V;
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public UV Clone() => (UV)MemberwiseClone();
 	}
 
 	public class UVConverter : ExpandableObjectConverter

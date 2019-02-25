@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -13,10 +15,10 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Common/CMN_DRING.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -47,18 +49,35 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateX(x);
 			transform.NJRotateY(y);
 			transform.NJRotateZ(item.Rotation.Z);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			if (item.Selected)
 			{
-				CustomVertex.PositionColored[] verts = new CustomVertex.PositionColored[2];
-				verts[0] = new CustomVertex.PositionColored(item.Position.ToVector3(), System.Drawing.Color.Yellow.ToArgb());
-				verts[1] = new CustomVertex.PositionColored(item.Scale.ToVector3(), System.Drawing.Color.Yellow.ToArgb());
-				dev.VertexFormat = VertexFormats.Position | VertexFormats.Diffuse;
+				FVF_PositionColored[] verts = new FVF_PositionColored[2];
+				verts[0] = new FVF_PositionColored(item.Position.ToVector3(), System.Drawing.Color.Yellow);
+				verts[1] = new FVF_PositionColored(item.Scale.ToVector3(), System.Drawing.Color.Yellow);
+				dev.VertexFormat = FVF_PositionColored.Format;
 				dev.DrawUserPrimitives(PrimitiveType.LineList, 1, verts);
 			}
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			int x = item.Rotation.X;
+			int y = item.Rotation.Y;
+			if (!item.Scale.IsEmpty)
+				(item.Position - item.Scale).GetRotation(out x, out y);
+			transform.NJRotateX(x);
+			transform.NJRotateY(y);
+			transform.NJRotateZ(item.Rotation.Z);
+			result.Add(new ModelTransform(model, transform.Top));
+			transform.Pop();
 			return result;
 		}
 
@@ -81,15 +100,33 @@ namespace SADXObjectDefinitions.Common
 			item.Scale = location;
 		}
 
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+
+			int x = item.Rotation.X;
+			int y = item.Rotation.Y;
+			if (!item.Scale.IsEmpty)
+				(item.Position - item.Scale).GetRotation(out x, out y);
+
+			MatrixFunctions.RotateY(ref matrix, x);
+			MatrixFunctions.RotateY(ref matrix, y);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Z);
+
+			return matrix;
+		}
+
 		public override string Name { get { return "Dash Hoop"; } }
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Target", typeof(Vertex), "Extended", null, new Vertex(), (o) => o.Scale, (o, v) => o.Scale = (Vertex)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		private VerbSpec[] customVerbs = new VerbSpec[] {
+		private readonly VerbSpec[] customVerbs = new VerbSpec[] {
 			new VerbSpec("Point To", o => LevelData.BeginPointOperation())
 		};
 

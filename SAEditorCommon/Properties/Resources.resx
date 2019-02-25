@@ -112,62 +112,64 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="xy_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\xy_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="x_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\x_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="x_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\x_rotation.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="y_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\y_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="y_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\y_rotation.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="zx_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\zx_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="zy_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\zy_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="z_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\z_move.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="z_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\z_rotation.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="x_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\x_null.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="y_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\y_null.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="z_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\z_null.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="x_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\x_scale.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="y_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\y_scale.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="z_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\z_scale.x;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="PointATexture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PointATexture.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PointBTexture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PointBTexture.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xy_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xy_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="x_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\x_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="x_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\x_null.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="x_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\x_rotation_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="x_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\x_scale_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="y_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\y_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="y_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\y_null.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="y_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\y_rotation_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="y_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\y_scale_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="zx_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zx_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="zy_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zy_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="z_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\z_move_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="z_null" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\z_null.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="z_rotation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\z_rotation_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="z_scale" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\z_scale_x.sa1mdl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Hourglass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hourglass.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

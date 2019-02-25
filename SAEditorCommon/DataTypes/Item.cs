@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
 using SonicRetro.SAModel.SAEditorCommon.UI;
@@ -16,15 +16,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[ParenthesizePropertyName(true)]
 		public string Type { get { return GetType().Name; } }
 
-		public virtual Vertex Position { get; set; }
-
 		private bool selected;
 		[Browsable(false)]
 		public bool Selected { get { return selected; } }
 		private BoundingSphere bounds = new BoundingSphere();
 		[ParenthesizePropertyName(true)]
 		public virtual BoundingSphere Bounds { get { return bounds; } }
-		public abstract Rotation Rotation { get; set; }
+
+		protected Matrix transformMatrix = Matrix.Identity;
+		protected Vertex position = new Vertex();
+		protected Rotation rotation = new Rotation();
+		protected bool rotateZYX = false;
+
+		public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
+		[Browsable(false)]
+		public Matrix TransformMatrix { get { return transformMatrix; } }
 
 		[Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
@@ -95,28 +102,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Vertex.CenterOfPoints(vertList);
 		}
 
-		public Matrix GetLocalAxes(out Vector3 Up, out Vector3 Right, out Vector3 Look)
+		protected virtual void GetHandleMatrix()
 		{
-			Matrix transform = Matrix.Identity;
+			transformMatrix = Matrix.Identity;
 
-			try
-			{
-				MatrixFunctions.RotateXYZ(ref transform, Rotation.X, Rotation.Y, Rotation.Z);
-			}
-			catch (NotSupportedException)
-			{
-				Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
-			}
+			MatrixStack matrixStack = new MatrixStack();
+			matrixStack.LoadMatrix(Matrix.Identity);
+			matrixStack.NJTranslate(Position);
+			if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
+			else matrixStack.NJRotateZYX(Rotation);
 
-			Up = new Vector3(0, 1, 0);
-			Look = new Vector3(0, 0, 1);
-			Right = new Vector3(1, 0, 0);
-
-			Up = Vector3.TransformCoordinate(Up, transform);
-			Look = Vector3.TransformCoordinate(Look, transform);
-			Right = Vector3.TransformCoordinate(Right, transform);
-
-			return transform;
+			transformMatrix = matrixStack.Top;
 		}
 	}
 }

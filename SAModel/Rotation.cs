@@ -6,7 +6,7 @@ using System.Globalization;
 namespace SonicRetro.SAModel
 {
 	[TypeConverter(typeof (RotationConverter))]
-	public class Rotation
+	public class Rotation : ICloneable
 	{
 		[Browsable(false)]
 		public int X { get; set; }
@@ -158,6 +158,10 @@ namespace SonicRetro.SAModel
 		{
 			get { return X == 0 && Y == 0 && Z == 0; }
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public Rotation Clone() => new Rotation(X, Y, Z);
 	}
 
 	public class RotationConverter : ExpandableObjectConverter

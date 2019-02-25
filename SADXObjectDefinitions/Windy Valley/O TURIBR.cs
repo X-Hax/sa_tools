@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.WindyValley
 {
@@ -31,9 +32,20 @@ namespace SADXObjectDefinitions.WindyValley
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_WINDY"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -45,14 +57,24 @@ namespace SADXObjectDefinitions.WindyValley
 			transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
+		}
 	}
 
 	public class Turibr1 : Bridge
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TURIBR.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Bridge 1"; } }
@@ -60,10 +82,10 @@ namespace SADXObjectDefinitions.WindyValley
 
 	public class Turibr : Bridge
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TURIBR.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Bridge"; } }
@@ -71,10 +93,10 @@ namespace SADXObjectDefinitions.WindyValley
 
 	public class Turibr2 : Bridge
 	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TURIBR2_Col.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override string Name { get { return "Bridge 2"; } }

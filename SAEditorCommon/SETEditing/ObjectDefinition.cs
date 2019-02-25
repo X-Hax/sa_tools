@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
@@ -10,11 +10,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class ObjectDefinition
 	{
-		public abstract void Init(ObjectData data, string name, Device dev);
+		public abstract void Init(ObjectData data, string name);
 		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
 		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
+		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
 		public virtual void SetOrientation(SETItem item, Vertex direction) { }
 		public virtual void PointTo(SETItem item, Vertex location) { }
+		public abstract Matrix GetHandleMatrix(SETItem item);
 		public abstract string Name { get; }
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }
@@ -42,6 +44,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public virtual float DefaultYScale { get { return 1; } }
 		public virtual float DefaultZScale { get { return 1; } }
 		public virtual float DistanceFromGround { get { return 0; } }
+	}
+
+	public class ModelTransform
+	{
+		public NJS_OBJECT Model { get; private set; }
+		public Matrix Transform { get; private set; }
+
+		public ModelTransform(NJS_OBJECT model, Matrix transform)
+		{
+			Model = model;
+			Transform = transform;
+		}
 	}
 
 	/// <summary>
@@ -135,7 +149,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, Type type, string category, string description, object defaultValue, string typeConverter, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), getMethod, setMethod) { }
+			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -153,7 +168,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, string type, string category, string description, object defaultValue, Type typeConverter, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, getMethod, setMethod) { }
+			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -212,7 +228,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, Type type, string category, string description, object defaultValue, string typeConverter, Dictionary<string, int> @enum, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), @enum, getMethod, setMethod) { }
+			this(name, type, category, description, defaultValue, Type.GetType(typeConverter), @enum, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -231,7 +248,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="getMethod">The method called to get the value of the property.</param>
 		/// <param name="setMethod">The method called to set the value of the property.</param>
 		public PropertySpec(string name, string type, string category, string description, object defaultValue, Type typeConverter, Dictionary<string, int> @enum, Func<SETItem, object> getMethod, Action<SETItem, object> setMethod) :
-			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, @enum, getMethod, setMethod) { }
+			this(name, Type.GetType(type), category, description, defaultValue, typeConverter, @enum, getMethod, setMethod)
+		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -424,7 +442,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		/// <param name="name">The name of the verb displayed in the property grid.</param>
 		/// <param name="method">The method called when clicked.</param>
 		public VerbSpec(string name, Action<SETItem> method)
-		{ 
+		{
 			this.name = name;
 			this.method = method;
 		}

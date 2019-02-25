@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using Color = System.Drawing.Color;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -40,41 +39,40 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		TRANSFORM_SCALE
 	}
 
+	public enum Pivot
+	{
+		CenterOfMass,
+		Origin
+	}
+
 	/// <summary>
-	/// This gives the user a handle to click on for movement and rotation operations.
+	/// This gives the user a handle to click on for movement and rotation operations. Create inherited versions for operating on different kinds of objects.
+	/// (Maybe it's a better idea to do this with a single static class like Unity does?)
 	/// </summary>
 	public class TransformGizmo
 	{
 		#region Private Variables
 		private Vector3 position = new Vector3();
-		private Rotation rotation = new Rotation();
+		private Matrix localTransformMatrix = Matrix.Identity;
+		private Matrix globalTransformMatrix = Matrix.Identity;
 
 		private bool enabled = false;
 		private bool isTransformLocal = false; // if TRUE,  the gizmo is in Local mode.
 		private GizmoSelectedAxes selectedAxes = GizmoSelectedAxes.NONE; // if this value is not NONE and enabled is true, you've gotten yourself into an invalid state.
 		private TransformMode mode = TransformMode.NONE;
-
-		private List<Item> affectedItems; // these are the items that will be affected by any transforms we are given.
+		private Pivot pivot = Pivot.CenterOfMass;
 		#endregion
 
 		#region Public Accesors
-		public Vector3 Position { get { return position; } set { position = value; } }
-		public Rotation GizRotation { get { return rotation; } set { rotation = value; } }
+		public Vector3 Position { get { return position; } }
+		public Rotation Rotation { get; }
 		public bool Enabled { get { return enabled; } set { enabled = value; } }
-
-		public List<Item> AffectedItems
-		{
-			get { return affectedItems; }
-			set
-			{
-				affectedItems = value;
-				SetGizmo();
-			}
-		}
 
 		public GizmoSelectedAxes SelectedAxes { get { return selectedAxes; } set { selectedAxes = value; } }
 
 		public TransformMode Mode { get { return mode; } set { mode = value; } }
+
+		public Pivot Pivot { get { return pivot; } set { pivot = value; } }
 
 		public bool LocalTransform
 		{
@@ -82,7 +80,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			set
 			{
 				isTransformLocal = value;
-				SetGizmo();
 			}
 		}
 		#endregion
@@ -102,55 +99,50 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (!enabled)
 				return GizmoSelectedAxes.NONE;
 
-			MatrixStack transform = new MatrixStack();
-			transform.Push();
-
 			float dist = Direct3D.Extensions.Distance(cam.Position, position) * 0.0825f;
 
-			transform.TranslateLocal(position.X, position.Y, position.Z);
-			transform.RotateXYZLocal(rotation.X, rotation.Y, rotation.Z);
-			transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+			MatrixStack transform = new MatrixStack();
 
-			Vector3 pos = Vector3.Unproject(Near, Viewport, Projection, View, transform.Top);
-			Vector3 dir = Vector3.Subtract(pos, Vector3.Unproject(Far, Viewport, Projection, View, transform.Top));
-			IntersectInformation info;
-
+			transform.Push();
+			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+			transform.LoadMatrix(transformMatrix);
+			transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 			switch (mode)
 			{
 				case (TransformMode.TRANFORM_MOVE):
-					if (Gizmo.XMoveMesh.Intersect(pos, dir, out info))
+					if (Gizmo.XMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.X_AXIS;
-					if (Gizmo.YMoveMesh.Intersect(pos, dir, out info))
+					if (Gizmo.YMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Y_AXIS;
-					if (Gizmo.ZMoveMesh.Intersect(pos, dir, out info))
+					if (Gizmo.ZMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Z_AXIS;
 
 					if (!isTransformLocal) // don't even look for these if the transform is local.
 					{
-						if (Gizmo.XYMoveMesh.Intersect(pos, dir, out info))
+						if (Gizmo.XYMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 							return GizmoSelectedAxes.XY_AXIS;
-						if (Gizmo.ZXMoveMesh.Intersect(pos, dir, out info))
+						if (Gizmo.ZXMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 							return GizmoSelectedAxes.XZ_AXIS;
-						if (Gizmo.ZYMoveMesh.Intersect(pos, dir, out info))
+						if (Gizmo.ZYMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 							return GizmoSelectedAxes.ZY_AXIS;
 					}
 					break;
 
 				case (TransformMode.TRANSFORM_ROTATE):
-					if (Gizmo.XRotateMesh.Intersect(pos, dir, out info))
+					if (Gizmo.XRotateMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.X_AXIS;
-					if (Gizmo.YRotateMesh.Intersect(pos, dir, out info))
+					if (Gizmo.YRotateMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Y_AXIS;
-					if (Gizmo.ZRotateMesh.Intersect(pos, dir, out info))
+					if (Gizmo.ZRotateMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Z_AXIS;
 					break;
 
 				case (TransformMode.TRANSFORM_SCALE):
-					if (Gizmo.XScaleMesh.Intersect(pos, dir, out info))
+					if (Gizmo.XScaleMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.X_AXIS;
-					if (Gizmo.YScaleMesh.Intersect(pos, dir, out info))
+					if (Gizmo.YScaleMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Y_AXIS;
-					if (Gizmo.ZScaleMesh.Intersect(pos, dir, out info))
+					if (Gizmo.ZScaleMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit)
 						return GizmoSelectedAxes.Z_AXIS;
 					break;
 
@@ -169,7 +161,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// <param name="cam"></param>
 		public void Draw(Device d3ddevice, EditorCamera cam)
 		{
-			d3ddevice.RenderState.ZBufferEnable = true;
+			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
 			RenderInfo.Draw(Render(d3ddevice, new MatrixStack(), cam), d3ddevice, cam);
@@ -189,75 +181,72 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			BoundingSphere gizmoSphere = new BoundingSphere() { Center = new Vertex(position.X, position.Y, position.Z), Radius = (1.0f * Math.Abs(dist)) };
 
 			#region Setting Render States
-			dev.SetSamplerState(0, SamplerStageStates.MinFilter, (int)TextureFilter.Point); // no fancy filtering is required because no textures are even being used
-			dev.SetSamplerState(0, SamplerStageStates.MagFilter, (int)TextureFilter.Point);
-			dev.SetSamplerState(0, SamplerStageStates.MipFilter, (int)TextureFilter.Point);
-			dev.SetRenderState(RenderStates.Lighting, true);
-			dev.SetRenderState(RenderStates.SpecularEnable, false);
-			dev.SetRenderState(RenderStates.Ambient, Color.White.ToArgb());
-			dev.SetRenderState(RenderStates.AlphaBlendEnable, false);
-			dev.SetRenderState(RenderStates.ColorVertex, false);
-			dev.Clear(ClearFlags.ZBuffer, 0, 1, 0);
+			dev.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point); // no fancy filtering is required because no textures are even being used
+			dev.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+			dev.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Point);
+			dev.SetRenderState(RenderState.Lighting, true);
+			dev.SetRenderState(RenderState.SpecularEnable, false);
+			dev.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
+			dev.SetRenderState(RenderState.AlphaBlendEnable, false);
+			dev.SetRenderState(RenderState.ColorVertex, false);
+			dev.Clear(ClearFlags.ZBuffer, Color.Transparent.ToRawColorBGRA(), 1, 0);
 			#endregion
 
 			transform.Push();
-			transform.TranslateLocal(position.X, position.Y, position.Z);
-			transform.RotateXYZLocal(rotation.X, rotation.Y, rotation.Z);
-			transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+			transform.LoadMatrix(transformMatrix);
+			transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 
 			#region Handling Transform Modes
 			switch (mode)
 			{
 				case TransformMode.TRANFORM_MOVE:
-					{
-						RenderInfo xRenderInfo = new RenderInfo(Gizmo.XMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(xRenderInfo);
-						RenderInfo yRenderInfo = new RenderInfo(Gizmo.YMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(yRenderInfo);
-						RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(zRenderInfo);
+				{
+					RenderInfo xRenderInfo = new RenderInfo(Gizmo.XMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(xRenderInfo);
+					RenderInfo yRenderInfo = new RenderInfo(Gizmo.YMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(yRenderInfo);
+					RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zRenderInfo);
 
-						if (!isTransformLocal) // this is such a cop-out. I'll try to find a better solution.
-						{
-							RenderInfo xyRenderInfo = new RenderInfo(Gizmo.XYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(xyRenderInfo);
-							RenderInfo zxRenderInfo = new RenderInfo(Gizmo.ZXMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XZ_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(zxRenderInfo);
-							RenderInfo zyRenderInfo = new RenderInfo(Gizmo.ZYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.ZY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
-							result.Add(zyRenderInfo);
-						}
-					}
-					break;
+					RenderInfo xyRenderInfo = new RenderInfo(Gizmo.XYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(xyRenderInfo);
+					RenderInfo zxRenderInfo = new RenderInfo(Gizmo.ZXMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.XZ_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zxRenderInfo);
+					RenderInfo zyRenderInfo = new RenderInfo(Gizmo.ZYMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.ZY_AXIS) ? Gizmo.HighlightMaterial : Gizmo.DoubleAxisMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zyRenderInfo);
+				}
+				break;
 				case TransformMode.TRANSFORM_ROTATE:
-					{
-						RenderInfo xRenderInfo = new RenderInfo(Gizmo.XRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(xRenderInfo);
-						RenderInfo yRenderInfo = new RenderInfo(Gizmo.YRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(yRenderInfo);
-						RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(zRenderInfo);
-					}
-					break;
+				{
+					RenderInfo xRenderInfo = new RenderInfo(Gizmo.XRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(xRenderInfo);
+					RenderInfo yRenderInfo = new RenderInfo(Gizmo.YRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(yRenderInfo);
+					RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZRotateMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zRenderInfo);
+				}
+				break;
 				case TransformMode.NONE:
-					{
-						RenderInfo xRenderInfo = new RenderInfo(Gizmo.XNullMesh, 0, transform.Top, Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(xRenderInfo);
-						RenderInfo yRenderInfo = new RenderInfo(Gizmo.YNullMesh, 0, transform.Top, Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(yRenderInfo);
-						RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZNullMesh, 0, transform.Top, Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(zRenderInfo);
-					}
-					break;
+				{
+					RenderInfo xRenderInfo = new RenderInfo(Gizmo.XNullMesh, 0, transform.Top, Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(xRenderInfo);
+					RenderInfo yRenderInfo = new RenderInfo(Gizmo.YNullMesh, 0, transform.Top, Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(yRenderInfo);
+					RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZNullMesh, 0, transform.Top, Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zRenderInfo);
+				}
+				break;
 				case TransformMode.TRANSFORM_SCALE:
-					{
-						RenderInfo xRenderInfo = new RenderInfo(Gizmo.XScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(xRenderInfo);
-						RenderInfo yRenderInfo = new RenderInfo(Gizmo.YScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(yRenderInfo);
-						RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
-						result.Add(zRenderInfo);
-					}
-					break;
+				{
+					RenderInfo xRenderInfo = new RenderInfo(Gizmo.XScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(xRenderInfo);
+					RenderInfo yRenderInfo = new RenderInfo(Gizmo.YScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Y_AXIS) ? Gizmo.HighlightMaterial : Gizmo.YMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(yRenderInfo);
+					RenderInfo zRenderInfo = new RenderInfo(Gizmo.ZScaleMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.Z_AXIS) ? Gizmo.HighlightMaterial : Gizmo.ZMaterial, null, FillMode.Solid, gizmoSphere);
+					result.Add(zRenderInfo);
+				}
+				break;
 			}
 			#endregion
 
@@ -265,233 +254,190 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			return result.ToArray();
 		}
 
-		/// <summary>
-		/// Sets the Gizmo's transform to the expected values, given the current state.
-		/// </summary>
-		private void SetGizmo()
+		public void SetGizmo(Vector3 center, Matrix transformMatrix)
 		{
 			if (!enabled)
 				return;
 
-			try
-			{
-				position = Item.CenterFromSelection(affectedItems).ToVector3();
+			position = center;
 
-				if ((affectedItems.Count == 1) && isTransformLocal)
-					rotation = new Rotation(affectedItems[0].Rotation.X, affectedItems[0].Rotation.Y, affectedItems[0].Rotation.Z);
-				else
-					rotation = new Rotation();
-
-				enabled = affectedItems.Count > 0;
-			}
-			catch (NotSupportedException)
-			{
-				Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
-			}
+			globalTransformMatrix = Matrix.Identity;
+			Vector3 tempPosition = position;
+			Matrix.Translation(ref tempPosition, out globalTransformMatrix);
+			localTransformMatrix = transformMatrix;
 		}
 
+		#region Move Methods
 		/// <summary>
-		/// Transforms the Items that belong to this Gizmo.
+		/// Converts an input vector2 into a direction-based movement for a point in space.
 		/// </summary>
-		/// <param name="xChange">Input for x axis.</param>
-		/// <param name="yChange">Input for y axis.</param>
-		public void TransformAffected(float xChange, float yChange, EditorCamera cam)
+		/// <param name="input"></param>
+		/// <param name="cam"></param>
+		/// <param name="Up"></param>
+		/// <param name="Look"></param>
+		/// <param name="Right"></param>
+		/// <returns></returns>
+		public Vector3 MoveDirection(Vector2 input, EditorCamera cam/*, Vector3 Up, Vector3 Look, Vector3 Right*/)
 		{
-			// don't operate with an invalid axis seleciton, or invalid mode
-			if (!enabled)
-				return;
-			if ((selectedAxes == GizmoSelectedAxes.NONE) || (mode == TransformMode.NONE))
-				return;
-
 			float yFlip = -1; // I don't think we'll ever need to mess with this
 			float xFlip = 1;
 			float axisDot = 0;
 
-			for (int i = 0; i < affectedItems.Count; i++) // loop through operands
+			Vector3 Right = new Vector3(1, 0, 0), Up = new Vector3(0, 1, 0), Look = new Vector3(0, 0, 1);
+
+			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+
+			Right = Vector3.TransformNormal(Right, transformMatrix);
+			Up = Vector3.TransformNormal(Up, transformMatrix);
+			Look = Vector3.TransformNormal(Look, transformMatrix);
+
+			Vector3 offset = new Vector3();
+
+			switch (selectedAxes)
 			{
-				Item currentItem = affectedItems[i];
-				switch (mode)
-				{
-					case TransformMode.TRANFORM_MOVE:
-						if (isTransformLocal) // then check operant space.
-						{
-							Vector3 Up = new Vector3(), Look = new Vector3(), Right = new Vector3();
-							affectedItems[i].GetLocalAxes(out Up, out Right, out Look);
-
-							Vector3 currentPosition = currentItem.Position.ToVector3();
-							Vector3 destination = new Vector3();
-
-							switch (selectedAxes)
-							{
-								case GizmoSelectedAxes.X_AXIS:
-									axisDot = Vector3.Dot(cam.Look, Right);
-									xFlip = (axisDot > 0) ? 1 : -1;
-									destination = (currentPosition + Right * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange * xFlip : yChange));
-									break;
-								case GizmoSelectedAxes.Y_AXIS:
-									destination = (currentPosition + Up * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange : yChange * yFlip));
-									break;
-								case GizmoSelectedAxes.Z_AXIS:
-									axisDot = Vector3.Dot(cam.Look, Right);
-									xFlip = (axisDot > 0) ? -1 : 1;
-									destination = (currentPosition + Look * ((Math.Abs(xChange) > Math.Abs(yChange)) ? xChange * xFlip : yChange));
-									break;
-							}
-
-							currentItem.Position = destination.ToVertex();
-						}
-						else
-						{
-							float xOff = 0.0f, yOff = 0.0f, zOff = 0.0f;
-							Vector3 axisDirection = new Vector3();
-
-							switch (selectedAxes)
-							{
-								case GizmoSelectedAxes.X_AXIS:
-									axisDirection = new Vector3(1, 0, 0);
-									axisDot = Vector3.Dot(cam.Look, axisDirection);
-									xFlip = (axisDot > 0) ? 1 : -1;
-									xOff = xChange * xFlip;
-									break;
-								case GizmoSelectedAxes.Y_AXIS:
-									axisDirection = new Vector3(0, 1, 0);
-									axisDot = Vector3.Dot(cam.Look, axisDirection);
-									yOff = yChange * yFlip;
-									break;
-								case GizmoSelectedAxes.Z_AXIS:
-									axisDirection = new Vector3(0, 0, 1);
-									axisDot = Vector3.Dot(cam.Look, axisDirection);
-									xFlip = (axisDot > 0) ? -1 : 1;
-									zOff = xChange * xFlip;
-									break;
-								case GizmoSelectedAxes.XY_AXIS:
-									xOff = xChange; yOff = yChange * yFlip;
-									break;
-								case GizmoSelectedAxes.XZ_AXIS:
-									xOff = xChange; zOff = yChange;
-									break;
-								case GizmoSelectedAxes.ZY_AXIS:
-									zOff = xChange; yOff = yChange * yFlip;
-									break;
-							}
-
-							currentItem.Position = new Vertex(currentItem.Position.X + xOff, currentItem.Position.Y + yOff, currentItem.Position.Z + zOff);
-						}
-
-						if (currentItem is LevelItem)
-						{
-							LevelItem levelItem = (LevelItem)currentItem;
-							levelItem.Save();
-						}
-						break;
-
-					case TransformMode.TRANSFORM_ROTATE:
-						if (currentItem is StartPosItem)
-						{
-							currentItem.Rotation.Y += (int)xChange;
-							continue;
-						}
-						if (currentItem is CAMItem)
-						{
-							currentItem.Rotation.Y += (int)xChange * 2;
-							continue;
-						}
-
-						if (isTransformLocal) // then check operant space.
-						{
-							try
-							{
-								switch (selectedAxes)
-								{
-									case GizmoSelectedAxes.X_AXIS:
-										currentItem.Rotation.XDeg += (int)xChange;
-										break;
-									case GizmoSelectedAxes.Y_AXIS:
-										currentItem.Rotation.ZDeg += (int)xChange;
-										break;
-									case GizmoSelectedAxes.Z_AXIS:
-										currentItem.Rotation.YDeg += (int)xChange;
-										break;
-								}
-							}
-							catch (NotSupportedException)
-							{
-								Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
-							}
-						}
-						else
-						{
-							// This code doesn't work - we need to find another way to do global rotations
-							//int xOff = 0, yOff = 0, zOff = 0;
-							MatrixStack objTransform = new MatrixStack();
-
-							/*
-							switch (selectedAxes)
-							{
-								case GizmoSelectedAxes.X_AXIS:
-									xOff = (int)xChange;
-									break;
-
-								case GizmoSelectedAxes.Y_AXIS:
-									yOff = (int)xChange;
-									break;
-
-								case GizmoSelectedAxes.Z_AXIS:
-									zOff = (int)xChange;
-									break;
-							}
-							*/
-
-							objTransform.Push();
-							//objTransform.RotateXYZLocal(xOff, yOff, zOff);
-							objTransform.RotateXYZLocal(currentItem.Rotation.X, currentItem.Rotation.Y, currentItem.Rotation.Z);
-
-							//Rotation oldRotation = currentItem.Rotation;
-							//Rotation newRotation = SAModel.Direct3D.Extensions.FromMatrix(objTransform.Top);
-
-							// todo: Fix Matrix->Euler conversion, then uncomment the line with the rotatexyz call. Then uncomment the call below and the gizmo should work.
-							//currentItem.Rotation = newRotation;
-						}
-						break;
-
-					case TransformMode.TRANSFORM_SCALE:
-						if (currentItem is LevelItem)
-						{
-							LevelItem levelItem = (LevelItem)currentItem;
-							switch (selectedAxes)
-							{
-								case GizmoSelectedAxes.X_AXIS:
-									levelItem.CollisionData.Model.Scale = new Vertex(levelItem.CollisionData.Model.Scale.X + xChange, levelItem.CollisionData.Model.Scale.Y, levelItem.CollisionData.Model.Scale.Z);
-									break;
-								case GizmoSelectedAxes.Y_AXIS:
-									levelItem.CollisionData.Model.Scale = new Vertex(levelItem.CollisionData.Model.Scale.X, levelItem.CollisionData.Model.Scale.Y + yChange, levelItem.CollisionData.Model.Scale.Z);
-									break;
-								case GizmoSelectedAxes.Z_AXIS:
-									levelItem.CollisionData.Model.Scale = new Vertex(levelItem.CollisionData.Model.Scale.X, levelItem.CollisionData.Model.Scale.Y, levelItem.CollisionData.Model.Scale.Z + xChange);
-									break;
-							}
-						}
-						else if (currentItem is CAMItem)
-						{
-							CAMItem camItem = (CAMItem)currentItem;
-							switch (selectedAxes)
-							{
-								case GizmoSelectedAxes.X_AXIS:
-									camItem.Scale = new Vertex(MathHelper.Clamp(camItem.Scale.X + xChange, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Y, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Z, 1, float.MaxValue)); // Clamping is to prevent invalid scale valeus (0 or less)
-									break;
-								case GizmoSelectedAxes.Y_AXIS:
-									camItem.Scale = new Vertex(MathHelper.Clamp(camItem.Scale.X, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Y + yChange, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Z, 1, float.MaxValue));
-									break;
-								case GizmoSelectedAxes.Z_AXIS:
-									camItem.Scale = new Vertex(MathHelper.Clamp(camItem.Scale.X, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Y, 1, float.MaxValue), MathHelper.Clamp(camItem.Scale.Z + xChange, 1, float.MaxValue)); // I just realized that Math.Min would work for these. Oh well, gave me an excuse to write a clamp function
-									break;
-							}
-						}
-						break;
-				}
+				case GizmoSelectedAxes.X_AXIS:
+					axisDot = Vector3.Dot(cam.Look, Right);
+					xFlip = (axisDot > 0) ? 1 : -1;
+					offset = (Right * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X * xFlip : input.Y));
+					break;
+				case GizmoSelectedAxes.Y_AXIS:
+					offset = (Up * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X : input.Y * yFlip));
+					break;
+				case GizmoSelectedAxes.Z_AXIS:
+					axisDot = Vector3.Dot(cam.Look, Right);
+					xFlip = (axisDot > 0) ? -1 : 1;
+					offset = (Look * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X * xFlip : input.Y));
+					break;
+				case GizmoSelectedAxes.XY_AXIS:
+					//axisDot = Vector3.Dot(cam.Look, Right); // figure this out later. We'll need to make it camera relative, and 
+					//xFlip = (axisDot > 0) ? 1 : -1;
+					offset = (Right * (input.X) * xFlip);
+					offset += (Up * (input.Y * yFlip));
+					break;
+				case GizmoSelectedAxes.XZ_AXIS:
+					offset = (Right * (input.X) * xFlip);
+					offset += (Look * (input.Y * yFlip));
+					break;
+				case GizmoSelectedAxes.ZY_AXIS:
+					offset = (Look * (input.Y * yFlip));
+					offset += (Up * (input.Y * yFlip));
+					break;
 			}
 
-			SetGizmo();
-		} // end of TransformAffected()
+			return offset;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="input">input direction</param>
+		/// <param name="sourcePosition">position to move</param>
+		/// <param name="cam">reference frame for mover</param>
+		/// <param name="Up"></param>
+		/// <param name="Look"></param>
+		/// <param name="Right"></param>
+		/// <returns></returns>
+		public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam)
+		{
+			return position = (sourcePosition + MoveDirection(input, cam));
+		}
+		#endregion
+
+		#region Rotation Methods
+		public Rotation Rotate(Vector2 input, EditorCamera cam, Rotation rotation)
+		{
+			if (isTransformLocal)
+			{
+				try
+				{
+					switch (selectedAxes) // todo: find a way to handle y-axis mouse motion, as well as camera relative-direction
+					{
+						case GizmoSelectedAxes.X_AXIS:
+							rotation.XDeg += (int)input.X;
+							break;
+						case GizmoSelectedAxes.Y_AXIS:
+							rotation.ZDeg += (int)input.X;
+							break;
+						case GizmoSelectedAxes.Z_AXIS:
+							rotation.YDeg += (int)input.X;
+							break;
+					}
+				}
+				catch (NotSupportedException)
+				{
+					Console.WriteLine("Certain Item types don't support rotations. This can be ignored.");
+				}
+			}
+			else
+			{
+				// This code doesn't work - we need to find another way to do global rotations
+				//int xOff = 0, yOff = 0, zOff = 0;
+				MatrixStack objTransform = new MatrixStack();
+
+				/*
+				switch (selectedAxes)
+				{
+					case GizmoSelectedAxes.X_AXIS:
+						xOff = (int)xChange;
+						break;
+
+					case GizmoSelectedAxes.Y_AXIS:
+						yOff = (int)xChange;
+						break;
+
+					case GizmoSelectedAxes.Z_AXIS:
+						zOff = (int)xChange;
+						break;
+				}
+				*/
+
+				objTransform.Push();
+				//objTransform.RotateXYZLocal(xOff, yOff, zOff);
+				objTransform.NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
+
+				//Rotation oldRotation = currentItem.Rotation;
+				//Rotation newRotation = SAModel.Direct3D.Extensions.FromMatrix(objTransform.Top);
+
+				// todo: Fix Matrix->Euler conversion, then uncomment the line with the rotatexyz call. Then uncomment the call below and the gizmo should work.
+				//currentItem.Rotation = newRotation;
+			}
+
+			return rotation;
+		}
+		#endregion
+
+		#region Scale Methods
+		/// <summary>
+		/// Gets an adjusted scale value based on mouse input.
+		/// </summary>
+		/// <param name="input">Mouse Delta.</param>
+		/// <param name="sourceScale">Input scale value</param>
+		/// <param name="cam">Reference camera. Provides extra context for Mouse Delta.</param>
+		/// <param name="clamp">If TRUE, minScale is used as the lowest value that the scale can be. Clamp is applied to all dimensions of the vector.</param>
+		/// <param name="minScale">Minimum acceptable scale values.</param>
+		/// <returns></returns>
+		public Vertex Scale(Vector2 input, Vertex sourceScale, EditorCamera cam, bool clamp, float minScale)
+		{
+			switch (selectedAxes)
+			{
+				case GizmoSelectedAxes.X_AXIS:
+					return new Vertex(MathHelper.Clamp(sourceScale.X + input.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
+
+				case GizmoSelectedAxes.Y_AXIS:
+					return new Vertex(MathHelper.Clamp(sourceScale.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Y + input.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
+
+				case GizmoSelectedAxes.Z_AXIS:
+					return new Vertex(MathHelper.Clamp(sourceScale.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Z + input.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
+			}
+
+			return sourceScale;
+		}
+		#endregion
 	} // end of TransformGizmo class
 } // end of namespace

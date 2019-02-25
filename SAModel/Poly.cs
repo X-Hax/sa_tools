@@ -109,7 +109,7 @@ namespace SonicRetro.SAModel
 	}
 
 	[Serializable]
-	public abstract class Poly
+	public abstract class Poly : ICloneable
 	{
 		public ushort[] Indexes { get; protected set; }
 
@@ -170,6 +170,15 @@ namespace SonicRetro.SAModel
 					return new Strip(file, address);
 			}
 			throw new ArgumentException("Unknown poly type!", "type");
+		}
+
+		object ICloneable.Clone() => Clone();
+
+		public Poly Clone()
+		{
+			Poly result = (Poly)MemberwiseClone();
+			Indexes = (ushort[])Indexes.Clone();
+			return result;
 		}
 	}
 }

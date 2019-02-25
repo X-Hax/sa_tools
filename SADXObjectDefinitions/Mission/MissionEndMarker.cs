@@ -1,11 +1,13 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System;
 using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Mission
 {
@@ -14,10 +16,10 @@ namespace SADXObjectDefinitions.Mission
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Mission/Mission End Marker.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -38,9 +40,21 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -52,6 +66,16 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(item.Scale.X, item.Scale.Y));
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + 0.5f, item.Position.Z);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
 		}
 
 		public override string Name { get { return "Mission End Marker"; } }
@@ -89,7 +113,7 @@ namespace SADXObjectDefinitions.Mission
 		// incomplete, further investigation required
 		// specifically: PRMBytes[4] controls the mode of operation, but I can't tell what they all do
 		// also probably need a selector for the Item Index property, maybe draw a line connecting the objects?
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Visible", typeof(bool), null, null, true, (o) => ((MissionSETItem)o).PRMBytes[8] == 0, (o, v) => ((MissionSETItem)o).PRMBytes[8] = (byte)((bool)v ? 0 : 1)),
 			new PropertySpec("Rings Required", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v),
 			new PropertySpec("Item List", typeof(MsnObjectList), null, null, MsnObjectList.Mission, o => (MsnObjectList)(((MissionSETItem)o).PRMBytes[6] >> 7), SetItemList),

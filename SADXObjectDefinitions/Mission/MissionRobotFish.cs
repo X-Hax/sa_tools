@@ -1,10 +1,12 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Mission
 {
@@ -13,10 +15,10 @@ namespace SADXObjectDefinitions.Mission
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Mission/Mission Robot Fish.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -41,9 +43,23 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJRotateZ(item.Rotation.Z);
 			transform.NJRotateX(item.Rotation.X);
 			transform.NJTranslate(-0.5f, 0, 0);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("mecha"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("mecha"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY((ushort)(item.Rotation.Y + 0x8000));
+			transform.NJRotateZ(item.Rotation.Z);
+			transform.NJRotateX(item.Rotation.X);
+			transform.NJTranslate(-0.5f, 0, 0);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -57,6 +73,19 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJRotateX(item.Rotation.X);
 			transform.NJTranslate(-0.5f, 0, 0);
 			return ObjectHelper.GetModelBounds(model, transform);
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, (ushort)(item.Rotation.Y + 0x8000));
+			MatrixFunctions.RotateZ(ref matrix, item.Rotation.Z);
+			MatrixFunctions.RotateX(ref matrix, item.Rotation.X);
+
+
+			return matrix;
 		}
 
 		public override string Name { get { return "Mission Robot Fish"; } }
@@ -75,7 +104,7 @@ namespace SADXObjectDefinitions.Mission
 			item.PRMBytes[5] = (byte)value;
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Weight", typeof(short), null, null, -1, GetWeight, SetWeight)
 		};
 

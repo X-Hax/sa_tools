@@ -1,22 +1,24 @@
-﻿using System;
-using Microsoft.DirectX;
+﻿using SharpDX;
+using System;
 
 namespace SonicRetro.SAModel.Direct3D
 {
-    public class EditorCamera
-    {
-        public float Distance { get; set; }
-        public Vector3 Position { get; set; }
-        public ushort Yaw { get; set; }
-        public ushort Pitch { get; set; }
-        public Vector3 Up { get; private set; }
-        public Vector3 Look { get; private set; }
-        public Vector3 Right { get; private set; }
-        public int mode { get; set; }
-        public Vector3 FocalPoint { get; set; }
-        public float DrawDistance { get; set; }
-        public float MoveSpeed { get; set; }
-        public float RotateSpeed { get; set; }
+	public class EditorCamera
+	{
+		public float Distance { get; set; }
+		public Vector3 Position { get; set; }
+		public ushort Yaw { get; set; }
+		public ushort Pitch { get; set; }
+		public int Roll { get; set; }
+		public Vector3 Up { get; private set; }
+		public Vector3 Look { get; private set; }
+		public Vector3 Right { get; private set; }
+		public int mode { get; set; }
+		public Vector3 FocalPoint { get; set; }
+		public Vector3 Direction { get; set; }
+		public float DrawDistance { get; set; }
+		public float MoveSpeed { get; set; }
+		public float RotateSpeed { get; set; }
 
 		public float FOV { get; set; }
 		public float Aspect { get; set; }
@@ -42,46 +44,88 @@ namespace SonicRetro.SAModel.Direct3D
 			DrawDistance = drawDistance;
 		}
 
-        public Matrix ToMatrix()
-        {
-            if (mode == 0)
-            {
-                Up = new Vector3(0, 1, 0);
-                Look = new Vector3(0, 0, 1);
-                Right = new Vector3(1, 0, 0);
-                Matrix yawm = Matrix.RotationAxis(Up, Extensions.BAMSToRad(Yaw));
-                Look = Vector3.TransformCoordinate(Look, yawm);
-                Right = Vector3.TransformCoordinate(Right, yawm);
-                Matrix pitchm = Matrix.RotationAxis(Right, Extensions.BAMSToRad(Pitch));
-                Look = Vector3.TransformCoordinate(Look, pitchm);
-                Up = Vector3.TransformCoordinate(Up, pitchm);
-                Matrix ViewMatrix = Matrix.Identity;
-                ViewMatrix.M11 = Right.X;
-                ViewMatrix.M12 = Up.X;
-                ViewMatrix.M13 = Look.X;
-                ViewMatrix.M21 = Right.Y;
-                ViewMatrix.M22 = Up.Y;
-                ViewMatrix.M23 = Look.Y;
-                ViewMatrix.M31 = Right.Z;
-                ViewMatrix.M32 = Up.Z;
-                ViewMatrix.M33 = Look.Z;
-                ViewMatrix.M41 = -Vector3.Dot(Position, Right);
-                ViewMatrix.M42 = -Vector3.Dot(Position, Up);
-				ViewMatrix.M43 = -Vector3.Dot(Position, Look);
-
-                return ViewMatrix;
-            }
-            else
-            {
-                Vector3 distvec = Vector3.TransformCoordinate(new Vector3(0, 0, Distance), Matrix.RotationYawPitchRoll(Extensions.BAMSToRad(Yaw), Extensions.BAMSToRad(Pitch), 0));
-                Position = distvec + FocalPoint;
-                Matrix ViewMatrix = Matrix.LookAtRH(Position, FocalPoint, new Vector3(0, 1, 0));
-                Up = new Vector3(ViewMatrix.M12, ViewMatrix.M22, ViewMatrix.M32);
-                Look = new Vector3(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33);
-                Right = new Vector3(ViewMatrix.M11, ViewMatrix.M21, ViewMatrix.M31);
-                return ViewMatrix;
-            }
-        }
+		public Matrix ToMatrix()
+		{
+			Matrix ViewMatrix = Matrix.Identity;
+			switch (mode)
+			{
+				default: // normal
+					Up = new Vector3(0, 1, 0);
+					Look = new Vector3(0, 0, 1);
+					Right = new Vector3(1, 0, 0);
+					Matrix yawm = Matrix.RotationAxis(Up, Extensions.BAMSToRad(Yaw));
+					Look = Vector3.TransformCoordinate(Look, yawm);
+					Right = Vector3.TransformCoordinate(Right, yawm);
+					Matrix pitchm = Matrix.RotationAxis(Right, Extensions.BAMSToRad(Pitch));
+					Look = Vector3.TransformCoordinate(Look, pitchm);
+					Up = Vector3.TransformCoordinate(Up, pitchm);
+					ViewMatrix.M11 = Right.X;
+					ViewMatrix.M12 = Up.X;
+					ViewMatrix.M13 = Look.X;
+					ViewMatrix.M21 = Right.Y;
+					ViewMatrix.M22 = Up.Y;
+					ViewMatrix.M23 = Look.Y;
+					ViewMatrix.M31 = Right.Z;
+					ViewMatrix.M32 = Up.Z;
+					ViewMatrix.M33 = Look.Z;
+					ViewMatrix.M41 = -Vector3.Dot(Position, Right);
+					ViewMatrix.M42 = -Vector3.Dot(Position, Up);
+					ViewMatrix.M43 = -Vector3.Dot(Position, Look);
+					break;
+				case 1: // orbit
+					Vector3 distvec = Vector3.TransformCoordinate(new Vector3(0, 0, Distance), Matrix.RotationYawPitchRoll(Extensions.BAMSToRad(Yaw), Extensions.BAMSToRad(Pitch), 0));
+					Position = distvec + FocalPoint;
+					ViewMatrix = Matrix.LookAtRH(Position, FocalPoint, new Vector3(0, 1, 0));
+					Up = new Vector3(ViewMatrix.M12, ViewMatrix.M22, ViewMatrix.M32);
+					Look = new Vector3(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33);
+					Right = new Vector3(ViewMatrix.M11, ViewMatrix.M21, ViewMatrix.M31);
+					break;
+				case 2: // ninja
+					float bams_sin = Extensions.NJSin(Roll);
+					float bams_cos = Extensions.NJCos(-Roll);
+					float thing = Direction.X * Direction.X + Direction.Z * Direction.Z;
+					double sqrt = Math.Sqrt(thing);
+					float v3 = Direction.Y * Direction.Y + thing;
+					double v4 = 1.0 / Math.Sqrt(v3);
+					double sqrt__ = sqrt * v4;
+					double sqrt___ = v4 * Direction.Y;
+					double v7, v8;
+					if (thing <= 0.000001)
+					{
+						v7 = 1.0;
+						v8 = 0.0;
+					}
+					else
+					{
+						double v5 = 1.0 / Math.Sqrt(thing);
+						double v6 = v5;
+						v7 = v5 * Direction.Z;
+						v8 = -(v6 * Direction.X);
+					}
+					double v9 = sqrt___ * v8;
+					ViewMatrix.M14 = 0;
+					ViewMatrix.M23 = (float)sqrt___;
+					ViewMatrix.M24 = 0;
+					ViewMatrix.M34 = 0;
+					ViewMatrix.M11 = (float)(v7 * bams_cos - v9 * bams_sin);
+					ViewMatrix.M12 = (float)(v9 * bams_cos + v7 * bams_sin);
+					ViewMatrix.M13 = -(float)(sqrt__ * v8);
+					ViewMatrix.M21 = -(float)(sqrt__ * bams_sin);
+					ViewMatrix.M22 = (float)(sqrt__ * bams_cos);
+					double v10 = v7 * sqrt___;
+					ViewMatrix.M31 = (float)(bams_sin * v10 + v8 * bams_cos);
+					ViewMatrix.M32 = (float)(v8 * bams_sin - v10 * bams_cos);
+					ViewMatrix.M33 = (float)(v7 * sqrt__);
+					ViewMatrix.M41 = -(ViewMatrix.M31 * Position.Z) - ViewMatrix.M11 * Position.X - ViewMatrix.M21 * Position.Y;
+					ViewMatrix.M42 = -(ViewMatrix.M32 * Position.Z) - ViewMatrix.M12 * Position.X - ViewMatrix.M22 * Position.Y;
+					float v12 = -(ViewMatrix.M33 * Position.Z) - ViewMatrix.M13 * Position.X;
+					double v13 = sqrt___ * Position.Y;
+					ViewMatrix.M44 = 1;
+					ViewMatrix.M43 = (float)(v12 - v13);
+					break;
+			}
+			return ViewMatrix;
+		}
 
 		/// <summary>
 		/// Calculates the near and far plane dimensions, as well as the vertices for the entire frustum.
@@ -104,11 +148,11 @@ namespace SonicRetro.SAModel.Direct3D
 			Vector3 ftl = fc + (Up * (HFar / 2)) - (Right * (WFar / 2));
 			farTopLeft = ftl.ToVertex();
 
-			Vector3 ftr = fc + (Up * (HFar/2)) + (Right * (WFar/2));
+			Vector3 ftr = fc + (Up * (HFar / 2)) + (Right * (WFar / 2));
 			farTopRight = ftr.ToVertex();
-			Vector3 fbl = fc - (Up * (HFar/2)) - (Right * (WFar/2));
+			Vector3 fbl = fc - (Up * (HFar / 2)) - (Right * (WFar / 2));
 			farBottomLeft = fbl.ToVertex();
-			Vector3 fbr = fc - (Up * (HFar/2)) + (Right * (WFar/2));
+			Vector3 fbr = fc - (Up * (HFar / 2)) + (Right * (WFar / 2));
 			farBottomRight = fbr.ToVertex();
 
 			Vector3 nc = Position + Look * 1f;
@@ -125,39 +169,39 @@ namespace SonicRetro.SAModel.Direct3D
 
 			#region Building Frustum Planes
 			// Left plane
-			frustumPlanes[0].A = viewMatrix.M14 + viewMatrix.M11;
-			frustumPlanes[0].B = viewMatrix.M24 + viewMatrix.M21;
-			frustumPlanes[0].C = viewMatrix.M34 + viewMatrix.M31;
+			frustumPlanes[0].Normal.X = viewMatrix.M14 + viewMatrix.M11;
+			frustumPlanes[0].Normal.Y = viewMatrix.M24 + viewMatrix.M21;
+			frustumPlanes[0].Normal.Z = viewMatrix.M34 + viewMatrix.M31;
 			frustumPlanes[0].D = viewMatrix.M44 + viewMatrix.M41;
 
 			// Right plane
-			frustumPlanes[1].A = viewMatrix.M14 - viewMatrix.M11;
-			frustumPlanes[1].B = viewMatrix.M24 - viewMatrix.M21;
-			frustumPlanes[1].C = viewMatrix.M34 - viewMatrix.M31;
+			frustumPlanes[1].Normal.X = viewMatrix.M14 - viewMatrix.M11;
+			frustumPlanes[1].Normal.Y = viewMatrix.M24 - viewMatrix.M21;
+			frustumPlanes[1].Normal.Z = viewMatrix.M34 - viewMatrix.M31;
 			frustumPlanes[1].D = viewMatrix.M44 - viewMatrix.M41;
 
 			// Top plane
-			frustumPlanes[2].A = viewMatrix.M14 - viewMatrix.M12;
-			frustumPlanes[2].B = viewMatrix.M24 - viewMatrix.M22;
-			frustumPlanes[2].C = viewMatrix.M34 - viewMatrix.M32;
+			frustumPlanes[2].Normal.X = viewMatrix.M14 - viewMatrix.M12;
+			frustumPlanes[2].Normal.Y = viewMatrix.M24 - viewMatrix.M22;
+			frustumPlanes[2].Normal.Z = viewMatrix.M34 - viewMatrix.M32;
 			frustumPlanes[2].D = viewMatrix.M44 - viewMatrix.M42;
 
 			// Bottom plane
-			frustumPlanes[3].A = viewMatrix.M14 + viewMatrix.M12;
-			frustumPlanes[3].B = viewMatrix.M24 + viewMatrix.M22;
-			frustumPlanes[3].C = viewMatrix.M34 + viewMatrix.M32;
+			frustumPlanes[3].Normal.X = viewMatrix.M14 + viewMatrix.M12;
+			frustumPlanes[3].Normal.Y = viewMatrix.M24 + viewMatrix.M22;
+			frustumPlanes[3].Normal.Z = viewMatrix.M34 + viewMatrix.M32;
 			frustumPlanes[3].D = viewMatrix.M44 + viewMatrix.M42;
 
 			// Near plane
-			frustumPlanes[4].A = viewMatrix.M13;
-			frustumPlanes[4].B = viewMatrix.M23;
-			frustumPlanes[4].C = viewMatrix.M33;
+			frustumPlanes[4].Normal.X = viewMatrix.M13;
+			frustumPlanes[4].Normal.Y = viewMatrix.M23;
+			frustumPlanes[4].Normal.Z = viewMatrix.M33;
 			frustumPlanes[4].D = viewMatrix.M43;
 
 			// Far plane
-			frustumPlanes[5].A = viewMatrix.M14 - viewMatrix.M13;
-			frustumPlanes[5].B = viewMatrix.M24 - viewMatrix.M23;
-			frustumPlanes[5].C = viewMatrix.M34 - viewMatrix.M33;
+			frustumPlanes[5].Normal.X = viewMatrix.M14 - viewMatrix.M13;
+			frustumPlanes[5].Normal.Y = viewMatrix.M24 - viewMatrix.M23;
+			frustumPlanes[5].Normal.Z = viewMatrix.M34 - viewMatrix.M33;
 			frustumPlanes[5].D = viewMatrix.M44 - viewMatrix.M43;
 			#endregion
 
@@ -172,7 +216,7 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				if (frustumPlanes[i].Dot(sphere.Center.ToVector3()) + sphere.Radius < 0)
+				if (Plane.DotCoordinate(frustumPlanes[i], sphere.Center.ToVector3()) + sphere.Radius < 0)
 				{
 					return false;
 				}
@@ -183,11 +227,19 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public void MoveToShowBounds(BoundingSphere itemVolume)
 		{
-			Vector3 finalPosition = itemVolume.Center.ToVector3();
+			if (mode == 0)
+			{
+				Vector3 finalPosition = itemVolume.Center.ToVector3();
 
-			finalPosition += (Look * (itemVolume.Radius + (itemVolume.Radius / 4)));
+				finalPosition += (Look * (itemVolume.Radius + (itemVolume.Radius / 4)));
 
-			Position = finalPosition;
+				Position = finalPosition;
+			}
+			else
+			{
+				FocalPoint = itemVolume.Center.ToVector3();
+				Distance = (itemVolume.Radius + (itemVolume.Radius / 4));
+			}
 		}
-    }
+	}
 }

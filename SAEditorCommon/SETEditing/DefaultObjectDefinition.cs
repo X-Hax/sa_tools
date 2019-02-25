@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using System;
+using SharpDX.Direct3D9;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using SharpDX;
 
 namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 {
@@ -24,13 +25,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		private int? xrot, yrot, zrot;
 		private ushort? defxrot, defyrot, defzrot;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			this.name = data.Name ?? name;
 			if (!string.IsNullOrEmpty(data.Model))
 			{
 				model = ObjectHelper.LoadModel(data.Model);
-				meshes = ObjectHelper.GetMeshes(model, dev);
+				meshes = ObjectHelper.GetMeshes(model);
 			}
 
 			texture = data.Texture;
@@ -55,7 +56,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
-			Matrix m = transform.Top;
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
 			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			HitResult result;
@@ -81,10 +81,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			else
 			{
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
-				result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures(texture), meshes));
+				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures(texture), meshes));
 				if (item.Selected)
 					result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			}
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (model == null) return new List<ModelTransform>();
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
+			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -101,6 +114,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
 				return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(xscl ?? item.Scale.X, yscl ?? item.Scale.Y), zscl ?? item.Scale.Z));
 			}
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+			//MatrixFunctions.Scale(ref matrix, item.Scale);
+			return matrix;
 		}
 
 		public override string Name { get { return name; } }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -194,7 +193,9 @@ namespace PAKEdit
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture();
 			if (tex.HasValue)
 			{
-				uint gbix = textures.Max((item) => item.GlobalIndex);
+				uint gbix = 0;
+				if (textures.Count > 0)
+					gbix = textures.Max((item) => item.GlobalIndex);
 				if (gbix != uint.MaxValue)
 					gbix++;
 				textures.Add(new TextureInfo(tex.Value.Key, gbix, tex.Value.Value));

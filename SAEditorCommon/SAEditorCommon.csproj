@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SonicRetro.SAModel.SAEditorCommon</RootNamespace>
     <AssemblyName>SAEditorCommon</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,25 +32,24 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.dll</HintPath>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.Direct3D.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D9, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D9.4.2.0\lib\net45\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2909.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2911.0\Microsoft.DirectX.Direct3DX.dll</HintPath>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="VrSharp">
       <HintPath>..\Dependencies\VrSharp.dll</HintPath>
     </Reference>
@@ -57,18 +57,67 @@
   <ItemGroup>
     <Compile Include="DataTypes\CAMItem.cs" />
     <Compile Include="DataTypes\DeathZoneItem.cs" />
-    <Compile Include="DataTypes\EditableRotation.cs" />
-    <Compile Include="DataTypes\EditableVertex.cs" />
+    <Compile Include="DataTypes\IScaleable.cs" />
     <Compile Include="DataTypes\Item.cs" />
     <Compile Include="DataTypes\LevelData.cs" />
     <Compile Include="DataTypes\LevelItem.cs" />
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
+    <Compile Include="DLLModGenerator\DLLModGen.cs" />
+    <Compile Include="DLLModGenerator\IniData.cs" />
+    <Compile Include="DLLModGenerator\DLLModGenUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DLLModGenerator\DLLModGenUI.Designer.cs">
+      <DependentUpon>DLLModGenUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GamePathChecker.cs" />
     <Compile Include="IniData.cs" />
+    <Compile Include="ManualBuildWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ManualBuildWindow.Designer.cs">
+      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModManagement\LoaderInfo.cs" />
+    <Compile Include="ModManagement\ModInfo.cs" />
+    <Compile Include="ModManagement\SA2LoaderInfo.cs" />
+    <Compile Include="ModManagement\SA2ModInfo.cs" />
+    <Compile Include="ModManagement\SADXLoaderInfo.cs" />
+    <Compile Include="ModManagement\SADXModInfo.cs" />
+    <Compile Include="ProjectManagerSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StructConverter\StructConverter.cs" />
+    <Compile Include="StructConverter\StructConverterUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StructConverter\StructConverterUI.Designer.cs">
+      <DependentUpon>StructConverterUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ActionInputCollector.cs" />
+    <Compile Include="UI\ActionKeybindControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ActionKeybindControl.Designer.cs">
+      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ActionKeybindEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ActionKeybindEditor.Designer.cs">
+      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ActionKeyMapping.cs" />
+    <Compile Include="UI\ActionMappingList.cs" />
+    <Compile Include="UI\ActionMapTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ActionMapTest.Designer.cs">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\BugReportDialog.cs">
       <SubType>Form</SubType>
@@ -84,6 +133,24 @@
     </Compile>
     <Compile Include="UI\EditorItemSelection.cs" />
     <Compile Include="UI\Gizmo.cs" />
+    <Compile Include="UI\HexNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryControl.Designer.cs">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ModelLibraryWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ModelLibraryWindow.Designer.cs">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MultiSelectTreeview.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\NewObjectDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +169,12 @@
     </Compile>
     <Compile Include="UI\ProgressDialog.Designer.cs">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SceneGraphControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\SceneGraphControl.Designer.cs">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\SETDeleteType.cs">
       <SubType>Form</SubType>
@@ -157,6 +230,24 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
+      <DependentUpon>DLLModGenUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ManualBuildWindow.resx">
+      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
+      <DependentUpon>StructConverterUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionKeybindControl.resx">
+      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionKeybindEditor.resx">
+      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ActionMapTest.resx">
+      <DependentUpon>ActionMapTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\BugReportDialog.resx">
       <DependentUpon>BugReportDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -179,6 +270,12 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibraryControl.resx">
+      <DependentUpon>ModelLibraryControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelLibraryWindow.resx">
+      <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\NewObjectDialog.resx">
       <DependentUpon>NewObjectDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -187,6 +284,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SceneGraphControl.resx">
+      <DependentUpon>SceneGraphControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SETDeleteType.resx">
       <DependentUpon>SETDeleteType.cs</DependentUpon>
@@ -214,27 +314,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Resources\xy_move.x" />
-    <None Include="Resources\x_move.x" />
-    <None Include="Resources\x_null.x" />
-    <None Include="Resources\x_rotation.x" />
-    <None Include="Resources\x_scale.x" />
-    <None Include="Resources\y_move.x" />
-    <None Include="Resources\y_null.x" />
-    <None Include="Resources\y_rotation.x" />
-    <None Include="Resources\y_scale.x" />
-    <None Include="Resources\zx_move.x" />
-    <None Include="Resources\zy_move.x" />
-    <None Include="Resources\z_move.x" />
-    <None Include="Resources\z_null.x" />
-    <None Include="Resources\z_rotation.x" />
-    <None Include="Resources\z_scale.x" />
+    <None Include="packages.config" />
+    <None Include="Resources\xy_move_x.sa1mdl" />
+    <None Include="Resources\x_move_x.sa1mdl" />
+    <None Include="Resources\x_null.sa1mdl" />
+    <None Include="Resources\x_rotation_x.sa1mdl" />
+    <None Include="Resources\x_scale_x.sa1mdl" />
+    <None Include="Resources\y_move_x.sa1mdl" />
+    <None Include="Resources\y_null.sa1mdl" />
+    <None Include="Resources\y_rotation_x.sa1mdl" />
+    <None Include="Resources\y_scale_x.sa1mdl" />
+    <None Include="Resources\zx_move_x.sa1mdl" />
+    <None Include="Resources\zy_move_x.sa1mdl" />
+    <None Include="Resources\z_move_x.sa1mdl" />
+    <None Include="Resources\z_null.sa1mdl" />
+    <None Include="Resources\z_rotation_x.sa1mdl" />
+    <None Include="Resources\z_scale_x.sa1mdl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PointBTexture.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PointATexture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Hourglass.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

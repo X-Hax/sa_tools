@@ -1,18 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class ORock2 : ObjectDefinition
+	public class Rock2 : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
+
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ROCK2.sa1mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+		}
+
+		public override string Name { get { return "Rock"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -31,9 +40,20 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -45,16 +65,15 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJRotateObject(item.Rotation);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-	}
 
-	public class Rock2 : ORock2
-	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override Matrix GetHandleMatrix(SETItem item)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O ROCK2.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
-		}
+			Matrix matrix = Matrix.Identity;
 
-		public override string Name { get { return "Rock"; } }
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+			return matrix;
+		}
 	}
 }

@@ -1,11 +1,13 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System;
 using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Mission
 {
@@ -14,10 +16,10 @@ namespace SADXObjectDefinitions.Mission
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Mission/Mission Flag.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -40,9 +42,23 @@ namespace SADXObjectDefinitions.Mission
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(item.Scale);
-			result.AddRange(model.DrawModelTree(dev, transform, ObjectHelper.GetTextures("Mission"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("Mission"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			((BasicAttach)model.Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
+			((BasicAttach)model.Children[0].Attach).Material[0].TextureID = ((MissionSETItem)item).PRMBytes[8] % 7;
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			transform.NJScale(item.Scale);
+			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -56,9 +72,19 @@ namespace SADXObjectDefinitions.Mission
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(item.Scale.X, item.Scale.Y), item.Scale.Z));
 		}
 
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
+		}
+
 		public override string Name { get { return "Mission Flag"; } }
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Goal", typeof(GoalType), null, null, 0, (o) => (GoalType)((MissionSETItem)o).PRMBytes[4], (o, v) => ((MissionSETItem)o).PRMBytes[4] = (byte)(GoalType)v),
 			new PropertySpec("Items Required/Order", typeof(byte), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[5], (o, v) => ((MissionSETItem)o).PRMBytes[5] = (byte)v),
 			new PropertySpec("Last In Order", typeof(bool), null, null, 0, (o) => ((MissionSETItem)o).PRMBytes[6] != 0, (o, v) => ((MissionSETItem)o).PRMBytes[6] = (byte)((bool)v ? 1 : 0)),

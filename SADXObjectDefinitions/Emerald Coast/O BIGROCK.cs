@@ -1,20 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OBigRock : ObjectDefinition
+	public class BigRock : ObjectDefinition
 	{
 		protected NJS_OBJECT model1;
 		protected Mesh[] meshes1;
 		protected NJS_OBJECT model2;
 		protected Mesh[] meshes2;
+
+		public override void Init(ObjectData data, string name)
+		{
+			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
+			meshes1 = ObjectHelper.GetMeshes(model1);
+			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
+			meshes2 = ObjectHelper.GetMeshes(model2);
+		}
+
+		public override string Name { get { return "Big Rock"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -22,6 +34,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			{
 				transform.Push();
 				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
 				HitResult result = model1.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes1);
 				transform.Pop();
 				return result;
@@ -30,6 +43,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			{
 				transform.Push();
 				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
 				HitResult result = model2.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes2);
 				transform.Pop();
 				return result;
@@ -44,7 +58,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
-				result.AddRange(model1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();
@@ -56,9 +70,33 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
-				result.AddRange(model2.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
 				if (item.Selected)
 					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
+				transform.Pop();
+				return result;
+			}
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (item.Scale.Y % 2 == 0)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(0, item.Rotation.Y, item.Rotation.Z);
+				result.Add(new ModelTransform(model2, transform.Top));
 				transform.Pop();
 				return result;
 			}
@@ -82,7 +120,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			}
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (BigRockVars)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
@@ -93,19 +131,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
 
-	public class BigRock : OBigRock
-	{
-		public override void Init(ObjectData data, string name, Device dev)
-		{ 
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BIGROCK_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y, item.Rotation.Z);
+
+			return matrix;
 		}
-
-		public override string Name { get { return "Big Rock"; } }
 	}
 
 	public enum BigRockVars

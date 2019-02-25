@@ -5,7 +5,7 @@ using System.IO;
 namespace SonicRetro.SAModel
 {
 	[Serializable]
-	public abstract class Attach
+	public abstract class Attach : ICloneable
 	{
 		public string Name { get; set; }
 		public BoundingSphere Bounds { get; set; }
@@ -15,7 +15,7 @@ namespace SonicRetro.SAModel
 		public MeshInfo[] MeshInfo
 		{
 			get { return meshInfo; }
-			protected set { meshInfo = value; }
+			set { meshInfo = value; }
 		}
 
 		public static int Size(ModelFormat format)
@@ -90,8 +90,14 @@ namespace SonicRetro.SAModel
 
 		public abstract void ProcessVertexData();
 
+		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex);
+
 		public abstract BasicAttach ToBasicModel();
 
 		public abstract ChunkAttach ToChunkModel();
+
+		object ICloneable.Clone() => Clone();
+
+		public abstract Attach Clone();
 	}
 }

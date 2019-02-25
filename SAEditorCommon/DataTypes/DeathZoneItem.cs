@@ -1,19 +1,20 @@
-﻿using System;
+﻿using SA_Tools;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.SAEditorCommon.UI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
-using SA_Tools;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 {
-	public class DeathZoneItem : Item
+	public class DeathZoneItem : Item, IScaleable
 	{
 		[Browsable(false)]
 		private NJS_OBJECT Model { get; set; }
@@ -21,6 +22,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		public string Name { get { return Model.Name; } }
 
 		[Browsable(false)]
 		public override BoundingSphere Bounds
@@ -34,31 +36,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		[NonSerialized]
-		private Device device;
-
-		public DeathZoneItem(Device device, EditorItemSelection selectionManager)
-			: base (selectionManager)
+		public DeathZoneItem(EditorItemSelection selectionManager)
+			: base(selectionManager)
 		{
-			this.device = device;
 			Model = new NJS_OBJECT();
 			ImportModel();
 			Paste();
+
+			rotateZYX = Model.RotateZYX;
+			GetHandleMatrix();
 		}
 
-		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, Device device, EditorItemSelection selectionManager)
+		public DeathZoneItem(NJS_OBJECT model, SA1CharacterFlags flags, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
 			model.ProcessVertexData();
 			Flags = flags;
-			Mesh = Model.Attach.CreateD3DMesh(device);
-			this.device = device;
+			Mesh = Model.Attach.CreateD3DMesh();
+
+			rotateZYX = Model.RotateZYX;
+			GetHandleMatrix();
 		}
 
 		public override Vertex Position { get { return Model.Position; } set { Model.Position = value; } }
 
 		public override Rotation Rotation { get { return Model.Rotation; } set { Model.Rotation = value; } }
+
+		protected override void GetHandleMatrix()
+		{
+			position = Model.Position;
+			rotation = Model.Rotation;
+			base.GetHandleMatrix();
+		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
@@ -68,7 +78,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
-			result.AddRange(Model.DrawModel(dev, transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
+			result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
 			if (Selected)
 				result.AddRange(Model.DrawModelInvert(transform, Mesh, false));
 			return result;
@@ -93,7 +103,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{
 				Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
-				Mesh = Model.Attach.CreateD3DMesh(device);
+				Mesh = Model.Attach.CreateD3DMesh();
 			}
 		}
 
@@ -204,8 +214,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public DeathZoneFlags Save(string path, int i)
 		{
-			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), "SADXLVL2", null, ModelFormat.Basic);
+			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), null, ModelFormat.Basic);
 			return new DeathZoneFlags() { Flags = Flags };
+		}
+
+		public Vertex GetScale()
+		{
+			return Model.Scale;
+		}
+
+		public void SetScale(Vertex scale)
+		{
+			Model.Scale = scale;
 		}
 	}
 }

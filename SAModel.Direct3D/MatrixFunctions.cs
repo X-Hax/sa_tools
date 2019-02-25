@@ -1,4 +1,5 @@
-﻿using Microsoft.DirectX;
+﻿using SharpDX;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -22,27 +23,10 @@ namespace SonicRetro.SAModel.Direct3D
 			Translate(ref matrix, vector.X, vector.Y, vector.Z);
 		}
 
-		public static void NJTranslate(this MatrixStack transform, float x, float y, float z)
-		{
-			Matrix m = transform.Top;
-			Translate(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJTranslate(this MatrixStack transform, Vertex vertex)
-		{
-			transform.NJTranslate(vertex.X, vertex.Y, vertex.Z);
-		}
-
-		public static void NJTranslate(this MatrixStack transform, Vector3 vector)
-		{
-			transform.NJTranslate(vector.X, vector.Y, vector.Z);
-		}
-
 		public static void RotateX(ref Matrix matrix, int x)
 		{
-			float v24 = Extensions.BAMSSin(x);
-			float v17 = Extensions.BAMSSinInv(x);
+			float v24 = Extensions.NJSin(x);
+			float v17 = Extensions.NJCos(x);
 			float v18 = matrix.M21;
 			float v19 = matrix.M22;
 			float v21 = matrix.M23;
@@ -57,17 +41,10 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M34 = v17 * matrix.M34 - v20 * v24;
 		}
 
-		public static void NJRotateX(this MatrixStack transform, int x)
-		{
-			Matrix m = transform.Top;
-			RotateX(ref m, x);
-			transform.LoadMatrix(m);
-		}
-
 		public static void RotateY(ref Matrix matrix, int y)
 		{
-			float v22 = Extensions.BAMSSin(y);
-			float v7 = Extensions.BAMSSinInv(y);
+			float v22 = Extensions.NJSin(y);
+			float v7 = Extensions.NJCos(y);
 			float v8 = matrix.M11;
 			float v9 = matrix.M12;
 			float v10 = matrix.M13;
@@ -82,17 +59,10 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M34 = v11 * v22 + v7 * matrix.M34;
 		}
 
-		public static void NJRotateY(this MatrixStack transform, int y)
-		{
-			Matrix m = transform.Top;
-			RotateY(ref m, y);
-			transform.LoadMatrix(m);
-		}
-
 		public static void RotateZ(ref Matrix matrix, int z)
 		{
-			float v22 = Extensions.BAMSSin(z);
-			float v7 = Extensions.BAMSSinInv(z);
+			float v22 = Extensions.NJSin(z);
+			float v7 = Extensions.NJCos(z);
 			float v8 = matrix.M11;
 			float v9 = matrix.M12;
 			float v10 = matrix.M13;
@@ -105,13 +75,6 @@ namespace SonicRetro.SAModel.Direct3D
 			matrix.M22 = v7 * matrix.M22 - v9 * v22;
 			matrix.M23 = v7 * matrix.M23 - v10 * v22;
 			matrix.M24 = v7 * matrix.M24 - v11 * v22;
-		}
-
-		public static void NJRotateZ(this MatrixStack transform, int z)
-		{
-			Matrix m = transform.Top;
-			RotateZ(ref m, z);
-			transform.LoadMatrix(m);
 		}
 
 		public static void RotateXYZ(ref Matrix matrix, int x, int y, int z)
@@ -129,18 +92,6 @@ namespace SonicRetro.SAModel.Direct3D
 			RotateXYZ(ref matrix, rotation.X, rotation.Y, rotation.Z);
 		}
 
-		public static void NJRotateXYZ(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateXYZ(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateXYZ(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
-		}
-
 		public static void RotateZYX(ref Matrix matrix, int x, int y, int z)
 		{
 			if (y != 0)
@@ -156,18 +107,6 @@ namespace SonicRetro.SAModel.Direct3D
 			RotateZYX(ref matrix, rotation.X, rotation.Y, rotation.Z);
 		}
 
-		public static void NJRotateZYX(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateZYX(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateZYX(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateZYX(rotation.X, rotation.Y, rotation.Z);
-		}
-
 		public static void RotateObject(ref Matrix matrix, int x, int y, int z)
 		{
 			if (z != 0)
@@ -181,18 +120,6 @@ namespace SonicRetro.SAModel.Direct3D
 		public static void RotateObject(ref Matrix matrix, Rotation rotation)
 		{
 			RotateObject(ref matrix, rotation.X, rotation.Y, rotation.Z);
-		}
-
-		public static void NJRotateObject(this MatrixStack transform, int x, int y, int z)
-		{
-			Matrix m = transform.Top;
-			RotateObject(ref m, x, y, z);
-			transform.LoadMatrix(m);
-		}
-
-		public static void NJRotateObject(this MatrixStack transform, Rotation rotation)
-		{
-			transform.NJRotateObject(rotation.X, rotation.Y, rotation.Z);
 		}
 
 		public static void Scale(ref Matrix matrix, float x, float y, float z)
@@ -220,22 +147,118 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			Scale(ref matrix, vector.X, vector.Y, vector.Z);
 		}
+	}
 
-		public static void NJScale(this MatrixStack transform, float x, float y, float z)
+	public class MatrixStack
+	{
+		private Stack<Matrix> matrices;
+
+		public MatrixStack()
 		{
-			Matrix m = transform.Top;
-			Scale(ref m, x, y, z);
-			transform.LoadMatrix(m);
+			matrices = new Stack<Matrix>();
+			matrices.Push(Matrix.Identity);
 		}
 
-		public static void NJScale(this MatrixStack transform, Vertex vertex)
+		public Matrix Top => matrices.Peek();
+
+		public void Push() => matrices.Push(Top);
+
+		public void Pop()
 		{
-			transform.NJScale(vertex.X, vertex.Y, vertex.Z);
+			if (matrices.Count > 1)
+				matrices.Pop();
 		}
 
-		public static void NJScale(this MatrixStack transform, Vector3 vector)
+		public void LoadMatrix(Matrix m) { matrices.Pop(); matrices.Push(m); }
+
+		public void TranslateLocal(Vector3 vector) => LoadMatrix(Top * Matrix.Translation(vector));
+
+		public void TranslateLocal(float x, float y, float z) => LoadMatrix(Top * Matrix.Translation(x, y, z));
+
+		public void ScaleLocal(Vector3 vector) => LoadMatrix(Top * Matrix.Scaling(vector));
+
+		public void ScaleLocal(float x, float y, float z) => LoadMatrix(Top * Matrix.Scaling(x, y, z));
+
+		public void NJTranslate(float x, float y, float z)
 		{
-			transform.NJScale(vector.X, vector.Y, vector.Z);
+			Matrix m = Top;
+			MatrixFunctions.Translate(ref m, x, y, z);
+			LoadMatrix(m);
 		}
+
+		public void NJTranslate(Vertex vertex)
+		{
+			NJTranslate(vertex.X, vertex.Y, vertex.Z);
+		}
+
+		public void NJTranslate(Vector3 vector)
+		{
+			NJTranslate(vector.X, vector.Y, vector.Z);
+		}
+
+		public void NJRotateX(int x)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateX(ref m, x);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateY(int y)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateY(ref m, y);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateZ(int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateZ(ref m, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateXYZ(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateXYZ(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateXYZ(Rotation rotation)
+		{
+			NJRotateXYZ(rotation.X, rotation.Y, rotation.Z);
+		}
+
+		public void NJRotateZYX(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateZYX(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateZYX(Rotation rotation)
+		{
+			NJRotateZYX(rotation.X, rotation.Y, rotation.Z);
+		}
+
+		public void NJRotateObject(int x, int y, int z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.RotateObject(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJRotateObject(Rotation rotation) => NJRotateObject(rotation.X, rotation.Y, rotation.Z);
+
+		public void NJScale(float x, float y, float z)
+		{
+			Matrix m = Top;
+			MatrixFunctions.Scale(ref m, x, y, z);
+			LoadMatrix(m);
+		}
+
+		public void NJScale(Vertex vertex) => NJScale(vertex.X, vertex.Y, vertex.Z);
+
+		public void NJScale(Vector3 vector) => NJScale(vector.X, vector.Y, vector.Z);
 	}
 }

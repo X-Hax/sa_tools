@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
-	public abstract class O_Frog : ObjectDefinition
+	public class OFrog : ObjectDefinition
 	{
 		protected NJS_OBJECT frog;
 		protected Mesh[] frogmsh;
@@ -17,6 +18,18 @@ namespace SADXObjectDefinitions.Common
 		protected Mesh[] bubblemsh;
 		protected NJS_OBJECT sphere;
 		protected Mesh[] spheremsh;
+
+		public override void Init(ObjectData data, string name)
+		{
+			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
+			frogmsh = ObjectHelper.GetMeshes(frog);
+			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
+			bubblemsh = ObjectHelper.GetMeshes(bubble);
+			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			spheremsh = ObjectHelper.GetMeshes(sphere);
+		}
+
+		public override string Name { get { return "Froggy (Bubble)"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -48,23 +61,39 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(frog.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
+			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(bubble.DrawModelTree(dev, transform, null, bubblemsh));
+			result.AddRange(bubble.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, bubblemsh));
 			if (item.Selected)
 				result.AddRange(bubble.DrawModelTreeInvert(transform, bubblemsh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
-			result.AddRange(sphere.DrawModelTree(dev, transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
 			if (item.Selected)
 				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(frog, transform.Top));
+			transform.Pop();
+			transform.Push();
+			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
+			transform.NJRotateY(item.Rotation.Y);
+			result.Add(new ModelTransform(bubble, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -76,27 +105,30 @@ namespace SADXObjectDefinitions.Common
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
 			return ObjectHelper.GetModelBounds(sphere, transform);
 		}
-	}
 
-	public class OFrog : O_Frog
-	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override Matrix GetHandleMatrix(SETItem item)
 		{
-			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
-			frogmsh = ObjectHelper.GetMeshes(frog, dev);
-			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
-			bubblemsh = ObjectHelper.GetMeshes(bubble, dev);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			spheremsh = ObjectHelper.GetMeshes(sphere, dev);
-		}
+			Matrix matrix = Matrix.Identity;
 
-		public override string Name { get { return "Froggy (Bubble)"; } }
+			MatrixFunctions.Translate(ref matrix, item.Position.X, item.Position.Y + item.Scale.Y, + item.Position.Z);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
+		}
 	}
 
-	public abstract class Kaeru : ObjectDefinition
+	public class Froggy : ObjectDefinition
 	{
 		protected NJS_OBJECT frog;
 		protected Mesh[] frogmsh;
+
+		public override void Init(ObjectData data, string name)
+		{
+			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
+			frogmsh = ObjectHelper.GetMeshes(frog);
+		}
+
+		public override string Name { get { return "Froggy"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -118,9 +150,21 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			transform.NJTranslate(2f, 0f, 0f);
-			result.AddRange(frog.DrawModelTree(dev, transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
+			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			transform.NJTranslate(2f, 0f, 0f);
+			result.Add(new ModelTransform(frog, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -133,16 +177,15 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(2f, 0f, 0f);
 			return ObjectHelper.GetModelBounds(frog, transform);
 		}
-	}
 
-	public class Froggy : Kaeru
-	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override Matrix GetHandleMatrix(SETItem item)
 		{
-			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
-			frogmsh = ObjectHelper.GetMeshes(frog, dev);
-		}
+			Matrix matrix = Matrix.Identity;
 
-		public override string Name { get { return "Froggy"; } }
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+			return matrix;
+		}
 	}
 }

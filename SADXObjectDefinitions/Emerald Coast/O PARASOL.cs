@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
-	public abstract class OParasol : ObjectDefinition
+	public class Parasol : ObjectDefinition
 	{
 		protected NJS_OBJECT model1;
 		protected Mesh[] meshes1;
@@ -21,6 +23,22 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		protected Mesh[] meshes4;
 		protected NJS_OBJECT model5;
 		protected Mesh[] meshes5;
+
+		public override void Init(ObjectData data, string name)
+		{
+			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_A.sa1mdl");
+			meshes1 = ObjectHelper.GetMeshes(model1);
+			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_B.sa1mdl");
+			meshes2 = ObjectHelper.GetMeshes(model2);
+			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_C.sa1mdl");
+			meshes3 = ObjectHelper.GetMeshes(model3);
+			model4 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_D.sa1mdl");
+			meshes4 = ObjectHelper.GetMeshes(model4);
+			model5 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_E.sa1mdl");
+			meshes5 = ObjectHelper.GetMeshes(model5);
+		}
+
+		public override string Name { get { return "Breakable Parasol, Chair, or Table"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -82,7 +100,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();
@@ -94,7 +112,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model2.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
 				if (item.Selected)
 					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
 				transform.Pop();
@@ -106,7 +124,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model3.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3));
+				result.AddRange(model3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3));
 				if (item.Selected)
 					result.AddRange(model3.DrawModelTreeInvert(transform, meshes3));
 				transform.Pop();
@@ -118,7 +136,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model4.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes4));
+				result.AddRange(model4.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes4));
 				if (item.Selected)
 					result.AddRange(model4.DrawModelTreeInvert(transform, meshes4));
 				transform.Pop();
@@ -130,7 +148,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model5.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes5));
+				result.AddRange(model5.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes5));
 				if (item.Selected)
 					result.AddRange(model5.DrawModelTreeInvert(transform, meshes5));
 				transform.Pop();
@@ -142,9 +160,73 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev, transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
+				transform.Pop();
+				return result;
+			}
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			if (item.Scale.X == 0 || item.Scale.X == 5 || item.Scale.X == 10 || item.Scale.X == -5)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 1 || item.Scale.X == 6 || item.Scale.X == 11 || item.Scale.X == -1)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model2, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 2 || item.Scale.X == 7 || item.Scale.X == 12 || item.Scale.X == -2)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model3, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 3 || item.Scale.X == 8 || item.Scale.X == 13 || item.Scale.X == -3)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model4, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else if (item.Scale.X == 4 || item.Scale.X == 9 || item.Scale.X == 14 || item.Scale.X == -4)
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model5, transform.Top));
+				transform.Pop();
+				return result;
+			}
+			else
+			{
+				List<ModelTransform> result = new List<ModelTransform>();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(item.Rotation);
+				result.Add(new ModelTransform(model1, transform.Top));
 				transform.Pop();
 				return result;
 			}
@@ -198,7 +280,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		internal int[] itemType = { 0, 1, 2, 3, 4 };
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (ParasolVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
@@ -209,25 +291,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
 
-	public class Parasol : OParasol
-	{
-		public override void Init(ObjectData data, string name, Device dev)
+		public override Matrix GetHandleMatrix(SETItem item)
 		{
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_A.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1, dev);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_B.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2, dev);
-			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_C.sa1mdl");
-			meshes3 = ObjectHelper.GetMeshes(model3, dev);
-			model4 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_D.sa1mdl");
-			meshes4 = ObjectHelper.GetMeshes(model4, dev);
-			model5 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_E.sa1mdl");
-			meshes5 = ObjectHelper.GetMeshes(model5, dev);
-		}
+			Matrix matrix = Matrix.Identity;
 
-		public override string Name { get { return "Breakable Parasol, Chair, or Table"; } }
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
+
+			return matrix;
+		}
 	}
 
 	public enum ParasolVariants

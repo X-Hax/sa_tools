@@ -9,7 +9,7 @@ namespace SonicRetro.SAModel
 		public float Unknown2 { get; set; }
 		public float Unknown3 { get; set; }
 		public NJS_OBJECT Model { get; set; }
-		public Animation Animation { get; set; }
+		public NJS_MOTION Animation { get; set; }
 		public int Unknown4 { get; set; }
 
 		public static int Size
@@ -41,7 +41,7 @@ namespace SonicRetro.SAModel
 			Unknown2 = ByteConverter.ToSingle(file, address + 4);
 			Unknown3 = ByteConverter.ToSingle(file, address + 8);
 			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt);
-			Animation = Animation.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, mfmt, labels);
+			Animation = NJS_MOTION.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, mfmt, labels);
 			Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
 		}
 

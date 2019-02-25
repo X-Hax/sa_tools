@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
 using System;
+using System.Collections.Generic;
+using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -14,10 +16,10 @@ namespace SADXObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
-		public override void Init(ObjectData data, string name, Device dev)
+		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
-			meshes = ObjectHelper.GetMeshes(model, dev);
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -38,11 +40,16 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f);
-			result.AddRange(model.DrawModelTree(dev, transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			return new List<ModelTransform>();
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
@@ -52,6 +59,16 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, (item.Scale.Z + 10) / 5f);
 			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f), (item.Scale.Z + 10) / 5f));
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+
+			return matrix;
 		}
 
 		public override string Name { get { return "Solid Sphere"; } }

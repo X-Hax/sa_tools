@@ -40,7 +40,7 @@ namespace SonicRetro.SAModel.SALVL
             this.NumericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.Label2 = new System.Windows.Forms.Label();
             this.CheckBox3 = new System.Windows.Forms.CheckBox();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown2 = new SAEditorCommon.UI.HexNumericUpdown();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown1)).BeginInit();
@@ -189,7 +189,7 @@ namespace SonicRetro.SAModel.SALVL
         internal NumericUpDown NumericUpDown1;
         internal Label Label2;
         internal CheckBox CheckBox3;
-        internal NumericUpDown numericUpDown2;
+        internal SAEditorCommon.UI.HexNumericUpdown numericUpDown2;
         internal ComboBox comboBox2;
         internal Label label3;
     }
