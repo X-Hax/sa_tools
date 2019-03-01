@@ -245,6 +245,39 @@ namespace SonicRetro.SAModel
 			return result.ToString();
 		}
 
+		public string ToNJA(string[] textures)
+		{
+			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+				return "{ 0 }";
+			StringBuilder result = new StringBuilder("MATSTART" + Environment.NewLine);
+			result.Append("Diffuse (");
+			result.Append(DiffuseColor.R + "," + DiffuseColor.G + "," + DiffuseColor.B + "," + DiffuseColor.A);
+			result.Append("), " + Environment.NewLine);
+			//result.Append(SpecularColor.ToStruct());
+			result.Append("Specular (");
+			result.Append(SpecularColor.R + "," + SpecularColor.G + "," + SpecularColor.B + "," + SpecularColor.A);
+			result.Append("), " + Environment.NewLine);
+			result.Append("Exponent (");
+			result.Append(Exponent);
+			result.Append("), " + Environment.NewLine);
+			int callback = (int)(TextureID & 0xC0000000);
+			int texid = (int)(TextureID & ~0xC0000000);
+			result.Append("AttrTexId(");
+			result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + ", ");
+			if (textures == null || texid >= textures.Length)
+				result.Append(texid);
+			else
+				result.Append(textures[texid].MakeIdentifier());
+			result.Append("), " + Environment.NewLine);
+			result.Append("AttrFlags (");
+			result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
+			if (UserFlags != 0)
+				result.Append(" | 0x" + UserFlags.ToString("X"));
+			result.Append("), " + Environment.NewLine);
+			result.Append("MATEND" + Environment.NewLine);
+			return result.ToString();
+		}
+
 		public string ToStruct()
 		{
 			return ToStruct(null);
