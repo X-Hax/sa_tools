@@ -33,6 +33,8 @@
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,11 +124,29 @@
 			// 
 			// newToolStripMenuItem
 			// 
+			this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newPVMToolStripMenuItem,
+            this.newGVMToolStripMenuItem});
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
 			this.newToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
 			this.newToolStripMenuItem.Text = "&New";
-			this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+			// 
+			// newPVMToolStripMenuItem
+			// 
+			this.newPVMToolStripMenuItem.Name = "newPVMToolStripMenuItem";
+			this.newPVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+			this.newPVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.newPVMToolStripMenuItem.Text = "&PVM";
+			this.newPVMToolStripMenuItem.Click += new System.EventHandler(this.newPVMToolStripMenuItem_Click);
+			// 
+			// newGVMToolStripMenuItem
+			// 
+			this.newGVMToolStripMenuItem.Name = "newGVMToolStripMenuItem";
+			this.newGVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+			this.newGVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.newGVMToolStripMenuItem.Text = "&GVM";
+			this.newGVMToolStripMenuItem.Click += new System.EventHandler(this.newGVMToolStripMenuItem_Click);
 			// 
 			// openToolStripMenuItem
 			// 
@@ -464,6 +484,8 @@
 		private System.Windows.Forms.ToolStripMenuItem exportTexturePackToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripMenuItem newPVMToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newGVMToolStripMenuItem;
 	}
 }
 

@@ -6,6 +6,10 @@ using System.Text;
 using Collada141;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
 
 namespace SonicRetro.SAModel
 {
@@ -85,6 +89,37 @@ namespace SonicRetro.SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
+		void AssimpLoad(Scene scene, Node node)
+		{
+			Name = node.Name;
+			Vector3D translation;
+			Vector3D scaling;
+			Quaternion rotation;
+			node.Transform.Decompose(out scaling, out rotation, out translation);
+			Vector3D rotationConverted = Extensions.FromQ2(rotation);
+			Position = new Vertex(translation.X, -translation.Z, translation.Y);
+			Rotation = new Rotation((int)(rotationConverted.X * 65536.0 / (2 * Math.PI)), -(int)(rotationConverted.Z * 65536.0 / (2 * Math.PI)), (int)(rotationConverted.Y * 65536.0 / (2 * Math.PI)));
+			Scale = new Vertex(scaling.X, -scaling.Z, scaling.Y);
+			List<Mesh> meshes = new List<Mesh>();
+			foreach (int i in node.MeshIndices)
+				meshes.Add(scene.Meshes[i]);
+			List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>(scene.Materials.Select(a => new NJS_MATERIAL(a)));
+			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
+			if (node.HasMeshes)
+				Attach = new BasicAttach(materials, meshes);
+			else Attach = null;
+			if (node.HasChildren)
+			{
+				List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a)));
+				Children = new ReadOnlyCollection<NJS_OBJECT>(list.ToArray());
+			}
+			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
+		}
+		public NJS_OBJECT(Scene scene, Node node)
+		{
+			AssimpLoad(scene, node);
+		}
+
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
 		{ }
@@ -133,6 +168,10 @@ namespace SonicRetro.SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels);
 			}
+
+			//Assimp.AssimpContext context = new AssimpContext();
+			//Scene scene = context.ImportFile("F:\\untitled.obj", PostProcessSteps.Triangulate);
+			//AssimpLoad(scene, scene.RootNode);
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
@@ -316,7 +355,7 @@ namespace SonicRetro.SAModel
 				obj = obj.Sibling;
 			} while (obj != null);
 		}
-		
+
 		private void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, ref int animindex)
 		{
 			if (Morph)
@@ -723,7 +762,7 @@ namespace SonicRetro.SAModel
 					Items = tris.ToArray()
 				}
 			});
-			skipAttach:
+		skipAttach:
 			++nodeID;
 			node node = new node
 			{
@@ -800,6 +839,64 @@ namespace SonicRetro.SAModel
 			result.Append(Sibling != null ? "&" + Sibling.Name : "NULL");
 			result.Append(" }");
 			return result.ToString();
+		}
+
+		public void ToNJA(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		{
+			for (int i = 1; i < Children.Count; i++)
+				Children[i - 1].Sibling = Children[i];
+			for (int i = Children.Count - 1; i >= 0; i--)
+			{
+				if (!labels.Contains(Children[i].Name))
+				{
+					labels.Add(Children[i].Name);
+					Children[i].ToNJA(writer, DX, labels, textures);
+					writer.WriteLine();
+				}
+			}
+			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
+			{
+				labels.Add(Sibling.Name);
+				Sibling.ToNJA(writer, DX, labels, textures);
+				writer.WriteLine();
+			}
+			writer.WriteLine("OBJECT_START");
+			if (Attach is BasicAttach)
+			{
+				BasicAttach basicattach = Attach as BasicAttach;
+				basicattach.ToNJA(writer, DX, labels, textures);
+			}
+			writer.Write("OBJECT ");
+			writer.Write(Name);
+			writer.WriteLine("[]");
+			writer.WriteLine("START");
+			writer.WriteLine("EvalFlags ( " + ((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | ") + " ),");
+			writer.WriteLine("Model  " + (Attach != null ? "&" + Attach.Name : "NULL") + ",");
+			writer.Write("OPosition ( ");
+			foreach (float value in Position.ToArray())
+			{
+				writer.Write(value.ToC());
+				writer.Write(", ");
+			}
+			writer.WriteLine("),");
+			writer.Write("OAngle ( ");
+			foreach (float value in Rotation.ToArray())
+			{
+				writer.Write(value.ToC());
+				writer.Write(", ");
+			}
+			writer.WriteLine("),");
+			writer.Write("OScale ( ");
+			foreach (float value in Scale.ToArray())
+			{
+				writer.Write(value.ToC());
+				writer.Write(", ");
+			}
+			writer.WriteLine("),");
+			writer.WriteLine("Child " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
+			writer.WriteLine("Sibling " + (Sibling != null ? Sibling.Name : "NULL"));
+			writer.WriteLine("END");
+			writer.WriteLine("OBJECT_END");
 		}
 
 		public void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)

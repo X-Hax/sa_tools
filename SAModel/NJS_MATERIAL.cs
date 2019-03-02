@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
+
 namespace SonicRetro.SAModel
 {
 	[Serializable]
@@ -163,6 +167,21 @@ namespace SonicRetro.SAModel
 			Flags = copy.Flags;
 		}
 
+		Color FromColor4D(Color4D c)
+		{
+			return Color.FromArgb((int)(c.A * 255.0f), (int)(c.R * 255.0f), (int)(c.G * 255.0f), (int)(c.B * 255.0f));
+		}
+
+		public NJS_MATERIAL(Material mat)
+		{
+			if(mat.HasColorDiffuse)
+				DiffuseColor = FromColor4D(mat.ColorDiffuse);
+			if(mat.HasColorSpecular)
+				SpecularColor = FromColor4D(mat.ColorSpecular);
+			Exponent = mat.Shininess;
+
+		}
+
 		/// <summary>
 		/// Load a material from a file buffer
 		/// </summary>
@@ -223,6 +242,39 @@ namespace SonicRetro.SAModel
 			if (UserFlags != 0)
 				result.Append(" | 0x" + UserFlags.ToString("X"));
 			result.Append(" }");
+			return result.ToString();
+		}
+
+		public string ToNJA(string[] textures)
+		{
+			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+				return "{ 0 }";
+			StringBuilder result = new StringBuilder("MATSTART" + Environment.NewLine);
+			result.Append("Diffuse (");
+			result.Append(DiffuseColor.R + "," + DiffuseColor.G + "," + DiffuseColor.B + "," + DiffuseColor.A);
+			result.Append("), " + Environment.NewLine);
+			//result.Append(SpecularColor.ToStruct());
+			result.Append("Specular (");
+			result.Append(SpecularColor.R + "," + SpecularColor.G + "," + SpecularColor.B + "," + SpecularColor.A);
+			result.Append("), " + Environment.NewLine);
+			result.Append("Exponent (");
+			result.Append(Exponent);
+			result.Append("), " + Environment.NewLine);
+			int callback = (int)(TextureID & 0xC0000000);
+			int texid = (int)(TextureID & ~0xC0000000);
+			result.Append("AttrTexId(");
+			result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + ", ");
+			if (textures == null || texid >= textures.Length)
+				result.Append(texid);
+			else
+				result.Append(textures[texid].MakeIdentifier());
+			result.Append("), " + Environment.NewLine);
+			result.Append("AttrFlags (");
+			result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
+			if (UserFlags != 0)
+				result.Append(" | 0x" + UserFlags.ToString("X"));
+			result.Append("), " + Environment.NewLine);
+			result.Append("MATEND" + Environment.NewLine);
 			return result.ToString();
 		}
 

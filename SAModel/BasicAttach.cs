@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
+using Assimp.Unmanaged;
+using Assimp.Configs;
+using Assimp;
+using NvTriStripDotNet;
+using PrimitiveType = Assimp.PrimitiveType;
 
 namespace SonicRetro.SAModel
 {
@@ -109,6 +115,7 @@ namespace SonicRetro.SAModel
 				}
 			}
 			Bounds = new BoundingSphere(file, address + 0x18);
+
 		}
 
 		public BasicAttach(Vertex[] vertex, Vertex[] normal, IEnumerable<NJS_MESHSET> mesh, IEnumerable<NJS_MATERIAL> material)
@@ -120,6 +127,77 @@ namespace SonicRetro.SAModel
 			Material = new List<NJS_MATERIAL>(material);
 
 			Name = "attach_" + Extensions.GenerateIdentifier();
+		}
+
+		public BasicAttach(List<NJS_MATERIAL> materials, List<Mesh> meshes)
+		{
+			Name = "attach_" + Extensions.GenerateIdentifier();
+			Bounds = new BoundingSphere();
+			Material = new List<NJS_MATERIAL>();
+			MaterialName = "matlist_" + Extensions.GenerateIdentifier();
+			Mesh = new List<NJS_MESHSET>();
+			MeshName = "meshlist_" + Extensions.GenerateIdentifier();
+			Vertex = new Vertex[0];
+			VertexName = "vertex_" + Extensions.GenerateIdentifier();
+			Normal = new Vertex[0];
+			NormalName = "normal_" + Extensions.GenerateIdentifier();
+
+			List<Vertex> vertices = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Vertices)
+				{
+					vertices.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Vertex = vertices.ToArray();
+
+			List<Vertex> normals = new List<Vertex>();
+			foreach (Mesh m in meshes)
+				foreach (Vector3D ve in m.Normals)
+				{
+					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
+				}
+			Normal = normals.ToArray();
+
+			Material = materials;
+
+			int polyIndex = 0;
+			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
+			for (int i = 0; i < meshes.Count; i++)
+			{
+				NJS_MESHSET meshset;//= new NJS_MESHSET(polyType, meshes[i].Faces.Count, false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
+
+				List<Poly> polys = new List<Poly>();
+
+				//i noticed the primitiveType of the Assimp Mesh is always triangles so...
+				foreach (Face f in meshes[i].Faces)
+				{
+					Triangle triangle = new Triangle();
+					triangle.Indexes[0] = (ushort)(f.Indices[0] + polyIndex);
+					triangle.Indexes[1] = (ushort)(f.Indices[1] + polyIndex);
+					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
+					polys.Add(triangle);
+				}
+				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), false); //hasVColor = meshes[i].HasVertexColors(0);
+				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+				meshset.MaterialID = (ushort)meshes[i].MaterialIndex;
+
+				if (meshes[i].HasTextureCoords(0))
+				{
+					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
+					{
+						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
+					}
+				}
+				
+				if (meshes[i].HasVertexColors(0))
+					throw new NotImplementedException();
+				polyIndex += meshes[i].VertexCount;
+				meshsets.Add(meshset);//4B4834
+			}
+			Mesh = meshsets;
+			Bounds = new BoundingSphere() { Radius = 1.0f };
+
 		}
 
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
@@ -416,7 +494,160 @@ namespace SonicRetro.SAModel
 			writer.Write(ToStruct(DX));
 			writer.WriteLine(";");
 		}
+		public void ToNJA(TextWriter writer, bool DX, List<string> labels, string[] textures)
+		{
+			if (Material != null && Material.Count > 0 && !labels.Contains(MaterialName))
+			{
+				labels.Add(MaterialName);
+				writer.Write("MATERIAL ");
+				writer.Write(MaterialName + "[]" + Environment.NewLine);
+				//writer.WriteLine("[] = {");
+				writer.WriteLine("START");
+				List<string> mtls = new List<string>(Material.Count);
+				foreach (NJS_MATERIAL item in Material)
+					mtls.Add(item.ToNJA(textures));
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
+				writer.WriteLine("END");
+				writer.WriteLine();
+			}
+			if (!labels.Contains(MeshName))
+			{
+				for (int i = 0; i < Mesh.Count; i++)
+				{
+					if (!labels.Contains(Mesh[i].PolyName))
+					{
+						labels.Add(Mesh[i].PolyName);
+						writer.Write("POLYGON ");
+						writer.Write(Mesh[i].PolyName);
+						writer.WriteLine("[]");
+						writer.WriteLine("START");
 
+						List<string> plys = new List<string>(Mesh[i].Poly.Count);
+						foreach (Poly item in Mesh[i].Poly)
+						{
+							if (item.PolyType == Basic_PolyType.Strips)
+							{
+								Strip strip = item as Strip;
+								plys.Add("Strip(" + (strip.Reversed ? "0x8000, " : "0x0,") + strip.Indexes.Length.ToString() + ")");
+							}
+							plys.Add(item.ToStruct());
+						}
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("END");
+						writer.WriteLine();
+					}
+				}
+				for (int i = 0; i < Mesh.Count; i++)
+				{
+					if (Mesh[i].PolyNormal != null && !labels.Contains(Mesh[i].PolyNormalName))
+					{
+						labels.Add(Mesh[i].PolyNormalName);
+						writer.Write("POLYNORMAL ");
+						writer.Write(Mesh[i].PolyNormalName);
+						writer.WriteLine("[]");
+						writer.WriteLine("START");
+						List<string> plys = new List<string>(Mesh[i].PolyNormal.Length);
+						foreach (Vertex item in Mesh[i].PolyNormal)
+							plys.Add("PNORM " + item.ToNJA());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("END");
+						writer.WriteLine();
+					}
+				}
+				for (int i = 0; i < Mesh.Count; i++)
+				{
+					if (Mesh[i].VColor != null && !labels.Contains(Mesh[i].VColorName))
+					{
+						labels.Add(Mesh[i].VColorName);
+						writer.Write("VERTCOLOR ");
+						writer.Write(Mesh[i].VColorName);
+						writer.WriteLine("[]");
+						writer.WriteLine("START");
+						List<string> vcs = new List<string>(Mesh[i].VColor.Length);
+						foreach (Color item in Mesh[i].VColor)
+							vcs.Add(item.ToStruct());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vcs.ToArray()));
+						writer.WriteLine("END");
+						writer.WriteLine();
+					}
+				}
+				for (int i = 0; i < Mesh.Count; i++)
+				{
+					if (Mesh[i].UV != null && !labels.Contains(Mesh[i].UVName))
+					{
+						labels.Add(Mesh[i].UVName);
+						writer.Write("VERTUV ");
+						writer.Write(Mesh[i].UVName);
+						writer.WriteLine("[] = {");
+						List<string> uvs = new List<string>(Mesh[i].UV.Length);
+						foreach (UV item in Mesh[i].UV)
+							uvs.Add(item.ToNJA()); //someone check this out, i dont understand how it works
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", uvs.ToArray()));
+						writer.WriteLine("END");
+						writer.WriteLine();
+					}
+				}
+				labels.Add(MeshName);
+				writer.Write("MESHSET");
+				if (DX)
+					writer.Write("_SADX");
+				writer.Write(" ");
+				writer.Write(MeshName);
+				writer.WriteLine("[]");
+				writer.WriteLine("START");
+				List<string> mshs = new List<string>(Mesh.Count);
+				foreach (NJS_MESHSET item in Mesh)
+					mshs.Add(item.ToNJA(DX));
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mshs.ToArray()));
+				writer.WriteLine("END");
+				writer.WriteLine();
+			}
+			if (!labels.Contains(VertexName))
+			{
+				labels.Add(VertexName);
+				writer.Write("POINT ");
+				writer.Write(VertexName);
+				writer.WriteLine("[]");
+				writer.WriteLine("START");
+				List<string> vtxs = new List<string>(Vertex.Length);
+				foreach (Vertex item in Vertex)
+					vtxs.Add("VERT " + (item != null ? item.ToNJA() : "{ 0 }"));
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+				writer.WriteLine("END");
+				writer.WriteLine();
+			}
+			if (Normal != null && !labels.Contains(NormalName))
+			{
+				labels.Add(VertexName);
+				writer.Write("NORMAL ");
+				writer.Write(NormalName);
+				writer.WriteLine("[]");
+				writer.WriteLine("START");
+				List<string> vtxs = new List<string>(Normal.Length);
+				foreach (Vertex item in Normal)
+					vtxs.Add("NORM " + (item != null ? item.ToNJA() : "{ 0 }"));
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+				writer.WriteLine("END");
+				writer.WriteLine();
+			}
+			writer.Write("MODEL");
+			if (DX)
+				writer.Write("_SADX");
+			writer.Write(" ");
+			writer.Write(Name);
+			writer.WriteLine("[]");
+			writer.WriteLine("START");
+			writer.WriteLine("Points " + VertexName + ",");
+			writer.WriteLine("Normal " + NormalName + ",");
+			writer.WriteLine("PointNum " + Vertex.Length + ",");
+			writer.WriteLine("Meshset " + MeshName + ",");
+			writer.WriteLine("Materials " + MaterialName + ",");
+			writer.WriteLine("MeshsetNum " + Mesh.Count + ",");
+			writer.WriteLine("MatNum " + Material.Count + ",");
+			writer.WriteLine("Center " + Bounds.Center.X + "," + Bounds.Center.Y + "," + Bounds.Center.Z  + ",");
+			writer.WriteLine("Radius " + Bounds.Radius + ",");
+			writer.WriteLine("END");
+		}
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
