@@ -200,9 +200,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				levelItemNode.Nodes.Add(levelItem.Name);
 			}
 
-			foreach (DeathZoneItem deathZone in LevelData.DeathZones)
+			if (LevelData.DeathZones != null)
 			{
-				deathZoneNode.Nodes.Add(deathZone.Name);
+				foreach (DeathZoneItem deathZone in LevelData.DeathZones)
+				{
+					deathZoneNode.Nodes.Add(deathZone.Name);
+				}
 			}
 
 			// set node
