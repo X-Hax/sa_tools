@@ -3126,7 +3126,59 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void statsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(LevelData.GetStats());
+			string selectionAppend = "";
+
+			int levelItemCount = selectedItems.Items.Count(item => item is LevelItem);
+
+			if (levelItemCount == 1)
+			{
+				LevelItem levelItem = (LevelItem)selectedItems.Items.First(item => item is LevelItem);
+				NJS_OBJECT levelNJSObject = levelItem.CollisionData.Model;
+
+				int faces = 0;
+				int vColors = 0;
+
+
+				if (levelNJSObject.Attach is BasicAttach)
+				{
+					BasicAttach model = ((BasicAttach)levelNJSObject.Attach);
+
+					foreach (NJS_MESHSET meshSet in model.Mesh)
+					{
+						vColors += meshSet.VColor.Length;
+
+						switch (meshSet.PolyType)
+						{
+							case Basic_PolyType.Triangles:
+								faces =+ meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.Quads:
+								faces =+ meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.NPoly:
+								faces =+ meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.Strips:
+								foreach (Strip strip in meshSet.Poly)
+								{
+									faces += strip.Size;
+								}
+								break;
+							default:
+								break;
+						}
+					}
+
+					selectionAppend = string.Format("{0}\nverts: {1}\nfaces: {2}\nvColors: {3}\nmaterials: {4}\nmeshes: {5}",
+					levelItem.Name, model.Vertex.Length, faces, vColors, model.Material.Count, model.Mesh.Count);
+				}
+			}
+			else if(levelItemCount > 1)
+			{
+				selectionAppend = "Multiple objects selected, can't display selection stats.";
+			}
+
+			MessageBox.Show(LevelData.GetStats() + string.Format("{0}\n", selectionAppend));
 		}
 
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
