@@ -199,6 +199,33 @@ namespace SonicRetro.SAModel
 			result.Append(" }");
 			return result.ToString();
 		}
+		
+		public string ToNJA(bool DX)
+		{
+			StringBuilder result = new StringBuilder("MESHSTART ");
+			result.Append("TypeMatId ( " + (StructEnums.NJD_MESHSET)((int)PolyType << 0xE) + ",");
+			result.Append(MaterialID & 0x3FFF);
+			result.Append("), ");
+			result.Append("MeshNum ");
+			result.Append(Poly != null ? (ushort)Poly.Count : 0);
+			result.Append(", ");
+			result.Append("Meshes ");
+			result.Append(Poly != null ? PolyName : "NULL");
+			result.Append(", ");
+			result.Append("PolyAttrs NULL, ");
+			result.Append("PolyNormal ");
+			result.Append(PolyNormal != null ? PolyNormalName : "NULL");
+			result.Append(", ");
+			result.Append("VertColor ");
+			result.Append(VColor != null ? VColorName : "NULL");
+			result.Append(", ");
+			result.Append("VertUV ");
+			result.Append(UV != null ? UVName : "NULL");
+			if (DX)
+				result.Append(", NULL");
+			result.Append(" MESHEND");
+			return result.ToString();
+		}
 
 		object ICloneable.Clone() => Clone();
 

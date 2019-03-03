@@ -64,6 +64,13 @@ namespace SonicRetro.SAModel
 			return "{ " + (short)(U * 255f) + ", " + (short)(V * 255f) + " }";
 		}
 
+		public string ToNJA()
+		{
+			if (U == 0 && V == 0)
+				return "{ 0 }";
+			return "UV ( " + (short)(U * 255f) + ", " + (short)(V * 255f) + " )";
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (obj is UV)
