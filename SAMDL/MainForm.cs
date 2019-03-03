@@ -273,6 +273,7 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			selectedObject = model;
 			SelectedItemChanged();
 
@@ -426,6 +427,7 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedObject = model;
 
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
 			currentFileName = "";
@@ -1027,6 +1029,7 @@ namespace SonicRetro.SAModel.SAMDL
 					for (int j = 0; j < TextureInfo.Length; j++)
 						Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
 
+					textureRemappingToolStripMenuItem.Enabled = loaded;
 					DrawEntireModel();
 				}
 			}
@@ -1504,6 +1507,39 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 					else
 						MessageBox.Show(this, "Not found.", "SAMDL");
+				}
+		}
+
+		private void textureRemappingToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfo))
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					foreach (Attach att in model.GetObjects().Where(a => a.Attach != null).Select(a => a.Attach))
+						switch (att)
+						{
+							case BasicAttach batt:
+								if (batt.Material != null)
+									foreach (NJS_MATERIAL mat in batt.Material)
+										if (dlg.TextureMap.ContainsKey(mat.TextureID))
+											mat.TextureID = dlg.TextureMap[mat.TextureID];
+								break;
+							case ChunkAttach catt:
+								if (catt.Poly != null)
+									foreach (PolyChunkTinyTextureID tex in catt.Poly.OfType<PolyChunkTinyTextureID>())
+										if (dlg.TextureMap.ContainsKey(tex.TextureID))
+											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
+								break;
+						}
+					if (model.HasWeight)
+					{
+						meshes = model.ProcessWeightedModel().ToArray();
+						UpdateWeightedModel();
+					}
+					else
+						model.ProcessVertexData();
+
+					DrawEntireModel();
 				}
 		}
 
