@@ -549,7 +549,15 @@ namespace PVMEditSharp
 										textures.Add(new GvrTextureInfo(name, new GvrTexture(file)));
 									else
 									{
-										textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+										switch (format)
+										{
+											case TextureFormat.PVM:
+												textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												break;
+											case TextureFormat.GVM:
+												textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												break;
+										}
 										if (gbix != uint.MaxValue)
 											gbix++;
 									}
