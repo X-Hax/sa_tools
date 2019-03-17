@@ -225,7 +225,21 @@ namespace ProjectManager
 
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
-			AutoBuild();
+			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
+			{
+				Action showProgress = () =>
+				{
+					Invoke((Action)progress.Show);
+				};
+
+				Action<string> stepProgress = (string update) => 
+				{
+					progress.StepProgress();
+					progress.SetStep(update);
+				};
+
+				AutoBuild(showProgress, stepProgress);
+			}
 		}
 
 		private void BackgroundWorker1_RunWorkerCompleteAlert(object sender, RunWorkerCompletedEventArgs e)
@@ -234,176 +248,169 @@ namespace ProjectManager
 			MessageBox.Show("Build complete!");
 		}
 
-		private void AutoBuild()
+		private void AutoBuild(Action showProgress, Action<string> updateProgress)
 		{
-			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
+			showProgress();
+
+			Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
+				new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
+
+			string modFolder = Path.Combine(Program.Settings.GetModPathForGame(game),
+				projectName);
+
+			Directory.CreateDirectory(modFolder);
+
+			updateProgress("Getting Assemblies");
+			switch (game)
 			{
-				Invoke((Action)progress.Show);
+				case SA_Tools.Game.SADX:
+					List<String> sadxAssemblyNames = GetSADXAssemblyNames();
 
-				Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
-					new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
+					// check for chrmodels or chrmodels_orig
+					string chrmodels = "chrmodels";
+					string chrmodelsOrig = "chrmodels_orig";
 
-				string modFolder = Path.Combine(Program.Settings.GetModPathForGame(game),
-					projectName);
+					string chrmodelsCompletePath = Path.Combine(projectFolder, chrmodels + "_data.ini");
+					string chrmodelsOrigCompletePath = Path.Combine(projectFolder, chrmodelsOrig + "_data.ini");
 
-				Directory.CreateDirectory(modFolder);
-
-				progress.StepProgress();
-				progress.SetStep("Getting Assembies");
-				switch (game)
-				{
-					case SA_Tools.Game.SADX:
-						List<String> sadxAssemblyNames = GetSADXAssemblyNames();
-
-						// check for chrmodels or chrmodels_orig
-						string chrmodels = "chrmodels";
-						string chrmodelsOrig = "chrmodels_orig";
-
-						string chrmodelsCompletePath = Path.Combine(projectFolder, chrmodels + "_data.ini");
-						string chrmodelsOrigCompletePath = Path.Combine(projectFolder, chrmodelsOrig + "_data.ini");
-
-						if (File.Exists(chrmodelsCompletePath))
-						{
-							sadxAssemblyNames.Add(chrmodels);
-						}
-						else
-						{
-							sadxAssemblyNames.Add(chrmodelsOrig);
-						}
-
-						assemblies.Add("sonic", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-
-						foreach (string assemblyName in sadxAssemblyNames)
-						{
-							assemblies.Add(assemblyName, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-						}
-						break;
-
-					case SA_Tools.Game.SA2B:
-						// dll
-						assemblies.Add("Data_DLL", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-
-						// exe
-						assemblies.Add("sonic2app", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-						break;
-
-					default:
-						break;
-				}
-
-				// export only the modified items in each assembly
-				progress.StepProgress();
-				progress.SetStep("Exporting Assembies");
-
-				foreach (KeyValuePair<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assembly in
-					assemblies)
-				{
-					string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
-
-					Dictionary<string, bool> itemsToExport = new Dictionary<string, bool>();
-
-					switch (assembly.Value)
+					if (File.Exists(chrmodelsCompletePath))
 					{
-						case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe:
-							SA_Tools.IniData iniData = SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.LoadINI(iniPath, ref itemsToExport);
-
-							SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(iniData,
-								itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
-							break;
-
-						case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
-							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DllIniData dllIniData =
-								SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
-
-							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
-								itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
-							break;
-						default:
-							break;
+						sadxAssemblyNames.Add(chrmodels);
 					}
-				}
+					else
+					{
+						sadxAssemblyNames.Add(chrmodelsOrig);
+					}
 
-				// copy system folder
-				progress.StepProgress();
-				progress.SetStep("Copying System Folder");
-				CopySystemFolder(modFolder);
+					assemblies.Add("sonic", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
 
-				// generate final mod.ini based off of one in project folder
-				progress.StepProgress();
-				progress.SetStep("Creating Mod.ini");
+					foreach (string assemblyName in sadxAssemblyNames)
+					{
+						assemblies.Add(assemblyName, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+					}
+					break;
 
-				string baseModIniPath = Path.Combine(projectFolder, "mod.ini");
-				string outputModIniPath = Path.Combine(modFolder, "mod.ini");
+				case SA_Tools.Game.SA2B:
+					// dll
+					assemblies.Add("Data_DLL", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 
-				switch (game)
+					// exe
+					assemblies.Add("sonic2app", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+					break;
+
+				default:
+					break;
+			}
+
+			// export only the modified items in each assembly
+			updateProgress("Exporting Assembies");
+
+			foreach (KeyValuePair<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assembly in
+				assemblies)
+			{
+				string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
+
+				Dictionary<string, bool> itemsToExport = new Dictionary<string, bool>();
+
+				switch (assembly.Value)
 				{
-					case SA_Tools.Game.SADX:
-						SADXModInfo sadxModInfo = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
+					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe:
+						SA_Tools.IniData iniData = SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.LoadINI(iniPath, ref itemsToExport);
 
-						// set all of our assemblies properly
-						string ADV00MODELS = "ADV00MODELS";
-						string ADV01CMODELS = "ADV01CMODELS";
-						string ADV01MODELS = "ADV01MODELS";
-						string ADV02MODELS = "ADV02MODELS";
-						string ADV03MODELS = "ADV03MODELS";
-						string BOSSCHAOS0MODELS = "BOSSCHAOS0MODELS";
-						string CHAOSTGGARDEN02MR_DAYTIME = "CHAOSTGGARDEN02MR_DAYTIME";
-						string CHAOSTGGARDEN02MR_EVENING = "CHAOSTGGARDEN02MR_EVENING";
-						string CHAOSTGGARDEN02MR_NIGHT = "CHAOSTGGARDEN02MR_NIGHT";
-
-						string dataSuffix = "_data.ini";
-
-						if (assemblies.ContainsKey(ADV00MODELS)) sadxModInfo.ADV00MODELSData = ADV00MODELS + dataSuffix;
-						if (assemblies.ContainsKey(ADV01CMODELS)) sadxModInfo.ADV01CMODELSData = ADV01CMODELS + dataSuffix;
-						if (assemblies.ContainsKey(ADV01MODELS)) sadxModInfo.ADV01MODELSData = ADV01MODELS + dataSuffix;
-						if (assemblies.ContainsKey(ADV02MODELS)) sadxModInfo.ADV02MODELSData = ADV02MODELS + dataSuffix;
-						if (assemblies.ContainsKey(ADV03MODELS)) sadxModInfo.ADV03MODELSData = ADV03MODELS + dataSuffix;
-						if (assemblies.ContainsKey(BOSSCHAOS0MODELS)) sadxModInfo.BOSSCHAOS0MODELSData = BOSSCHAOS0MODELS + dataSuffix;
-						if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_DAYTIME)) sadxModInfo.CHAOSTGGARDEN02MR_DAYTIMEData = CHAOSTGGARDEN02MR_DAYTIME + dataSuffix;
-						if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_EVENING)) sadxModInfo.CHAOSTGGARDEN02MR_EVENINGData = CHAOSTGGARDEN02MR_EVENING + dataSuffix;
-						if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_NIGHT)) sadxModInfo.CHAOSTGGARDEN02MR_NIGHTData = CHAOSTGGARDEN02MR_NIGHT + dataSuffix;
-						if (assemblies.ContainsKey("sonic")) sadxModInfo.EXEData = "sonic_data.ini";
-
-						// save our output
-						SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
+						SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(iniData,
+							itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
 						break;
 
-					case SA_Tools.Game.SA2B:
-						SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
+					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
+						SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DllIniData dllIniData =
+							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
-						sa2ModInfo.EXEFile = "sonic2app_data.ini";
-						sa2ModInfo.DLLFile = "Data_DLL_data.ini";
-
-						// save our output
-						SA_Tools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
+						SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
+							itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
 						break;
 					default:
 						break;
 				}
+			}
 
-				// execute our post-build script
-				string projectSettingsPath = Path.Combine(projectFolder, "ProjectSettings.ini");
+			// copy system folder
+			updateProgress("Copying System Folder");
+			CopySystemFolder(modFolder);
 
-				if (File.Exists(projectSettingsPath))
+			// generate final mod.ini based off of one in project folder
+			updateProgress("Creating Mod.ini");
+
+			string baseModIniPath = Path.Combine(projectFolder, "mod.ini");
+			string outputModIniPath = Path.Combine(modFolder, "mod.ini");
+
+			switch (game)
+			{
+				case SA_Tools.Game.SADX:
+					SADXModInfo sadxModInfo = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
+
+					// set all of our assemblies properly
+					string ADV00MODELS = "ADV00MODELS";
+					string ADV01CMODELS = "ADV01CMODELS";
+					string ADV01MODELS = "ADV01MODELS";
+					string ADV02MODELS = "ADV02MODELS";
+					string ADV03MODELS = "ADV03MODELS";
+					string BOSSCHAOS0MODELS = "BOSSCHAOS0MODELS";
+					string CHAOSTGGARDEN02MR_DAYTIME = "CHAOSTGGARDEN02MR_DAYTIME";
+					string CHAOSTGGARDEN02MR_EVENING = "CHAOSTGGARDEN02MR_EVENING";
+					string CHAOSTGGARDEN02MR_NIGHT = "CHAOSTGGARDEN02MR_NIGHT";
+
+					string dataSuffix = "_data.ini";
+
+					if (assemblies.ContainsKey(ADV00MODELS)) sadxModInfo.ADV00MODELSData = ADV00MODELS + dataSuffix;
+					if (assemblies.ContainsKey(ADV01CMODELS)) sadxModInfo.ADV01CMODELSData = ADV01CMODELS + dataSuffix;
+					if (assemblies.ContainsKey(ADV01MODELS)) sadxModInfo.ADV01MODELSData = ADV01MODELS + dataSuffix;
+					if (assemblies.ContainsKey(ADV02MODELS)) sadxModInfo.ADV02MODELSData = ADV02MODELS + dataSuffix;
+					if (assemblies.ContainsKey(ADV03MODELS)) sadxModInfo.ADV03MODELSData = ADV03MODELS + dataSuffix;
+					if (assemblies.ContainsKey(BOSSCHAOS0MODELS)) sadxModInfo.BOSSCHAOS0MODELSData = BOSSCHAOS0MODELS + dataSuffix;
+					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_DAYTIME)) sadxModInfo.CHAOSTGGARDEN02MR_DAYTIMEData = CHAOSTGGARDEN02MR_DAYTIME + dataSuffix;
+					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_EVENING)) sadxModInfo.CHAOSTGGARDEN02MR_EVENINGData = CHAOSTGGARDEN02MR_EVENING + dataSuffix;
+					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_NIGHT)) sadxModInfo.CHAOSTGGARDEN02MR_NIGHTData = CHAOSTGGARDEN02MR_NIGHT + dataSuffix;
+					if (assemblies.ContainsKey("sonic")) sadxModInfo.EXEData = "sonic_data.ini";
+
+					// save our output
+					SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
+					break;
+
+				case SA_Tools.Game.SA2B:
+					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
+
+					sa2ModInfo.EXEFile = "sonic2app_data.ini";
+					sa2ModInfo.DLLFile = "Data_DLL_data.ini";
+
+					// save our output
+					SA_Tools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
+					break;
+				default:
+					break;
+			}
+
+			// execute our post-build script
+			string projectSettingsPath = Path.Combine(projectFolder, "ProjectSettings.ini");
+
+			if (File.Exists(projectSettingsPath))
+			{
+				ProjectSettings projectSettings = SA_Tools.IniSerializer.Deserialize<ProjectSettings>(projectSettingsPath);
+
+				string storedEnvironmentDirectory = Environment.CurrentDirectory;
+
+				if (File.Exists(projectSettings.PostBuildScript))
 				{
-					ProjectSettings projectSettings = SA_Tools.IniSerializer.Deserialize<ProjectSettings>(projectSettingsPath);
+					System.Diagnostics.ProcessStartInfo procStartInfo =
+						new System.Diagnostics.ProcessStartInfo(projectSettings.PostBuildScript);
 
-					string storedEnvironmentDirectory = Environment.CurrentDirectory;
+					System.Diagnostics.Process process = System.Diagnostics.Process.Start(procStartInfo);
 
-					if (File.Exists(projectSettings.PostBuildScript))
+					while (!process.HasExited)
 					{
-						System.Diagnostics.ProcessStartInfo procStartInfo =
-							new System.Diagnostics.ProcessStartInfo(projectSettings.PostBuildScript);
-
-						System.Diagnostics.Process process = System.Diagnostics.Process.Start(procStartInfo);
-
-						while (!process.HasExited)
-						{
-							System.Threading.Thread.Sleep(100);
-						}
-
-						Environment.CurrentDirectory = storedEnvironmentDirectory;
+						System.Threading.Thread.Sleep(100);
 					}
+
+					Environment.CurrentDirectory = storedEnvironmentDirectory;
 				}
 			}
 		}
