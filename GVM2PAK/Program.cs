@@ -35,13 +35,13 @@ namespace GVM2PAK
 				{
 					if (PvrTexture.Is(filedata))
 					{
-						if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename, new MemoryStream(filedata)))
+						if (!AddTexture(pak, filenoext, longdir, false, inf, d3ddevice, filename.ToLowerInvariant(), new MemoryStream(filedata)))
 							continue;
 						goto end;
 					}
 					else if (GvrTexture.Is(filedata))
 					{
-						if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename, new MemoryStream(filedata)))
+						if (!AddTexture(pak, filenoext, longdir, true, inf, d3ddevice, filename.ToLowerInvariant(), new MemoryStream(filedata)))
 							continue;
 						goto end;
 					}
@@ -64,7 +64,7 @@ namespace GVM2PAK
 					ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
 					bool fail = false;
 					foreach (ArchiveEntry file in pvmentries)
-						if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name, file.Open()))
+						if (!AddTexture(pak, filenoext, longdir, gvm, inf, d3ddevice, file.Name.ToLowerInvariant(), file.Open()))
 						{
 							fail = true;
 							break;
