@@ -40,7 +40,7 @@ namespace SonicRetro.SAModel
 			Unknown1 = ByteConverter.ToInt32(file, address);
 			Unknown2 = ByteConverter.ToSingle(file, address + 4);
 			Unknown3 = ByteConverter.ToSingle(file, address + 8);
-			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt);
+			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt, labels);
 			Animation = NJS_MOTION.ReadHeader(file, (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase), imageBase, mfmt, labels);
 			Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
 		}
