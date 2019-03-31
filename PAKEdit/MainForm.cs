@@ -109,7 +109,7 @@ namespace PAKEdit
 				Stream tex = TextureLoader.SaveToStream(ImageFileFormat.Dds, Texture.FromBitmap(d3ddevice, item.Image, Usage.SoftwareProcessing, Pool.Managed));
 				byte[] tb = new byte[tex.Length];
 				tex.Read(tb, 0, tb.Length);
-				string name = item.Name;
+				string name = item.Name.ToLowerInvariant();
 				if (name.Length > 0x1C)
 					name = name.Substring(0, 0x1C);
 				pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
