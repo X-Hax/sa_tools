@@ -87,23 +87,44 @@ namespace ProjectManager
 
 			FluentCommandLineParser parser = new FluentCommandLineParser();
 			// parse main options
-			parser.Setup<CLIMode>('m', "mode").Callback(mode => startupArgs.mode = mode);
+			parser.Setup<CLIMode>('m', "mode").Callback((CLIMode mode) =>
+			{
+				startupArgs.mode = mode;
+			});
 
 			// parse split options
-			parser.Setup<string>('f', "FileToSplit").Callback(fileToSplit => startupArgs.filePath = fileToSplit);
-			parser.Setup<string>('d', "DataMappingFilePath").Callback(mappingPath => startupArgs.dataMappingPath = mappingPath);
-			parser.Setup<bool>('b', "BigEndian").Callback(bigEndian => startupArgs.isBigEndian = bigEndian);
-			parser.Setup<string>('o', "OutputFolder").Callback(folder => startupArgs.outputFolder = folder);
-			parser.Setup<List<string>>('a', "AnimationList").Callback(animationList => startupArgs.animationList = animationList.ToArray());
+			parser.Setup<string>('f', "FileToSplit").Callback((string fileToSplit) => { startupArgs.filePath = fileToSplit; });
+			parser.Setup<string>('o', "OutputFolder").Callback((string folder) => { startupArgs.outputFolder = folder; });
+			parser.Setup<string>('d', "DataMappingFilePath").Callback((string mappingPath) => { startupArgs.dataMappingPath = mappingPath; });
+			parser.Setup<bool>('b', "BigEndian").Callback((bool bigEndian) => { startupArgs.isBigEndian = bigEndian; });
+			parser.Setup<List<string>>('a', "AnimationList").Callback((List<string> animationList) => { startupArgs.animationList = animationList.ToArray(); });
 			//parser.Setup<bool>
 
 			// parse build options
-			parser.Setup<string>('p', "ProjectName").Callback(projectName => startupArgs.projectName = projectName);
-			parser.Setup<SA_Tools.Game>('g', "Game").Callback(game => startupArgs.game = game);
-			parser.Setup<bool>('r', "RunAfterBuild").Callback(runAfterbuild => startupArgs.runAfterBuild = runAfterbuild);
+			parser.Setup<string>('p', "ProjectName").Callback((string projectName) => { startupArgs.projectName = projectName; });
+			parser.Setup<SA_Tools.Game>('g', "Game").Callback((SA_Tools.Game game) => { startupArgs.game = game; });
+			parser.Setup<bool>('r', "RunAfterBuild").Callback((bool runAfterbuild) => { startupArgs.runAfterBuild = runAfterbuild; });
 
 			// do help
-			parser.SetupHelp("?", "help").Callback(text => Console.WriteLine(text));
+			parser.SetupHelp("?", "help").Callback((string text) =>
+			{
+				Console.WriteLine("Project Manager cmd line options:");
+				Console.WriteLine(text);
+				Console.WriteLine("NOTE: Not all of these options are valid in all contexts.");
+				Console.WriteLine("You must set Mode. To either Split, SplitMDL, or Build.");
+				Console.WriteLine("Split requires:");
+				Console.WriteLine("   FileToSplit: This is the file with the data you'd like to extract.");
+				Console.WriteLine("   DataMappingFilePath: This is the INI file that says where things are in the data file.");
+				Console.WriteLine("   OutputFolder: This is where the split data will be placed.");
+				Console.WriteLine();
+				Console.WriteLine("SplitMDL requires everything Split does but also:");
+				Console.WriteLine("   BigEndian: true/false. States whether or not the file is big endian.");
+				Console.WriteLine("   AnimationList: (optional) a list of SAAnimation files to use. Paths are relative to the mdl file.");
+				Console.WriteLine("Build requires:");
+				Console.WriteLine("   ProjectName: name of the project to build.");
+				Console.WriteLine("   Game: Game the project is for. Valid values are SADXPC and SA2B");
+				Console.WriteLine("   RunAfterBuild: true/false. Whether or not to start the game and load the mod after build is complete");
+			});
 
 			parser.Parse(args);
 				
@@ -145,29 +166,58 @@ namespace ProjectManager
 			return 0;
 		}
 
-		private static int CLISplit(StartupArgs args)
+		private static int CLISplit(StartupArgs startupArgs)
 		{
-			Environment.CurrentDirectory = Path.GetDirectoryName(args.dataMappingPath);
-
-			if (!File.Exists(args.filePath))
+			bool envSwitchError = false;
+			try
 			{
-				Console.WriteLine(args.filePath + " not found. Aborting.");
+				Environment.CurrentDirectory = Path.GetDirectoryName(startupArgs.dataMappingPath);
+			}
+			catch(System.ArgumentException e)
+			{
+				envSwitchError = true;
+				Console.WriteLine(string.Format("{0} was an invalid data mapping path", startupArgs.dataMappingPath));
+			}
+			catch(System.IO.DirectoryNotFoundException nullEx)
+			{
+				envSwitchError = true;
+				Console.WriteLine(string.Format("Path to data mappilg file {0} did not exist", startupArgs.dataMappingPath));
+			}
+
+			if(envSwitchError)
+			{
+				Console.WriteLine("Press any key to exit.");
+				Console.ReadLine();
+
+				return (int)ERRORVALUE.InvalidDataMapping;
+			}
+
+			if (!File.Exists(startupArgs.filePath))
+			{
+				Console.WriteLine(startupArgs.filePath + " not found. Aborting.");
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
 				return (int)ERRORVALUE.NoSourceFile;
 			}
 
-			if (!File.Exists(args.dataMappingPath))
+			if (!File.Exists(startupArgs.dataMappingPath))
 			{
-				Console.WriteLine(args.dataMappingPath + " not found. Aborting.");
+				Console.WriteLine(startupArgs.dataMappingPath + " not found. Aborting.");
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
 				return (int)ERRORVALUE.NoDataMapping;
 			}
 
-			if (!Directory.Exists(args.outputFolder))
+			// check our output folder's last character for validity. Modify it if need be so that sub folders do not get created.
+			char outputPathfinalChar = startupArgs.outputFolder[startupArgs.outputFolder.Length - 1];
+			if (outputPathfinalChar != System.IO.Path.DirectorySeparatorChar && outputPathfinalChar != System.IO.Path.AltDirectorySeparatorChar)
+			{
+				startupArgs.outputFolder += System.IO.Path.DirectorySeparatorChar;
+			}
+
+			if (!Directory.Exists(startupArgs.outputFolder))
 			{
 				// try creating the directory
 				bool created = true;
@@ -175,7 +225,7 @@ namespace ProjectManager
 				try
 				{
 					// check to see if trailing charcter closes 
-					Directory.CreateDirectory(args.outputFolder);
+					Directory.CreateDirectory(startupArgs.outputFolder);
 				}
 				catch
 				{
@@ -193,10 +243,10 @@ namespace ProjectManager
 				}
 			}
 
-			System.IO.FileInfo fileInfo = new System.IO.FileInfo(args.filePath);
+			System.IO.FileInfo fileInfo = new System.IO.FileInfo(startupArgs.filePath);
 
-			return (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(args.filePath, args.dataMappingPath, args.outputFolder) :
-				Split.Split.SplitFile(args.filePath, args.dataMappingPath, args.outputFolder);
+			return (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder) :
+				Split.Split.SplitFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder);
 		}
 
 		private static void CLISplitMDL(StartupArgs args)
@@ -206,7 +256,9 @@ namespace ProjectManager
 
 		private static void CLIBuild(StartupArgs args)
 		{
-
+			Console.WriteLine("CLI Build is not yet implemented");
+			Console.WriteLine("Press any key to exit.");
+			Console.ReadLine();
 		}
 
 		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
