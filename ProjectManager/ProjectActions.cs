@@ -195,7 +195,7 @@ namespace ProjectManager
 				case SA_Tools.Game.SA2B:
 
 					// dll
-					assemblies.Add("Data_DLL", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+					assemblies.Add("Data_DLL_orig", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 
 					// exe
 					assemblies.Add("sonic2app", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
