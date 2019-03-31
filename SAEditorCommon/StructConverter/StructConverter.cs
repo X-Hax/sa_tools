@@ -147,73 +147,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 					}
 					break;
 					case "levelpathlist":
-					{
-						modified = false;
-						string[] hashes = item.Value.MD5Hash.Split(',');
-						if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
 						{
-							modified = true;
-							break;
-						}
-						for (int i = 0; i < hashes.Length; i++)
-						{
-							string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
-							if (!File.Exists(file))
+							modified = false;
+							Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
+							string[] hash1 = item.Value.MD5Hash.Split('|');
+							foreach (string hash in hash1)
 							{
-								modified = true;
-								break;
+								string[] hash2 = hash.Split(':');
+								hashes.Add(hash2[0], hash2[1].Split(','));
 							}
-							else if (HelperFunctions.FileHash(file) != hashes[i])
+							foreach (string dir in Directory.GetDirectories(item.Value.Filename))
 							{
-								modified = true;
-								break;
-							}
-						}
-					}
-					break;
-					case "pathlist":
-					{
-						modified = false;
-						Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
-						string[] hash1 = item.Value.MD5Hash.Split('|');
-						foreach (string hash in hash1)
-						{
-							string[] hash2 = hash.Split(':');
-							hashes.Add(hash2[0], hash2[1].Split(','));
-						}
-						foreach (string dir in Directory.GetDirectories(item.Value.Filename))
-						{
-							string name = new DirectoryInfo(dir).Name;
-							if (!hashes.ContainsKey(name))
-							{
-								modified = true;
-								break;
-							}
-						}
-						if (modified.Value)
-							break;
-						foreach (KeyValuePair<string, string[]> dirinfo in hashes)
-						{
-							string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
-							if (!Directory.Exists(dir))
-							{
-								modified = true;
-								break;
-							}
-							if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
-							{
-								modified = true;
-								break;
-							}
-							for (int i = 0; i < dirinfo.Value.Length; i++)
-							{
-								string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
-								if (!File.Exists(file))
-								{
-									modified = true;
-									break;
-								}
-								else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
+								string name = new DirectoryInfo(dir).Name;
+								if (!hashes.ContainsKey(name))
 								{
 									modified = true;
 									break;
@@ -221,8 +167,62 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 							if (modified.Value)
 								break;
+							foreach (KeyValuePair<string, string[]> dirinfo in hashes)
+							{
+								string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
+								if (!Directory.Exists(dir))
+								{
+									modified = true;
+									break;
+								}
+								if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
+								{
+									modified = true;
+									break;
+								}
+								for (int i = 0; i < dirinfo.Value.Length; i++)
+								{
+									string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									if (!File.Exists(file))
+									{
+										modified = true;
+										break;
+									}
+									else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
+									{
+										modified = true;
+										break;
+									}
+								}
+								if (modified.Value)
+									break;
+							}
 						}
-					}
+						break;
+					case "pathlist":
+						{
+							modified = false;
+							string[] hashes = item.Value.MD5Hash.Split(',');
+							if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
+							{
+								modified = true;
+								break;
+							}
+							for (int i = 0; i < hashes.Length; i++)
+							{
+								string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+								if (!File.Exists(file))
+								{
+									modified = true;
+									break;
+								}
+								else if (HelperFunctions.FileHash(file) != hashes[i])
+								{
+									modified = true;
+									break;
+								}
+							}
+						}
 					break;
 					case ("animindexlist"):
 						modified = false;
