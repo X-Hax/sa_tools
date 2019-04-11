@@ -583,7 +583,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 #endif
 
 #if !DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
+			return Path.GetDirectoryName(Application.ExecutablePath) + "/../objdefs/";
 #endif
 		}
 
