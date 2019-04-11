@@ -118,6 +118,7 @@
     <Compile Include="Mission\MissionTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Windy Valley\E E-103.cs" />
+    <Compile Include="Windy Valley\O BIGFLA.cs" />
     <Compile Include="Windy Valley\O BROCU.cs" />
     <Compile Include="Windy Valley\O BROOBJ.cs" />
     <Compile Include="Windy Valley\O GATE.cs" />
