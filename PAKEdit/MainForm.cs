@@ -51,7 +51,7 @@ namespace PAKEdit
 						sb.Append((char)inf[i + j]);
 					else
 						break;
-				byte[] dds = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+				byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
 				using (MemoryStream str = new MemoryStream(dds))
 				using (Texture tex = TextureLoader.FromStream(d3ddevice, str))
 				using (Stream bmp = TextureLoader.SaveToStream(ImageFileFormat.Png, tex))

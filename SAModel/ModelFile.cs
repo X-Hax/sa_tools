@@ -88,8 +88,15 @@ namespace SonicRetro.SAModel
 						animationFiles = new string[0];
 					string path = Path.GetDirectoryName(filename);
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
-					foreach (string item in animationFiles)
-						anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+					try
+					{
+						foreach (string item in animationFiles)
+							anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+					}
+					catch
+					{
+						anims.Clear();
+					}
 					Animations = anims.AsReadOnly();
 					if (version == 1)
 					{
@@ -109,8 +116,15 @@ namespace SonicRetro.SAModel
 						else
 							morphFiles = new string[0];
 						List<NJS_MOTION> morphs = new List<NJS_MOTION>();
-						foreach (string item in morphFiles)
-							morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
+						try
+						{
+							foreach (string item in morphFiles)
+								morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
+						}
+						catch
+						{
+							morphs.Clear();
+						}
 						Morphs = morphs.AsReadOnly();
 					}
 					else
@@ -246,12 +260,26 @@ namespace SonicRetro.SAModel
 				{
 					string path = Path.GetDirectoryName(filename);
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
-					foreach (string item in animationFiles)
-						anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+					try
+					{
+						foreach (string item in animationFiles)
+							anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+					}
+					catch
+					{
+						anims.Clear();
+					}
 					Animations = anims.AsReadOnly();
 					List<NJS_MOTION> morphs = new List<NJS_MOTION>();
-					foreach (string item in morphFiles)
-						morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
+					try
+					{
+						foreach (string item in morphFiles)
+							morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
+					}
+					catch
+					{
+						morphs.Clear();
+					}
 					Morphs = morphs.AsReadOnly();
 				}
 			}
