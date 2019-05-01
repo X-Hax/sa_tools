@@ -268,12 +268,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
 						{
 							case AssemblyType.Exe:
 								StructConverter.StructConverter.ExportINI((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
-									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + ".ini"));
+									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 								break;
 
 							case AssemblyType.DLL:
 								DLLModGenerator.DLLModGen.ExportINI((DLLModGenerator.DllIniData)assemblyIniFiles[assembly.Key],
-									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + ".ini"));
+									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 								break;
 
 							default:

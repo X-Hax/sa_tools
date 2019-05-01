@@ -289,7 +289,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 						for (int j = 0; j < list.Length; j++)
 						{
 							System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"));
-							fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), j.ToString(NumberFormatInfo.InvariantInfo)), true);
+							fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), true);
 						}
 						File.Copy(item.Value.Filename, Path.Combine(dstfol, item.Value.Filename), true);
 						break;
