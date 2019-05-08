@@ -306,7 +306,7 @@ namespace LevelConverter
 								Array.Copy(chunk.Vertices.ToArray(), 0, VertexBuffer, chunk.IndexOffset, chunk.Vertices.Count);
 								Array.Copy(chunk.Normals.ToArray(), 0, NormalBuffer, chunk.IndexOffset, chunk.Normals.Count);
 								if (chunk.Diffuse.Count > 0)
-									Array.Copy(chunk.Diffuse.ToArray(), 0, ColorBuffer, chunk.IndexOffset, chunk.Diffuse.Count);
+									Array.Copy(chunk.Diffuse.Cast<Color?>().ToArray(), 0, ColorBuffer, chunk.IndexOffset, chunk.Diffuse.Count);
 							}
 						NJS_MATERIAL material = new NJS_MATERIAL() { UseTexture = true };
 						int minVtx = int.MaxValue;
@@ -412,7 +412,7 @@ namespace LevelConverter
 											hasVertVColor = true;
 										List<Strip> strips = new List<Strip>(c2.StripCount);
 										List<UV> uvs = hasUV ? new List<UV>() : null;
-										List<Color> vcolors = hasVColor ? new List<Color>() : null;
+										List<Color> vcolors = hasVColor || hasVertVColor ? new List<Color>() : null;
 										foreach (PolyChunkStrip.Strip strip in c2.Strips)
 										{
 											minVtx = Math.Min(minVtx, strip.Indexes.Min());
