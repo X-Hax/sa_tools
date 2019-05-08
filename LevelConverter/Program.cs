@@ -289,6 +289,7 @@ namespace LevelConverter
 				case LandTableFormat.SA2:
 					Vertex[] VertexBuffer = new Vertex[0];
 					Vertex[] NormalBuffer = new Vertex[0];
+					Color?[] ColorBuffer = new Color?[0];
 					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach is ChunkAttach))
 					{
 						ChunkAttach cnkatt = (ChunkAttach)col.Model.Attach;
@@ -300,9 +301,12 @@ namespace LevelConverter
 								{
 									Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
 									Array.Resize(ref NormalBuffer, chunk.IndexOffset + chunk.VertexCount);
+									Array.Resize(ref ColorBuffer, chunk.IndexOffset + chunk.VertexCount);
 								}
 								Array.Copy(chunk.Vertices.ToArray(), 0, VertexBuffer, chunk.IndexOffset, chunk.Vertices.Count);
 								Array.Copy(chunk.Normals.ToArray(), 0, NormalBuffer, chunk.IndexOffset, chunk.Normals.Count);
+								if (chunk.Diffuse.Count > 0)
+									Array.Copy(chunk.Diffuse.ToArray(), 0, ColorBuffer, chunk.IndexOffset, chunk.Diffuse.Count);
 							}
 						NJS_MATERIAL material = new NJS_MATERIAL() { UseTexture = true };
 						int minVtx = int.MaxValue;
@@ -403,6 +407,9 @@ namespace LevelConverter
 												hasUV = true;
 												break;
 										}
+										bool hasVertVColor = false;
+										if (!hasVColor && c2.Strips.All(a => a.Indexes.All(b => ColorBuffer[b].HasValue)))
+											hasVertVColor = true;
 										List<Strip> strips = new List<Strip>(c2.StripCount);
 										List<UV> uvs = hasUV ? new List<UV>() : null;
 										List<Color> vcolors = hasVColor ? new List<Color>() : null;
@@ -415,11 +422,14 @@ namespace LevelConverter
 												uvs.AddRange(strip.UVs);
 											if (hasVColor)
 												vcolors.AddRange(strip.VColors);
+											else if (hasVertVColor)
+												foreach (short i in strip.Indexes)
+													vcolors.Add(ColorBuffer[i].Value);
 										}
-										NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
+										NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor || hasVertVColor);
 										if (hasUV)
 											uvs.CopyTo(mesh.UV);
-										if (hasVColor)
+										if (hasVColor || hasVertVColor)
 											vcolors.CopyTo(mesh.VColor);
 										mesh.MaterialID = (ushort)basatt.Material.Count;
 										basatt.Mesh.Add(mesh);
