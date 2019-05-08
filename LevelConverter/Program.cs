@@ -439,6 +439,7 @@ namespace LevelConverter
 						col.Model.Attach = basatt;
 					}
 					level.Anim = new List<GeoAnimData>();
+					level.Flags = level.TextureFileName != null ? 0xA : 2;
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
 					break;
 			}
