@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SonicRetro.SAModel.GC
@@ -13,12 +14,16 @@ namespace SonicRetro.SAModel.GC
 
 		public GCAttach()
 		{
+			Name = "gcattach_" + Extensions.GenerateIdentifier();
+
 			VertexData = new VertexData();
 			GeometryData = new GeometryData();
 		}
 
 		public GCAttach(byte[] file, int address, uint imageBase)
 		{
+			Name = "gcattach_" + Extensions.GenerateIdentifier();
+
 			// The struct is 36/0x24 bytes long.
 
 			VertexData = new VertexData();
@@ -37,7 +42,7 @@ namespace SonicRetro.SAModel.GC
 				                               ByteConverter.ToSingle(file, address + 28));
 			BoundingSphereRadius = ByteConverter.ToSingle(file, address + 32);
 
-			ReadVertexAttributes(file, vertex_attribute_offset, imageBase);
+			VertexData.Load(file, vertex_attribute_offset, imageBase);
 
 			if (opaque_geometry_count > 0)
 			{
@@ -118,246 +123,34 @@ namespace SonicRetro.SAModel.GC
 			File.WriteAllText(file_name, writer.ToString());
 		}
 
-		private void ReadVertexAttributes(byte[] file, uint address, uint imageBase)
-		{
-			VertexAttribute attrib = new VertexAttribute(file, address, imageBase);
-
-			while (attrib.Attribute != GXVertexAttribute.Null + 8)
-			{
-				object attrib_data = GetVertexData(file, attrib);
-				if (attrib_data != null)
-					VertexData.SetAttributeData(attrib.Attribute, attrib_data);
-
-				address += 16;
-				attrib = new VertexAttribute(file, address, imageBase);
-			}
-		}
-
-		private object GetVertexData(byte[] file, VertexAttribute attribute)
-		{
-			object attribute_data = null;
-
-			switch (attribute.Attribute)
-			{
-				case GXVertexAttribute.Position:
-					switch (attribute.ComponentCount)
-					{
-						case GXComponentCount.Position_XY:
-							attribute_data = LoadVec2Data(file, attribute);
-							break;
-						case GXComponentCount.Position_XYZ:
-							attribute_data = LoadVec3Data(file, attribute);
-							break;
-					}
-					break;
-				case GXVertexAttribute.Normal:
-					switch (attribute.ComponentCount)
-					{
-						case GXComponentCount.Normal_XYZ:
-							attribute_data = LoadVec3Data(file, attribute);
-							break;
-					}
-					break;
-				case GXVertexAttribute.Color0:
-				case GXVertexAttribute.Color1:
-					break;
-				case GXVertexAttribute.Tex0:
-				case GXVertexAttribute.Tex1:
-				case GXVertexAttribute.Tex2:
-				case GXVertexAttribute.Tex3:
-				case GXVertexAttribute.Tex4:
-				case GXVertexAttribute.Tex5:
-				case GXVertexAttribute.Tex6:
-				case GXVertexAttribute.Tex7:
-					switch (attribute.ComponentCount)
-					{
-						case GXComponentCount.TexCoord_S:
-							attribute_data = LoadSingleFloat(file, attribute);
-							break;
-						case GXComponentCount.TexCoord_ST:
-							attribute_data = LoadVec2Data(file, attribute);
-							break;
-					}
-					break;
-			}
-
-			return attribute_data;
-		}
-
-		private List<float> LoadSingleFloat(byte[] file, VertexAttribute attribute)
-		{
-			List<float> floatList = new List<float>();
-			int cur_address = attribute.DataOffset;
-
-			for (int i = 0; i < attribute.DataCount; i++)
-			{
-				switch (attribute.DataType)
-				{
-					case GXDataType.Unsigned8:
-						byte compu81 = file[cur_address];
-						float compu81Float = (float)compu81 / (float)(1 << attribute.FractionalBitCount);
-						floatList.Add(compu81Float);
-
-						cur_address++;
-						break;
-					case GXDataType.Signed8:
-						sbyte comps81 = (sbyte)file[cur_address];
-						float comps81Float = (float)comps81 / (float)(1 << attribute.FractionalBitCount);
-						floatList.Add(comps81Float);
-
-						cur_address++;
-						break;
-					case GXDataType.Unsigned16:
-						ushort compu161 = ByteConverter.ToUInt16(file, cur_address);
-						float compu161Float = (float)compu161 / (float)(1 << attribute.FractionalBitCount);
-						floatList.Add(compu161Float);
-
-						cur_address += 2;
-						break;
-					case GXDataType.Signed16:
-						short comps161 = ByteConverter.ToInt16(file, cur_address);
-						float comps161Float = (float)comps161 / (float)(1 << attribute.FractionalBitCount);
-						floatList.Add(comps161Float);
-
-						cur_address += 2;
-						break;
-					case GXDataType.Float32:
-						floatList.Add(ByteConverter.ToSingle(file, cur_address));
-
-						cur_address += 4;
-						break;
-				}
-			}
-
-			return floatList;
-		}
-
-		private List<Vector2> LoadVec2Data(byte[] file, VertexAttribute attribute)
-		{
-			List<Vector2> vec2List = new List<Vector2>();
-			int cur_address = attribute.DataOffset;
-
-			for (int i = 0; i < attribute.DataCount; i++)
-			{
-				switch (attribute.DataType)
-				{
-					case GXDataType.Unsigned8:
-						byte compu81 = file[cur_address];
-						byte compu82 = file[cur_address + 1];
-						float compu81Float = (float)compu81 / (float)(1 << attribute.FractionalBitCount);
-						float compu82Float = (float)compu82 / (float)(1 << attribute.FractionalBitCount);
-						vec2List.Add(new Vector2(compu81Float, compu82Float));
-
-						cur_address += 2;
-						break;
-					case GXDataType.Signed8:
-						sbyte comps81 = (sbyte)file[cur_address];
-						sbyte comps82 = (sbyte)file[cur_address + 1];
-						float comps81Float = (float)comps81 / (float)(1 << attribute.FractionalBitCount);
-						float comps82Float = (float)comps82 / (float)(1 << attribute.FractionalBitCount);
-						vec2List.Add(new Vector2(comps81Float, comps82Float));
-
-						cur_address += 2;
-						break;
-					case GXDataType.Unsigned16:
-						ushort compu161 = ByteConverter.ToUInt16(file, cur_address);
-						ushort compu162 = ByteConverter.ToUInt16(file, cur_address + 2);
-						float compu161Float = (float)compu161 / (float)(1 << attribute.FractionalBitCount);
-						float compu162Float = (float)compu162 / (float)(1 << attribute.FractionalBitCount);
-						vec2List.Add(new Vector2(compu161Float, compu162Float));
-
-						cur_address += 4;
-						break;
-					case GXDataType.Signed16:
-						short comps161 = ByteConverter.ToInt16(file, cur_address);
-						short comps162 = ByteConverter.ToInt16(file, cur_address + 2);
-						float comps161Float = (float)comps161 / (float)(1 << attribute.FractionalBitCount);
-						float comps162Float = (float)comps162 / (float)(1 << attribute.FractionalBitCount);
-						vec2List.Add(new Vector2(comps161Float, comps162Float));
-
-						cur_address += 4;
-						break;
-					case GXDataType.Float32:
-						vec2List.Add(new Vector2(ByteConverter.ToSingle(file, cur_address),
-							                     ByteConverter.ToSingle(file, cur_address + 4)));
-
-						cur_address += 8;
-						break;
-				}
-			}
-
-			return vec2List;
-		}
-
-		private List<Vector3> LoadVec3Data(byte[] file, VertexAttribute attribute)
-		{
-			List<Vector3> vec3List = new List<Vector3>();
-			int cur_address = attribute.DataOffset;
-
-			for (int i = 0; i < attribute.DataCount; i++)
-			{
-				switch (attribute.DataType)
-				{
-					case GXDataType.Unsigned8:
-						byte compu81 = file[cur_address];
-						byte compu82 = file[cur_address + 1];
-						byte compu83 = file[cur_address + 2];
-						float compu81Float = (float)compu81 / (float)(1 << attribute.FractionalBitCount);
-						float compu82Float = (float)compu82 / (float)(1 << attribute.FractionalBitCount);
-						float compu83Float = (float)compu83 / (float)(1 << attribute.FractionalBitCount);
-						vec3List.Add(new Vector3(compu81Float, compu82Float, compu83Float));
-
-						cur_address += 3;
-						break;
-					case GXDataType.Signed8:
-						sbyte comps81 = (sbyte)file[cur_address];
-						sbyte comps82 = (sbyte)file[cur_address + 1];
-						sbyte comps83 = (sbyte)file[cur_address + 2];
-						float comps81Float = (float)comps81 / (float)(1 << attribute.FractionalBitCount);
-						float comps82Float = (float)comps82 / (float)(1 << attribute.FractionalBitCount);
-						float comps83Float = (float)comps83 / (float)(1 << attribute.FractionalBitCount);
-						vec3List.Add(new Vector3(comps81Float, comps82Float, comps83Float));
-
-						cur_address += 3;
-						break;
-					case GXDataType.Unsigned16:
-						ushort compu161 = ByteConverter.ToUInt16(file, cur_address);
-						ushort compu162 = ByteConverter.ToUInt16(file, cur_address + 2);
-						ushort compu163 = ByteConverter.ToUInt16(file, cur_address + 4);
-						float compu161Float = (float)compu161 / (float)(1 << attribute.FractionalBitCount);
-						float compu162Float = (float)compu162 / (float)(1 << attribute.FractionalBitCount);
-						float compu163Float = (float)compu163 / (float)(1 << attribute.FractionalBitCount);
-						vec3List.Add(new Vector3(compu161Float, compu162Float, compu163Float));
-
-						cur_address += 6;
-						break;
-					case GXDataType.Signed16:
-						short comps161 = ByteConverter.ToInt16(file, cur_address);
-						short comps162 = ByteConverter.ToInt16(file, cur_address + 2);
-						short comps163 = ByteConverter.ToInt16(file, cur_address + 4);
-						float comps161Float = (float)comps161 / (float)(1 << attribute.FractionalBitCount);
-						float comps162Float = (float)comps162 / (float)(1 << attribute.FractionalBitCount);
-						float comps163Float = (float)comps163 / (float)(1 << attribute.FractionalBitCount);
-						vec3List.Add(new Vector3(comps161Float, comps162Float, comps163Float));
-
-						cur_address += 6;
-						break;
-					case GXDataType.Float32:
-						vec3List.Add(new Vector3(ByteConverter.ToSingle(file, cur_address),
-							                     ByteConverter.ToSingle(file, cur_address + 4),
-												 ByteConverter.ToSingle(file, cur_address + 8)));
-
-						cur_address += 12;
-						break;
-				}
-			}
-
-			return vec3List;
-		}
-
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
-			throw new System.NotImplementedException();
+			byte[] output = new byte[1];
+
+			using (MemoryStream strm = new MemoryStream())
+			{
+				BinaryWriter gc_file = new BinaryWriter(strm);
+
+				gc_file.Write((int)0);
+				gc_file.Write((int)0);
+				gc_file.Write((int)0);
+				gc_file.Write((int)0);
+
+				gc_file.Write((short)GeometryData.OpaqueMeshes.Count);
+				gc_file.Write((short)GeometryData.TranslucentMeshes.Count);
+
+				gc_file.Write(BoundingSphereCenter.X);
+				gc_file.Write(BoundingSphereCenter.Y);
+				gc_file.Write(BoundingSphereCenter.Z);
+				gc_file.Write(BoundingSphereRadius);
+
+				VertexData.WriteVertexAttributes(gc_file, imageBase);
+
+				output = strm.ToArray();
+			}
+
+			address = (uint)output.Length;
+			return output;
 		}
 
 		public override string ToStruct(bool DX)
