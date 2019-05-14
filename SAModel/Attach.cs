@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using SonicRetro.SAModel.GC;
 
 namespace SonicRetro.SAModel
 {
@@ -28,6 +29,8 @@ namespace SonicRetro.SAModel
 					return 0x2C;
 				case ModelFormat.Chunk:
 					return 0x18;
+				case ModelFormat.GC:
+					return 0x24;
 			}
 			return -1;
 		}
@@ -41,6 +44,8 @@ namespace SonicRetro.SAModel
 					return new BasicAttach();
 				case ModelFormat.Chunk:
 					return new ChunkAttach();
+				case ModelFormat.GC:
+					return new GCAttach();
 			}
 			throw new ArgumentOutOfRangeException("format");
 		}
@@ -59,6 +64,8 @@ namespace SonicRetro.SAModel
 					return new BasicAttach(file, address, imageBase, format == ModelFormat.BasicDX, labels);
 				case ModelFormat.Chunk:
 					return new ChunkAttach(file, address, imageBase, labels);
+				case ModelFormat.GC:
+					return new GCAttach(file, address, imageBase);
 			}
 			throw new ArgumentOutOfRangeException("format");
 		}

@@ -88,7 +88,8 @@ namespace SonicRetro.SAModel
 	{
 		Basic,
 		BasicDX,
-		Chunk
+		Chunk,
+		GC
 	}
 
 	public enum ChunkType : byte

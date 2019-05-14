@@ -121,6 +121,18 @@ namespace ProjectManager.Split
 								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.Chunk);
 							}
 							break;
+						case "gcmodel":
+							{
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC);
+								string[] mdlanis = new string[0];
+								if (customProperties.ContainsKey("animations"))
+									mdlanis = customProperties["animations"].Split(',');
+								string[] mdlmorphs = new string[0];
+								if (customProperties.ContainsKey("morphs"))
+									mdlmorphs = customProperties["morphs"].Split(',');
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.GC);
+							}
+							break;
 						case "action":
 							{
 								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt);

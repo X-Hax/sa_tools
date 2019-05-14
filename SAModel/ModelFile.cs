@@ -432,6 +432,7 @@ namespace SonicRetro.SAModel
 					magic = SA1MDLVer;
 					break;
 				case ModelFormat.Chunk:
+				case ModelFormat.GC:
 					magic = SA2MDLVer;
 					break;
 				default:
