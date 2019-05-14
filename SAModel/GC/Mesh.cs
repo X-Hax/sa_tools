@@ -11,7 +11,7 @@ namespace SonicRetro.SAModel.GC
 		public List<Parameter> Parameters { get; private set; }
 		public List<Primitive> Primitives { get; private set; }
 
-		public Mesh(byte[] file, int address, uint imageBase)
+		public Mesh(byte[] file, int address, uint imageBase, IndexAttributeParameter index = null)
 		{
 			Parameters = new List<Parameter>();
 			Primitives = new List<Primitive>();
@@ -23,7 +23,14 @@ namespace SonicRetro.SAModel.GC
 			int primitives_size = ByteConverter.ToInt32(file, address + 12);
 
 			ReadParameters(file, parameters_offset, parameters_count);
-			ReadPrimitives(file, primitives_offset, primitives_size);
+
+			IndexAttributeParameter index_param = (IndexAttributeParameter)Parameters.Find(x => x.ParameterType == ParameterType.IndexAttributeFlags);
+			if (index_param == null)
+			{
+				index_param = index;
+			}
+
+			ReadPrimitives(file, primitives_offset, primitives_size, index_param);
 		}
 
 		private void ReadParameters(byte[] file, int address, int count)
@@ -43,22 +50,24 @@ namespace SonicRetro.SAModel.GC
 			}
 		}
 
-		private void ReadPrimitives(byte[] file, int address, int size)
+		private void ReadPrimitives(byte[] file, int address, int size, IndexAttributeParameter index_parameter)
 		{
 			int end_pos = address + size;
-			IndexAttributeParameter index_parameter = (IndexAttributeParameter)Parameters.Find(x => x.ParameterType == ParameterType.IndexAttributeFlags);
 
 			while (address < end_pos)
 			{
+				if (file[address] == 0)
+				{
+					address++;
+					continue;
+				}
+
 				Primitive prim = new Primitive((GXPrimitiveType)file[address]);
 
 				short raw_index_count = ByteConverter.ToInt16(file, address + 1);
 				byte[] raw_index_bytes = ByteConverter.GetBytes(raw_index_count);
 
 				int real_index_count = ByteConverter.ToInt16(new byte[] { raw_index_bytes[1], raw_index_bytes[0] }, 0);
-
-				if (real_index_count == 0)
-					break;
 
 				address += 3;
 
@@ -76,6 +85,12 @@ namespace SonicRetro.SAModel.GC
 					{
 						vert.NormalIndex = index_parameter.IndexAttributes.HasFlag(
 							IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex) ?
+							ByteConverter.ToInt16(file, address += 2) : file[address++];
+					}
+					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasColor))
+					{
+						vert.Color0Index = index_parameter.IndexAttributes.HasFlag(
+							IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex) ?
 							ByteConverter.ToInt16(file, address += 2) : file[address++];
 					}
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasUV))

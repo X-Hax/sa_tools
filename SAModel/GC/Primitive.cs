@@ -10,6 +10,7 @@ namespace SonicRetro.SAModel.GC
 	{
 		public int PositionIndex { get; set; }
 		public int NormalIndex { get; set; }
+		public int Color0Index { get; set; }
 		public int UVIndex { get; set; }
 	}
 

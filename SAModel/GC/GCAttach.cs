@@ -24,7 +24,7 @@ namespace SonicRetro.SAModel.GC
 			VertexData = new VertexData();
 			GeometryData = new GeometryData();
 
-			int vertex_attribute_offset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
+			uint vertex_attribute_offset = ByteConverter.ToUInt32(file, address) - imageBase;
 			int unknown_1 = ByteConverter.ToInt32(file, address + 4);
 			int opaque_geometry_data_offset = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			int translucent_geometry_data_offset = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
@@ -81,8 +81,11 @@ namespace SonicRetro.SAModel.GC
 				}
 			}
 
+			int mesh_index = 0;
+
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
+				writer.WriteLine($"o mesh_{ mesh_index++ }");
 				foreach (Primitive p in m.Primitives)
 				{
 					List<Vertex> triangles = p.ToTriangles();
@@ -91,7 +94,8 @@ namespace SonicRetro.SAModel.GC
 
 					for (int i = 0; i < triangles.Count; i += 3)
 					{
-						writer.WriteLine($"f {triangles[i].PositionIndex + 1} {triangles[i + 1].PositionIndex + 1} {triangles[i + 2].PositionIndex + 1}");
+						writer.Write($"f {triangles[i].PositionIndex + 1}/{triangles[i].UVIndex + 1} {triangles[i + 1].PositionIndex + 1}/{triangles[i + 1].UVIndex + 1} {triangles[i + 2].PositionIndex + 1}/{triangles[i + 2].UVIndex + 1}");
+						writer.WriteLine();
 					}
 				}
 			}
@@ -114,7 +118,7 @@ namespace SonicRetro.SAModel.GC
 			File.WriteAllText(file_name, writer.ToString());
 		}
 
-		private void ReadVertexAttributes(byte[] file, int address, uint imageBase)
+		private void ReadVertexAttributes(byte[] file, uint address, uint imageBase)
 		{
 			VertexAttribute attrib = new VertexAttribute(file, address, imageBase);
 

@@ -10,10 +10,12 @@ namespace SonicRetro.SAModel
 	{
 		public const ulong SA1MDL = 0x4C444D314153u;
 		public const ulong SA2MDL = 0x4C444D324153u;
+		public const ulong SA2BMDL = 0x4C444D42324153u;
 		public const ulong FormatMask = 0xFFFFFFFFFFFFu;
 		public const ulong CurrentVersion = 3;
 		public const ulong SA1MDLVer = SA1MDL | (CurrentVersion << 56);
 		public const ulong SA2MDLVer = SA2MDL | (CurrentVersion << 56);
+		public const ulong SA2BMDLVer = SA2BMDL | (CurrentVersion << 56);
 
 		public ModelFormat Format { get; private set; }
 		public NJS_OBJECT Model { get; private set; }
@@ -432,8 +434,10 @@ namespace SonicRetro.SAModel
 					magic = SA1MDLVer;
 					break;
 				case ModelFormat.Chunk:
-				case ModelFormat.GC:
 					magic = SA2MDLVer;
+					break;
+				case ModelFormat.GC:
+					magic = SA2BMDLVer;
 					break;
 				default:
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");

@@ -17,6 +17,8 @@ namespace SonicRetro.SAModel.GC
 		public List<Mesh> OpaqueMeshes { get; private set; }
 		public List<Mesh> TranslucentMeshes { get; private set; }
 
+		private IndexAttributeParameter cur_attributes;
+
 		public GeometryData()
 		{
 			OpaqueMeshes = new List<Mesh>();
@@ -27,7 +29,12 @@ namespace SonicRetro.SAModel.GC
 		{
 			for (int i = 0; i < count; i++)
 			{
-				Mesh new_mesh = new Mesh(file, address, imageBase);
+				Mesh new_mesh = new Mesh(file, address, imageBase, cur_attributes);
+
+				if (cur_attributes == null)
+				{
+					cur_attributes = (IndexAttributeParameter)new_mesh.Parameters.Find(x => x.ParameterType == ParameterType.IndexAttributeFlags);
+				}
 
 				if (geometry_type == GeometryType.Translucent)
 				{
