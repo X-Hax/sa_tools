@@ -88,8 +88,8 @@ namespace SonicRetro.SAModel
 			children = new List<NJS_OBJECT>();
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
-
-		void AssimpLoad(Scene scene, Node node)
+		//
+		void AssimpLoad(Scene scene, Node node, string[] textures = null)
 		{
 			Name = node.Name;
 			Vector3D translation;
@@ -97,29 +97,61 @@ namespace SonicRetro.SAModel
 			Quaternion rotation;
 			node.Transform.Decompose(out scaling, out rotation, out translation);
 			Vector3D rotationConverted = Extensions.FromQ2(rotation);
-			Position = new Vertex(translation.X, -translation.Z, translation.Y);
-			Rotation = new Rotation((int)(rotationConverted.X * 65536.0 / (2 * Math.PI)), -(int)(rotationConverted.Z * 65536.0 / (2 * Math.PI)), (int)(rotationConverted.Y * 65536.0 / (2 * Math.PI)));
-			Scale = new Vertex(scaling.X, -scaling.Z, scaling.Y);
+			Position = new Vertex(translation.X, translation.Y, translation.Z);
+			Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
+			Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 			List<Mesh> meshes = new List<Mesh>();
 			foreach (int i in node.MeshIndices)
 				meshes.Add(scene.Meshes[i]);
-			List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>(scene.Materials.Select(a => new NJS_MATERIAL(a)));
 			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
 			if (node.HasMeshes)
-				Attach = new BasicAttach(materials, meshes);
-			else Attach = null;
+				Attach = new BasicAttach(scene.Materials, meshes, textures);
+			else
+				Attach = null;
 			if (node.HasChildren)
 			{
-				List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a)));
+
+				//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
+				List<NJS_OBJECT> list = new List<NJS_OBJECT>();
+				foreach(Node n in node.Children)
+				{
+					NJS_OBJECT t = new NJS_OBJECT(scene, n, this, textures);
+					//HACK: workaround for those weird empty nodes created by most 3d editors
+					if (n.Name == "")
+					{
+						t.Children[0].Position = t.Position;
+						t.Children[0].Rotation = t.Rotation;
+						t.Children[0].Scale = t.Scale;
+						list.Add(t.Children[0]);
+					}
+					else
+						list.Add(t);
+					/*if (Parent != null)
+					{
+						if (t.Attach != null)
+						{
+							Parent.Attach = t.Attach;
+							if (Parent.children != null && t.children.Count > 0)
+								Parent.children.AddRange(t.children);
+						}
+						else
+							list.Add(t);
+					}*/
+
+				}
 				Children = new ReadOnlyCollection<NJS_OBJECT>(list.ToArray());
 			}
 			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
 		}
-		public NJS_OBJECT(Scene scene, Node node)
+		public NJS_OBJECT(Scene scene, Node node, NJS_OBJECT parent, string[] textures = null)
 		{
-			AssimpLoad(scene, node);
+			Parent = parent;
+			AssimpLoad(scene, node, textures);
 		}
-
+		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene,node,null, textures)
+		{
+			
+		}
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
 		{ }

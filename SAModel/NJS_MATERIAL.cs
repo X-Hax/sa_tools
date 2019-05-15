@@ -174,12 +174,13 @@ namespace SonicRetro.SAModel
 
 		public NJS_MATERIAL(Material mat)
 		{
-			if(mat.HasColorDiffuse)
+			if (mat.HasColorDiffuse)
 				DiffuseColor = FromColor4D(mat.ColorDiffuse);
-			if(mat.HasColorSpecular)
+			if (mat.HasColorSpecular)
 				SpecularColor = FromColor4D(mat.ColorSpecular);
+			//if(mat.)
 			Exponent = mat.Shininess;
-
+			
 		}
 
 		/// <summary>
