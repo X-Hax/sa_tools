@@ -33,7 +33,7 @@ namespace SonicRetro.SAModel.GC
 			DataCount /= CalculateComponentSize();
 		}
 
-		private int CalculateComponentSize()
+		public int CalculateComponentSize()
 		{
 			int size = 0;
 			int num_components = 1;
