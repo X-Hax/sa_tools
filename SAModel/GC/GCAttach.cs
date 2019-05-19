@@ -372,7 +372,39 @@ namespace SonicRetro.SAModel.GC
 
 		public override void ProcessVertexData()
 		{
-			throw new System.NotImplementedException();
+			List<MeshInfo> meshInfo = new List<MeshInfo>();
+			foreach (Mesh m in GeometryData.OpaqueMeshes)
+			{
+				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
+				List<Poly> polys = new List<Poly>();
+				foreach (Primitive prim in m.Primitives)
+				{
+					Poly newPoly = null;
+					switch(prim.PrimitiveType)
+					{
+						case GXPrimitiveType.Triangles:
+							newPoly = new Triangle();
+							break;
+						case GXPrimitiveType.TriangleStrip:
+							newPoly = new Strip(prim.Vertices.Count, false);
+							break;
+					}
+
+					for (int i = 0; i < prim.Vertices.Count; i++)
+					{
+						newPoly.Indexes[i] = (ushort)vertData.Count;
+						vertData.Add(new SAModel.VertexData(
+							VertexData.Positions[prim.Vertices[i].PositionIndex],
+							VertexData.Normals[prim.Vertices[i].NormalIndex],
+							null,//hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+							null));//hasUV ? mesh.UV[currentstriptotal++] : null));
+					}
+					polys.Add(newPoly);
+				}
+				meshInfo.Add(new SAModel.MeshInfo(null, polys.ToArray(), vertData.ToArray(), false, false));
+			}
+				
+			MeshInfo = meshInfo.ToArray();
 		}
 
 		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)

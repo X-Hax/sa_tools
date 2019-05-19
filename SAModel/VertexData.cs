@@ -90,6 +90,14 @@ namespace SonicRetro.SAModel
 			UV = uv;
 		}
 
+		public VertexData(GC.Vector3 position, GC.Vector3 normal, Color? color, UV uv)
+		{
+			Position = new Vertex(position.X, position.Y, position.Z);
+			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
+			Color = color;
+			UV = uv;
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (obj is VertexData)
