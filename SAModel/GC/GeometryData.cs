@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,11 @@ namespace SonicRetro.SAModel.GC
 
 				address += 16;
 			}
+		}
+
+		public void WriteGeometryData(BinaryWriter writer, uint imageBase)
+		{
+
 		}
 	}
 }
