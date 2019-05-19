@@ -90,12 +90,13 @@ namespace SonicRetro.SAModel
 			UV = uv;
 		}
 
-		public VertexData(GC.Vector3 position, GC.Vector3 normal, Color? color, UV uv)
+		public VertexData(GC.Vector3 position, GC.Vector3 normal, GC.Color color, GC.Vector2 uv)
 		{
 			Position = new Vertex(position.X, position.Y, position.Z);
 			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
-			Color = color;
-			UV = uv;
+			Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.G), (int)(color.B), (int)(color.A));
+			//Color = color;
+			UV = new UV() { U = uv.X / 16.0f, V = uv.Y / 16.0f };
 		}
 
 		public override bool Equals(object obj)

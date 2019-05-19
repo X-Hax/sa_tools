@@ -58,4 +58,42 @@ namespace SonicRetro.SAModel.GC
 			IndexAttributes = (IndexAttributeFlags)ByteConverter.ToInt32(file, address);
 		}
 	}
+
+	public class AmbientColorParameter : Parameter
+	{
+		public System.Drawing.Color AmbientColor { get; private set; }
+		public AmbientColorParameter()
+		{
+			ParameterType = ParameterType.AmbientColor;
+		}
+		public override void Read(byte[] file, int address)
+		{
+			AmbientColor = System.Drawing.Color.FromArgb(ByteConverter.ToInt32(file, address));
+		}
+	}
+
+	public class TextureParameter : Parameter
+	{
+		[Flags]
+		public enum TileMode
+		{
+			WrapU = 1 << 0,
+			MirrorU = 1 << 1,
+			WrapV = 1 << 2,
+			MirrorV = 1 << 3,
+		}
+		public ushort TextureID { get; private set; }
+		public TileMode Tile { get; private set; }
+		public TextureParameter()
+		{
+			ParameterType = ParameterType.Texture;
+			TextureID = 0;
+			Tile = TileMode.WrapU | TileMode.WrapV;
+		}
+		public override void Read(byte[] file, int address)
+		{
+			TextureID = ByteConverter.ToUInt16(file, address);
+			Tile = (TileMode)ByteConverter.ToUInt16(file, address + 2);
+		}
+	}
 }

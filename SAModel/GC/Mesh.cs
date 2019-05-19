@@ -44,6 +44,17 @@ namespace SonicRetro.SAModel.GC
 						index_param.Read(file, address + 4);
 						Parameters.Add(index_param);
 						break;
+					case ParameterType.AmbientColor:
+						AmbientColorParameter ambient_param = new AmbientColorParameter();
+						ambient_param.Read(file, address + 4);
+						Parameters.Add(ambient_param);
+						break;
+					case ParameterType.Texture:
+						TextureParameter texture_param = new TextureParameter();
+						texture_param.Read(file, address + 4);
+						Parameters.Add(texture_param);
+						break;
+						
 				}
 
 				address += 8;

@@ -25,10 +25,10 @@ namespace SonicRetro.SAModel.SAMDL
 
 		static void TryReadRingModel()
 		{
-			byte[] exe = File.ReadAllBytes(@"D:\Steam\steamapps\common\Sonic Adventure 2\resource\gd_PC\DLL\Win32\Data_DLL_orig.dll");
+			//byte[] exe = File.ReadAllBytes(@"D:\Steam\steamapps\common\Sonic Adventure 2\resource\gd_PC\DLL\Win32\Data_DLL_orig.dll");
 
-			GCAttach test = new GCAttach(exe, 0xC61C8C, 0x10002000);
-			test.ExportOBJ(@"D:\Steam\steamapps\common\Sonic Adventure 2\ring.obj");
+			//GCAttach test = new GCAttach(exe, 0xC61C8C, 0x10002000);
+			//test.ExportOBJ(@"D:\Steam\steamapps\common\Sonic Adventure 2\ring.obj");
 		}
 	}
 }

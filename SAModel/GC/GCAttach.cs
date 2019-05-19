@@ -11,7 +11,7 @@ namespace SonicRetro.SAModel.GC
 
 		public Vector3 BoundingSphereCenter { get; private set; }
 		public float BoundingSphereRadius { get; private set; }
-
+		
 		public GCAttach()
 		{
 			Name = "gcattach_" + Extensions.GenerateIdentifier();
@@ -37,11 +37,14 @@ namespace SonicRetro.SAModel.GC
 			int opaque_geometry_count = ByteConverter.ToInt16(file, address + 16);
 			int translucent_geometry_count = ByteConverter.ToInt16(file, address + 18);
 
+			
 			BoundingSphereCenter = new Vector3(ByteConverter.ToSingle(file, address + 20),
 											   ByteConverter.ToSingle(file, address + 24),
 											   ByteConverter.ToSingle(file, address + 28));
 			BoundingSphereRadius = ByteConverter.ToSingle(file, address + 32);
-
+			Bounds = new BoundingSphere();
+			Bounds.Center = new SonicRetro.SAModel.Vertex(BoundingSphereCenter.X, BoundingSphereCenter.Y, BoundingSphereCenter.Z);
+			Bounds.Radius = BoundingSphereRadius;
 			VertexData.Load(file, vertex_attribute_offset, imageBase);
 
 			if (opaque_geometry_count > 0)
@@ -166,35 +169,63 @@ namespace SonicRetro.SAModel.GC
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
+			bool hasUV = VertexData.TexCoord_0 != null;
+			//bool hasVColor = VertexData.Color_0 != null;
+			bool hasVColor = false; //vcolor reading not added yet
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
+				NJS_MATERIAL material = new NJS_MATERIAL();
+				foreach(Parameter param in m.Parameters)
+				{
+					if(param.ParameterType == ParameterType.Texture)
+					{
+						TextureParameter tex = param as TextureParameter;
+						material.TextureID = tex.TextureID;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+							material.FlipU = true;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+							material.FlipV = true;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+							material.ClampU = true;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+							material.ClampV = true;
+					}
+				}
 				foreach (Primitive prim in m.Primitives)
 				{
-					Poly newPoly = null;
+					List<Poly> newPolys = new List<Poly>();
 					switch(prim.PrimitiveType)
 					{
 						case GXPrimitiveType.Triangles:
-							newPoly = new Triangle();
+							for(int i = 0; i < prim.Vertices.Count / 3; i++)
+							{
+								newPolys.Add(new Triangle());
+							}
 							break;
 						case GXPrimitiveType.TriangleStrip:
-							newPoly = new Strip(prim.Vertices.Count, false);
+							newPolys.Add(new Strip(prim.Vertices.Count, false));
 							break;
 					}
 
 					for (int i = 0; i < prim.Vertices.Count; i++)
 					{
-						newPoly.Indexes[i] = (ushort)vertData.Count;
+						if (prim.PrimitiveType == GXPrimitiveType.Triangles)
+						{
+							newPolys[i/3].Indexes[i % 3] = (ushort)vertData.Count;
+						}
+						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
+						
 						vertData.Add(new SAModel.VertexData(
 							VertexData.Positions[prim.Vertices[i].PositionIndex],
 							VertexData.Normals[prim.Vertices[i].NormalIndex],
-							null,//hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
-							null));//hasUV ? mesh.UV[currentstriptotal++] : null));
-					}
-					polys.Add(newPoly);
+							hasVColor ? VertexData.Color_0[prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+							hasUV ? VertexData.TexCoord_0[prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
 				}
-				meshInfo.Add(new SAModel.MeshInfo(null, polys.ToArray(), vertData.ToArray(), false, false));
+					polys.AddRange(newPolys);
+				}
+				meshInfo.Add(new SAModel.MeshInfo(material, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 			}
 
 			MeshInfo = meshInfo.ToArray();
