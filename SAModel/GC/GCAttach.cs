@@ -219,7 +219,7 @@ namespace SonicRetro.SAModel.GC
 						
 						vertData.Add(new SAModel.VertexData(
 							VertexData.Positions[prim.Vertices[i].PositionIndex],
-							VertexData.Normals[prim.Vertices[i].NormalIndex],
+							VertexData.Normals.Count > 0 ? VertexData.Normals[prim.Vertices[i].NormalIndex] : new Vector3(0,1,0),
 							hasVColor ? VertexData.Color_0[prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
 							hasUV ? VertexData.TexCoord_0[prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
 					}

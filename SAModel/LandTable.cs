@@ -121,6 +121,7 @@ namespace SonicRetro.SAModel
 					Unknown3 = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					short cnkcnt = ByteConverter.ToInt16(file, address + 2);
 					Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
 					COL = new List<COL>();
@@ -135,36 +136,6 @@ namespace SonicRetro.SAModel
 						for (int i = 0; i < colcnt; i++)
 						{
 							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt)));
-							tmpaddr += SAModel.COL.Size(format);
-						}
-					}
-					else
-						COLName = "collist_" + Extensions.GenerateIdentifier();
-					Anim = new List<GeoAnimData>();
-					AnimName = "animlist_" + Extensions.GenerateIdentifier();
-					tmpaddr = ByteConverter.ToInt32(file, address + 0x18);
-					if (tmpaddr != 0)
-					{
-						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-						TextureFileName = file.GetCString(tmpaddr, Encoding.ASCII);
-					}
-					TextureList = ByteConverter.ToUInt32(file, address + 0x1C);
-					break;
-				case LandTableFormat.SA2B:
-					short gccnt = ByteConverter.ToInt16(file, address + 2);
-					Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
-					COL = new List<COL>();
-					tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
-					if (tmpaddr != 0)
-					{
-						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-						if (labels.ContainsKey(tmpaddr))
-							COLName = labels[tmpaddr];
-						else
-							COLName = "collist_" + tmpaddr.ToString("X8");
-						for (int i = 0; i < colcnt; i++)
-						{
-							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, gccnt < 0 ? null : (bool?)(i >= gccnt)));
 							tmpaddr += SAModel.COL.Size(format);
 						}
 					}

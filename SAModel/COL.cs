@@ -69,7 +69,10 @@ namespace SonicRetro.SAModel
 						mfmt = ModelFormat.Chunk;
 					break;
 				case LandTableFormat.SA2B:
-					mfmt = ModelFormat.GC;
+					if (forceBasic.HasValue && forceBasic.Value)
+						mfmt = ModelFormat.Basic;
+					else
+						mfmt = ModelFormat.GC;
 					break;
 			}
 			switch (format)
