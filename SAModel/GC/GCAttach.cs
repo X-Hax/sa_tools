@@ -222,7 +222,7 @@ namespace SonicRetro.SAModel.GC
 							VertexData.Normals[prim.Vertices[i].NormalIndex],
 							hasVColor ? VertexData.Color_0[prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
 							hasUV ? VertexData.TexCoord_0[prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
-				}
+					}
 					polys.AddRange(newPolys);
 				}
 				meshInfo.Add(new SAModel.MeshInfo(material, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));

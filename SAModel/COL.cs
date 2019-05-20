@@ -28,6 +28,7 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SADX:
 					return 0x24;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					return 0x20;
 				default:
 					throw new ArgumentOutOfRangeException("format");
@@ -67,6 +68,9 @@ namespace SonicRetro.SAModel
 					else
 						mfmt = ModelFormat.Chunk;
 					break;
+				case LandTableFormat.SA2B:
+					mfmt = ModelFormat.GC;
+					break;
 			}
 			switch (format)
 			{
@@ -80,6 +84,7 @@ namespace SonicRetro.SAModel
 					Flags = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					Flags = ByteConverter.ToInt32(file, address + 0x1C);
 					if (!forceBasic.HasValue)
 						mfmt = Flags < 0 ? ModelFormat.Chunk : ModelFormat.Basic;

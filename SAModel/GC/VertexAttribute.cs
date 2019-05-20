@@ -63,11 +63,15 @@ namespace SonicRetro.SAModel.GC
 				case GXDataType.Unsigned16:
 				case GXDataType.Signed16:
 				case GXDataType.RGB565:
+				case GXDataType.RGBA4:
 					size = num_components * 2;
 					break;
 				case GXDataType.Float32:
 				case GXDataType.RGBA8:
 					size = num_components * 4;
+					break;
+				case GXDataType.RGB8:
+					size = num_components * 3;
 					break;
 			}
 
