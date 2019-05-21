@@ -8,6 +8,7 @@ namespace SonicRetro.SAModel.GC
 {
 	public enum ParameterType
 	{
+		VtxAttrFmt = 0,
 		IndexAttributeFlags = 1,
 		Lighting = 2,
 		BlendAlpha = 4,
@@ -23,6 +24,22 @@ namespace SonicRetro.SAModel.GC
 		public abstract void Read(byte[] file, int address);
 	}
 
+	public class VtxAttrFmtParameter : Parameter
+	{
+		public GXVertexAttribute VertexAttribute { get; private set; }
+		public GXDataType DataType { get; private set; }
+		public byte FractionBits { get; private set; }
+		public VtxAttrFmtParameter()
+		{
+			ParameterType = ParameterType.VtxAttrFmt;
+		}
+		public override void Read(byte[] file, int address)
+		{
+			FractionBits = file[0];
+			DataType = (GXDataType)();
+			VertexAttribute = (GXVertexAttribute)file[2];
+		}
+	}
 	public class IndexAttributeParameter : Parameter
 	{
 		[Flags]

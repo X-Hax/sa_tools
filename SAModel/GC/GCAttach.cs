@@ -165,7 +165,7 @@ namespace SonicRetro.SAModel.GC
 		{
 			throw new System.NotImplementedException();
 		}
-
+		NJS_MATERIAL lastMat = new NJS_MATERIAL();
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
@@ -176,21 +176,21 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				NJS_MATERIAL material = new NJS_MATERIAL();
+				
 				foreach(Parameter param in m.Parameters)
 				{
 					if(param.ParameterType == ParameterType.Texture)
 					{
 						TextureParameter tex = param as TextureParameter;
-						material.TextureID = tex.TextureID;
+						lastMat.TextureID = tex.TextureID;
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
-							material.FlipU = true;
+							lastMat.FlipU = true;
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
-							material.FlipV = true;
+							lastMat.FlipV = true;
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
-							material.ClampU = true;
+							lastMat.ClampU = true;
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
-							material.ClampV = true;
+							lastMat.ClampV = true;
 					}
 				}
 				foreach (Primitive prim in m.Primitives)
@@ -225,7 +225,7 @@ namespace SonicRetro.SAModel.GC
 					}
 					polys.AddRange(newPolys);
 				}
-				meshInfo.Add(new SAModel.MeshInfo(material, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				meshInfo.Add(new SAModel.MeshInfo(lastMat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 			}
 
 			MeshInfo = meshInfo.ToArray();

@@ -32,9 +32,10 @@ namespace SonicRetro.SAModel.GC
 			{
 				Mesh new_mesh = new Mesh(file, address, imageBase, cur_attributes);
 
-				if (cur_attributes == null)
+				IndexAttributeParameter param = (IndexAttributeParameter)new_mesh.Parameters.Find(x => x.ParameterType == ParameterType.IndexAttributeFlags);
+				if (param != null)
 				{
-					cur_attributes = (IndexAttributeParameter)new_mesh.Parameters.Find(x => x.ParameterType == ParameterType.IndexAttributeFlags);
+					cur_attributes = param;
 				}
 
 				if (geometry_type == GeometryType.Translucent)

@@ -39,6 +39,9 @@ namespace SonicRetro.SAModel.GC
 			{
 				switch ((ParameterType)ByteConverter.ToInt32(file, address))
 				{
+					case 0:
+						
+						break;
 					case ParameterType.IndexAttributeFlags:
 						IndexAttributeParameter index_param = new IndexAttributeParameter();
 						index_param.Read(file, address + 4);
@@ -91,6 +94,8 @@ namespace SonicRetro.SAModel.GC
 						vert.PositionIndex = index_parameter.IndexAttributes.HasFlag(
 							IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex) ?
 							ByteConverter.ToInt16(file, address += 2) : file[address++];
+						if (vert.PositionIndex == 0x901)
+							vert.PositionIndex = vert.PositionIndex; //debug breakpoint
 					}
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasNormal))
 					{
