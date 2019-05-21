@@ -197,7 +197,6 @@ namespace SonicRetro.SAModel.GC
 		{
 			throw new System.NotImplementedException();
 		}
-		NJS_MATERIAL lastMat = new NJS_MATERIAL();
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
@@ -208,23 +207,28 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				
-				foreach(Parameter param in m.Parameters)
+				NJS_MATERIAL cur_mat = new NJS_MATERIAL();
+
+				foreach (Parameter param in m.Parameters)
 				{
 					if(param.ParameterType == ParameterType.Texture)
 					{
 						TextureParameter tex = param as TextureParameter;
-						lastMat.TextureID = tex.TextureID;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
-							lastMat.FlipU = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
-							lastMat.FlipV = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
-							lastMat.ClampU = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
-							lastMat.ClampV = true;
+						cur_mat.TextureID = tex.TextureID;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+							cur_mat.FlipU = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+							cur_mat.FlipV = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+							cur_mat.ClampU = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+							cur_mat.ClampV = true;
+
+						cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+						cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
 					}
 				}
+
 				foreach (Primitive prim in m.Primitives)
 				{
 					List<Poly> newPolys = new List<Poly>();
@@ -257,7 +261,63 @@ namespace SonicRetro.SAModel.GC
 					}
 					polys.AddRange(newPolys);
 				}
-				meshInfo.Add(new SAModel.MeshInfo(lastMat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+			}
+			foreach (Mesh m in GeometryData.TranslucentMeshes)
+			{
+				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
+				List<Poly> polys = new List<Poly>();
+				NJS_MATERIAL cur_mat = new NJS_MATERIAL();
+
+				foreach (Parameter param in m.Parameters)
+				{
+					if (param.ParameterType == ParameterType.Texture)
+					{
+						TextureParameter tex = param as TextureParameter;
+						cur_mat.TextureID = tex.TextureID;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+							cur_mat.FlipU = true;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+							cur_mat.FlipV = true;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+							cur_mat.ClampU = false;
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+							cur_mat.ClampV = false;
+					}
+				}
+				foreach (Primitive prim in m.Primitives)
+				{
+					List<Poly> newPolys = new List<Poly>();
+					switch (prim.PrimitiveType)
+					{
+						case GXPrimitiveType.Triangles:
+							for (int i = 0; i < prim.Vertices.Count / 3; i++)
+							{
+								newPolys.Add(new Triangle());
+							}
+							break;
+						case GXPrimitiveType.TriangleStrip:
+							newPolys.Add(new Strip(prim.Vertices.Count, false));
+							break;
+					}
+
+					for (int i = 0; i < prim.Vertices.Count; i++)
+					{
+						if (prim.PrimitiveType == GXPrimitiveType.Triangles)
+						{
+							newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
+						}
+						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
+
+						vertData.Add(new SAModel.VertexData(
+							VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
+							hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+					}
+					polys.AddRange(newPolys);
+				}
+				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 			}
 
 			MeshInfo = meshInfo.ToArray();

@@ -321,7 +321,7 @@ namespace SonicRetro.SAModel.GC
 					case GXDataType.Unsigned16:
 						ushort compu161 = ByteConverter.ToUInt16(file, cur_address);
 						ushort compu162 = ByteConverter.ToUInt16(file, cur_address + 2);
-						float compu161Float = (float)compu161 / (float)(1 << attribute.FractionalBitCount);
+						float compu161Float = (float)compu162 / (float)(1 << attribute.FractionalBitCount);
 						float compu162Float = (float)compu162 / (float)(1 << attribute.FractionalBitCount);
 						vec2List.Add(new Vector2(compu161Float, compu162Float));
 
@@ -330,8 +330,8 @@ namespace SonicRetro.SAModel.GC
 					case GXDataType.Signed16:
 						short comps161 = ByteConverter.ToInt16(file, cur_address);
 						short comps162 = ByteConverter.ToInt16(file, cur_address + 2);
-						float comps161Float = (float)comps161 / (float)(1 << attribute.FractionalBitCount);
-						float comps162Float = (float)comps162 / (float)(1 << attribute.FractionalBitCount);
+						float comps161Float = (float)comps161 / 255f; //(float)(1 << (int)Math.Pow(2, attribute.FractionalBitCount));
+						float comps162Float = (float)comps162 / 255f; //(float)(1 << (int)Math.Pow(2, attribute.FractionalBitCount));
 						vec2List.Add(new Vector2(comps161Float, comps162Float));
 
 						cur_address += 4;
