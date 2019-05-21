@@ -8,10 +8,10 @@ namespace SonicRetro.SAModel.GC
 {
 	public class Vertex
 	{
-		public int PositionIndex { get; set; }
-		public int NormalIndex { get; set; }
-		public int Color0Index { get; set; }
-		public int UVIndex { get; set; }
+		public uint PositionIndex { get; set; }
+		public uint NormalIndex { get; set; }
+		public uint Color0Index { get; set; }
+		public uint UVIndex { get; set; }
 	}
 
 	public struct Primitive

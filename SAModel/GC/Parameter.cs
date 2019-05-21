@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.GC
 		public override void Read(byte[] file, int address)
 		{
 			FractionBits = file[0];
-			DataType = (GXDataType)();
+			DataType = (GXDataType)(0);
 			VertexAttribute = (GXVertexAttribute)file[2];
 		}
 	}

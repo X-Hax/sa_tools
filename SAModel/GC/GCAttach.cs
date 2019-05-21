@@ -102,8 +102,36 @@ namespace SonicRetro.SAModel.GC
 
 					for (int i = 0; i < triangles.Count; i += 3)
 					{
-						writer.Write($"f {triangles[i].PositionIndex + 1}/{triangles[i].UVIndex + 1} {triangles[i + 1].PositionIndex + 1}/{triangles[i + 1].UVIndex + 1} {triangles[i + 2].PositionIndex + 1}/{triangles[i + 2].UVIndex + 1}");
-						writer.WriteLine();
+						int pos_1 = (int)triangles[i].PositionIndex;
+						int pos_2 = (int)triangles[i + 1].PositionIndex;
+						int pos_3 = (int)triangles[i + 2].PositionIndex;
+
+						string empty = "";
+
+						int tex_1 = 0; int tex_2 = 0; int tex_3 = 0;
+						int nrm_1 = 0; int nrm_2 = 0; int nrm_3 = 0;
+
+						bool has_tex = VertexData.TexCoord_0.Count > 0;
+						bool has_nrm = VertexData.Normals.Count > 0;
+
+						if (has_tex)
+						{
+							tex_1 = (int)triangles[i].UVIndex;
+							tex_2 = (int)triangles[i + 1].UVIndex;
+							tex_3 = (int)triangles[i + 2].UVIndex;
+						}
+						if (has_nrm)
+						{
+							nrm_1 = (int)triangles[i].NormalIndex;
+							nrm_2 = (int)triangles[i + 1].NormalIndex;
+							nrm_3 = (int)triangles[i + 2].NormalIndex;
+						}
+
+						string v1 = $"{pos_1 + 1}{(has_tex ? "/" + tex_1.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_1.ToString() : empty)}";
+						string v2 = $"{pos_2 + 1}{(has_tex ? "/" + tex_2.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_2.ToString() : empty)}";
+						string v3 = $"{pos_3 + 1}{(has_tex ? "/" + tex_3.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_3.ToString() : empty)}";
+
+						writer.WriteLine($"f { v1 } { v2 } { v3 }");
 					}
 				}
 			}
@@ -118,7 +146,11 @@ namespace SonicRetro.SAModel.GC
 
 					for (int i = 0; i < triangles.Count; i += 3)
 					{
-						writer.WriteLine($"f {triangles[i].PositionIndex + 1} {triangles[i + 1].PositionIndex + 1} {triangles[i + 2].PositionIndex + 1}");
+						int pos_1 = (int)triangles[i].PositionIndex;
+						int pos_2 = (int)triangles[i + 1].PositionIndex;
+						int pos_3 = (int)triangles[i + 2].PositionIndex;
+
+						writer.WriteLine($"f {pos_1 + 1} {pos_2 + 1} {pos_3 + 1}");
 					}
 				}
 			}
@@ -216,12 +248,12 @@ namespace SonicRetro.SAModel.GC
 							newPolys[i/3].Indexes[i % 3] = (ushort)vertData.Count;
 						}
 						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
-						
+
 						vertData.Add(new SAModel.VertexData(
-							VertexData.Positions[prim.Vertices[i].PositionIndex],
-							VertexData.Normals.Count > 0 ? VertexData.Normals[prim.Vertices[i].NormalIndex] : new Vector3(0,1,0),
-							hasVColor ? VertexData.Color_0[prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-							hasUV ? VertexData.TexCoord_0[prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
+							VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0,1,0),
+							hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
 					}
 					polys.AddRange(newPolys);
 				}

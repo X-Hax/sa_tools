@@ -91,29 +91,87 @@ namespace SonicRetro.SAModel.GC
 
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasPosition))
 					{
-						vert.PositionIndex = index_parameter.IndexAttributes.HasFlag(
-							IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex) ?
-							ByteConverter.ToInt16(file, address += 2) : file[address++];
-						if (vert.PositionIndex == 0x901)
-							vert.PositionIndex = vert.PositionIndex; //debug breakpoint
+						bool is_16bit = index_parameter.IndexAttributes.HasFlag(
+							IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex);
+
+						ushort raw_pos_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							vert.PositionIndex = raw_pos_index;
+							address++;
+						}
+						else
+						{
+							byte[] pos_bytes = BitConverter.GetBytes(raw_pos_index);
+							Array.Reverse(pos_bytes);
+
+							vert.PositionIndex = BitConverter.ToUInt16(pos_bytes, 0);
+							address += 2;
+						}
 					}
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasNormal))
 					{
-						vert.NormalIndex = index_parameter.IndexAttributes.HasFlag(
-							IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex) ?
-							ByteConverter.ToInt16(file, address += 2) : file[address++];
+						bool is_16bit = index_parameter.IndexAttributes.HasFlag(
+							IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex);
+
+						ushort raw_nrm_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							vert.NormalIndex = raw_nrm_index;
+							address++;
+						}
+						else
+						{
+							byte[] nrm_bytes = BitConverter.GetBytes(raw_nrm_index);
+							Array.Reverse(nrm_bytes);
+
+							vert.Color0Index = BitConverter.ToUInt16(nrm_bytes, 0);
+							address += 2;
+						}
 					}
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasColor))
 					{
-						vert.Color0Index = index_parameter.IndexAttributes.HasFlag(
-							IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex) ?
-							ByteConverter.ToInt16(file, address += 2) : file[address++];
+						bool is_16bit = index_parameter.IndexAttributes.HasFlag(
+							IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex);
+
+						ushort raw_col_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							vert.Color0Index = raw_col_index;
+							address++;
+						}
+						else
+						{
+							byte[] col_bytes = BitConverter.GetBytes(raw_col_index);
+							Array.Reverse(col_bytes);
+
+							vert.Color0Index = BitConverter.ToUInt16(col_bytes, 0);
+							address += 2;
+						}
 					}
 					if (index_parameter.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasUV))
 					{
-						vert.UVIndex = index_parameter.IndexAttributes.HasFlag(
-							IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex) ?
-							ByteConverter.ToInt16(file, address += 2) : file[address++];
+						bool is_16bit = index_parameter.IndexAttributes.HasFlag(
+							IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex);
+
+						ushort raw_tex_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							vert.UVIndex = raw_tex_index;
+							address++;
+						}
+						else
+						{
+							byte[] tex_bytes = BitConverter.GetBytes(raw_tex_index);
+							Array.Reverse(tex_bytes);
+
+							vert.UVIndex = BitConverter.ToUInt16(tex_bytes, 0);
+							address += 2;
+						}
 					}
 
 					prim.Vertices.Add(vert);
