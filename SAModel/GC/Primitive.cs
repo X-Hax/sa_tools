@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,74 @@ namespace SonicRetro.SAModel.GC
 		{
 			PrimitiveType = type;
 			Vertices = new List<Vertex>();
+		}
+
+		public void Write(BinaryWriter writer, IndexAttributeParameter attribute_parameters)
+		{
+			writer.Write((byte)PrimitiveType);
+
+			byte[] big_endian_count = BitConverter.GetBytes((ushort)Vertices.Count);
+			Array.Reverse(big_endian_count);
+			writer.Write(big_endian_count);
+
+			bool has_color = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasColor);
+			bool has_normal = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasNormal);
+			bool has_uv = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.HasUV);
+
+			bool is_position_16bit = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex);
+			bool is_color_16bit = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex);
+			bool is_normal_16bit = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex);
+			bool is_uv_16bit = attribute_parameters.IndexAttributes.HasFlag(IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex);
+
+			foreach (Vertex v in Vertices)
+			{
+				// Position should always exist
+
+				if (is_position_16bit)
+				{
+					writer.Write((ushort)v.PositionIndex);
+				}
+				else
+				{
+					writer.Write((byte)v.PositionIndex);
+				}
+
+				if (has_normal)
+				{
+					if (is_normal_16bit)
+					{
+						writer.Write((ushort)v.NormalIndex);
+					}
+					else
+					{
+						writer.Write((byte)v.NormalIndex);
+					}
+				}
+
+				if (has_color)
+				{
+					if (is_color_16bit)
+					{
+						writer.Write((ushort)v.Color0Index);
+					}
+					else
+					{
+						writer.Write((byte)v.Color0Index);
+					}
+				}
+
+				if (has_uv)
+				{
+					if (is_uv_16bit)
+					{
+						writer.Write((ushort)v.UVIndex);
+					}
+					else
+					{
+						writer.Write((byte)v.UVIndex);
+					}
+				}
+			}
 		}
 
 		public List<Vertex> ToTriangles()

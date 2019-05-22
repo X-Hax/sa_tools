@@ -458,7 +458,7 @@ namespace SonicRetro.SAModel.GC
 				attrib_writer.Write((int)0);
 
 				writer.Seek(0, SeekOrigin.Begin);
-				writer.Write(writer.BaseStream.Length + imageBase);
+				writer.Write((int)(writer.BaseStream.Length + imageBase));
 				writer.Seek(0, SeekOrigin.End);
 
 				writer.Write(attributes.ToArray());

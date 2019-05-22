@@ -180,6 +180,7 @@ namespace SonicRetro.SAModel.GC
 				gc_file.Write(BoundingSphereRadius);
 
 				VertexData.WriteVertexAttributes(gc_file, imageBase);
+				GeometryData.WriteGeometryData(gc_file, imageBase);
 
 				output = strm.ToArray();
 			}
@@ -200,9 +201,8 @@ namespace SonicRetro.SAModel.GC
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
-			bool hasUV = VertexData.TexCoord_0 != null;
-			//bool hasVColor = VertexData.Color_0 != null;
-			bool hasVColor = false; //vcolor reading not added yet
+			bool hasUV = VertexData.TexCoord_0.Count != 0;
+			bool hasVColor = VertexData.Color_0.Count != 0;
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();

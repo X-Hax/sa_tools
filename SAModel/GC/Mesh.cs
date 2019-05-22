@@ -39,13 +39,25 @@ namespace SonicRetro.SAModel.GC
 			{
 				switch ((ParameterType)ByteConverter.ToInt32(file, address))
 				{
-					case 0:
-						
+					case ParameterType.VtxAttrFmt:
+						VtxAttrFmtParameter vtx_param = new VtxAttrFmtParameter();
+						vtx_param.Read(file, address + 4);
+						Parameters.Add(vtx_param);
 						break;
 					case ParameterType.IndexAttributeFlags:
 						IndexAttributeParameter index_param = new IndexAttributeParameter();
 						index_param.Read(file, address + 4);
 						Parameters.Add(index_param);
+						break;
+					case ParameterType.Lighting:
+						LightingParameter light_param = new LightingParameter();
+						light_param.Read(file, address + 4);
+						Parameters.Add(light_param);
+						break;
+					case ParameterType.BlendAlpha:
+						BlendAlphaParameter blend_param = new BlendAlphaParameter();
+						blend_param.Read(file, address + 4);
+						Parameters.Add(blend_param);
 						break;
 					case ParameterType.AmbientColor:
 						AmbientColorParameter ambient_param = new AmbientColorParameter();
@@ -57,7 +69,16 @@ namespace SonicRetro.SAModel.GC
 						texture_param.Read(file, address + 4);
 						Parameters.Add(texture_param);
 						break;
-						
+					case ParameterType.Unknown_9:
+						Unknown9Parameter unk9_param = new Unknown9Parameter();
+						unk9_param.Read(file, address + 4);
+						Parameters.Add(unk9_param);
+						break;
+					case ParameterType.MipMap:
+						MipMapParameter mip_param = new MipMapParameter();
+						mip_param.Read(file, address + 4);
+						Parameters.Add(mip_param);
+						break;
 				}
 
 				address += 8;
