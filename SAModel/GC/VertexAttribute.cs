@@ -46,11 +46,7 @@ namespace SonicRetro.SAModel.GC
 					break;
 				case GXComponentCount.Position_XYZ:
 				case GXComponentCount.Normal_XYZ:
-				case GXComponentCount.Color_RGB:
 					num_components = 3;
-					break;
-				case GXComponentCount.Color_RGBA:
-					num_components = 4;
 					break;
 			}
 
@@ -68,10 +64,9 @@ namespace SonicRetro.SAModel.GC
 					break;
 				case GXDataType.Float32:
 				case GXDataType.RGBA8:
-					size = num_components * 4;
-					break;
 				case GXDataType.RGB8:
-					size = num_components * 3;
+				case GXDataType.RGBX8:
+					size = num_components * 4;
 					break;
 			}
 

@@ -219,6 +219,7 @@ namespace SonicRetro.SAModel.GC
 					break;
 				case GXVertexAttribute.Color0:
 				case GXVertexAttribute.Color1:
+					attribute_data = LoadColorData(file, attribute);
 					break;
 				case GXVertexAttribute.Tex0:
 				case GXVertexAttribute.Tex1:
@@ -412,6 +413,75 @@ namespace SonicRetro.SAModel.GC
 			}
 
 			return vec3List;
+		}
+
+		private List<Color> LoadColorData(byte[] file, VertexAttribute attribute)
+		{
+			List<Color> colorList = new List<Color>();
+			int cur_address = attribute.DataOffset;
+
+			for (int i = 0; i < attribute.DataCount; i++)
+			{
+				switch (attribute.DataType)
+				{
+					case GXDataType.RGB565:
+						short colorShort = ByteConverter.ToInt16(file, cur_address);
+						int r5 = (colorShort & 0xF800) >> 11;
+						int g6 = (colorShort & 0x07E0) >> 5;
+						int b5 = (colorShort & 0x001F);
+						colorList.Add(new Color((float)r5 / 255.0f, (float)g6 / 255.0f, (float)b5 / 255.0f, 1.0f));
+
+						cur_address += 2;
+						break;
+					case GXDataType.RGB8:
+						byte r8 = file[cur_address];
+						byte g8 = file[cur_address + 1];
+						byte b8 = file[cur_address + 2];
+						colorList.Add(new Color((float)r8 / 255.0f, (float)g8 / 255.0f, (float)b8 / 255.0f, 1.0f));
+
+						cur_address += 4;
+						break;
+					case GXDataType.RGBX8:
+						byte rx8 = file[cur_address];
+						byte gx8 = file[cur_address + 1];
+						byte bx8 = file[cur_address + 2];
+
+						cur_address += 4;
+						colorList.Add(new Color((float)rx8 / 255.0f, (float)gx8 / 255.0f, (float)bx8 / 255.0f, 1.0f));
+						break;
+					case GXDataType.RGBA4:
+						short colorShortA = ByteConverter.ToInt16(file, cur_address);
+						int r4 = (colorShortA & 0xF000) >> 12;
+						int g4 = (colorShortA & 0x0F00) >> 8;
+						int b4 = (colorShortA & 0x00F0) >> 4;
+						int a4 = (colorShortA & 0x000F);
+
+						cur_address += 2;
+						colorList.Add(new Color((float)r4 / 255.0f, (float)g4 / 255.0f, (float)b4 / 255.0f, (float)a4 / 255.0f));
+						break;
+					case GXDataType.RGBA6:
+						int colorInt = ByteConverter.ToInt32(file, cur_address);
+						int r6 = (colorInt & 0xFC0000) >> 18;
+						int ga6 = (colorInt & 0x03F000) >> 12;
+						int b6 = (colorInt & 0x000FC0) >> 6;
+						int a6 = (colorInt & 0x00003F);
+						colorList.Add(new Color((float)r6 / 255.0f, (float)ga6 / 255.0f, (float)b6 / 255.0f, (float)a6 / 255.0f));
+
+						cur_address += 4;
+						break;
+					case GXDataType.RGBA8:
+						byte ra8 = file[cur_address];
+						byte ga8 = file[cur_address + 1];
+						byte ba8 = file[cur_address + 2];
+						byte aa8 = file[cur_address + 3];
+						colorList.Add(new Color((float)ra8, (float)ga8, (float)ba8, (float)aa8));
+
+						cur_address += 4;
+						break;
+				}
+			}
+
+			return colorList;
 		}
 
 		public void WriteVertexAttributes(BinaryWriter writer, uint imageBase)
