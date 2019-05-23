@@ -209,24 +209,31 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-
+				
 				foreach (Parameter param in m.Parameters)
 				{
 					if(param.ParameterType == ParameterType.Texture)
 					{
 						TextureParameter tex = param as TextureParameter;
 						cur_mat.TextureID = tex.TextureID;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
 							cur_mat.FlipU = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
 							cur_mat.FlipV = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
 							cur_mat.ClampU = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = true;
 
 						cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
 						cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+					}
+					else if (param.ParameterType == ParameterType.TexCoordGen)
+					{
+						TexCoordGenParameter gen = param as TexCoordGenParameter;
+						if (gen.TexGenSrc == GXTexGenSrc.Normal)
+							cur_mat.EnvironmentMap = true;
+						else cur_mat.EnvironmentMap = false; 
 					}
 				}
 
@@ -270,7 +277,7 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-
+				
 				foreach (Parameter param in m.Parameters)
 				{
 					if (param.ParameterType == ParameterType.Texture)
@@ -289,8 +296,9 @@ namespace SonicRetro.SAModel.GC
 					if(param.ParameterType == ParameterType.TexCoordGen)
 					{
 						TexCoordGenParameter gen = param as TexCoordGenParameter;
-						if (gen.TexGenSrc != GXTexGenSrc.Tex0)
+						if (gen.TexGenSrc == GXTexGenSrc.Normal)
 							cur_mat.EnvironmentMap = true;
+						else cur_mat.EnvironmentMap = false;
 					}
 				}
 				foreach (Primitive prim in m.Primitives)
