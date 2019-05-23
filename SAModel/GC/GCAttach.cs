@@ -197,7 +197,9 @@ namespace SonicRetro.SAModel.GC
 		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
 			throw new System.NotImplementedException();
-		}	
+		}
+
+		NJS_MATERIAL cur_mat = new NJS_MATERIAL();
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
@@ -207,7 +209,6 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				NJS_MATERIAL cur_mat = new NJS_MATERIAL();
 
 				foreach (Parameter param in m.Parameters)
 				{
@@ -262,13 +263,13 @@ namespace SonicRetro.SAModel.GC
 					polys.AddRange(newPolys);
 				}
 				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
 
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				NJS_MATERIAL cur_mat = new NJS_MATERIAL();
 
 				foreach (Parameter param in m.Parameters)
 				{
@@ -325,6 +326,7 @@ namespace SonicRetro.SAModel.GC
 					polys.AddRange(newPolys);
 				}
 				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
 
 			MeshInfo = meshInfo.ToArray();
