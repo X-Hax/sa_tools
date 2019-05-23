@@ -68,6 +68,9 @@ namespace SonicRetro.SAModel.GC
 				case GXDataType.RGBX8:
 					size = num_components * 4;
 					break;
+				default:
+					size = num_components * 4;
+					break;
 			}
 
 			return size;

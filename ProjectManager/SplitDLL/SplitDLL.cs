@@ -106,6 +106,23 @@ namespace ProjectManager.SplitDLL
 								}
 							}
 							break;
+						case "battlelandtable":
+							{
+								LandTable land = new LandTable(datafile, address, imageBase, LandTableFormat.SA2B) { Description = name };
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = land.Name
+								};
+								output.Items.Add(info);
+								if (!labels.Contains(land.Name))
+								{
+									land.SaveToFile(fileOutputPath, LandTableFormat.SA2B);
+									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
+									labels.AddRange(land.GetLabels());
+								}
+							}
+							break;
 						case "landtablearray":
 							for (int i = 0; i < data.Length; i++)
 							{
