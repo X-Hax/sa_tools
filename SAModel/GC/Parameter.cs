@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SonicRetro.SAModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -116,44 +117,101 @@ namespace SonicRetro.SAModel.GC
 
 	public class BlendAlphaParameter : Parameter
 	{
-		[Flags]
-		public enum BlendAlphaFlags : ushort
+		private int m_Data;
+
+		public AlphaInstruction SourceAlpha
 		{
-			Bit0 = 1 << 0,
-			Bit1 = 1 << 1,
-			Bit2 = 1 << 2,
-			Bit3 = 1 << 3,
-			Bit4 = 1 << 4,
-			Bit5 = 1 << 5,
-			Bit6 = 1 << 6,
-			Bit7 = 1 << 7,
-			Bit8 = 1 << 8,
-			Bit9 = 1 << 9,
-			Bit10 = 1 << 10,
-			Bit11 = 1 << 11,
-			Bit12 = 1 << 12,
-			Bit13 = 1 << 13,
-			UseAlpha = 1 << 14,
-			Bit15 = 1 << 15,
+			get
+			{
+				return GXToNJAlphaInstruction((GXBlendModeControl)((m_Data >> 11) & 7));
+			}
+			set
+			{
+				int inst = (int)NJtoGXBlendModeControl(value);
+				m_Data &= ~(7 << 11);
+				m_Data |= (inst & 7) << 11;
+			}
 		}
 
-		public BlendAlphaFlags BlendFlags { get; private set; }
+		public AlphaInstruction DestinationAlpha
+		{
+			get
+			{
+				return GXToNJAlphaInstruction((GXBlendModeControl)((m_Data >> 8) & 7));
+			}
+			set
+			{
+				int inst = (int)NJtoGXBlendModeControl(value);
+				m_Data &= ~(7 << 8);
+				m_Data |= (inst & 7) << 8;
+			}
+		}
 
 		public BlendAlphaParameter()
 		{
 			ParameterType = ParameterType.BlendAlpha;
+			m_Data = 0;
 		}
 
 		public override void Read(byte[] file, int address)
 		{
-			BlendFlags = (BlendAlphaFlags)ByteConverter.ToUInt16(file, address);
+			m_Data = ByteConverter.ToInt32(file, address);
 		}
 
 		public override void Write(BinaryWriter writer)
 		{
 			writer.Write((int)ParameterType);
-			writer.Write((ushort)BlendFlags);
-			writer.Write((short)0);
+			writer.Write(m_Data);
+		}
+
+		public static AlphaInstruction GXToNJAlphaInstruction(GXBlendModeControl gx)
+		{
+			switch (gx)
+			{
+				case GXBlendModeControl.SrcAlpha:
+					return AlphaInstruction.SourceAlpha;
+				case GXBlendModeControl.DstAlpha:
+					return AlphaInstruction.DestinationAlpha;
+				case GXBlendModeControl.InverseSrcAlpha:
+					return AlphaInstruction.InverseSourceAlpha;
+				case GXBlendModeControl.InverseDstAlpha:
+					return AlphaInstruction.InverseDestinationAlpha;
+				case GXBlendModeControl.SrcColor:
+					return AlphaInstruction.OtherColor;
+				case GXBlendModeControl.InverseSrcColor:
+					return AlphaInstruction.InverseOtherColor;
+				case GXBlendModeControl.One:
+					return AlphaInstruction.One;
+				case GXBlendModeControl.Zero:
+					return AlphaInstruction.Zero;
+			}
+
+			return AlphaInstruction.Zero;
+		}
+
+		public static GXBlendModeControl NJtoGXBlendModeControl(AlphaInstruction nj)
+		{
+			switch (nj)
+			{
+				case AlphaInstruction.SourceAlpha:
+					return GXBlendModeControl.SrcAlpha;
+				case AlphaInstruction.DestinationAlpha:
+					return GXBlendModeControl.DstAlpha;
+				case AlphaInstruction.InverseSourceAlpha:
+					return GXBlendModeControl.InverseSrcAlpha;
+				case AlphaInstruction.InverseDestinationAlpha:
+					return GXBlendModeControl.InverseDstAlpha;
+				case AlphaInstruction.OtherColor:
+					return GXBlendModeControl.SrcColor;
+				case AlphaInstruction.InverseOtherColor:
+					return GXBlendModeControl.InverseSrcColor;
+				case AlphaInstruction.One:
+					return GXBlendModeControl.One;
+				case AlphaInstruction.Zero:
+					return GXBlendModeControl.Zero;
+			}
+
+			return GXBlendModeControl.Zero;
 		}
 	}
 

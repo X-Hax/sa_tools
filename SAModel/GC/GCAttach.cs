@@ -235,6 +235,12 @@ namespace SonicRetro.SAModel.GC
 							cur_mat.EnvironmentMap = true;
 						else cur_mat.EnvironmentMap = false; 
 					}
+					else if (param.ParameterType == ParameterType.BlendAlpha)
+					{
+						BlendAlphaParameter blend = param as BlendAlphaParameter;
+						cur_mat.SourceAlpha = blend.SourceAlpha;
+						cur_mat.DestinationAlpha = blend.DestinationAlpha;
+					}
 				}
 
 				foreach (Primitive prim in m.Primitives)
@@ -269,6 +275,9 @@ namespace SonicRetro.SAModel.GC
 					}
 					polys.AddRange(newPolys);
 				}
+
+				cur_mat.UseAlpha = false;
+
 				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
@@ -293,12 +302,18 @@ namespace SonicRetro.SAModel.GC
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = false;
 					}
-					if(param.ParameterType == ParameterType.TexCoordGen)
+				    else if (param.ParameterType == ParameterType.TexCoordGen)
 					{
 						TexCoordGenParameter gen = param as TexCoordGenParameter;
 						if (gen.TexGenSrc == GXTexGenSrc.Normal)
 							cur_mat.EnvironmentMap = true;
 						else cur_mat.EnvironmentMap = false;
+					}
+					else if (param.ParameterType == ParameterType.BlendAlpha)
+					{
+						BlendAlphaParameter blend = param as BlendAlphaParameter;
+						cur_mat.SourceAlpha = blend.SourceAlpha;
+						cur_mat.DestinationAlpha = blend.DestinationAlpha;
 					}
 				}
 				foreach (Primitive prim in m.Primitives)
@@ -333,6 +348,9 @@ namespace SonicRetro.SAModel.GC
 					}
 					polys.AddRange(newPolys);
 				}
+
+				cur_mat.UseAlpha = true;
+
 				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
