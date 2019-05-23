@@ -16,7 +16,7 @@ namespace SonicRetro.SAModel.GC
 		AmbientColor = 5,
 		Texture = 8,
 		Unknown_9 = 9,
-		MipMap = 10,
+		TexCoordGen = 10,
 	}
 
 	public abstract class Parameter
@@ -236,18 +236,26 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
-	public class MipMapParameter : Parameter
+	public class TexCoordGenParameter : Parameter
 	{
 		public ushort Unknown1 { get; private set; }
 		public ushort Unknown2 { get; private set; }
-
-		public MipMapParameter()
+		public GXTexCoordID TexCoordID{ get; private set; }
+		public GXTexGenType TexGenType { get; private set; }
+		public GXTexGenSrc TexGenSrc { get; private set; }
+		public int MatrixIndex { get; private set; }
+		public TexCoordGenParameter()
 		{
-			ParameterType = ParameterType.MipMap;
+			ParameterType = ParameterType.TexCoordGen;
 		}
 
 		public override void Read(byte[] file, int address)
 		{
+			TexCoordID = (GXTexCoordID)file[2];
+			TexGenType = (GXTexGenType)(ByteConverter.ToUInt16(file, address) >> 12);
+			TexGenSrc = (GXTexGenSrc)((ByteConverter.ToUInt32(file, address) >> 4) & 0xFF);
+			MatrixIndex = 0x1E + (file[0] & 0xF) * 3;
+			//im just gonna keep this for now
 			Unknown1 = ByteConverter.ToUInt16(file, address);
 			Unknown2 = ByteConverter.ToUInt16(file, address + 2);
 		}

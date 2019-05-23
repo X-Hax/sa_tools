@@ -197,7 +197,7 @@ namespace SonicRetro.SAModel.GC
 		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
 			throw new System.NotImplementedException();
-		}
+		}	
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
@@ -263,6 +263,7 @@ namespace SonicRetro.SAModel.GC
 				}
 				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
 			}
+
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
@@ -283,6 +284,12 @@ namespace SonicRetro.SAModel.GC
 							cur_mat.ClampU = false;
 						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = false;
+					}
+					if(param.ParameterType == ParameterType.TexCoordGen)
+					{
+						TexCoordGenParameter gen = param as TexCoordGenParameter;
+						if (gen.TexGenSrc != GXTexGenSrc.Tex0)
+							cur_mat.EnvironmentMap = true;
 					}
 				}
 				foreach (Primitive prim in m.Primitives)

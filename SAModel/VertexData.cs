@@ -94,7 +94,12 @@ namespace SonicRetro.SAModel
 		{
 			Position = new Vertex(position.X, position.Y, position.Z);
 			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
-			Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.G), (int)(color.B), (int)(color.A));
+
+			//why does this work, i fed R in as A
+			//Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.G), (int)(color.B), (int)(color.A));
+			
+			Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.A), (int)(color.B), (int)(color.G));
+
 			//Color = color;
 			UV = new UV() { U = uv.X, V = uv.Y };
 		}

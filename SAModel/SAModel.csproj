@@ -59,6 +59,7 @@
     <Compile Include="GC\GXEnums\GXComponentCount.cs" />
     <Compile Include="GC\GXEnums\GXDataType.cs" />
     <Compile Include="GC\GXEnums\GXPrimitiveType.cs" />
+    <Compile Include="GC\GXEnums\GXTexCoord.cs" />
     <Compile Include="GC\GXEnums\GXVertexAttribute.cs" />
     <Compile Include="GC\GXEnums\VertexInputType.cs" />
     <Compile Include="GC\Mesh.cs" />

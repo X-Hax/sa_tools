@@ -74,8 +74,8 @@ namespace SonicRetro.SAModel.GC
 						unk9_param.Read(file, address + 4);
 						Parameters.Add(unk9_param);
 						break;
-					case ParameterType.MipMap:
-						MipMapParameter mip_param = new MipMapParameter();
+					case ParameterType.TexCoordGen:
+						TexCoordGenParameter mip_param = new TexCoordGenParameter();
 						mip_param.Read(file, address + 4);
 						Parameters.Add(mip_param);
 						break;
