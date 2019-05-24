@@ -185,7 +185,8 @@ namespace SonicRetro.SAModel.GC
 				output = strm.ToArray();
 			}
 
-			address = (uint)output.Length;
+			address = 0;
+			//labels.Add(Name, address + imageBase);
 			return output;
 		}
 
@@ -216,13 +217,13 @@ namespace SonicRetro.SAModel.GC
 					{
 						TextureParameter tex = param as TextureParameter;
 						cur_mat.TextureID = tex.TextureID;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
 							cur_mat.FlipU = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
 							cur_mat.FlipV = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
 							cur_mat.ClampU = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = true;
 
 						cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
@@ -293,13 +294,13 @@ namespace SonicRetro.SAModel.GC
 					{
 						TextureParameter tex = param as TextureParameter;
 						cur_mat.TextureID = tex.TextureID;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
 							cur_mat.FlipU = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
 							cur_mat.FlipV = true;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
 							cur_mat.ClampU = false;
-						if (tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = false;
 					}
 				    else if (param.ParameterType == ParameterType.TexCoordGen)

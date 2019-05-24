@@ -516,6 +516,22 @@ namespace SonicRetro.SAModel.GC
 								vec3nrm.Write(writer, v);
 							}
 							break;
+						case GXVertexAttribute.Color0:
+							attrib_writer.Write((int)(Color_0.Count * v.CalculateComponentSize()));
+
+							foreach (Color color in Color_0)
+							{
+								color.Write(writer, v);
+							}
+							break;
+						case GXVertexAttribute.Tex0:
+							attrib_writer.Write((int)(TexCoord_0.Count * v.CalculateComponentSize()));
+
+							foreach (Vector2 vec2tex in TexCoord_0)
+							{
+								vec2tex.Write(writer, v);
+							}
+							break;
 					}
 				}
 

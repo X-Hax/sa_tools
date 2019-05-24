@@ -113,6 +113,7 @@ namespace SonicRetro.SAModel
 					result.AddRange(ByteConverter.GetBytes(Unknown3));
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					result.AddRange(ByteConverter.GetBytes(modelptr));
 					result.AddRange(ByteConverter.GetBytes(Unknown2));
 					result.AddRange(ByteConverter.GetBytes(Unknown3));
