@@ -10,7 +10,7 @@ namespace SonicRetro.SAModel
 		public const ulong SA1LVL = 0x4C564C314153u;
 		public const ulong SA2LVL = 0x4C564C324153u;
 		public const ulong SA2BLVL = 0x4C564C42324153u;
-		public const ulong FormatMask = 0xFFFFFFFFFFFFu;
+		public const ulong FormatMask = 0xFFFFFFFFFFFFFFu;
 		public const ulong CurrentVersion = 3;
 		public const ulong SA1LVLVer = SA1LVL | (CurrentVersion << 56);
 		public const ulong SA2LVLVer = SA2LVL | (CurrentVersion << 56);
@@ -277,6 +277,17 @@ namespace SonicRetro.SAModel
 				ByteConverter.BigEndian = be;
 				return table;
 			}
+			if (magic == SA2BLVL)
+			{
+				LandTable table = new LandTable(file, ByteConverter.ToInt32(file, 8), 0, LandTableFormat.SA2B, labels)
+				{
+					Author = author,
+					Description = description,
+					Metadata = meta
+				};
+				ByteConverter.BigEndian = be;
+				return table;
+			}
 			ByteConverter.BigEndian = be;
 			throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
 		}
@@ -292,6 +303,7 @@ namespace SonicRetro.SAModel
 			{
 				case SA1LVL:
 				case SA2LVL:
+				case SA2BLVL:
 					return file[7] <= CurrentVersion;
 				default:
 					return false;
@@ -414,6 +426,7 @@ namespace SonicRetro.SAModel
 					result.AddRange(ByteConverter.GetBytes(Unknown3));
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					result.AddRange(ByteConverter.GetBytes((ushort)cnk.Count));
 					result.AddRange(new byte[8]); // TODO: figure out what these do
 					result.AddRange(ByteConverter.GetBytes(Unknown1));
@@ -575,6 +588,9 @@ namespace SonicRetro.SAModel
 					break;
 				case LandTableFormat.SA2:
 					magic = SA2LVLVer;
+					break;
+				case LandTableFormat.SA2B:
+					magic = SA2BLVLVer;
 					break;
 				default:
 					throw new ArgumentException("Cannot save " + format + " format levels to file!", "format");

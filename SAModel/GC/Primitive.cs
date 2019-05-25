@@ -49,7 +49,9 @@ namespace SonicRetro.SAModel.GC
 
 				if (is_position_16bit)
 				{
-					writer.Write((ushort)v.PositionIndex);
+					byte[] big_endian_pos = BitConverter.GetBytes((ushort)v.PositionIndex);
+					Array.Reverse(big_endian_pos);
+					writer.Write(big_endian_pos);
 				}
 				else
 				{
@@ -60,7 +62,9 @@ namespace SonicRetro.SAModel.GC
 				{
 					if (is_normal_16bit)
 					{
-						writer.Write((ushort)v.NormalIndex);
+						byte[] big_endian_nrm = BitConverter.GetBytes((ushort)v.NormalIndex);
+						Array.Reverse(big_endian_nrm);
+						writer.Write(big_endian_nrm);
 					}
 					else
 					{
@@ -72,7 +76,9 @@ namespace SonicRetro.SAModel.GC
 				{
 					if (is_color_16bit)
 					{
-						writer.Write((ushort)v.Color0Index);
+						byte[] big_endian_col = BitConverter.GetBytes((ushort)v.Color0Index);
+						Array.Reverse(big_endian_col);
+						writer.Write(big_endian_col);
 					}
 					else
 					{
@@ -84,7 +90,9 @@ namespace SonicRetro.SAModel.GC
 				{
 					if (is_uv_16bit)
 					{
-						writer.Write((ushort)v.UVIndex);
+						byte[] big_endian_uv = BitConverter.GetBytes((ushort)v.UVIndex);
+						Array.Reverse(big_endian_uv);
+						writer.Write(big_endian_uv);
 					}
 					else
 					{

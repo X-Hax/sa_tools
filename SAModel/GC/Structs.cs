@@ -77,8 +77,8 @@ namespace SonicRetro.SAModel.GC
 					writer.Write((ushort)(Y * (1 << attrib.FractionalBitCount)));
 					break;
 				case GXDataType.Signed16:
-					writer.Write((short)(X * (1 << attrib.FractionalBitCount)));
-					writer.Write((short)(Y * (1 << attrib.FractionalBitCount)));
+					writer.Write((short)(X * 255f)); //(1 << attrib.FractionalBitCount)));
+					writer.Write((short)(Y * 255f)); //(1 << attrib.FractionalBitCount)));
 					break;
 				case GXDataType.Unsigned8:
 					writer.Write((byte)(X * (1 << attrib.FractionalBitCount)));
@@ -105,6 +105,25 @@ namespace SonicRetro.SAModel.GC
 			G = g;
 			B = b;
 			A = a;
+		}
+
+		public void Write(BinaryWriter writer, VertexAttribute attrib)
+		{
+			switch (attrib.DataType)
+			{
+				case GXDataType.RGB8:
+					writer.Write((byte)R);
+					writer.Write((byte)G);
+					writer.Write((byte)B);
+					writer.Write((byte)255);
+					break;
+				case GXDataType.RGBA8:
+					writer.Write((byte)R);
+					writer.Write((byte)G);
+					writer.Write((byte)B);
+					writer.Write((byte)A);
+					break;
+			}
 		}
 	}
 }

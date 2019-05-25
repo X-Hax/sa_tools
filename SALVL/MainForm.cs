@@ -75,7 +75,7 @@ namespace SonicRetro.SAModel.SALVL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1lvl",
-				Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.exe;*.dll;*.bin;*.prs|All Files|*.*"
+				Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.sa2blvl;*.exe;*.dll;*.bin;*.prs|All Files|*.*"
 			};
 			if (a.ShowDialog(this) == DialogResult.OK)
 				LoadFile(a.FileName);
