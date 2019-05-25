@@ -1617,6 +1617,45 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
+		private void aSSIMPImportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NJS_OBJECT obj = selectedObject;
+			Assimp.AssimpContext context = new Assimp.AssimpContext();
+			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
+
+			using (OpenFileDialog a = new OpenFileDialog
+			{
+				DefaultExt = "fbx",
+				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					string objFileName = a.FileName;
+					Assimp.Scene scene = context.ImportFile(objFileName);
+					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
+					
+					editMaterialsToolStripMenuItem.Enabled = true;
+
+					model.ProcessVertexData();
+					NJS_OBJECT[] models = model.GetObjects();
+					meshes = new Mesh[models.Length];
+					for (int i = 0; i < models.Length; i++)
+						if (models[i].Attach != null)
+							try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+							catch { }
+					AddTreeNode(model, treeView1.Nodes);
+					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+					selectedObject = model;
+					SelectedItemChanged();
+
+					currentFileName = objFileName;
+
+					AddModelToLibrary(model, false);
+				}
+			}
+		}
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawEntireModel();

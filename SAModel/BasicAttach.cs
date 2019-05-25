@@ -129,7 +129,7 @@ namespace SonicRetro.SAModel
 			Name = "attach_" + Extensions.GenerateIdentifier();
 		}
 
-		public BasicAttach(List<NJS_MATERIAL> materials, List<Mesh> meshes)
+		public BasicAttach(List<Material> materials, List<Mesh> meshes, string[] textures = null)
 		{
 			Name = "attach_" + Extensions.GenerateIdentifier();
 			Bounds = new BoundingSphere();
@@ -142,23 +142,36 @@ namespace SonicRetro.SAModel
 			Normal = new Vertex[0];
 			NormalName = "normal_" + Extensions.GenerateIdentifier();
 
+		
 			List<Vertex> vertices = new List<Vertex>();
+			List<Vertex> normals = new List<Vertex>();
+			Dictionary<int, int> lookupMaterial = new Dictionary<int, int>();
 			foreach (Mesh m in meshes)
+			{
 				foreach (Vector3D ve in m.Vertices)
 				{
 					vertices.Add(new Vertex(ve.X, ve.Y, ve.Z));
 				}
-			Vertex = vertices.ToArray();
-
-			List<Vertex> normals = new List<Vertex>();
-			foreach (Mesh m in meshes)
 				foreach (Vector3D ve in m.Normals)
 				{
 					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
 				}
-			Normal = normals.ToArray();
+				lookupMaterial.Add(m.MaterialIndex, Material.Count);
+				Material.Add(new NJS_MATERIAL(materials[m.MaterialIndex]));
 
-			Material = materials;
+				if (materials[m.MaterialIndex].HasTextureDiffuse)
+				{
+					if (textures != null)
+					{
+						Material[Material.Count - 1].UseTexture = true;
+						for (int i = 0; i < textures.Length; i++) 
+							if (textures[i] == Path.GetFileNameWithoutExtension(materials[m.MaterialIndex].TextureDiffuse.FilePath))
+								Material[Material.Count - 1].TextureID = i;
+					}
+				}
+			}
+			Vertex = vertices.ToArray();
+			Normal = normals.ToArray();
 
 			int polyIndex = 0;
 			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
@@ -177,9 +190,9 @@ namespace SonicRetro.SAModel
 					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
 					polys.Add(triangle);
 				}
-				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), false); //hasVColor = meshes[i].HasVertexColors(0);
+				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
 				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
-				meshset.MaterialID = (ushort)meshes[i].MaterialIndex;
+				meshset.MaterialID = (ushort)lookupMaterial[meshes[i].MaterialIndex];
 
 				if (meshes[i].HasTextureCoords(0))
 				{
@@ -189,9 +202,15 @@ namespace SonicRetro.SAModel
 						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
 					}
 				}
-				
+
 				if (meshes[i].HasVertexColors(0))
-					throw new NotImplementedException();
+				{
+					meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+					for (int x = 0; x < meshes[i].VertexColorChannels[0].Count; x++)
+					{
+						meshset.VColor[x] = Color.FromArgb((int)(meshes[i].VertexColorChannels[0][x].A * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].R * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].G * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].B * 255.0f));
+					}
+				}
 				polyIndex += meshes[i].VertexCount;
 				meshsets.Add(meshset);//4B4834
 			}
