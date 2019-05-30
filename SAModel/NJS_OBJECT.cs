@@ -89,12 +89,17 @@ namespace SonicRetro.SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
-		public Node AssimpExport(Scene scene)
+		public Node AssimpExport(Scene scene, Node parent = null)
 		{
-			Node node = new Node(Name);
-			node.Metadata.Add("i dont know what this is now ", new Assimp.Metadata.Entry(Assimp.MetaDataType.Bool, false));
+			Node node = null;
+			if (parent == null)
+				node = new Node(Name);
+			else node = new Node(Name, parent);
+			
+			//TODO
 			node.Transform = Matrix4x4.Identity;
-			node.Transform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z)); //add rotation and Scale
+			node.Transform *= Matrix4x4.FromEulerAnglesXYZ(new Vector3D(Rotation.ZDeg, -Rotation.YDeg, Rotation.XDeg)); 
+			node.Transform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z)); 
 			node.Name = Name;
 			int startMeshIndex = scene.MeshCount;
 			if (Attach != null)
@@ -107,6 +112,11 @@ namespace SonicRetro.SAModel
 					for (int i = startMeshIndex; i < endMeshIndex; i++)
 						node.MeshIndices.Add(i);
 				}
+			}
+			if(Children != null)
+			{
+				foreach(NJS_OBJECT child in Children)
+					node.Children.Add(child.AssimpExport(scene, node));
 			}
 			return node;
 		}

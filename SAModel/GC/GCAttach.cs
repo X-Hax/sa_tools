@@ -202,7 +202,7 @@ namespace SonicRetro.SAModel.GC
 			throw new System.NotImplementedException();
 		}
 
-		public void AssimpExport(Scene scene)
+		public void AssimpExport(Scene scene, string[]  textures = null)
 		{
 			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 			bool hasUV = VertexData.TexCoord_0.Count != 0;
@@ -213,41 +213,74 @@ namespace SonicRetro.SAModel.GC
 				mesh.PrimitiveType = PrimitiveType.Triangle;
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
+
+				foreach(Parameter param in m.Parameters)
+				{
+					if (param.ParameterType == ParameterType.Texture)
+					{
+						TextureParameter tex = param as TextureParameter;
+						cur_mat.TextureID = tex.TextureID;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+							cur_mat.FlipU = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+							cur_mat.FlipV = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+							cur_mat.ClampU = true;
+						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+							cur_mat.ClampV = true;
+
+						cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+						cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+					}
+					else if (param.ParameterType == ParameterType.TexCoordGen)
+					{
+						TexCoordGenParameter gen = param as TexCoordGenParameter;
+						if (gen.TexGenSrc == GXTexGenSrc.Normal)
+							cur_mat.EnvironmentMap = true;
+						else cur_mat.EnvironmentMap = false;
+					}
+					else if (param.ParameterType == ParameterType.BlendAlpha)
+					{
+						BlendAlphaParameter blend = param as BlendAlphaParameter;
+						cur_mat.SourceAlpha = blend.SourceAlpha;
+						cur_mat.DestinationAlpha = blend.DestinationAlpha;
+					}
+				}
+
 				foreach (Primitive prim in m.Primitives)
 				{
-					Face newPoly = new Face();
-					List<Vertex> triangles = prim.ToTriangles();
-					for (int i = 0; i < triangles.Count; i++)
+					for (int i = 0; i < prim.ToTriangles().Count; i += 3)
 					{
-						
-						newPoly.Indices.Add((ushort)positions.Count);
-						
-						Vector3 vertex = VertexData.Positions[(int)triangles[i].PositionIndex];
-						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
-						if (VertexData.Normals.Count > 0)
+						Face newPoly = new Face();
+						newPoly.Indices.AddRange(new int[] { positions.Count + 2, positions.Count + 1, positions.Count });
+						for (int j = 0; j < 3; j++)
 						{
-							Vector3 normal = VertexData.Normals[(int)triangles[i].NormalIndex];
-							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+							Vector3 vertex = VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
+							positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
+							if (VertexData.Normals.Count > 0)
+							{
+								Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
+								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+							}
+							//implement VColor
+							if (hasVColor)
+							{
+								//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+							}
 						}
-						//implement VColor
-						if (hasVColor)
-						{
-							//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
-						}
-
 						//vertData.Add(new SAModel.VertexData(
 
 						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
 						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
 						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
 						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+						mesh.Faces.Add(newPoly);
 					}
-
-					mesh.Faces.Add(newPoly);
 				}
 				mesh.Vertices.AddRange(positions);
 				if (normals.Count > 0)
 					mesh.Normals.AddRange(normals);
+
 				meshes.Add(mesh);
 			}
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
@@ -258,34 +291,36 @@ namespace SonicRetro.SAModel.GC
 				List<Vector3D> normals = new List<Vector3D>();
 				foreach (Primitive prim in m.Primitives)
 				{
-					Face newPoly = new Face();
-					for (int i = 0; i < prim.ToTriangles().Count; i++)
+					
+					for (int i = 0; i < prim.ToTriangles().Count; i+=3)
 					{
-
-						newPoly.Indices.Add((ushort)positions.Count);
-
-						Vector3 vertex = VertexData.Positions[(int)prim.ToTriangles()[i].PositionIndex];
-						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
-						if (VertexData.Normals.Count > 0)
+						Face newPoly = new Face();
+						newPoly.Indices.AddRange( new int []{ positions.Count + 2, positions.Count + 1, positions.Count });
+						for (int j = 0; j < 3; j++)
 						{
-							Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i].NormalIndex];
-							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+							Vector3 vertex = VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
+							positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
+							if (VertexData.Normals.Count > 0)
+							{
+								Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
+								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+							}
+							//implement VColor
+							if (hasVColor)
+							{
+								//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+							}
 						}
-						//implement VColor
-						if (hasVColor)
-						{
-							//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
-						}
-
 						//vertData.Add(new SAModel.VertexData(
 
 						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
 						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
 						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
 						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+						mesh.Faces.Add(newPoly);
 					}
 
-					mesh.Faces.Add(newPoly);
+
 				}
 				mesh.Vertices.AddRange(positions);
 				if (normals.Count > 0)
@@ -293,6 +328,7 @@ namespace SonicRetro.SAModel.GC
 				meshes.Add(mesh);
 			}
 			scene.Meshes.AddRange(meshes);
+			cur_mat = new NJS_MATERIAL();
 		}
 
 		NJS_MATERIAL cur_mat = new NJS_MATERIAL();
