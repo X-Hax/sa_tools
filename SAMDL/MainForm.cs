@@ -1677,7 +1677,7 @@ namespace SonicRetro.SAModel.SAMDL
 					//i was hoping the metadata is the thing that its trying to access as null pointer
 					n.Metadata.Add("i dont know what this is", new Assimp.Metadata.Entry(Assimp.MetaDataType.Bool, false));
 					n.Children.Add(model.AssimpExport(scene));
-					context.ExportFile(scene, a.FileName, "fbx", Assimp.PostProcessSteps.ValidateDataStructure);//
+					context.ExportFile(scene, a.FileName, "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate);//
 				}
 			}
 		}

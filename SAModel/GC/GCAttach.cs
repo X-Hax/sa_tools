@@ -209,40 +209,24 @@ namespace SonicRetro.SAModel.GC
 			bool hasVColor = VertexData.Color_0.Count != 0;
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
-				Assimp.Mesh mesh = new Assimp.Mesh();	
+				Assimp.Mesh mesh = new Assimp.Mesh();
+				mesh.PrimitiveType = PrimitiveType.Triangle;
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
 				foreach (Primitive prim in m.Primitives)
 				{
-					List<Face> newPolys = new List<Face>();
-					switch (prim.PrimitiveType)
+					Face newPoly = new Face();
+					List<Vertex> triangles = prim.ToTriangles();
+					for (int i = 0; i < triangles.Count; i++)
 					{
-						case GXPrimitiveType.Triangles:
-							mesh.PrimitiveType = PrimitiveType.Triangle;
-							//for (int i = 0; i < prim.Vertices.Count / 3; i++)
-							//{
-								newPolys.Add(new Face());
-							//}
-							break;
-						case GXPrimitiveType.TriangleStrip:
-							mesh.PrimitiveType = PrimitiveType.Polygon;
-							newPolys.Add(new Face());
-							break;
-					}
-					for (int i = 0; i < prim.Vertices.Count; i++)
-					{
-						//if (prim.PrimitiveType == GXPrimitiveType.Triangles)
-						//{
-							//newPolys[i/3].Indices.Add((ushort)positions.Count);
-						//}
-						//else
-							newPolys[0].Indices.Add((ushort)positions.Count);
 						
-						Vector3 vertex = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+						newPoly.Indices.Add((ushort)positions.Count);
+						
+						Vector3 vertex = VertexData.Positions[(int)triangles[i].PositionIndex];
 						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
 						if (VertexData.Normals.Count > 0)
 						{
-							Vector3 normal = VertexData.Normals[(int)prim.Vertices[i].PositionIndex];
+							Vector3 normal = VertexData.Normals[(int)triangles[i].NormalIndex];
 							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
 						}
 						//implement VColor
@@ -259,7 +243,7 @@ namespace SonicRetro.SAModel.GC
 						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
 					}
 
-					mesh.Faces.AddRange(newPolys);
+					mesh.Faces.Add(newPoly);
 				}
 				mesh.Vertices.AddRange(positions);
 				if (normals.Count > 0)
@@ -269,41 +253,25 @@ namespace SonicRetro.SAModel.GC
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
 			{
 				Assimp.Mesh mesh = new Assimp.Mesh();
+				mesh.PrimitiveType = PrimitiveType.Triangle;
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
 				foreach (Primitive prim in m.Primitives)
 				{
 					Face newPoly = new Face();
-					/*switch (prim.PrimitiveType)
+					for (int i = 0; i < prim.ToTriangles().Count; i++)
 					{
-						case GXPrimitiveType.Triangles:
-							for (int i = 0; i < prim.Vertices.Count / 3; i++)
-							{
-								newPolys.Add(new Triangle());
-							}
-							break;
-						case GXPrimitiveType.TriangleStrip:
-							newPolys.Add(new Strip(prim.Vertices.Count, false));
-							break;
-					}
-					*/
 
-					for (int i = 0; i < prim.Vertices.Count; i++)
-					{
-						//if (prim.PrimitiveType == GXPrimitiveType.Triangles)
-						//{
-						//newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
-						//}
-						//else newPolys[0].Indexes[i] = (ushort)vertData.Count;
-						newPoly.Indices.Add(positions.Count);
-						Vector3 vertex = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+						newPoly.Indices.Add((ushort)positions.Count);
+
+						Vector3 vertex = VertexData.Positions[(int)prim.ToTriangles()[i].PositionIndex];
 						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
 						if (VertexData.Normals.Count > 0)
 						{
-							Vector3 normal = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+							Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i].NormalIndex];
 							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
 						}
-						//implement VColor and shit
+						//implement VColor
 						if (hasVColor)
 						{
 							//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
