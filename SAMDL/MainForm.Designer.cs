@@ -40,6 +40,7 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importOBJToolstripitem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSSIMPImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colladaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +72,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aSSIMPImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSSIMPExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -176,9 +177,16 @@
             // importOBJToolstripitem
             // 
             this.importOBJToolstripitem.Name = "importOBJToolstripitem";
-            this.importOBJToolstripitem.Size = new System.Drawing.Size(180, 22);
+            this.importOBJToolstripitem.Size = new System.Drawing.Size(154, 22);
             this.importOBJToolstripitem.Text = "&Obj";
             this.importOBJToolstripitem.Click += new System.EventHandler(this.importOBJToolStripMenuItem_Click);
+            // 
+            // aSSIMPImportToolStripMenuItem
+            // 
+            this.aSSIMPImportToolStripMenuItem.Name = "aSSIMPImportToolStripMenuItem";
+            this.aSSIMPImportToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.aSSIMPImportToolStripMenuItem.Text = "ASSIMP Import";
+            this.aSSIMPImportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPImportToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -187,7 +195,8 @@
             this.cStructsToolStripMenuItem,
             this.objToolStripMenuItem,
             this.multiObjToolStripMenuItem,
-            this.nJAToolStripMenuItem});
+            this.nJAToolStripMenuItem,
+            this.aSSIMPExportToolStripMenuItem});
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
@@ -196,35 +205,35 @@
             // colladaToolStripMenuItem
             // 
             this.colladaToolStripMenuItem.Name = "colladaToolStripMenuItem";
-            this.colladaToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.colladaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.colladaToolStripMenuItem.Text = "&Collada";
             this.colladaToolStripMenuItem.Click += new System.EventHandler(this.colladaToolStripMenuItem_Click);
             // 
             // cStructsToolStripMenuItem
             // 
             this.cStructsToolStripMenuItem.Name = "cStructsToolStripMenuItem";
-            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cStructsToolStripMenuItem.Text = "C &Structs";
             this.cStructsToolStripMenuItem.Click += new System.EventHandler(this.cStructsToolStripMenuItem_Click);
             // 
             // objToolStripMenuItem
             // 
             this.objToolStripMenuItem.Name = "objToolStripMenuItem";
-            this.objToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.objToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.objToolStripMenuItem.Text = "&Obj";
             this.objToolStripMenuItem.Click += new System.EventHandler(this.objToolStripMenuItem_Click);
             // 
             // multiObjToolStripMenuItem
             // 
             this.multiObjToolStripMenuItem.Name = "multiObjToolStripMenuItem";
-            this.multiObjToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.multiObjToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.multiObjToolStripMenuItem.Text = "&Multi-Obj";
             this.multiObjToolStripMenuItem.Click += new System.EventHandler(this.multiObjToolStripMenuItem_Click);
             // 
             // nJAToolStripMenuItem
             // 
             this.nJAToolStripMenuItem.Name = "nJAToolStripMenuItem";
-            this.nJAToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.nJAToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.nJAToolStripMenuItem.Text = "NJA";
             this.nJAToolStripMenuItem.Click += new System.EventHandler(this.nJAToolStripMenuItem_Click);
             // 
@@ -457,12 +466,12 @@
             this.exportOBJToolStripMenuItem.Text = "&Export OBJ...";
             this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
             // 
-            // aSSIMPImportToolStripMenuItem
+            // aSSIMPExportToolStripMenuItem
             // 
-            this.aSSIMPImportToolStripMenuItem.Name = "aSSIMPImportToolStripMenuItem";
-            this.aSSIMPImportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.aSSIMPImportToolStripMenuItem.Text = "ASSIMP Import";
-            this.aSSIMPImportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPImportToolStripMenuItem_Click);
+            this.aSSIMPExportToolStripMenuItem.Name = "aSSIMPExportToolStripMenuItem";
+            this.aSSIMPExportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aSSIMPExportToolStripMenuItem.Text = "ASSIMP Export";
+            this.aSSIMPExportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPExportToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -538,5 +547,6 @@
 		private System.Windows.Forms.ToolStripMenuItem nJAToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem textureRemappingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aSSIMPImportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem aSSIMPExportToolStripMenuItem;
 	}
 }

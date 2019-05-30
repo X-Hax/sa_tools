@@ -88,7 +88,29 @@ namespace SonicRetro.SAModel
 			children = new List<NJS_OBJECT>();
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
-		//
+
+		public Node AssimpExport(Scene scene)
+		{
+			Node node = new Node(Name);
+			node.Metadata.Add("i dont know what this is now ", new Assimp.Metadata.Entry(Assimp.MetaDataType.Bool, false));
+			node.Transform = Matrix4x4.Identity;
+			node.Transform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z)); //add rotation and Scale
+			node.Name = Name;
+			int startMeshIndex = scene.MeshCount;
+			if (Attach != null)
+			{
+				if (Attach is GC.GCAttach)
+				{
+					GC.GCAttach gcAttach = Attach as GC.GCAttach;
+					gcAttach.AssimpExport(scene);
+					int endMeshIndex = scene.MeshCount;
+					for (int i = startMeshIndex; i < endMeshIndex; i++)
+						node.MeshIndices.Add(i);
+				}
+			}
+			return node;
+		}
+
 		void AssimpLoad(Scene scene, Node node, string[] textures = null)
 		{
 			Name = node.Name;
@@ -898,6 +920,12 @@ namespace SonicRetro.SAModel
 				BasicAttach basicattach = Attach as BasicAttach;
 				basicattach.ToNJA(writer, DX, labels, textures);
 			}
+			else if (Attach is ChunkAttach)
+			{
+				//ChunkAttach ChunkAttach = Attach as ChunkAttach;
+				//ChunkAttach.ToNJA(writer, labels, textures);
+			}
+
 			writer.Write("OBJECT ");
 			writer.Write(Name);
 			writer.WriteLine("[]");

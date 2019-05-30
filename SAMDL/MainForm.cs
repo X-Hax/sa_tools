@@ -1656,6 +1656,32 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 		}
+
+		private void aSSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "fbx",
+				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				FileName = model.Name
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					//i was hoping the metadata is the thing that its trying to access as null pointer
+					n.Metadata.Add("i dont know what this is", new Assimp.Metadata.Entry(Assimp.MetaDataType.Bool, false));
+					n.Children.Add(model.AssimpExport(scene));
+					context.ExportFile(scene, a.FileName, "fbx", Assimp.PostProcessSteps.ValidateDataStructure);//
+				}
+			}
+		}
+				
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawEntireModel();

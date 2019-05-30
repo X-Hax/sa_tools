@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Assimp;
+
 namespace SonicRetro.SAModel.GC
 {
 	public class GCAttach : Attach
@@ -198,6 +200,131 @@ namespace SonicRetro.SAModel.GC
 		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
 			throw new System.NotImplementedException();
+		}
+
+		public void AssimpExport(Scene scene)
+		{
+			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
+			bool hasUV = VertexData.TexCoord_0.Count != 0;
+			bool hasVColor = VertexData.Color_0.Count != 0;
+			foreach (Mesh m in GeometryData.OpaqueMeshes)
+			{
+				Assimp.Mesh mesh = new Assimp.Mesh();	
+				List<Vector3D> positions = new List<Vector3D>();
+				List<Vector3D> normals = new List<Vector3D>();
+				foreach (Primitive prim in m.Primitives)
+				{
+					List<Face> newPolys = new List<Face>();
+					switch (prim.PrimitiveType)
+					{
+						case GXPrimitiveType.Triangles:
+							mesh.PrimitiveType = PrimitiveType.Triangle;
+							//for (int i = 0; i < prim.Vertices.Count / 3; i++)
+							//{
+								newPolys.Add(new Face());
+							//}
+							break;
+						case GXPrimitiveType.TriangleStrip:
+							mesh.PrimitiveType = PrimitiveType.Polygon;
+							newPolys.Add(new Face());
+							break;
+					}
+					for (int i = 0; i < prim.Vertices.Count; i++)
+					{
+						//if (prim.PrimitiveType == GXPrimitiveType.Triangles)
+						//{
+							//newPolys[i/3].Indices.Add((ushort)positions.Count);
+						//}
+						//else
+							newPolys[0].Indices.Add((ushort)positions.Count);
+						
+						Vector3 vertex = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
+						if (VertexData.Normals.Count > 0)
+						{
+							Vector3 normal = VertexData.Normals[(int)prim.Vertices[i].PositionIndex];
+							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+						}
+						//implement VColor
+						if (hasVColor)
+						{
+							//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+						}
+
+						//vertData.Add(new SAModel.VertexData(
+
+						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
+						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+					}
+
+					mesh.Faces.AddRange(newPolys);
+				}
+				mesh.Vertices.AddRange(positions);
+				if (normals.Count > 0)
+					mesh.Normals.AddRange(normals);
+				meshes.Add(mesh);
+			}
+			foreach (Mesh m in GeometryData.TranslucentMeshes)
+			{
+				Assimp.Mesh mesh = new Assimp.Mesh();
+				List<Vector3D> positions = new List<Vector3D>();
+				List<Vector3D> normals = new List<Vector3D>();
+				foreach (Primitive prim in m.Primitives)
+				{
+					Face newPoly = new Face();
+					/*switch (prim.PrimitiveType)
+					{
+						case GXPrimitiveType.Triangles:
+							for (int i = 0; i < prim.Vertices.Count / 3; i++)
+							{
+								newPolys.Add(new Triangle());
+							}
+							break;
+						case GXPrimitiveType.TriangleStrip:
+							newPolys.Add(new Strip(prim.Vertices.Count, false));
+							break;
+					}
+					*/
+
+					for (int i = 0; i < prim.Vertices.Count; i++)
+					{
+						//if (prim.PrimitiveType == GXPrimitiveType.Triangles)
+						//{
+						//newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
+						//}
+						//else newPolys[0].Indexes[i] = (ushort)vertData.Count;
+						newPoly.Indices.Add(positions.Count);
+						Vector3 vertex = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
+						if (VertexData.Normals.Count > 0)
+						{
+							Vector3 normal = VertexData.Positions[(int)prim.Vertices[i].PositionIndex];
+							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+						}
+						//implement VColor and shit
+						if (hasVColor)
+						{
+							//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+						}
+
+						//vertData.Add(new SAModel.VertexData(
+
+						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
+						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+					}
+
+					mesh.Faces.Add(newPoly);
+				}
+				mesh.Vertices.AddRange(positions);
+				if (normals.Count > 0)
+					mesh.Normals.AddRange(normals);
+				meshes.Add(mesh);
+			}
+			scene.Meshes.AddRange(meshes);
 		}
 
 		NJS_MATERIAL cur_mat = new NJS_MATERIAL();
