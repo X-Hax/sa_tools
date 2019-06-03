@@ -376,7 +376,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 
 			currentFileName = fileName;
-			Text = GetStatusString();
+			UpdateStatusString();
 		}
 
 		private void saveMenuItem_Click(object sender, EventArgs e)
@@ -431,7 +431,7 @@ namespace SonicRetro.SAModel.SAMDL
 			SelectedItemChanged();
 
 			currentFileName = "";
-			Text = GetStatusString();
+			UpdateStatusString();
 		}
 
 		private void NewFileOperation(ModelFormat modelFormat)
@@ -472,9 +472,12 @@ namespace SonicRetro.SAModel.SAMDL
 			Close();
 		}
 
-		string GetStatusString()
+		void UpdateStatusString()
 		{
-			return "SAMDL: " + currentFileName;
+			Text = "SAMDL: " + currentFileName;
+			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
+			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
+			animFrameLabel.Text = $"Frame: {animframe}";
 			// + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
 		}
 
@@ -484,7 +487,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (!loaded) return;
 			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
-			Text = GetStatusString();
+			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };

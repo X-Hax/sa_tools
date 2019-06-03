@@ -40,6 +40,7 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importOBJToolstripitem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSSIMPImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colladaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +72,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aSSIMPImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.animNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -81,6 +85,7 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -116,7 +121,7 @@
             this.basicModelToolStripMenuItem,
             this.chunkModelToolStripMenuItem});
             this.newFileMenuitem.Name = "newFileMenuitem";
-            this.newFileMenuitem.Size = new System.Drawing.Size(180, 22);
+            this.newFileMenuitem.Size = new System.Drawing.Size(155, 22);
             this.newFileMenuitem.Text = "&New";
             // 
             // basicModelToolStripMenuItem
@@ -136,14 +141,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // loadTexturesToolStripMenuItem
             // 
             this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
-            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
@@ -151,7 +156,7 @@
             // 
             this.saveMenuItem.Enabled = false;
             this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveMenuItem.Text = "&Save...";
             this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
@@ -159,7 +164,7 @@
             // 
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -170,15 +175,22 @@
             this.aSSIMPImportToolStripMenuItem});
             this.importToolStripMenuItem.Enabled = false;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.importToolStripMenuItem.Text = "&Import";
             // 
             // importOBJToolstripitem
             // 
             this.importOBJToolstripitem.Name = "importOBJToolstripitem";
-            this.importOBJToolstripitem.Size = new System.Drawing.Size(180, 22);
+            this.importOBJToolstripitem.Size = new System.Drawing.Size(154, 22);
             this.importOBJToolstripitem.Text = "&Obj";
             this.importOBJToolstripitem.Click += new System.EventHandler(this.importOBJToolStripMenuItem_Click);
+            // 
+            // aSSIMPImportToolStripMenuItem
+            // 
+            this.aSSIMPImportToolStripMenuItem.Name = "aSSIMPImportToolStripMenuItem";
+            this.aSSIMPImportToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.aSSIMPImportToolStripMenuItem.Text = "ASSIMP Import";
+            this.aSSIMPImportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPImportToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -190,7 +202,7 @@
             this.nJAToolStripMenuItem});
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // colladaToolStripMenuItem
@@ -231,7 +243,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -457,18 +469,44 @@
             this.exportOBJToolStripMenuItem.Text = "&Export OBJ...";
             this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
             // 
-            // aSSIMPImportToolStripMenuItem
+            // statusStrip1
             // 
-            this.aSSIMPImportToolStripMenuItem.Name = "aSSIMPImportToolStripMenuItem";
-            this.aSSIMPImportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.aSSIMPImportToolStripMenuItem.Text = "ASSIMP Import";
-            this.aSSIMPImportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPImportToolStripMenuItem_Click);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cameraPosLabel,
+            this.animNameLabel,
+            this.animFrameLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 538);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(584, 24);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // cameraPosLabel
+            // 
+            this.cameraPosLabel.Name = "cameraPosLabel";
+            this.cameraPosLabel.Size = new System.Drawing.Size(106, 19);
+            this.cameraPosLabel.Text = "Camera Pos: 0, 0, 0";
+            // 
+            // animNameLabel
+            // 
+            this.animNameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.animNameLabel.Name = "animNameLabel";
+            this.animNameLabel.Size = new System.Drawing.Size(102, 19);
+            this.animNameLabel.Text = "Animation: None";
+            // 
+            // animFrameLabel
+            // 
+            this.animFrameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.animFrameLabel.Name = "animFrameLabel";
+            this.animFrameLabel.Size = new System.Drawing.Size(56, 19);
+            this.animFrameLabel.Text = "Frame: 0";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 562);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
@@ -488,6 +526,8 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -538,5 +578,9 @@
 		private System.Windows.Forms.ToolStripMenuItem nJAToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem textureRemappingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aSSIMPImportToolStripMenuItem;
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.ToolStripStatusLabel cameraPosLabel;
+		private System.Windows.Forms.ToolStripStatusLabel animNameLabel;
+		private System.Windows.Forms.ToolStripStatusLabel animFrameLabel;
 	}
 }
