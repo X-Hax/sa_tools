@@ -51,76 +51,85 @@ namespace PVMEditSharp
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 			ArchiveBase pvmfile = new PvmArchive();
-			if (pvmfile.Is(pvmdata, filename))
-				format = TextureFormat.PVM;
+			List<TextureInfo> newtextures;
+			if (PvmxArchive.Is(pvmdata))
+			{
+				format = TextureFormat.PVMX;
+				newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata));
+			}
 			else
 			{
-				pvmfile = new GvmArchive();
-				if (!pvmfile.Is(pvmdata, filename))
+				if (pvmfile.Is(pvmdata, filename))
+					format = TextureFormat.PVM;
+				else
 				{
-					MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					return false;
+					pvmfile = new GvmArchive();
+					if (!pvmfile.Is(pvmdata, filename))
+					{
+						MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						return false;
+					}
+					format = TextureFormat.GVM;
 				}
-				format = TextureFormat.GVM;
-			}
-			ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
-			List<TextureInfo> newtextures = new List<TextureInfo>(pvmentries.Count);
-			switch (format)
-			{
-				case TextureFormat.PVM:
-					PvpPalette pvp = null;
-					foreach (ArchiveEntry file in pvmentries)
-					{
-						PvrTexture vrfile = new PvrTexture(file.Open());
-						if (vrfile.NeedsExternalPalette)
+				ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
+				newtextures = new List<TextureInfo>(pvmentries.Count);
+				switch (format)
+				{
+					case TextureFormat.PVM:
+						PvpPalette pvp = null;
+						foreach (ArchiveEntry file in pvmentries)
 						{
-							if (pvp == null)
-								using (OpenFileDialog a = new OpenFileDialog
-								{
-									DefaultExt = "pvp",
-									Filter = "PVP Files|*.pvp",
-									InitialDirectory = Path.GetDirectoryName(filename),
-									Title = "External palette file"
-								})
-									if (a.ShowDialog(this) == DialogResult.OK)
-										pvp = new PvpPalette(a.FileName);
-									else
+							PvrTexture vrfile = new PvrTexture(file.Open());
+							if (vrfile.NeedsExternalPalette)
+							{
+								if (pvp == null)
+									using (OpenFileDialog a = new OpenFileDialog
 									{
-										MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-										return false;
-									}
-							vrfile.SetPalette(pvp);
+										DefaultExt = "pvp",
+										Filter = "PVP Files|*.pvp",
+										InitialDirectory = Path.GetDirectoryName(filename),
+										Title = "External palette file"
+									})
+										if (a.ShowDialog(this) == DialogResult.OK)
+											pvp = new PvpPalette(a.FileName);
+										else
+										{
+											MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+											return false;
+										}
+								vrfile.SetPalette(pvp);
+							}
+							newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
 						}
-						newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
-					}
-					break;
-				case TextureFormat.GVM:
-					GvpPalette gvp = null;
-					foreach (ArchiveEntry file in pvmentries)
-					{
-						GvrTexture vrfile = new GvrTexture(file.Open());
-						if (vrfile.NeedsExternalPalette)
+						break;
+					case TextureFormat.GVM:
+						GvpPalette gvp = null;
+						foreach (ArchiveEntry file in pvmentries)
 						{
-							if (gvp == null)
-								using (OpenFileDialog a = new OpenFileDialog
-								{
-									DefaultExt = "gvp",
-									Filter = "GVP Files|*.gvp",
-									InitialDirectory = Path.GetDirectoryName(filename),
-									Title = "External palette file"
-								})
-									if (a.ShowDialog(this) == DialogResult.OK)
-										gvp = new GvpPalette(a.FileName);
-									else
+							GvrTexture vrfile = new GvrTexture(file.Open());
+							if (vrfile.NeedsExternalPalette)
+							{
+								if (gvp == null)
+									using (OpenFileDialog a = new OpenFileDialog
 									{
-										MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-										return false;
-									}
-							vrfile.SetPalette(gvp);
+										DefaultExt = "gvp",
+										Filter = "GVP Files|*.gvp",
+										InitialDirectory = Path.GetDirectoryName(filename),
+										Title = "External palette file"
+									})
+										if (a.ShowDialog(this) == DialogResult.OK)
+											gvp = new GvpPalette(a.FileName);
+										else
+										{
+											MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+											return false;
+										}
+								vrfile.SetPalette(gvp);
+							}
+							newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
 						}
-						newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
-					}
-					break;
+						break;
+				}
 			}
 			textures.Clear();
 			textures.AddRange(newtextures);
@@ -173,9 +182,19 @@ namespace PVMEditSharp
 			UpdateTextureCount();
 		}
 
+		private void newPVMXToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			textures.Clear();
+			listBox1.Items.Clear();
+			filename = null;
+			format = TextureFormat.PVMX;
+			Text = "PVMX Editor";
+			UpdateTextureCount();
+		}
+
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs;*.pvmx" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					GetTextures(dlg.FileName);
@@ -286,8 +305,11 @@ namespace PVMEditSharp
 							writer.CreateEntry(pvr, tex.Name);
 						}
 						break;
+					case TextureFormat.PVMX:
+						PvmxArchive.Save(str, textures.OfType<PvmxTextureInfo>());
+						break;
 				}
-				writer.Flush();
+				writer?.Flush();
 				data = str.ToArray();
 				str.Close();
 			}
@@ -318,6 +340,10 @@ namespace PVMEditSharp
 				case TextureFormat.GVM:
 					defext = "gvm";
 					filter = "GVM Files|*.gvm;*.prs";
+					break;
+				case TextureFormat.PVMX:
+					defext = "pvmx";
+					filter = "PVMX Files|*.pvmx";
 					break;
 			}
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = filter })
@@ -442,6 +468,10 @@ namespace PVMEditSharp
 					defext = "gvr";
 					filter = "Texture Files|*.prs;*.gvm;*.gvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp";
 					break;
+				case TextureFormat.PVMX:
+					defext = "png";
+					filter = "Texture Files|*.png;*.jpg;*.jpeg;*.gif;*.bmp";
+					break;
 			}
 			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = defext, Filter = filter, Multiselect = true })
 			{
@@ -557,6 +587,9 @@ namespace PVMEditSharp
 											case TextureFormat.GVM:
 												textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
 												break;
+											case TextureFormat.PVMX:
+												textures.Add(new PvmxTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												break;
 										}
 										if (gbix != uint.MaxValue)
 											gbix++;
@@ -631,7 +664,7 @@ namespace PVMEditSharp
 
 		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			foreach (PvrTextureInfo info in textures)
+			foreach (TextureInfo info in textures)
 				if (info.CheckMipmap())
 					info.Mipmap = true;
 			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].CheckMipmap())
@@ -718,5 +751,24 @@ namespace PVMEditSharp
 		}
 	}
 
-	enum TextureFormat { PVM, GVM }
+	class PvmxTextureInfo : TextureInfo
+	{
+		public Size? Dimensions { get; set; }
+
+		public PvmxTextureInfo() { }
+
+		public PvmxTextureInfo(string name, uint gbix, Bitmap bitmap)
+		{
+			Name = name;
+			GlobalIndex = gbix;
+			Image = bitmap;
+		}
+
+		public override bool CheckMipmap()
+		{
+			return false;
+		}
+	}
+
+	enum TextureFormat { PVM, GVM, PVMX }
 }
