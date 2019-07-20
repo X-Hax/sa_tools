@@ -41,6 +41,7 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +64,6 @@
             this.textureName = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
@@ -202,6 +202,13 @@
             this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsGVMToolStripMenuItem.Text = "&GVM";
             this.saveAsGVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsGVMToolStripMenuItem_Click);
+            // 
+            // saveAsPVMXToolStripMenuItem
+            // 
+            this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
+            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
+            this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
             // 
             // exportAllToolStripMenuItem
             // 
@@ -437,13 +444,6 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
             this.toolStripStatusLabel1.Text = "0 textures";
-            // 
-            // saveAsPVMXToolStripMenuItem
-            // 
-            this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
-            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveAsPVMXToolStripMenuItem.Text = "save As PVM&X";
-            this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
             // 
             // MainForm
             // 
