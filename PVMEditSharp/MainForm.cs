@@ -582,13 +582,13 @@ namespace PVMEditSharp
 										switch (format)
 										{
 											case TextureFormat.PVM:
-												textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(file)));
 												break;
 											case TextureFormat.GVM:
-												textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(file)));
 												break;
 											case TextureFormat.PVMX:
-												textures.Add(new PvmxTextureInfo(name, gbix, new Bitmap(dlg.FileName)));
+												textures.Add(new PvmxTextureInfo(name, gbix, new Bitmap(file)));
 												break;
 										}
 										if (gbix != uint.MaxValue)
