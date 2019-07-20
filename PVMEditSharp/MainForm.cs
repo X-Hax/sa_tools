@@ -306,7 +306,7 @@ namespace PVMEditSharp
 						}
 						break;
 					case TextureFormat.PVMX:
-						PvmxArchive.Save(str, textures.OfType<PvmxTextureInfo>());
+						PvmxArchive.Save(str, textures.Cast<PvmxTextureInfo>());
 						break;
 				}
 				writer?.Flush();
@@ -361,41 +361,102 @@ namespace PVMEditSharp
 			}
 		}
 
+		private void saveAsPVMToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.prs" })
+			{
+				if (filename != null)
+				{
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "pvm");
+				}
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					switch (format)
+					{
+						case TextureFormat.GVM:
+							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)));
+							break;
+						case TextureFormat.PVMX:
+							textures = new List<TextureInfo>(textures.Cast<PvmxTextureInfo>().Select(a => new PvrTextureInfo(a)));
+							break;
+					}
+					format = TextureFormat.PVM;
+					SetFilename(dlg.FileName);
+					SaveTextures();
+				}
+			}
+		}
+
+		private void saveAsGVMToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "gvm", Filter = "GVM Files|*.gvm;*.prs" })
+			{
+				if (filename != null)
+				{
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "gvm");
+				}
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					switch (format)
+					{
+						case TextureFormat.PVM:
+							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)));
+							break;
+						case TextureFormat.PVMX:
+							textures = new List<TextureInfo>(textures.Cast<PvmxTextureInfo>().Select(a => new GvrTextureInfo(a)));
+							break;
+					}
+					format = TextureFormat.GVM;
+					SetFilename(dlg.FileName);
+					SaveTextures();
+				}
+			}
+		}
+
+		private void saveAsPVMXToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvmx", Filter = "PVMX Files|*.pvmx" })
+			{
+				if (filename != null)
+				{
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "pvmx");
+				}
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					switch (format)
+					{
+						case TextureFormat.PVM:
+						case TextureFormat.GVM:
+							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)));
+							break;
+					}
+					format = TextureFormat.PVMX;
+					SetFilename(dlg.FileName);
+					SaveTextures();
+				}
+			}
+		}
+
 		private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (FolderBrowserDialog dlg = new FolderBrowserDialog())
 			{
 				if (filename != null)
 					dlg.SelectedPath = Path.GetDirectoryName(filename);
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-					foreach (TextureInfo tex in textures)
-						tex.Image.Save(Path.Combine(dlg.SelectedPath, tex.Name + ".png"));
-			}
-		}
-
-		private void exportTexturePackToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (FolderBrowserDialog dlg = new FolderBrowserDialog())
-			{
-				if (filename != null)
-					dlg.SelectedPath = Path.GetDirectoryName(filename);
 
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					string path = Path.Combine(dlg.SelectedPath, Path.GetFileNameWithoutExtension(filename));
-
-					if (!Directory.Exists(path))
-						Directory.CreateDirectory(path);
-
-					using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
-					{
+					using (TextWriter texList = File.CreateText(Path.Combine(dlg.SelectedPath, "index.txt")))
 						foreach (TextureInfo tex in textures)
 						{
-							tex.Image.Save(Path.Combine(path, tex.Name + ".png"));
-							texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
+							tex.Image.Save(Path.Combine(dlg.SelectedPath, tex.Name + ".png"));
+							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
+								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
+							else
+								texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
 						}
-					}
-				}
 			}
 		}
 
@@ -694,6 +755,37 @@ namespace PVMEditSharp
 
 		public PvrTextureInfo() { }
 
+		public PvrTextureInfo(TextureInfo tex)
+		{
+			Name = tex.Name;
+			GlobalIndex = tex.GlobalIndex;
+			Image = tex.Image;
+			Mipmap = tex.Mipmap;
+			PixelFormat = PvrPixelFormat.Unknown;
+			DataFormat = PvrDataFormat.Unknown;
+		}
+
+		public PvrTextureInfo(GvrTextureInfo tex)
+			: this((TextureInfo)tex)
+		{
+			switch (tex.DataFormat)
+			{
+				case GvrDataFormat.Index4:
+					DataFormat = PvrDataFormat.Index4;
+					break;
+				case GvrDataFormat.Index8:
+					DataFormat = PvrDataFormat.Index8;
+					break;
+			}
+		}
+
+		public PvrTextureInfo(PvrTextureInfo tex)
+			: this((TextureInfo)tex)
+		{
+			PixelFormat = tex.PixelFormat;
+			DataFormat = tex.DataFormat;
+		}
+
 		public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
 		{
 			Name = name;
@@ -726,6 +818,37 @@ namespace PVMEditSharp
 
 		public GvrTextureInfo() { }
 
+		public GvrTextureInfo(TextureInfo tex)
+		{
+			Name = tex.Name;
+			GlobalIndex = tex.GlobalIndex;
+			Image = tex.Image;
+			Mipmap = tex.Mipmap;
+			PixelFormat = GvrPixelFormat.Unknown;
+			DataFormat = GvrDataFormat.Unknown;
+		}
+
+		public GvrTextureInfo(PvrTextureInfo tex)
+			: this((TextureInfo)tex)
+		{
+			switch (tex.DataFormat)
+			{
+				case PvrDataFormat.Index4:
+					DataFormat = GvrDataFormat.Index4;
+					break;
+				case PvrDataFormat.Index8:
+					DataFormat = GvrDataFormat.Index8;
+					break;
+			}
+		}
+
+		public GvrTextureInfo(GvrTextureInfo tex)
+			: this((TextureInfo)tex)
+		{
+			PixelFormat = tex.PixelFormat;
+			DataFormat = tex.DataFormat;
+		}
+
 		public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
 		{
 			Name = name;
@@ -756,6 +879,19 @@ namespace PVMEditSharp
 		public Size? Dimensions { get; set; }
 
 		public PvmxTextureInfo() { }
+
+		public PvmxTextureInfo(TextureInfo tex)
+		{
+			Name = tex.Name;
+			GlobalIndex = tex.GlobalIndex;
+			Image = tex.Image;
+		}
+
+		public PvmxTextureInfo(PvmxTextureInfo tex)
+			: this((TextureInfo)tex)
+		{
+			Dimensions = tex.Dimensions;
+		}
 
 		public PvmxTextureInfo(string name, uint gbix, Bitmap bitmap)
 		{
