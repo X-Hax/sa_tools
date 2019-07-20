@@ -57,7 +57,7 @@ namespace PVMEditSharp
 							int count = 0;
 							while (file[off + count] != 0)
 								count++;
-							tex.Name = Encoding.UTF8.GetString(file, off, count);
+							tex.Name = Path.ChangeExtension(Encoding.UTF8.GetString(file, off, count), null);
 							off += count + 1;
 							break;
 
@@ -101,6 +101,7 @@ namespace PVMEditSharp
 				bw.Write(tex.GlobalIndex);
 				bw.Write((byte)dictionary_field.name);
 				bw.Write(tex.Name.ToCharArray());
+				bw.Write(new[] { '.', 'p', 'n', 'g' });
 				bw.Write((byte)0);
 				if (tex.Dimensions.HasValue)
 				{
