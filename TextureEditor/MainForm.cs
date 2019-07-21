@@ -1,6 +1,6 @@
-﻿using PAKLib;
+﻿using Microsoft.DirectX.Direct3D;
+using PAKLib;
 using PuyoTools.Modules.Archive;
-using SharpDX.WIC;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +10,6 @@ using System.Text;
 using System.Windows.Forms;
 using VrSharp.GvrTexture;
 using VrSharp.PvrTexture;
-using Bitmap = System.Drawing.Bitmap;
 
 namespace TextureEditor
 {
@@ -23,6 +22,7 @@ namespace TextureEditor
 			InitializeComponent();
 		}
 
+		Device d3ddevice;
 		TextureFormat format;
 		string filename;
 		List<TextureInfo> textures = new List<TextureInfo>();
@@ -59,7 +59,7 @@ namespace TextureEditor
 			if (PvmxArchive.Is(pvmdata))
 			{
 				format = TextureFormat.PVMX;
-				newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata));
+				newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata).Cast<TextureInfo>());
 			}
 			else if (PAKFile.Is(filename))
 			{
@@ -68,31 +68,20 @@ namespace TextureEditor
 				string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
 				byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
 				newtextures = new List<TextureInfo>(inf.Length / 0x3C);
-				using (var factory = new ImagingFactory2())
-					for (int i = 0; i < inf.Length; i += 0x3C)
-					{
-						StringBuilder sb = new StringBuilder(0x1C);
-						for (int j = 0; j < 0x1C; j++)
-							if (inf[i + j] != 0)
-								sb.Append((char)inf[i + j]);
-							else
-								break;
-						byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-						Bitmap bmp;
-						using (MemoryStream str = new MemoryStream(dds))
-						using (var decoder = new BitmapDecoder(factory, str, DecodeOptions.CacheOnDemand))
-						using (var converter = new FormatConverter(factory))
-						{
-							converter.Initialize(decoder.GetFrame(0), PixelFormat.Format32bppBGRA, BitmapDitherType.None, null, 0, BitmapPaletteType.Custom);
-							bmp = new Bitmap(converter.Size.Width, converter.Size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-							System.Drawing.Imaging.BitmapData data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-							byte[] pix = new byte[Math.Abs(data.Stride) * data.Height];
-							converter.CopyPixels(pix, data.Stride);
-							System.Runtime.InteropServices.Marshal.Copy(pix, 0, data.Scan0, pix.Length);
-							bmp.UnlockBits(data);
-						}
+				for (int i = 0; i < inf.Length; i += 0x3C)
+				{
+					StringBuilder sb = new StringBuilder(0x1C);
+					for (int j = 0; j < 0x1C; j++)
+						if (inf[i + j] != 0)
+							sb.Append((char)inf[i + j]);
+						else
+							break;
+					byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+					using (MemoryStream str = new MemoryStream(dds))
+					using (Texture tex = TextureLoader.FromStream(d3ddevice, str))
+					using (Stream bmp = TextureLoader.SaveToStream(ImageFileFormat.Png, tex))
 						newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), new Bitmap(bmp)));
-					}
+				}
 			}
 			else
 			{
@@ -194,6 +183,8 @@ namespace TextureEditor
 			}
 
 			Settings.MRUList = newlist;
+
+			d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 
 			if (Program.Arguments.Length > 0 && !GetTextures(Program.Arguments[0]))
 				this.Close();
@@ -360,44 +351,25 @@ namespace TextureEditor
 						string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
 						string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
-						using (var factory = new ImagingFactory2())
-							foreach (TextureInfo item in textures)
-							{
-								byte[] tb;
-								using (MemoryStream ms = new MemoryStream())
-								using (var encoder = new BitmapEncoder(factory, ContainerFormatGuids.Dds))
-								{
-									encoder.Initialize(ms);
-									using (var frame = new BitmapFrameEncode(encoder))
-									{
-										frame.Initialize();
-										frame.SetSize(item.Image.Width, item.Image.Height);
-										Guid fdc = PixelFormat.Format32bppBGRA;
-										frame.SetPixelFormat(ref fdc);
-										Bitmap img = item.Image;
-										if (img.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-											img = new Bitmap(img);
-										System.Drawing.Imaging.BitmapData bmpdata = item.Image.LockBits(new Rectangle(0, 0, item.Image.Width, item.Image.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-										frame.WritePixels(bmpdata.Height, bmpdata.Scan0, bmpdata.Stride);
-										frame.Commit();
-									}
-									encoder.Commit();
-									tb = ms.ToArray();
-								}
-								string name = item.Name.ToLowerInvariant();
-								if (name.Length > 0x1C)
-									name = name.Substring(0, 0x1C);
-								pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
-								inf.AddRange(Encoding.ASCII.GetBytes(name));
-								if (name.Length != 0x1C)
-									inf.AddRange(new byte[0x1C - name.Length]);
-								inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
-								inf.AddRange(new byte[0xC]);
-								inf.AddRange(BitConverter.GetBytes(item.Image.Width));
-								inf.AddRange(BitConverter.GetBytes(item.Image.Height));
-								inf.AddRange(new byte[4]);
-								inf.AddRange(BitConverter.GetBytes(0x80000000));
-							}
+						foreach (TextureInfo item in textures)
+						{
+							Stream tex = TextureLoader.SaveToStream(ImageFileFormat.Dds, Texture.FromBitmap(d3ddevice, item.Image, Usage.SoftwareProcessing, Pool.Managed));
+							byte[] tb = new byte[tex.Length];
+							tex.Read(tb, 0, tb.Length);
+							string name = item.Name.ToLowerInvariant();
+							if (name.Length > 0x1C)
+								name = name.Substring(0, 0x1C);
+							pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
+							inf.AddRange(Encoding.ASCII.GetBytes(name));
+							if (name.Length != 0x1C)
+								inf.AddRange(new byte[0x1C - name.Length]);
+							inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
+							inf.AddRange(new byte[0xC]);
+							inf.AddRange(BitConverter.GetBytes(item.Image.Width));
+							inf.AddRange(BitConverter.GetBytes(item.Image.Height));
+							inf.AddRange(new byte[4]);
+							inf.AddRange(BitConverter.GetBytes(0x80000000));
+						}
 						pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
 						pak.Save(filename);
 
@@ -473,11 +445,11 @@ namespace TextureEditor
 					switch (format)
 					{
 						case TextureFormat.GVM:
-							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
 					format = TextureFormat.PVM;
@@ -501,11 +473,11 @@ namespace TextureEditor
 					switch (format)
 					{
 						case TextureFormat.PVM:
-							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
 					format = TextureFormat.GVM;
@@ -531,7 +503,7 @@ namespace TextureEditor
 						case TextureFormat.PVM:
 						case TextureFormat.GVM:
 						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
 					format = TextureFormat.PVMX;
@@ -557,7 +529,7 @@ namespace TextureEditor
 						case TextureFormat.PVM:
 						case TextureFormat.GVM:
 						case TextureFormat.PVMX:
-							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)));
+							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
 					format = TextureFormat.PAK;

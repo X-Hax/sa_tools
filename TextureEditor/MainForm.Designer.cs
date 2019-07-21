@@ -36,12 +36,14 @@
             this.newPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,12 +66,10 @@
             this.textureName = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dummyPanel = new System.Windows.Forms.Panel();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -141,7 +141,7 @@
             // 
             this.newPVMToolStripMenuItem.Name = "newPVMToolStripMenuItem";
             this.newPVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newPVMToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.newPVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.newPVMToolStripMenuItem.Text = "&PVM";
             this.newPVMToolStripMenuItem.Click += new System.EventHandler(this.newPVMToolStripMenuItem_Click);
             // 
@@ -150,7 +150,7 @@
             this.newGVMToolStripMenuItem.Name = "newGVMToolStripMenuItem";
             this.newGVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.N)));
-            this.newGVMToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.newGVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.newGVMToolStripMenuItem.Text = "&GVM";
             this.newGVMToolStripMenuItem.Click += new System.EventHandler(this.newGVMToolStripMenuItem_Click);
             // 
@@ -159,9 +159,19 @@
             this.newPVMXToolStripMenuItem.Name = "newPVMXToolStripMenuItem";
             this.newPVMXToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.N)));
-            this.newPVMXToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.newPVMXToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.newPVMXToolStripMenuItem.Text = "PVM&X";
             this.newPVMXToolStripMenuItem.Click += new System.EventHandler(this.newPVMXToolStripMenuItem_Click);
+            // 
+            // newPAKToolStripMenuItem
+            // 
+            this.newPAKToolStripMenuItem.Name = "newPAKToolStripMenuItem";
+            this.newPAKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+            this.newPAKToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.newPAKToolStripMenuItem.Text = "PA&K";
+            this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -213,6 +223,13 @@
             this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
             this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
+            // 
+            // saveAsPAKToolStripMenuItem
+            // 
+            this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
+            this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.saveAsPAKToolStripMenuItem.Text = "PA&K";
+            this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
             // 
             // exportAllToolStripMenuItem
             // 
@@ -449,28 +466,22 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
             this.toolStripStatusLabel1.Text = "0 textures";
             // 
-            // newPAKToolStripMenuItem
+            // dummyPanel
             // 
-            this.newPAKToolStripMenuItem.Name = "newPAKToolStripMenuItem";
-            this.newPAKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.N)));
-            this.newPAKToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.newPAKToolStripMenuItem.Text = "PA&K";
-            this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
-            // 
-            // saveAsPAKToolStripMenuItem
-            // 
-            this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
-            this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveAsPAKToolStripMenuItem.Text = "PA&K";
-            this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
+            this.dummyPanel.Enabled = false;
+            this.dummyPanel.Location = new System.Drawing.Point(0, 0);
+            this.dummyPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.dummyPanel.Name = "dummyPanel";
+            this.dummyPanel.Size = new System.Drawing.Size(0, 0);
+            this.dummyPanel.TabIndex = 3;
+            this.dummyPanel.Visible = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 562);
+            this.Controls.Add(this.dummyPanel);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.statusStrip1);
@@ -485,7 +496,6 @@
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -540,6 +550,7 @@
 		private System.Windows.Forms.ToolStripMenuItem saveAsPVMXToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newPAKToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsPAKToolStripMenuItem;
+		private System.Windows.Forms.Panel dummyPanel;
 	}
 }
 

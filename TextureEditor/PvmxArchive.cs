@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TextureEditor
 {
@@ -89,12 +87,24 @@ namespace TextureEditor
 			return textures;
 		}
 
+		struct OffData
+		{
+			public long off;
+			public byte[] data;
+
+			public OffData(long o, byte[] d)
+			{
+				off = o;
+				data = d;
+			}
+		}
+
 		public static void Save(Stream str, IEnumerable<PvmxTextureInfo> textures)
 		{
 			BinaryWriter bw = new BinaryWriter(str);
 			bw.Write(FourCC);
 			bw.Write(Version);
-			List<(long off, byte[] data)> texdata = new List<(long off, byte[] data)>();
+			List<OffData> texdata = new List<OffData>();
 			foreach (PvmxTextureInfo tex in textures)
 			{
 				bw.Write((byte)dictionary_field.global_index);
@@ -114,20 +124,20 @@ namespace TextureEditor
 				using (MemoryStream ms = new MemoryStream())
 				{
 					tex.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-					texdata.Add((str.Position, ms.ToArray()));
+					texdata.Add(new OffData(str.Position, ms.ToArray()));
 					size = ms.Length;
 				}
 				bw.Write(0ul);
 				bw.Write(size);
 			}
 			bw.Write((byte)dictionary_field.none);
-			foreach ((long off, byte[] data) in texdata)
+			foreach (OffData od in texdata)
 			{
 				long pos = str.Position;
-				str.Position = off;
+				str.Position = od.off;
 				bw.Write(pos);
 				str.Position = pos;
-				bw.Write(data);
+				bw.Write(od.data);
 			}
 		}
 	}
