@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA Tools", "SA Tools\SA Tools.csproj", "{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}"
 EndProject
@@ -49,9 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GVM2PAK", "GVM2PAK\GVM2PAK.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilePAK", "CompilePAK\CompilePAK.csproj", "{B97C5F6C-8278-46A2-98BE-D805A65CCE19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PVMEditSharp", "PVMEditSharp\PVMEditSharp.csproj", "{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAKEdit", "PAKEdit\PAKEdit.csproj", "{152D3816-CF71-425D-AAB0-9A900436D2DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureEditor", "TextureEditor\TextureEditor.csproj", "{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA2StageSelEdit", "SA2StageSelEdit\SA2StageSelEdit.csproj", "{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}"
 EndProject
@@ -335,16 +333,6 @@ Global
 		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|Mixed Platforms.Build.0 = Release|x86
 		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|x86.ActiveCfg = Release|x86
 		{7E63BEA7-9E08-41C5-BC20-42C8D8B054CD}.Release|x86.Build.0 = Release|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Debug|x86.ActiveCfg = Debug|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Debug|x86.Build.0 = Debug|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|Any CPU.ActiveCfg = Release|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|Mixed Platforms.Build.0 = Release|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|x86.ActiveCfg = Release|x86
-		{152D3816-CF71-425D-AAB0-9A900436D2DD}.Release|x86.Build.0 = Release|x86
 		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{A99ACE2A-004F-4784-A68C-3BE8EEE197C2}.Debug|Mixed Platforms.Build.0 = Debug|x86

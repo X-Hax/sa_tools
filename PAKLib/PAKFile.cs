@@ -29,6 +29,13 @@ namespace PAKLib
 
 		public static uint Magic = 0x6B617001;
 
+		public static bool Is(string filename)
+		{
+			using (FileStream fs = System.IO.File.OpenRead(filename))
+			using (BinaryReader br = new BinaryReader(fs))
+				return br.ReadUInt32() == Magic;
+		}
+
 		public List<File> Files { get; set; }
 
 		public PAKFile()

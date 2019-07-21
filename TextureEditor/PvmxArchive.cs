@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PVMEditSharp
+namespace TextureEditor
 {
 	static class PvmxArchive
 	{

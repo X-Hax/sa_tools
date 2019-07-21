@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace PVMEditSharp
+namespace TextureEditor
 {
 	static class Program
 	{

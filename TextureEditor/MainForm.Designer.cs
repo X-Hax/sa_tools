@@ -1,4 +1,4 @@
-﻿namespace PVMEditSharp
+﻿namespace TextureEditor
 {
 	partial class MainForm
 	{
@@ -64,6 +64,8 @@
             this.textureName = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
@@ -129,7 +131,8 @@
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newPVMToolStripMenuItem,
             this.newGVMToolStripMenuItem,
-            this.newPVMXToolStripMenuItem});
+            this.newPVMXToolStripMenuItem,
+            this.newPAKToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.newToolStripMenuItem.Text = "&New";
@@ -181,7 +184,8 @@
             this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveAsPVMToolStripMenuItem,
             this.saveAsGVMToolStripMenuItem,
-            this.saveAsPVMXToolStripMenuItem});
+            this.saveAsPVMXToolStripMenuItem,
+            this.saveAsPAKToolStripMenuItem});
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
@@ -192,21 +196,21 @@
             // saveAsPVMToolStripMenuItem
             // 
             this.saveAsPVMToolStripMenuItem.Name = "saveAsPVMToolStripMenuItem";
-            this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.saveAsPVMToolStripMenuItem.Text = "&PVM";
             this.saveAsPVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMToolStripMenuItem_Click);
             // 
             // saveAsGVMToolStripMenuItem
             // 
             this.saveAsGVMToolStripMenuItem.Name = "saveAsGVMToolStripMenuItem";
-            this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.saveAsGVMToolStripMenuItem.Text = "&GVM";
             this.saveAsGVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsGVMToolStripMenuItem_Click);
             // 
             // saveAsPVMXToolStripMenuItem
             // 
             this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
-            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
             this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
             // 
@@ -445,6 +449,23 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
             this.toolStripStatusLabel1.Text = "0 textures";
             // 
+            // newPAKToolStripMenuItem
+            // 
+            this.newPAKToolStripMenuItem.Name = "newPAKToolStripMenuItem";
+            this.newPAKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+            this.newPAKToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.newPAKToolStripMenuItem.Text = "PA&K";
+            this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
+            // 
+            // saveAsPAKToolStripMenuItem
+            // 
+            this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
+            this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsPAKToolStripMenuItem.Text = "PA&K";
+            this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -517,6 +538,8 @@
 		private System.Windows.Forms.ToolStripMenuItem saveAsPVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsGVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsPVMXToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newPAKToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveAsPAKToolStripMenuItem;
 	}
 }
 
