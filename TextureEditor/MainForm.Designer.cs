@@ -300,7 +300,7 @@
             this.splitContainer1.Panel2.Controls.Add(label2);
             this.splitContainer1.Panel2.Controls.Add(this.textureName);
             this.splitContainer1.Panel2.Controls.Add(label1);
-            this.splitContainer1.Size = new System.Drawing.Size(584, 516);
+            this.splitContainer1.Size = new System.Drawing.Size(584, 515);
             this.splitContainer1.SplitterDistance = 194;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -310,7 +310,7 @@
             this.listBox1.IntegralHeight = false;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(190, 483);
+            this.listBox1.Size = new System.Drawing.Size(190, 482);
             this.listBox1.TabIndex = 0;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -321,7 +321,7 @@
             this.panel1.Controls.Add(this.removeTextureButton);
             this.panel1.Controls.Add(this.addTextureButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 483);
+            this.panel1.Location = new System.Drawing.Point(0, 482);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(190, 29);
             this.panel1.TabIndex = 1;
@@ -454,7 +454,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 540);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 539);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(584, 22);
             this.statusStrip1.TabIndex = 2;
@@ -472,7 +472,7 @@
             this.dummyPanel.Location = new System.Drawing.Point(0, 0);
             this.dummyPanel.Margin = new System.Windows.Forms.Padding(0);
             this.dummyPanel.Name = "dummyPanel";
-            this.dummyPanel.Size = new System.Drawing.Size(0, 0);
+            this.dummyPanel.Size = new System.Drawing.Size(100, 100);
             this.dummyPanel.TabIndex = 3;
             this.dummyPanel.Visible = false;
             // 
@@ -480,11 +480,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 562);
-            this.Controls.Add(this.dummyPanel);
+            this.ClientSize = new System.Drawing.Size(584, 561);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.dummyPanel);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "PVM Editor";
