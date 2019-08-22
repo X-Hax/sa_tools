@@ -1634,7 +1634,7 @@ namespace SonicRetro.SAModel.SAMDL
 					string objFileName = a.FileName;
 					Assimp.Scene scene = context.ImportFile(objFileName);
 					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
-					
+
 					editMaterialsToolStripMenuItem.Enabled = true;
 
 					model.ProcessVertexData();
@@ -1661,7 +1661,7 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			using (SaveFileDialog a = new SaveFileDialog
 			{
-				DefaultExt = "fbx",
+				DefaultExt = "dae",
 				Filter = "Model Files|*.obj;*.fbx;*.dae",
 				FileName = model.Name
 			})
@@ -1674,13 +1674,23 @@ namespace SonicRetro.SAModel.SAMDL
 					Assimp.Node n = new Assimp.Node();
 					n.Name = "RootNode";
 					scene.RootNode = n;
-					
-					n.Children.Add(model.AssimpExport(scene));
-					context.ExportFile(scene, a.FileName, "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate);//
+					string rootPath = Path.GetDirectoryName(a.FileName);
+					List<string> texturePaths = new List<string>();
+					if (TextureInfo != null)
+					{
+						foreach (BMPInfo bmp in TextureInfo)
+						{
+							texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
+							bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+						}
+					}
+					Assimp.Matrix4x4 identity = Assimp.Matrix4x4.Identity;
+					model.AssimpExport(scene, ref identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
 		}
-				
+
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawEntireModel();

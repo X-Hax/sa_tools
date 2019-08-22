@@ -89,17 +89,34 @@ namespace SonicRetro.SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
-		public Node AssimpExport(Scene scene, Node parent = null)
+		public Node AssimpExport(Scene scene, ref Matrix4x4 parentMatrix, string[] texInfo = null, Node parent = null)
 		{
 			Node node = null;
 			if (parent == null)
 				node = new Node(Name);
-			else node = new Node(Name, parent);
-			
-			//TODO
-			node.Transform = Matrix4x4.Identity;
-			node.Transform *= Matrix4x4.FromEulerAnglesXYZ(new Vector3D(Rotation.ZDeg, -Rotation.YDeg, Rotation.XDeg)); 
-			node.Transform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z)); 
+			else
+			{
+				node = new Node(Name, parent);
+				parent.Children.Add(node);
+			}
+
+			Matrix4x4 nodeTransform = Matrix4x4.Identity;
+
+			nodeTransform *= Matrix4x4.FromScaling(new Vector3D(Scale.X, Scale.Y, Scale.Z));
+
+			float rotX = ((Rotation.X) * (2 * (float)Math.PI) / 65536.0f);
+			float rotY = ((Rotation.Y) * (2 * (float)Math.PI) / 65536.0f);
+			float rotZ = ((Rotation.Z) * (2 * (float)Math.PI) / 65536.0f);
+			Matrix4x4 rotation = Matrix4x4.FromRotationX(rotX) *
+					   Matrix4x4.FromRotationY(rotY) *
+					   Matrix4x4.FromRotationZ(rotZ);
+			nodeTransform *= rotation;
+
+			nodeTransform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z));
+
+			Matrix4x4 thing = nodeTransform * parentMatrix;
+			node.Transform = nodeTransform;
+
 			node.Name = Name;
 			int startMeshIndex = scene.MeshCount;
 			if (Attach != null)
@@ -107,16 +124,22 @@ namespace SonicRetro.SAModel
 				if (Attach is GC.GCAttach)
 				{
 					GC.GCAttach gcAttach = Attach as GC.GCAttach;
-					gcAttach.AssimpExport(scene);
+					gcAttach.AssimpExport(scene, texInfo);
 					int endMeshIndex = scene.MeshCount;
 					for (int i = startMeshIndex; i < endMeshIndex; i++)
-						node.MeshIndices.Add(i);
+					{
+						Node meshChildNode = new Node("meshnode_" + i);
+						meshChildNode.Transform = thing;
+						scene.RootNode.Children.Add(meshChildNode);
+
+						meshChildNode.MeshIndices.Add(i);
+					}
 				}
 			}
-			if(Children != null)
+			if (Children != null)
 			{
-				foreach(NJS_OBJECT child in Children)
-					node.Children.Add(child.AssimpExport(scene, node));
+				foreach (NJS_OBJECT child in Children)
+					child.AssimpExport(scene, ref thing, texInfo, node);
 			}
 			return node;
 		}
@@ -145,7 +168,7 @@ namespace SonicRetro.SAModel
 
 				//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
 				List<NJS_OBJECT> list = new List<NJS_OBJECT>();
-				foreach(Node n in node.Children)
+				foreach (Node n in node.Children)
 				{
 					NJS_OBJECT t = new NJS_OBJECT(scene, n, this, textures);
 					//HACK: workaround for those weird empty nodes created by most 3d editors
@@ -180,9 +203,9 @@ namespace SonicRetro.SAModel
 			Parent = parent;
 			AssimpLoad(scene, node, textures);
 		}
-		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene,node,null, textures)
+		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene, node, null, textures)
 		{
-			
+
 		}
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())

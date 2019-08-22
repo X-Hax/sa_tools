@@ -13,7 +13,7 @@ namespace SonicRetro.SAModel.GC
 
 		public Vector3 BoundingSphereCenter { get; private set; }
 		public float BoundingSphereRadius { get; private set; }
-		
+
 		public GCAttach()
 		{
 			Name = "gcattach_" + Extensions.GenerateIdentifier();
@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel.GC
 			int opaque_geometry_count = ByteConverter.ToInt16(file, address + 16);
 			int translucent_geometry_count = ByteConverter.ToInt16(file, address + 18);
 
-			
+
 			BoundingSphereCenter = new Vector3(ByteConverter.ToSingle(file, address + 20),
 											   ByteConverter.ToSingle(file, address + 24),
 											   ByteConverter.ToSingle(file, address + 28));
@@ -202,23 +202,26 @@ namespace SonicRetro.SAModel.GC
 			throw new System.NotImplementedException();
 		}
 
-		public void AssimpExport(Scene scene, string[]  textures = null)
+		public void AssimpExport(Scene scene, string[] textures = null)
 		{
 			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 			bool hasUV = VertexData.TexCoord_0.Count != 0;
 			bool hasVColor = VertexData.Color_0.Count != 0;
+			int nameMeshIndex = 0;
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
-				Assimp.Mesh mesh = new Assimp.Mesh();
+				Assimp.Mesh mesh = new Assimp.Mesh(Name + "_mesh_" + nameMeshIndex);
+				nameMeshIndex++;
 				mesh.PrimitiveType = PrimitiveType.Triangle;
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
-
-				foreach(Parameter param in m.Parameters)
+				List<Vector3D> texcoords = new List<Vector3D>();
+				foreach (Parameter param in m.Parameters)
 				{
 					if (param.ParameterType == ParameterType.Texture)
 					{
 						TextureParameter tex = param as TextureParameter;
+						cur_mat.UseTexture = true;
 						cur_mat.TextureID = tex.TextureID;
 						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
 							cur_mat.FlipU = true;
@@ -262,6 +265,11 @@ namespace SonicRetro.SAModel.GC
 								Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
 								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
 							}
+							if (hasUV)
+							{
+								Vector2 normal = VertexData.TexCoord_0[(int)prim.ToTriangles()[i + j].UVIndex];
+								texcoords.Add(new Vector3D(normal.X, normal.Y, 1.0f));
+							}
 							//implement VColor
 							if (hasVColor)
 							{
@@ -277,10 +285,38 @@ namespace SonicRetro.SAModel.GC
 						mesh.Faces.Add(newPoly);
 					}
 				}
+
 				mesh.Vertices.AddRange(positions);
 				if (normals.Count > 0)
 					mesh.Normals.AddRange(normals);
+				if (texcoords.Count > 0)
+					mesh.TextureCoordinateChannels[0].AddRange(texcoords);
+				Material materoial = new Material();
+				materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+				if (cur_mat.UseTexture && textures != null)
+				{
+					string texPath = Path.GetFileName(textures[cur_mat.TextureID]);
+					TextureWrapMode wrapU = TextureWrapMode.Wrap;
+					TextureWrapMode wrapV = TextureWrapMode.Wrap;
+					if (cur_mat.ClampU)
+						wrapU = TextureWrapMode.Clamp;
+					else if (cur_mat.FlipU)
+						wrapU = TextureWrapMode.Mirror;
 
+					if (cur_mat.ClampV)
+						wrapV = TextureWrapMode.Clamp;
+					else if (cur_mat.FlipV)
+						wrapV = TextureWrapMode.Mirror;
+
+					Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
+						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
+						wrapU, wrapV, 0); //wrapmode and shit add here
+					materoial.AddMaterialTexture(ref tex);
+
+				}
+				int matIndex = scene.MaterialCount;
+				scene.Materials.Add(materoial);
+				mesh.MaterialIndex = matIndex;
 				meshes.Add(mesh);
 			}
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
@@ -291,11 +327,11 @@ namespace SonicRetro.SAModel.GC
 				List<Vector3D> normals = new List<Vector3D>();
 				foreach (Primitive prim in m.Primitives)
 				{
-					
-					for (int i = 0; i < prim.ToTriangles().Count; i+=3)
+
+					for (int i = 0; i < prim.ToTriangles().Count; i += 3)
 					{
 						Face newPoly = new Face();
-						newPoly.Indices.AddRange( new int []{ positions.Count + 2, positions.Count + 1, positions.Count });
+						newPoly.Indices.AddRange(new int[] { positions.Count + 2, positions.Count + 1, positions.Count });
 						for (int j = 0; j < 3; j++)
 						{
 							Vector3 vertex = VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
@@ -341,10 +377,10 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				
+
 				foreach (Parameter param in m.Parameters)
 				{
-					if(param.ParameterType == ParameterType.Texture)
+					if (param.ParameterType == ParameterType.Texture)
 					{
 						TextureParameter tex = param as TextureParameter;
 						cur_mat.TextureID = tex.TextureID;
@@ -365,7 +401,7 @@ namespace SonicRetro.SAModel.GC
 						TexCoordGenParameter gen = param as TexCoordGenParameter;
 						if (gen.TexGenSrc == GXTexGenSrc.Normal)
 							cur_mat.EnvironmentMap = true;
-						else cur_mat.EnvironmentMap = false; 
+						else cur_mat.EnvironmentMap = false;
 					}
 					else if (param.ParameterType == ParameterType.BlendAlpha)
 					{
@@ -378,10 +414,10 @@ namespace SonicRetro.SAModel.GC
 				foreach (Primitive prim in m.Primitives)
 				{
 					List<Poly> newPolys = new List<Poly>();
-					switch(prim.PrimitiveType)
+					switch (prim.PrimitiveType)
 					{
 						case GXPrimitiveType.Triangles:
-							for(int i = 0; i < prim.Vertices.Count / 3; i++)
+							for (int i = 0; i < prim.Vertices.Count / 3; i++)
 							{
 								newPolys.Add(new Triangle());
 							}
@@ -395,15 +431,15 @@ namespace SonicRetro.SAModel.GC
 					{
 						if (prim.PrimitiveType == GXPrimitiveType.Triangles)
 						{
-							newPolys[i/3].Indexes[i % 3] = (ushort)vertData.Count;
+							newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
 						}
 						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
 
 						vertData.Add(new SAModel.VertexData(
 							VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0,1,0),
+							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
 							hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() {X = 0, Y = 0}));
+							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
 					}
 					polys.AddRange(newPolys);
 				}
@@ -418,7 +454,7 @@ namespace SonicRetro.SAModel.GC
 			{
 				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
 				List<Poly> polys = new List<Poly>();
-				
+
 				foreach (Parameter param in m.Parameters)
 				{
 					if (param.ParameterType == ParameterType.Texture)
@@ -434,7 +470,7 @@ namespace SonicRetro.SAModel.GC
 						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
 							cur_mat.ClampV = false;
 					}
-				    else if (param.ParameterType == ParameterType.TexCoordGen)
+					else if (param.ParameterType == ParameterType.TexCoordGen)
 					{
 						TexCoordGenParameter gen = param as TexCoordGenParameter;
 						if (gen.TexGenSrc == GXTexGenSrc.Normal)
