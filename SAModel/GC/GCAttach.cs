@@ -60,6 +60,129 @@ namespace SonicRetro.SAModel.GC
 			}
 		}
 
+		public GCAttach(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
+		{
+			Name = "attach_" + Extensions.GenerateIdentifier();
+			Bounds = new BoundingSphere();
+			VertexData = new VertexData();
+			GeometryData = new GeometryData();
+			//setup names!!!
+			List<Mesh> gcmeshes = new List<Mesh>();
+			List<Vector3D> vertices = new List<Vector3D>();
+			List<Vector3D> normals = new List<Vector3D>();
+			List<Vector2> texcoords = new List<Vector2>();
+			List<Color> colors = new List<Color>();
+			foreach (Assimp.Mesh m in meshes)
+			{
+				Assimp.Material currentAiMat = null;
+				if (m.MaterialIndex >= 0)
+				{
+					currentAiMat = materials[m.MaterialIndex];
+				}
+
+				List<Primitive> primitives = new List<Primitive>();
+				List<Parameter> parameters = new List<Parameter>();
+
+				uint vertStartIndex = (uint)vertices.Count;
+				uint normStartIndex = (uint)normals.Count;
+				uint uvStartIndex = (uint)texcoords.Count;
+				uint colorStartIndex = (uint)colors.Count;
+				vertices.AddRange(m.Vertices);
+				if (m.HasNormals)
+				{
+					normals.AddRange(m.Normals);
+				}
+				if (m.HasTextureCoords(0))
+				{
+					foreach (Vector3D texcoord in m.TextureCoordinateChannels[0])
+						texcoords.Add(new Vector2(texcoord.X, 1.0f - texcoord.Y));
+				}
+				if (m.HasVertexColors(0))
+				{
+
+					if (m.VertexColorChannels[0].Count == 87)
+						currentAiMat = currentAiMat;
+					foreach (Color4D texcoord in m.VertexColorChannels[0])
+						colors.Add(new Color(texcoord.A * 255.0f, texcoord.B * 255.0f, texcoord.G * 255.0f, texcoord.R * 255.0f));//colors.Add(new Color(texcoord.A * 255.0f, texcoord.B * 255.0f, texcoord.G * 255.0f, texcoord.R * 255.0f));
+																																  //colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f)); rgba
+				}
+				if (currentAiMat != null)
+				{
+					IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.HasNormal;
+					if (m.HasTextureCoords(0))
+						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV;
+					if (m.HasVertexColors(0))
+						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor;
+					IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
+					parameters.Add(indexParam);
+					LightingParameter lightParam = new LightingParameter();
+					parameters.Add(lightParam);
+					if (currentAiMat.HasTextureDiffuse)
+					{
+						if (textures != null)
+						{
+							int texId = 0;
+							TextureParameter.TileMode tileMode = 0;
+							if (currentAiMat.TextureDiffuse.WrapModeU == TextureWrapMode.Mirror)
+								tileMode |= TextureParameter.TileMode.MirrorU;
+							else tileMode |= TextureParameter.TileMode.WrapU;
+							if (currentAiMat.TextureDiffuse.WrapModeV == TextureWrapMode.Mirror)
+								tileMode |= TextureParameter.TileMode.MirrorV;
+							else tileMode |= TextureParameter.TileMode.WrapV;
+							for (int i = 0; i < textures.Length; i++)
+								if (textures[i] == Path.GetFileNameWithoutExtension(currentAiMat.TextureDiffuse.FilePath))
+									texId = i;
+							TextureParameter texParam = new TextureParameter((ushort)texId, tileMode);
+							parameters.Add(texParam);
+
+						}
+					}
+					else if (textures != null)
+					{
+						int texId = 0;
+						for (int i = 0; i < textures.Length; i++)
+							if (textures[i].ToLower() == currentAiMat.Name.ToLower())
+								texId = i;
+						TextureParameter texParam = new TextureParameter((ushort)texId, TextureParameter.TileMode.WrapU | TextureParameter.TileMode.WrapV);
+						parameters.Add(texParam);
+					}
+				}
+
+				foreach (Face f in m.Faces)
+				{
+					Primitive prim = new Primitive(GXPrimitiveType.Triangles);
+					foreach (int index in f.Indices)
+					{
+						Vertex vert = new Vertex();
+						vert.PositionIndex = vertStartIndex + (uint)index;
+						if (m.HasNormals)
+							vert.NormalIndex = vertStartIndex + (uint)index;
+						if (m.HasTextureCoords(0))
+							vert.UVIndex = uvStartIndex + (uint)index;
+						if (m.HasVertexColors(0))
+							vert.Color0Index = colorStartIndex + (uint)index;
+
+						prim.Vertices.Add(vert);
+					}
+					primitives.Add(prim);
+				}
+				Mesh gcm = new Mesh(parameters, primitives);
+				gcmeshes.Add(gcm);
+			}
+			List<Vector3> gcvertices = new List<Vector3>();
+			foreach (Vector3D aivert in vertices)
+				gcvertices.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+			List<Vector3> gcnormals = new List<Vector3>();
+			foreach (Vector3D aivert in normals)
+				gcnormals.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+			VertexData.SetAttributeData(GXVertexAttribute.Position, gcvertices);
+			VertexData.SetAttributeData(GXVertexAttribute.Normal, gcnormals);
+			if (texcoords.Count > 0)
+				VertexData.SetAttributeData(GXVertexAttribute.Tex0, texcoords);
+			if (colors.Count > 0)
+				VertexData.SetAttributeData(GXVertexAttribute.Color0, colors);
+			GeometryData.OpaqueMeshes.AddRange(gcmeshes);
+		}
 		public void ExportOBJ(string file_name)
 		{
 			StringWriter writer = new StringWriter();
@@ -216,6 +339,7 @@ namespace SonicRetro.SAModel.GC
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
 				List<Vector3D> texcoords = new List<Vector3D>();
+				List<Color4D> colors = new List<Color4D>();
 				foreach (Parameter param in m.Parameters)
 				{
 					if (param.ParameterType == ParameterType.Texture)
@@ -273,7 +397,8 @@ namespace SonicRetro.SAModel.GC
 							//implement VColor
 							if (hasVColor)
 							{
-								//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+								Color c = VertexData.Color_0[(int)prim.ToTriangles()[i + j].Color0Index];
+								colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
 							}
 						}
 						//vertData.Add(new SAModel.VertexData(
@@ -291,7 +416,9 @@ namespace SonicRetro.SAModel.GC
 					mesh.Normals.AddRange(normals);
 				if (texcoords.Count > 0)
 					mesh.TextureCoordinateChannels[0].AddRange(texcoords);
-				Material materoial = new Material();
+				if (colors.Count > 0)
+					mesh.VertexColorChannels[0].AddRange(colors);
+				Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
 				materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
 				if (cur_mat.UseTexture && textures != null)
 				{
@@ -319,12 +446,16 @@ namespace SonicRetro.SAModel.GC
 				mesh.MaterialIndex = matIndex;
 				meshes.Add(mesh);
 			}
+			nameMeshIndex = 0;
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
 			{
-				Assimp.Mesh mesh = new Assimp.Mesh();
+				Assimp.Mesh mesh = new Assimp.Mesh(Name + "_transparentmesh_" + nameMeshIndex);
+				nameMeshIndex++;
 				mesh.PrimitiveType = PrimitiveType.Triangle;
 				List<Vector3D> positions = new List<Vector3D>();
 				List<Vector3D> normals = new List<Vector3D>();
+				List<Vector3D> texcoords = new List<Vector3D>();
+				List<Color4D> colors = new List<Color4D>();
 				foreach (Primitive prim in m.Primitives)
 				{
 
@@ -341,10 +472,15 @@ namespace SonicRetro.SAModel.GC
 								Vector3 normal = VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
 								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
 							}
-							//implement VColor
+							if (hasUV)
+							{
+								Vector2 normal = VertexData.TexCoord_0[(int)prim.ToTriangles()[i + j].UVIndex];
+								texcoords.Add(new Vector3D(normal.X, normal.Y, 1.0f));
+							}
 							if (hasVColor)
 							{
-								//VertexData.Color_0[(int)prim.Vertices[i].Color0Index]
+								Color c = VertexData.Color_0[(int)prim.ToTriangles()[i + j].Color0Index];
+								colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
 							}
 						}
 						//vertData.Add(new SAModel.VertexData(
@@ -361,6 +497,40 @@ namespace SonicRetro.SAModel.GC
 				mesh.Vertices.AddRange(positions);
 				if (normals.Count > 0)
 					mesh.Normals.AddRange(normals);
+				if (texcoords.Count > 0)
+					mesh.TextureCoordinateChannels[0].AddRange(texcoords);
+				if (colors.Count > 0)
+					mesh.VertexColorChannels[0].AddRange(colors);
+				Material materoial = new Material() { Name = "material_" + nameMeshIndex };
+				materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+				if (cur_mat.UseTexture && textures != null)
+				{
+					string texPath = Path.GetFileName(textures[cur_mat.TextureID]);
+					TextureWrapMode wrapU = TextureWrapMode.Wrap;
+					TextureWrapMode wrapV = TextureWrapMode.Wrap;
+					if (cur_mat.ClampU)
+						wrapU = TextureWrapMode.Clamp;
+					else if (cur_mat.FlipU)
+						wrapU = TextureWrapMode.Mirror;
+
+					if (cur_mat.ClampV)
+						wrapV = TextureWrapMode.Clamp;
+					else if (cur_mat.FlipV)
+						wrapV = TextureWrapMode.Mirror;
+
+					Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
+						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
+						wrapU, wrapV, 0); //wrapmode and shit add here
+					Assimp.TextureSlot alpha = new Assimp.TextureSlot(texPath, Assimp.TextureType.Opacity, 0,
+						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
+						wrapU, wrapV, 0); //wrapmode and shit add here
+					materoial.AddMaterialTexture(ref tex);
+					materoial.AddMaterialTexture(ref alpha);
+
+				}
+				int matIndex = scene.MaterialCount;
+				scene.Materials.Add(materoial);
+				mesh.MaterialIndex = matIndex;
 				meshes.Add(mesh);
 			}
 			scene.Meshes.AddRange(meshes);

@@ -10,7 +10,11 @@ namespace SonicRetro.SAModel.GC
 	{
 		public List<Parameter> Parameters { get; private set; }
 		public List<Primitive> Primitives { get; private set; }
-
+		public Mesh(List<Parameter> parameters, List<Primitive> primitives)
+		{
+			Parameters = parameters;
+			Primitives = primitives;
+		}
 		public Mesh(byte[] file, int address, uint imageBase, IndexAttributeParameter index = null)
 		{
 			Parameters = new List<Parameter>();

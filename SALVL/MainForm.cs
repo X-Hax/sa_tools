@@ -1032,5 +1032,48 @@ namespace SonicRetro.SAModel.SALVL
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
 		}
+
+		private void ASSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				FileName = "test"
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					string rootPath = Path.GetDirectoryName(a.FileName);
+					List<string> texturePaths = new List<string>();
+
+					if (LevelData.TextureBitmaps != null)
+					{
+						foreach (BMPInfo[] bmp_ in LevelData.TextureBitmaps.Values) //???????
+						{
+							foreach (BMPInfo bmp in bmp_)
+							{
+								texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
+								bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+							}
+						}
+					}
+					
+					foreach (COL col in LevelData.geo.COL)
+					{
+						Assimp.Matrix4x4 identity = Assimp.Matrix4x4.Identity;
+						col.Model.AssimpExport(scene, ref identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					}
+						
+					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+				}
+			}
+		}
 	}
 }

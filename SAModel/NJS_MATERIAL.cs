@@ -188,6 +188,7 @@ namespace SonicRetro.SAModel
 					FlipU = true;
 				if (mat.TextureDiffuse.WrapModeV == TextureWrapMode.Mirror)
 					FlipV = true;
+				UseTexture = true;
 			}
 			Exponent = mat.Shininess;
 			

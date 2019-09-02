@@ -141,7 +141,6 @@ namespace SonicRetro.SAModel
 			VertexName = "vertex_" + Extensions.GenerateIdentifier();
 			Normal = new Vertex[0];
 			NormalName = "normal_" + Extensions.GenerateIdentifier();
-
 		
 			List<Vertex> vertices = new List<Vertex>();
 			List<Vertex> normals = new List<Vertex>();
@@ -168,6 +167,15 @@ namespace SonicRetro.SAModel
 							if (textures[i] == Path.GetFileNameWithoutExtension(materials[m.MaterialIndex].TextureDiffuse.FilePath))
 								Material[Material.Count - 1].TextureID = i;
 					}
+				}
+				else if (textures != null)
+				{
+					for (int i = 0; i < textures.Length; i++)
+						if (textures[i].ToLower() == materials[m.MaterialIndex].Name.ToLower())
+						{
+							Material[Material.Count - 1].TextureID = i;
+							Material[Material.Count - 1].UseTexture = true;
+						}
 				}
 			}
 			Vertex = vertices.ToArray();
@@ -199,7 +207,7 @@ namespace SonicRetro.SAModel
 					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
 					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
 					{
-						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
+						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = 1.0f - meshes[i].TextureCoordinateChannels[0][x].Y };
 					}
 				}
 

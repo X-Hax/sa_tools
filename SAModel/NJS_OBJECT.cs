@@ -144,23 +144,37 @@ namespace SonicRetro.SAModel
 			return node;
 		}
 
-		void AssimpLoad(Scene scene, Node node, string[] textures = null)
+		void AssimpLoad(Scene scene, Node node,Node parentNode, ModelFormat format, string[] textures = null)
 		{
 			Name = node.Name;
 			Vector3D translation;
 			Vector3D scaling;
 			Quaternion rotation;
-			node.Transform.Decompose(out scaling, out rotation, out translation);
-			Vector3D rotationConverted = Extensions.FromQ2(rotation);
+			if (parentNode != null)
+			{
+				Matrix4x4 invParentTransform = parentNode.Transform;
+				invParentTransform.Inverse();
+				Matrix4x4 localTransform = node.Transform * invParentTransform;
+				localTransform.Decompose(out scaling, out rotation, out translation);
+			}
+			else node.Transform.Decompose(out scaling, out rotation, out translation);
+			Vector3D rotationConverted = rotation.ToEulerAngles();
 			Position = new Vertex(translation.X, translation.Y, translation.Z);
+			//Rotation = new Rotation(0, 0, 0);
 			Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
+			//Scale = new Vertex(1, 1, 1);
 			List<Mesh> meshes = new List<Mesh>();
 			foreach (int i in node.MeshIndices)
 				meshes.Add(scene.Meshes[i]);
 			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
 			if (node.HasMeshes)
-				Attach = new BasicAttach(scene.Materials, meshes, textures);
+			{
+				if(format == ModelFormat.Basic)
+					Attach = new BasicAttach(scene.Materials, meshes, textures);
+				else if(format == ModelFormat.GC)
+					Attach = new GC.GCAttach(scene.Materials, meshes, textures);
+			}
 			else
 				Attach = null;
 			if (node.HasChildren)
@@ -170,7 +184,7 @@ namespace SonicRetro.SAModel
 				List<NJS_OBJECT> list = new List<NJS_OBJECT>();
 				foreach (Node n in node.Children)
 				{
-					NJS_OBJECT t = new NJS_OBJECT(scene, n, this, textures);
+					NJS_OBJECT t = new NJS_OBJECT(scene, n, null, null, textures);
 					//HACK: workaround for those weird empty nodes created by most 3d editors
 					if (n.Name == "")
 					{
@@ -198,12 +212,12 @@ namespace SonicRetro.SAModel
 			}
 			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
 		}
-		public NJS_OBJECT(Scene scene, Node node, NJS_OBJECT parent, string[] textures = null)
+		public NJS_OBJECT(Scene scene, Node node, Node parentNode, NJS_OBJECT parent, string[] textures = null)
 		{
 			Parent = parent;
-			AssimpLoad(scene, node, textures);
+			AssimpLoad(scene, node, parentNode, ModelFormat.Basic, textures);
 		}
-		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene, node, null, textures)
+		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene, node, null, null, textures)
 		{
 
 		}

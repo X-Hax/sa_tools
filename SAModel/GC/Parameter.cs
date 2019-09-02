@@ -78,6 +78,11 @@ namespace SonicRetro.SAModel.GC
 		{
 			ParameterType = ParameterType.IndexAttributeFlags;
 		}
+		public IndexAttributeParameter(IndexAttributeFlags flags)
+		{
+			ParameterType = ParameterType.IndexAttributeFlags;
+			IndexAttributes = flags;
+		}
 
 		public override void Read(byte[] file, int address)
 		{
@@ -256,6 +261,13 @@ namespace SonicRetro.SAModel.GC
 			TextureID = 0;
 			Tile = TileMode.WrapU | TileMode.WrapV;
 		}
+		public TextureParameter(ushort TexID, TileMode tileMode)
+		{
+			ParameterType = ParameterType.Texture;
+			TextureID = TexID;
+			Tile = tileMode;
+		}
+
 		public override void Read(byte[] file, int address)
 		{
 			TextureID = ByteConverter.ToUInt16(file, address);

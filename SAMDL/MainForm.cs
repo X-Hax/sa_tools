@@ -1632,7 +1632,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					string objFileName = a.FileName;
-					Assimp.Scene scene = context.ImportFile(objFileName);
+					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate);
 					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
 
 					editMaterialsToolStripMenuItem.Enabled = true;

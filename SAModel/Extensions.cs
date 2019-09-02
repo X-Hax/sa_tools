@@ -25,35 +25,33 @@ namespace SonicRetro.SAModel
 			return angle;
 		}
 
-		public static Vector3D FromQ2(Assimp.Quaternion q1)
+		public static Assimp.Vector3D ToEulerAngles(this Assimp.Quaternion q)
 		{
-			float sqw = q1.W * q1.W;
-			float sqx = q1.X * q1.X;
-			float sqy = q1.Y * q1.Y;
-			float sqz = q1.Z * q1.Z;
-			float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-			float test = q1.X * q1.W - q1.Y * q1.Z;
-			Vector3D v;
+			// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+			// roll (x-axis rotation)
+			var sinr = +2.0 * (q.W * q.X + q.Y * q.Z);
+			var cosr = +1.0 - 2.0 * (q.X * q.X + q.Y * q.Y);
+			var roll = Math.Atan2(sinr, cosr);
 
-			if (test > 0.4995f * unit)
-			{ // singularity at north pole
-				v.Y = 2f * (float)Math.Atan2(q1.Y, q1.X);
-				v.X = (float)Math.PI / 2;
-				v.Z = 0;
-				return NormalizeAngles(v * (float)(180 / Math.PI));
+			// pitch (y-axis rotation)
+			var sinp = +2.0 * (q.W * q.Y - q.Z * q.X);
+			double pitch;
+			if (Math.Abs(sinp) >= 1)
+			{
+				var sign = sinp < 0 ? -1f : 1f;
+				pitch = (Math.PI / 2) * sign; // use 90 degrees if out of range
 			}
-			if (test < -0.4995f * unit)
-			{ // singularity at south pole
-				v.Y = -2f * (float)Math.Atan2(q1.Y, q1.X);
-				v.X = -(float)Math.PI / 2;
-				v.Z = 0;
-				return NormalizeAngles(v * (float)(180 / Math.PI));
+			else
+			{
+				pitch = Math.Asin(sinp);
 			}
-			Quaternion q = new Assimp.Quaternion(q1.W, q1.Z, q1.X, q1.Y);
-			v.Y = (float)Math.Atan2(2f * q.X * q.W + 2f * q.Y * q.Z, 1 - 2f * (q.Z * q.Z + q.W * q.W));     // Yaw
-			v.X = (float)Math.Asin(2f * (q.X * q.Z - q.W * q.Y));                             // Pitch
-			v.Z = (float)Math.Atan2(2f * q.X * q.Y + 2f * q.Z * q.W, 1 - 2f * (q.Y * q.Y + q.Z * q.Z));      // Roll
-			return NormalizeAngles(v * (float)(180 / Math.PI));
+
+			// yaw (z-axis rotation)
+			var siny = +2.0 * (q.W * q.Z + q.X * q.Y);
+			var cosy = +1.0 - 2.0 * (q.Y * q.Y + q.Z * q.Z);
+			var yaw = Math.Atan2(siny, cosy);
+
+			return new Assimp.Vector3D((float)(roll * 57.2958d), (float)(pitch * 57.2958d), (float)(yaw * 57.2958d));
 		}
 
 		public static void Align(this List<byte> me, int alignment)
