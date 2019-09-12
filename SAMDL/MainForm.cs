@@ -1195,6 +1195,8 @@ namespace SonicRetro.SAModel.SAMDL
 				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
+			if (model.HasWeight)
+				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
 			DrawEntireModel();
 		}

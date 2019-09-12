@@ -18,6 +18,12 @@ namespace SonicRetro.SAModel.Direct3D
 		void SetNormal(Vector3 v);
 	}
 
+	public interface IVertexColor
+	{
+		Color GetColor();
+		void SetColor(Color c);
+	}
+
 	[StructLayout(LayoutKind.Explicit)]
 	public struct FVF_PositionNormal : IVertexNormal
 	{
@@ -108,7 +114,7 @@ namespace SonicRetro.SAModel.Direct3D
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionColored : IVertex
+	public struct FVF_PositionColored : IVertex, IVertexColor
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -146,6 +152,10 @@ namespace SonicRetro.SAModel.Direct3D
 		public void SetPosition(Vector3 v) => Position = v;
 
 		public VertexFormat GetFormat() => Format;
+
+		public Color GetColor() => System.Drawing.Color.FromArgb(Color);
+
+		public void SetColor(Color c) => Color = c.ToArgb();
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
@@ -202,7 +212,7 @@ namespace SonicRetro.SAModel.Direct3D
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalColored : IVertexNormal
+	public struct FVF_PositionNormalColored : IVertexNormal, IVertexColor
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -249,10 +259,14 @@ namespace SonicRetro.SAModel.Direct3D
 		public void SetNormal(Vector3 v) => Normal = v;
 
 		public VertexFormat GetFormat() => Format;
+
+		public Color GetColor() => System.Drawing.Color.FromArgb(Color);
+
+		public void SetColor(Color c) => Color = c.ToArgb();
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct FVF_PositionNormalTexturedColored : IVertexNormal
+	public struct FVF_PositionNormalTexturedColored : IVertexNormal, IVertexColor
 	{
 		[FieldOffset(0x00)]
 		public Vector3 Position;
@@ -307,5 +321,9 @@ namespace SonicRetro.SAModel.Direct3D
 		public void SetNormal(Vector3 v) => Normal = v;
 
 		public VertexFormat GetFormat() => Format;
+
+		public Color GetColor() => System.Drawing.Color.FromArgb(Color);
+
+		public void SetColor(Color c) => Color = c.ToArgb();
 	}
 }
