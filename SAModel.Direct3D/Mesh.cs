@@ -433,22 +433,23 @@ namespace SonicRetro.SAModel.Direct3D
 			t *= 4;
 			for (int i = 0; i < 3; i++)
 			{
-				color1[i] = (byte)(Math.Round(color1[i] * t) + Math.Round(color2[i] * (1.0f - t)));
+				color1[i] = (byte)(Math.Round(color1[i] * (1.0f - t)) + Math.Round(color2[i] * t));
 			}
 			return System.Drawing.Color.FromArgb(color1[0], color1[1], color1[2]);
 		}
 
 		public void UpdateSelection(int selected)
 		{
-			for (int i = 0; i < weights.Count; i++)
-				if (weights[i] != null)
-				{
-					WeightData weight = weights[i].SingleOrDefault(a => a.Index == selected);
-					if (weight != null)
-						vertexBuffer[i].SetColor(GetColor(weight.Weight));
+			if (selected != -1)
+				for (int i = 0; i < weights.Count; i++)
+					if (weights[i] != null)
+					{
+						WeightData weight = weights[i].SingleOrDefault(a => a.Index == selected);
+						vertexBuffer[i].SetColor(GetColor(weight?.Weight ?? 0));
+					}
 					else
-						vertexBuffer[i].SetColor(System.Drawing.Color.White);
-				}
+						foreach (T v in vertexBuffer)
+							v.SetColor(System.Drawing.Color.White);
 		}
 	}
 }

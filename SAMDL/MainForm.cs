@@ -274,6 +274,7 @@ namespace SonicRetro.SAModel.SAMDL
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			showWeightsToolStripMenuItem.Enabled = model.HasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
 
@@ -1195,7 +1196,7 @@ namespace SonicRetro.SAModel.SAMDL
 				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
-			if (model.HasWeight)
+			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
 			DrawEntireModel();
@@ -1661,6 +1662,19 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 		}
+
+		private void ShowWeightsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			if (showWeightsToolStripMenuItem.Checked)
+			{
+				EditorOptions.OverrideLighting = true;
+				model.UpdateWeightedModelSelection(selectedObject, meshes);
+			}
+			else
+				model.UpdateWeightedModelSelection(null, meshes);
+			DrawEntireModel();
+		}
+
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			DrawEntireModel();
