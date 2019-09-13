@@ -13,7 +13,7 @@ You are encouraged to first, [read the wiki](https://github.com/sonicretro/sa_to
 - Steps to reproduce the problem. If you cannot get the problem to happen on-command, we can't fix it
 - Media such as screenshots or video that help illustrate the issue.
 
-## Real-time assitance & discussion
+## Real-time assistance & discussion
 The toolkit developers (and other community members familiar with it) are frequently available at:
 - [The official x-hax Discord server](https://t.co/QHzmLrHHDy)
 - The official x-hax IRC server: irc://irc.badnik.zone/x-hax
