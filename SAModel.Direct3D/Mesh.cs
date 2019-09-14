@@ -370,10 +370,12 @@ namespace SonicRetro.SAModel.Direct3D
 	public interface IWeightedMesh
 	{
 		void Update(IList<Matrix> matrices);
+
+		void UpdateSelection(int selected);
 	}
 
 	public class WeightedMesh<T> : Mesh<T>, IWeightedMesh
-		where T : struct, IVertexNormal
+		where T : struct, IVertexNormal, IVertexColor
 	{
 		private readonly List<List<WeightData>> weights;
 
@@ -398,6 +400,56 @@ namespace SonicRetro.SAModel.Direct3D
 					vertexBuffer[i].SetPosition(pos);
 					vertexBuffer[i].SetNormal(nor);
 				}
+		}
+
+		private System.Drawing.Color GetColor(float weight)
+		{
+			byte[] color1 = new byte[] { 0, 0, 127 };
+			byte[] color2 = new byte[] { 251, 64, 0 };
+			float t = 0;
+			if (weight < 0.25f)
+			{
+				color2 = new byte[] { 0, 153, 158 };
+				t = weight;
+			}
+			else if (weight < 0.50f)
+			{
+				color1 = new byte[] { 0, 153, 158 };
+				color2 = new byte[] { 0, 190, 20 };
+				t = weight - 0.25f;
+			}
+			else if (weight < 0.75f)
+			{
+				color1 = new byte[] { 0, 190, 20 };
+				color2 = new byte[] { 220, 213, 0 };
+				t = weight - 0.5f;
+			}
+			else
+			{
+				color1 = new byte[] { 220, 213, 0 };
+				t = weight - 0.75f;
+			}
+
+			t *= 4;
+			for (int i = 0; i < 3; i++)
+			{
+				color1[i] = (byte)(Math.Round(color1[i] * (1.0f - t)) + Math.Round(color2[i] * t));
+			}
+			return System.Drawing.Color.FromArgb(color1[0], color1[1], color1[2]);
+		}
+
+		public void UpdateSelection(int selected)
+		{
+			if (selected != -1)
+				for (int i = 0; i < weights.Count; i++)
+					if (weights[i] != null)
+					{
+						WeightData weight = weights[i].SingleOrDefault(a => a.Index == selected);
+						vertexBuffer[i].SetColor(GetColor(weight?.Weight ?? 0));
+					}
+					else
+						foreach (T v in vertexBuffer)
+							v.SetColor(System.Drawing.Color.White);
 		}
 	}
 }

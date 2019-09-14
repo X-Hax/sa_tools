@@ -401,27 +401,18 @@ namespace SonicRetro.SAModel.Direct3D
 				result = ProcessPolyList(attach.Poly, 0, weights);
 			attach.MeshInfo = result.ToArray();
 			int numverts = 0;
-			byte data = 0;
+			bool uv = false;
 			foreach (MeshInfo item in attach.MeshInfo)
 			{
 				numverts += item.Vertices.Length;
 				if (item.HasUV)
-					data |= 1;
-				if (item.HasVC)
-					data |= 2;
+					uv = true;
 			}
 			if (numverts == 0) return null;
-			switch (data)
-			{
-				case 3:
-					return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
-				case 2:
-					return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
-				case 1:
-					return new WeightedMesh<FVF_PositionNormalTextured>(attach, weights);
-				default:
-					return new WeightedMesh<FVF_PositionNormal>(attach, weights);
-			}
+			if (uv)
+				return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
+			else
+				return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
 		}
 
 		private static List<MeshInfo> ProcessPolyList(List<PolyChunk> strips, int start, List<List<WeightData>> weights)
@@ -614,6 +605,15 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (NJS_OBJECT child in obj.Children)
 				child.GetMatricesAnimated(transform, anim, animframe, ref animindex, matrices);
 			transform.Pop();
+		}
+
+		public static void UpdateWeightedModelSelection(this NJS_OBJECT obj, NJS_OBJECT selected, Mesh[] meshes)
+		{
+			NJS_OBJECT[] objs = obj.GetObjects();
+			int selind = Array.IndexOf(objs, selected);
+			for (int i = 0; i < objs.Length; i++)
+				if (meshes[i] is IWeightedMesh mesh)
+					mesh.UpdateSelection(selind);
 		}
 
 		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
