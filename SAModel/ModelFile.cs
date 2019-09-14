@@ -11,7 +11,7 @@ namespace SonicRetro.SAModel
 		public const ulong SA1MDL = 0x4C444D314153u;
 		public const ulong SA2MDL = 0x4C444D324153u;
 		public const ulong SA2BMDL = 0x4C444D42324153u;
-		public const ulong FormatMask = 0xFFFFFFFFFFFFu;
+		public const ulong FormatMask = 0xFFFFFFFFFFFFFFu;
 		public const ulong CurrentVersion = 3;
 		public const ulong SA1MDLVer = SA1MDL | (CurrentVersion << 56);
 		public const ulong SA2MDLVer = SA2MDL | (CurrentVersion << 56);
