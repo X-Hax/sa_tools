@@ -328,10 +328,8 @@ namespace TextureEditor
 									if (tlevels == 2)
 										break;
 								}
-								if (!tex.Mipmap)
-									tex.DataFormat = GvrDataFormat.Argb8888;
-								else if (tlevels == 0)
-									tex.DataFormat = GvrDataFormat.Rgb565;
+								if (tlevels == 0)
+									tex.DataFormat = GvrDataFormat.Dxt1;
 								else
 									tex.DataFormat = GvrDataFormat.Rgb5a3;
 							}
