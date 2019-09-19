@@ -583,6 +583,25 @@ namespace TextureEditor
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				textureImage.Image = textures[listBox1.SelectedIndex].Image;
+				switch (textures[listBox1.SelectedIndex])
+				{
+					case PvrTextureInfo pvr:
+						dataFormatLabel.Text = $"Data Format: {pvr.DataFormat}";
+						pixelFormatLabel.Text = $"Pixel Format: {pvr.PixelFormat}";
+						dataFormatLabel.Show();
+						pixelFormatLabel.Show();
+						break;
+					case GvrTextureInfo gvr:
+						dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
+						pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
+						dataFormatLabel.Show();
+						pixelFormatLabel.Show();
+						break;
+					default:
+						dataFormatLabel.Hide();
+						pixelFormatLabel.Hide();
+						break;
+				}
 			}
 			else
 				mipmapCheckBox.Enabled = false;
