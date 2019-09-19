@@ -569,10 +569,13 @@ namespace TextureEditor
 
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 			bool en = listBox1.SelectedIndex != -1;
 			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = en;
 			if (en)
 			{
+				textureUpButton.Enabled = listBox1.SelectedIndex > 0;
+				textureDownButton.Enabled = listBox1.SelectedIndex < textures.Count - 1;
 				textureName.Text = textures[listBox1.SelectedIndex].Name;
 				globalIndex.Value = textures[listBox1.SelectedIndex].GlobalIndex;
 				if (textures[listBox1.SelectedIndex].CheckMipmap())
@@ -604,7 +607,11 @@ namespace TextureEditor
 				}
 			}
 			else
+			{
+				textureUpButton.Enabled = false;
+				textureDownButton.Enabled = false;
 				mipmapCheckBox.Enabled = false;
+			}
 		}
 
 		private KeyValuePair<string, Bitmap>? BrowseForTexture(string textureName = null)
@@ -792,7 +799,41 @@ namespace TextureEditor
 			int i = listBox1.SelectedIndex;
 			textures.RemoveAt(i);
 			listBox1.Items.RemoveAt(i);
+			if (i == textures.Count)
+				--i;
+			listBox1.SelectedIndex = i;
 			UpdateTextureCount();
+		}
+
+		private void TextureUpButton_Click(object sender, EventArgs e)
+		{
+			int i = listBox1.SelectedIndex;
+			TextureInfo ti = textures[i];
+			textures.RemoveAt(i);
+			textures.Insert(i - 1, ti);
+			listBox1.BeginUpdate();
+			listBox1.Items.RemoveAt(i);
+			listBox1.Items.Insert(i - 1, ti.Name);
+			listBox1.EndUpdate();
+			listBox1.SelectedIndex = i - 1;
+		}
+
+		private void TextureDownButton_Click(object sender, EventArgs e)
+		{
+			int i = listBox1.SelectedIndex;
+			TextureInfo ti = textures[i];
+			textures.RemoveAt(i);
+			textures.Insert(i + 1, ti);
+			listBox1.BeginUpdate();
+			listBox1.Items.RemoveAt(i);
+			listBox1.Items.Insert(i + 1, ti.Name);
+			listBox1.EndUpdate();
+			listBox1.SelectedIndex = i + 1;
+		}
+
+		private void HexIndexCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 		}
 
 		private void textureName_TextChanged(object sender, EventArgs e)

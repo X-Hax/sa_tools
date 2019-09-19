@@ -30,6 +30,7 @@
 		{
 			System.Windows.Forms.Label label1;
 			System.Windows.Forms.Label label2;
+			System.Windows.Forms.Label label3;
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,8 +70,13 @@
 			this.dummyPanel = new System.Windows.Forms.Panel();
 			this.dataFormatLabel = new System.Windows.Forms.Label();
 			this.pixelFormatLabel = new System.Windows.Forms.Label();
+			this.indexTextBox = new System.Windows.Forms.TextBox();
+			this.hexIndexCheckBox = new System.Windows.Forms.CheckBox();
+			this.textureUpButton = new System.Windows.Forms.Button();
+			this.textureDownButton = new System.Windows.Forms.Button();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
+			label3 = new System.Windows.Forms.Label();
 			this.menuStrip1.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -86,7 +92,7 @@
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(3, 6);
+			label1.Location = new System.Drawing.Point(3, 32);
 			label1.Name = "label1";
 			label1.Size = new System.Drawing.Size(38, 13);
 			label1.TabIndex = 0;
@@ -95,7 +101,7 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(3, 31);
+			label2.Location = new System.Drawing.Point(3, 57);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(69, 13);
 			label2.TabIndex = 2;
@@ -292,10 +298,14 @@
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.listBox1);
 			this.splitContainer1.Panel1.Controls.Add(this.panel1);
+			this.splitContainer1.Panel1MinSize = 206;
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.AutoScroll = true;
+			this.splitContainer1.Panel2.Controls.Add(this.hexIndexCheckBox);
+			this.splitContainer1.Panel2.Controls.Add(this.indexTextBox);
+			this.splitContainer1.Panel2.Controls.Add(label3);
 			this.splitContainer1.Panel2.Controls.Add(this.mipmapCheckBox);
 			this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
 			this.splitContainer1.Panel2.Controls.Add(this.globalIndex);
@@ -303,7 +313,7 @@
 			this.splitContainer1.Panel2.Controls.Add(this.textureName);
 			this.splitContainer1.Panel2.Controls.Add(label1);
 			this.splitContainer1.Size = new System.Drawing.Size(584, 515);
-			this.splitContainer1.SplitterDistance = 194;
+			this.splitContainer1.SplitterDistance = 206;
 			this.splitContainer1.TabIndex = 1;
 			// 
 			// listBox1
@@ -312,7 +322,7 @@
 			this.listBox1.IntegralHeight = false;
 			this.listBox1.Location = new System.Drawing.Point(0, 0);
 			this.listBox1.Name = "listBox1";
-			this.listBox1.Size = new System.Drawing.Size(190, 482);
+			this.listBox1.Size = new System.Drawing.Size(202, 482);
 			this.listBox1.TabIndex = 0;
 			this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
 			// 
@@ -320,12 +330,14 @@
 			// 
 			this.panel1.AutoSize = true;
 			this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panel1.Controls.Add(this.textureDownButton);
+			this.panel1.Controls.Add(this.textureUpButton);
 			this.panel1.Controls.Add(this.removeTextureButton);
 			this.panel1.Controls.Add(this.addTextureButton);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panel1.Location = new System.Drawing.Point(0, 482);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(190, 29);
+			this.panel1.Size = new System.Drawing.Size(202, 29);
 			this.panel1.TabIndex = 1;
 			// 
 			// removeTextureButton
@@ -357,7 +369,7 @@
 			// 
 			this.mipmapCheckBox.AutoSize = true;
 			this.mipmapCheckBox.Enabled = false;
-			this.mipmapCheckBox.Location = new System.Drawing.Point(204, 29);
+			this.mipmapCheckBox.Location = new System.Drawing.Point(204, 55);
 			this.mipmapCheckBox.Name = "mipmapCheckBox";
 			this.mipmapCheckBox.Size = new System.Drawing.Size(63, 17);
 			this.mipmapCheckBox.TabIndex = 7;
@@ -375,7 +387,7 @@
 			this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 3);
 			this.tableLayoutPanel1.Controls.Add(this.dataFormatLabel, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.pixelFormatLabel, 0, 1);
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 55);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 81);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 4;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -436,7 +448,7 @@
 			// globalIndex
 			// 
 			this.globalIndex.Enabled = false;
-			this.globalIndex.Location = new System.Drawing.Point(78, 29);
+			this.globalIndex.Location = new System.Drawing.Point(78, 55);
 			this.globalIndex.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -450,7 +462,7 @@
 			// textureName
 			// 
 			this.textureName.Enabled = false;
-			this.textureName.Location = new System.Drawing.Point(78, 3);
+			this.textureName.Location = new System.Drawing.Point(78, 29);
 			this.textureName.Name = "textureName";
 			this.textureName.Size = new System.Drawing.Size(185, 20);
 			this.textureName.TabIndex = 1;
@@ -505,6 +517,61 @@
 			this.pixelFormatLabel.TabIndex = 7;
 			this.pixelFormatLabel.Text = "Pixel Format: Unknown";
 			this.pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// label3
+			// 
+			label3.AutoSize = true;
+			label3.Location = new System.Drawing.Point(3, 6);
+			label3.Name = "label3";
+			label3.Size = new System.Drawing.Size(36, 13);
+			label3.TabIndex = 8;
+			label3.Text = "Index:";
+			// 
+			// indexTextBox
+			// 
+			this.indexTextBox.Location = new System.Drawing.Point(78, 3);
+			this.indexTextBox.Name = "indexTextBox";
+			this.indexTextBox.ReadOnly = true;
+			this.indexTextBox.Size = new System.Drawing.Size(100, 20);
+			this.indexTextBox.TabIndex = 9;
+			this.indexTextBox.Text = "0";
+			// 
+			// hexIndexCheckBox
+			// 
+			this.hexIndexCheckBox.AutoSize = true;
+			this.hexIndexCheckBox.Location = new System.Drawing.Point(184, 5);
+			this.hexIndexCheckBox.Name = "hexIndexCheckBox";
+			this.hexIndexCheckBox.Size = new System.Drawing.Size(45, 17);
+			this.hexIndexCheckBox.TabIndex = 10;
+			this.hexIndexCheckBox.Text = "Hex";
+			this.hexIndexCheckBox.UseVisualStyleBackColor = true;
+			this.hexIndexCheckBox.CheckedChanged += new System.EventHandler(this.HexIndexCheckBox_CheckedChanged);
+			// 
+			// textureUpButton
+			// 
+			this.textureUpButton.AutoSize = true;
+			this.textureUpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.textureUpButton.Enabled = false;
+			this.textureUpButton.Location = new System.Drawing.Point(117, 3);
+			this.textureUpButton.Name = "textureUpButton";
+			this.textureUpButton.Size = new System.Drawing.Size(31, 23);
+			this.textureUpButton.TabIndex = 2;
+			this.textureUpButton.Text = "Up";
+			this.textureUpButton.UseVisualStyleBackColor = true;
+			this.textureUpButton.Click += new System.EventHandler(this.TextureUpButton_Click);
+			// 
+			// textureDownButton
+			// 
+			this.textureDownButton.AutoSize = true;
+			this.textureDownButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.textureDownButton.Enabled = false;
+			this.textureDownButton.Location = new System.Drawing.Point(154, 3);
+			this.textureDownButton.Name = "textureDownButton";
+			this.textureDownButton.Size = new System.Drawing.Size(45, 23);
+			this.textureDownButton.TabIndex = 3;
+			this.textureDownButton.Text = "Down";
+			this.textureDownButton.UseVisualStyleBackColor = true;
+			this.textureDownButton.Click += new System.EventHandler(this.TextureDownButton_Click);
 			// 
 			// MainForm
 			// 
@@ -583,6 +650,10 @@
 		private System.Windows.Forms.Panel dummyPanel;
 		private System.Windows.Forms.Label dataFormatLabel;
 		private System.Windows.Forms.Label pixelFormatLabel;
+		private System.Windows.Forms.CheckBox hexIndexCheckBox;
+		private System.Windows.Forms.TextBox indexTextBox;
+		private System.Windows.Forms.Button textureUpButton;
+		private System.Windows.Forms.Button textureDownButton;
 	}
 }
 
