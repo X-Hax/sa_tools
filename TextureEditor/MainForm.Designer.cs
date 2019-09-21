@@ -55,25 +55,26 @@
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listBox1 = new System.Windows.Forms.ListBox();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.textureDownButton = new System.Windows.Forms.Button();
+			this.textureUpButton = new System.Windows.Forms.Button();
 			this.removeTextureButton = new System.Windows.Forms.Button();
 			this.addTextureButton = new System.Windows.Forms.Button();
+			this.hexIndexCheckBox = new System.Windows.Forms.CheckBox();
+			this.indexTextBox = new System.Windows.Forms.TextBox();
 			this.mipmapCheckBox = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.textureImage = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.exportButton = new System.Windows.Forms.Button();
 			this.importButton = new System.Windows.Forms.Button();
+			this.dataFormatLabel = new System.Windows.Forms.Label();
+			this.pixelFormatLabel = new System.Windows.Forms.Label();
 			this.globalIndex = new System.Windows.Forms.NumericUpDown();
 			this.textureName = new System.Windows.Forms.TextBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.dummyPanel = new System.Windows.Forms.Panel();
-			this.dataFormatLabel = new System.Windows.Forms.Label();
-			this.pixelFormatLabel = new System.Windows.Forms.Label();
-			this.indexTextBox = new System.Windows.Forms.TextBox();
-			this.hexIndexCheckBox = new System.Windows.Forms.CheckBox();
-			this.textureUpButton = new System.Windows.Forms.Button();
-			this.textureDownButton = new System.Windows.Forms.Button();
+			this.textureSizeLabel = new System.Windows.Forms.Label();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -106,6 +107,15 @@
 			label2.Size = new System.Drawing.Size(69, 13);
 			label2.TabIndex = 2;
 			label2.Text = "Global Index:";
+			// 
+			// label3
+			// 
+			label3.AutoSize = true;
+			label3.Location = new System.Drawing.Point(3, 6);
+			label3.Name = "label3";
+			label3.Size = new System.Drawing.Size(36, 13);
+			label3.TabIndex = 8;
+			label3.Text = "Index:";
 			// 
 			// menuStrip1
 			// 
@@ -312,6 +322,7 @@
 			this.splitContainer1.Panel2.Controls.Add(label2);
 			this.splitContainer1.Panel2.Controls.Add(this.textureName);
 			this.splitContainer1.Panel2.Controls.Add(label1);
+			this.splitContainer1.Panel2.SizeChanged += new System.EventHandler(this.SplitContainer1_Panel2_SizeChanged);
 			this.splitContainer1.Size = new System.Drawing.Size(584, 515);
 			this.splitContainer1.SplitterDistance = 206;
 			this.splitContainer1.TabIndex = 1;
@@ -340,6 +351,32 @@
 			this.panel1.Size = new System.Drawing.Size(202, 29);
 			this.panel1.TabIndex = 1;
 			// 
+			// textureDownButton
+			// 
+			this.textureDownButton.AutoSize = true;
+			this.textureDownButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.textureDownButton.Enabled = false;
+			this.textureDownButton.Location = new System.Drawing.Point(154, 3);
+			this.textureDownButton.Name = "textureDownButton";
+			this.textureDownButton.Size = new System.Drawing.Size(45, 23);
+			this.textureDownButton.TabIndex = 3;
+			this.textureDownButton.Text = "Down";
+			this.textureDownButton.UseVisualStyleBackColor = true;
+			this.textureDownButton.Click += new System.EventHandler(this.TextureDownButton_Click);
+			// 
+			// textureUpButton
+			// 
+			this.textureUpButton.AutoSize = true;
+			this.textureUpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.textureUpButton.Enabled = false;
+			this.textureUpButton.Location = new System.Drawing.Point(117, 3);
+			this.textureUpButton.Name = "textureUpButton";
+			this.textureUpButton.Size = new System.Drawing.Size(31, 23);
+			this.textureUpButton.TabIndex = 2;
+			this.textureUpButton.Text = "Up";
+			this.textureUpButton.UseVisualStyleBackColor = true;
+			this.textureUpButton.Click += new System.EventHandler(this.TextureUpButton_Click);
+			// 
 			// removeTextureButton
 			// 
 			this.removeTextureButton.AutoSize = true;
@@ -365,6 +402,26 @@
 			this.addTextureButton.UseVisualStyleBackColor = true;
 			this.addTextureButton.Click += new System.EventHandler(this.addTextureButton_Click);
 			// 
+			// hexIndexCheckBox
+			// 
+			this.hexIndexCheckBox.AutoSize = true;
+			this.hexIndexCheckBox.Location = new System.Drawing.Point(184, 5);
+			this.hexIndexCheckBox.Name = "hexIndexCheckBox";
+			this.hexIndexCheckBox.Size = new System.Drawing.Size(45, 17);
+			this.hexIndexCheckBox.TabIndex = 10;
+			this.hexIndexCheckBox.Text = "Hex";
+			this.hexIndexCheckBox.UseVisualStyleBackColor = true;
+			this.hexIndexCheckBox.CheckedChanged += new System.EventHandler(this.HexIndexCheckBox_CheckedChanged);
+			// 
+			// indexTextBox
+			// 
+			this.indexTextBox.Location = new System.Drawing.Point(78, 3);
+			this.indexTextBox.Name = "indexTextBox";
+			this.indexTextBox.ReadOnly = true;
+			this.indexTextBox.Size = new System.Drawing.Size(100, 20);
+			this.indexTextBox.TabIndex = 9;
+			this.indexTextBox.Text = "0";
+			// 
 			// mipmapCheckBox
 			// 
 			this.mipmapCheckBox.AutoSize = true;
@@ -383,24 +440,27 @@
 			this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 2);
-			this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 3);
+			this.tableLayoutPanel1.Controls.Add(this.textureSizeLabel, 0, 2);
+			this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 3);
+			this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 4);
 			this.tableLayoutPanel1.Controls.Add(this.dataFormatLabel, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.pixelFormatLabel, 0, 1);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 81);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 4;
+			this.tableLayoutPanel1.RowCount = 5;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 137);
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 157);
 			this.tableLayoutPanel1.TabIndex = 6;
 			// 
 			// textureImage
 			// 
 			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.textureImage.Location = new System.Drawing.Point(0, 38);
+			this.textureImage.Location = new System.Drawing.Point(0, 58);
 			this.textureImage.Margin = new System.Windows.Forms.Padding(0);
 			this.textureImage.Name = "textureImage";
 			this.textureImage.Size = new System.Drawing.Size(64, 64);
@@ -414,7 +474,7 @@
 			this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panel2.Controls.Add(this.exportButton);
 			this.panel2.Controls.Add(this.importButton);
-			this.panel2.Location = new System.Drawing.Point(3, 105);
+			this.panel2.Location = new System.Drawing.Point(3, 125);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(123, 29);
 			this.panel2.TabIndex = 5;
@@ -444,6 +504,30 @@
 			this.importButton.Text = "Import...";
 			this.importButton.UseVisualStyleBackColor = true;
 			this.importButton.Click += new System.EventHandler(this.importButton_Click);
+			// 
+			// dataFormatLabel
+			// 
+			this.dataFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.dataFormatLabel.AutoSize = true;
+			this.dataFormatLabel.Location = new System.Drawing.Point(0, 3);
+			this.dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.dataFormatLabel.Name = "dataFormatLabel";
+			this.dataFormatLabel.Size = new System.Drawing.Size(117, 13);
+			this.dataFormatLabel.TabIndex = 6;
+			this.dataFormatLabel.Text = "Data Format: Unknown";
+			this.dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// pixelFormatLabel
+			// 
+			this.pixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.pixelFormatLabel.AutoSize = true;
+			this.pixelFormatLabel.Location = new System.Drawing.Point(0, 22);
+			this.pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.pixelFormatLabel.Name = "pixelFormatLabel";
+			this.pixelFormatLabel.Size = new System.Drawing.Size(116, 13);
+			this.pixelFormatLabel.TabIndex = 7;
+			this.pixelFormatLabel.Text = "Pixel Format: Unknown";
+			this.pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// globalIndex
 			// 
@@ -494,84 +578,17 @@
 			this.dummyPanel.TabIndex = 3;
 			this.dummyPanel.Visible = false;
 			// 
-			// dataFormatLabel
+			// textureSizeLabel
 			// 
-			this.dataFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.dataFormatLabel.AutoSize = true;
-			this.dataFormatLabel.Location = new System.Drawing.Point(0, 3);
-			this.dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-			this.dataFormatLabel.Name = "dataFormatLabel";
-			this.dataFormatLabel.Size = new System.Drawing.Size(117, 13);
-			this.dataFormatLabel.TabIndex = 6;
-			this.dataFormatLabel.Text = "Data Format: Unknown";
-			this.dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// pixelFormatLabel
-			// 
-			this.pixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.pixelFormatLabel.AutoSize = true;
-			this.pixelFormatLabel.Location = new System.Drawing.Point(0, 22);
-			this.pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-			this.pixelFormatLabel.Name = "pixelFormatLabel";
-			this.pixelFormatLabel.Size = new System.Drawing.Size(116, 13);
-			this.pixelFormatLabel.TabIndex = 7;
-			this.pixelFormatLabel.Text = "Pixel Format: Unknown";
-			this.pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// label3
-			// 
-			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(3, 6);
-			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(36, 13);
-			label3.TabIndex = 8;
-			label3.Text = "Index:";
-			// 
-			// indexTextBox
-			// 
-			this.indexTextBox.Location = new System.Drawing.Point(78, 3);
-			this.indexTextBox.Name = "indexTextBox";
-			this.indexTextBox.ReadOnly = true;
-			this.indexTextBox.Size = new System.Drawing.Size(100, 20);
-			this.indexTextBox.TabIndex = 9;
-			this.indexTextBox.Text = "0";
-			// 
-			// hexIndexCheckBox
-			// 
-			this.hexIndexCheckBox.AutoSize = true;
-			this.hexIndexCheckBox.Location = new System.Drawing.Point(184, 5);
-			this.hexIndexCheckBox.Name = "hexIndexCheckBox";
-			this.hexIndexCheckBox.Size = new System.Drawing.Size(45, 17);
-			this.hexIndexCheckBox.TabIndex = 10;
-			this.hexIndexCheckBox.Text = "Hex";
-			this.hexIndexCheckBox.UseVisualStyleBackColor = true;
-			this.hexIndexCheckBox.CheckedChanged += new System.EventHandler(this.HexIndexCheckBox_CheckedChanged);
-			// 
-			// textureUpButton
-			// 
-			this.textureUpButton.AutoSize = true;
-			this.textureUpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.textureUpButton.Enabled = false;
-			this.textureUpButton.Location = new System.Drawing.Point(117, 3);
-			this.textureUpButton.Name = "textureUpButton";
-			this.textureUpButton.Size = new System.Drawing.Size(31, 23);
-			this.textureUpButton.TabIndex = 2;
-			this.textureUpButton.Text = "Up";
-			this.textureUpButton.UseVisualStyleBackColor = true;
-			this.textureUpButton.Click += new System.EventHandler(this.TextureUpButton_Click);
-			// 
-			// textureDownButton
-			// 
-			this.textureDownButton.AutoSize = true;
-			this.textureDownButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.textureDownButton.Enabled = false;
-			this.textureDownButton.Location = new System.Drawing.Point(154, 3);
-			this.textureDownButton.Name = "textureDownButton";
-			this.textureDownButton.Size = new System.Drawing.Size(45, 23);
-			this.textureDownButton.TabIndex = 3;
-			this.textureDownButton.Text = "Down";
-			this.textureDownButton.UseVisualStyleBackColor = true;
-			this.textureDownButton.Click += new System.EventHandler(this.TextureDownButton_Click);
+			this.textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.textureSizeLabel.AutoSize = true;
+			this.textureSizeLabel.Location = new System.Drawing.Point(0, 41);
+			this.textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.textureSizeLabel.Name = "textureSizeLabel";
+			this.textureSizeLabel.Size = new System.Drawing.Size(42, 13);
+			this.textureSizeLabel.TabIndex = 11;
+			this.textureSizeLabel.Text = "Size: ---";
+			this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// MainForm
 			// 
@@ -654,6 +671,7 @@
 		private System.Windows.Forms.TextBox indexTextBox;
 		private System.Windows.Forms.Button textureUpButton;
 		private System.Windows.Forms.Button textureDownButton;
+		private System.Windows.Forms.Label textureSizeLabel;
 	}
 }
 

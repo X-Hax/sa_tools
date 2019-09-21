@@ -190,6 +190,12 @@ namespace TextureEditor
 				this.Close();
 		}
 
+		private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex > -1)
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+		}
+
 		private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			textures.Clear();
@@ -567,6 +573,40 @@ namespace TextureEditor
 			Close();
 		}
 
+		private void UpdateTextureView(Image image)
+		{
+			int width = image.Width;
+			int height = image.Height;
+			int maxwidth = splitContainer1.Panel2.Width - 20;
+			int maxheight = splitContainer1.Panel2.Height - (tableLayoutPanel1.Top + (tableLayoutPanel1.Height - textureImage.Height)) - 20;
+			if (width > maxwidth || height > maxheight)
+			{
+				double widthpct = width / (double)maxwidth;
+				double heightpct = height / (double)maxheight;
+				switch (Math.Sign(widthpct - heightpct))
+				{
+					case -1: // height > width
+						maxwidth = (int)(width / heightpct);
+						break;
+					case 1:
+						maxheight = (int)(height / widthpct);
+						break;
+				}
+				Bitmap bmp = new Bitmap(maxwidth, maxheight);
+				using (Graphics gfx = Graphics.FromImage(bmp))
+				{
+					gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+					gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+					gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+					gfx.DrawImage(image, 0, 0, maxwidth, maxheight);
+				}
+				textureImage.Image = bmp;
+			}
+			else
+				textureImage.Image = image;
+		}
+
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
@@ -585,7 +625,8 @@ namespace TextureEditor
 				}
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
-				textureImage.Image = textures[listBox1.SelectedIndex].Image;
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+				textureSizeLabel.Text = $"Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
 				switch (textures[listBox1.SelectedIndex])
 				{
 					case PvrTextureInfo pvr:
@@ -862,7 +903,9 @@ namespace TextureEditor
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture(listBox1.GetItemText(listBox1.SelectedItem));
 			if (tex.HasValue)
 			{
-				textureImage.Image = textures[listBox1.SelectedIndex].Image = tex.Value.Value;
+				textures[listBox1.SelectedIndex].Image = tex.Value.Value;
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+				textureSizeLabel.Text = $"Size: {tex.Value.Value.Width}x{tex.Value.Value.Height}";
 				if (textures[listBox1.SelectedIndex].CheckMipmap())
 				{
 					mipmapCheckBox.Enabled = true;
