@@ -195,7 +195,7 @@ namespace SonicRetro.SAModel
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static VertexData[] VertexBuffer = new VertexData[4095];
+		static VertexData[] VertexBuffer = new VertexData[32768];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public override void ProcessVertexData()
