@@ -483,7 +483,7 @@ namespace SonicRetro.SAModel
 		public PolyChunkMaterialBump()
 		{
 			Type = ChunkType.Material_Bump;
-			Size = 12;
+			Size = 6;
 		}
 
 		public PolyChunkMaterialBump(byte[] file, int address)
