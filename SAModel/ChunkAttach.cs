@@ -411,6 +411,8 @@ namespace SonicRetro.SAModel
 								}
 								polys.Add(str);
 							}
+							if (!hasVColor)
+								hasVColor = verts.Any(a => a.Color.HasValue && a.Color.Value != Color.White);
 #if modellog
 							indexes = new List<ushort>(System.Linq.Enumerable.Distinct(indexes));
 							indexes.Sort();
