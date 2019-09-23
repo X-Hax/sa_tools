@@ -177,7 +177,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				return (int)ERRORVALUE.InvalidDataMapping;
+				return (int)SA_Tools.Split.SplitERRORVALUE.InvalidDataMapping;
 			}
 
 			if (!File.Exists(startupArgs.filePath))
@@ -186,7 +186,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				return (int)ERRORVALUE.NoSourceFile;
+				return (int)SA_Tools.Split.SplitERRORVALUE.NoSourceFile;
 			}
 
 			if (!File.Exists(startupArgs.dataMappingPath))
@@ -195,7 +195,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				return (int)ERRORVALUE.NoDataMapping;
+				return (int)SA_Tools.Split.SplitERRORVALUE.NoDataMapping;
 			}
 
 			// check our output folder's last character for validity. Modify it if need be so that sub folders do not get created.
@@ -227,19 +227,19 @@ namespace ProjectManager
 					Console.WriteLine("Press any key to exit.");
 					Console.ReadLine();
 
-					return (int)ERRORVALUE.InvalidProject;
+					return (int)SA_Tools.Split.SplitERRORVALUE.InvalidProject;
 				}
 			}
 
 			System.IO.FileInfo fileInfo = new System.IO.FileInfo(startupArgs.filePath);
 
-			return (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder) :
-				Split.Split.SplitFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder);
+			return (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder) :
+				SA_Tools.Split.Split.SplitFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder);
 		}
 
 		private static void CLISplitMDL(StartupArgs args)
 		{
-			SplitMDL.SplitMDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
+			SA_Tools.SplitMDL.SplitMDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
 		}
 
 		private static void CLIBuild(StartupArgs args)
