@@ -37,9 +37,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NvTriStripDotNet">
-      <HintPath>..\Dependencies\NvTriStripDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -49,6 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
+      <Project>{0d72870c-29a2-4b16-b016-2f2e266a0e64}</Project>
+      <Name>SAEditorCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>

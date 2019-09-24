@@ -99,10 +99,6 @@ namespace SonicRetro.SAModel
 
 		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex);
 
-		public abstract BasicAttach ToBasicModel();
-
-		public abstract ChunkAttach ToChunkModel();
-
 		object ICloneable.Clone() => Clone();
 
 		public abstract Attach Clone();

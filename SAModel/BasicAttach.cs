@@ -787,16 +787,6 @@ namespace SonicRetro.SAModel
 			Normal = vert;
 		}
 
-		public override BasicAttach ToBasicModel()
-		{
-			return this;
-		}
-
-		public override ChunkAttach ToChunkModel()
-		{
-			throw new NotImplementedException(); // TODO
-		}
-
 		public override Attach Clone()
 		{
 			BasicAttach result = (BasicAttach)MemberwiseClone();
