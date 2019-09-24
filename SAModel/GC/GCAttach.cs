@@ -700,16 +700,6 @@ namespace SonicRetro.SAModel.GC
 			throw new System.NotImplementedException();
 		}
 
-		public override BasicAttach ToBasicModel()
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override ChunkAttach ToChunkModel()
-		{
-			throw new System.NotImplementedException();
-		}
-
 		public override Attach Clone()
 		{
 			throw new System.NotImplementedException();
