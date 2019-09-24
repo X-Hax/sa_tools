@@ -4,9 +4,42 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-
 namespace SonicRetro.SAModel
 {
+	class CachedVertex : IEquatable<CachedVertex>
+	{
+		public Vertex vertex;
+		public Vertex normal;
+		public Color color;
+		public UV uv;
+
+		public CachedVertex(Vertex v, Vertex n, Color c)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+		}
+
+		public CachedVertex(Vertex v, Vertex n, Color c, UV u)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+			uv = u;
+		}
+
+		public bool Equals(CachedVertex other)
+		{
+			if (!vertex.Equals(other.vertex)) return false;
+			if (!normal.Equals(other.normal)) return false;
+			if (!color.Equals(other.color)) return false;
+			if (uv == null && other.uv != null) return false;
+			if (other.uv == null) return false;
+			if (!uv.Equals(other.uv)) return false;
+			return true;
+		}
+	}
+
 	[Serializable]
 	public class ChunkAttach : Attach
 	{
@@ -22,7 +55,171 @@ namespace SonicRetro.SAModel
 			Name = "attach_" + Extensions.GenerateIdentifier();
 			Bounds = new BoundingSphere();
 		}
+		public static ChunkAttach CreateFromAssimp(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
+		{
+			ChunkAttach attach = new ChunkAttach(true, true);
+			NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
+			bool hasnormal = meshes.Any(a => a.HasNormals);
+			bool hasvcolor = meshes.Any(a => a.HasVertexColors(0));
+			List<CachedVertex> cache = new List<CachedVertex>();
+			List<List<Strip>> strips = new List<List<Strip>>();
+			List<List<List<UV>>> uvs = new List<List<List<UV>>>();
+			VertexChunk vertexChunk;
+			if (hasvcolor)
+				vertexChunk = new VertexChunk(ChunkType.Vertex_VertexDiffuse8);
+			else if (hasnormal)
+				vertexChunk = new VertexChunk(ChunkType.Vertex_VertexNormal);
+			else
+				vertexChunk = new VertexChunk(ChunkType.Vertex_Vertex);
+			foreach (Assimp.Mesh aiMesh in meshes)
+			{			
+				List<Strip> polys = new List<Strip>();
+				List<List<UV>> us = null;
+				bool hasUV = aiMesh.HasTextureCoords(0);
+				bool hasVColor = aiMesh.HasVertexColors(0);
+				int currentstriptotal = 0;
 
+				List<ushort> tris = new List<ushort>();
+				Dictionary<ushort, Assimp.Vector3D> uvmap = new Dictionary<ushort, Assimp.Vector3D>();
+				foreach (Assimp.Face aiFace in aiMesh.Faces)
+					for (int i = 0; i < 3; i++)
+					{
+						UV uv = null;
+						if (hasUV)
+						{
+							uv = new UV()
+							{
+								U = aiMesh.TextureCoordinateChannels[0][currentstriptotal].X,
+								V = 1.0f - aiMesh.TextureCoordinateChannels[0][currentstriptotal].Y
+							};
+						}
+
+						Color vertexColor = Color.White;
+						if (hasVColor)
+						{
+							Assimp.Color4D aiColor = aiMesh.VertexColorChannels[0][currentstriptotal];
+							vertexColor = Color.FromArgb((int)(aiColor.A * 255.0f), (int)(aiColor.R * 255.0f), (int)(aiColor.G * 255.0f), (int)(aiColor.B * 255.0f));
+						}
+
+						ushort ind = (ushort)cache.AddUnique(new CachedVertex(
+							new Vertex(aiMesh.Vertices[aiFace.Indices[i]].X, aiMesh.Vertices[aiFace.Indices[i]].Y,
+							aiMesh.Vertices[aiFace.Indices[i]].Z),
+							new Vertex(aiMesh.Normals[aiFace.Indices[i]].X, aiMesh.Normals[aiFace.Indices[i]].Y,
+							aiMesh.Normals[aiFace.Indices[i]].Z),
+							vertexColor,
+							uv));
+						if (hasUV)
+							uvmap[ind] = aiMesh.TextureCoordinateChannels[0][currentstriptotal];
+						++currentstriptotal;
+						tris.Add(ind);
+					}
+
+				if (hasUV)
+					us = new List<List<UV>>();
+
+				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+				foreach(NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
+				{
+					var stripIndices = new ushort[grp.Indices.Length];
+					List<UV> stripuv = new List<UV>();
+					for (var j = 0; j < grp.Indices.Length; j++)
+					{
+						var vertexIndex = grp.Indices[j];
+						stripIndices[j] = vertexIndex;
+						if (hasUV)
+							stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = 1.0f - uvmap[vertexIndex].Y });
+					}
+
+					polys.Add(new Strip(stripIndices, false));
+					if (hasUV)
+						us.Add(stripuv);
+					//PolyChunkStrip.Strip strp = new PolyChunkStrip.Strip(false, grp.Indices, null, null);
+					//strip.Strips.Add(strp);
+				}
+				strips.Add(polys);
+				uvs.Add(us);
+			}
+			foreach (var item in cache)
+			{
+				vertexChunk.Vertices.Add(item.vertex);
+				if (hasnormal)
+					vertexChunk.Normals.Add(item.normal);
+				if (hasvcolor)
+					vertexChunk.Diffuse.Add(item.color);
+			}
+			vertexChunk.VertexCount = (ushort)cache.Count;
+			switch (vertexChunk.Type)
+			{
+				case ChunkType.Vertex_Vertex:
+					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 3 + 1);
+					break;
+				case ChunkType.Vertex_VertexDiffuse8:
+					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 4 + 1);
+					break;
+				case ChunkType.Vertex_VertexNormal:
+					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 6 + 1);
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuse8:
+					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 7 + 1);
+					break;
+			}
+			attach.Vertex.Add(vertexChunk);
+			for (int i = 0; i < meshes.Count; i++)
+			{
+				Assimp.Mesh aiMesh = meshes[i];
+
+				//material stuff
+				Assimp.Material currentAiMat = materials[aiMesh.MaterialIndex];
+				if (currentAiMat != null)
+				{
+					//output mat first then texID, thats how the official exporter worked
+					PolyChunkMaterial material = new PolyChunkMaterial();
+					attach.Poly.Add(material);
+					if (currentAiMat.HasTextureDiffuse)
+					{
+						if (textures != null)
+						{
+							PolyChunkTinyTextureID tinyTexId = new PolyChunkTinyTextureID();
+							int texId = 0;
+							for (int j = 0; j < textures.Length; j++)
+								if (textures[j] == Path.GetFileNameWithoutExtension(currentAiMat.TextureDiffuse.FilePath))
+									texId = j;
+							tinyTexId.TextureID = (ushort)texId;
+							attach.Poly.Add(tinyTexId);
+						}
+					}
+					else if (textures != null)
+					{
+						PolyChunkTinyTextureID tinyTexId = new PolyChunkTinyTextureID();
+						int texId = 0;
+						for (int j = 0; j < textures.Length; j++)
+							if (textures[j].ToLower() == currentAiMat.Name.ToLower())
+								texId = j;
+						tinyTexId.TextureID = (ushort)texId;
+						attach.Poly.Add(tinyTexId);
+					}
+				}
+
+				PolyChunkStrip strip;
+				if (aiMesh.HasTextureCoords(0))
+					strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
+				else
+					strip = new PolyChunkStrip(ChunkType.Strip_Strip);
+
+				for (int i1 = 0; i1 < strips[i].Count; i1++)
+				{
+					Strip item = strips[i][i1];
+					UV[] uv2 = null;
+					if (aiMesh.HasTextureCoords(0))
+						uv2 = uvs[i][i1].ToArray();
+					strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uv2, null));
+				}
+				attach.Poly.Add(strip);
+			}
+
+
+			return attach;
+		}
 		public ChunkAttach(bool hasVertex, bool hasPoly)
 			: this()
 		{

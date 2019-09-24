@@ -299,6 +299,9 @@ namespace SonicRetro.SAModel.SAMDL
 				case ModelFormat.Chunk:
 					outfmt = ModelFormat.Chunk;
 					break;
+				case ModelFormat.GC:
+					outfmt = ModelFormat.GC;
+					break;
 			}
 		}
 
@@ -353,8 +356,8 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
-				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
-				Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
+				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl",
+				Filter = (outfmt == ModelFormat.GC ? "SA2B" : (outfmt == ModelFormat.Chunk ? "SA2" : "SA1")) + "MDL Files|*." + (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl|All Files|*.*"
 			})
 			{
 				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
@@ -1639,6 +1642,19 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					string objFileName = a.FileName;
 					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate);
+					loaded = false;
+					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
+					timer1.Stop();
+					modelFile = null;
+					animation = null;
+					animations = null;
+					animnum = -1;
+					animframe = 0;
+
+					outfmt = ModelFormat.GC;
+					animations = new NJS_MOTION[0];
+					treeView1.Nodes.Clear();
+					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
 
 					editMaterialsToolStripMenuItem.Enabled = true;

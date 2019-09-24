@@ -167,16 +167,19 @@ namespace SonicRetro.SAModel
 			List<Mesh> meshes = new List<Mesh>();
 			foreach (int i in node.MeshIndices)
 				meshes.Add(scene.Meshes[i]);
-			//materials.Add(new NJS_MATERIAL() { DiffuseColor = System.Drawing.Color.White});
+			
 			if (node.HasMeshes)
 			{
 				if(format == ModelFormat.Basic)
 					Attach = new BasicAttach(scene.Materials, meshes, textures);
 				else if(format == ModelFormat.GC)
 					Attach = new GC.GCAttach(scene.Materials, meshes, textures);
+				else if (format == ModelFormat.Chunk)
+					Attach = ChunkAttach.CreateFromAssimp(scene.Materials, meshes, textures);
 			}
 			else
 				Attach = null;
+
 			if (node.HasChildren)
 			{
 
@@ -215,7 +218,7 @@ namespace SonicRetro.SAModel
 		public NJS_OBJECT(Scene scene, Node node, Node parentNode, NJS_OBJECT parent, string[] textures = null)
 		{
 			Parent = parent;
-			AssimpLoad(scene, node, parentNode, ModelFormat.Basic, textures);
+			AssimpLoad(scene, node, parentNode, ModelFormat.Chunk, textures);
 		}
 		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene, node, null, null, textures)
 		{

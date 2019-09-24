@@ -99,7 +99,6 @@ namespace SonicRetro.SAModel.GC
 				}
 				if (m.HasVertexColors(0))
 				{
-
 					if (m.VertexColorChannels[0].Count == 87)
 						currentAiMat = currentAiMat;
 					foreach (Color4D texcoord in m.VertexColorChannels[0])
@@ -108,11 +107,11 @@ namespace SonicRetro.SAModel.GC
 				}
 				if (currentAiMat != null)
 				{
-					IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.HasNormal;
+					IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.HasNormal | IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex | IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex;
 					if (m.HasTextureCoords(0))
-						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV;
+						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV | IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
 					if (m.HasVertexColors(0))
-						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor;
+						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor | IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex;
 					IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
 					parameters.Add(indexParam);
 					LightingParameter lightParam = new LightingParameter();

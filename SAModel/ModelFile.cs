@@ -254,6 +254,9 @@ namespace SonicRetro.SAModel
 					case SA2MDL:
 						Format = ModelFormat.Chunk;
 						break;
+					case SA2BMDL:
+						Format = ModelFormat.GC;
+						break;
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
