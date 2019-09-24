@@ -190,6 +190,12 @@ namespace TextureEditor
 				this.Close();
 		}
 
+		private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex > -1)
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+		}
+
 		private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			textures.Clear();
@@ -328,10 +334,8 @@ namespace TextureEditor
 									if (tlevels == 2)
 										break;
 								}
-								if (!tex.Mipmap)
-									tex.DataFormat = GvrDataFormat.Argb8888;
-								else if (tlevels == 0)
-									tex.DataFormat = GvrDataFormat.Rgb565;
+								if (tlevels == 0)
+									tex.DataFormat = GvrDataFormat.Dxt1;
 								else
 									tex.DataFormat = GvrDataFormat.Rgb5a3;
 							}
@@ -569,12 +573,49 @@ namespace TextureEditor
 			Close();
 		}
 
+		private void UpdateTextureView(Image image)
+		{
+			int width = image.Width;
+			int height = image.Height;
+			int maxwidth = splitContainer1.Panel2.Width - 20;
+			int maxheight = splitContainer1.Panel2.Height - (tableLayoutPanel1.Top + (tableLayoutPanel1.Height - textureImage.Height)) - 20;
+			if (width > maxwidth || height > maxheight)
+			{
+				double widthpct = width / (double)maxwidth;
+				double heightpct = height / (double)maxheight;
+				switch (Math.Sign(widthpct - heightpct))
+				{
+					case -1: // height > width
+						maxwidth = (int)(width / heightpct);
+						break;
+					case 1:
+						maxheight = (int)(height / widthpct);
+						break;
+				}
+				Bitmap bmp = new Bitmap(maxwidth, maxheight);
+				using (Graphics gfx = Graphics.FromImage(bmp))
+				{
+					gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+					gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+					gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+					gfx.DrawImage(image, 0, 0, maxwidth, maxheight);
+				}
+				textureImage.Image = bmp;
+			}
+			else
+				textureImage.Image = image;
+		}
+
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 			bool en = listBox1.SelectedIndex != -1;
 			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = en;
 			if (en)
 			{
+				textureUpButton.Enabled = listBox1.SelectedIndex > 0;
+				textureDownButton.Enabled = listBox1.SelectedIndex < textures.Count - 1;
 				textureName.Text = textures[listBox1.SelectedIndex].Name;
 				globalIndex.Value = textures[listBox1.SelectedIndex].GlobalIndex;
 				if (textures[listBox1.SelectedIndex].CheckMipmap())
@@ -584,10 +625,34 @@ namespace TextureEditor
 				}
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
-				textureImage.Image = textures[listBox1.SelectedIndex].Image;
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+				textureSizeLabel.Text = $"Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
+				switch (textures[listBox1.SelectedIndex])
+				{
+					case PvrTextureInfo pvr:
+						dataFormatLabel.Text = $"Data Format: {pvr.DataFormat}";
+						pixelFormatLabel.Text = $"Pixel Format: {pvr.PixelFormat}";
+						dataFormatLabel.Show();
+						pixelFormatLabel.Show();
+						break;
+					case GvrTextureInfo gvr:
+						dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
+						pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
+						dataFormatLabel.Show();
+						pixelFormatLabel.Show();
+						break;
+					default:
+						dataFormatLabel.Hide();
+						pixelFormatLabel.Hide();
+						break;
+				}
 			}
 			else
+			{
+				textureUpButton.Enabled = false;
+				textureDownButton.Enabled = false;
 				mipmapCheckBox.Enabled = false;
+			}
 		}
 
 		private KeyValuePair<string, Bitmap>? BrowseForTexture(string textureName = null)
@@ -775,7 +840,41 @@ namespace TextureEditor
 			int i = listBox1.SelectedIndex;
 			textures.RemoveAt(i);
 			listBox1.Items.RemoveAt(i);
+			if (i == textures.Count)
+				--i;
+			listBox1.SelectedIndex = i;
 			UpdateTextureCount();
+		}
+
+		private void TextureUpButton_Click(object sender, EventArgs e)
+		{
+			int i = listBox1.SelectedIndex;
+			TextureInfo ti = textures[i];
+			textures.RemoveAt(i);
+			textures.Insert(i - 1, ti);
+			listBox1.BeginUpdate();
+			listBox1.Items.RemoveAt(i);
+			listBox1.Items.Insert(i - 1, ti.Name);
+			listBox1.EndUpdate();
+			listBox1.SelectedIndex = i - 1;
+		}
+
+		private void TextureDownButton_Click(object sender, EventArgs e)
+		{
+			int i = listBox1.SelectedIndex;
+			TextureInfo ti = textures[i];
+			textures.RemoveAt(i);
+			textures.Insert(i + 1, ti);
+			listBox1.BeginUpdate();
+			listBox1.Items.RemoveAt(i);
+			listBox1.Items.Insert(i + 1, ti.Name);
+			listBox1.EndUpdate();
+			listBox1.SelectedIndex = i + 1;
+		}
+
+		private void HexIndexCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 		}
 
 		private void textureName_TextChanged(object sender, EventArgs e)
@@ -804,7 +903,9 @@ namespace TextureEditor
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture(listBox1.GetItemText(listBox1.SelectedItem));
 			if (tex.HasValue)
 			{
-				textureImage.Image = textures[listBox1.SelectedIndex].Image = tex.Value.Value;
+				textures[listBox1.SelectedIndex].Image = tex.Value.Value;
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+				textureSizeLabel.Text = $"Size: {tex.Value.Value.Width}x{tex.Value.Value.Height}";
 				if (textures[listBox1.SelectedIndex].CheckMipmap())
 				{
 					mipmapCheckBox.Enabled = true;

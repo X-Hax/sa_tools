@@ -200,16 +200,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				levelItemNode.Nodes.Add(levelItem.Name);
 			}
 
-			foreach (DeathZoneItem deathZone in LevelData.DeathZones)
+			if (LevelData.DeathZones != null)
 			{
-				deathZoneNode.Nodes.Add(deathZone.Name);
+				foreach (DeathZoneItem deathZone in LevelData.DeathZones)
+				{
+					deathZoneNode.Nodes.Add(deathZone.Name);
+				}
 			}
 
 			// set node
-			foreach (SETItem setItem in LevelData.SETItems(LevelData.Character))
-			{
-				setNode.Nodes.Add(setItem.Name);
-			}
+			if (!LevelData.SETItemsIsNull() && LevelData.CharHasSETItems(LevelData.Character))
+				foreach (SETItem setItem in LevelData.SETItems(LevelData.Character))
+				{
+					setNode.Nodes.Add(setItem.Name);
+				}
 
 			// cam node
 			foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
@@ -222,10 +226,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				splineNode.Nodes.Add("spline_" + splineData.Code.ToString("X"));
 			}
 
-			foreach (MissionSETItem missionSet in LevelData.MissionSETItems[LevelData.Character])
-			{
-				missionSETNode.Nodes.Add(missionSETNode.Name);
-			}
+			if (LevelData.MissionSETItems != null && LevelData.MissionSETItems[LevelData.Character] != null)
+				foreach (MissionSETItem missionSet in LevelData.MissionSETItems[LevelData.Character])
+				{
+					missionSETNode.Nodes.Add(missionSETNode.Name);
+				}
 
 			sceneTreeView.EndUpdate();
 		}

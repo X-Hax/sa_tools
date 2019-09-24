@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using SA_Tools;
 using SonicRetro.SAModel;
 
-namespace ProjectManager.SplitDLL
+namespace SA_Tools.SplitDLL
 {
-	static class SplitDLL
+	public static class SplitDLL
 	{
 		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
 		{
@@ -499,10 +499,10 @@ namespace ProjectManager.SplitDLL
 				Console.WriteLine(e.StackTrace);
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
-				return (int)ERRORVALUE.UnhandledException;
+				return (int)SA_Tools.Split.SplitERRORVALUE.UnhandledException;
 			}
 
-			return (int)ERRORVALUE.Success;
+			return (int)SA_Tools.Split.SplitERRORVALUE.Success;
 		}
 
 		[DllImport("shlwapi.dll", SetLastError = true)]

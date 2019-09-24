@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Text;
 using SA_Tools;
 
-namespace ProjectManager.SplitDLL
+namespace SA_Tools.SplitDLL
 {
 	public class IniData
 	{

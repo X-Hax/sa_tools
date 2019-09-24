@@ -404,7 +404,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoSourceFile.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 
@@ -414,7 +414,7 @@ namespace ProjectManager
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
 
-				throw new Exception(ERRORVALUE.NoDataMapping.ToString());
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoDataMapping.ToString());
 				//return (int)ERRORVALUE.NoDataMapping;
 			}
 
@@ -440,7 +440,7 @@ namespace ProjectManager
 					Console.WriteLine("Press any key to exit.");
 					Console.ReadLine();
 
-					throw new Exception(ERRORVALUE.InvalidProject.ToString());
+					throw new Exception(SA_Tools.Split.SplitERRORVALUE.InvalidProject.ToString());
 					//return (int)ERRORVALUE.InvalidProject;
 				}
 			}
@@ -449,8 +449,8 @@ namespace ProjectManager
 			// switch on file extension - if dll, use dll splitter
 			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
 
-			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-				Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
+				SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
 		}
 
 		private void DoSADXSplit(ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -601,7 +601,7 @@ namespace ProjectManager
 				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
 				Directory.CreateDirectory(fileOutputFolder);
 
-				SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
+				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
 					fileOutputFolder, splitMDL.animationFiles);
 			}
 
@@ -618,7 +618,7 @@ namespace ProjectManager
 
 		private string GetOutputFolder()
 		{
-			return Path.Combine(GetGameFolder(), string.Format("Projects/{0}/", ProjectNameBox.Text));
+			return Path.Combine(GetGameFolder(), string.Format("Projects\\{0}\\", ProjectNameBox.Text));
 		}
 
 		private string GetGameFolder()
@@ -659,6 +659,24 @@ namespace ProjectManager
 				string outputFolder = GetOutputFolder();
 
 				Directory.CreateDirectory(outputFolder);
+
+				// create our convenience folders
+				string exportFolderPath = Path.Combine(outputFolder, "Exports");
+				Directory.CreateDirectory(exportFolderPath);
+
+				string exportReadmePath = Path.Combine(exportFolderPath, "readme.txt");
+				File.WriteAllLines(exportReadmePath, new string[] { "Use this for storing models for export." });
+
+				string importFolderPath = Path.Combine(outputFolder, "Imports");
+				Directory.CreateDirectory(importFolderPath);
+
+				string importReadmePath = Path.Combine(importFolderPath, "readme.txt");
+				File.WriteAllLines(importReadmePath, new string[] { "Use this for storing models for import." });
+
+				string sourceFolderPath = Path.Combine(outputFolder, "Source");
+				Directory.CreateDirectory(sourceFolderPath);
+				string sourceReadmePath = Path.Combine(sourceFolderPath, "readme.txt");
+				File.WriteAllLines(sourceReadmePath, new string[] { "Use this folder for storing your source code." });
 
 				// get our ini files to split
 				string iniFolder = "";

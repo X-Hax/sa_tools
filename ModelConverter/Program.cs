@@ -36,7 +36,10 @@ namespace ModelConverter
 						bool hasnormal = basatt.Normal?.Length > 0;
 						bool hasvcolor = basatt.Mesh.Any(a => a.VColor != null);
 						if (hasvcolor)
+						{
 							vcnk = new VertexChunk(ChunkType.Vertex_VertexDiffuse8);
+							hasnormal = false;
+						}
 						else if (hasnormal)
 							vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
 						else

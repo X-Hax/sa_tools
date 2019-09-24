@@ -38,6 +38,7 @@
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.showCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1 = new System.Windows.Forms.UserControl();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -53,7 +54,7 @@
 			this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.timer1 = new System.Timers.Timer();
-			this.showCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -139,6 +140,16 @@
 			this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
 			this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.viewToolStripMenuItem.Text = "&View";
+			// 
+			// showCameraToolStripMenuItem
+			// 
+			this.showCameraToolStripMenuItem.Checked = true;
+			this.showCameraToolStripMenuItem.CheckOnClick = true;
+			this.showCameraToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.showCameraToolStripMenuItem.Name = "showCameraToolStripMenuItem";
+			this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+			this.showCameraToolStripMenuItem.Text = "Show &Camera";
+			this.showCameraToolStripMenuItem.Click += new System.EventHandler(this.showCameraToolStripMenuItem_Click);
 			// 
 			// panel1
 			// 
@@ -264,6 +275,7 @@
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.camModeLabel,
             this.cameraPosLabel,
+            this.cameraFOVLabel,
             this.sceneNumLabel,
             this.animFrameLabel});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 538);
@@ -305,15 +317,12 @@
 			this.timer1.SynchronizingObject = this;
 			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
 			// 
-			// showCameraToolStripMenuItem
+			// cameraFOVLabel
 			// 
-			this.showCameraToolStripMenuItem.Checked = true;
-			this.showCameraToolStripMenuItem.CheckOnClick = true;
-			this.showCameraToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.showCameraToolStripMenuItem.Name = "showCameraToolStripMenuItem";
-			this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.showCameraToolStripMenuItem.Text = "Show &Camera";
-			this.showCameraToolStripMenuItem.Click += new System.EventHandler(this.showCameraToolStripMenuItem_Click);
+			this.cameraFOVLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+			this.cameraFOVLabel.Name = "cameraFOVLabel";
+			this.cameraFOVLabel.Size = new System.Drawing.Size(45, 19);
+			this.cameraFOVLabel.Text = "FOV: 0";
 			// 
 			// MainForm
 			// 
@@ -374,6 +383,7 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
 		private System.Windows.Forms.ToolStripMenuItem showCameraToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel cameraFOVLabel;
 	}
 }
 

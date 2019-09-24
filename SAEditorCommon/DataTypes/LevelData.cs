@@ -118,7 +118,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public static IEnumerable<SETItem> SETItems(int characterID)
 		{
-			return (IEnumerable<SETItem>)setItems[characterID];
+			return setItems[characterID];
 		}
 
 		public static int GetIndexOfSETItem(int characterID, SETItem item)

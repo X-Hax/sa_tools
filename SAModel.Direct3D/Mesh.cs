@@ -354,9 +354,18 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (short[] sub in indexBuffer)
 				for (int i = 0; i < sub.Length; i += 3)
 				{
-					Vector3 v1 = vertexBuffer[sub[i]].GetPosition();
+					int v1Index = sub[i];
+					int v2Index = sub[i + 1];
+					int v3Index = sub[i + 2];
+
+					/*Vector3 v1 = vertexBuffer[sub[i]].GetPosition();
 					Vector3 v2 = vertexBuffer[sub[i + 1]].GetPosition();
-					Vector3 v3 = vertexBuffer[sub[i + 2]].GetPosition();
+					Vector3 v3 = vertexBuffer[sub[i + 2]].GetPosition();*/
+
+					Vector3 v1 = vertexBuffer[v1Index].GetPosition();
+					Vector3 v2 = vertexBuffer[v2Index].GetPosition();
+					Vector3 v3 = vertexBuffer[v3Index].GetPosition();
+
 					if (Collision.RayIntersectsTriangle(ref ray, ref v1, ref v2, ref v3, out float distance))
 					{
 						Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1)), transform);

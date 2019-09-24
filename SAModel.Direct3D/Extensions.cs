@@ -287,8 +287,8 @@ namespace SonicRetro.SAModel.Direct3D
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static VertexData[] VertexBuffer = new VertexData[4095];
-		static List<WeightData>[] WeightBuffer = new List<WeightData>[4095];
+		static VertexData[] VertexBuffer = new VertexData[32768];
+		static List<WeightData>[] WeightBuffer = new List<WeightData>[32768];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
@@ -333,7 +333,7 @@ namespace SonicRetro.SAModel.Direct3D
 						for (int i = 0; i < chunk.VertexCount; i++)
 						{
 							var weightByte = chunk.NinjaFlags[i] >> 16;
-							var weight = weightByte * (1f / 255f);
+							var weight = weightByte / 255f;
 							var origpos = chunk.Vertices[i].ToVector3();
 							var position = (Vector3.TransformCoordinate(origpos, transform.Top) * weight).ToVertex();
 							var orignor = Vector3.Up;

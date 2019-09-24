@@ -207,6 +207,7 @@ namespace SA2EventViewer
 			Text = "SA2 Event Viewer: " + currentFileName;
 			camModeLabel.Text = eventcamera ? "Event Cam" : "Free Cam";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
+			cameraFOVLabel.Text = $"FOV: {cam.FOV}";
 			sceneNumLabel.Text = $"Scene: {scenenum}";
 			animFrameLabel.Text = $"Frame: {animframe}";
 		}
@@ -215,19 +216,7 @@ namespace SA2EventViewer
 		internal void DrawEntireModel()
 		{
 			if (!loaded) return;
-			float fov = (float)(Math.PI / 4);
-			if (eventcamera && animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
-			{
-				int an = 0;
-				int fr = animframe;
-				while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
-				{
-					fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
-					an++;
-				}
-				fov = SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(@event.Scenes[scenenum].CameraMotions[an].Models[0].GetAngle(fr));
-			}
-			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(fov, panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(cam.FOV, panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -375,10 +364,12 @@ namespace SA2EventViewer
 						dir = Vector3.Normalize(cam.Position - data.GetTarget(fr).ToVector3());
 					cam.Direction = dir;
 					cam.Roll = data.GetRoll(fr);
+					cam.FOV = SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(@event.Scenes[scenenum].CameraMotions[an].Models[0].GetAngle(fr));
 				}
 				else
 				{
 					cam.mode = 0;
+					cam.FOV = (float)(Math.PI / 4);
 					if (animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
 					{
 						int an = 0;

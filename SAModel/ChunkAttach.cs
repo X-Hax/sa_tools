@@ -393,7 +393,7 @@ namespace SonicRetro.SAModel
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static VertexData[] VertexBuffer = new VertexData[4095];
+		static VertexData[] VertexBuffer = new VertexData[32768];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public override void ProcessVertexData()
@@ -609,6 +609,8 @@ namespace SonicRetro.SAModel
 								}
 								polys.Add(str);
 							}
+							if (!hasVColor)
+								hasVColor = verts.Any(a => a.Color.HasValue && a.Color.Value != Color.White);
 #if modellog
 							indexes = new List<ushort>(System.Linq.Enumerable.Distinct(indexes));
 							indexes.Sort();
