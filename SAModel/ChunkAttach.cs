@@ -142,10 +142,11 @@ namespace SonicRetro.SAModel
 			foreach (var item in cache)
 			{
 				vertexChunk.Vertices.Add(item.vertex);
-				if (hasnormal)
-					vertexChunk.Normals.Add(item.normal);
 				if (hasvcolor)
 					vertexChunk.Diffuse.Add(item.color);
+				else if (hasnormal)
+					vertexChunk.Normals.Add(item.normal);
+				
 			}
 			vertexChunk.VertexCount = (ushort)cache.Count;
 			switch (vertexChunk.Type)

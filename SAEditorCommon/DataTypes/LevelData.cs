@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
@@ -425,6 +426,38 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 				case ".txt":
 					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
+					break;
+
+				case ".dae":
+				case ".fbx":
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Configs.FBXPreservePivotsConfig conf = new Assimp.Configs.FBXPreservePivotsConfig(true);
+					context.SetConfig(conf);
+					Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate);
+					for (int i = 0; i < scene.RootNode.ChildCount; i++)
+					{
+						Assimp.Node child = scene.RootNode.Children[i];
+						List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
+						foreach (int j in child.MeshIndices)
+							meshes.Add(scene.Meshes[j]);
+						bool isVisible = true;
+						for(int j = 0; j < child.MeshCount; j++)
+						{
+							if (scene.Materials[meshes[j].MaterialIndex].Name.Contains("Collision"))
+							{
+								isVisible = false;
+								break;
+							}
+						}
+						NJS_OBJECT obj = new NJS_OBJECT(scene,child, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? ModelFormat.Chunk : ModelFormat.BasicDX);
+						obj.Attach.ProcessVertexData();
+						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X, obj.Position.Y, obj.Position.Z), obj.Rotation, levelItems.Count, selectionManager)
+						{
+							Visible = isVisible
+						};
+						createdItems.Add(newLevelItem);
+					}
+					
 					break;
 
 				default:

@@ -349,7 +349,7 @@
             // importFileDialog
             // 
             this.importFileDialog.FileName = "file";
-            this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable|*.txt";
+            this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf;*.dae;*.fbx|NodeTable|*.txt";
             this.importFileDialog.RestoreDirectory = true;
             this.importFileDialog.Title = "Select a file to import.";
             // 

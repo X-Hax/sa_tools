@@ -215,12 +215,12 @@ namespace SonicRetro.SAModel
 			}
 			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
 		}
-		public NJS_OBJECT(Scene scene, Node node, Node parentNode, NJS_OBJECT parent, string[] textures = null)
+		public NJS_OBJECT(Scene scene, Node node, Node parentNode, NJS_OBJECT parent, string[] textures = null, ModelFormat format = ModelFormat.Chunk)
 		{
 			Parent = parent;
-			AssimpLoad(scene, node, parentNode, ModelFormat.Chunk, textures);
+			AssimpLoad(scene, node, parentNode, format, textures);
 		}
-		public NJS_OBJECT(Scene scene, Node node, string[] textures = null) : this(scene, node, null, null, textures)
+		public NJS_OBJECT(Scene scene, Node node, string[] textures = null, ModelFormat format = ModelFormat.Chunk) : this(scene, node, null, null, textures, format)
 		{
 
 		}
