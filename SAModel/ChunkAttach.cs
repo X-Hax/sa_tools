@@ -457,16 +457,6 @@ namespace SonicRetro.SAModel
 			}
 		}
 
-		public override BasicAttach ToBasicModel()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override ChunkAttach ToChunkModel()
-		{
-			return this;
-		}
-
 		public override Attach Clone()
 		{
 			ChunkAttach result = (ChunkAttach)MemberwiseClone();
