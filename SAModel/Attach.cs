@@ -65,7 +65,7 @@ namespace SonicRetro.SAModel
 				case ModelFormat.Chunk:
 					return new ChunkAttach(file, address, imageBase, labels);
 				case ModelFormat.GC:
-					return new GCAttach(file, address, imageBase);
+					return new GCAttach(file, address, imageBase, labels);
 			}
 			throw new ArgumentOutOfRangeException("format");
 		}
