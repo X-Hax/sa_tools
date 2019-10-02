@@ -65,7 +65,7 @@ namespace SonicRetro.SAModel
 				case ModelFormat.Chunk:
 					return new ChunkAttach(file, address, imageBase, labels);
 				case ModelFormat.GC:
-					return new GCAttach(file, address, imageBase);
+					return new GCAttach(file, address, imageBase, labels);
 			}
 			throw new ArgumentOutOfRangeException("format");
 		}
@@ -98,10 +98,6 @@ namespace SonicRetro.SAModel
 		public abstract void ProcessVertexData();
 
 		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex);
-
-		public abstract BasicAttach ToBasicModel();
-
-		public abstract ChunkAttach ToChunkModel();
 
 		object ICloneable.Clone() => Clone();
 

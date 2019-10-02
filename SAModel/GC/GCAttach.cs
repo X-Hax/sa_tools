@@ -11,20 +11,21 @@ namespace SonicRetro.SAModel.GC
 		public VertexData VertexData { get; private set; }
 		public GeometryData GeometryData { get; private set; }
 
-		public Vector3 BoundingSphereCenter { get; private set; }
-		public float BoundingSphereRadius { get; private set; }
-
 		public GCAttach()
 		{
 			Name = "gcattach_" + Extensions.GenerateIdentifier();
 
 			VertexData = new VertexData();
 			GeometryData = new GeometryData();
+			Bounds = new BoundingSphere();
 		}
 
-		public GCAttach(byte[] file, int address, uint imageBase)
+		public GCAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
-			Name = "gcattach_" + Extensions.GenerateIdentifier();
+			if (labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "attach_" + address.ToString("X8");
 
 			// The struct is 36/0x24 bytes long.
 
@@ -40,13 +41,7 @@ namespace SonicRetro.SAModel.GC
 			int translucent_geometry_count = ByteConverter.ToInt16(file, address + 18);
 
 
-			BoundingSphereCenter = new Vector3(ByteConverter.ToSingle(file, address + 20),
-											   ByteConverter.ToSingle(file, address + 24),
-											   ByteConverter.ToSingle(file, address + 28));
-			BoundingSphereRadius = ByteConverter.ToSingle(file, address + 32);
-			Bounds = new BoundingSphere();
-			Bounds.Center = new SonicRetro.SAModel.Vertex(BoundingSphereCenter.X, BoundingSphereCenter.Y, BoundingSphereCenter.Z);
-			Bounds.Radius = BoundingSphereRadius;
+			Bounds = new BoundingSphere(file, address + 20);
 			VertexData.Load(file, vertex_attribute_offset, imageBase);
 
 			if (opaque_geometry_count > 0)
@@ -391,24 +386,24 @@ namespace SonicRetro.SAModel.GC
 
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
-			byte[] output = new byte[1];
+			byte[] output;
 
 			using (MemoryStream strm = new MemoryStream())
 			{
 				BinaryWriter gc_file = new BinaryWriter(strm);
 
-				gc_file.Write((int)0);
-				gc_file.Write((int)0);
-				gc_file.Write((int)0);
-				gc_file.Write((int)0);
+				gc_file.Write(0);
+				gc_file.Write(0);
+				gc_file.Write(0);
+				gc_file.Write(0);
 
 				gc_file.Write((short)GeometryData.OpaqueMeshes.Count);
 				gc_file.Write((short)GeometryData.TranslucentMeshes.Count);
 
-				gc_file.Write(BoundingSphereCenter.X);
-				gc_file.Write(BoundingSphereCenter.Y);
-				gc_file.Write(BoundingSphereCenter.Z);
-				gc_file.Write(BoundingSphereRadius);
+				gc_file.Write(Bounds.Center.X);
+				gc_file.Write(Bounds.Center.Y);
+				gc_file.Write(Bounds.Center.Z);
+				gc_file.Write(Bounds.Radius);
 
 				VertexData.WriteVertexAttributes(gc_file, imageBase);
 				GeometryData.WriteGeometryData(gc_file, imageBase);
@@ -417,7 +412,7 @@ namespace SonicRetro.SAModel.GC
 			}
 
 			address = 0;
-			//labels.Add(Name, address + imageBase);
+			labels.Add(Name, imageBase);
 			return output;
 		}
 
@@ -802,16 +797,6 @@ namespace SonicRetro.SAModel.GC
 		}
 
 		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override BasicAttach ToBasicModel()
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override ChunkAttach ToChunkModel()
 		{
 			throw new System.NotImplementedException();
 		}
