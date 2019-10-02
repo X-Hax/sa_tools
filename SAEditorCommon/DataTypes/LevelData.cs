@@ -431,7 +431,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				case ".dae":
 				case ".fbx":
 					Assimp.AssimpContext context = new Assimp.AssimpContext();
-					Assimp.Configs.FBXPreservePivotsConfig conf = new Assimp.Configs.FBXPreservePivotsConfig(true);
+					Assimp.Configs.FBXPreservePivotsConfig conf = new Assimp.Configs.FBXPreservePivotsConfig(false);
 					context.SetConfig(conf);
 					Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate);
 					for (int i = 0; i < scene.RootNode.ChildCount; i++)
@@ -449,7 +449,36 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 								break;
 							}
 						}
-						NJS_OBJECT obj = new NJS_OBJECT(scene,child, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? ModelFormat.Chunk : ModelFormat.BasicDX);
+						
+						NJS_OBJECT obj = new NJS_OBJECT(scene,child,scene.RootNode, null,LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? ModelFormat.GC : ModelFormat.BasicDX);
+						{
+							//sa2 collision patch
+							if(obj.Attach.GetType() == typeof(BasicAttach))
+							{
+								BasicAttach ba = obj.Attach as BasicAttach;
+								foreach (NJS_MATERIAL mats in ba.Material)
+									mats.DoubleSided = true;
+							}
+							//cant check for transparent texture so i gotta force alpha for now, temporary
+							else if (obj.Attach.GetType() == typeof(ChunkAttach))
+							{
+								ChunkAttach ca = obj.Attach as ChunkAttach;
+								foreach (PolyChunk polys in ca.Poly)
+								{
+									if(polys.GetType() == typeof(PolyChunkMaterial))
+									{
+										PolyChunkMaterial mat = polys as PolyChunkMaterial;
+										mat.SourceAlpha = AlphaInstruction.SourceAlpha;
+										mat.DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
+									}
+									else if (polys.GetType() == typeof(PolyChunkStrip))
+									{
+										PolyChunkStrip str = polys as PolyChunkStrip;
+										str.UseAlpha = true;
+									}
+								}
+							}
+						}
 						obj.Attach.ProcessVertexData();
 						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X, obj.Position.Y, obj.Position.Z), obj.Rotation, levelItems.Count, selectionManager)
 						{

@@ -62,6 +62,7 @@ namespace SonicRetro.SAModel.GC
 
 		public GCAttach(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
 		{
+			NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
 			Name = "attach_" + Extensions.GenerateIdentifier();
 			Bounds = new BoundingSphere();
 			VertexData = new VertexData();
@@ -72,6 +73,7 @@ namespace SonicRetro.SAModel.GC
 			List<Vector3D> normals = new List<Vector3D>();
 			List<Vector2> texcoords = new List<Vector2>();
 			List<Color> colors = new List<Color>();
+			List<VertexAttribute> vertexAttribs = new List<VertexAttribute>();
 			foreach (Assimp.Mesh m in meshes)
 			{
 				Assimp.Material currentAiMat = null;
@@ -99,23 +101,90 @@ namespace SonicRetro.SAModel.GC
 				}
 				if (m.HasVertexColors(0))
 				{
-					if (m.VertexColorChannels[0].Count == 87)
-						currentAiMat = currentAiMat;
 					foreach (Color4D texcoord in m.VertexColorChannels[0])
 						colors.Add(new Color(texcoord.A * 255.0f, texcoord.B * 255.0f, texcoord.G * 255.0f, texcoord.R * 255.0f));//colors.Add(new Color(texcoord.A * 255.0f, texcoord.B * 255.0f, texcoord.G * 255.0f, texcoord.R * 255.0f));
 																																  //colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f)); rgba
 				}
+
+				//VertexAttribute stuff
+				VertexAttribute posAttrib = new VertexAttribute();
+				posAttrib.Attribute = GXVertexAttribute.Position;
+				posAttrib.FractionalBitCount = 12;
+				posAttrib.DataType = GXDataType.Float32;
+				posAttrib.ComponentCount = GXComponentCount.Position_XYZ;
+				vertexAttribs.Add(posAttrib);
+
+				
+
+				if (m.HasTextureCoords(0))
+				{
+					VertexAttribute texAttrib = new VertexAttribute();
+					texAttrib.Attribute = GXVertexAttribute.Tex0;
+					texAttrib.FractionalBitCount = 4;
+					texAttrib.DataType = GXDataType.Signed16;
+					texAttrib.ComponentCount = GXComponentCount.TexCoord_ST;
+					vertexAttribs.Add(texAttrib);
+				}
+
+				if (m.HasVertexColors(0))
+				{
+					VertexAttribute clrAttrib = new VertexAttribute();
+					clrAttrib.Attribute = GXVertexAttribute.Color0;
+					clrAttrib.FractionalBitCount = 4;
+					clrAttrib.DataType = GXDataType.RGBA8;
+					clrAttrib.ComponentCount = GXComponentCount.Color_RGBA;
+					vertexAttribs.Add(clrAttrib);
+				}
+				else
+				{
+					VertexAttribute nrmAttrib = new VertexAttribute();
+					nrmAttrib.Attribute = GXVertexAttribute.Normal;
+					nrmAttrib.FractionalBitCount = 12;
+					nrmAttrib.DataType = GXDataType.Float32;
+					nrmAttrib.ComponentCount = GXComponentCount.Normal_XYZ;
+					vertexAttribs.Add(nrmAttrib);
+				}
+
+				//TODO CHECK NORMALS
+				IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex;
+				if (m.HasVertexColors(0))
+					indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor | IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex;
+				else
+					indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasNormal | IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex;
+
+				if (m.HasTextureCoords(0))
+					indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV | IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
+
+				VtxAttrFmtParameter posparam = new VtxAttrFmtParameter(5120, GXVertexAttribute.Position);
+				parameters.Add(posparam);
+
+
+				if (m.HasVertexColors(0))
+				{
+					VtxAttrFmtParameter colorparam = new VtxAttrFmtParameter(27136, GXVertexAttribute.Color0);
+					parameters.Add(colorparam);
+				}
+				else
+				{
+					VtxAttrFmtParameter normalParam = new VtxAttrFmtParameter(9216, GXVertexAttribute.Normal);
+					parameters.Add(normalParam);
+				}
+				if (m.HasTextureCoords(0))
+				{
+					VtxAttrFmtParameter texparam = new VtxAttrFmtParameter(33544, GXVertexAttribute.Tex0);
+					parameters.Add(texparam);
+				}
+				IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
+				parameters.Add(indexParam);
+
+				if (m.HasVertexColors(0))
+				{
+					LightingParameter lightParam = new LightingParameter(0xB11, 1); //we have no idea what it means but if it works it works
+					parameters.Add(lightParam);
+				}
 				if (currentAiMat != null)
 				{
-					IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.HasNormal | IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex | IndexAttributeParameter.IndexAttributeFlags.Normal16BitIndex;
-					if (m.HasTextureCoords(0))
-						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV | IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
-					if (m.HasVertexColors(0))
-						indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor | IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex;
-					IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
-					parameters.Add(indexParam);
-					LightingParameter lightParam = new LightingParameter();
-					parameters.Add(lightParam);
+
 					if (currentAiMat.HasTextureDiffuse)
 					{
 						if (textures != null)
@@ -131,7 +200,7 @@ namespace SonicRetro.SAModel.GC
 							for (int i = 0; i < textures.Length; i++)
 								if (textures[i] == Path.GetFileNameWithoutExtension(currentAiMat.TextureDiffuse.FilePath))
 									texId = i;
-							TextureParameter texParam = new TextureParameter((ushort)texId, tileMode);
+							TextureParameter texParam = new TextureParameter((ushort)texId, TextureParameter.TileMode.WrapU | TextureParameter.TileMode.WrapV);
 							parameters.Add(texParam);
 
 						}
@@ -146,20 +215,53 @@ namespace SonicRetro.SAModel.GC
 						parameters.Add(texParam);
 					}
 				}
+				List<ushort> tris = new List<ushort>();
 
+				foreach (Face f in m.Faces)
+				{
+					foreach (int index in f.Indices)
+					{
+						tris.Add((ushort)index);
+					}
+				}
+				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+				/*
+				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
+				{
+					Primitive prim = new Primitive(GXPrimitiveType.TriangleStrip);
+					//List<UV> stripuv = new List<UV>();
+					for (var j = 0; j < grp.Indices.Length; j++)
+					{
+						Vertex vert = new Vertex();
+						vert.PositionIndex = vertStartIndex + (uint)grp.Indices[j];
+						if (m.HasNormals)
+							vert.NormalIndex = normStartIndex + (uint)grp.Indices[j];
+						if (m.HasTextureCoords(0))
+							vert.UVIndex = uvStartIndex + (uint)grp.Indices[j];
+						//if (m.HasVertexColors(0))
+							//vert.Color0Index = colorStartIndex + (uint)grp.Indices[j];
+						prim.Vertices.Add(vert);
+					}
+					primitives.Add(prim);
+				}
+				*/
 				foreach (Face f in m.Faces)
 				{
 					Primitive prim = new Primitive(GXPrimitiveType.Triangles);
 					foreach (int index in f.Indices)
 					{
 						Vertex vert = new Vertex();
+
 						vert.PositionIndex = vertStartIndex + (uint)index;
-						if (m.HasNormals)
-							vert.NormalIndex = vertStartIndex + (uint)index;
+
 						if (m.HasTextureCoords(0))
 							vert.UVIndex = uvStartIndex + (uint)index;
+
 						if (m.HasVertexColors(0))
 							vert.Color0Index = colorStartIndex + (uint)index;
+						else
+							if (m.HasNormals)
+								vert.NormalIndex = vertStartIndex + (uint)index;
 
 						prim.Vertices.Add(vert);
 					}
@@ -174,12 +276,17 @@ namespace SonicRetro.SAModel.GC
 			List<Vector3> gcnormals = new List<Vector3>();
 			foreach (Vector3D aivert in normals)
 				gcnormals.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+
+			VertexData.VertexAttributes.AddRange(vertexAttribs);
+
 			VertexData.SetAttributeData(GXVertexAttribute.Position, gcvertices);
-			VertexData.SetAttributeData(GXVertexAttribute.Normal, gcnormals);
-			if (texcoords.Count > 0)
-				VertexData.SetAttributeData(GXVertexAttribute.Tex0, texcoords);
 			if (colors.Count > 0)
 				VertexData.SetAttributeData(GXVertexAttribute.Color0, colors);
+			else
+				VertexData.SetAttributeData(GXVertexAttribute.Normal, gcnormals);
+			if (texcoords.Count > 0)
+				VertexData.SetAttributeData(GXVertexAttribute.Tex0, texcoords);
+			
 			GeometryData.OpaqueMeshes.AddRange(gcmeshes);
 		}
 		public void ExportOBJ(string file_name)
@@ -516,7 +623,6 @@ namespace SonicRetro.SAModel.GC
 						wrapV = TextureWrapMode.Clamp;
 					else if (cur_mat.FlipV)
 						wrapV = TextureWrapMode.Mirror;
-
 					Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
 						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
 						wrapU, wrapV, 0); //wrapmode and shit add here

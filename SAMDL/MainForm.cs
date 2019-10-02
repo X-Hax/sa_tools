@@ -1655,7 +1655,7 @@ namespace SonicRetro.SAModel.SAMDL
 					animations = new NJS_MOTION[0];
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
+					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(),ModelFormat.GC);
 
 					editMaterialsToolStripMenuItem.Enabled = true;
 
@@ -1671,8 +1671,6 @@ namespace SonicRetro.SAModel.SAMDL
 					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
-
-					currentFileName = objFileName;
 
 					AddModelToLibrary(model, false);
 				}

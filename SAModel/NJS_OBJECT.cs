@@ -170,7 +170,7 @@ namespace SonicRetro.SAModel
 			
 			if (node.HasMeshes)
 			{
-				if(format == ModelFormat.Basic)
+				if(format == ModelFormat.Basic || format == ModelFormat.BasicDX)
 					Attach = new BasicAttach(scene.Materials, meshes, textures);
 				else if(format == ModelFormat.GC)
 					Attach = new GC.GCAttach(scene.Materials, meshes, textures);
@@ -187,7 +187,7 @@ namespace SonicRetro.SAModel
 				List<NJS_OBJECT> list = new List<NJS_OBJECT>();
 				foreach (Node n in node.Children)
 				{
-					NJS_OBJECT t = new NJS_OBJECT(scene, n, null, null, textures);
+					NJS_OBJECT t = new NJS_OBJECT(scene, n, null, null, textures,format);
 					//HACK: workaround for those weird empty nodes created by most 3d editors
 					if (n.Name == "")
 					{

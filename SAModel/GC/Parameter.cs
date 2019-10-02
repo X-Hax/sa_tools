@@ -36,6 +36,12 @@ namespace SonicRetro.SAModel.GC
 		{
 			ParameterType = ParameterType.VtxAttrFmt;
 		}
+		public VtxAttrFmtParameter(ushort Unknown, GXVertexAttribute vertexAttrib)
+		{
+			ParameterType = ParameterType.VtxAttrFmt;
+			Unknown_1 = Unknown;
+			VertexAttribute = vertexAttrib;
+		}
 		public override void Read(byte[] file, int address)
 		{
 			Unknown_1 = ByteConverter.ToUInt16(file, address);
@@ -104,6 +110,13 @@ namespace SonicRetro.SAModel.GC
 		public LightingParameter()
 		{
 			ParameterType = ParameterType.Lighting;
+		}
+
+		public LightingParameter(ushort Unk1, ushort Unk2)
+		{
+			ParameterType = ParameterType.Lighting;
+			Unknown1 = Unk1;
+			Unknown2 = Unk2;
 		}
 
 		public override void Read(byte[] file, int address)
