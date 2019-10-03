@@ -109,7 +109,7 @@ namespace SonicRetro.SAModel.GC
 				posAttrib.ComponentCount = GXComponentCount.Position_XYZ;
 				vertexAttribs.Add(posAttrib);
 
-				
+
 
 				if (m.HasTextureCoords(0))
 				{
@@ -174,9 +174,15 @@ namespace SonicRetro.SAModel.GC
 
 				if (m.HasVertexColors(0))
 				{
-					LightingParameter lightParam = new LightingParameter(0xB11, 1); //we have no idea what it means but if it works it works
+					LightingParameter lightParam = new LightingParameter(0xB11, 1);
 					parameters.Add(lightParam);
 				}
+				else
+				{
+					LightingParameter lightParam = new LightingParameter(0x211, 1);
+					parameters.Add(lightParam);
+				}
+
 				if (currentAiMat != null)
 				{
 
@@ -256,7 +262,7 @@ namespace SonicRetro.SAModel.GC
 							vert.Color0Index = colorStartIndex + (uint)index;
 						else
 							if (m.HasNormals)
-								vert.NormalIndex = vertStartIndex + (uint)index;
+							vert.NormalIndex = vertStartIndex + (uint)index;
 
 						prim.Vertices.Add(vert);
 					}
@@ -281,7 +287,7 @@ namespace SonicRetro.SAModel.GC
 				VertexData.SetAttributeData(GXVertexAttribute.Normal, gcnormals);
 			if (texcoords.Count > 0)
 				VertexData.SetAttributeData(GXVertexAttribute.Tex0, texcoords);
-			
+
 			GeometryData.OpaqueMeshes.AddRange(gcmeshes);
 		}
 		public void ExportOBJ(string file_name)
