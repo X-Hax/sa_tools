@@ -57,7 +57,7 @@ namespace SonicRetro.SAModel.GC
 
 		public GCAttach(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
 		{
-			NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
+			//NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
 			Name = "attach_" + Extensions.GenerateIdentifier();
 			Bounds = new BoundingSphere();
 			VertexData = new VertexData();
@@ -109,8 +109,6 @@ namespace SonicRetro.SAModel.GC
 				posAttrib.ComponentCount = GXComponentCount.Position_XYZ;
 				vertexAttribs.Add(posAttrib);
 
-
-
 				if (m.HasTextureCoords(0))
 				{
 					VertexAttribute texAttrib = new VertexAttribute();
@@ -140,7 +138,7 @@ namespace SonicRetro.SAModel.GC
 					vertexAttribs.Add(nrmAttrib);
 				}
 
-				//TODO CHECK NORMALS
+				//Parameter stuff
 				IndexAttributeParameter.IndexAttributeFlags indexattr = IndexAttributeParameter.IndexAttributeFlags.HasPosition | IndexAttributeParameter.IndexAttributeFlags.Position16BitIndex;
 				if (m.HasVertexColors(0))
 					indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasColor | IndexAttributeParameter.IndexAttributeFlags.Color16BitIndex;
@@ -150,9 +148,11 @@ namespace SonicRetro.SAModel.GC
 				if (m.HasTextureCoords(0))
 					indexattr |= IndexAttributeParameter.IndexAttributeFlags.HasUV | IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
 
+				IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
+				parameters.Add(indexParam);
+
 				VtxAttrFmtParameter posparam = new VtxAttrFmtParameter(5120, GXVertexAttribute.Position);
 				parameters.Add(posparam);
-
 
 				if (m.HasVertexColors(0))
 				{
@@ -169,8 +169,6 @@ namespace SonicRetro.SAModel.GC
 					VtxAttrFmtParameter texparam = new VtxAttrFmtParameter(33544, GXVertexAttribute.Tex0);
 					parameters.Add(texparam);
 				}
-				IndexAttributeParameter indexParam = new IndexAttributeParameter(indexattr);
-				parameters.Add(indexParam);
 
 				if (m.HasVertexColors(0))
 				{
@@ -185,7 +183,6 @@ namespace SonicRetro.SAModel.GC
 
 				if (currentAiMat != null)
 				{
-
 					if (currentAiMat.HasTextureDiffuse)
 					{
 						if (textures != null)
@@ -216,6 +213,7 @@ namespace SonicRetro.SAModel.GC
 						parameters.Add(texParam);
 					}
 				}
+				/* old stripifying code, im gonna leave it here just incase
 				List<ushort> tris = new List<ushort>();
 
 				foreach (Face f in m.Faces)
@@ -226,7 +224,7 @@ namespace SonicRetro.SAModel.GC
 					}
 				}
 				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
-				/*
+				
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
 					Primitive prim = new Primitive(GXPrimitiveType.TriangleStrip);
@@ -271,9 +269,11 @@ namespace SonicRetro.SAModel.GC
 				Mesh gcm = new Mesh(parameters, primitives);
 				gcmeshes.Add(gcm);
 			}
+
 			List<Vector3> gcvertices = new List<Vector3>();
 			foreach (Vector3D aivert in vertices)
 				gcvertices.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+
 			List<Vector3> gcnormals = new List<Vector3>();
 			foreach (Vector3D aivert in normals)
 				gcnormals.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));

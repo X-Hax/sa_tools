@@ -1651,11 +1651,11 @@ namespace SonicRetro.SAModel.SAMDL
 					animnum = -1;
 					animframe = 0;
 
-					outfmt = ModelFormat.GC;
+					//outfmt = ModelFormat.GC;
 					animations = new NJS_MOTION[0];
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(),ModelFormat.GC);
+					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
 
 					editMaterialsToolStripMenuItem.Enabled = true;
 

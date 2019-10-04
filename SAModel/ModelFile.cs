@@ -322,6 +322,9 @@ namespace SonicRetro.SAModel
 				case ModelFormat.Chunk:
 					magic = SA2MDLVer;
 					break;
+				case ModelFormat.GC:
+					magic = SA2BMDLVer;
+					break;
 				default:
 					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
 			}
