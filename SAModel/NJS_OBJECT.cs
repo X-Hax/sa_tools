@@ -115,7 +115,7 @@ namespace SonicRetro.SAModel
 			nodeTransform *= Matrix4x4.FromTranslation(new Vector3D(Position.X, Position.Y, Position.Z));
 
 			Matrix4x4 thing = nodeTransform * parentMatrix;
-			node.Transform = nodeTransform;
+			node.Transform = nodeTransform;//nodeTransform;
 
 			node.Name = Name;
 			int startMeshIndex = scene.MeshCount;
@@ -125,15 +125,69 @@ namespace SonicRetro.SAModel
 				{
 					GC.GCAttach gcAttach = Attach as GC.GCAttach;
 					gcAttach.AssimpExport(scene, texInfo);
-					int endMeshIndex = scene.MeshCount;
-					for (int i = startMeshIndex; i < endMeshIndex; i++)
+				}
+				else
+				{
+					int nameMeshIndex = 0;
+					foreach(MeshInfo meshInfo in Attach.MeshInfo)
 					{
-						Node meshChildNode = new Node("meshnode_" + i);
-						meshChildNode.Transform = thing;
-						scene.RootNode.Children.Add(meshChildNode);
+						Mesh mesh = new Mesh("mesh_" + nameMeshIndex);
 
-						meshChildNode.MeshIndices.Add(i);
+						NJS_MATERIAL cur_mat = meshInfo.Material;
+						Material materoial = new Material() { Name = "material_" + nameMeshIndex++ }; ;
+						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+						if (cur_mat.UseTexture && texInfo != null)
+						{
+							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
+							TextureWrapMode wrapU = TextureWrapMode.Wrap;
+							TextureWrapMode wrapV = TextureWrapMode.Wrap;
+							if (cur_mat.ClampU)
+								wrapU = TextureWrapMode.Clamp;
+							else if (cur_mat.FlipU)
+								wrapU = TextureWrapMode.Mirror;
+
+							if (cur_mat.ClampV)
+								wrapV = TextureWrapMode.Clamp;
+							else if (cur_mat.FlipV)
+								wrapV = TextureWrapMode.Mirror;
+
+							Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
+								Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
+								wrapU, wrapV, 0); //wrapmode and shit add here
+							materoial.AddMaterialTexture(ref tex);
+						}
+						int matIndex = scene.MaterialCount;
+						scene.Materials.Add(materoial);
+						mesh.MaterialIndex = matIndex;
+
+						mesh.PrimitiveType = PrimitiveType.Triangle;
+						ushort[] tris = meshInfo.ToTriangles();						
+						for (int i = 0; i < tris.Length; i += 3)
+						{
+							Face face = new Face();
+							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
+							for (int j = 0; j < 3; j++)
+							{
+								mesh.Vertices.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Position.X, meshInfo.Vertices[tris[i + j]].Position.Y, meshInfo.Vertices[tris[i + j]].Position.Z));
+								mesh.Normals.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Normal.X, meshInfo.Vertices[tris[i + j]].Normal.Y, meshInfo.Vertices[tris[i + j]].Normal.Z));
+								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
+									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
+							}
+							mesh.Faces.Add(face);
+						}
+						
+						scene.Meshes.Add(mesh);
 					}
+				}
+				int endMeshIndex = scene.MeshCount;
+				for (int i = startMeshIndex; i < endMeshIndex; i++)
+				{
+					node.MeshIndices.Add(i);
+					//Node meshChildNode = new Node("meshnode_" + i);
+					//meshChildNode.Transform = thing;
+					//scene.RootNode.Children.Add(meshChildNode);
+					//meshChildNode.MeshIndices.Add(i);
 				}
 			}
 			if (Children != null)
