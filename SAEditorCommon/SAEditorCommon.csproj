@@ -79,6 +79,7 @@
       <DependentUpon>DLLModGenUI.cs</DependentUpon>
     </Compile>
     <Compile Include="GamePathChecker.cs" />
+    <Compile Include="Import\AssimpStuff.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="ManualBuildWindow.cs">
       <SubType>Form</SubType>
