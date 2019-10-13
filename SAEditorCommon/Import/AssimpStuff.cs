@@ -57,6 +57,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
 		{
+			mdlindex++;
 			Node node = null;
 			if (parent == null)
 				node = new Node(obj.Name);
@@ -212,7 +213,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							mesh.Normals.Add(Vector3.TransformNormal(meshInfo.Vertices[tris[i + j]].Normal.ToVector3(), nodeWorldTransformInv).ToVector3D());
 							if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
 								mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
-							mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
+							if (meshInfo.Vertices[tris[i + j]].UV != null)
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
 							vertexWeights.Add(weights[tris[i + j]]);
 						}
 						mesh.Faces.Add(face);
@@ -249,11 +251,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				int endMeshIndex = scene.MeshCount;
 				for (int i = startMeshIndex; i < endMeshIndex; i++)
 				{
-					node.MeshIndices.Add(i);
-					//Node meshChildNode = new Node("meshnode_" + i);
-					//meshChildNode.Transform = thing;
-					//scene.RootNode.Children.Add(meshChildNode);
-					//meshChildNode.MeshIndices.Add(i);
+					//node.MeshIndices.Add(i);
+					Node meshChildNode = new Node("meshnode_" + i);
+					meshChildNode.Transform = nodeTransform.ToMatrix4X4();
+					scene.RootNode.Children.Add(meshChildNode);
+					meshChildNode.MeshIndices.Add(i);
 				}
 			}
 			if (obj.Children != null)
