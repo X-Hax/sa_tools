@@ -58,15 +58,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
 		{
 			mdlindex++;
-			Node node = null;
+			string nodename = $"n{mdlindex:000}_{obj.Name}";
+			Node node;
 			if (parent == null)
-				node = new Node(obj.Name);
+				node = new Node(nodename);
 			else
 			{
-				node = new Node(obj.Name, parent);
+				node = new Node(nodename, parent);
 				parent.Children.Add(node);
 			}
-			NodeNames.Add(obj.Name);
+			NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
 
@@ -87,7 +88,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			Matrix nodeWorldTransformInv = Matrix.Invert(nodeWorldTransform);
 			node.Transform = nodeTransform.ToMatrix4X4();//nodeTransform;
 
-			node.Name = obj.Name;
+			node.Name = nodename;
 			int startMeshIndex = scene.MeshCount;
 			if (obj.Attach != null)
 			{
