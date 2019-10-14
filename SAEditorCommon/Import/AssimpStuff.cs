@@ -47,12 +47,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		static List<string> NodeNames;
 		static List<Matrix> NodeTransforms;
 
-		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null)
+		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
 		{
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
 			int mdlindex = -1;
-			return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, null, ref mdlindex);
+			return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent, ref mdlindex);
 		}
 
 		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
@@ -253,7 +253,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				{
 					//node.MeshIndices.Add(i);
 					Node meshChildNode = new Node("meshnode_" + i);
-					meshChildNode.Transform = nodeTransform.ToMatrix4X4();
+					meshChildNode.Transform = nodeWorldTransform.ToMatrix4X4();
 					scene.RootNode.Children.Add(meshChildNode);
 					meshChildNode.MeshIndices.Add(i);
 				}
@@ -409,7 +409,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Matrix4x4 ToMatrix4X4(this Matrix m)
 		{
-			return new Matrix4x4(m.M11, m.M12, m.M13, m.M14, m.M21, m.M22, m.M23, m.M24, m.M31, m.M32, m.M33, m.M34, m.M41, m.M42, m.M43, m.M44);
+			return new Matrix4x4(m.M11, m.M21, m.M31, m.M41, m.M12, m.M22, m.M32, m.M42, m.M13, m.M23, m.M33, m.M43, m.M14, m.M24, m.M34, m.M44);
 		}
 	}
 }
