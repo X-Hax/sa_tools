@@ -168,95 +168,97 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				List<List<WeightData>> weights = new List<List<WeightData>>();
 				if (attach.Poly != null)
 					result = ProcessPolyList(attach.Poly, 0, weights);
-				attach.MeshInfo = result.ToArray();
-				int nameMeshIndex = 0;
-				foreach (MeshInfo meshInfo in result)
+				if (result.Count > 0)
 				{
-					Assimp.Mesh mesh = new Assimp.Mesh("mesh_" + nameMeshIndex);
-
-					NJS_MATERIAL cur_mat = meshInfo.Material;
-					Material materoial = new Material() { Name = "material_" + nameMeshIndex++ }; ;
-					materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
-					if (cur_mat.UseTexture && texInfo != null)
+					int nameMeshIndex = 0;
+					foreach (MeshInfo meshInfo in result)
 					{
-						string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
-						TextureWrapMode wrapU = TextureWrapMode.Wrap;
-						TextureWrapMode wrapV = TextureWrapMode.Wrap;
-						if (cur_mat.ClampU)
-							wrapU = TextureWrapMode.Clamp;
-						else if (cur_mat.FlipU)
-							wrapU = TextureWrapMode.Mirror;
+						Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
 
-						if (cur_mat.ClampV)
-							wrapV = TextureWrapMode.Clamp;
-						else if (cur_mat.FlipV)
-							wrapV = TextureWrapMode.Mirror;
-
-						TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
-							TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
-							wrapU, wrapV, 0); //wrapmode and shit add here
-						materoial.AddMaterialTexture(ref tex);
-					}
-					int matIndex = scene.MaterialCount;
-					scene.Materials.Add(materoial);
-					mesh.MaterialIndex = matIndex;
-
-					mesh.PrimitiveType = PrimitiveType.Triangle;
-					ushort[] tris = meshInfo.ToTriangles();
-					List<List<WeightData>> vertexWeights = new List<List<WeightData>>(tris.Length);
-					for (int i = 0; i < tris.Length; i += 3)
-					{
-						Face face = new Face();
-						face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
-						for (int j = 0; j < 3; j++)
+						NJS_MATERIAL cur_mat = meshInfo.Material;
+						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
+						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+						if (cur_mat.UseTexture && texInfo != null)
 						{
-							mesh.Vertices.Add(Vector3.TransformCoordinate(meshInfo.Vertices[tris[i + j]].Position.ToVector3(), nodeWorldTransformInv).ToVector3D());
-							mesh.Normals.Add(Vector3.TransformNormal(meshInfo.Vertices[tris[i + j]].Normal.ToVector3(), nodeWorldTransformInv).ToVector3D());
-							if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-								mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
-							if (meshInfo.Vertices[tris[i + j]].UV != null)
-								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-							vertexWeights.Add(weights[tris[i + j]]);
+							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
+							TextureWrapMode wrapU = TextureWrapMode.Wrap;
+							TextureWrapMode wrapV = TextureWrapMode.Wrap;
+							if (cur_mat.ClampU)
+								wrapU = TextureWrapMode.Clamp;
+							else if (cur_mat.FlipU)
+								wrapU = TextureWrapMode.Mirror;
+
+							if (cur_mat.ClampV)
+								wrapV = TextureWrapMode.Clamp;
+							else if (cur_mat.FlipV)
+								wrapV = TextureWrapMode.Mirror;
+
+							TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
+								TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
+								wrapU, wrapV, 0); //wrapmode and shit add here
+							materoial.AddMaterialTexture(ref tex);
 						}
-						mesh.Faces.Add(face);
-					}
+						int matIndex = scene.MaterialCount;
+						scene.Materials.Add(materoial);
+						mesh.MaterialIndex = matIndex;
 
-					// Convert vertex weights
-					var aiBoneMap = new Dictionary<int, Bone>();
-					for (int i = 0; i < vertexWeights.Count; i++)
-					{
-						for (int j = 0; j < vertexWeights[i].Count; j++)
+						mesh.PrimitiveType = PrimitiveType.Triangle;
+						ushort[] tris = meshInfo.ToTriangles();
+						List<List<WeightData>> vertexWeights = new List<List<WeightData>>(tris.Length);
+						for (int i = 0; i < tris.Length; i += 3)
 						{
-							var vertexWeight = vertexWeights[i][j];
-
-							if (!aiBoneMap.TryGetValue(vertexWeight.Index, out var aiBone))
+							Face face = new Face();
+							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
+							for (int j = 0; j < 3; j++)
 							{
-								aiBone = aiBoneMap[vertexWeight.Index] = new Bone
-								{
-									Name = NodeNames[vertexWeight.Index]
-								};
-
-								// Offset matrix: difference between world transform of weighted bone node and the world transform of the mesh's parent node
-								var offsetMatrix = Matrix.Invert(NodeTransforms[vertexWeight.Index] * nodeWorldTransformInv);
-								aiBone.OffsetMatrix = offsetMatrix.ToMatrix4X4();
+								mesh.Vertices.Add(Vector3.TransformCoordinate(meshInfo.Vertices[tris[i + j]].Position.ToVector3(), nodeWorldTransformInv).ToVector3D());
+								mesh.Normals.Add(Vector3.TransformNormal(meshInfo.Vertices[tris[i + j]].Normal.ToVector3(), nodeWorldTransformInv).ToVector3D());
+								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
+									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
+								if (meshInfo.Vertices[tris[i + j]].UV != null)
+									mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
+								vertexWeights.Add(weights[tris[i + j]]);
 							}
-
-							// Assimps way of storing weights is not very efficient
-							aiBone.VertexWeights.Add(new VertexWeight(i, vertexWeight.Weight));
+							mesh.Faces.Add(face);
 						}
-					}
 
-					mesh.Bones.AddRange(aiBoneMap.Values);
-					scene.Meshes.Add(mesh);
-				}
-				int endMeshIndex = scene.MeshCount;
-				for (int i = startMeshIndex; i < endMeshIndex; i++)
-				{
-					//node.MeshIndices.Add(i);
-					Node meshChildNode = new Node("meshnode_" + i);
-					meshChildNode.Transform = nodeWorldTransform.ToMatrix4X4();
-					scene.RootNode.Children.Add(meshChildNode);
-					meshChildNode.MeshIndices.Add(i);
+						// Convert vertex weights
+						var aiBoneMap = new Dictionary<int, Bone>();
+						for (int i = 0; i < vertexWeights.Count; i++)
+						{
+							for (int j = 0; j < vertexWeights[i].Count; j++)
+							{
+								var vertexWeight = vertexWeights[i][j];
+
+								if (!aiBoneMap.TryGetValue(vertexWeight.Index, out var aiBone))
+								{
+									aiBone = aiBoneMap[vertexWeight.Index] = new Bone
+									{
+										Name = NodeNames[vertexWeight.Index]
+									};
+
+									// Offset matrix: difference between world transform of weighted bone node and the world transform of the mesh's parent node
+									var offsetMatrix = Matrix.Invert(NodeTransforms[vertexWeight.Index] * nodeWorldTransformInv);
+									aiBone.OffsetMatrix = offsetMatrix.ToMatrix4X4();
+								}
+
+								// Assimps way of storing weights is not very efficient
+								aiBone.VertexWeights.Add(new VertexWeight(i, vertexWeight.Weight));
+							}
+						}
+
+						mesh.Bones.AddRange(aiBoneMap.Values);
+						scene.Meshes.Add(mesh);
+					}
+					int endMeshIndex = scene.MeshCount;
+					for (int i = startMeshIndex; i < endMeshIndex; i++)
+					{
+						//node.MeshIndices.Add(i);
+						Node meshChildNode = new Node($"meshnode_{i}");
+						meshChildNode.Transform = nodeWorldTransform.ToMatrix4X4();
+						scene.RootNode.Children.Add(meshChildNode);
+						meshChildNode.MeshIndices.Add(i);
+					}
 				}
 			}
 			if (obj.Children != null)

@@ -139,10 +139,10 @@ namespace SonicRetro.SAModel
 					int nameMeshIndex = 0;
 					foreach(MeshInfo meshInfo in Attach.MeshInfo)
 					{
-						Mesh mesh = new Mesh("mesh_" + nameMeshIndex);
+						Mesh mesh = new Mesh($"{Attach.Name}_mesh_{nameMeshIndex}");
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
-						Material materoial = new Material() { Name = "material_" + nameMeshIndex++ }; ;
+						Material materoial = new Material() { Name = $"{Attach.Name}_material_{nameMeshIndex++}" };
 						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
 						if (cur_mat.UseTexture && texInfo != null)
 						{
