@@ -89,14 +89,22 @@ namespace SonicRetro.SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
-		public Node AssimpExport(Scene scene, ref Matrix4x4 parentMatrix, string[] texInfo = null, Node parent = null)
+		public Node AssimpExport(Scene scene, Matrix4x4 parentMatrix, string[] texInfo = null, Node parent = null)
 		{
-			Node node = null;
+			int mdlindex = -1;
+			return AssimpExport(scene, parentMatrix, texInfo, parent, ref mdlindex);
+		}
+
+		private Node AssimpExport(Scene scene, Matrix4x4 parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
+		{
+			mdlindex++;
+			string nodename = $"n{mdlindex:000}_{Name}";
+			Node node;
 			if (parent == null)
-				node = new Node(Name);
+				node = new Node(nodename);
 			else
 			{
-				node = new Node(Name, parent);
+				node = new Node(nodename, parent);
 				parent.Children.Add(node);
 			}
 
@@ -117,7 +125,7 @@ namespace SonicRetro.SAModel
 			Matrix4x4 thing = nodeTransform * parentMatrix;
 			node.Transform = nodeTransform;//nodeTransform;
 
-			node.Name = Name;
+			node.Name = nodename;
 			int startMeshIndex = scene.MeshCount;
 			if (Attach != null)
 			{
@@ -131,10 +139,10 @@ namespace SonicRetro.SAModel
 					int nameMeshIndex = 0;
 					foreach(MeshInfo meshInfo in Attach.MeshInfo)
 					{
-						Mesh mesh = new Mesh("mesh_" + nameMeshIndex);
+						Mesh mesh = new Mesh($"{Attach.Name}_mesh_{nameMeshIndex}");
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
-						Material materoial = new Material() { Name = "material_" + nameMeshIndex++ }; ;
+						Material materoial = new Material() { Name = $"{Attach.Name}_material_{nameMeshIndex++}" };
 						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
 						if (cur_mat.UseTexture && texInfo != null)
 						{
@@ -193,7 +201,7 @@ namespace SonicRetro.SAModel
 			if (Children != null)
 			{
 				foreach (NJS_OBJECT child in Children)
-					child.AssimpExport(scene, ref thing, texInfo, node);
+					child.AssimpExport(scene, thing, texInfo, node, ref mdlindex);
 			}
 			return node;
 		}

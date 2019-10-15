@@ -48,30 +48,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		static List<string> NodeNames;
 		static List<Matrix> NodeTransforms;
 
-		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null)
+		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
 		{
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
 			int mdlindex = -1;
-			return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, null, ref mdlindex);
+			return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent, ref mdlindex);
 		}
 
 		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
 		{
 			mdlindex++;
-
-			Node node = null;
+			string nodename = $"n{mdlindex:000}_{obj.Name}";
+			Node node;
 			if (parent == null)
-			{
-				node = new Node(obj.Name);
-				scene.RootNode.Children.Add(node);
-			}
+				node = new Node(nodename);
 			else
 			{
-				node = new Node(obj.Name, parent);
+				node = new Node(nodename, parent);
 				parent.Children.Add(node);
 			}
-			NodeNames.Add(obj.Name);
+			NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
 
@@ -92,7 +89,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			Matrix nodeWorldTransformInv = Matrix.Invert(nodeWorldTransform);
 			node.Transform = nodeTransform.ToMatrix4X4();//nodeTransform;
 
-			node.Name = obj.Name;
+			node.Name = nodename;
 			int startMeshIndex = scene.MeshCount;
 			if (obj.Attach != null)
 			{
@@ -162,9 +159,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 									VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
 								WeightBuffer[i + chunk.IndexOffset] = null;
 								WeightBuffer[i + chunk.IndexOffset] = new List<WeightData>
-								{
-									new WeightData(mdlindex, origpos, orignor, 1)
-								};
+							{
+								new WeightData(mdlindex, origpos, orignor, 1)
+							};
 							}
 					}
 				}
@@ -173,14 +170,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (attach.Poly != null)
 				{
 					result = ProcessPolyList(attach.Poly, 0, weights);
-					attach.MeshInfo = result.ToArray();
+				if (result.Count > 0)
+				{
 					int nameMeshIndex = 0;
 					foreach (MeshInfo meshInfo in result)
 					{
-						Assimp.Mesh mesh = new Assimp.Mesh("mesh_" + nameMeshIndex);
+						Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
-						Material materoial = new Material() { Name = "material_" + nameMeshIndex++ }; ;
+						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
 						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
 						if (cur_mat.UseTexture && texInfo != null)
 						{
@@ -258,14 +256,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					for (int i = startMeshIndex; i < endMeshIndex; i++)
 					{
 						//node.MeshIndices.Add(i);
-						Node meshChildNode = new Node("meshnode_" + i);
-						meshChildNode.Transform = nodeTransform.ToMatrix4X4();
+						Node meshChildNode = new Node($"meshnode_{i}");
+						meshChildNode.Transform = nodeWorldTransform.ToMatrix4X4();
 						scene.RootNode.Children.Add(meshChildNode);
 						meshChildNode.MeshIndices.Add(i);
 					}
 				}
 			}
-
 			if (obj.Children != null)
 			{
 				foreach (NJS_OBJECT child in obj.Children)
@@ -804,7 +801,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Matrix4x4 ToMatrix4X4(this Matrix m)
 		{
-			return new Matrix4x4(m.M11, m.M12, m.M13, m.M14, m.M21, m.M22, m.M23, m.M24, m.M31, m.M32, m.M33, m.M34, m.M41, m.M42, m.M43, m.M44);
+			return new Matrix4x4(m.M11, m.M21, m.M31, m.M41, m.M12, m.M22, m.M32, m.M42, m.M13, m.M23, m.M33, m.M43, m.M14, m.M24, m.M34, m.M44);
 		}
 	}
 }

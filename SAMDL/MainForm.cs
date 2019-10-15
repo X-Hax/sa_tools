@@ -1726,9 +1726,9 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 					Assimp.Matrix4x4 identity = Assimp.Matrix4x4.Identity;
 					if (model.HasWeight)
-						SAEditorCommon.Import.AssimpStuff.AssimpExportWeighted(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null);
+						SAEditorCommon.Import.AssimpStuff.AssimpExportWeighted(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 					else
-						model.AssimpExport(scene, ref identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+						model.AssimpExport(scene, identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
