@@ -1655,17 +1655,25 @@ namespace SonicRetro.SAModel.SAMDL
 					animations = new NJS_MOTION[0];
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
-
+					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
+					model = SAEditorCommon.Import.AssimpStuff.AssimpImportWeighted(scene, TextureInfo?.Select(t => t.Name).ToArray());
 					editMaterialsToolStripMenuItem.Enabled = true;
 
-					model.ProcessVertexData();
-					NJS_OBJECT[] models = model.GetObjects();
-					meshes = new Mesh[models.Length];
-					for (int i = 0; i < models.Length; i++)
-						if (models[i].Attach != null)
-							try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-							catch { }
+					if (model.HasWeight)
+						meshes = model.ProcessWeightedModel().ToArray();
+					else
+					{
+						model.ProcessVertexData();
+						NJS_OBJECT[] models = model.GetObjects();
+						meshes = new Mesh[models.Length];
+						for (int i = 0; i < models.Length; i++)
+							if (models[i].Attach != null)
+								try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+								catch { }
+					}
+
+					showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+
 					AddTreeNode(model, treeView1.Nodes);
 					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
