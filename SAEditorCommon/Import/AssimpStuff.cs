@@ -168,7 +168,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				List<MeshInfo> result = new List<MeshInfo>();
 				List<List<WeightData>> weights = new List<List<WeightData>>();
 				if (attach.Poly != null)
-				{
 					result = ProcessPolyList(attach.Poly, 0, weights);
 				if (result.Count > 0)
 				{
