@@ -270,6 +270,59 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return node;
 		}
 
+		static class VertexCacheManager
+		{
+			struct CacheEntry : IComparable<CacheEntry>
+			{
+				public int start;
+				public int length;
+				public int handle;
+
+				public int end => start + length;
+
+				int IComparable<CacheEntry>.CompareTo(CacheEntry other)
+				{
+					return start.CompareTo(other.start);
+				}
+			}
+
+			static readonly SortedSet<CacheEntry> entries = new SortedSet<CacheEntry>();
+			static int handle = 0;
+
+			public static void Clear() => entries.Clear();
+
+			public static (int start, int handle) Reserve(int length)
+			{
+				int st = 0;
+				foreach (var en in entries)
+					if (en.start < st + length)
+						st = en.end;
+					else
+						break;
+				if (st + length >= short.MaxValue)
+					throw new Exception("No space in cache to reserve that many vertices!");
+				CacheEntry entry = new CacheEntry
+				{
+					start = st,
+					length = length,
+					handle = handle++
+				};
+				entries.Add(entry);
+				return (st, entry.handle);
+			}
+
+			public static void Release(int handle)
+			{
+				foreach (var en in entries)
+					if (en.handle == handle)
+					{
+						entries.Remove(en);
+						return;
+					}
+				throw new ArgumentException($"No cache entry with handle '{handle}' was found.", "handle");
+			}
+		}
+
 		struct NodeStatus
 		{
 			public List<WeightStatus> statuses;
