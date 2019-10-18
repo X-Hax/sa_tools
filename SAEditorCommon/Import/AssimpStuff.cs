@@ -565,17 +565,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				var vertinds = weights.Select((weightlist, vertind) => (vertind, weightlist)).Where(a => a.weightlist.Any(b => b.name == bonename));
 				VertexChunk vc = null;
 				int nextind = -1;
-				foreach (var vert in vertinds)
+				foreach (var (vertind, weightlist) in vertinds)
 				{
-					if (vert.vertind != nextind || GetWeightStatus(bonename, vert.weightlist) != vc.WeightStatus)
+					if (vertind != nextind || GetWeightStatus(bonename, weightlist) != vc.WeightStatus)
 					{
-						vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vert.vertind, WeightStatus = GetWeightStatus(bonename, vert.weightlist) };
+						vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertind, WeightStatus = GetWeightStatus(bonename, weightlist) };
 						chunks.Add(vc);
 					}
-					vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.vertind].ToSharpDX(), matrices[bonename]).ToVertex());
-					vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.vertind].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
-					vc.NinjaFlags.Add((uint)(((byte)(vert.weightlist.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.vertind - vc.IndexOffset)));
-					nextind = vert.vertind + 1;
+					vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vertind].ToSharpDX(), matrices[bonename]).ToVertex());
+					vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vertind].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
+					vc.NinjaFlags.Add((uint)(((byte)(weightlist.First(a => a.name == bonename).weight * 255.0f) << 16) | (vertind - vc.IndexOffset)));
+					nextind = vertind + 1;
 				}
 				foreach (var cnk in chunks)
 				{
@@ -586,7 +586,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				result.Vertex.Add(bonename, chunks);
 			}
 			bool hasUV = aiMesh.HasTextureCoords(0);
-			int currentstriptotal = 0;
 			List<PolyChunkStrip.Strip> polys = new List<PolyChunkStrip.Strip>();
 			List<ushort> tris = new List<ushort>();
 			Dictionary<ushort, Vector3D> uvmap = new Dictionary<ushort, Vector3D>();
@@ -595,8 +594,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				{
 					ushort ind = (ushort)vertmap[aiFace.Indices[i]];
 					if (hasUV)
-						uvmap[ind] = aiMesh.TextureCoordinateChannels[0][currentstriptotal];
-					++currentstriptotal;
+						uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
 					tris.Add(ind);
 				}
 
