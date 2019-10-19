@@ -29,22 +29,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		internal class WeightData
 		{
 			public int Index { get; private set; }
-			public Vector3 Position { get; private set; }
-			public Vector3 Normal { get; private set; }
 			public float Weight { get; private set; }
 
-			public WeightData(int index, Vector3 position, Vector3 normal, float weight)
+			public WeightData(int index, float weight)
 			{
 				Index = index;
-				Position = position;
-				Normal = normal;
 				Weight = weight;
 			}
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
-		static VertexData[] VertexBuffer = new VertexData[32768];
-		static List<WeightData>[] WeightBuffer = new List<WeightData>[32768];
+		static readonly VertexData[] VertexBuffer = new VertexData[32768];
+		static readonly List<WeightData>[] WeightBuffer = new List<WeightData>[32768];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 		static List<string> NodeNames;
 		static List<Matrix> NodeTransforms;
@@ -61,21 +57,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
 			int mdlindex = -1;
+			ProcessNodes(obj, parentMatrix, ref mdlindex);
+			mdlindex = -1;
 			return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent, ref mdlindex);
 		}
 
-		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
+		private static void ProcessNodes(this NJS_OBJECT obj, Matrix parentMatrix, ref int mdlindex)
 		{
 			mdlindex++;
 			string nodename = $"n{mdlindex:000}_{obj.Name}";
-			Node node;
-			if (parent == null)
-				node = new Node(nodename);
-			else
-			{
-				node = new Node(nodename, parent);
-				parent.Children.Add(node);
-			}
 			NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
@@ -94,6 +84,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 			Matrix nodeWorldTransform = nodeTransform * parentMatrix;
 			NodeTransforms.Add(nodeWorldTransform);
+			if (obj.Children != null)
+				foreach (NJS_OBJECT child in obj.Children)
+					child.ProcessNodes(nodeWorldTransform, ref mdlindex);
+		}
+
+		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent, ref int mdlindex)
+		{
+			mdlindex++;
+			string nodename = NodeNames[mdlindex];
+			Node node;
+			if (parent == null)
+				node = new Node(nodename);
+			else
+			{
+				node = new Node(nodename, parent);
+				parent.Children.Add(node);
+			}
+
+			Matrix nodeTransform = Matrix.Identity;
+
+			nodeTransform *= Matrix.Scaling(obj.Scale.X, obj.Scale.Y, obj.Scale.Z);
+
+			float rotX = ((obj.Rotation.X) * (2 * (float)Math.PI) / 65536.0f);
+			float rotY = ((obj.Rotation.Y) * (2 * (float)Math.PI) / 65536.0f);
+			float rotZ = ((obj.Rotation.Z) * (2 * (float)Math.PI) / 65536.0f);
+			Matrix rotation = Matrix.RotationX(rotX) *
+					   Matrix.RotationY(rotY) *
+					   Matrix.RotationZ(rotZ);
+			nodeTransform *= rotation;
+
+			nodeTransform *= Matrix.Translation(obj.Position.X, obj.Position.Y, obj.Position.Z);
+
+			Matrix nodeWorldTransform = NodeTransforms[mdlindex];
 			Matrix nodeWorldTransformInv = Matrix.Invert(nodeWorldTransform);
 			node.Transform = nodeTransform.ToAssimp();//nodeTransform;
 
@@ -112,15 +135,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							{
 								var weightByte = chunk.NinjaFlags[i] >> 16;
 								var weight = weightByte / 255f;
-								var origpos = chunk.Vertices[i].ToVector3();
-								var position = (Vector3.TransformCoordinate(origpos, nodeWorldTransform) * weight).ToVertex();
-								var orignor = Vector3.Up;
+								var position = (Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), nodeWorldTransform) * weight).ToVertex();
 								Vertex normal = null;
 								if (chunk.Normals.Count > 0)
-								{
-									orignor = chunk.Normals[i].ToVector3();
-									normal = (Vector3.TransformNormal(orignor, nodeWorldTransform) * weight).ToVertex();
-								}
+									normal = (Vector3.TransformNormal(chunk.Normals[i].ToVector3(), nodeWorldTransform) * weight).ToVertex();
 
 								// Store vertex in cache
 								var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
@@ -132,7 +150,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 									VertexBuffer[vertexCacheId] = new VertexData(position, normal);
 									WeightBuffer[vertexCacheId] = new List<WeightData>
 								{
-									new WeightData(mdlindex, origpos, orignor, weight)
+									new WeightData(mdlindex, weight)
 								};
 									if (chunk.Diffuse.Count > 0)
 										VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
@@ -146,30 +164,21 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 									if (chunk.Diffuse.Count > 0)
 										cacheVertex.Color = chunk.Diffuse[i];
 									VertexBuffer[vertexCacheId] = cacheVertex;
-									WeightBuffer[vertexCacheId].Add(new WeightData(mdlindex, origpos, orignor, weight));
+									WeightBuffer[vertexCacheId].Add(new WeightData(mdlindex, weight));
 								}
 							}
 						}
 						else
 							for (int i = 0; i < chunk.VertexCount; i++)
 							{
-								var origpos = chunk.Vertices[i].ToVector3();
-								var position = Vector3.TransformCoordinate(origpos, nodeWorldTransform).ToVertex();
-								var orignor = Vector3.Up;
+								var position = Vector3.TransformCoordinate(chunk.Vertices[i].ToVector3(), nodeWorldTransform).ToVertex();
 								Vertex normal = null;
 								if (chunk.Normals.Count > 0)
-								{
-									orignor = chunk.Normals[i].ToVector3();
-									normal = Vector3.TransformNormal(orignor, nodeWorldTransform).ToVertex();
-								}
+									normal = Vector3.TransformNormal(chunk.Normals[i].ToVector3(), nodeWorldTransform).ToVertex();
 								VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
 								if (chunk.Diffuse.Count > 0)
 									VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
-								WeightBuffer[i + chunk.IndexOffset] = null;
-								WeightBuffer[i + chunk.IndexOffset] = new List<WeightData>
-							{
-								new WeightData(mdlindex, origpos, orignor, 1)
-							};
+								WeightBuffer[i + chunk.IndexOffset] = new List<WeightData> { new WeightData(mdlindex, 1) };
 							}
 					}
 				}
@@ -233,23 +242,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						// Convert vertex weights
 						var aiBoneMap = new Dictionary<int, Bone>();
+						for (int i = 0; i < NodeNames.Count; i++)
+							aiBoneMap.Add(i, new Bone() { Name = NodeNames[i], OffsetMatrix = Matrix.Invert(NodeTransforms[i] * nodeWorldTransformInv).ToAssimp() });
 						for (int i = 0; i < vertexWeights.Count; i++)
 						{
 							for (int j = 0; j < vertexWeights[i].Count; j++)
 							{
 								var vertexWeight = vertexWeights[i][j];
 
-								if (!aiBoneMap.TryGetValue(vertexWeight.Index, out var aiBone))
-								{
-									aiBone = aiBoneMap[vertexWeight.Index] = new Bone
-									{
-										Name = NodeNames[vertexWeight.Index]
-									};
-
-									// Offset matrix: difference between world transform of weighted bone node and the world transform of the mesh's parent node
-									var offsetMatrix = Matrix.Invert(NodeTransforms[vertexWeight.Index] * nodeWorldTransformInv);
-									aiBone.OffsetMatrix = offsetMatrix.ToAssimp();
-								}
+								var aiBone = aiBoneMap[vertexWeight.Index];
 
 								// Assimps way of storing weights is not very efficient
 								aiBone.VertexWeights.Add(new VertexWeight(i, vertexWeight.Weight));
@@ -399,7 +400,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 									verts.Add(new VertexData(
 										VertexBuffer[strip.Indexes[k]].Position,
 										VertexBuffer[strip.Indexes[k]].Normal,
-										hasVColor ? (System.Drawing.Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
 										hasUV ? strip.UVs[k] : null));
 									weights.Add(WeightBuffer[strip.Indexes[k]]);
 								}
@@ -732,7 +733,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, ref int mdlindex)
 		{
-			NJS_OBJECT obj = new NJS_OBJECT { Name = aiNode.Name };
+			NJS_OBJECT obj = new NJS_OBJECT { Name = aiNode.Name, Animate = true, Morph = true };
 			aiNode.Transform.Decompose(out Vector3D scaling, out Assimp.Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
