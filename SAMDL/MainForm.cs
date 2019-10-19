@@ -1724,11 +1724,7 @@ namespace SonicRetro.SAModel.SAMDL
 							bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
 						}
 					}
-					Assimp.Matrix4x4 identity = Assimp.Matrix4x4.Identity;
-					if (model.HasWeight)
-						SAEditorCommon.Import.AssimpStuff.AssimpExportWeighted(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
-					else
-						model.AssimpExport(scene, identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}

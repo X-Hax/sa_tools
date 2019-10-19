@@ -49,6 +49,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		static List<string> NodeNames;
 		static List<Matrix> NodeTransforms;
 
+		public static Node AssimpExport(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
+		{
+			if (obj.HasWeight)
+				return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent);
+			return obj.AssimpExport(scene, parentMatrix.ToAssimp(), texInfo, parent);
+		}
+
 		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
 		{
 			NodeNames = new List<string>();
@@ -534,50 +541,98 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			MeshData result = new MeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray()).ToSAModel();
-			var verts = new List<VertInfo>(aiMesh.VertexCount);
-			for (int i = 0; i < aiMesh.VertexCount; i++)
-				verts.Add(new VertInfo(i));
-			List<string> sortedbones = new List<string>();
-			var matrices = new Dictionary<string, Matrix>();
-			foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
+			if (aiMesh.BoneCount > 1)
 			{
-				sortedbones.Add(bone.Name);
-				foreach (var weight in bone.VertexWeights)
-					verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
-				matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
-			}
-			result.FirstNode = sortedbones.First();
-			string lastbone = sortedbones.Last();
-			result.LastNode = lastbone;
-			for (int i = 0; i < aiMesh.VertexCount; i++)
-				if (verts[i].weights.Count == 0)
-					verts[i].weights.Add(new VertWeight(lastbone, 1));
-			foreach (var bonename in sortedbones)
-			{
-				List<VertexChunk> chunks = new List<VertexChunk>();
-				Dictionary<WeightStatus, List<VertInfo>> vertsbyweight = new Dictionary<WeightStatus, List<VertInfo>>()
+				var verts = new List<VertInfo>(aiMesh.VertexCount);
+				for (int i = 0; i < aiMesh.VertexCount; i++)
+					verts.Add(new VertInfo(i));
+				List<string> sortedbones = new List<string>();
+				var matrices = new Dictionary<string, Matrix>();
+				foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
 				{
-					{ WeightStatus.Start, new List<VertInfo>() },
-					{ WeightStatus.Middle, new List<VertInfo>() },
-					{ WeightStatus.End, new List<VertInfo>() }
-				};
-				foreach (var v in verts.Where(a => a.weights.Any(b => b.name == bonename)))
-					vertsbyweight[GetWeightStatus(bonename, v.weights)].Add(v);
-				foreach (var (weight, vertinds) in vertsbyweight.Where(a => a.Value.Count > 0))
-				{
-					VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => a.index), WeightStatus = weight };
-					foreach (var vert in vertinds)
-					{
-						vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
-						vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
-						vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
-					}
-					vc.VertexCount = (ushort)vc.Vertices.Count;
-					vc.Size = (ushort)(vc.VertexCount * 7 + 1);
-					chunks.Add(vc);
+					sortedbones.Add(bone.Name);
+					foreach (var weight in bone.VertexWeights)
+						verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
+					matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
 				}
+				result.FirstNode = sortedbones.First();
+				string lastbone = sortedbones.Last();
+				result.LastNode = lastbone;
+				for (int i = 0; i < aiMesh.VertexCount; i++)
+					if (verts[i].weights.Count == 0)
+						verts[i].weights.Add(new VertWeight(lastbone, 1));
+				foreach (var bonename in sortedbones)
+				{
+					List<VertexChunk> chunks = new List<VertexChunk>();
+					Dictionary<WeightStatus, List<VertInfo>> vertsbyweight = new Dictionary<WeightStatus, List<VertInfo>>()
+					{
+						{ WeightStatus.Start, new List<VertInfo>() },
+						{ WeightStatus.Middle, new List<VertInfo>() },
+						{ WeightStatus.End, new List<VertInfo>() }
+					};
+					foreach (var v in verts.Where(a => a.weights.Any(b => b.name == bonename)))
+						vertsbyweight[GetWeightStatus(bonename, v.weights)].Add(v);
+					foreach (var (weight, vertinds) in vertsbyweight.Where(a => a.Value.Count > 0))
+					{
+						VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => a.index), WeightStatus = weight };
+						foreach (var vert in vertinds)
+						{
+							vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+							vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
+							vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
+						}
+						vc.VertexCount = (ushort)vc.Vertices.Count;
+						vc.Size = (ushort)(vc.VertexCount * 7 + 1);
+						chunks.Add(vc);
+					}
 
-				result.Vertex.Add(bonename, chunks);
+					result.Vertex.Add(bonename, chunks);
+				}
+			}
+			else
+			{
+				Matrix transform = Matrix.Identity;
+				if (aiMesh.BoneCount == 1)
+				{
+					result.LastNode = result.FirstNode = aiMesh.Bones[0].Name;
+					transform = aiMesh.Bones[0].OffsetMatrix.ToSharpDX();
+				}
+				ChunkType type = ChunkType.Vertex_Vertex;
+				bool hasnormal = false;
+				bool hasvcolor = false;
+				if (aiMesh.HasVertexColors(0))
+				{
+					hasvcolor = true;
+					type = ChunkType.Vertex_VertexDiffuse8;
+				}
+				else if (aiMesh.HasNormals)
+				{
+					hasnormal = true;
+					type = ChunkType.Vertex_VertexNormal;
+				}
+				VertexChunk vc = new VertexChunk(type);
+				for (int i = 0; i < aiMesh.VertexCount; i++)
+				{
+					vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[i].ToSharpDX(), transform).ToVertex());
+					if (hasnormal)
+						vc.Normals.Add(Vector3.TransformNormal(aiMesh.Normals[i].ToSharpDX(), transform).ToVertex());
+					if (hasvcolor)
+						vc.Diffuse.Add(aiMesh.VertexColorChannels[0][i].ToColor());
+				}
+				vc.VertexCount = (ushort)vc.Vertices.Count;
+				switch (type)
+				{
+					case ChunkType.Vertex_Vertex:
+						vc.Size = (ushort)(vc.VertexCount * 3 + 1);
+						break;
+					case ChunkType.Vertex_VertexDiffuse8:
+						vc.Size = (ushort)(vc.VertexCount * 4 + 1);
+						break;
+					case ChunkType.Vertex_VertexNormal:
+						vc.Size = (ushort)(vc.VertexCount * 6 + 1);
+						break;
+				}
+				result.Vertex[result.FirstNode] = new List<VertexChunk>() { vc };
 			}
 			bool hasUV = aiMesh.HasTextureCoords(0);
 			List<PolyChunkStrip.Strip> polys = new List<PolyChunkStrip.Strip>();
@@ -609,7 +664,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			}
 
 			//material stuff
-			Assimp.Material currentAiMat = scene.Materials[aiMesh.MaterialIndex];
+			Material currentAiMat = scene.Materials[aiMesh.MaterialIndex];
 			if (currentAiMat != null)
 			{
 				//output mat first then texID, thats how the official exporter worked
@@ -651,6 +706,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
+		public static NJS_OBJECT AssimpImport(Scene scene, Node node, ModelFormat modelFormat, string[] texInfo = null)
+		{
+			if (modelFormat == ModelFormat.Chunk)
+				foreach (var mesh in scene.Meshes)
+					if (mesh.BoneCount > 1)
+						return AssimpImportWeighted(scene, texInfo);
+			return new NJS_OBJECT(scene, node, texInfo, modelFormat);
+		}
+
 		public static NJS_OBJECT AssimpImportWeighted(Scene scene, string[] texInfo = null)
 		{
 			VertexCacheManager.Clear();
@@ -663,26 +727,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			foreach (var mesh in scene.Meshes)
 				meshdata.Add(ProcessMesh(mesh, scene, texInfo));
 			mdlindex = -1;
-			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, scene.RootNode, ref mdlindex);
+			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, ref mdlindex);
 		}
 
-		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, Node parent, ref int mdlindex)
+		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, ref int mdlindex)
 		{
-			NJS_OBJECT obj = new NJS_OBJECT();
-			obj.Name = aiNode.Name;
-			Vector3D translation;
-			Vector3D scaling;
-			Assimp.Quaternion rotation;
-			aiNode.Transform.Decompose(out scaling, out rotation, out translation);
+			NJS_OBJECT obj = new NJS_OBJECT { Name = aiNode.Name };
+			aiNode.Transform.Decompose(out Vector3D scaling, out Assimp.Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
 			//Rotation = new Rotation(0, 0, 0);
 			obj.Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 
+			ChunkAttach attach = null;
 			if (meshdata.Any(a => a.Vertex.ContainsKey(aiNode.Name)))
 			{
-				ChunkAttach attach = new ChunkAttach(true, meshdata.Any(a => a.LastNode == aiNode.Name));
+				attach = new ChunkAttach(true, meshdata.Any(a => a.LastNode == aiNode.Name) || aiNode.HasMeshes);
 				obj.Attach = attach;
 				foreach (var mesh in meshdata.Where(a => a.Vertex.ContainsKey(aiNode.Name)))
 				{
@@ -705,9 +766,39 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 				}
 			}
+			if (aiNode.HasMeshes)
+			{
+				if (attach == null)
+				{
+					attach = new ChunkAttach(true, true);
+					obj.Attach = attach;
+				}
+				foreach (var mesh in aiNode.MeshIndices.Select(i => meshdata[i]))
+				{
+					(int vstart, int handle) = VertexCacheManager.Reserve(mesh.VertexCount);
+					foreach (var vc in mesh.Vertex[null])
+						vc.IndexOffset += (ushort)vstart;
+					foreach (var str in mesh.Poly.OfType<PolyChunkStrip>().SelectMany(a => a.Strips))
+						for (int i = 0; i < str.Indexes.Length; i++)
+							str.Indexes[i] += (ushort)vstart;
+					attach.Vertex.AddRange(mesh.Vertex[null]);
+					attach.Poly.AddRange(mesh.Poly);
+					attach.Bounds = mesh.Bounds;
+					VertexCacheManager.Release(handle);
+				}
+			}
 			foreach (Node child in aiNode.Children)
 			{
-				obj.AddChild(AssimpImportWeighted(child, scene, meshdata, aiNode, ref mdlindex));
+				NJS_OBJECT c = AssimpImportWeighted(child, scene, meshdata, ref mdlindex);
+				//HACK: workaround for those weird empty nodes created by most 3d editors
+				if (child.Name == "")
+				{
+					c.Children[0].Position = c.Position;
+					c.Children[0].Rotation = c.Rotation;
+					c.Children[0].Scale = c.Scale;
+					c = c.Children[0];
+				}
+				obj.AddChild(c);
 			}
 			return obj;
 		}
@@ -716,6 +807,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		public static Vector3D ToAssimp(this Vector3 v) => new Vector3D(v.X, v.Y, v.Z);
 
 		public static Vector3 ToSharpDX(this Vector3D v) => new Vector3(v.X, v.Y, v.Z);
+
+		public static Vertex ToSAModel(this Vector3D v) => new Vertex(v.X, v.Y, v.Z);
+
+		public static Color ToColor(this Color4D c) => Color.FromArgb((int)c.A * 255, (int)c.R * 255, (int)c.G * 255, (int)c.B * 255);
 
 		public static Matrix4x4 ToAssimp(this Matrix m) => new Matrix4x4(m.M11, m.M21, m.M31, m.M41, m.M12, m.M22, m.M32, m.M42, m.M13, m.M23, m.M33, m.M43, m.M14, m.M24, m.M34, m.M44);
 

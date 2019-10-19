@@ -450,7 +450,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 							}
 						}
 						
-						NJS_OBJECT obj = new NJS_OBJECT(scene,child,scene.RootNode, null,LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? (ModelFormat)geo.Format : ModelFormat.BasicDX);
+						NJS_OBJECT obj = new NJS_OBJECT(scene, child, null, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? (ModelFormat)geo.Format : ModelFormat.BasicDX);
 						{
 							//sa2 collision patch
 							if(obj.Attach.GetType() == typeof(BasicAttach))

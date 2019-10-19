@@ -206,20 +206,10 @@ namespace SonicRetro.SAModel
 			return node;
 		}
 
-		void AssimpLoad(Scene scene, Node node,Node parentNode, ModelFormat format, string[] textures = null)
+		void AssimpLoad(Scene scene, Node node, ModelFormat format, string[] textures = null)
 		{
 			Name = node.Name;
-			Vector3D translation;
-			Vector3D scaling;
-			Quaternion rotation;
-			if (parentNode != null)
-			{
-				Matrix4x4 invParentTransform = parentNode.Transform;
-				invParentTransform.Inverse();
-				Matrix4x4 localTransform = node.Transform * invParentTransform;
-				localTransform.Decompose(out scaling, out rotation, out translation);
-			}
-			else node.Transform.Decompose(out scaling, out rotation, out translation);
+			node.Transform.Decompose(out Vector3D scaling, out Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			Position = new Vertex(translation.X, translation.Y, translation.Z);
 			//Rotation = new Rotation(0, 0, 0);
@@ -246,20 +236,19 @@ namespace SonicRetro.SAModel
 			{
 
 				//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
-				List<NJS_OBJECT> list = new List<NJS_OBJECT>();
 				foreach (Node n in node.Children)
 				{
-					NJS_OBJECT t = new NJS_OBJECT(scene, n, null, null, textures,format);
+					NJS_OBJECT t = new NJS_OBJECT(scene, n, null, textures, format);
 					//HACK: workaround for those weird empty nodes created by most 3d editors
 					if (n.Name == "")
 					{
 						t.Children[0].Position = t.Position;
 						t.Children[0].Rotation = t.Rotation;
 						t.Children[0].Scale = t.Scale;
-						list.Add(t.Children[0]);
+						children.Add(t.Children[0]);
 					}
 					else
-						list.Add(t);
+						children.Add(t);
 					/*if (Parent != null)
 					{
 						if (t.Attach != null)
@@ -273,19 +262,17 @@ namespace SonicRetro.SAModel
 					}*/
 
 				}
-				Children = new ReadOnlyCollection<NJS_OBJECT>(list.ToArray());
 			}
-			else Children = new ReadOnlyCollection<NJS_OBJECT>(new List<NJS_OBJECT>().ToArray());
 		}
-		public NJS_OBJECT(Scene scene, Node node, Node parentNode, NJS_OBJECT parent, string[] textures = null, ModelFormat format = ModelFormat.Chunk)
+		public NJS_OBJECT(Scene scene, Node node, NJS_OBJECT parent, string[] textures = null, ModelFormat format = ModelFormat.Chunk)
+			: this()
 		{
 			Parent = parent;
-			AssimpLoad(scene, node, parentNode, format, textures);
+			AssimpLoad(scene, node, format, textures);
 		}
-		public NJS_OBJECT(Scene scene, Node node, string[] textures = null, ModelFormat format = ModelFormat.Chunk) : this(scene, node, null, null, textures, format)
-		{
-
-		}
+		public NJS_OBJECT(Scene scene, Node node, string[] textures = null, ModelFormat format = ModelFormat.Chunk)
+			: this(scene, node, null, textures, format)
+		{ }
 		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
 		{ }
