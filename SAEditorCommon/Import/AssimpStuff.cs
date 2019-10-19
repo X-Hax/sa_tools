@@ -496,13 +496,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		class VertInfo
 		{
-			public readonly int origIndex;
-			public int sortedIndex;
+			public readonly int index;
 			public readonly List<VertWeight> weights;
 
 			public VertInfo(int ind)
 			{
-				origIndex = ind;
+				index = ind;
 				weights = new List<VertWeight>();
 			}
 		}
@@ -553,43 +552,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			for (int i = 0; i < aiMesh.VertexCount; i++)
 				if (verts[i].weights.Count == 0)
 					verts[i].weights.Add(new VertWeight(lastbone, 1));
-			verts.Sort((a, b) =>
-			{
-				for (int i = 0; i < Math.Min(a.weights.Count, b.weights.Count); i++)
-				{
-					var c = nodeIndexForSort[a.weights[i].name].CompareTo(nodeIndexForSort[b.weights[i].name]);
-					if (c != 0)
-						return c;
-				}
-				var d = a.weights.Count.CompareTo(b.weights.Count);
-				if (d != 0)
-					return d;
-				return a.origIndex.CompareTo(b.origIndex);
-			});
-			for (int i = 0; i < verts.Count; i++)
-				verts[i].sortedIndex = i;
 			foreach (var bonename in sortedbones)
 			{
 				List<VertexChunk> chunks = new List<VertexChunk>();
-				var vertinds = verts.Where(a => a.weights.Any(b => b.name == bonename));
-				VertexChunk vc = null;
-				int nextind = -1;
-				foreach (var vert in vertinds)
+				Dictionary<WeightStatus, List<VertInfo>> vertsbyweight = new Dictionary<WeightStatus, List<VertInfo>>()
 				{
-					if (vert.sortedIndex != nextind || GetWeightStatus(bonename, vert.weights) != vc.WeightStatus)
+					{ WeightStatus.Start, new List<VertInfo>() },
+					{ WeightStatus.Middle, new List<VertInfo>() },
+					{ WeightStatus.End, new List<VertInfo>() }
+				};
+				foreach (var v in verts.Where(a => a.weights.Any(b => b.name == bonename)))
+					vertsbyweight[GetWeightStatus(bonename, v.weights)].Add(v);
+				foreach (var (weight, vertinds) in vertsbyweight.Where(a => a.Value.Count > 0))
+				{
+					VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => a.index), WeightStatus = weight };
+					foreach (var vert in vertinds)
 					{
-						vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vert.sortedIndex, WeightStatus = GetWeightStatus(bonename, vert.weights) };
-						chunks.Add(vc);
+						vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+						vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
+						vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
 					}
-					vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.origIndex].ToSharpDX(), matrices[bonename]).ToVertex());
-					vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.origIndex].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
-					vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.sortedIndex - vc.IndexOffset)));
-					nextind = vert.sortedIndex + 1;
-				}
-				foreach (var cnk in chunks)
-				{
-					cnk.VertexCount = (ushort)cnk.Vertices.Count;
-					cnk.Size = (ushort)(cnk.VertexCount * 7 + 1);
+					vc.VertexCount = (ushort)vc.Vertices.Count;
+					vc.Size = (ushort)(vc.VertexCount * 7 + 1);
+					chunks.Add(vc);
 				}
 
 				result.Vertex.Add(bonename, chunks);
@@ -601,7 +586,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			foreach (Face aiFace in aiMesh.Faces)
 				for (int i = 0; i < 3; i++)
 				{
-					ushort ind = (ushort)verts[aiFace.Indices[i]].sortedIndex;
+					ushort ind = (ushort)aiFace.Indices[i];
 					if (hasUV)
 						uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
 					tris.Add(ind);
@@ -743,5 +728,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		public static Matrix4x4 ToAssimp(this Matrix m) => new Matrix4x4(m.M11, m.M21, m.M31, m.M41, m.M12, m.M22, m.M32, m.M42, m.M13, m.M23, m.M33, m.M43, m.M14, m.M24, m.M34, m.M44);
 
 		public static Matrix ToSharpDX(this Matrix4x4 m) => new Matrix(m.A1, m.B1, m.C1, m.D1, m.A2, m.B2, m.C2, m.D2, m.A3, m.B3, m.C3, m.D3, m.A4, m.B4, m.C4, m.D4);
+
+		public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> item, out TKey key, out TValue value)
+		{
+			key = item.Key;
+			value = item.Value;
+		}
 	}
 }
