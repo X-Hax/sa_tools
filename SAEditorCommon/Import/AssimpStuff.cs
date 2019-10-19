@@ -673,15 +673,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			Vector3D translation;
 			Vector3D scaling;
 			Assimp.Quaternion rotation;
-			if (parent != null)
-			{
-				Matrix4x4 invParentTransform = parent.Transform;
-				invParentTransform.Inverse();
-				Matrix4x4 localTransform = aiNode.Transform * invParentTransform;
-				localTransform.Decompose(out scaling, out rotation, out translation);
-			}
-			else
-				aiNode.Transform.Decompose(out scaling, out rotation, out translation);
+			aiNode.Transform.Decompose(out scaling, out rotation, out translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
 			//Rotation = new Rotation(0, 0, 0);
