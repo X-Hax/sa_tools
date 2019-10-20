@@ -117,7 +117,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			nodeTransform *= Matrix.Translation(obj.Position.X, obj.Position.Y, obj.Position.Z);
 
 			Matrix nodeWorldTransform = NodeTransforms[mdlindex];
-			Matrix nodeWorldTransformInv = Matrix.Invert(nodeWorldTransform);
+			Matrix nodeWorldTransformInv = Matrix.Invert(parentMatrix);
 			node.Transform = nodeTransform.ToAssimp();//nodeTransform;
 
 			node.Name = nodename;
@@ -229,8 +229,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
 							for (int j = 0; j < 3; j++)
 							{
-								mesh.Vertices.Add(Vector3.TransformCoordinate(meshInfo.Vertices[tris[i + j]].Position.ToVector3(), nodeWorldTransformInv).ToAssimp());
-								mesh.Normals.Add(Vector3.TransformNormal(meshInfo.Vertices[tris[i + j]].Normal.ToVector3(), nodeWorldTransformInv).ToAssimp());
+								mesh.Vertices.Add(meshInfo.Vertices[tris[i + j]].Position.ToAssimp());
+								mesh.Normals.Add(meshInfo.Vertices[tris[i + j]].Normal.ToAssimp());
 								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
 									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
 								if (meshInfo.Vertices[tris[i + j]].UV != null)
@@ -243,7 +243,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						// Convert vertex weights
 						var aiBoneMap = new Dictionary<int, Bone>();
 						for (int i = 0; i < NodeNames.Count; i++)
-							aiBoneMap.Add(i, new Bone() { Name = NodeNames[i], OffsetMatrix = Matrix.Invert(NodeTransforms[i] * nodeWorldTransformInv).ToAssimp() });
+							aiBoneMap.Add(i, new Bone() { Name = NodeNames[i], OffsetMatrix = Matrix.Invert(NodeTransforms[i]).ToAssimp() });
 						for (int i = 0; i < vertexWeights.Count; i++)
 						{
 							for (int j = 0; j < vertexWeights[i].Count; j++)
@@ -265,7 +265,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					{
 						//node.MeshIndices.Add(i);
 						Node meshChildNode = new Node($"meshnode_{i}");
-						meshChildNode.Transform = nodeWorldTransform.ToAssimp();
+						//meshChildNode.Transform = nodeWorldTransform.ToAssimp();
 						scene.RootNode.Children.Add(meshChildNode);
 						meshChildNode.MeshIndices.Add(i);
 					}
@@ -808,6 +808,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		public static Vector3D ToAssimp(this Vector3 v) => new Vector3D(v.X, v.Y, v.Z);
 
 		public static Vector3 ToSharpDX(this Vector3D v) => new Vector3(v.X, v.Y, v.Z);
+
+		public static Vector3D ToAssimp(this Vertex v) => new Vector3D(v.X, v.Y, v.Z);
 
 		public static Vertex ToSAModel(this Vector3D v) => new Vertex(v.X, v.Y, v.Z);
 
