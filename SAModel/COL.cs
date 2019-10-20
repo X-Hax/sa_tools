@@ -89,8 +89,8 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SA2:
 				case LandTableFormat.SA2B:
 					Flags = ByteConverter.ToInt32(file, address + 0x1C);
-					if (!forceBasic.HasValue)
-						mfmt = Flags < 0 ? ModelFormat.Chunk : ModelFormat.Basic;
+					if (!forceBasic.HasValue && Flags < 0)
+						mfmt = ModelFormat.Basic;
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels);
 					Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
