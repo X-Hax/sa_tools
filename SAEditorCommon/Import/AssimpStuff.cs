@@ -243,7 +243,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						// Convert vertex weights
 						var aiBoneMap = new Dictionary<int, Bone>();
 						for (int i = 0; i < NodeNames.Count; i++)
-							aiBoneMap.Add(i, new Bone() { Name = NodeNames[i], OffsetMatrix = Matrix.Invert(NodeTransforms[i]).ToAssimp() });
+							aiBoneMap.Add(i, new Bone() { Name = NodeNames[i], OffsetMatrix = Matrix.Invert(NodeTransforms[i] * Matrix.Translation(0.0001f, 0, 0)).ToAssimp() });
 						for (int i = 0; i < vertexWeights.Count; i++)
 						{
 							for (int j = 0; j < vertexWeights[i].Count; j++)
