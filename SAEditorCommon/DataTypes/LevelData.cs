@@ -449,8 +449,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 								break;
 							}
 						}
-						
-						NJS_OBJECT obj = new NJS_OBJECT(scene, child, null, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), isVisible ? (ModelFormat)geo.Format : ModelFormat.BasicDX);
+						ModelFormat mfmt = ModelFormat.Basic;
+						if (!isVisible)
+							switch (geo.Format)
+							{
+								case LandTableFormat.SA2:
+									mfmt = ModelFormat.Chunk;
+									break;
+								case LandTableFormat.SA2B:
+									mfmt = ModelFormat.GC;
+									break;
+							}
+						NJS_OBJECT obj = new NJS_OBJECT(scene, child, null, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray(), mfmt);
 						{
 							//sa2 collision patch
 							if(obj.Attach.GetType() == typeof(BasicAttach))
