@@ -1189,7 +1189,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			}
 			else
@@ -1201,7 +1201,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
