@@ -471,6 +471,11 @@ namespace SonicRetro.SAModel.SAMDL
 			NewFileOperation(ModelFormat.Chunk);
 		}
 
+		private void GamecubeModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.GC);
+		}
+
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
@@ -1184,7 +1189,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			}
 			else
@@ -1196,7 +1201,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
@@ -1656,7 +1661,7 @@ namespace SonicRetro.SAModel.SAMDL
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
-					model = SAEditorCommon.Import.AssimpStuff.AssimpImportWeighted(scene, TextureInfo?.Select(t => t.Name).ToArray());
+					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray());
 					editMaterialsToolStripMenuItem.Enabled = true;
 
 					if (model.HasWeight)

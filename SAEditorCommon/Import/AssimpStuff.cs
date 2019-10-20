@@ -49,7 +49,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			if (obj.HasWeight)
 				return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent);
-			return obj.AssimpExport(scene, parentMatrix.ToAssimp(), texInfo, parent);
+			return obj.AssimpExport(scene, texInfo, parent);
 		}
 
 		public static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
