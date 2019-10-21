@@ -33,7 +33,6 @@
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.currentSceneOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,14 +46,14 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.camModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.timer1 = new System.Timers.Timer();
-			this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.exportSA2MDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -92,29 +91,21 @@
 			// openToolStripMenuItem
 			// 
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.openToolStripMenuItem.Text = "&Open...";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
 			// exportToolStripMenuItem
 			// 
-			this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.currentSceneOBJToolStripMenuItem});
 			this.exportToolStripMenuItem.Enabled = false;
 			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.exportToolStripMenuItem.Text = "&Export";
-			// 
-			// currentSceneOBJToolStripMenuItem
-			// 
-			this.currentSceneOBJToolStripMenuItem.Name = "currentSceneOBJToolStripMenuItem";
-			this.currentSceneOBJToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-			this.currentSceneOBJToolStripMenuItem.Text = "Current Scene (OBJ)";
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -129,7 +120,7 @@
 			// preferencesToolStripMenuItem
 			// 
 			this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+			this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.preferencesToolStripMenuItem.Text = "Preferences";
 			this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
 			// 
@@ -147,7 +138,7 @@
 			this.showCameraToolStripMenuItem.CheckOnClick = true;
 			this.showCameraToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.showCameraToolStripMenuItem.Name = "showCameraToolStripMenuItem";
-			this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+			this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.showCameraToolStripMenuItem.Text = "Show &Camera";
 			this.showCameraToolStripMenuItem.Click += new System.EventHandler(this.showCameraToolStripMenuItem_Click);
 			// 
@@ -258,17 +249,9 @@
 			// contextMenuStrip1
 			// 
 			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportOBJToolStripMenuItem});
+            this.exportSA2MDLToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(140, 26);
-			// 
-			// exportOBJToolStripMenuItem
-			// 
-			this.exportOBJToolStripMenuItem.Enabled = false;
-			this.exportOBJToolStripMenuItem.Name = "exportOBJToolStripMenuItem";
-			this.exportOBJToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-			this.exportOBJToolStripMenuItem.Text = "&Export OBJ...";
-			this.exportOBJToolStripMenuItem.Click += new System.EventHandler(this.exportOBJToolStripMenuItem_Click);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 48);
 			// 
 			// statusStrip1
 			// 
@@ -297,6 +280,13 @@
 			this.cameraPosLabel.Size = new System.Drawing.Size(110, 19);
 			this.cameraPosLabel.Text = "Camera Pos: 0, 0, 0";
 			// 
+			// cameraFOVLabel
+			// 
+			this.cameraFOVLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+			this.cameraFOVLabel.Name = "cameraFOVLabel";
+			this.cameraFOVLabel.Size = new System.Drawing.Size(45, 19);
+			this.cameraFOVLabel.Text = "FOV: 0";
+			// 
 			// sceneNumLabel
 			// 
 			this.sceneNumLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
@@ -317,12 +307,13 @@
 			this.timer1.SynchronizingObject = this;
 			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
 			// 
-			// cameraFOVLabel
+			// exportSA2MDLToolStripMenuItem
 			// 
-			this.cameraFOVLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-			this.cameraFOVLabel.Name = "cameraFOVLabel";
-			this.cameraFOVLabel.Size = new System.Drawing.Size(45, 19);
-			this.cameraFOVLabel.Text = "FOV: 0";
+			this.exportSA2MDLToolStripMenuItem.Enabled = false;
+			this.exportSA2MDLToolStripMenuItem.Name = "exportSA2MDLToolStripMenuItem";
+			this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exportSA2MDLToolStripMenuItem.Text = "Export &SA2MDL";
+			this.exportSA2MDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2MDLToolStripMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -370,7 +361,6 @@
 		private System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem exportOBJToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel cameraPosLabel;
@@ -378,12 +368,12 @@
 		private System.Windows.Forms.ToolStripStatusLabel animFrameLabel;
 		private System.Timers.Timer timer1;
 		private System.Windows.Forms.ToolStripStatusLabel camModeLabel;
-		private System.Windows.Forms.ToolStripMenuItem currentSceneOBJToolStripMenuItem;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
 		private System.Windows.Forms.ToolStripMenuItem showCameraToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel cameraFOVLabel;
+		private System.Windows.Forms.ToolStripMenuItem exportSA2MDLToolStripMenuItem;
 	}
 }
 
