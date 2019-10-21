@@ -925,25 +925,25 @@ namespace SA2EventViewer
 
 		private void exportSA2MDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" };
-			if (dlg.ShowDialog(this) == DialogResult.OK)
-			{
-				string[] anims = null;
-				if (selectedObject.Motion != null)
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					string animname = selectedObject.Motion.Name + ".saanim";
-					selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-					anims = new[] { animname };
+					string[] anims = null;
+					if (selectedObject.Motion != null)
+					{
+						string animname = selectedObject.Motion.Name + ".saanim";
+						selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+						anims = new[] { animname };
+					}
+					string[] morphs = null;
+					if (selectedObject.ShapeMotion != null)
+					{
+						string animname = selectedObject.ShapeMotion.Name + ".saanim";
+						selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+						morphs = new[] { animname };
+					}
+					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims, morphs, null, null, null, ModelFormat.Chunk);
 				}
-				string[] morphs = null;
-				if (selectedObject.ShapeMotion != null)
-				{
-					string animname = selectedObject.ShapeMotion.Name + ".saanim";
-					selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-					morphs = new[] { animname };
-				}
-				ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims, morphs, null, null, null, ModelFormat.Chunk);
-			}
 		}
 	}
 }
