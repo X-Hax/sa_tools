@@ -189,6 +189,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (result.Count > 0)
 				{
 					int nameMeshIndex = 0;
+					int weightind = 0;
 					foreach (MeshInfo meshInfo in result)
 					{
 						Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
@@ -235,7 +236,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
 								if (meshInfo.Vertices[tris[i + j]].UV != null)
 									mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-								vertexWeights.Add(weights[tris[i + j]]);
+								vertexWeights.Add(weights[weightind + tris[i + j]]);
 							}
 							mesh.Faces.Add(face);
 						}
@@ -259,6 +260,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						mesh.Bones.AddRange(aiBoneMap.Values);
 						scene.Meshes.Add(mesh);
+						weightind += meshInfo.Vertices.Length;
 					}
 					int endMeshIndex = scene.MeshCount;
 					for (int i = startMeshIndex; i < endMeshIndex; i++)
