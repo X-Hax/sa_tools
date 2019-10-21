@@ -189,7 +189,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (result.Count > 0)
 				{
 					int nameMeshIndex = 0;
-					int weightind = 0;
+					int vertind = 0;
 					foreach (MeshInfo meshInfo in result)
 					{
 						Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
@@ -221,23 +221,24 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						scene.Materials.Add(materoial);
 						mesh.MaterialIndex = matIndex;
 
+						List<List<WeightData>> vertexWeights = new List<List<WeightData>>(meshInfo.Vertices.Length);
+						for (int i = 0; i < meshInfo.Vertices.Length; i++)
+						{
+							mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
+							mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
+							if (meshInfo.Vertices[i].Color.HasValue)
+								mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[i].Color.Value.R, meshInfo.Vertices[i].Color.Value.G, meshInfo.Vertices[i].Color.Value.B, meshInfo.Vertices[i].Color.Value.A));
+							if (meshInfo.Vertices[i].UV != null)
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
+							vertexWeights.Add(weights[vertind + i]);
+						}
+
 						mesh.PrimitiveType = PrimitiveType.Triangle;
 						ushort[] tris = meshInfo.ToTriangles();
-						List<List<WeightData>> vertexWeights = new List<List<WeightData>>(tris.Length);
 						for (int i = 0; i < tris.Length; i += 3)
 						{
 							Face face = new Face();
-							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
-							for (int j = 0; j < 3; j++)
-							{
-								mesh.Vertices.Add(meshInfo.Vertices[tris[i + j]].Position.ToAssimp());
-								mesh.Normals.Add(meshInfo.Vertices[tris[i + j]].Normal.ToAssimp());
-								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
-								if (meshInfo.Vertices[tris[i + j]].UV != null)
-									mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-								vertexWeights.Add(weights[weightind + tris[i + j]]);
-							}
+							face.Indices.AddRange(new int[] { tris[i + 2], tris[i + 1], tris[i] });
 							mesh.Faces.Add(face);
 						}
 
@@ -260,7 +261,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						mesh.Bones.AddRange(aiBoneMap.Values);
 						scene.Meshes.Add(mesh);
-						weightind += meshInfo.Vertices.Length;
+						vertind += meshInfo.Vertices.Length;
 					}
 					int endMeshIndex = scene.MeshCount;
 					for (int i = startMeshIndex; i < endMeshIndex; i++)
