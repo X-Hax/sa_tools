@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.UI;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
 using Color = System.Drawing.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -892,152 +891,19 @@ namespace SA2EventViewer
 			if (selectedObject != null)
 			{
 				propertyGrid1.SelectedObject = selectedObject;
-				//exportOBJToolStripMenuItem.Enabled = selectedObject.Model != null;
+				exportSA2MDLToolStripMenuItem.Enabled = selectedObject.Model != null;
 			}
 			else
 			{
 				propertyGrid1.SelectedObject = null;
-				exportOBJToolStripMenuItem.Enabled = false;
+				exportSA2MDLToolStripMenuItem.Enabled = false;
 			}
 
 			DrawEntireModel();
-		}
-
-		private void objToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj"
-			})
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-					{
-						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-						int totalVerts = 0;
-						int totalNorms = 0;
-						int totalUVs = 0;
-
-						bool errorFlag = false;
-
-						for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
-							if (@event.Scenes[scenenum].Entities[i].Model != null)
-								SonicRetro.SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, @event.Scenes[scenenum].Entities[i].Model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-						
-
-						#region Material Exporting
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-						for (int i = 0; i < materials.Count; i++)
-						{
-							int texIndx = materials[i].TextureID;
-
-							NJS_MATERIAL material = materials[i];
-							mtlstream.WriteLine("newmtl material_{0}", i);
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-								material.DiffuseColor.R / 255,
-								material.DiffuseColor.G / 255,
-								material.DiffuseColor.B / 255));
-
-							mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-								material.SpecularColor.R / 255,
-								material.SpecularColor.G / 255,
-								material.SpecularColor.B / 255));
-							mtlstream.WriteLine("illum 1");
-
-							if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-
-							//progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
-							//progress.StepProgress();
-							Application.DoEvents();
-						}
-						#endregion
-
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-					}
-				}
-		}
-
-		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj",
-				FileName = selectedObject.Model.Name
-			})
-			{
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					string objFileName = a.FileName;
-					using (StreamWriter objstream = new StreamWriter(objFileName, false))
-					{
-						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-						int totalVerts = 0;
-						int totalNorms = 0;
-						int totalUVs = 0;
-						bool errorFlag = false;
-
-						SonicRetro.SAModel.Direct3D.Extensions.WriteModelAsObj(objstream, selectedObject.Model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
-
-						string mypath = Path.GetDirectoryName(objFileName);
-						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
-						{
-							for (int i = 0; i < materials.Count; i++)
-							{
-								int texIndx = materials[i].TextureID;
-
-								NJS_MATERIAL material = materials[i];
-								mtlstream.WriteLine("newmtl material_{0}", i);
-								mtlstream.WriteLine("Ka 1 1 1");
-								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-									material.DiffuseColor.R / 255,
-									material.DiffuseColor.G / 255,
-									material.DiffuseColor.B / 255));
-
-								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-									material.SpecularColor.R / 255,
-									material.SpecularColor.G / 255,
-									material.SpecularColor.B / 255));
-								mtlstream.WriteLine("illum 1");
-
-								if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-								{
-									mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-									// save texture
-
-									TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-		}
-
-		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DrawEntireModel();
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1055,6 +921,29 @@ namespace SA2EventViewer
 		private void showCameraToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DrawEntireModel();
+		}
+
+		private void exportSA2MDLToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					string[] anims = null;
+					if (selectedObject.Motion != null)
+					{
+						string animname = selectedObject.Motion.Name + ".saanim";
+						selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+						anims = new[] { animname };
+					}
+					string[] morphs = null;
+					if (selectedObject.ShapeMotion != null)
+					{
+						string animname = selectedObject.ShapeMotion.Name + ".saanim";
+						selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+						morphs = new[] { animname };
+					}
+					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims, morphs, null, null, null, ModelFormat.Chunk);
+				}
 		}
 	}
 }
