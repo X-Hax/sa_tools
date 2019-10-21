@@ -254,9 +254,16 @@ namespace SA2EventViewer
 					if (@event.Scenes[scenenum].Entities[i].Model != null)
 						if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
 						{
+							if (animframe != -1 && @event.Scenes[scenenum].Entities[i].Motion != null)
+							{
+								transform.Push();
+								transform.NJTranslate(@event.Scenes[scenenum].Entities[i].Motion.Models[0].GetPosition(animframe));
+							}
 							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[scenenum][i]));
 							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
 								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeightedInvert(transform.Top, meshes[scenenum][i]));
+							if (animframe != -1 && @event.Scenes[scenenum].Entities[i].Motion != null)
+								transform.Pop();
 						}
 						else if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
 						{
@@ -313,7 +320,11 @@ namespace SA2EventViewer
 							if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
 								@event.Scenes[scenenum].Entities[i].Model.UpdateWeightedModel(new MatrixStack(), meshes[scenenum][i]);
 							else
-								@event.Scenes[scenenum].Entities[i].Model.UpdateWeightedModelAnimated(new MatrixStack(), @event.Scenes[scenenum].Entities[i].Motion, animframe, meshes[scenenum][i]);
+							{
+								MatrixStack m = new MatrixStack();
+								m.NJTranslate(-@event.Scenes[scenenum].Entities[i].Motion.Models[0].GetPosition(animframe));
+								@event.Scenes[scenenum].Entities[i].Model.UpdateWeightedModelAnimated(m, @event.Scenes[scenenum].Entities[i].Motion, animframe, meshes[scenenum][i]);
+							}
 						}
 						else if (@event.Scenes[scenenum].Entities[i].ShapeMotion != null)
 						{
