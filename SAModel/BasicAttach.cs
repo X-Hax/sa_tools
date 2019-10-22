@@ -207,7 +207,7 @@ namespace SonicRetro.SAModel
 					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
 					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
 					{
-						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = 1.0f - meshes[i].TextureCoordinateChannels[0][x].Y };
+						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
 					}
 				}
 

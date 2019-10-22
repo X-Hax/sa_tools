@@ -90,7 +90,7 @@ namespace SonicRetro.SAModel
 							uv = new UV()
 							{
 								U = aiMesh.TextureCoordinateChannels[0][currentstriptotal].X,
-								V = 1.0f - aiMesh.TextureCoordinateChannels[0][currentstriptotal].Y
+								V = aiMesh.TextureCoordinateChannels[0][currentstriptotal].Y
 							};
 						}
 

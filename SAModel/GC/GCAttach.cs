@@ -92,7 +92,7 @@ namespace SonicRetro.SAModel.GC
 				if (m.HasTextureCoords(0))
 				{
 					foreach (Vector3D texcoord in m.TextureCoordinateChannels[0])
-						texcoords.Add(new Vector2(texcoord.X, 1.0f - texcoord.Y));
+						texcoords.Add(new Vector2(texcoord.X, texcoord.Y));
 				}
 				if (m.HasVertexColors(0))
 				{
