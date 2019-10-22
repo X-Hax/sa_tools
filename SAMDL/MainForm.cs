@@ -1646,7 +1646,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					string objFileName = a.FileName;
-					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices);
+					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 					loaded = false;
 					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
 					timer1.Stop();

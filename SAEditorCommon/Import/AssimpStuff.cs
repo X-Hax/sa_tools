@@ -661,7 +661,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					var vertexIndex = grp.Indices[j];
 					stripIndices[j] = vertexIndex;
 					if (hasUV)
-						stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = 1.0f - uvmap[vertexIndex].Y });
+						stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
 				}
 
 				polys.Add(new PolyChunkStrip.Strip(false, stripIndices, hasUV ? stripuv.ToArray() : null, null));
