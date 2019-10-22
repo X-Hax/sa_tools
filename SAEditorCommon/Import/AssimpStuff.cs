@@ -494,7 +494,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			public string LastNode { get; set; }
 			public List<PolyChunk> Poly { get; set; }
 			public int VertexCount { get; set; }
-			public BoundingSphere Bounds { get; set; }
+			public SharpDX.BoundingSphere Bounds { get; set; }
 			public int CacheHandle { get; set; }
 
 			public MeshData(int vcount)
@@ -544,7 +544,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo = null)
 		{
 			MeshData result = new MeshData(aiMesh.VertexCount);
-			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray()).ToSAModel();
+			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
 			if (aiMesh.BoneCount > 1)
 			{
 				var verts = new List<VertInfo>(aiMesh.VertexCount);
@@ -745,6 +745,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 
 			ChunkAttach attach = null;
+			SharpDX.BoundingSphere bounds = new SharpDX.BoundingSphere();
+			List<int> releasehandles = new List<int>();
 			if (meshdata.Any(a => a.Vertex.ContainsKey(aiNode.Name)))
 			{
 				attach = new ChunkAttach(true, meshdata.Any(a => a.LastNode == aiNode.Name) || aiNode.HasMeshes);
@@ -765,8 +767,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					if (mesh.LastNode == aiNode.Name)
 					{
 						attach.Poly.AddRange(mesh.Poly);
-						attach.Bounds = mesh.Bounds;
-						VertexCacheManager.Release(mesh.CacheHandle);
+						if (bounds.Radius == 0)
+							bounds = mesh.Bounds;
+						else
+							bounds = SharpDX.BoundingSphere.Merge(bounds, mesh.Bounds);
+						releasehandles.Add(mesh.CacheHandle);
 					}
 				}
 			}
@@ -787,10 +792,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							str.Indexes[i] += (ushort)vstart;
 					attach.Vertex.AddRange(mesh.Vertex[null]);
 					attach.Poly.AddRange(mesh.Poly);
-					attach.Bounds = mesh.Bounds;
-					VertexCacheManager.Release(handle);
+					if (bounds.Radius == 0)
+						bounds = mesh.Bounds;
+					else
+						bounds = SharpDX.BoundingSphere.Merge(bounds, mesh.Bounds);
+					releasehandles.Add(handle);
 				}
 			}
+			if (attach != null)
+				attach.Bounds = bounds.ToSAModel();
+			foreach (int handle in releasehandles)
+				VertexCacheManager.Release(handle);
 			foreach (Node child in aiNode.Children)
 			{
 				NJS_OBJECT c = AssimpImportWeighted(child, scene, meshdata, ref mdlindex);
