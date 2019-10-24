@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-using Assimp.Unmanaged;
-using Assimp.Configs;
-using Assimp;
-
 namespace SonicRetro.SAModel
 {
 	[Serializable]
@@ -165,32 +161,6 @@ namespace SonicRetro.SAModel
 			Exponent = copy.Exponent;
 			TextureID = copy.TextureID;
 			Flags = copy.Flags;
-		}
-
-		Color FromColor4D(Color4D c)
-		{
-			return Color.FromArgb((int)(c.A * 255.0f), (int)(c.R * 255.0f), (int)(c.G * 255.0f), (int)(c.B * 255.0f));
-		}
-
-		public NJS_MATERIAL(Material mat)
-		{
-			if (mat.HasColorDiffuse)
-				DiffuseColor = FromColor4D(mat.ColorDiffuse);
-			if (mat.HasColorSpecular)
-				SpecularColor = FromColor4D(mat.ColorSpecular);
-			if(mat.HasTextureDiffuse)
-			{
-				if (mat.TextureDiffuse.WrapModeU == TextureWrapMode.Clamp)
-					ClampU = true;
-				if (mat.TextureDiffuse.WrapModeV == TextureWrapMode.Clamp)
-					ClampV = true;
-				if (mat.TextureDiffuse.WrapModeU == TextureWrapMode.Mirror)
-					FlipU = true;
-				if (mat.TextureDiffuse.WrapModeV == TextureWrapMode.Mirror)
-					FlipV = true;
-			}
-			Exponent = mat.Shininess;
-			
 		}
 
 		/// <summary>

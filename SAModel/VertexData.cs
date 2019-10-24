@@ -90,6 +90,20 @@ namespace SonicRetro.SAModel
 			UV = uv;
 		}
 
+		public VertexData(GC.Vector3 position, GC.Vector3 normal, GC.Color color, GC.Vector2 uv)
+		{
+			Position = new Vertex(position.X, position.Y, position.Z);
+			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
+
+			//why does this work, i fed R in as A
+			//Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.G), (int)(color.B), (int)(color.A));
+			
+			Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.A), (int)(color.B), (int)(color.G));
+
+			//Color = color;
+			UV = new UV() { U = uv.X, V = uv.Y };
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (obj is VertexData)

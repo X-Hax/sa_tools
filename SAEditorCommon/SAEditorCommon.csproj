@@ -35,6 +35,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="NvTriStripDotNet">
       <HintPath>..\Dependencies\NvTriStripDotNet.dll</HintPath>
     </Reference>
@@ -75,6 +79,7 @@
       <DependentUpon>DLLModGenUI.cs</DependentUpon>
     </Compile>
     <Compile Include="GamePathChecker.cs" />
+    <Compile Include="Import\AssimpStuff.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="ManualBuildWindow.cs">
       <SubType>Form</SubType>

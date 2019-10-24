@@ -143,7 +143,8 @@ namespace SonicRetro.SAModel.SAMDL
 			this.comboBox2.Items.AddRange(new object[] {
             "Basic",
             "SADX Basic",
-            "Chunk"});
+            "Chunk",
+			"GC"});
 			this.comboBox2.Location = new System.Drawing.Point(60, 114);
 			this.comboBox2.Name = "comboBox2";
 			this.comboBox2.Size = new System.Drawing.Size(104, 21);

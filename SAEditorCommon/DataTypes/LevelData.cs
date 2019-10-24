@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
@@ -425,6 +426,77 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 				case ".txt":
 					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
+					break;
+
+				case ".dae":
+				case ".fbx":
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Configs.FBXPreservePivotsConfig conf = new Assimp.Configs.FBXPreservePivotsConfig(false);
+					context.SetConfig(conf);
+					Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate);
+					for (int i = 0; i < scene.RootNode.ChildCount; i++)
+					{
+						Assimp.Node child = scene.RootNode.Children[i];
+						List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
+						foreach (int j in child.MeshIndices)
+							meshes.Add(scene.Meshes[j]);
+						bool isVisible = true;
+						for(int j = 0; j < child.MeshCount; j++)
+						{
+							if (scene.Materials[meshes[j].MaterialIndex].Name.Contains("Collision"))
+							{
+								isVisible = false;
+								break;
+							}
+						}
+						ModelFormat mfmt = ModelFormat.Basic;
+						if (!isVisible)
+							switch (geo.Format)
+							{
+								case LandTableFormat.SA2:
+									mfmt = ModelFormat.Chunk;
+									break;
+								case LandTableFormat.SA2B:
+									mfmt = ModelFormat.GC;
+									break;
+							}
+						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, mfmt, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray());
+						{
+							//sa2 collision patch
+							if(obj.Attach.GetType() == typeof(BasicAttach))
+							{
+								BasicAttach ba = obj.Attach as BasicAttach;
+								foreach (NJS_MATERIAL mats in ba.Material)
+									mats.DoubleSided = true;
+							}
+							//cant check for transparent texture so i gotta force alpha for now, temporary
+							else if (obj.Attach.GetType() == typeof(ChunkAttach))
+							{
+								ChunkAttach ca = obj.Attach as ChunkAttach;
+								foreach (PolyChunk polys in ca.Poly)
+								{
+									if(polys.GetType() == typeof(PolyChunkMaterial))
+									{
+										PolyChunkMaterial mat = polys as PolyChunkMaterial;
+										mat.SourceAlpha = AlphaInstruction.SourceAlpha;
+										mat.DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
+									}
+									else if (polys.GetType() == typeof(PolyChunkStrip))
+									{
+										PolyChunkStrip str = polys as PolyChunkStrip;
+										//str.UseAlpha = true;
+									}
+								}
+							}
+						}
+						obj.Attach.ProcessVertexData();
+						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X, obj.Position.Y, obj.Position.Z), obj.Rotation, levelItems.Count, selectionManager)
+						{
+							Visible = isVisible
+						};
+						createdItems.Add(newLevelItem);
+					}
+					
 					break;
 
 				default:

@@ -38,7 +38,7 @@ namespace SonicRetro.SAModel
 		public ushort IndexOffset
 		{
 			get { return (ushort)(Header2 & 0xFFFF); }
-			set { Header2 = (ushort)((Header2 & 0xFFFF0000u) | value); }
+			set { Header2 = (Header2 & 0xFFFF0000u) | value; }
 		}
 
 		public ushort VertexCount

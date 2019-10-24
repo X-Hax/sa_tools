@@ -4,9 +4,42 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-
 namespace SonicRetro.SAModel
 {
+	class CachedVertex : IEquatable<CachedVertex>
+	{
+		public Vertex vertex;
+		public Vertex normal;
+		public Color color;
+		public UV uv;
+
+		public CachedVertex(Vertex v, Vertex n, Color c)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+		}
+
+		public CachedVertex(Vertex v, Vertex n, Color c, UV u)
+		{
+			vertex = v;
+			normal = n;
+			color = c;
+			uv = u;
+		}
+
+		public bool Equals(CachedVertex other)
+		{
+			if (!vertex.Equals(other.vertex)) return false;
+			if (!normal.Equals(other.normal)) return false;
+			if (!color.Equals(other.color)) return false;
+			if (uv == null && other.uv != null) return false;
+			if (other.uv == null) return false;
+			if (!uv.Equals(other.uv)) return false;
+			return true;
+		}
+	}
+
 	[Serializable]
 	public class ChunkAttach : Attach
 	{

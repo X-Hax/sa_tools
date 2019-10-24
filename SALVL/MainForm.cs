@@ -75,7 +75,7 @@ namespace SonicRetro.SAModel.SALVL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1lvl",
-				Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.exe;*.dll;*.bin;*.prs|All Files|*.*"
+				Filter = "Level Files|*.sa1lvl;*.sa2lvl;*.sa2blvl;*.exe;*.dll;*.bin;*.prs|All Files|*.*"
 			};
 			if (a.ShowDialog(this) == DialogResult.OK)
 				LoadFile(a.FileName);
@@ -1031,6 +1031,48 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
+		}
+
+		private void ASSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				FileName = "test"
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					string rootPath = Path.GetDirectoryName(a.FileName);
+					List<string> texturePaths = new List<string>();
+
+					if (LevelData.TextureBitmaps != null)
+					{
+						foreach (BMPInfo[] bmp_ in LevelData.TextureBitmaps.Values) //???????
+						{
+							foreach (BMPInfo bmp in bmp_)
+							{
+								texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
+								bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+							}
+						}
+					}
+					
+					foreach (COL col in LevelData.geo.COL)
+					{
+						SAEditorCommon.Import.AssimpStuff.AssimpExport(col.Model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					}
+						
+					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+				}
+			}
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using SonicRetro.SAModel.GC;
 using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SAMDL

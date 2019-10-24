@@ -299,6 +299,9 @@ namespace SonicRetro.SAModel.SAMDL
 				case ModelFormat.Chunk:
 					outfmt = ModelFormat.Chunk;
 					break;
+				case ModelFormat.GC:
+					outfmt = ModelFormat.GC;
+					break;
 			}
 		}
 
@@ -353,8 +356,8 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
-				DefaultExt = (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl",
-				Filter = (outfmt == ModelFormat.Chunk ? "SA2" : "SA1") + "MDL Files|*." + (outfmt == ModelFormat.Chunk ? "sa2" : "sa1") + "mdl|All Files|*.*"
+				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl",
+				Filter = (outfmt == ModelFormat.GC ? "SA2B" : (outfmt == ModelFormat.Chunk ? "SA2" : "SA1")) + "MDL Files|*." + (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl|All Files|*.*"
 			})
 			{
 				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
@@ -466,6 +469,11 @@ namespace SonicRetro.SAModel.SAMDL
 		private void chunkModelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			NewFileOperation(ModelFormat.Chunk);
+		}
+
+		private void GamecubeModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.GC);
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1181,7 +1189,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			}
 			else
@@ -1193,7 +1201,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
@@ -1638,25 +1646,44 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					string objFileName = a.FileName;
-					Assimp.Scene scene = context.ImportFile(objFileName);
-					model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray());
-					
+					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+					loaded = false;
+					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
+					timer1.Stop();
+					modelFile = null;
+					animation = null;
+					animations = null;
+					animnum = -1;
+					animframe = 0;
+
+					//outfmt = ModelFormat.GC;
+					animations = new NJS_MOTION[0];
+					treeView1.Nodes.Clear();
+					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
+					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray());
 					editMaterialsToolStripMenuItem.Enabled = true;
 
-					model.ProcessVertexData();
-					NJS_OBJECT[] models = model.GetObjects();
-					meshes = new Mesh[models.Length];
-					for (int i = 0; i < models.Length; i++)
-						if (models[i].Attach != null)
-							try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-							catch { }
+					if (model.HasWeight)
+						meshes = model.ProcessWeightedModel().ToArray();
+					else
+					{
+						model.ProcessVertexData();
+						NJS_OBJECT[] models = model.GetObjects();
+						meshes = new Mesh[models.Length];
+						for (int i = 0; i < models.Length; i++)
+							if (models[i].Attach != null)
+								try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+								catch { }
+					}
+
+					showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+
 					AddTreeNode(model, treeView1.Nodes);
 					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
-
-					currentFileName = objFileName;
 
 					AddModelToLibrary(model, false);
 				}
@@ -1673,6 +1700,39 @@ namespace SonicRetro.SAModel.SAMDL
 			else
 				model.UpdateWeightedModelSelection(null, meshes);
 			DrawEntireModel();
+		}
+
+		private void aSSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				FileName = model.Name
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					string rootPath = Path.GetDirectoryName(a.FileName);
+					List<string> texturePaths = new List<string>();
+					if (TextureInfo != null)
+					{
+						foreach (BMPInfo bmp in TextureInfo)
+						{
+							texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
+							bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+						}
+					}
+					SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+				}
+			}
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

@@ -34,12 +34,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpNet">
-      <HintPath>..\Dependencies\AssimpNet.dll</HintPath>
-    </Reference>
-    <Reference Include="NvTriStripDotNet">
-      <HintPath>..\Dependencies\NvTriStripDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -54,6 +48,21 @@
     <Compile Include="COL.cs" />
     <Compile Include="collada_schema_1_4.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GC\GCAttach.cs" />
+    <Compile Include="GC\GeometryData.cs" />
+    <Compile Include="GC\GXEnums\GXBlendModeControl.cs" />
+    <Compile Include="GC\GXEnums\GXComponentCount.cs" />
+    <Compile Include="GC\GXEnums\GXDataType.cs" />
+    <Compile Include="GC\GXEnums\GXPrimitiveType.cs" />
+    <Compile Include="GC\GXEnums\GXTexCoord.cs" />
+    <Compile Include="GC\GXEnums\GXVertexAttribute.cs" />
+    <Compile Include="GC\GXEnums\VertexInputType.cs" />
+    <Compile Include="GC\Mesh.cs" />
+    <Compile Include="GC\Parameter.cs" />
+    <Compile Include="GC\Primitive.cs" />
+    <Compile Include="GC\Structs.cs" />
+    <Compile Include="GC\VertexAttribute.cs" />
+    <Compile Include="GC\VertexData.cs" />
     <Compile Include="GeoAnimData.cs" />
     <Compile Include="LandTable.cs" />
     <Compile Include="NJS_MATERIAL.cs" />
@@ -73,6 +82,7 @@
     <Compile Include="VertexChunk.cs" />
     <Compile Include="VertexData.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

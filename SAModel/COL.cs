@@ -28,6 +28,7 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SADX:
 					return 0x24;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					return 0x20;
 				default:
 					throw new ArgumentOutOfRangeException("format");
@@ -67,6 +68,12 @@ namespace SonicRetro.SAModel
 					else
 						mfmt = ModelFormat.Chunk;
 					break;
+				case LandTableFormat.SA2B:
+					if (forceBasic.HasValue && forceBasic.Value)
+						mfmt = ModelFormat.Basic;
+					else
+						mfmt = ModelFormat.GC;
+					break;
 			}
 			switch (format)
 			{
@@ -80,9 +87,10 @@ namespace SonicRetro.SAModel
 					Flags = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					Flags = ByteConverter.ToInt32(file, address + 0x1C);
-					if (!forceBasic.HasValue)
-						mfmt = Flags < 0 ? ModelFormat.Chunk : ModelFormat.Basic;
+					if (!forceBasic.HasValue && Flags < 0)
+						mfmt = ModelFormat.Basic;
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels);
 					Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
@@ -105,6 +113,7 @@ namespace SonicRetro.SAModel
 					result.AddRange(ByteConverter.GetBytes(Unknown3));
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 					result.AddRange(ByteConverter.GetBytes(modelptr));
 					result.AddRange(ByteConverter.GetBytes(Unknown2));
 					result.AddRange(ByteConverter.GetBytes(Unknown3));

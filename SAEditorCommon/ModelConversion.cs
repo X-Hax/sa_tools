@@ -8,7 +8,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 {
 	public static class ModelConversion
 	{
-		static NvStripifier nvStripifier = new NvStripifier() { StitchStrips = false, UseRestart = false };
+		static readonly NvStripifier nvStripifier = new NvStripifier() { StitchStrips = false, UseRestart = false };
 
 		public static ChunkAttach ToChunk(this Attach attach)
 		{

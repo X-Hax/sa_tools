@@ -2,60 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Assimp;
+
 namespace SonicRetro.SAModel
 {
 	public static class Extensions
 	{
-		//https://stackoverflow.com/questions/12088610/conversion-between-euler-quaternion-like-in-unity3d-engine
-		static Vector3D NormalizeAngles(Vector3D angles)
-		{
-			angles.X = NormalizeAngle(angles.X);
-			angles.Y = NormalizeAngle(angles.Y);
-			angles.Z = NormalizeAngle(angles.Z);
-			return angles;
-		}
-
-		static float NormalizeAngle(float angle)
-		{
-			while (angle > 360)
-				angle -= 360;
-			while (angle < 0)
-				angle += 360;
-			return angle;
-		}
-
-		public static Vector3D FromQ2(Assimp.Quaternion q1)
-		{
-			float sqw = q1.W * q1.W;
-			float sqx = q1.X * q1.X;
-			float sqy = q1.Y * q1.Y;
-			float sqz = q1.Z * q1.Z;
-			float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-			float test = q1.X * q1.W - q1.Y * q1.Z;
-			Vector3D v;
-
-			if (test > 0.4995f * unit)
-			{ // singularity at north pole
-				v.Y = 2f * (float)Math.Atan2(q1.Y, q1.X);
-				v.X = (float)Math.PI / 2;
-				v.Z = 0;
-				return NormalizeAngles(v * (float)(180 / Math.PI));
-			}
-			if (test < -0.4995f * unit)
-			{ // singularity at south pole
-				v.Y = -2f * (float)Math.Atan2(q1.Y, q1.X);
-				v.X = -(float)Math.PI / 2;
-				v.Z = 0;
-				return NormalizeAngles(v * (float)(180 / Math.PI));
-			}
-			Quaternion q = new Assimp.Quaternion(q1.W, q1.Z, q1.X, q1.Y);
-			v.Y = (float)Math.Atan2(2f * q.X * q.W + 2f * q.Y * q.Z, 1 - 2f * (q.Z * q.Z + q.W * q.W));     // Yaw
-			v.X = (float)Math.Asin(2f * (q.X * q.Z - q.W * q.Y));                             // Pitch
-			v.Z = (float)Math.Atan2(2f * q.X * q.Y + 2f * q.Z * q.W, 1 - 2f * (q.Y * q.Y + q.Z * q.Z));      // Roll
-			return NormalizeAngles(v * (float)(180 / Math.PI));
-		}
-
 		public static void Align(this List<byte> me, int alignment)
 		{
 			int off = me.Count % alignment;
