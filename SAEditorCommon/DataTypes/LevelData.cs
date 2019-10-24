@@ -460,7 +460,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 									mfmt = ModelFormat.GC;
 									break;
 							}
-						NJS_OBJECT obj = new NJS_OBJECT(scene, child, null, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray(), mfmt);
+						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, mfmt, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray());
 						{
 							//sa2 collision patch
 							if(obj.Attach.GetType() == typeof(BasicAttach))

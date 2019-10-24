@@ -1067,8 +1067,7 @@ namespace SonicRetro.SAModel.SALVL
 					
 					foreach (COL col in LevelData.geo.COL)
 					{
-						Assimp.Matrix4x4 identity = Assimp.Matrix4x4.Identity;
-						col.Model.AssimpExport(scene, identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+						SAEditorCommon.Import.AssimpStuff.AssimpExport(col.Model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 					}
 						
 					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//

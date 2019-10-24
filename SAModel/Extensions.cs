@@ -2,58 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Assimp;
+
 namespace SonicRetro.SAModel
 {
 	public static class Extensions
 	{
-		//https://stackoverflow.com/questions/12088610/conversion-between-euler-quaternion-like-in-unity3d-engine
-		static Vector3D NormalizeAngles(Vector3D angles)
-		{
-			angles.X = NormalizeAngle(angles.X);
-			angles.Y = NormalizeAngle(angles.Y);
-			angles.Z = NormalizeAngle(angles.Z);
-			return angles;
-		}
-
-		static float NormalizeAngle(float angle)
-		{
-			while (angle > 360)
-				angle -= 360;
-			while (angle < 0)
-				angle += 360;
-			return angle;
-		}
-
-		public static Assimp.Vector3D ToEulerAngles(this Assimp.Quaternion q)
-		{
-			// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-			// roll (x-axis rotation)
-			var sinr = +2.0 * (q.W * q.X + q.Y * q.Z);
-			var cosr = +1.0 - 2.0 * (q.X * q.X + q.Y * q.Y);
-			var roll = Math.Atan2(sinr, cosr);
-
-			// pitch (y-axis rotation)
-			var sinp = +2.0 * (q.W * q.Y - q.Z * q.X);
-			double pitch;
-			if (Math.Abs(sinp) >= 1)
-			{
-				var sign = sinp < 0 ? -1f : 1f;
-				pitch = (Math.PI / 2) * sign; // use 90 degrees if out of range
-			}
-			else
-			{
-				pitch = Math.Asin(sinp);
-			}
-
-			// yaw (z-axis rotation)
-			var siny = +2.0 * (q.W * q.Z + q.X * q.Y);
-			var cosy = +1.0 - 2.0 * (q.Y * q.Y + q.Z * q.Z);
-			var yaw = Math.Atan2(siny, cosy);
-
-			return new Assimp.Vector3D((float)(roll * 57.2958d), (float)(pitch * 57.2958d), (float)(yaw * 57.2958d));
-		}
-
 		public static void Align(this List<byte> me, int alignment)
 		{
 			int off = me.Count % alignment;
