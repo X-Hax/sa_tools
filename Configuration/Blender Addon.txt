@@ -1,0 +1,1 @@
+Justin113D has made an addon for Blender to read and write model files used by these tools. You can find it at https://github.com/Justin113D/BlenderSASupport
