@@ -884,6 +884,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				result.FirstNode = sortedbones.First();
 				string lastbone = sortedbones.Last();
 				result.LastNode = lastbone;
+				result.Bounds = new SharpDX.BoundingSphere(Vector3.TransformCoordinate(result.Bounds.Center, matrices[lastbone]), result.Bounds.Radius);
 				for (int i = 0; i < aiMesh.VertexCount; i++)
 					if (verts[i].weights.Count == 0)
 						verts[i].weights.Add(new VertWeight(lastbone, 1));
@@ -923,6 +924,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					result.LastNode = result.FirstNode = aiMesh.Bones[0].Name;
 					transform = aiMesh.Bones[0].OffsetMatrix.ToSharpDX();
 				}
+				result.Bounds = new SharpDX.BoundingSphere(Vector3.TransformCoordinate(result.Bounds.Center, transform), result.Bounds.Radius);
 				ChunkType type = ChunkType.Vertex_Vertex;
 				bool hasnormal = false;
 				bool hasvcolor = false;
