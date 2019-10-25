@@ -1173,7 +1173,18 @@ namespace SonicRetro.SAModel.SAMDL
 
 		internal Type GetAttachType()
 		{
-			return outfmt == ModelFormat.Chunk ? typeof(ChunkAttach) : typeof(BasicAttach);
+			switch (outfmt)
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					return typeof(BasicAttach);
+				case ModelFormat.Chunk:
+					return typeof(ChunkAttach);
+				case ModelFormat.GC:
+					return typeof(GC.GCAttach);
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		bool suppressTreeEvent;
@@ -1187,7 +1198,7 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = selectedObject;
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
+				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach || (selectedObject.Attach is ChunkAttach ca && ca.Poly?.Count > 0);
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1373,10 +1384,44 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (MaterialEditor dlg = new MaterialEditor(((BasicAttach)selectedObject.Attach).Material, TextureInfo))
+			List<NJS_MATERIAL> mats;
+			switch (selectedObject.Attach)
+			{
+				case BasicAttach bscatt:
+					mats = bscatt.Material;
+					break;
+				case ChunkAttach cnkatt:
+					mats = cnkatt.MeshInfo.Select(a => a.Material).ToList();
+					break;
+				default:
+					return;
+			}
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfo))
 			{
 				dlg.FormUpdated += (s, ev) => DrawEntireModel();
 				dlg.ShowDialog(this);
+			}
+			switch (selectedObject.Attach)
+			{
+				case ChunkAttach cnkatt:
+					model.StripPolyCache();
+					List<PolyChunk> chunks = new List<PolyChunk>();
+					int matind = 0;
+					foreach (var cnk in cnkatt.Poly)
+						switch (cnk)
+						{
+							case PolyChunkVolume pcv:
+								chunks.Add(pcv);
+								break;
+							case PolyChunkStrip pcs:
+								chunks.Add(new PolyChunkMaterial(mats[matind]));
+								chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
+								pcs.UpdateFlags(mats[matind]);
+								chunks.Add(pcs);
+								break;
+						}
+					cnkatt.Poly = chunks;
+					break;
 			}
 		}
 

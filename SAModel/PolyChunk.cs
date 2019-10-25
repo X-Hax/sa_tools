@@ -314,6 +314,19 @@ namespace SonicRetro.SAModel
 			Data = ByteConverter.ToUInt16(file, address + 2);
 		}
 
+		public PolyChunkTinyTextureID(NJS_MATERIAL mat)
+			: this()
+		{
+			MipmapDAdjust = mat.MipmapDAdjust;
+			ClampV = mat.ClampV;
+			ClampU = mat.ClampU;
+			FlipV = mat.FlipV;
+			FlipU = mat.FlipU;
+			TextureID = (ushort)mat.TextureID;
+			SuperSample = mat.SuperSample;
+			FilterMode = mat.FilterMode;
+		}
+
 		public override byte[] GetBytes()
 		{
 			Type = Second ? ChunkType.Tiny_TextureID2 : ChunkType.Tiny_TextureID;
@@ -430,6 +443,20 @@ namespace SonicRetro.SAModel
 				case ChunkType.Material_DiffuseAmbientSpecular2:
 					Second = true;
 					break;
+			}
+		}
+
+		public PolyChunkMaterial(NJS_MATERIAL mat)
+		{
+			SourceAlpha = mat.SourceAlpha;
+			DestinationAlpha = mat.DestinationAlpha;
+			Diffuse = mat.DiffuseColor;
+			if (mat.AmbientColor != Color.White)
+				Ambient = mat.AmbientColor;
+			if (mat.SpecularColor != Color.Transparent)
+			{
+				Specular = mat.SpecularColor;
+				SpecularExponent = (byte)mat.Exponent;
 			}
 		}
 
@@ -1178,6 +1205,17 @@ namespace SonicRetro.SAModel
 			foreach (Strip item in Strips)
 				result.Strips.Add(item.Clone());
 			return result;
+		}
+
+		public void UpdateFlags(NJS_MATERIAL mat)
+		{
+			IgnoreLight = mat.IgnoreLighting;
+			IgnoreSpecular = mat.IgnoreSpecular;
+			IgnoreAmbient = mat.IgnoreAmbient;
+			UseAlpha = mat.UseAlpha;
+			DoubleSide = mat.DoubleSided;
+			FlatShading = mat.FlatShading;
+			EnvironmentMapping = mat.EnvironmentMap;
 		}
 	}
 }

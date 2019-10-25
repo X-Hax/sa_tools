@@ -309,20 +309,9 @@ namespace SonicRetro.SAModel
 			for (int i = start; i < strips.Count; i++)
 			{
 				PolyChunk chunk = strips[i];
+				MaterialBuffer.UpdateFromPolyChunk(chunk);
 				switch (chunk.Type)
 				{
-					case ChunkType.Bits_BlendAlpha:
-						{
-							PolyChunkBitsBlendAlpha c2 = (PolyChunkBitsBlendAlpha)chunk;
-							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
-							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
-						}
-						break;
-					case ChunkType.Bits_MipmapDAdjust:
-						break;
-					case ChunkType.Bits_SpecularExponent:
-						MaterialBuffer.Exponent = ((PolyChunkBitsSpecularExponent)chunk).SpecularExponent;
-						break;
 					case ChunkType.Bits_CachePolygonList:
 						byte cachenum = ((PolyChunkBitsCachePolygonList)chunk).List;
 #if modellog
@@ -337,46 +326,6 @@ namespace SonicRetro.SAModel
 						Extensions.Log("Drawing Poly List " + cached.Name + "[" + cached.Index + "] from cache #" + cachenum + Environment.NewLine);
 #endif
 						result.AddRange(ProcessPolyList(cached.Name, cached.Polys, cached.Index));
-						break;
-					case ChunkType.Tiny_TextureID:
-					case ChunkType.Tiny_TextureID2:
-						{
-							PolyChunkTinyTextureID c2 = (PolyChunkTinyTextureID)chunk;
-							MaterialBuffer.ClampU = c2.ClampU;
-							MaterialBuffer.ClampV = c2.ClampV;
-							MaterialBuffer.FilterMode = c2.FilterMode;
-							MaterialBuffer.FlipU = c2.FlipU;
-							MaterialBuffer.FlipV = c2.FlipV;
-							MaterialBuffer.SuperSample = c2.SuperSample;
-							MaterialBuffer.TextureID = c2.TextureID;
-						}
-						break;
-					case ChunkType.Material_Diffuse:
-					case ChunkType.Material_Ambient:
-					case ChunkType.Material_DiffuseAmbient:
-					case ChunkType.Material_Specular:
-					case ChunkType.Material_DiffuseSpecular:
-					case ChunkType.Material_AmbientSpecular:
-					case ChunkType.Material_DiffuseAmbientSpecular:
-					case ChunkType.Material_Diffuse2:
-					case ChunkType.Material_Ambient2:
-					case ChunkType.Material_DiffuseAmbient2:
-					case ChunkType.Material_Specular2:
-					case ChunkType.Material_DiffuseSpecular2:
-					case ChunkType.Material_AmbientSpecular2:
-					case ChunkType.Material_DiffuseAmbientSpecular2:
-						{
-							PolyChunkMaterial c2 = (PolyChunkMaterial)chunk;
-							MaterialBuffer.SourceAlpha = c2.SourceAlpha;
-							MaterialBuffer.DestinationAlpha = c2.DestinationAlpha;
-							if (c2.Diffuse.HasValue)
-								MaterialBuffer.DiffuseColor = c2.Diffuse.Value;
-							if (c2.Specular.HasValue)
-							{
-								MaterialBuffer.SpecularColor = c2.Specular.Value;
-								MaterialBuffer.Exponent = c2.SpecularExponent;
-							}
-						}
 						break;
 					case ChunkType.Strip_Strip:
 					case ChunkType.Strip_StripUVN:
@@ -395,12 +344,6 @@ namespace SonicRetro.SAModel
 #if modellog
 							Extensions.Log("Strip " + c2.Type + Environment.NewLine);
 #endif
-							MaterialBuffer.DoubleSided = c2.DoubleSide;
-							MaterialBuffer.EnvironmentMap = c2.EnvironmentMapping;
-							MaterialBuffer.FlatShading = c2.FlatShading;
-							MaterialBuffer.IgnoreLighting = c2.IgnoreLight;
-							MaterialBuffer.IgnoreSpecular = c2.IgnoreSpecular;
-							MaterialBuffer.UseAlpha = c2.UseAlpha;
 							bool hasVColor = false;
 							switch (chunk.Type)
 							{

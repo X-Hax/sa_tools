@@ -10,6 +10,7 @@ namespace SonicRetro.SAModel
 	{
 		#region Basic Variables (internal use)
 
+		public Color AmbientColor { get; set; }
 		public Color DiffuseColor  { get; set; }
 		public Color SpecularColor { get; set; }
 		public float Exponent      { get; set; }
@@ -30,6 +31,15 @@ namespace SonicRetro.SAModel
 		{
 			get { return (Flags & 0x80) == 0x80; }
 			set { Flags = (uint)((Flags & ~0x80) | (value ? 0x80u : 0)); }
+		}
+
+		public float MipmapDAdjust
+		{
+			get { return ((Flags & 0xF0) >> 4) * 0.25f; }
+			set
+			{
+				Flags = (uint)(Flags & ~0xF0) | ((uint)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))) << 4);
+			}
 		}
 
 		public bool SuperSample
@@ -73,6 +83,8 @@ namespace SonicRetro.SAModel
 			get { return (Flags & 0x80000) == 0x80000; }
 			set { Flags = (uint)((Flags & ~0x80000) | (value ? 0x80000u : 0)); }
 		}
+
+		public bool IgnoreAmbient { get; set; }
 
 		public bool UseAlpha
 		{
@@ -134,6 +146,7 @@ namespace SonicRetro.SAModel
 		/// </summary>
 		public NJS_MATERIAL()
 		{
+			AmbientColor = Color.White;
 			DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
 			SpecularColor = Color.Transparent;
 			UseAlpha = true;
@@ -156,6 +169,7 @@ namespace SonicRetro.SAModel
 		/// <param name="copy"></param>
 		public NJS_MATERIAL(NJS_MATERIAL copy)
 		{
+			AmbientColor = copy.AmbientColor;
 			DiffuseColor = copy.DiffuseColor;
 			SpecularColor = copy.SpecularColor;
 			Exponent = copy.Exponent;
@@ -199,7 +213,7 @@ namespace SonicRetro.SAModel
 			return result.ToArray();
 		}
 
-		public string ToStruct(string[] textures)
+		public string ToStruct(string[] textures = null)
 		{
 			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
 				return "{ 0 }";
@@ -259,9 +273,53 @@ namespace SonicRetro.SAModel
 			return result.ToString();
 		}
 
-		public string ToStruct()
+		public void UpdateFromPolyChunk(PolyChunk chunk)
 		{
-			return ToStruct(null);
+			switch (chunk)
+			{
+				case PolyChunkBitsBlendAlpha bba:
+					SourceAlpha = bba.SourceAlpha;
+					DestinationAlpha = bba.DestinationAlpha;
+					break;
+				case PolyChunkBitsMipmapDAdjust bmda:
+					MipmapDAdjust = bmda.MipmapDAdjust;
+					break;
+				case PolyChunkBitsSpecularExponent bse:
+					Exponent = bse.SpecularExponent;
+					break;
+				case PolyChunkTinyTextureID ttid:
+					MipmapDAdjust = ttid.MipmapDAdjust;
+					ClampU = ttid.ClampU;
+					ClampV = ttid.ClampV;
+					FilterMode = ttid.FilterMode;
+					FlipU = ttid.FlipU;
+					FlipV = ttid.FlipV;
+					SuperSample = ttid.SuperSample;
+					TextureID = ttid.TextureID;
+					break;
+				case PolyChunkMaterial mat:
+					SourceAlpha = mat.SourceAlpha;
+					DestinationAlpha = mat.DestinationAlpha;
+					if (mat.Ambient.HasValue)
+						AmbientColor = mat.Ambient.Value;
+					if (mat.Diffuse.HasValue)
+						DiffuseColor = mat.Diffuse.Value;
+					if (mat.Specular.HasValue)
+					{
+						SpecularColor = mat.Specular.Value;
+						Exponent = mat.SpecularExponent;
+					}
+					break;
+				case PolyChunkStrip str:
+					DoubleSided = str.DoubleSide;
+					EnvironmentMap = str.EnvironmentMapping;
+					FlatShading = str.FlatShading;
+					IgnoreLighting = str.IgnoreLight;
+					IgnoreSpecular = str.IgnoreSpecular;
+					IgnoreAmbient = str.IgnoreAmbient;
+					UseAlpha = str.UseAlpha;
+					break;
+			}
 		}
 
 		public override bool Equals(object obj)
@@ -269,14 +327,14 @@ namespace SonicRetro.SAModel
 			if (!(obj is NJS_MATERIAL))
 				return false;
 			NJS_MATERIAL other = (NJS_MATERIAL)obj;
-			return DiffuseColor == other.DiffuseColor && SpecularColor == other.SpecularColor && Exponent == other.Exponent &&
-			       TextureID == other.TextureID && Flags == other.Flags;
+			return AmbientColor == other.AmbientColor && DiffuseColor == other.DiffuseColor && SpecularColor == other.SpecularColor &&
+				Exponent == other.Exponent && TextureID == other.TextureID && Flags == other.Flags;
 		}
 
 		public override int GetHashCode()
 		{
-			return DiffuseColor.GetHashCode() ^ SpecularColor.GetHashCode() ^ Exponent.GetHashCode() ^ TextureID.GetHashCode() ^
-			       Flags.GetHashCode();
+			return AmbientColor.GetHashCode() ^ DiffuseColor.GetHashCode() ^ SpecularColor.GetHashCode() ^ Exponent.GetHashCode() ^
+				TextureID.GetHashCode() ^ Flags.GetHashCode();
 		}
 
 		object ICloneable.Clone() => Clone();

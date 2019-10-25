@@ -912,6 +912,36 @@ namespace SonicRetro.SAModel
 			}
 		}
 
+		static readonly List<PolyChunk>[] PolyCache = new List<PolyChunk>[255];
+		public void StripPolyCache()
+		{
+			if (Attach is ChunkAttach attach && attach.Poly != null)
+				for (int i = 0; i < attach.Poly.Count; i++)
+				{
+					switch (attach.Poly[i].Type)
+					{
+						case ChunkType.Bits_CachePolygonList:
+							PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
+							attach.Poly = attach.Poly.Take(i).ToList();
+							if (attach.Poly.Count == 0)
+							{
+								attach.Poly = null;
+								attach.PolyName = null;
+							}
+							break;
+						case ChunkType.Bits_DrawPolygonList:
+							int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
+							attach.Poly.RemoveAt(i);
+							attach.Poly.InsertRange(i--, PolyCache[list]);
+							break;
+					}
+				}
+			foreach (NJS_OBJECT child in Children)
+				child.StripPolyCache();
+			if (Parent == null && Sibling != null)
+				Sibling.StripPolyCache();
+		}
+
 		object ICloneable.Clone() => Clone();
 
 		public NJS_OBJECT Clone()
