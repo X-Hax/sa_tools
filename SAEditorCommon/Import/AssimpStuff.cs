@@ -903,7 +903,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						vc.Size = (ushort)(vc.VertexCount * 6 + 1);
 						break;
 				}
-				result.Vertex[result.FirstNode] = new List<VertexChunk>() { vc };
+				result.Vertex[result.FirstNode ?? string.Empty] = new List<VertexChunk>() { vc };
 			}
 			bool hasUV = aiMesh.HasTextureCoords(0);
 			List<PolyChunkStrip.Strip> polys = new List<PolyChunkStrip.Strip>();
@@ -1052,12 +1052,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				foreach (var mesh in aiNode.MeshIndices.Select(i => meshdata[i]))
 				{
 					(int vstart, int handle) = VertexCacheManager.Reserve(mesh.VertexCount);
-					foreach (var vc in mesh.Vertex[null])
+					foreach (var vc in mesh.Vertex[string.Empty])
 						vc.IndexOffset += (ushort)vstart;
 					foreach (var str in mesh.Poly.OfType<PolyChunkStrip>().SelectMany(a => a.Strips))
 						for (int i = 0; i < str.Indexes.Length; i++)
 							str.Indexes[i] += (ushort)vstart;
-					attach.Vertex.AddRange(mesh.Vertex[null]);
+					attach.Vertex.AddRange(mesh.Vertex[string.Empty]);
 					attach.Poly.AddRange(mesh.Poly);
 					if (bounds.Radius == 0)
 						bounds = mesh.Bounds;
