@@ -82,7 +82,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, modelfmt);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt);
 							}
 							break;
 						case "basicmodel":
@@ -94,7 +94,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.Basic);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic);
 							}
 							break;
 						case "basicdxmodel":
@@ -106,7 +106,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.BasicDX);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX);
 							}
 							break;
 						case "chunkmodel":
@@ -118,7 +118,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.Chunk);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk);
 							}
 							break;
 						case "gcmodel":
@@ -130,7 +130,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, mdlmorphs, null, item.Key, null, ModelFormat.GC);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC);
 							}
 							break;
 						case "action":
@@ -252,7 +252,7 @@ namespace SA_Tools.Split
 								{
 									flags.Add(new DeathZoneFlags(datafile, address));
 									string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, null, modelfmt);
+									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, modelfmt);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;
 								}

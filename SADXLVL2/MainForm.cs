@@ -3061,7 +3061,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							LevelItem levelItem = selectedItem as LevelItem;
 							string path = Path.Combine(folderBrowser.SelectedPath, levelItem.CollisionData.Model.Name + ".sa1mdl");
 
-							ModelFile.CreateFile(path, levelItem.CollisionData.Model, null, null, "", "", null, ModelFormat.Basic);
+							ModelFile.CreateFile(path, levelItem.CollisionData.Model, null, "", "", null, ModelFormat.Basic);
 						}
 					}
 				}

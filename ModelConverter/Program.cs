@@ -26,12 +26,12 @@ namespace ModelConverter
 				case ModelFormat.Basic:
 					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is BasicAttach))
 						obj.Attach = obj.Attach.ToChunk();
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, null, ModelFormat.Chunk);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, ModelFormat.Chunk);
 					break;
 				case ModelFormat.Chunk:
 					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is ChunkAttach))
 						obj.Attach = obj.Attach.ToBasic();
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, null, ModelFormat.Basic);
+					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, ModelFormat.Basic);
 					break;
 			}
 		}

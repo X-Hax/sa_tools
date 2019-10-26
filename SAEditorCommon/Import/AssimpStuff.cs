@@ -45,7 +45,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Node AssimpExport(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
 		{
-			if (obj.HasWeight)
+			if (obj.GetObjects().Any(a => a.Attach is ChunkAttach))
 				return AssimpExportWeighted(obj, scene, parentMatrix, texInfo, parent);
 			return obj.AssimpExport(scene, texInfo, parent);
 		}

@@ -20,12 +20,10 @@ namespace SonicRetro.SAModel
 		public ModelFormat Format { get; private set; }
 		public NJS_OBJECT Model { get; private set; }
 		public ReadOnlyCollection<NJS_MOTION> Animations { get; private set; }
-		public ReadOnlyCollection<NJS_MOTION> Morphs { get; private set; }
 		public string Author { get; set; }
 		public string Description { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
-		private string[] morphFiles;
 
 		public ModelFile(string filename)
 			: this(File.ReadAllBytes(filename), filename)
@@ -100,46 +98,11 @@ namespace SonicRetro.SAModel
 						anims.Clear();
 					}
 					Animations = anims.AsReadOnly();
-					if (version == 1)
-					{
-						tmpaddr = ByteConverter.ToInt32(file, 0x10);
-						if (tmpaddr != 0)
-						{
-							List<string> morphfiles = new List<string>();
-							int addr = ByteConverter.ToInt32(file, tmpaddr);
-							while (addr != -1)
-							{
-								morphfiles.Add(file.GetCString(addr));
-								tmpaddr += 4;
-								addr = ByteConverter.ToInt32(file, tmpaddr);
-							}
-							morphFiles = morphfiles.ToArray();
-						}
-						else
-							morphFiles = new string[0];
-						List<NJS_MOTION> morphs = new List<NJS_MOTION>();
-						try
-						{
-							foreach (string item in morphFiles)
-								morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
-						}
-						catch
-						{
-							morphs.Clear();
-						}
-						Morphs = morphs.AsReadOnly();
-					}
-					else
-					{
-						morphFiles = new string[0];
-						Morphs = new ReadOnlyCollection<NJS_MOTION>(new List<NJS_MOTION>());
-					}
 				}
 			}
 			else
 			{
 				animationFiles = new string[0];
-				morphFiles = new string[0];
 				tmpaddr = ByteConverter.ToInt32(file, 0xC);
 				if (tmpaddr != 0)
 				{
@@ -171,13 +134,6 @@ namespace SonicRetro.SAModel
 									animationFiles = animfiles.ToArray();
 									break;
 								case ChunkTypes.Morph:
-									List<string> morphfiles = new List<string>();
-									while (ByteConverter.ToInt32(file, tmpaddr) != -1)
-									{
-										morphfiles.Add(file.GetCString(ByteConverter.ToInt32(file, tmpaddr)));
-										tmpaddr += 4;
-									}
-									morphFiles = morphfiles.ToArray();
 									break;
 								case ChunkTypes.Author:
 									Author = file.GetCString(tmpaddr);
@@ -219,13 +175,6 @@ namespace SonicRetro.SAModel
 									animationFiles = animchunks.ToArray();
 									break;
 								case ChunkTypes.Morph:
-									List<string> morphchunks = new List<string>();
-									while (ByteConverter.ToInt32(chunk, chunkaddr) != -1)
-									{
-										morphchunks.Add(chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr)));
-										chunkaddr += 4;
-									}
-									morphFiles = morphchunks.ToArray();
 									break;
 								case ChunkTypes.Author:
 									Author = chunk.GetCString(chunkaddr);
@@ -275,17 +224,6 @@ namespace SonicRetro.SAModel
 						anims.Clear();
 					}
 					Animations = anims.AsReadOnly();
-					List<NJS_MOTION> morphs = new List<NJS_MOTION>();
-					try
-					{
-						foreach (string item in morphFiles)
-							morphs.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountMorph()));
-					}
-					catch
-					{
-						morphs.Clear();
-					}
-					Morphs = morphs.AsReadOnly();
 				}
 			}
 			ByteConverter.BigEndian = be;
@@ -373,25 +311,6 @@ namespace SonicRetro.SAModel
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}
-			if (Morphs.Count > 0)
-			{
-				List<byte> chunk = new List<byte>((Morphs.Count + 1) * 4);
-				int straddr = file.Count + (Morphs.Count + 1) * 4;
-				List<byte> strbytes = new List<byte>();
-				for (int i = 0; i < Morphs.Count; i++)
-				{
-					Morphs[i].Save(Path.Combine(path, morphFiles[i]));
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
-					strbytes.AddRange(Encoding.UTF8.GetBytes(morphFiles[i]));
-					strbytes.Add(0);
-					strbytes.Align(4);
-				}
-				chunk.AddRange(ByteConverter.GetBytes(-1));
-				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Morph));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
 			if (!string.IsNullOrEmpty(Author))
 			{
 				List<byte> chunk = new List<byte>(Author.Length + 1);
@@ -424,8 +343,8 @@ namespace SonicRetro.SAModel
 			ByteConverter.BigEndian = be;
 		}
 
-		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string[] morphFiles,
-			string author, string description, Dictionary<uint, byte[]> metadata, ModelFormat format)
+		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
+			string description, Dictionary<uint, byte[]> metadata, ModelFormat format)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
@@ -489,24 +408,6 @@ namespace SonicRetro.SAModel
 				chunk.AddRange(ByteConverter.GetBytes(-1));
 				chunk.AddRange(strbytes);
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Animation));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (morphFiles != null && morphFiles.Length > 0)
-			{
-				List<byte> chunk = new List<byte>((morphFiles.Length + 1) * 4);
-				int straddr = (morphFiles.Length + 1) * 4;
-				List<byte> strbytes = new List<byte>();
-				for (int i = 0; i < morphFiles.Length; i++)
-				{
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
-					strbytes.AddRange(Encoding.UTF8.GetBytes(morphFiles[i]));
-					strbytes.Add(0);
-					strbytes.Align(4);
-				}
-				chunk.AddRange(ByteConverter.GetBytes(-1));
-				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Morph));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}

@@ -413,8 +413,8 @@ namespace SA_Tools.SplitDLL
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										string animationName = Path.GetFileName(outputFN);
 
-										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, null,
-											idx + "->object", null, modelfmt);
+										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, idx + "->object",
+											null, modelfmt);
 										output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
 									}
 								}
@@ -470,8 +470,7 @@ namespace SA_Tools.SplitDLL
 					string modelOutputPath = string.Concat(projectFolderName, item.Filename);
 					//string modelOutputPath = item.Filename;
 
-					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, null, item.Name, null,
-						item.Format);
+					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format);
 					string type = "model";
 					switch (item.Format)
 					{

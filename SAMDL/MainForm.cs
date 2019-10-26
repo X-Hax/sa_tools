@@ -257,7 +257,7 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 			}
-			if (model.HasWeight)
+			if (outfmt == ModelFormat.Chunk)
 				meshes = model.ProcessWeightedModel().ToArray();
 			else
 			{
@@ -375,7 +375,7 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile.SaveToFile(fileName);
 			else
 			{
-				ModelFile.CreateFile(fileName, model, null, null, null, null, null, outfmt);
+				ModelFile.CreateFile(fileName, model, null, null, null, null, outfmt);
 				modelFile = new ModelFile(fileName);
 			}
 
@@ -510,7 +510,7 @@ namespace SonicRetro.SAModel.SAMDL
 			MatrixStack transform = new MatrixStack();
 			if (showModelToolStripMenuItem.Checked)
 			{
-				if (model.HasWeight)
+				if (outfmt == ModelFormat.Chunk)
 					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes), d3ddevice, cam);
 				else if (animation != null)
 					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
@@ -519,7 +519,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 				if (selectedObject != null)
 				{
-					if (model.HasWeight)
+					if (outfmt == ModelFormat.Chunk)
 					{
 						NJS_OBJECT[] objs = model.GetObjects();
 						if (selectedObject.Attach != null)
@@ -668,7 +668,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void UpdateWeightedModel()
 		{
-			if (model.HasWeight)
+			if (outfmt == ModelFormat.Chunk)
 			{
 				if (animation != null)
 					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
@@ -1151,7 +1151,7 @@ namespace SonicRetro.SAModel.SAMDL
 				Near.Z = 0;
 				Far = Near;
 				Far.Z = -1;
-				if (model.HasWeight)
+				if (outfmt == ModelFormat.Chunk)
 					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
 				else
 					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
@@ -1590,7 +1590,7 @@ namespace SonicRetro.SAModel.SAMDL
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
 						}
-					if (model.HasWeight)
+					if (outfmt == ModelFormat.Chunk)
 					{
 						meshes = model.ProcessWeightedModel().ToArray();
 						UpdateWeightedModel();
@@ -1709,7 +1709,7 @@ namespace SonicRetro.SAModel.SAMDL
 					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray());
 					editMaterialsToolStripMenuItem.Enabled = true;
 
-					if (model.HasWeight)
+					if (outfmt == ModelFormat.Chunk)
 						meshes = model.ProcessWeightedModel().ToArray();
 					else
 					{

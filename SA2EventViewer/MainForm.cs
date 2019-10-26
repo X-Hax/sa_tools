@@ -928,21 +928,20 @@ namespace SA2EventViewer
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					string[] anims = null;
+					List<string> anims = new List<string>();
 					if (selectedObject.Motion != null)
 					{
-						string animname = selectedObject.Motion.Name + ".saanim";
+						string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_sklmtn.saanim";
 						selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-						anims = new[] { animname };
+						anims.Add(animname);
 					}
-					string[] morphs = null;
 					if (selectedObject.ShapeMotion != null)
 					{
-						string animname = selectedObject.ShapeMotion.Name + ".saanim";
+						string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_shpmtn.saanim";
 						selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-						morphs = new[] { animname };
+						anims.Add(animname);
 					}
-					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims, morphs, null, null, null, ModelFormat.Chunk);
+					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims.ToArray(), null, null, null, ModelFormat.Chunk);
 				}
 		}
 	}

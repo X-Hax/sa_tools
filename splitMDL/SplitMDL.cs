@@ -106,7 +106,7 @@ namespace SplitMDL
 
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
-						null, null, null, null, ModelFormat.Chunk);
+						null, null, null, ModelFormat.Chunk);
 				}
 
 				// save ini file
