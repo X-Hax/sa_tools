@@ -1416,7 +1416,7 @@ namespace SonicRetro.SAModel.SAMDL
 							case PolyChunkStrip pcs:
 								chunks.Add(new PolyChunkMaterial(mats[matind]));
 								chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
-								pcs.UpdateFlags(mats[matind]);
+								pcs.UpdateFlags(mats[matind++]);
 								chunks.Add(pcs);
 								break;
 						}
