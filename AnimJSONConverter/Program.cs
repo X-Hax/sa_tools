@@ -15,7 +15,7 @@ namespace AnimJSONConverter
 				Console.WriteLine(filename = args[0]);
 			else
 				filename = Console.ReadLine().Trim('"');
-			JsonSerializer js = new JsonSerializer();
+			JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
 			switch (Path.GetExtension(filename).ToLowerInvariant())
 			{
 				case ".saanim":
