@@ -380,7 +380,7 @@ namespace SonicRetro.SAModel
 		public PolyChunkMaterial()
 		{
 			Type = ChunkType.Material_Diffuse;
-			Diffuse = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			Diffuse = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
 		}
 
 		public PolyChunkMaterial(byte[] file, int address)
