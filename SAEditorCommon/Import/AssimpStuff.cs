@@ -983,6 +983,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				foreach (var mesh in scene.Meshes)
 					if (mesh.BoneCount > 1)
 						return AssimpImportWeighted(scene, texInfo);
+			if (node == null || node == scene.RootNode)
+			{
+				NJS_OBJECT result = AssimpImportNonWeighted(scene, scene.RootNode, modelFormat, texInfo);
+				result.FixSiblings();
+				return result.Children[0];
+			}
 			return AssimpImportNonWeighted(scene, node, modelFormat, texInfo);
 		}
 

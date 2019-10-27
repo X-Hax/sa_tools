@@ -142,8 +142,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
-			for (int i = 1; i < Children.Count; i++)
-				Children[i - 1].Sibling = Children[i];
+			FixSiblings();
 			List<byte> result = new List<byte>();
 			uint childaddr = 0;
 			uint siblingaddr = 0;
@@ -196,6 +195,12 @@ namespace SonicRetro.SAModel
 			result.AddRange(ByteConverter.GetBytes(siblingaddr));
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
+		}
+
+		public void FixSiblings()
+		{
+			for (int i = 1; i < Children.Count; i++)
+				Children[i - 1].Sibling = Children[i];
 		}
 
 		public ObjectFlags GetFlags()
