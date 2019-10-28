@@ -1706,7 +1706,7 @@ namespace SonicRetro.SAModel.SAMDL
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
-					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray());
+					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
 					editMaterialsToolStripMenuItem.Enabled = true;
 
 					if (outfmt == ModelFormat.Chunk)

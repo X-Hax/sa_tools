@@ -981,7 +981,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			if (modelFormat == ModelFormat.Chunk)
 				foreach (var mesh in scene.Meshes)
-					if (mesh.BoneCount > 1)
+					if (mesh.BoneCount > 0)
 						return AssimpImportWeighted(scene, texInfo);
 			if (node == null || node == scene.RootNode)
 			{
