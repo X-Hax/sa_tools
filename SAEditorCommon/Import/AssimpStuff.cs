@@ -1007,9 +1007,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, ref mdlindex);
 		}
 
+		static readonly System.Text.RegularExpressions.Regex nodenameregex = new System.Text.RegularExpressions.Regex("^n[0-9]{3}_", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, ref int mdlindex)
 		{
-			NJS_OBJECT obj = new NJS_OBJECT { Name = aiNode.Name, Animate = true, Morph = true };
+			NJS_OBJECT obj = new NJS_OBJECT { Animate = true, Morph = true };
+			if (nodenameregex.IsMatch(aiNode.Name))
+				obj.Name = aiNode.Name.Substring(5);
+			else
+				obj.Name = aiNode.Name;
 			aiNode.Transform.Decompose(out Vector3D scaling, out Assimp.Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
@@ -1094,8 +1099,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		private static NJS_OBJECT AssimpImportNonWeighted(Scene scene, Node node, ModelFormat format, string[] textures = null)
 		{
-			NJS_OBJECT obj = new NJS_OBJECT();
-			obj.Name = node.Name;
+			NJS_OBJECT obj = new NJS_OBJECT() { Animate = true, Morph = true };
+			if (nodenameregex.IsMatch(node.Name))
+				obj.Name = node.Name.Substring(5);
+			else
+				obj.Name = node.Name;
 			node.Transform.Decompose(out Vector3D scaling, out Assimp.Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
