@@ -13,12 +13,12 @@ namespace ModelRelabeler
 			if (argq.Count > 0)
 			{
 				mdlfilename = argq.Dequeue();
-				Console.WriteLine("Model File: {0}", mdlfilename);
+				Console.WriteLine("New Model File: {0}", mdlfilename);
 			}
 			else
 			{
-				Console.Write("Model File: ");
-				mdlfilename = Console.ReadLine();
+				Console.Write("New Model File: ");
+				mdlfilename = Console.ReadLine().Trim('"');
 			}
 			ModelFile model = new ModelFile(mdlfilename);
 			NJS_OBJECT[] objects = model.Model.GetObjects();
@@ -26,12 +26,12 @@ namespace ModelRelabeler
 			if (argq.Count > 0)
 			{
 				repmdlfilename = argq.Dequeue();
-				Console.WriteLine("Replacement Model File: {0}", repmdlfilename);
+				Console.WriteLine("Old Model File: {0}", repmdlfilename);
 			}
 			else
 			{
-				Console.Write("Replacement Model File: ");
-				repmdlfilename = Console.ReadLine();
+				Console.Write("Old Model File: ");
+				repmdlfilename = Console.ReadLine().Trim('"');
 			}
 			ModelFile repmodel = new ModelFile(repmdlfilename);
 			NJS_OBJECT[] repobjects = repmodel.Model.GetObjects();
