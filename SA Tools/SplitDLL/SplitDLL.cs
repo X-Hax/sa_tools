@@ -13,8 +13,10 @@ namespace SA_Tools.SplitDLL
 	{
 		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
 		{
+#if !DEBUG
 			try
 			{
+#endif
 				byte[] datafile = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
@@ -491,7 +493,8 @@ namespace SA_Tools.SplitDLL
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
-			}
+#if !DEBUG
+		}
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
@@ -500,7 +503,7 @@ namespace SA_Tools.SplitDLL
 				Console.ReadLine();
 				return (int)SA_Tools.Split.SplitERRORVALUE.UnhandledException;
 			}
-
+#endif
 			return (int)SA_Tools.Split.SplitERRORVALUE.Success;
 		}
 
