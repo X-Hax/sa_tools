@@ -240,6 +240,7 @@ namespace SonicRetro.SAModel
 			{
 				case SA1MDL:
 				case SA2MDL:
+				case SA2BMDL:
 					return file[7] <= CurrentVersion;
 				default:
 					return false;
