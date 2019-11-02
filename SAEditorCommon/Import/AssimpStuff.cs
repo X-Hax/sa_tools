@@ -1262,29 +1262,54 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		private static ChunkAttach AssimpImportChunk(List<Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
 		{
 			ChunkAttach attach = new ChunkAttach(true, true);
-			NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
 			List<List<Strip>> strips = new List<List<Strip>>();
 			List<List<List<UV>>> uvs = new List<List<List<UV>>>();
 			VertexChunk vertexChunk;
 			ChunkType type = ChunkType.Vertex_Vertex;
+			int vertlimit = 65535 / 3;
 			bool hasnormal = false;
 			bool hasvcolor = false;
 			if (meshes.Any(a => a.HasVertexColors(0)))
 			{
 				hasvcolor = true;
 				type = ChunkType.Vertex_VertexDiffuse8;
+				vertlimit = 65535 / 4;
 			}
 			else if (meshes.Any(a => a.HasNormals))
 			{
 				hasnormal = true;
 				type = ChunkType.Vertex_VertexNormal;
+				vertlimit = 65535 / 6;
 			}
+			int vcnt = 0;
 			vertexChunk = new VertexChunk(type);
 			foreach (Assimp.Mesh aiMesh in meshes)
 			{
-				int vertoff = vertexChunk.Vertices.Count;
+				int vertoff = vcnt + vertexChunk.Vertices.Count;
 				for (int i = 0; i < aiMesh.VertexCount; i++)
 				{
+					if (vertexChunk.Vertices.Count >= vertlimit)
+					{
+						vertexChunk.VertexCount = (ushort)vertexChunk.Vertices.Count;
+						switch (vertexChunk.Type)
+						{
+							case ChunkType.Vertex_Vertex:
+								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 3 + 1);
+								break;
+							case ChunkType.Vertex_VertexDiffuse8:
+								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 4 + 1);
+								break;
+							case ChunkType.Vertex_VertexNormal:
+								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 6 + 1);
+								break;
+							case ChunkType.Vertex_VertexNormalDiffuse8:
+								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 7 + 1);
+								break;
+						}
+						attach.Vertex.Add(vertexChunk);
+						vcnt += vertexChunk.VertexCount;
+						vertexChunk = new VertexChunk(type) { IndexOffset = (ushort)vcnt };
+					}
 					vertexChunk.Vertices.Add(aiMesh.Vertices[i].ToSAModel());
 					if (hasnormal)
 						vertexChunk.Normals.Add(aiMesh.Normals[i].ToSAModel());
