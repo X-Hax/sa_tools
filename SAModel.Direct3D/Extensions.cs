@@ -387,7 +387,6 @@ namespace SonicRetro.SAModel.Direct3D
 							VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
 							if (chunk.Diffuse.Count > 0)
 								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
-							WeightBuffer[i + chunk.IndexOffset] = null;
 							WeightBuffer[i + chunk.IndexOffset] = new List<WeightData>
 							{
 								new WeightData(mdlindex, origpos, orignor, 1)
@@ -475,13 +474,19 @@ namespace SonicRetro.SAModel.Direct3D
 							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 							for (int k = 0; k < strip.Indexes.Length; k++)
 							{
-									str.Indexes[k] = (ushort)verts.Count;
-									verts.Add(new VertexData(
+									var v = new VertexData(
 										VertexBuffer[strip.Indexes[k]].Position,
 										VertexBuffer[strip.Indexes[k]].Normal,
 										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
-										hasUV ? strip.UVs[k] : null));
-									weights.Add(WeightBuffer[strip.Indexes[k]]);
+										hasUV ? strip.UVs[k] : null);
+									if (verts.Contains(v))
+										str.Indexes[k] = (ushort)verts.IndexOf(v);
+									else
+									{
+										weights.Add(WeightBuffer[strip.Indexes[k]]);
+										str.Indexes[k] = (ushort)verts.Count;
+										verts.Add(v);
+									}
 								}
 								polys.Add(str);
 						}
