@@ -236,7 +236,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						for (int i = 0; i < tris.Length; i += 3)
 						{
 							Face face = new Face();
-							face.Indices.AddRange(new int[] { tris[i + 2], tris[i + 1], tris[i] });
+							face.Indices.AddRange(new int[] { tris[i], tris[i + 1], tris[i + 2] });
 							mesh.Faces.Add(face);
 						}
 
