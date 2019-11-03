@@ -928,17 +928,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 			foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 			{
-				var stripIndices = new ushort[grp.Indices.Length];
+				bool rev = grp.Indices[1] == grp.Indices[0];
+				var stripIndices = new List<ushort>(grp.Indices.Length);
 				List<UV> stripuv = new List<UV>();
-				for (var j = 0; j < grp.Indices.Length; j++)
+				for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
 				{
 					var vertexIndex = grp.Indices[j];
-					stripIndices[j] = vertexIndex;
+					stripIndices.Add(vertexIndex);
 					if (hasUV)
 						stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
 				}
 
-				polys.Add(new PolyChunkStrip.Strip(false, stripIndices, hasUV ? stripuv.ToArray() : null, null));
+				polys.Add(new PolyChunkStrip.Strip(rev, stripIndices.ToArray(), hasUV ? stripuv.ToArray() : null, null));
 			}
 
 			//material stuff
@@ -1345,17 +1346,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					var stripIndices = new ushort[grp.Indices.Length];
+					bool rev = grp.Indices[1] == grp.Indices[0];
+					var stripIndices = new List<ushort>(grp.Indices.Length);
 					List<UV> stripuv = new List<UV>();
-					for (var j = 0; j < grp.Indices.Length; j++)
+					for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
 					{
 						var vertexIndex = grp.Indices[j];
-						stripIndices[j] = (ushort)(vertexIndex + vertoff);
+						stripIndices.Add((ushort)(vertexIndex + vertoff));
 						if (hasUV)
 							stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
 					}
 
-					polys.Add(new Strip(stripIndices, false));
+					polys.Add(new Strip(stripIndices.ToArray(), rev));
 					if (hasUV)
 						us.Add(stripuv);
 					//PolyChunkStrip.Strip strp = new PolyChunkStrip.Strip(false, grp.Indices, null, null);
