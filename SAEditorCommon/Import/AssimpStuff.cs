@@ -816,13 +816,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			MeshData result = new MeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
-			if (aiMesh.BoneCount > 1)
-			{
-				var verts = new List<VertInfo>(aiMesh.VertexCount);
-				for (int i = 0; i < aiMesh.VertexCount; i++)
-					verts.Add(new VertInfo(i));
-				List<string> sortedbones = new List<string>();
-				var matrices = new Dictionary<string, Matrix>();
+			var verts = new List<VertInfo>(aiMesh.VertexCount);
+			for (int i = 0; i < aiMesh.VertexCount; i++)
+				verts.Add(new VertInfo(i));
+			List<string> sortedbones = new List<string>();
+			var matrices = new Dictionary<string, Matrix>();
+			if (aiMesh.HasBones)
 				foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
 				{
 					sortedbones.Add(bone.Name);
@@ -830,6 +829,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
 					matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
 				}
+			if (sortedbones.Count > 1)
+			{
 				result.FirstNode = sortedbones.First();
 				string lastbone = sortedbones.Last();
 				result.LastNode = lastbone;
@@ -868,10 +869,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			else
 			{
 				Matrix transform = Matrix.Identity;
-				if (aiMesh.BoneCount == 1)
+				if (sortedbones.Count == 1)
 				{
-					result.LastNode = result.FirstNode = aiMesh.Bones[0].Name;
-					transform = aiMesh.Bones[0].OffsetMatrix.ToSharpDX();
+					result.LastNode = result.FirstNode = sortedbones[0];
+					transform = matrices[sortedbones[0]];
 				}
 				result.Bounds = new SharpDX.BoundingSphere(Vector3.TransformCoordinate(result.Bounds.Center, transform), result.Bounds.Radius);
 				ChunkType type = ChunkType.Vertex_Vertex;
