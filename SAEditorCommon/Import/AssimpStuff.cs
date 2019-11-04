@@ -858,8 +858,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
 							vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
 						}
-						vc.VertexCount = (ushort)vc.Vertices.Count;
-						vc.Size = (ushort)(vc.VertexCount * 7 + 1);
 						chunks.Add(vc);
 					}
 
@@ -896,19 +894,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						vc.Normals.Add(Vector3.TransformNormal(aiMesh.Normals[i].ToSharpDX(), transform).ToVertex());
 					if (hasvcolor)
 						vc.Diffuse.Add(aiMesh.VertexColorChannels[0][i].ToColor());
-				}
-				vc.VertexCount = (ushort)vc.Vertices.Count;
-				switch (type)
-				{
-					case ChunkType.Vertex_Vertex:
-						vc.Size = (ushort)(vc.VertexCount * 3 + 1);
-						break;
-					case ChunkType.Vertex_VertexDiffuse8:
-						vc.Size = (ushort)(vc.VertexCount * 4 + 1);
-						break;
-					case ChunkType.Vertex_VertexNormal:
-						vc.Size = (ushort)(vc.VertexCount * 6 + 1);
-						break;
 				}
 				result.Vertex[result.FirstNode ?? string.Empty] = new List<VertexChunk>() { vc };
 			}
@@ -1086,7 +1071,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				}
 			}
 			if (attach != null)
+			{
+				attach.Vertex = VertexChunk.Merge(attach.Vertex);
 				attach.Bounds = bounds.ToSAModel();
+			}
 			foreach (int handle in releasehandles)
 				VertexCacheManager.Release(handle);
 			foreach (Node child in aiNode.Children)
@@ -1274,50 +1262,24 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<List<List<UV>>> uvs = new List<List<List<UV>>>();
 			VertexChunk vertexChunk;
 			ChunkType type = ChunkType.Vertex_Vertex;
-			int vertlimit = 65535 / 3;
 			bool hasnormal = false;
 			bool hasvcolor = false;
 			if (meshes.Any(a => a.HasVertexColors(0)))
 			{
 				hasvcolor = true;
 				type = ChunkType.Vertex_VertexDiffuse8;
-				vertlimit = 65535 / 4;
 			}
 			else if (meshes.Any(a => a.HasNormals))
 			{
 				hasnormal = true;
 				type = ChunkType.Vertex_VertexNormal;
-				vertlimit = 65535 / 6;
 			}
-			int vcnt = 0;
 			vertexChunk = new VertexChunk(type);
 			foreach (Assimp.Mesh aiMesh in meshes)
 			{
-				int vertoff = vcnt + vertexChunk.Vertices.Count;
+				int vertoff = vertexChunk.Vertices.Count;
 				for (int i = 0; i < aiMesh.VertexCount; i++)
 				{
-					if (vertexChunk.Vertices.Count >= vertlimit)
-					{
-						vertexChunk.VertexCount = (ushort)vertexChunk.Vertices.Count;
-						switch (vertexChunk.Type)
-						{
-							case ChunkType.Vertex_Vertex:
-								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 3 + 1);
-								break;
-							case ChunkType.Vertex_VertexDiffuse8:
-								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 4 + 1);
-								break;
-							case ChunkType.Vertex_VertexNormal:
-								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 6 + 1);
-								break;
-							case ChunkType.Vertex_VertexNormalDiffuse8:
-								vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 7 + 1);
-								break;
-						}
-						attach.Vertex.Add(vertexChunk);
-						vcnt += vertexChunk.VertexCount;
-						vertexChunk = new VertexChunk(type) { IndexOffset = (ushort)vcnt };
-					}
 					vertexChunk.Vertices.Add(aiMesh.Vertices[i].ToSAModel());
 					if (hasnormal)
 						vertexChunk.Normals.Add(aiMesh.Normals[i].ToSAModel());
@@ -1365,22 +1327,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				}
 				strips.Add(polys);
 				uvs.Add(us);
-			}
-			vertexChunk.VertexCount = (ushort)vertexChunk.Vertices.Count;
-			switch (vertexChunk.Type)
-			{
-				case ChunkType.Vertex_Vertex:
-					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 3 + 1);
-					break;
-				case ChunkType.Vertex_VertexDiffuse8:
-					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 4 + 1);
-					break;
-				case ChunkType.Vertex_VertexNormal:
-					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 6 + 1);
-					break;
-				case ChunkType.Vertex_VertexNormalDiffuse8:
-					vertexChunk.Size = (ushort)(vertexChunk.VertexCount * 7 + 1);
-					break;
 			}
 			attach.Vertex.Add(vertexChunk);
 			for (int i = 0; i < meshes.Count; i++)
@@ -1759,11 +1705,5 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		public static Matrix4x4 ToAssimp(this Matrix m) => new Matrix4x4(m.M11, m.M21, m.M31, m.M41, m.M12, m.M22, m.M32, m.M42, m.M13, m.M23, m.M33, m.M43, m.M14, m.M24, m.M34, m.M44);
 
 		public static Matrix ToSharpDX(this Matrix4x4 m) => new Matrix(m.A1, m.B1, m.C1, m.D1, m.A2, m.B2, m.C2, m.D2, m.A3, m.B3, m.C3, m.D3, m.A4, m.B4, m.C4, m.D4);
-
-		public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> item, out TKey key, out TValue value)
-		{
-			key = item.Key;
-			value = item.Value;
-		}
 	}
 }

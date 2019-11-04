@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SonicRetro.SAModel
 {
@@ -41,11 +42,11 @@ namespace SonicRetro.SAModel
 			set { Header2 = (Header2 & 0xFFFF0000u) | value; }
 		}
 
-		public ushort VertexCount
-		{
-			get { return (ushort)(Header2 >> 16); }
-			set { Header2 = (Header2 & 0xFFFFu) | (uint)(value << 16); }
-		}
+		private uint GetVertCount() => Header2 >> 16;
+
+		private void SetVertCount(int count) => Header2 = (Header2 & 0xFFFFu) | (uint)(count << 16);
+
+		public int VertexCount => Vertices.Count;
 
 		public bool HasWeight { get { return Type == ChunkType.Vertex_VertexNinjaFlags | Type == ChunkType.Vertex_VertexNormalNinjaFlags; } }
 
@@ -100,7 +101,7 @@ namespace SonicRetro.SAModel
 			Header1 = ByteConverter.ToUInt32(file, address);
 			Header2 = ByteConverter.ToUInt32(file, address + 4);
 			address = address + 8;
-			for (int i = 0; i < VertexCount; i++)
+			for (int i = 0; i < GetVertCount(); i++)
 			{
 				switch (Type)
 				{
@@ -210,10 +211,172 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes()
 		{
+			VertexChunk next = null;
+			int vertlimit;
+			int vertcount = Vertices.Count;
+			switch (Type)
+			{
+				case ChunkType.Vertex_VertexSH:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalSH:
+					vertlimit = 65535 / 8;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList(), Normals = Normals.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_Vertex:
+					vertlimit = 65535 / 3;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuse8:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList(), Diffuse = Diffuse.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexUserFlags:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList(), UserFlags = UserFlags.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNinjaFlags:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList(), NinjaFlags = NinjaFlags.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuseSpecular5:
+				case ChunkType.Vertex_VertexDiffuseSpecular4:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type)
+						{
+							Vertices = Vertices.Skip(vertlimit).ToList(),
+							Diffuse = Diffuse.Skip(vertlimit).ToList(),
+							Specular = Specular.Skip(vertlimit).ToList()
+						};
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormal:
+					vertlimit = 65535 / 6;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type) { Vertices = Vertices.Skip(vertlimit).ToList(), Normals = Normals.Skip(vertlimit).ToList() };
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuse8:
+					vertlimit = 65535 / 7;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type)
+						{
+							Vertices = Vertices.Skip(vertlimit).ToList(),
+							Normals = Normals.Skip(vertlimit).ToList(),
+							Diffuse = Diffuse.Skip(vertlimit).ToList()
+						};
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalUserFlags:
+					vertlimit = 65535 / 7;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type)
+						{
+							Vertices = Vertices.Skip(vertlimit).ToList(),
+							Normals = Normals.Skip(vertlimit).ToList(),
+							UserFlags = UserFlags.Skip(vertlimit).ToList()
+						};
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalNinjaFlags:
+					vertlimit = 65535 / 7;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type)
+						{
+							Vertices = Vertices.Skip(vertlimit).ToList(),
+							Normals = Normals.Skip(vertlimit).ToList(),
+							NinjaFlags = NinjaFlags.Skip(vertlimit).ToList()
+						};
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+					vertlimit = 65535 / 4;
+					if (Vertices.Count > vertlimit)
+					{
+						next = new VertexChunk(Type)
+						{
+							Vertices = Vertices.Skip(vertlimit).ToList(),
+							Normals = Normals.Skip(vertlimit).ToList(),
+							Diffuse = Diffuse.Skip(vertlimit).ToList(),
+							Specular = Specular.Skip(vertlimit).ToList()
+						};
+						vertcount = vertlimit;
+					}
+					break;
+				case ChunkType.End:
+					break;
+				default:
+					throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			}
+			SetVertCount(vertcount);
+			switch (Type)
+			{
+				case ChunkType.Vertex_Vertex:
+					Size = (ushort)(vertcount * 3 + 1);
+					break;
+				case ChunkType.Vertex_VertexSH:
+				case ChunkType.Vertex_VertexDiffuse8:
+				case ChunkType.Vertex_VertexUserFlags:
+				case ChunkType.Vertex_VertexNinjaFlags:
+				case ChunkType.Vertex_VertexDiffuseSpecular5:
+				case ChunkType.Vertex_VertexDiffuseSpecular4:
+					Size = (ushort)(vertcount * 4 + 1);
+					break;
+				case ChunkType.Vertex_VertexNormal:
+					Size = (ushort)(vertcount * 6 + 1);
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuse8:
+				case ChunkType.Vertex_VertexNormalUserFlags:
+				case ChunkType.Vertex_VertexNormalNinjaFlags:
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+					Size = (ushort)(vertcount * 7 + 1);
+					break;
+				case ChunkType.Vertex_VertexNormalSH:
+					Size = (ushort)(vertcount * 8 + 1);
+					break;
+			}
 			List<byte> result = new List<byte>((Size * 4) + 4);
 			result.AddRange(ByteConverter.GetBytes(Header1));
 			result.AddRange(ByteConverter.GetBytes(Header2));
-			for (int i = 0; i < VertexCount; i++)
+			for (int i = 0; i < vertcount; i++)
 			{
 				switch (Type)
 				{
@@ -287,10 +450,10 @@ namespace SonicRetro.SAModel
 							ByteConverter.ToUInt16(VColor.GetBytes(Diffuse[i], ColorType.ARGB4444), 0)
 							| (ByteConverter.ToUInt16(VColor.GetBytes(Specular[i], ColorType.RGB565), 0) << 16)));
 						break;
-					default:
-						throw new NotSupportedException("Unsupported chunk type " + Type + ".");
 				}
 			}
+			if (next != null)
+				result.AddRange(next.GetBytes());
 			return result.ToArray();
 		}
 
@@ -309,6 +472,83 @@ namespace SonicRetro.SAModel
 			result.Specular = new List<Color>(Specular);
 			result.UserFlags = new List<uint>(UserFlags);
 			result.NinjaFlags = new List<uint>(NinjaFlags);
+			return result;
+		}
+
+		public static List<VertexChunk> Merge(List<VertexChunk> source)
+		{
+			if (source == null) return null;
+			if (source.Count < 2) return source;
+			var chunks = new Dictionary<ChunkType, List<VertexChunk>>();
+			foreach (var c in source)
+			{
+				if (!chunks.ContainsKey(c.Type))
+					chunks[c.Type] = new List<VertexChunk>();
+				chunks[c.Type].Add(c);
+			}
+			var result = new List<VertexChunk>();
+			foreach (var list in chunks.Values)
+			{
+				var t = list[0].Type;
+				switch (t)
+				{
+					case ChunkType.Vertex_VertexNinjaFlags:
+					case ChunkType.Vertex_VertexNormalNinjaFlags:
+						var weights = new Dictionary<WeightStatus, List<VertexChunk>>();
+						foreach (var c in list)
+						{
+							if (!weights.ContainsKey(c.WeightStatus))
+								weights[c.WeightStatus] = new List<VertexChunk>();
+							weights[c.WeightStatus].Add(c);
+						}
+						foreach (var (s, l2) in weights.OrderBy(a => a.Key))
+						{
+							var r = new VertexChunk(t) { WeightStatus = s, IndexOffset = l2.Min(a => a.IndexOffset) };
+							foreach (var c in l2)
+							{
+								r.Vertices.AddRange(c.Vertices);
+								if (c.Normals?.Count > 0)
+									r.Normals.AddRange(c.Normals);
+								if (c.IndexOffset == r.IndexOffset)
+									r.NinjaFlags.AddRange(c.NinjaFlags);
+								else
+									for (int i = 0; i < c.Vertices.Count; i++)
+									{
+										int ind = (int)c.NinjaFlags[i] & 0xFFFF;
+										ind += c.IndexOffset - r.IndexOffset;
+										r.NinjaFlags.Add((c.NinjaFlags[i] & 0xFFFF0000) | (uint)ind);
+									}
+							}
+							result.Add(r);
+						}
+						break;
+					default:
+						list.Sort((a, b) => a.IndexOffset.CompareTo(b.IndexOffset));
+						var r2 = new VertexChunk(t) { IndexOffset = list[0].IndexOffset };
+						foreach (var c in list)
+						{
+							if (c.IndexOffset != r2.IndexOffset + r2.VertexCount)
+							{
+								result.Add(r2);
+								r2 = c;
+							}
+							else
+							{
+								r2.Vertices.AddRange(c.Vertices);
+								if (c.Normals?.Count > 0)
+									r2.Normals.AddRange(c.Normals);
+								if (c.Diffuse?.Count > 0)
+									r2.Diffuse.AddRange(c.Diffuse);
+								if (c.Specular?.Count > 0)
+									r2.Specular.AddRange(c.Specular);
+								if (c.UserFlags?.Count > 0)
+									r2.UserFlags.AddRange(c.UserFlags);
+							}
+						}
+						result.Add(r2);
+						break;
+				}
+			}
 			return result;
 		}
 	}

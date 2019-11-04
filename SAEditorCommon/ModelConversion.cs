@@ -187,22 +187,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 				if (hasvcolor)
 					vcnk.Diffuse.Add(item.color);
 			}
-			vcnk.VertexCount = (ushort)cache.Count;
-			switch (vcnk.Type)
-			{
-				case ChunkType.Vertex_Vertex:
-					vcnk.Size = (ushort)(vcnk.VertexCount * 3 + 1);
-					break;
-				case ChunkType.Vertex_VertexDiffuse8:
-					vcnk.Size = (ushort)(vcnk.VertexCount * 4 + 1);
-					break;
-				case ChunkType.Vertex_VertexNormal:
-					vcnk.Size = (ushort)(vcnk.VertexCount * 6 + 1);
-					break;
-				case ChunkType.Vertex_VertexNormalDiffuse8:
-					vcnk.Size = (ushort)(vcnk.VertexCount * 7 + 1);
-					break;
-			}
 			cnkatt.Vertex.Add(vcnk);
 			for (int i = 0; i < basatt.Mesh.Count; i++)
 			{
