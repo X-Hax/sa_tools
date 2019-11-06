@@ -194,7 +194,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
-						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
 						if (cur_mat.UseTexture && texInfo != null)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
@@ -225,7 +225,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
 							mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
 							if (meshInfo.Vertices[i].Color.HasValue)
-								mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[i].Color.Value.R, meshInfo.Vertices[i].Color.Value.G, meshInfo.Vertices[i].Color.Value.B, meshInfo.Vertices[i].Color.Value.A));
+								mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
 							if (meshInfo.Vertices[i].UV != null)
 								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
 							vertexWeights.Add(weights[vertind + i]);
@@ -415,7 +415,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{obj.Attach.Name}_material_{nameMeshIndex++}" };
-						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
+						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
 						if (cur_mat.UseTexture && texInfo != null)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
@@ -451,7 +451,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 								mesh.Vertices.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Position.X, meshInfo.Vertices[tris[i + j]].Position.Y, meshInfo.Vertices[tris[i + j]].Position.Z));
 								mesh.Normals.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Normal.X, meshInfo.Vertices[tris[i + j]].Normal.Y, meshInfo.Vertices[tris[i + j]].Normal.Z));
 								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
+									mesh.VertexColorChannels[0].Add(meshInfo.Vertices[tris[i + j]].Color.Value.ToAssimp());
 								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
 							}
 							mesh.Faces.Add(face);
@@ -572,7 +572,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (colors.Count > 0)
 					mesh.VertexColorChannels[0].AddRange(colors);
 				Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
-				materoial.ColorDiffuse = new Color4D(MaterialBuffer.DiffuseColor.R, MaterialBuffer.DiffuseColor.G, MaterialBuffer.DiffuseColor.B, MaterialBuffer.DiffuseColor.A);
+				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
 				if (MaterialBuffer.UseTexture && textures != null)
 				{
 					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
@@ -655,7 +655,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (colors.Count > 0)
 					mesh.VertexColorChannels[0].AddRange(colors);
 				Material materoial = new Material() { Name = "material_" + nameMeshIndex };
-				materoial.ColorDiffuse = new Color4D(MaterialBuffer.DiffuseColor.R, MaterialBuffer.DiffuseColor.G, MaterialBuffer.DiffuseColor.B, MaterialBuffer.DiffuseColor.A);
+				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
 				if (MaterialBuffer.UseTexture && textures != null)
 				{
 					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
@@ -1677,7 +1677,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Vertex ToSAModel(this Vector3D v) => new Vertex(v.X, v.Y, v.Z);
 
-		public static Color ToColor(this Color4D c) => Color.FromArgb((int)c.A * 255, (int)c.R * 255, (int)c.G * 255, (int)c.B * 255);
+		public static Color4D ToAssimp(this Color c) => new Color4D(c.R / 255f, c.G / 255f, c.B / 255f, c.G / 255f);
+
+		public static Color ToColor(this Color4D c) => Color.FromArgb((int)(c.A * 255), (int)(c.R * 255), (int)(c.G * 255), (int)(c.B * 255));
 
 		public static NJS_MATERIAL ToSAModel(this Material mat)
 		{
