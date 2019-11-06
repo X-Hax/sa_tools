@@ -1752,7 +1752,7 @@ namespace SonicRetro.SAModel.SAMDL
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				Filter = "Model Files|*.fbx;*.dae",
 				FileName = model.Name
 			})
 			{
@@ -1775,7 +1775,44 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 					SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
-					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+					/*
+					if (animation != null)
+					{
+						Assimp.Animation asAnim = new Assimp.Animation() { Name = animation.Name };
+						asAnim.DurationInTicks = animation.Frames;
+						asAnim.TicksPerSecond = 0.1f;
+						string[] names = model.GetObjects().Select(l => l.Name).ToArray();
+						List<Assimp.NodeAnimationChannel> nodeAnimChannels = new List<Assimp.NodeAnimationChannel>();
+						foreach (KeyValuePair<int, AnimModelData> pair in animation.Models)
+						{
+							Assimp.NodeAnimationChannel channel = new Assimp.NodeAnimationChannel();
+							channel.NodeName = names[pair.Key];
+							AnimModelData data = pair.Value;
+							if(data.Position.Count > 0)
+							{
+								foreach(KeyValuePair<int, Vertex> ver in data.Position)
+									channel.PositionKeys.Add(new Assimp.VectorKey() { Time = ver.Key, Value = new Assimp.Vector3D(ver.Value.X, ver.Value.Y, ver.Value.Z) });
+							}
+							if (data.Rotation.Count > 0)
+							{
+								foreach (KeyValuePair<int, Rotation> ver in data.Rotation)
+									channel.RotationKeys.Add(new Assimp.QuaternionKey()
+									{
+										Time = ver.Key,
+										Value = new Assimp.Quaternion((ver.Value.YDeg) * (float)Math.PI / 180.0f, (ver.Value.ZDeg) * (float)Math.PI / 180.0f, (ver.Value.XDeg) * (float)Math.PI / 180.0f) //umm yeah
+									});
+							}
+							if (data.Scale.Count > 0)
+							{
+								foreach (KeyValuePair<int, Vertex> ver in data.Scale)
+									channel.ScalingKeys.Add(new Assimp.VectorKey() { Time = ver.Key, Value = new Assimp.Vector3D(ver.Value.X, ver.Value.Y, ver.Value.Z) });
+							}
+						}
+						asAnim.NodeAnimationChannels.AddRange(nodeAnimChannels);
+						scene.Animations.Add(asAnim);
+					}
+					*/
+					context.ExportFile(scene, a.FileName, a.FileName.EndsWith("dae") ? "collada" : "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
 		}
