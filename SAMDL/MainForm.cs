@@ -137,7 +137,7 @@ namespace SonicRetro.SAModel.SAMDL
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadFile(a.FileName);
