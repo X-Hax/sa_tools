@@ -6,8 +6,16 @@ Credit to Mambo4 of cgsociety for posting a bit of a usage guide for the Json li
 Credit to TGE for help on debugging the script as well as for borrowed code from his Renderware animation importer
 */
 
+struct nodeData 
+(
+	ref = undefined,
+	tfm = undefined
+)
+
 rollout tagRoll "saanim Json I/O" 
 (
+local tfmData = #()
+	
 Label lab2 "Please pick an saanim .json for your model"
 button animImportSA1 "Load SA1 Anim" across:1 width:120 align:#center
 button animImportSA2 "Load SA2 Anim" across:1 width:120 align:#center
@@ -17,6 +25,7 @@ Label lab3 "Note: Anim Data is not fully reset because of node positionings." al
 Label lab4 "Reload model before anim each time for best results." align:#left
 checkBox loadClear "Clear Anim Data on Load" checked:true align:#left
 checkBox clearProp "Clear bone000 User Properties" checked:true align:#left
+checkBox saToolSA2 "SA2 Model is from SA Tools" checked:true align:#left
 checkBox tgeMode "Model is from TGE's converter" checked:false align:#left
 	
 --Function to return a json file the user picks
@@ -37,7 +46,26 @@ fn ClearAnimations =
 		DeleteKeys obj.controller #allkeys
 	)
 )
+
+/*
+--Pose Saver
+fn SavePose =
+(
+	for obj in objects do
+	(
+		append tfmData (nodeData ref:obj tfm:(deepcopy obj.transform))
+	)
+)
 	
+--Pose Loader
+fn LoadPose =
+(
+	for obj in tfmData do
+	(
+		obj.ref.transform = (deepcopy obj.tfm)
+	)
+)*/
+
 --BAMS angle to Euler Angle conversion
 fn BAMStoEuler BAMSstr = 
 (
@@ -65,7 +93,10 @@ fn eulerToBAMS eulerVal =
 	BAMSstring = toUpper (BAMSX + ", " + BAMSY + ", " + BAMSZ)
 )
 
-fn loadSA1Anim sa1Anim startPth =
+--More so SA Tools model anim loading than SA1, but this was made before SA2 exports worked.
+--Mainly requires the strange y-z flipping on root position to not happen for sa2
+--Ideally the loadSA2Anim function would be refactored into this, but I will probably do that another time.
+fn loadSA1Anim sa1Anim startPth sa2Mode =
 (
 	
 	--use dotnet.loadAssembly to load the Newtonsoft.Json library:
@@ -80,6 +111,7 @@ fn loadSA1Anim sa1Anim startPth =
 	FrameCount = anmObjParse.item["Frames"].value
 	AnimName = anmObjParse.item["Name"].value
 	ModelParts = anmObjParse.item["ModelParts"].value
+	InterpMode = anmObjParse.item["InterpolationMode"].value
 	objArray = objects as array
 	
 	--Max's dae import does funny things to scaling to all root nodes. This fixes that.
@@ -91,9 +123,10 @@ fn loadSA1Anim sa1Anim startPth =
 	try(delete $Settings) catch()
     nDummy = dummy pos: ( [0, 0, 0] ) name: ( "Settings")
 	setUserPropBuffer $Settings ""
-	setUserProp $Settings "Frames" (FrameCount as Integer)
+	setUserProp $Settings "Original Frames" (FrameCount as Integer)
 	setUserProp $Settings "Name" (AnimName as String)
 	setUserProp $Settings "ModelParts" (ModelParts as Integer) 
+	setUserProp $Settings "InterpolationMode" (InterpMode as Integer)
 	
 	animationRange = interval 0 (FrameCount-1)
 	
@@ -139,7 +172,7 @@ fn loadSA1Anim sa1Anim startPth =
 				posTime = (curPos.name as integer)
 				posCorrected = execute ("[" + curPos.First.value + "]")
 				posCorrected.x = (posCorrected.x)
-				if ( i == 1 or scaleCheck == false) then
+				if ( i == 1 or scaleCheck == false and sa2Mode == false) then
 				(
 					posTemp = (posCorrected.z)
 					posCorrected.z = (posCorrected.y)
@@ -204,6 +237,7 @@ fn loadSA2Anim sa2Anim startPth =
 	FrameCount = anmObjParse.item["Frames"].value
 	AnimName = anmObjParse.item["Name"].value
 	ModelParts = anmObjParse.item["ModelParts"].value
+	InterpMode = anmObjParse.item["InterpolationMode"].value
 	
 	--Max's dae import does funny things to scaling to all root nodes. This fixes that.
 	objArray = objects as array
@@ -221,19 +255,21 @@ fn loadSA2Anim sa2Anim startPth =
 	if (clearProp.checked == true and tgeMode.checked == false) then
 	(	
 		setUserPropBuffer $bone000 ""
-		setUserProp $bone000 "Frames" (FrameCount as Integer)
+		setUserProp $bone000 "Original Frames" (FrameCount as Integer)
 		setUserProp $bone000 "Name" (AnimName as String)
 		setUserProp $bone000 "ModelParts" (ModelParts as Integer)
+		setUserProp $bone000 "InterpolationMode" (InterpMode as Integer)
 	) else if (clearProp.checked == true) then (
 		setUserPropBuffer $node_0 ""
-		setUserProp $node_0 "Frames" (FrameCount as Integer)
+		setUserProp $node_0 "Original Frames" (FrameCount as Integer)
 		setUserProp $node_0 "Name" (AnimName as String)
 		setUserProp $node_0 "ModelParts" (ModelParts as Integer)
+		setUserProp $node_0 "InterpolationMode" (InterpMode as Integer)
 	)
 	if tgeMode.checked then ( deleteKeys objects #allKeys )
 	animationRange = interval 0 (FrameCount-1)
 	
-	maxops.setDefaultTangentType #step #step
+	maxops.setDefaultTangentType #smooth #smooth
 	animButtonState = true
 	-- Sort through "Models" and store names and values
 	 i = 1
@@ -319,7 +355,7 @@ fn loadSA2Anim sa2Anim startPth =
 )
 
 	
-fn ExportSA1Anim jPath startPth =
+fn ExportSA1Anim jPath startPth sa2Mode =
 (
 	
 	--use dotnet.loadAssembly to load the Newtonsoft.Json library:
@@ -360,7 +396,7 @@ fn ExportSA1Anim jPath startPth =
 					at time itemKey.Time
 					posKeyTime = (filterString (itemKey.Time as String) "f")
 					posKeyValue = (filterString (at time itemKey.Time o.Controller.Position as String) "[,]")
-					if ( i == 1 or scaleExCheck == false) then
+					if ( i == 1 or scaleExCheck == false and sa2Mode == false) then
 					(
 						tempPosVal = posKeyValue[2]
 						posKeyValue[2] = posKeyValue[3]
@@ -405,7 +441,13 @@ fn ExportSA1Anim jPath startPth =
 			append modelObj ("},\n")
 		)
 	)
-    append  modelObj ("},\n\"Frames\": " + ((getUserProp $Settings "Frames") as String) + ",\n\"Name\": \"" + ((getUserProp $Settings "Name") as String) + "\",\n\"ModelParts\": " +  ((getUserProp $Settings "ModelParts") as String) + "\n}")
+	aRange = (animationrange.end+1) as String
+	aRange = substring aRange 1 (aRange.count-1)
+	if (getUserProp $Settings "InterpolationMode") == undefined then
+	(
+		setUserProp $Settings "InterpolationMode" 0
+	)
+    append  modelObj ("},\n\"Frames\": " + aRange + ",\n\"Name\": \"" + ((getUserProp $Settings "Name") as String) + "\",\n\"ModelParts\": " + ((getUserProp $Settings "ModelParts") as String) + ",\n\"InterpolationMode\": " + ((getUserProp $Settings "InterpolationMode") as String) + "\n}")
 	
 	--Convert the json to a string
 	anmObjOut = anmObj.parse modelObj
@@ -498,13 +540,24 @@ fn ExportSA2Anim jPath startPth =
 			append modelObj ("},\n")
 		)
 	)
+	aRange = (animationrange.end+1) as String
+	aRange = substring aRange 1 (aRange.count-1)
+
 	if (tgeMode.checked == false) then
 	(
-		append  modelObj ("},\n\"Frames\": " + ((getUserProp $bone000 "Frames") as String) + ",\n\"Name\": \"" + ((getUserProp $bone000 "Name") as String) + "\",\n\"ModelParts\": " +  ((getUserProp $bone000 "ModelParts") as String) + "\n}")
+		if (getUserProp $bone000 "InterpolationMode") == undefined then
+		(
+			setUserProp $bone000 "InterpolationMode" 0
+		)
+		append  modelObj ("},\n\"Frames\": " + aRange + ",\n\"Name\": \"" + ((getUserProp $bone000 "Name") as String) + "\",\n\"ModelParts\": " +  ((getUserProp $bone000 "ModelParts") as String) + ",\n\"InterpolationMode\": " + ((getUserProp $bone000 "InterpolationMode") as String) + "\n}")
 	)
     else
 	(
-		append  modelObj ("},\n\"Frames\": " + ((getUserProp $node_0 "Frames") as String) + ",\n\"Name\": \"" + ((getUserProp $node_0 "Name") as String) + "\",\n\"ModelParts\": " +  ((getUserProp $node_0 "ModelParts") as String) + "\n}")
+		if (getUserProp $node_0 "InterpolationMode") == undefined then
+		(
+			setUserProp $node_0 "InterpolationMode" 0
+		)
+		append  modelObj ("},\n\"Frames\": " + aRange + ",\n\"Name\": \"" + ((getUserProp $node_0 "Name") as String) + "\",\n\"ModelParts\": " +  ((getUserProp $node_0 "ModelParts") as String) + ",\n\"InterpolationMode\": " + ((getUserProp $node_0 "InterpolationMode") as String) + "\n}")
 	)
 	--Convert the json to a string
 	anmObjOut = anmObj.parse modelObj
@@ -530,36 +583,42 @@ on animImportSA1 pressed do
 	-- Open up a dialog box
 	local jsonPath = getOpenFileName caption:"Import saanim .json" \
 			types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
-	--Load our Json
-	jsonString = getJsonFileAsString jsonPath
-	--Load the Animation in
-	loadSA1Anim jsonString startPath
+	if jsonPath != undefined then
+	(
+		--Load our Json
+		jsonString = getJsonFileAsString jsonPath
+		--Load the Animation in
+		loadSA1Anim jsonString startPath false
+	)
 )
 
 on animImportSA2 pressed do
 (
-	if ((tgeMode.checked == true and $node_0 != undefined) or $bone000 != undefined) then
+	if ((tgeMode.checked == true and $node_0 != undefined) or $bone000 != undefined or saToolSA2.checked == true) then
     (
-	    try 
-        (
-			if loadClear.checked then
+		if loadClear.checked then
+		(
+			ClearAnimations()
+		)
+		-- Script start dir
+		startPath = getFilenamePath(getThisScriptFilename())
+		-- Open up a dialog box
+		local jsonPath = getOpenFileName caption:"Import saanim .json" \
+				types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
+			
+		if jsonPath != undefined then
+		(
+			--Load our Json
+			jsonString = getJsonFileAsString jsonPath
+			--Load the Animation in
+			if saToolSA2.checked == true then
 			(
-				ClearAnimations()
+				loadSA1Anim jsonString startPath saToolSA2.checked
+			) else
+			(
+				loadSA2Anim jsonString startPath
 			)
-			-- Script start dir
-			startPath = getFilenamePath(getThisScriptFilename())
-            -- Open up a dialog box
-            local jsonPath = getOpenFileName caption:"Import saanim .json" \
-                    types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
-            --Load our Json
-            jsonString = getJsonFileAsString jsonPath
-            --Load the Animation in
-            loadSA2Anim jsonString startPath
-        )
-        catch 
-        (
-		  messageBox "Please select a valid saanim .json"
-        )
+		)
     ) else (
         messageBox "Please import an appropriate SA2/B model"
     )
@@ -569,21 +628,18 @@ on animExportSA1 pressed do
 (
 	if $Settings != undefined then
     (
-	    try 
-        (
-			-- Script start dir
-			startPath = getFilenamePath(getThisScriptFilename())
-            -- Open up a dialog box
-            local jsonPath = getSaveFileName caption:"Export saanim .json" \
-                    types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
+		-- Script start dir
+		startPath = getFilenamePath(getThisScriptFilename())
+		-- Open up a dialog box
+		local jsonPath = getSaveFileName caption:"Export saanim .json" \
+				types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
+			
+		if jsonPath != undefined then
+		(
+			--Export the Animation in
+			exportSA1Anim jsonPath startPath false
+		)
 
-            --Export the Animation in
-            exportSA1Anim jsonPath startPath
-        )
-        catch 
-        (
-            messageBox "Error"
-        )
     ) else (
         messageBox "Please load an appropriate SA1/DX model, animation, and ensure a 'Settings' object with appropriate parameters exists"
     )
@@ -591,23 +647,27 @@ on animExportSA1 pressed do
 
 on animExportSA2 pressed do
 (
-	if ((tgeMode.checked == true and $node_0 != undefined) or $bone000 != undefined) then
+	if ((tgeMode.checked == true and $node_0 != undefined) or $bone000 != undefined or saToolSA2.checked) then
     (
-	    try 
-        (
-			-- Script start dir
-			startPath = getFilenamePath(getThisScriptFilename())
-            -- Open up a dialog box
-            local jsonPath = getSaveFileName caption:"Export saanim .json" \
-                    types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
+		-- Script start dir
+		startPath = getFilenamePath(getThisScriptFilename())
+		-- Open up a dialog box
+		local jsonPath = getSaveFileName caption:"Export saanim .json" \
+				types:"saanim json (*.json)|*.json|All Files (*.*)|*.*|"
 
-            --Export the Animation in
-            exportSA2Anim jsonPath startPath
-        )
-        catch 
-        (
-          --  messageBox "Error"
-        )
+		if jsonPath != undefined then
+		(
+			--Export the Animation in
+			if saToolSA2.checked == true then
+			(
+				exportSA1Anim jsonPath startPath saToolSA2.checked 
+			)
+			else
+			(
+				exportSA2Anim jsonPath startPath 
+			)
+		)
+
     ) else (
         messageBox "Please load an appropriate SA2/B model and an animation"
     )
@@ -615,7 +675,7 @@ on animExportSA2 pressed do
 
 
 )
-createDialog tagRoll 320 220
+createDialog tagRoll 320 240
 
 
 
