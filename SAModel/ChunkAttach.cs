@@ -48,7 +48,22 @@ namespace SonicRetro.SAModel
 		public List<PolyChunk> Poly { get; set; }
 		public string PolyName { get; set; }
 
-		public bool HasWeight { get { return Vertex != null && Vertex.Any(a => a.HasWeight); } }
+		public bool HasWeight
+		{
+			get
+			{
+				if (Poly == null || !Poly.Any(a => a is PolyChunkStrip))
+					return Vertex != null && Vertex.Any(a => a.HasWeight);
+				List<int> ids = new List<int>();
+				if (Vertex != null)
+					foreach (var vc in Vertex)
+					{
+						if (vc.HasWeight) return true;
+						ids.AddRange(Enumerable.Range(vc.IndexOffset, vc.VertexCount));
+					}
+				return Poly.OfType<PolyChunkStrip>().SelectMany(a => a.Strips).SelectMany(a => a.Indexes).Any(a => !ids.Contains(a));
+			}
+		}
 
 		public ChunkAttach()
 		{

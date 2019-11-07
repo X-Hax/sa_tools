@@ -46,6 +46,7 @@ namespace SonicRetro.SAModel.SAMDL
 		bool loaded;
 		string currentFileName = "";
 		NJS_OBJECT model;
+		bool hasWeight;
 		NJS_MOTION[] animations;
 		NJS_MOTION animation;
 		ModelFile modelFile;
@@ -138,7 +139,7 @@ namespace SonicRetro.SAModel.SAMDL
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadFile(a.FileName);
@@ -258,7 +259,7 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 			}
-			if (outfmt == ModelFormat.Chunk)
+			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
 			else
 			{
@@ -270,16 +271,17 @@ namespace SonicRetro.SAModel.SAMDL
 						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
 						catch { }
 			}
+
+			currentFileName = filename;
+
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
-			showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+			showWeightsToolStripMenuItem.Enabled = hasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
-
-			currentFileName = filename;
 
 			AddModelToLibrary(model, false);
 		}
@@ -484,7 +486,10 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void UpdateStatusString()
 		{
-			Text = "SAMDL: " + currentFileName;
+			if (!string.IsNullOrEmpty(currentFileName))
+				Text = "SAMDL: " + currentFileName;
+			else
+				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
 			animFrameLabel.Text = $"Frame: {animframe}";
@@ -511,7 +516,7 @@ namespace SonicRetro.SAModel.SAMDL
 			MatrixStack transform = new MatrixStack();
 			if (showModelToolStripMenuItem.Checked)
 			{
-				if (outfmt == ModelFormat.Chunk)
+				if (hasWeight)
 					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes), d3ddevice, cam);
 				else if (animation != null)
 					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
@@ -520,7 +525,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 				if (selectedObject != null)
 				{
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight)
 					{
 						NJS_OBJECT[] objs = model.GetObjects();
 						if (selectedObject.Attach != null)
@@ -669,7 +674,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void UpdateWeightedModel()
 		{
-			if (outfmt == ModelFormat.Chunk)
+			if (hasWeight)
 			{
 				if (animation != null)
 					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
@@ -1152,7 +1157,7 @@ namespace SonicRetro.SAModel.SAMDL
 				Near.Z = 0;
 				Far = Near;
 				Far.Z = -1;
-				if (outfmt == ModelFormat.Chunk)
+				if (hasWeight)
 					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
 				else
 					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
@@ -1216,7 +1221,7 @@ namespace SonicRetro.SAModel.SAMDL
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
-			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
+			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
 			DrawEntireModel();
@@ -1591,7 +1596,7 @@ namespace SonicRetro.SAModel.SAMDL
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
 						}
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight)
 					{
 						meshes = model.ProcessWeightedModel().ToArray();
 						UpdateWeightedModel();
@@ -1770,7 +1775,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 					editMaterialsToolStripMenuItem.Enabled = true;
 
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight = model.HasWeight)
 						meshes = model.ProcessWeightedModel().ToArray();
 					else
 					{
@@ -1783,7 +1788,7 @@ namespace SonicRetro.SAModel.SAMDL
 								catch { }
 					}
 
-					showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+					showWeightsToolStripMenuItem.Enabled = hasWeight;
 
 					AddTreeNode(model, treeView1.Nodes);
 					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;

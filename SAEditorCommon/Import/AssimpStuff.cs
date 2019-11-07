@@ -50,7 +50,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return obj.AssimpExport(scene, texInfo, parent);
 		}
 
-		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent)
 		{
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
@@ -194,8 +194,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
-						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
-						if (cur_mat.UseTexture && texInfo != null)
+						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
 							TextureWrapMode wrapU = TextureWrapMode.Wrap;
@@ -225,7 +225,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
 							mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
 							if (meshInfo.Vertices[i].Color.HasValue)
-								mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[i].Color.Value.R, meshInfo.Vertices[i].Color.Value.G, meshInfo.Vertices[i].Color.Value.B, meshInfo.Vertices[i].Color.Value.A));
+								mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
 							if (meshInfo.Vertices[i].UV != null)
 								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
 							vertexWeights.Add(weights[vertind + i]);
@@ -365,7 +365,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
-		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo, Node parent)
 		{
 			int mdlindex = -1;
 			return AssimpExport(obj, scene, texInfo, parent, ref mdlindex);
@@ -415,8 +415,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{obj.Attach.Name}_material_{nameMeshIndex++}" };
-						materoial.ColorDiffuse = new Color4D(cur_mat.DiffuseColor.R, cur_mat.DiffuseColor.G, cur_mat.DiffuseColor.B, cur_mat.DiffuseColor.A);
-						if (cur_mat.UseTexture && texInfo != null)
+						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
 							TextureWrapMode wrapU = TextureWrapMode.Wrap;
@@ -440,20 +440,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						scene.Materials.Add(materoial);
 						mesh.MaterialIndex = matIndex;
 
+						for (int i = 0; i < meshInfo.Vertices.Length; i++)
+						{
+							mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
+							mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
+							if (meshInfo.Vertices[i].Color.HasValue)
+								mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
+							if (meshInfo.Vertices[i].UV != null)
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
+						}
+
 						mesh.PrimitiveType = PrimitiveType.Triangle;
 						ushort[] tris = meshInfo.ToTriangles();
 						for (int i = 0; i < tris.Length; i += 3)
 						{
 							Face face = new Face();
-							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
-							for (int j = 0; j < 3; j++)
-							{
-								mesh.Vertices.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Position.X, meshInfo.Vertices[tris[i + j]].Position.Y, meshInfo.Vertices[tris[i + j]].Position.Z));
-								mesh.Normals.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Normal.X, meshInfo.Vertices[tris[i + j]].Normal.Y, meshInfo.Vertices[tris[i + j]].Normal.Z));
-								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-									mesh.VertexColorChannels[0].Add(new Color4D(meshInfo.Vertices[tris[i + j]].Color.Value.R, meshInfo.Vertices[tris[i + j]].Color.Value.G, meshInfo.Vertices[tris[i + j]].Color.Value.B, meshInfo.Vertices[tris[i + j]].Color.Value.A));
-								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-							}
+							face.Indices.AddRange(new int[] { tris[i], tris[i + 1], tris[i + 2] });
 							mesh.Faces.Add(face);
 						}
 
@@ -572,7 +574,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (colors.Count > 0)
 					mesh.VertexColorChannels[0].AddRange(colors);
 				Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
-				materoial.ColorDiffuse = new Color4D(MaterialBuffer.DiffuseColor.R, MaterialBuffer.DiffuseColor.G, MaterialBuffer.DiffuseColor.B, MaterialBuffer.DiffuseColor.A);
+				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
 				if (MaterialBuffer.UseTexture && textures != null)
 				{
 					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
@@ -655,7 +657,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (colors.Count > 0)
 					mesh.VertexColorChannels[0].AddRange(colors);
 				Material materoial = new Material() { Name = "material_" + nameMeshIndex };
-				materoial.ColorDiffuse = new Color4D(MaterialBuffer.DiffuseColor.R, MaterialBuffer.DiffuseColor.G, MaterialBuffer.DiffuseColor.B, MaterialBuffer.DiffuseColor.A);
+				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
 				if (MaterialBuffer.UseTexture && textures != null)
 				{
 					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
@@ -749,11 +751,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static Dictionary<string, int> nodeIndexForSort = new Dictionary<string, int>();
+		static Dictionary<string, Node> nodemap = new Dictionary<string, Node>();
 
 		private static void FillNodeIndexForSort(Scene scene, Node aiNode, ref int mdlindex)
 		{
 			mdlindex++;
 			nodeIndexForSort.Add(aiNode.Name, mdlindex);
+			nodemap.Add(aiNode.Name, aiNode);
 			foreach (Node child in aiNode.Children)
 				FillNodeIndexForSort(scene, child, ref mdlindex);
 		}
@@ -812,7 +816,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static readonly NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo = null)
+		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo, out string[] bones)
 		{
 			MeshData result = new MeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
@@ -822,6 +826,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<string> sortedbones = new List<string>();
 			var matrices = new Dictionary<string, Matrix>();
 			if (aiMesh.HasBones)
+			{
+				bones = aiMesh.Bones.Select(a => a.Name).ToArray();
 				foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
 				{
 					sortedbones.Add(bone.Name);
@@ -829,6 +835,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
 					matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
 				}
+			}
+			else
+				bones = null;
 			if (sortedbones.Count > 1)
 			{
 				result.FirstNode = sortedbones.First();
@@ -989,15 +998,38 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			VertexCacheManager.Clear();
 			nodeIndexForSort.Clear();
+			nodemap.Clear();
 
 			//get node indices for sorting
 			int mdlindex = -1;
-			FillNodeIndexForSort(scene, scene.RootNode,ref mdlindex);
+			FillNodeIndexForSort(scene, scene.RootNode, ref mdlindex);
 			List<MeshData> meshdata = new List<MeshData>();
+			Dictionary<string, int> bonelist = new Dictionary<string, int>();
 			foreach (var mesh in scene.Meshes)
-				meshdata.Add(ProcessMesh(mesh, scene, texInfo));
+			{
+				meshdata.Add(ProcessMesh(mesh, scene, texInfo, out var bones));
+				if (bones != null)
+					foreach (string b in bones)
+						if (bonelist.ContainsKey(b))
+							bonelist[b]++;
+						else
+							bonelist[b] = 1;
+			}
+			Dictionary<Node, int> roots = new Dictionary<Node, int>();
+			foreach (var (name, count) in bonelist)
+			{
+				Node n = nodemap[name];
+				while (n.Parent != scene.RootNode)
+				{
+					n = n.Parent;
+				}
+				if (roots.ContainsKey(n))
+					roots[n] += count;
+				else
+					roots[n] = count;
+			}
 			mdlindex = -1;
-			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, ref mdlindex);
+			return AssimpImportWeighted(roots.OrderByDescending(a => a.Value).First().Key, scene, meshdata, ref mdlindex);
 		}
 
 		static readonly System.Text.RegularExpressions.Regex nodenameregex = new System.Text.RegularExpressions.Regex("^n[0-9]{3}_", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
@@ -1677,7 +1709,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Vertex ToSAModel(this Vector3D v) => new Vertex(v.X, v.Y, v.Z);
 
-		public static Color ToColor(this Color4D c) => Color.FromArgb((int)c.A * 255, (int)c.R * 255, (int)c.G * 255, (int)c.B * 255);
+		public static Color4D ToAssimp(this Color c) => new Color4D(c.R / 255f, c.G / 255f, c.B / 255f, c.G / 255f);
+
+		public static Color ToColor(this Color4D c) => Color.FromArgb((int)(c.A * 255), (int)(c.R * 255), (int)(c.G * 255), (int)(c.B * 255));
 
 		public static NJS_MATERIAL ToSAModel(this Material mat)
 		{
