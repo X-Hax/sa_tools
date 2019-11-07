@@ -1688,15 +1688,15 @@ namespace SonicRetro.SAModel.SAMDL
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 
-			using (OpenFileDialog a = new OpenFileDialog
+			using (OpenFileDialog ofd = new OpenFileDialog
 			{
 				DefaultExt = "fbx",
 				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
 			})
 			{
-				if (a.ShowDialog() == DialogResult.OK)
+				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					string objFileName = a.FileName;
+					string objFileName = ofd.FileName;
 					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 					loaded = false;
 					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
@@ -1729,6 +1729,26 @@ namespace SonicRetro.SAModel.SAMDL
 								{
 									NJS_MOTION motion = new NJS_MOTION();
 									Assimp.Animation anim = scene.Animations[i];
+
+									Dictionary<string, Assimp.NodeAnimationChannel> chans = new Dictionary<string, Assimp.NodeAnimationChannel>();
+									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels.Where(a => a.NodeName.Contains("_$AssimpFbx$_")))
+									{
+										string name = animChannel.NodeName.Remove(animChannel.NodeName.IndexOf("_$AssimpFbx$_"));
+										if (chans.ContainsKey(name))
+										{
+											if (animChannel.HasPositionKeys)
+												chans[name].PositionKeys.AddRange(animChannel.PositionKeys);
+											if (animChannel.HasRotationKeys)
+												chans[name].RotationKeys.AddRange(animChannel.RotationKeys);
+											if (animChannel.HasScalingKeys)
+												chans[name].ScalingKeys.AddRange(animChannel.ScalingKeys);
+										}
+										else
+										{
+											animChannel.NodeName = name;
+											chans[name] = animChannel;
+										}
+									}
 
 									Dictionary<string, int> getIndex = new Dictionary<string, int>();
 									NJS_OBJECT[] objectArray = model.GetObjects();
