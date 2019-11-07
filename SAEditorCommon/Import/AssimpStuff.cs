@@ -440,20 +440,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						scene.Materials.Add(materoial);
 						mesh.MaterialIndex = matIndex;
 
+						for (int i = 0; i < meshInfo.Vertices.Length; i++)
+						{
+							mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
+							mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
+							if (meshInfo.Vertices[i].Color.HasValue)
+								mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
+							if (meshInfo.Vertices[i].UV != null)
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
+						}
+
 						mesh.PrimitiveType = PrimitiveType.Triangle;
 						ushort[] tris = meshInfo.ToTriangles();
 						for (int i = 0; i < tris.Length; i += 3)
 						{
 							Face face = new Face();
-							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
-							for (int j = 0; j < 3; j++)
-							{
-								mesh.Vertices.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Position.X, meshInfo.Vertices[tris[i + j]].Position.Y, meshInfo.Vertices[tris[i + j]].Position.Z));
-								mesh.Normals.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Normal.X, meshInfo.Vertices[tris[i + j]].Normal.Y, meshInfo.Vertices[tris[i + j]].Normal.Z));
-								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-									mesh.VertexColorChannels[0].Add(meshInfo.Vertices[tris[i + j]].Color.Value.ToAssimp());
-								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-							}
+							face.Indices.AddRange(new int[] { tris[i], tris[i + 1], tris[i + 2] });
 							mesh.Faces.Add(face);
 						}
 
