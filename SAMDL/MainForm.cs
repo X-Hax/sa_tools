@@ -9,6 +9,7 @@ using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.Import;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -1703,10 +1704,70 @@ namespace SonicRetro.SAModel.SAMDL
 
 					//outfmt = ModelFormat.GC;
 					animations = new NJS_MOTION[0];
+
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
 					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
+
+					/*
+					if (scene.Animations.Count > 0)
+					{
+						animations = new NJS_MOTION[scene.Animations.Count];
+						using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+						{
+							if (dlg.ShowDialog(this) == DialogResult.OK)
+							{
+								string animSavePath = dlg.SelectedPath;
+
+								for (int i = 0; i < scene.Animations.Count; i++)
+								{
+									NJS_MOTION motion = new NJS_MOTION();
+									Assimp.Animation anim = scene.Animations[i];
+
+									Dictionary<string, int> getIndex = new Dictionary<string, int>();
+									NJS_OBJECT[] objectArray = model.GetObjects();
+									for(int j = 0; j < objectArray.Length; j++)
+									{
+										getIndex.Add(objectArray[j].Name, j);
+										
+									}
+
+									//did it like this instead of using nodeanimationchannelscount because for example, chao dont like if all the nodes arent present and im guessing the other animation functions dont either
+									motion.ModelParts = objectArray.Length;
+
+									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels)
+									{
+										AnimModelData modelData = new AnimModelData();
+										if(animChannel.HasPositionKeys)
+											foreach(Assimp.VectorKey vecKey in animChannel.PositionKeys)
+											{
+												modelData.Position.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+											}
+
+										if (animChannel.HasRotationKeys)
+											foreach (Assimp.QuaternionKey rotKey in animChannel.RotationKeys)
+											{
+												Assimp.Vector3D rotationConverted = rotKey.Value.ToEulerAngles();
+												modelData.Rotation.Add((int)rotKey.Time, new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z)));
+											}
+
+										if (animChannel.HasScalingKeys)
+											foreach (Assimp.VectorKey vecKey in animChannel.ScalingKeys)
+											{
+												modelData.Scale.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+											}
+
+										motion.Models.Add(getIndex[animChannel.NodeName], modelData);
+									}
+									animations[i] = motion;
+								}
+
+							}
+						}
+					}
+					*/
+
 					editMaterialsToolStripMenuItem.Enabled = true;
 
 					if (outfmt == ModelFormat.Chunk)
