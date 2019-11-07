@@ -50,7 +50,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return obj.AssimpExport(scene, texInfo, parent);
 		}
 
-		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent)
 		{
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
@@ -365,7 +365,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
-		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo, Node parent)
 		{
 			int mdlindex = -1;
 			return AssimpExport(obj, scene, texInfo, parent, ref mdlindex);

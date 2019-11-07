@@ -269,6 +269,9 @@ namespace SonicRetro.SAModel.SAMDL
 						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
 						catch { }
 			}
+
+			currentFileName = filename;
+
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
@@ -277,8 +280,6 @@ namespace SonicRetro.SAModel.SAMDL
 			showWeightsToolStripMenuItem.Enabled = model.HasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
-
-			currentFileName = filename;
 
 			AddModelToLibrary(model, false);
 		}
@@ -483,7 +484,10 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void UpdateStatusString()
 		{
-			Text = "SAMDL: " + currentFileName;
+			if (!string.IsNullOrEmpty(currentFileName))
+				Text = "SAMDL: " + currentFileName;
+			else
+				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
 			animFrameLabel.Text = $"Frame: {animframe}";
