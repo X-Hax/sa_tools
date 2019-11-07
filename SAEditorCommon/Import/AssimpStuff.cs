@@ -195,7 +195,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
 						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
-						if (cur_mat.UseTexture && texInfo != null)
+						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
 							TextureWrapMode wrapU = TextureWrapMode.Wrap;
@@ -416,7 +416,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{obj.Attach.Name}_material_{nameMeshIndex++}" };
 						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
-						if (cur_mat.UseTexture && texInfo != null)
+						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
 							TextureWrapMode wrapU = TextureWrapMode.Wrap;
