@@ -749,11 +749,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static Dictionary<string, int> nodeIndexForSort = new Dictionary<string, int>();
+		static Dictionary<string, Node> nodemap = new Dictionary<string, Node>();
 
 		private static void FillNodeIndexForSort(Scene scene, Node aiNode, ref int mdlindex)
 		{
 			mdlindex++;
 			nodeIndexForSort.Add(aiNode.Name, mdlindex);
+			nodemap.Add(aiNode.Name, aiNode);
 			foreach (Node child in aiNode.Children)
 				FillNodeIndexForSort(scene, child, ref mdlindex);
 		}
@@ -812,7 +814,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static readonly NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo = null)
+		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo, out string[] bones)
 		{
 			MeshData result = new MeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
@@ -822,6 +824,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<string> sortedbones = new List<string>();
 			var matrices = new Dictionary<string, Matrix>();
 			if (aiMesh.HasBones)
+			{
+				bones = aiMesh.Bones.Select(a => a.Name).ToArray();
 				foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
 				{
 					sortedbones.Add(bone.Name);
@@ -829,6 +833,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
 					matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
 				}
+			}
+			else
+				bones = null;
 			if (sortedbones.Count > 1)
 			{
 				result.FirstNode = sortedbones.First();
@@ -989,15 +996,38 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			VertexCacheManager.Clear();
 			nodeIndexForSort.Clear();
+			nodemap.Clear();
 
 			//get node indices for sorting
 			int mdlindex = -1;
-			FillNodeIndexForSort(scene, scene.RootNode,ref mdlindex);
+			FillNodeIndexForSort(scene, scene.RootNode, ref mdlindex);
 			List<MeshData> meshdata = new List<MeshData>();
+			Dictionary<string, int> bonelist = new Dictionary<string, int>();
 			foreach (var mesh in scene.Meshes)
-				meshdata.Add(ProcessMesh(mesh, scene, texInfo));
+			{
+				meshdata.Add(ProcessMesh(mesh, scene, texInfo, out var bones));
+				if (bones != null)
+					foreach (string b in bones)
+						if (bonelist.ContainsKey(b))
+							bonelist[b]++;
+						else
+							bonelist[b] = 1;
+			}
+			Dictionary<Node, int> roots = new Dictionary<Node, int>();
+			foreach (var (name, count) in bonelist)
+			{
+				Node n = nodemap[name];
+				while (n.Parent != scene.RootNode)
+				{
+					n = n.Parent;
+				}
+				if (roots.ContainsKey(n))
+					roots[n] += count;
+				else
+					roots[n] = count;
+			}
 			mdlindex = -1;
-			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, ref mdlindex);
+			return AssimpImportWeighted(roots.OrderByDescending(a => a.Value).First().Key, scene, meshdata, ref mdlindex);
 		}
 
 		static readonly System.Text.RegularExpressions.Regex nodenameregex = new System.Text.RegularExpressions.Regex("^n[0-9]{3}_", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
