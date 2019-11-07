@@ -450,6 +450,7 @@ namespace SonicRetro.SAModel.Direct3D
 		public void UpdateSelection(int selected)
 		{
 			if (selected != -1)
+			{
 				for (int i = 0; i < weights.Count; i++)
 					if (weights[i] != null)
 					{
@@ -457,8 +458,11 @@ namespace SonicRetro.SAModel.Direct3D
 						vertexBuffer[i].SetColor(GetColor(weight?.Weight ?? 0));
 					}
 					else
-						foreach (T v in vertexBuffer)
-							v.SetColor(System.Drawing.Color.White);
+						vertexBuffer[i].SetColor(System.Drawing.Color.White);
+			}
+			else
+				foreach (T v in vertexBuffer)
+					v.SetColor(System.Drawing.Color.White);
 		}
 	}
 }
