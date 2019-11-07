@@ -461,8 +461,8 @@ namespace SonicRetro.SAModel.Direct3D
 						vertexBuffer[i].SetColor(System.Drawing.Color.White);
 			}
 			else
-				foreach (T v in vertexBuffer)
-					v.SetColor(System.Drawing.Color.White);
+				for (int i = 0; i < weights.Count; i++)
+					vertexBuffer[i].SetColor(System.Drawing.Color.White);
 		}
 	}
 }
