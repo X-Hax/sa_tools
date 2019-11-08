@@ -322,7 +322,7 @@ namespace ProjectManager
 						break;
 
 					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
-						SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DllIniData dllIniData =
+						SA_Tools.SplitDLL.DllIniData dllIniData =
 							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
 						SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,

@@ -960,7 +960,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("AnimationIndex {0}[] = {{", name);
 								List<string> objs = new List<string>(anims.Count);
 								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
-									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, {obj.Value.Name} }}");
+									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, &{obj.Value.Name} }}");
 								objs.Add("{ -1 }");
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");

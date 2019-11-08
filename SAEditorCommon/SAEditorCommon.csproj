@@ -71,7 +71,6 @@
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
     <Compile Include="DLLModGenerator\DLLModGen.cs" />
-    <Compile Include="DLLModGenerator\IniData.cs" />
     <Compile Include="DLLModGenerator\DLLModGenUI.cs">
       <SubType>Form</SubType>
     </Compile>

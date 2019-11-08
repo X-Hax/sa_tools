@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using SA_Tools;
+using SA_Tools.SplitDLL;
 
 namespace SonicRetro.SAModel.SAEditorCommon
 {
@@ -26,7 +27,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			InitializeComponent();
 		}
 
-		public void Initalize(Game game, string projectName, string projectFolder,
+		public void Initalize(SA_Tools.Game game, string projectName, string projectFolder,
 			string modFolder, Dictionary<string, AssemblyType> assemblies)
 		{
 			this.projectFolder = projectFolder;
@@ -55,7 +56,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 						break;
 
 					case AssemblyType.DLL:
-						DLLModGenerator.DllIniData dllIniData = DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
+						DllIniData dllIniData = DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 						assemblyItemsToExport.Add(assembly.Key, itemsToExport);
 						assemblyIniFiles.Add(assembly.Key, dllIniData);
 						break;
@@ -116,10 +117,10 @@ namespace SonicRetro.SAModel.SAEditorCommon
 						assembly.Key, (SA_Tools.IniData)iniFile, assemblyItemsToExport[assembly.Key]);
 
 				}
-				else if (iniFile is DLLModGenerator.DllIniData)
+				else if (iniFile is DllIniData)
 				{
 					FillListViewDLLIniData(tabListView, assembly.Value,
-						assembly.Key, (DLLModGenerator.DllIniData)iniFile, assemblyItemsToExport[assembly.Key]);
+						assembly.Key, (DllIniData)iniFile, assemblyItemsToExport[assembly.Key]);
 				}
 
 				for (int i = 0; i < tabListView.Columns.Count; i++)
@@ -155,12 +156,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		}
 
 		private void FillListViewDLLIniData(ListView listView, AssemblyType assemblyType, string assemblyName,
-			DLLModGenerator.DllIniData iniData, Dictionary<string, bool> itemsToExport)
+			DllIniData iniData, Dictionary<string, bool> itemsToExport)
 		{
 			listView.BeginUpdate();
 			listView.Items.Clear();
 
-			foreach (KeyValuePair<string, DLLModGenerator.FileTypeHash> item in iniData.Files)
+			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
 
@@ -241,7 +242,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 						break;
 
 					case AssemblyType.DLL:
-						DLLModGenerator.DLLModGen.ExportCPP((DLLModGenerator.DllIniData)assemblyIniFiles[assembly.Key],
+						DLLModGenerator.DLLModGen.ExportCPP((DllIniData)assemblyIniFiles[assembly.Key],
 							assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
 						break;
 
@@ -272,7 +273,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 								break;
 
 							case AssemblyType.DLL:
-								DLLModGenerator.DLLModGen.ExportINI((DLLModGenerator.DllIniData)assemblyIniFiles[assembly.Key],
+								DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
 									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 								break;
 

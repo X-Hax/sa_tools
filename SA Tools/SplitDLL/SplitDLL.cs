@@ -145,7 +145,7 @@ namespace SA_Tools.SplitDLL
 									{
 										string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 										string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-										
+
 										land.SaveToFile(outputFN, landfmt);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
@@ -406,7 +406,7 @@ namespace SA_Tools.SplitDLL
 									{
 										ModelAnimations mdl = models[ani.Model.Name];
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
-										PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);						 
+										PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);
 										mdl.Animations.Add(sb.ToString()); // this is where the problem is
 									}
 									else
@@ -441,27 +441,84 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "animindexlist":
 							{
-								int c = 0;
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
 								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
-									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-
-									NJS_MOTION anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = c,
-										Field = "Animation",
-										Label = anim.Name
-									};
-									anim.Save(outputFN);
-									output.Files[fileName] = new FileTypeHash("animindex", HelperFunctions.FileHash(outputFN));
+									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
-									++c;
 								}
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "charaobjectdatalist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<CharaObjectData> result = new List<CharaObjectData>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									CharaObjectData chara = new CharaObjectData();
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk);
+									chara.MainModel = model.Name;
+									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation1 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 1.saanim"));
+									hashes.Add($"{i} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 1.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation2 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 2.saanim"));
+									hashes.Add($"{i} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 2.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation3 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 3.saanim"));
+									hashes.Add($"{i} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 3.saanim")));
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, new[] { $"{i} Anim 1.saanim", $"{i} Anim 2.saanim", $"{i} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									int ptr = BitConverter.ToInt32(datafile, address + 16);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk);
+										chara.AccessoryModel = model.Name;
+										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{i} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Accessory.sa2mdl")));
+									}
+									ptr = BitConverter.ToInt32(datafile, address + 24);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk);
+										chara.SuperModel = model.Name;
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation1 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 1.saanim"));
+										hashes.Add($"Super {i} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 1.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation2 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 2.saanim"));
+										hashes.Add($"Super {i} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 2.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation3 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 3.saanim"));
+										hashes.Add($"Super {i} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 3.saanim")));
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {i}.sa2mdl"), model, new[] { $"Super {i} Anim 1.saanim", $"Super {i} Anim 2.saanim", $"Super {i} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"Super {i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i}.sa2mdl")));
+									}
+									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
+									chara.Unknown2 = BitConverter.ToInt32(datafile, address + 44);
+									chara.Unknown3 = BitConverter.ToInt32(datafile, address + 48);
+									chara.Unknown4 = BitConverter.ToInt32(datafile, address + 52);
+									chara.Unknown5 = BitConverter.ToSingle(datafile, address + 56);
+									result.Add(chara);
+									address += 60;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
 					}
@@ -494,7 +551,7 @@ namespace SA_Tools.SplitDLL
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
 #if !DEBUG
-		}
+			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
