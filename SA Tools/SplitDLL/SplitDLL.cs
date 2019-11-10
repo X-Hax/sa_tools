@@ -11,6 +11,11 @@ namespace SA_Tools.SplitDLL
 {
 	public static class SplitDLL
 	{
+		static readonly string[] charaobjectnames = new[] {
+										"Sonic", "Shadow", "Tails", "Eggman", "Knuckles", "Rouge",
+										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
+										"Neutral Chao", "Hero Chao", "Dark Chao"
+									};
 		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
 		{
 #if !DEBUG
@@ -462,31 +467,32 @@ namespace SA_Tools.SplitDLL
 								List<string> hashes = new List<string>();
 								for (int i = 0; i < data.Length; i++)
 								{
+									string chnm = charaobjectnames[i];
 									CharaObjectData chara = new CharaObjectData();
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk);
 									chara.MainModel = model.Name;
 									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation1 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 1.saanim"));
-									hashes.Add($"{i} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 1.saanim")));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"));
+									hashes.Add($"{chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim")));
 									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation2 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 2.saanim"));
-									hashes.Add($"{i} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 2.saanim")));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"));
+									hashes.Add($"{chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim")));
 									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation3 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{i} Anim 3.saanim"));
-									hashes.Add($"{i} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Anim 3.saanim")));
-									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, new[] { $"{i} Anim 1.saanim", $"{i} Anim 2.saanim", $"{i} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
-									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"));
+									hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+									hashes.Add($"{chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl")));
 									int ptr = BitConverter.ToInt32(datafile, address + 16);
 									if (ptr != 0)
 									{
 										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk);
 										chara.AccessoryModel = model.Name;
 										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
-										hashes.Add($"{i} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Accessory.sa2mdl")));
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{chnm} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl")));
 									}
 									ptr = BitConverter.ToInt32(datafile, address + 24);
 									if (ptr != 0)
@@ -495,18 +501,18 @@ namespace SA_Tools.SplitDLL
 										chara.SuperModel = model.Name;
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation1 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 1.saanim"));
-										hashes.Add($"Super {i} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 1.saanim")));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"));
+										hashes.Add($"Super {chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim")));
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation2 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 2.saanim"));
-										hashes.Add($"Super {i} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 2.saanim")));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"));
+										hashes.Add($"Super {chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim")));
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation3 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {i} Anim 3.saanim"));
-										hashes.Add($"Super {i} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i} Anim 3.saanim")));
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {i}.sa2mdl"), model, new[] { $"Super {i} Anim 1.saanim", $"Super {i} Anim 2.saanim", $"Super {i} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
-										hashes.Add($"Super {i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {i}.sa2mdl")));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"));
+										hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
 									}
 									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
 									chara.Unknown2 = BitConverter.ToInt32(datafile, address + 44);
