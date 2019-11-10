@@ -6,7 +6,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModManagement
 {
 	public class SA2ModInfo : ModInfo
 	{
-		public string EXEFile { get; set; }
+		public string EXEData { get; set; }
+		public string DLLData { get; set; }
 		public bool RedirectMainSave { get; set; }
 		public bool RedirectChaoSave { get; set; }
 

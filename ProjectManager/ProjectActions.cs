@@ -342,6 +342,7 @@ namespace ProjectManager
 
 			string baseModIniPath = Path.Combine(projectFolder, "mod.ini");
 			string outputModIniPath = Path.Combine(modFolder, "mod.ini");
+			const string dataSuffix = "_data.ini";
 
 			switch (game)
 			{
@@ -358,8 +359,6 @@ namespace ProjectManager
 					string CHAOSTGGARDEN02MR_DAYTIME = "CHAOSTGGARDEN02MR_DAYTIME";
 					string CHAOSTGGARDEN02MR_EVENING = "CHAOSTGGARDEN02MR_EVENING";
 					string CHAOSTGGARDEN02MR_NIGHT = "CHAOSTGGARDEN02MR_NIGHT";
-
-					string dataSuffix = "_data.ini";
 
 					if (assemblies.ContainsKey(ADV00MODELS)) sadxModInfo.ADV00MODELSData = ADV00MODELS + dataSuffix;
 					if (assemblies.ContainsKey(ADV01CMODELS)) sadxModInfo.ADV01CMODELSData = ADV01CMODELS + dataSuffix;
@@ -379,8 +378,8 @@ namespace ProjectManager
 				case SA_Tools.Game.SA2B:
 					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					sa2ModInfo.EXEFile = "sonic2app_data.ini";
-					sa2ModInfo.DLLFile = "Data_DLL_data.ini";
+					if (assemblies.ContainsKey("Data_DLL")) sa2ModInfo.DLLData = "Data_DLL" + dataSuffix;
+					if (assemblies.ContainsKey("sonic2app")) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
 					// save our output
 					SA_Tools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
