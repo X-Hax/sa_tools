@@ -75,7 +75,7 @@ namespace SA_Tools.Split
 							break;
 						case "model":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -87,7 +87,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -99,7 +99,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicdxmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -111,7 +111,7 @@ namespace SA_Tools.Split
 							break;
 						case "chunkmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -123,7 +123,7 @@ namespace SA_Tools.Split
 							break;
 						case "gcmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -135,7 +135,7 @@ namespace SA_Tools.Split
 							break;
 						case "action":
 							{
-								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt);
+								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								ani.Animation.Name = filedesc;
 								ani.Animation.Save(fileOutputPath);
 							}
@@ -252,7 +252,7 @@ namespace SA_Tools.Split
 								{
 									flags.Add(new DeathZoneFlags(datafile, address));
 									string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt), null, null, null, null, modelfmt);
+									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;
 								}

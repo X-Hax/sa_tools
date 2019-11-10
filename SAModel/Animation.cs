@@ -11,14 +11,14 @@ namespace SonicRetro.SAModel
 		public NJS_OBJECT Model { get; private set; }
 		public NJS_MOTION Animation { get; private set; }
 
-		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format)
-			: this(file, address, imageBase, format, new Dictionary<int, string>())
+		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
+			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
 		{
 		}
 
-		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
+			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
 			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
@@ -443,15 +443,15 @@ namespace SonicRetro.SAModel
 			ModelParts = nummodels;
 		}
 
-		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format)
+		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
 		{
-			return ReadHeader(file, address, imageBase, format, new Dictionary<int, string>());
+			return ReadHeader(file, address, imageBase, format, new Dictionary<int, string>(), attaches);
 		}
 
 		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format,
-			Dictionary<int, string> labels)
+			Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			NJS_OBJECT Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
+			NJS_OBJECT Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
 			return new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
