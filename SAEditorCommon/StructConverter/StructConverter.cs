@@ -18,6 +18,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "basicmodel", "Basic Model" },
 			{ "basicdxmodel", "Basic Model (SADX)" },
 			{ "chunkmodel", "Chunk Model" },
+			{ "gcmodel", "SA2B Model" },
 			{ "action", "Action (animation+model)" },
 			{ "animation", "Animation" },
 			{ "objlist", "Object List" },
@@ -373,6 +374,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "chunkmodel":
+							mdl = new ModelFile(data.Filename).Model;
+							name = mdl.Name;
+							mdl.ToStructVariables(writer, false, new List<string>());
+							models.Add(item.Key, mdl.Name);
+							break;
+						case "gcmodel":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
