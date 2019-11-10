@@ -163,11 +163,16 @@ namespace SonicRetro.SAModel.SAEditorCommon
 
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
-				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
-
-				bool modified = exportStatus.Value;
+				bool modified = itemsToExport[item.Key];
 
 				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); ;
+			}
+
+			foreach (var item in iniData.DataItems)
+			{
+				bool modified = itemsToExport[item.Filename];
+
+				listView.Items.Add(new ListViewItem(new[] { item.Filename, modified ? "Yes" : "No" }) { Checked = modified }); ;
 			}
 
 			listView.EndUpdate();
