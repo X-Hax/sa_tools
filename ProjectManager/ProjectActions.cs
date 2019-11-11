@@ -292,7 +292,7 @@ namespace ProjectManager
 
 				case SA_Tools.Game.SA2B:
 					// dll
-					assemblies.Add("Data_DLL", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+					assemblies.Add("Data_DLL_orig", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 
 					// exe
 					assemblies.Add("sonic2app", SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
@@ -378,7 +378,7 @@ namespace ProjectManager
 				case SA_Tools.Game.SA2B:
 					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					if (assemblies.ContainsKey("Data_DLL")) sa2ModInfo.DLLData = "Data_DLL" + dataSuffix;
+					if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig" + dataSuffix;
 					if (assemblies.ContainsKey("sonic2app")) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
 					// save our output
