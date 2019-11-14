@@ -1427,7 +1427,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<GC.Mesh> gcmeshes = new List<GC.Mesh>();
 			List<Vector3D> vertices = new List<Vector3D>();
 			List<Vector3D> normals = new List<Vector3D>();
-			List<Vector2> texcoords = new List<Vector2>();
+			List<GC.Vector2> texcoords = new List<GC.Vector2>();
 			List<GC.Color> colors = new List<GC.Color>();
 			List<GC.VertexAttribute> vertexAttribs = new List<GC.VertexAttribute>();
 			foreach (Assimp.Mesh m in meshes)
@@ -1453,7 +1453,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (m.HasTextureCoords(0))
 				{
 					foreach (Vector3D texcoord in m.TextureCoordinateChannels[0])
-						texcoords.Add(new Vector2(texcoord.X, texcoord.Y));
+						texcoords.Add(new GC.Vector2(texcoord.X, texcoord.Y));
 				}
 				if (m.HasVertexColors(0))
 				{
@@ -1631,13 +1631,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				gcmeshes.Add(gcm);
 			}
 
-			List<Vector3> gcvertices = new List<Vector3>();
+			List<GC.Vector3> gcvertices = new List<GC.Vector3>();
 			foreach (Vector3D aivert in vertices)
-				gcvertices.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+				gcvertices.Add(new GC.Vector3(aivert.X, aivert.Y, aivert.Z));
 
-			List<Vector3> gcnormals = new List<Vector3>();
+			List<GC.Vector3> gcnormals = new List<GC.Vector3>();
 			foreach (Vector3D aivert in normals)
-				gcnormals.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+				gcnormals.Add(new GC.Vector3(aivert.X, aivert.Y, aivert.Z));
 
 			attach.VertexData.VertexAttributes.AddRange(vertexAttribs);
 
