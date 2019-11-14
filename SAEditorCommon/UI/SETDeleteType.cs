@@ -30,7 +30,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			deleteType = (ushort)delTypeDropDown.SelectedIndex;
 
-			IEnumerable<SETItem> itemsToDelete = LevelData.SETItems(LevelData.Character).Where<SETItem>(item => item.ID == deleteType);
+			List<SETItem> itemsToDelete = LevelData.SETItems(LevelData.Character).Where<SETItem>(item => item.ID == deleteType).ToList();
 			foreach (SETItem item in itemsToDelete) LevelData.RemoveSETItem(LevelData.Character, item);
 
 			DialogResult = DialogResult.OK;
