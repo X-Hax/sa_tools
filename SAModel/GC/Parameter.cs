@@ -20,6 +20,7 @@ namespace SonicRetro.SAModel.GC
 		TexCoordGen = 10,
 	}
 
+	[Serializable]
 	public abstract class Parameter
 	{
 		public ParameterType ParameterType { get; protected set; }
@@ -28,6 +29,7 @@ namespace SonicRetro.SAModel.GC
 		public abstract void Write(BinaryWriter writer);
 	}
 
+	[Serializable]
 	public class VtxAttrFmtParameter : Parameter
 	{
 		public GXVertexAttribute VertexAttribute { get; private set; }
@@ -55,6 +57,7 @@ namespace SonicRetro.SAModel.GC
 			writer.Write((ushort)(VertexAttribute - 8));
 		}
 	}
+	[Serializable]
 	public class IndexAttributeParameter : Parameter
 	{
 		[Flags]
@@ -102,6 +105,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class LightingParameter : Parameter
 	{
 		public ushort Unknown1 { get; private set; }
@@ -133,6 +137,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class BlendAlphaParameter : Parameter
 	{
 		private int m_Data;
@@ -233,6 +238,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class AmbientColorParameter : Parameter
 	{
 		public System.Drawing.Color AmbientColor { get; private set; }
@@ -255,6 +261,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class TextureParameter : Parameter
 	{
 		[Flags]
@@ -296,6 +303,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class Unknown9Parameter : Parameter
 	{
 		public ushort Unknown1 { get; private set; }
@@ -320,6 +328,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public class TexCoordGenParameter : Parameter
 	{
 		public ushort Unknown1 { get; private set; }

@@ -4,6 +4,7 @@ using System.IO;
 
 namespace SonicRetro.SAModel.GC
 {
+	[Serializable]
 	public class GCAttach : Attach
 	{
 		public VertexData VertexData { get; private set; }

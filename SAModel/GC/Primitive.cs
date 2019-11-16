@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.GC
 {
+	[Serializable]
 	public class Vertex
 	{
 		public uint PositionIndex { get; set; }
@@ -15,6 +16,7 @@ namespace SonicRetro.SAModel.GC
 		public uint UVIndex { get; set; }
 	}
 
+	[Serializable]
 	public struct Primitive
 	{
 		public GXPrimitiveType PrimitiveType { get; private set; }

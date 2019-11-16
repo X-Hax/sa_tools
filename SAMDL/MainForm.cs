@@ -1361,24 +1361,25 @@ namespace SonicRetro.SAModel.SAMDL
 			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
 			if (selectedObject.Attach != null)
 				attach.Name = selectedObject.Attach.Name;
-			if (attach is BasicAttach batt)
+			switch (attach)
 			{
-				batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
-				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
-				batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
-				foreach (NJS_MESHSET m in batt.Mesh)
-				{
-					m.PolyName = "poly_" + Extensions.GenerateIdentifier();
-					m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
-					m.UVName = "uv_" + Extensions.GenerateIdentifier();
-					m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-				}
-			}
-			else if (attach is ChunkAttach catt)
-			{
-				catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-				catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+				case BasicAttach batt:
+					batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+					batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+					batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
+					foreach (NJS_MESHSET m in batt.Mesh)
+					{
+						m.PolyName = "poly_" + Extensions.GenerateIdentifier();
+						m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+						m.UVName = "uv_" + Extensions.GenerateIdentifier();
+						m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+					}
+					break;
+				case ChunkAttach catt:
+					catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+					break;
 			}
 			selectedObject.Attach = attach;
 			attach.ProcessVertexData();

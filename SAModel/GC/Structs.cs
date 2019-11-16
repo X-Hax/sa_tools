@@ -7,6 +7,7 @@ using System.IO;
 
 namespace SonicRetro.SAModel.GC
 {
+	[Serializable]
 	public struct Vector3
 	{
 		public float X { get; set; }
@@ -53,6 +54,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public struct Vector2
 	{
 		public float X { get; set; }
@@ -92,6 +94,7 @@ namespace SonicRetro.SAModel.GC
 		}
 	}
 
+	[Serializable]
 	public struct Color
 	{
 		public float R { get; set; }
