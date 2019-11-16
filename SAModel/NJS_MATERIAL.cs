@@ -318,6 +318,18 @@ namespace SonicRetro.SAModel
 					IgnoreSpecular = str.IgnoreSpecular;
 					IgnoreAmbient = str.IgnoreAmbient;
 					UseAlpha = str.UseAlpha;
+					UseTexture = false;
+					switch (chunk.Type)
+					{
+						case ChunkType.Strip_StripUVN:
+						case ChunkType.Strip_StripUVH:
+						case ChunkType.Strip_StripUVNColor:
+						case ChunkType.Strip_StripUVHColor:
+						case ChunkType.Strip_StripUVN2:
+						case ChunkType.Strip_StripUVH2:
+							UseTexture = true;
+							break;
+					}
 					break;
 			}
 		}
