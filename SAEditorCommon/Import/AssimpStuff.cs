@@ -1420,9 +1420,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		private static GC.GCAttach AssimpImportGC(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
 		{
-			GC.GCAttach attach = new GC.GCAttach();
-			//NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-			attach.Name = "attach_" + Extensions.GenerateIdentifier();
+			GC.GCAttach attach = new GC.GCAttach
+			{
+				Name = "attach_" + Extensions.GenerateIdentifier()
+			};
 			//setup names!!!
 			List<GC.Mesh> gcmeshes = new List<GC.Mesh>();
 			List<Vector3D> vertices = new List<Vector3D>();
@@ -1432,7 +1433,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<GC.VertexAttribute> vertexAttribs = new List<GC.VertexAttribute>();
 			foreach (Assimp.Mesh m in meshes)
 			{
-				Assimp.Material currentAiMat = null;
+				Material currentAiMat = null;
 				if (m.MaterialIndex >= 0)
 				{
 					currentAiMat = materials[m.MaterialIndex];
@@ -1463,40 +1464,44 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				}
 
 				//VertexAttribute stuff
-				GC.VertexAttribute posAttrib = new GC.VertexAttribute();
-				posAttrib.Attribute = GC.GXVertexAttribute.Position;
-				posAttrib.FractionalBitCount = 12;
-				posAttrib.DataType = GC.GXDataType.Float32;
-				posAttrib.ComponentCount = GC.GXComponentCount.Position_XYZ;
-				vertexAttribs.Add(posAttrib);
+				vertexAttribs.Add(new GC.VertexAttribute
+				{
+					Attribute = GC.GXVertexAttribute.Position,
+					FractionalBitCount = 12,
+					DataType = GC.GXDataType.Float32,
+					ComponentCount = GC.GXComponentCount.Position_XYZ
+				});
 
 				if (m.HasTextureCoords(0))
 				{
-					GC.VertexAttribute texAttrib = new GC.VertexAttribute();
-					texAttrib.Attribute = GC.GXVertexAttribute.Tex0;
-					texAttrib.FractionalBitCount = 4;
-					texAttrib.DataType = GC.GXDataType.Signed16;
-					texAttrib.ComponentCount = GC.GXComponentCount.TexCoord_ST;
-					vertexAttribs.Add(texAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Tex0,
+						FractionalBitCount = 4,
+						DataType = GC.GXDataType.Signed16,
+						ComponentCount = GC.GXComponentCount.TexCoord_ST
+					});
 				}
 
 				if (m.HasVertexColors(0))
 				{
-					GC.VertexAttribute clrAttrib = new GC.VertexAttribute();
-					clrAttrib.Attribute = GC.GXVertexAttribute.Color0;
-					clrAttrib.FractionalBitCount = 4;
-					clrAttrib.DataType = GC.GXDataType.RGBA8;
-					clrAttrib.ComponentCount = GC.GXComponentCount.Color_RGBA;
-					vertexAttribs.Add(clrAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Color0,
+						FractionalBitCount = 4,
+						DataType = GC.GXDataType.RGBA8,
+						ComponentCount = GC.GXComponentCount.Color_RGBA
+					});
 				}
 				else
 				{
-					GC.VertexAttribute nrmAttrib = new GC.VertexAttribute();
-					nrmAttrib.Attribute = GC.GXVertexAttribute.Normal;
-					nrmAttrib.FractionalBitCount = 12;
-					nrmAttrib.DataType = GC.GXDataType.Float32;
-					nrmAttrib.ComponentCount = GC.GXComponentCount.Normal_XYZ;
-					vertexAttribs.Add(nrmAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Normal,
+						FractionalBitCount = 12,
+						DataType = GC.GXDataType.Float32,
+						ComponentCount = GC.GXComponentCount.Normal_XYZ
+					});
 				}
 
 				//Parameter stuff
@@ -1509,37 +1514,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (m.HasTextureCoords(0))
 					indexattr |= GC.IndexAttributeParameter.IndexAttributeFlags.HasUV | GC.IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
 
-				GC.IndexAttributeParameter indexParam = new GC.IndexAttributeParameter(indexattr);
-				parameters.Add(indexParam);
+				parameters.Add(new GC.IndexAttributeParameter(indexattr));
 
-				GC.VtxAttrFmtParameter posparam = new GC.VtxAttrFmtParameter(5120, GC.GXVertexAttribute.Position);
-				parameters.Add(posparam);
+				parameters.Add(new GC.VtxAttrFmtParameter(5120, GC.GXVertexAttribute.Position));
 
 				if (m.HasVertexColors(0))
 				{
-					GC.VtxAttrFmtParameter colorparam = new GC.VtxAttrFmtParameter(27136, GC.GXVertexAttribute.Color0);
-					parameters.Add(colorparam);
+					parameters.Add(new GC.VtxAttrFmtParameter(27136, GC.GXVertexAttribute.Color0));
 				}
 				else
 				{
-					GC.VtxAttrFmtParameter normalParam = new GC.VtxAttrFmtParameter(9216, GC.GXVertexAttribute.Normal);
-					parameters.Add(normalParam);
+					parameters.Add(new GC.VtxAttrFmtParameter(9216, GC.GXVertexAttribute.Normal));
 				}
 				if (m.HasTextureCoords(0))
 				{
-					GC.VtxAttrFmtParameter texparam = new GC.VtxAttrFmtParameter(33544, GC.GXVertexAttribute.Tex0);
-					parameters.Add(texparam);
+					parameters.Add(new GC.VtxAttrFmtParameter(33544, GC.GXVertexAttribute.Tex0));
 				}
 
 				if (m.HasVertexColors(0))
 				{
-					GC.LightingParameter lightParam = new GC.LightingParameter(0xB11, 1);
-					parameters.Add(lightParam);
+					parameters.Add(new GC.LightingParameter(0xB11, 1));
 				}
 				else
 				{
-					GC.LightingParameter lightParam = new GC.LightingParameter(0x211, 1);
-					parameters.Add(lightParam);
+					parameters.Add(new GC.LightingParameter(0x211, 1));
 				}
 
 				if (currentAiMat != null)
@@ -1549,17 +1547,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						if (textures != null)
 						{
 							int texId = 0;
-							GC.TextureParameter.TileMode tileMode = 0;
-							if (currentAiMat.TextureDiffuse.WrapModeU == TextureWrapMode.Mirror)
-								tileMode |= GC.TextureParameter.TileMode.MirrorU;
-							else tileMode |= GC.TextureParameter.TileMode.WrapU;
-							if (currentAiMat.TextureDiffuse.WrapModeV == TextureWrapMode.Mirror)
-								tileMode |= GC.TextureParameter.TileMode.MirrorV;
-							else tileMode |= GC.TextureParameter.TileMode.WrapV;
+							GC.TextureParameter.TileMode tileMode = GC.TextureParameter.TileMode.Mask;
+							switch (currentAiMat.TextureDiffuse.WrapModeU)
+							{
+								case TextureWrapMode.Clamp:
+									tileMode &= ~GC.TextureParameter.TileMode.WrapU;
+									break;
+								case TextureWrapMode.Mirror:
+									tileMode &= ~GC.TextureParameter.TileMode.MirrorU;
+									break;
+							}
+							switch (currentAiMat.TextureDiffuse.WrapModeV)
+							{
+								case TextureWrapMode.Clamp:
+									tileMode &= ~GC.TextureParameter.TileMode.WrapV;
+									break;
+								case TextureWrapMode.Mirror:
+									tileMode &= ~GC.TextureParameter.TileMode.MirrorV;
+									break;
+							}
 							for (int i = 0; i < textures.Length; i++)
 								if (textures[i] == Path.GetFileNameWithoutExtension(currentAiMat.TextureDiffuse.FilePath))
 									texId = i;
-							GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, GC.TextureParameter.TileMode.WrapU | GC.TextureParameter.TileMode.WrapV);
+							GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, tileMode);
 							parameters.Add(texParam);
 
 						}
@@ -1627,8 +1637,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					primitives.Add(prim);
 				}
-				GC.Mesh gcm = new GC.Mesh(parameters, primitives);
-				gcmeshes.Add(gcm);
+				gcmeshes.Add(new GC.Mesh(parameters, primitives));
 			}
 
 			List<GC.Vector3> gcvertices = new List<GC.Vector3>();

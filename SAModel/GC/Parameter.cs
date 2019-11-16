@@ -264,7 +264,8 @@ namespace SonicRetro.SAModel.GC
 			MirrorU = 1 << 1,
 			WrapV = 1 << 2,
 			MirrorV = 1 << 3,
-			Unk_1 = 1 << 4
+			Unk_1 = 1 << 4,
+			Mask = (1 << 5) - 1
 		}
 		public ushort TextureID { get; private set; }
 		public TileMode Tile { get; private set; }
