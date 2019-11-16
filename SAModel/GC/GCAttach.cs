@@ -203,155 +203,93 @@ namespace SonicRetro.SAModel.GC
 			bool hasVColor = VertexData.Color_0.Count != 0;
 			foreach (Mesh m in GeometryData.OpaqueMeshes)
 			{
-				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
-				List<Poly> polys = new List<Poly>();
-
-				foreach (Parameter param in m.Parameters)
-				{
-					if (param.ParameterType == ParameterType.Texture)
-					{
-						TextureParameter tex = param as TextureParameter;
-						cur_mat.TextureID = tex.TextureID;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
-							cur_mat.FlipU = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
-							cur_mat.FlipV = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
-							cur_mat.ClampU = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
-							cur_mat.ClampV = true;
-
-						cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
-						cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
-					}
-					else if (param.ParameterType == ParameterType.TexCoordGen)
-					{
-						TexCoordGenParameter gen = param as TexCoordGenParameter;
-						if (gen.TexGenSrc == GXTexGenSrc.Normal)
-							cur_mat.EnvironmentMap = true;
-						else cur_mat.EnvironmentMap = false;
-					}
-					else if (param.ParameterType == ParameterType.BlendAlpha)
-					{
-						BlendAlphaParameter blend = param as BlendAlphaParameter;
-						cur_mat.SourceAlpha = blend.SourceAlpha;
-						cur_mat.DestinationAlpha = blend.DestinationAlpha;
-					}
-				}
-
-				foreach (Primitive prim in m.Primitives)
-				{
-					List<Poly> newPolys = new List<Poly>();
-					switch (prim.PrimitiveType)
-					{
-						case GXPrimitiveType.Triangles:
-							for (int i = 0; i < prim.Vertices.Count / 3; i++)
-							{
-								newPolys.Add(new Triangle());
-							}
-							break;
-						case GXPrimitiveType.TriangleStrip:
-							newPolys.Add(new Strip(prim.Vertices.Count, false));
-							break;
-					}
-
-					for (int i = 0; i < prim.Vertices.Count; i++)
-					{
-						if (prim.PrimitiveType == GXPrimitiveType.Triangles)
-						{
-							newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
-						}
-						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
-
-						vertData.Add(new SAModel.VertexData(
-							VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
-							hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
-					}
-					polys.AddRange(newPolys);
-				}
-
-				cur_mat.UseAlpha = false;
-
-				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				meshInfo.Add(ProcessMesh(m, hasUV, hasVColor, false));
 				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
 
 			foreach (Mesh m in GeometryData.TranslucentMeshes)
 			{
-				List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
-				List<Poly> polys = new List<Poly>();
-
-				foreach (Parameter param in m.Parameters)
-				{
-					if (param.ParameterType == ParameterType.Texture)
-					{
-						TextureParameter tex = param as TextureParameter;
-						cur_mat.TextureID = tex.TextureID;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
-							cur_mat.FlipU = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
-							cur_mat.FlipV = true;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
-							cur_mat.ClampU = false;
-						if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
-							cur_mat.ClampV = false;
-					}
-					else if (param.ParameterType == ParameterType.TexCoordGen)
-					{
-						TexCoordGenParameter gen = param as TexCoordGenParameter;
-						if (gen.TexGenSrc == GXTexGenSrc.Normal)
-							cur_mat.EnvironmentMap = true;
-						else cur_mat.EnvironmentMap = false;
-					}
-					else if (param.ParameterType == ParameterType.BlendAlpha)
-					{
-						BlendAlphaParameter blend = param as BlendAlphaParameter;
-						cur_mat.SourceAlpha = blend.SourceAlpha;
-						cur_mat.DestinationAlpha = blend.DestinationAlpha;
-					}
-				}
-				foreach (Primitive prim in m.Primitives)
-				{
-					List<Poly> newPolys = new List<Poly>();
-					switch (prim.PrimitiveType)
-					{
-						case GXPrimitiveType.Triangles:
-							for (int i = 0; i < prim.Vertices.Count / 3; i++)
-							{
-								newPolys.Add(new Triangle());
-							}
-							break;
-						case GXPrimitiveType.TriangleStrip:
-							newPolys.Add(new Strip(prim.Vertices.Count, false));
-							break;
-					}
-
-					for (int i = 0; i < prim.Vertices.Count; i++)
-					{
-						if (prim.PrimitiveType == GXPrimitiveType.Triangles)
-						{
-							newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
-						}
-						else newPolys[0].Indexes[i] = (ushort)vertData.Count;
-
-						vertData.Add(new SAModel.VertexData(
-							VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-							VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
-							hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-							hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
-					}
-					polys.AddRange(newPolys);
-				}
-
-				cur_mat.UseAlpha = true;
-
-				meshInfo.Add(new SAModel.MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor));
+				meshInfo.Add(ProcessMesh(m, hasUV, hasVColor, true));
 				cur_mat = new NJS_MATERIAL(cur_mat);
 			}
 
 			MeshInfo = meshInfo.ToArray();
+		}
+
+		private MeshInfo ProcessMesh(Mesh m, bool hasUV, bool hasVColor, bool useAlpha)
+		{
+			List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
+			List<Poly> polys = new List<Poly>();
+
+			foreach (Parameter param in m.Parameters)
+			{
+				if (param.ParameterType == ParameterType.Texture)
+				{
+					TextureParameter tex = param as TextureParameter;
+					cur_mat.TextureID = tex.TextureID;
+					if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
+						cur_mat.FlipU = true;
+					if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
+						cur_mat.FlipV = true;
+					if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
+						cur_mat.ClampU = true;
+					if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
+						cur_mat.ClampV = true;
+
+					cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+					cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
+				}
+				else if (param.ParameterType == ParameterType.TexCoordGen)
+				{
+					TexCoordGenParameter gen = param as TexCoordGenParameter;
+					if (gen.TexGenSrc == GXTexGenSrc.Normal)
+						cur_mat.EnvironmentMap = true;
+					else cur_mat.EnvironmentMap = false;
+				}
+				else if (param.ParameterType == ParameterType.BlendAlpha)
+				{
+					BlendAlphaParameter blend = param as BlendAlphaParameter;
+					cur_mat.SourceAlpha = blend.SourceAlpha;
+					cur_mat.DestinationAlpha = blend.DestinationAlpha;
+				}
+			}
+
+			foreach (Primitive prim in m.Primitives)
+			{
+				List<Poly> newPolys = new List<Poly>();
+				switch (prim.PrimitiveType)
+				{
+					case GXPrimitiveType.Triangles:
+						for (int i = 0; i < prim.Vertices.Count / 3; i++)
+						{
+							newPolys.Add(new Triangle());
+						}
+						break;
+					case GXPrimitiveType.TriangleStrip:
+						newPolys.Add(new Strip(prim.Vertices.Count, false));
+						break;
+				}
+
+				for (int i = 0; i < prim.Vertices.Count; i++)
+				{
+					if (prim.PrimitiveType == GXPrimitiveType.Triangles)
+					{
+						newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
+					}
+					else newPolys[0].Indexes[i] = (ushort)vertData.Count;
+
+					vertData.Add(new SAModel.VertexData(
+						VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+						VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
+						hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+						hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+				}
+				polys.AddRange(newPolys);
+			}
+
+			cur_mat.UseAlpha = useAlpha;
+			var result = new MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor);
+			return result;
 		}
 
 		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
