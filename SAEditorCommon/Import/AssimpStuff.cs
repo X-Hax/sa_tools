@@ -1584,7 +1584,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						parameters.Add(texParam);
 					}
 				}
-				/* old stripifying code, im gonna leave it here just incase
 				List<ushort> tris = new List<ushort>();
 
 				foreach (Face f in m.Faces)
@@ -1598,41 +1597,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					Primitive prim = new Primitive(GXPrimitiveType.TriangleStrip);
-					//List<UV> stripuv = new List<UV>();
+					GC.Primitive prim = new GC.Primitive(GC.GXPrimitiveType.TriangleStrip);
 					for (var j = 0; j < grp.Indices.Length; j++)
 					{
-						Vertex vert = new Vertex();
-						vert.PositionIndex = vertStartIndex + (uint)grp.Indices[j];
-						if (m.HasNormals)
-							vert.NormalIndex = normStartIndex + (uint)grp.Indices[j];
-						if (m.HasTextureCoords(0))
-							vert.UVIndex = uvStartIndex + (uint)grp.Indices[j];
-						//if (m.HasVertexColors(0))
-							//vert.Color0Index = colorStartIndex + (uint)grp.Indices[j];
-						prim.Vertices.Add(vert);
-					}
-					primitives.Add(prim);
-				}
-				*/
-				foreach (Face f in m.Faces)
-				{
-					GC.Primitive prim = new GC.Primitive(GC.GXPrimitiveType.Triangles);
-					foreach (int index in f.Indices)
-					{
 						GC.Vertex vert = new GC.Vertex();
-
-						vert.PositionIndex = vertStartIndex + (uint)index;
-
+						vert.PositionIndex = vertStartIndex + grp.Indices[j];
 						if (m.HasTextureCoords(0))
-							vert.UVIndex = uvStartIndex + (uint)index;
-
+							vert.UVIndex = uvStartIndex + grp.Indices[j];
 						if (m.HasVertexColors(0))
-							vert.Color0Index = colorStartIndex + (uint)index;
-						else
-							if (m.HasNormals)
-							vert.NormalIndex = vertStartIndex + (uint)index;
-
+							vert.Color0Index = colorStartIndex + grp.Indices[j];
+						else if (m.HasNormals)
+							vert.NormalIndex = vertStartIndex + grp.Indices[j];
 						prim.Vertices.Add(vert);
 					}
 					primitives.Add(prim);
