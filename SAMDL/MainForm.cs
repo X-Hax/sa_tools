@@ -1204,7 +1204,7 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = selectedObject;
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach || (selectedObject.Attach is ChunkAttach ca && ca.Poly?.Count > 0);
+				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1396,11 +1396,9 @@ namespace SonicRetro.SAModel.SAMDL
 				case BasicAttach bscatt:
 					mats = bscatt.Material;
 					break;
-				case ChunkAttach cnkatt:
-					mats = cnkatt.MeshInfo.Select(a => a.Material).ToList();
-					break;
 				default:
-					return;
+					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+					break;
 			}
 			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfo))
 			{
@@ -1427,6 +1425,29 @@ namespace SonicRetro.SAModel.SAMDL
 								break;
 						}
 					cnkatt.Poly = chunks;
+					break;
+				case GC.GCAttach gcatt:
+					matind = 0;
+					foreach (var msh in gcatt.GeometryData.OpaqueMeshes.Concat(gcatt.GeometryData.TranslucentMeshes))
+					{
+						msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+						if (mats[matind].UseTexture)
+						{
+							GC.TextureParameter.TileMode tm = GC.TextureParameter.TileMode.Mask;
+							if (mats[matind].ClampU)
+								tm &= ~GC.TextureParameter.TileMode.WrapU;
+							if (mats[matind].FlipU)
+								tm &= ~GC.TextureParameter.TileMode.MirrorU;
+							if (mats[matind].ClampV)
+								tm &= ~GC.TextureParameter.TileMode.WrapV;
+							if (mats[matind].FlipV)
+								tm &= ~GC.TextureParameter.TileMode.MirrorV;
+							msh.Parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
+						}
+						msh.Parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
+						msh.Parameters.Add(new GC.BlendAlphaParameter() { SourceAlpha = mats[matind].SourceAlpha, DestinationAlpha = mats[matind].DestinationAlpha });
+						matind++;
+					}
 					break;
 			}
 		}
