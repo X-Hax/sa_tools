@@ -1616,6 +1616,17 @@ namespace SonicRetro.SAModel.SAMDL
 										if (dlg.TextureMap.ContainsKey(tex.TextureID))
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
+							case GC.GCAttach gatt:
+								foreach (var msh in gatt.GeometryData.OpaqueMeshes.Concat(gatt.GeometryData.TranslucentMeshes))
+								{
+									var tp = (GC.TextureParameter)msh.Parameters.LastOrDefault(a => a is GC.TextureParameter);
+									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
+									{
+										msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+										msh.Parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
+									}
+								}
+								break;
 						}
 					if (hasWeight)
 					{
