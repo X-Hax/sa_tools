@@ -147,7 +147,7 @@ namespace SonicRetro.SAModel
 		public NJS_MATERIAL()
 		{
 			AmbientColor = Color.White;
-			DiffuseColor = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			DiffuseColor = Color.White;
 			SpecularColor = Color.Transparent;
 			UseAlpha = true;
 			UseTexture = true;
