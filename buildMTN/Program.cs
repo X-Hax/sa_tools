@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SA_Tools;
+using SA_Tools.SplitMDL;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SA_Tools;
-using SonicRetro.SAModel;
 
 namespace buildMTN
 {
@@ -82,12 +83,5 @@ namespace buildMTN
 				Environment.CurrentDirectory = dir;
 			}
 		}
-	}
-
-	class MTNInfo
-	{
-		public bool BigEndian { get; set; }
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<short, string> Indexes { get; set; } = new Dictionary<short, string>();
 	}
 }
