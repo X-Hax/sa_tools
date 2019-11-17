@@ -515,9 +515,9 @@ namespace SA_Tools.SplitDLL
 										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
 									}
 									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
-									chara.Unknown2 = BitConverter.ToInt32(datafile, address + 44);
-									chara.Unknown3 = BitConverter.ToInt32(datafile, address + 48);
-									chara.Unknown4 = BitConverter.ToInt32(datafile, address + 52);
+									chara.Rating = BitConverter.ToInt32(datafile, address + 44);
+									chara.DescriptionID = BitConverter.ToInt32(datafile, address + 48);
+									chara.TextBackTexture = BitConverter.ToInt32(datafile, address + 52);
 									chara.Unknown5 = BitConverter.ToSingle(datafile, address + 56);
 									result.Add(chara);
 									address += 60;

@@ -2874,9 +2874,9 @@ namespace SA_Tools
 		public string SuperAnimation2 { get; set; }
 		public string SuperAnimation3 { get; set; }
 		public int Unknown1 { get; set; }
-		public int Unknown2 { get; set; }
-		public int Unknown3 { get; set; }
-		public int Unknown4 { get; set; }
+		public int Rating { get; set; }
+		public int DescriptionID { get; set; }
+		public int TextBackTexture { get; set; }
 		public float Unknown5 { get; set; }
 
 		public string ToStruct()
@@ -2903,9 +2903,9 @@ namespace SA_Tools
 			else
 				sb.Append("NULL, NULL, NULL, NULL, ");
 			sb.AppendFormat("{0}, ", Unknown1);
-			sb.AppendFormat("{0}, ", Unknown2);
-			sb.AppendFormat("{0}, ", Unknown3);
-			sb.AppendFormat("{0}, ", Unknown4);
+			sb.AppendFormat("{0}, ", Rating);
+			sb.AppendFormat("{0}, ", DescriptionID);
+			sb.AppendFormat("{0}, ", TextBackTexture);
 			sb.Append(Unknown5.ToC());
 			sb.Append(" }");
 			return sb.ToString();
