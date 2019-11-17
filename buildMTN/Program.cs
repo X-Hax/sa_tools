@@ -15,11 +15,18 @@ namespace buildMTN
 			try
 			{
 				Queue<string> argq = new Queue<string>(args);
-				if (argq.Count > 0 && argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
-				{
-					ByteConverter.BigEndian = true;
-					argq.Dequeue();
-				}
+				bool? be = null;
+				if (argq.Count > 0)
+					if (argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
+					{
+						be = true;
+						argq.Dequeue();
+					}
+					else if (argq.Peek().Equals("/le", StringComparison.OrdinalIgnoreCase))
+					{
+						be = false;
+						argq.Dequeue();
+					}
 				string mtnfilename;
 				if (argq.Count > 0)
 				{
@@ -32,27 +39,32 @@ namespace buildMTN
 					mtnfilename = Console.ReadLine();
 				}
 				mtnfilename = Path.Combine(Environment.CurrentDirectory, mtnfilename);
+				if (Directory.Exists(mtnfilename))
+					mtnfilename += ".prs";
 				Environment.CurrentDirectory = Path.GetDirectoryName(mtnfilename);
-				SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
+				List<NJS_MOTION> anims = new List<NJS_MOTION>();
 				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mtnfilename), "*.saanim"))
 					if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
-						anims.Add(i, NJS_MOTION.Load(file));
-				Dictionary<short, string> animnames = IniSerializer.Deserialize<Dictionary<short, string>>(
-					Path.Combine(Path.GetFileNameWithoutExtension(mtnfilename), Path.GetFileNameWithoutExtension(mtnfilename) + ".ini"),
-					new IniCollectionSettings(IniCollectionMode.IndexOnly));
+						anims.Add(NJS_MOTION.Load(file));
+				MTNInfo mtninfo = IniSerializer.Deserialize<MTNInfo>(
+					Path.Combine(Path.GetFileNameWithoutExtension(mtnfilename), Path.GetFileNameWithoutExtension(mtnfilename) + ".ini"));
+				if (!be.HasValue)
+					ByteConverter.BigEndian = mtninfo.BigEndian;
+				else
+					ByteConverter.BigEndian = be.Value;
 				List<byte> animbytes = new List<byte>();
 				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
 				Dictionary<string, short> animparts = new Dictionary<string, short>();
-				uint imageBase = (uint)(animnames.Count * 8) + 8;
-				foreach (KeyValuePair<short, NJS_MOTION> item in anims)
+				uint imageBase = (uint)(mtninfo.Indexes.Count * 8) + 8;
+				foreach (NJS_MOTION item in anims)
 				{
-					animbytes.AddRange(item.Value.GetBytes(imageBase, out uint address));
-					animaddrs[item.Value.Name] = (int)(address + imageBase);
-					animparts[item.Value.Name] = (short)item.Value.ModelParts;
-					imageBase = (uint)(animnames.Count * 8) + 8 + (uint)animbytes.Count;
+					animbytes.AddRange(item.GetBytes(imageBase, out uint address));
+					animaddrs[item.Name] = (int)(address + imageBase);
+					animparts[item.Name] = (short)item.ModelParts;
+					imageBase = (uint)(mtninfo.Indexes.Count * 8) + 8 + (uint)animbytes.Count;
 				}
 				List<byte> mtnfile = new List<byte>();
-				foreach (KeyValuePair<short, string> item in animnames)
+				foreach (KeyValuePair<short, string> item in mtninfo.Indexes)
 				{
 					mtnfile.AddRange(ByteConverter.GetBytes(item.Key));
 					mtnfile.AddRange(ByteConverter.GetBytes(animparts[item.Value]));
@@ -70,5 +82,12 @@ namespace buildMTN
 				Environment.CurrentDirectory = dir;
 			}
 		}
+	}
+
+	class MTNInfo
+	{
+		public bool BigEndian { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<short, string> Indexes { get; set; } = new Dictionary<short, string>();
 	}
 }
