@@ -389,6 +389,58 @@ namespace TextureEditor
 				File.WriteAllBytes(filename, data);
 		}
 
+		private void ConvertTextures(TextureFormat newfmt)
+		{
+			switch (newfmt)
+			{
+				case TextureFormat.PVM:
+					switch (format)
+					{
+						case TextureFormat.GVM:
+							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
+							break;
+						case TextureFormat.PVMX:
+						case TextureFormat.PAK:
+							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
+							break;
+					}
+					break;
+				case TextureFormat.GVM:
+					switch (format)
+					{
+						case TextureFormat.PVM:
+							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
+							break;
+						case TextureFormat.PVMX:
+						case TextureFormat.PAK:
+							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
+							break;
+					}
+					break;
+				case TextureFormat.PVMX:
+					switch (format)
+					{
+						case TextureFormat.PVM:
+						case TextureFormat.GVM:
+						case TextureFormat.PAK:
+							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)).Cast<TextureInfo>());
+							break;
+					}
+					break;
+				case TextureFormat.PAK:
+					switch (format)
+					{
+						case TextureFormat.PVM:
+						case TextureFormat.GVM:
+						case TextureFormat.PVMX:
+							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
+							break;
+					}
+					break;
+			}
+			format = newfmt;
+		}
+
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (filename == null)
@@ -399,39 +451,34 @@ namespace TextureEditor
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			fileToolStripMenuItem.HideDropDown();
 			string defext = null;
-			string filter = null;
 			switch (format)
 			{
 				case TextureFormat.PVM:
 					defext = "pvm";
-					filter = "PVM Files|*.pvm;*.prs";
 					break;
 				case TextureFormat.GVM:
 					defext = "gvm";
-					filter = "GVM Files|*.gvm;*.prs";
 					break;
 				case TextureFormat.PVMX:
 					defext = "pvmx";
-					filter = "PVMX Files|*.pvmx";
 					break;
 				case TextureFormat.PAK:
 					defext = "pak";
-					filter = "PAK Files|*.pak";
 					break;
 			}
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = filter })
+			using SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak", FilterIndex = (int)format };
+			if (filename != null)
 			{
-				if (filename != null)
-				{
-					dlg.InitialDirectory = Path.GetDirectoryName(filename);
-					dlg.FileName = Path.GetFileName(filename);
-				}
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					SetFilename(dlg.FileName);
-					SaveTextures();
-				}
+				dlg.InitialDirectory = Path.GetDirectoryName(filename);
+				dlg.FileName = Path.GetFileName(filename);
+			}
+			if (dlg.ShowDialog(this) == DialogResult.OK)
+			{
+				ConvertTextures((TextureFormat)dlg.FilterIndex);
+				SetFilename(dlg.FileName);
+				SaveTextures();
 			}
 		}
 
@@ -446,17 +493,7 @@ namespace TextureEditor
 				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					switch (format)
-					{
-						case TextureFormat.GVM:
-							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
-							break;
-						case TextureFormat.PVMX:
-						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
-							break;
-					}
-					format = TextureFormat.PVM;
+					ConvertTextures(TextureFormat.PVM);
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
@@ -474,17 +511,7 @@ namespace TextureEditor
 				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					switch (format)
-					{
-						case TextureFormat.PVM:
-							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
-							break;
-						case TextureFormat.PVMX:
-						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
-							break;
-					}
-					format = TextureFormat.GVM;
+					ConvertTextures(TextureFormat.GVM);
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
@@ -502,15 +529,7 @@ namespace TextureEditor
 				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					switch (format)
-					{
-						case TextureFormat.PVM:
-						case TextureFormat.GVM:
-						case TextureFormat.PAK:
-							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)).Cast<TextureInfo>());
-							break;
-					}
-					format = TextureFormat.PVMX;
+					ConvertTextures(TextureFormat.PVMX);
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
@@ -528,15 +547,7 @@ namespace TextureEditor
 				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					switch (format)
-					{
-						case TextureFormat.PVM:
-						case TextureFormat.GVM:
-						case TextureFormat.PVMX:
-							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
-							break;
-					}
-					format = TextureFormat.PAK;
+					ConvertTextures(TextureFormat.PAK);
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
