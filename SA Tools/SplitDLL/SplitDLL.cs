@@ -161,7 +161,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "model":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -202,7 +202,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -253,7 +253,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "basicmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -274,7 +274,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -295,7 +295,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "basicdxmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -316,7 +316,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -337,7 +337,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "chunkmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -358,7 +358,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -384,7 +384,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt);
+									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									ani.Animation.Name = item.Key + "_" + i;
 									DllItemInfo info = new DllItemInfo()
@@ -469,7 +469,7 @@ namespace SA_Tools.SplitDLL
 								{
 									string chnm = charaobjectnames[i];
 									CharaObjectData chara = new CharaObjectData();
-									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk);
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									chara.MainModel = model.Name;
 									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation1 = anim.Name;
@@ -488,7 +488,7 @@ namespace SA_Tools.SplitDLL
 									int ptr = BitConverter.ToInt32(datafile, address + 16);
 									if (ptr != 0)
 									{
-										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk);
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 										chara.AccessoryModel = model.Name;
 										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
 										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
@@ -497,7 +497,7 @@ namespace SA_Tools.SplitDLL
 									ptr = BitConverter.ToInt32(datafile, address + 24);
 									if (ptr != 0)
 									{
-										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk);
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 										chara.SuperModel = model.Name;
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation1 = anim.Name;
