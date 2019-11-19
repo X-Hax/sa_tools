@@ -450,7 +450,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 							}
 						}
 						ModelFormat mfmt = ModelFormat.Basic;
-						if (!isVisible)
+						if (isVisible)
 							switch (geo.Format)
 							{
 								case LandTableFormat.SA2:
