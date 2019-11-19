@@ -212,7 +212,7 @@ namespace SonicRetro.SAModel.SAMDL
 								int i = ByteConverter.ToInt32(file, address);
 								while (i != -1)
 								{
-									sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt));
+									sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
 									address += 8;
 									i = ByteConverter.ToInt32(file, address);
 								}
@@ -291,8 +291,8 @@ namespace SonicRetro.SAModel.SAMDL
 			modelinfo.ShowDialog(this);
 			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
 			if (modelinfo.checkBox1.Checked)
-				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
-			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
+				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null) };
+			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null);
 			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 			{
 				case ModelFormat.Basic:

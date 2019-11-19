@@ -133,7 +133,7 @@ namespace splitEvent
 				name = $"object_{ptr3:X8}";
 				if (!nodenames.Contains(name))
 				{
-					NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk);
+					NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
 					name = obj.Name;
 					List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
 					foreach (string s in names)
