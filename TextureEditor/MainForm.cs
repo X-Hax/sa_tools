@@ -187,7 +187,7 @@ namespace TextureEditor
 			d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 
 			if (Program.Arguments.Length > 0 && !GetTextures(Program.Arguments[0]))
-				this.Close();
+				Close();
 		}
 
 		private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
@@ -468,17 +468,19 @@ namespace TextureEditor
 					defext = "pak";
 					break;
 			}
-			using SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak", FilterIndex = (int)format };
-			if (filename != null)
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak", FilterIndex = (int)format })
 			{
-				dlg.InitialDirectory = Path.GetDirectoryName(filename);
-				dlg.FileName = Path.GetFileName(filename);
-			}
-			if (dlg.ShowDialog(this) == DialogResult.OK)
-			{
-				ConvertTextures((TextureFormat)dlg.FilterIndex);
-				SetFilename(dlg.FileName);
-				SaveTextures();
+				if (filename != null)
+				{
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.GetFileName(filename);
+				}
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					ConvertTextures((TextureFormat)dlg.FilterIndex);
+					SetFilename(dlg.FileName);
+					SaveTextures();
+				}
 			}
 		}
 
