@@ -55,7 +55,7 @@ namespace SA_Tools.SplitMDL
 				List<string> partnames = new List<string>();
 				foreach (KeyValuePair<int, int> item in modeladdrs)
 				{
-					NJS_OBJECT obj = new NJS_OBJECT(mdlfile, item.Value, 0, ModelFormat.Chunk);
+					NJS_OBJECT obj = new NJS_OBJECT(mdlfile, item.Value, 0, ModelFormat.Chunk, new Dictionary<int, Attach>());
 					modelnames[item.Key] = obj.Name;
 					if (!partnames.Contains(obj.Name))
 					{
