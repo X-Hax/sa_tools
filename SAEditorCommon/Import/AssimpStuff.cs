@@ -762,7 +762,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				FillNodeIndexForSort(scene, child, ref mdlindex);
 		}
 
-		class MeshData
+		class ChunkMeshData
 		{
 			public string FirstNode { get; set; }
 			public Dictionary<string, List<VertexChunk>> Vertex { get; set; }
@@ -772,7 +772,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			public SharpDX.BoundingSphere Bounds { get; set; }
 			public int CacheHandle { get; set; }
 
-			public MeshData(int vcount)
+			public ChunkMeshData(int vcount)
 			{
 				VertexCount = vcount;
 				Vertex = new Dictionary<string, List<VertexChunk>>();
@@ -816,9 +816,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static readonly NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo, out string[] bones)
+		private static ChunkMeshData ProcessMeshChunk(Assimp.Mesh aiMesh, Scene scene, string[] texInfo, out string[] bones)
 		{
-			MeshData result = new MeshData(aiMesh.VertexCount);
+			ChunkMeshData result = new ChunkMeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
 			var verts = new List<VertInfo>(aiMesh.VertexCount);
 			for (int i = 0; i < aiMesh.VertexCount; i++)
@@ -1003,11 +1003,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			//get node indices for sorting
 			int mdlindex = -1;
 			FillNodeIndexForSort(scene, scene.RootNode, ref mdlindex);
-			List<MeshData> meshdata = new List<MeshData>();
+			List<ChunkMeshData> meshdata = new List<ChunkMeshData>();
 			Dictionary<string, int> bonelist = new Dictionary<string, int>();
 			foreach (var mesh in scene.Meshes)
 			{
-				meshdata.Add(ProcessMesh(mesh, scene, texInfo, out var bones));
+				meshdata.Add(ProcessMeshChunk(mesh, scene, texInfo, out var bones));
 				if (bones != null)
 					foreach (string b in bones)
 						if (bonelist.ContainsKey(b))
@@ -1029,11 +1029,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					roots[n] = count;
 			}
 			mdlindex = -1;
-			return AssimpImportWeighted(roots.OrderByDescending(a => a.Value).First().Key, scene, meshdata, ref mdlindex);
+			return AssimpImportWeighted(roots.OrderByDescending(a => a.Value).First().Key, meshdata, ref mdlindex);
 		}
 
 		static readonly System.Text.RegularExpressions.Regex nodenameregex = new System.Text.RegularExpressions.Regex("^n[0-9]{3}_", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
-		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, ref int mdlindex)
+		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, List<ChunkMeshData> meshdata, ref int mdlindex)
 		{
 			NJS_OBJECT obj = new NJS_OBJECT { Animate = true, Morph = true };
 			if (nodenameregex.IsMatch(aiNode.Name))
@@ -1105,13 +1105,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			if (attach != null)
 			{
 				attach.Vertex = VertexChunk.Merge(attach.Vertex);
+				if (attach.Poly != null)
+					attach.Poly = PolyChunk.Merge(attach.Poly);
 				attach.Bounds = bounds.ToSAModel();
 			}
 			foreach (int handle in releasehandles)
 				VertexCacheManager.Release(handle);
 			foreach (Node child in aiNode.Children)
 			{
-				NJS_OBJECT c = AssimpImportWeighted(child, scene, meshdata, ref mdlindex);
+				NJS_OBJECT c = AssimpImportWeighted(child, meshdata, ref mdlindex);
 				//HACK: workaround for those weird empty nodes created by most 3d editors
 				if (child.Name == "")
 				{
@@ -1139,12 +1141,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			obj.Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 			//Scale = new Vertex(1, 1, 1);
-			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
-			foreach (int i in node.MeshIndices)
-				meshes.Add(scene.Meshes[i]);
 
 			if (node.HasMeshes)
 			{
+				var meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
 				if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
 					obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
 				else if (format == ModelFormat.GC)
@@ -1414,6 +1414,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				attach.Poly.Add(strip);
 			}
 
+			attach.Poly = PolyChunk.Merge(attach.Poly);
 
 			return attach;
 		}
