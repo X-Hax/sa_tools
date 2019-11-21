@@ -468,7 +468,7 @@ namespace TextureEditor
 					defext = "pak";
 					break;
 			}
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak", FilterIndex = (int)format })
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = defext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak", FilterIndex = (int)format + 1 })
 			{
 				if (filename != null)
 				{
@@ -477,7 +477,7 @@ namespace TextureEditor
 				}
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					ConvertTextures((TextureFormat)dlg.FilterIndex);
+					ConvertTextures((TextureFormat)(dlg.FilterIndex - 1));
 					SetFilename(dlg.FileName);
 					SaveTextures();
 				}
