@@ -869,8 +869,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			if (currentAiMat != null)
 			{
 				//output mat first then texID, thats how the official exporter worked
-				PolyChunkMaterial material = new PolyChunkMaterial();
-				result.Poly.Add(material);
+				attach.Poly.Add(new PolyChunkMaterial() { SourceAlpha = AlphaInstruction.SourceAlpha, DestinationAlpha = AlphaInstruction.InverseSourceAlpha });
 				if (currentAiMat.HasTextureDiffuse)
 				{
 					if (texInfo != null)
@@ -1298,8 +1297,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (currentAiMat != null)
 				{
 					//output mat first then texID, thats how the official exporter worked
-					PolyChunkMaterial material = new PolyChunkMaterial();
-					attach.Poly.Add(material);
+					attach.Poly.Add(new PolyChunkMaterial() { SourceAlpha = AlphaInstruction.SourceAlpha, DestinationAlpha = AlphaInstruction.InverseSourceAlpha });
 					if (currentAiMat.HasTextureDiffuse)
 					{
 						if (textures != null)
