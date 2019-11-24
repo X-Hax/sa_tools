@@ -63,6 +63,7 @@
 			this.indexTextBox = new System.Windows.Forms.TextBox();
 			this.mipmapCheckBox = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.textureSizeLabel = new System.Windows.Forms.Label();
 			this.textureImage = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.exportButton = new System.Windows.Forms.Button();
@@ -74,7 +75,7 @@
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.dummyPanel = new System.Windows.Forms.Panel();
-			this.textureSizeLabel = new System.Windows.Forms.Label();
+			this.makePCCompatibleGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -285,7 +286,8 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addMipmapsToAllToolStripMenuItem});
+            this.addMipmapsToAllToolStripMenuItem,
+            this.makePCCompatibleGVMsToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -293,7 +295,7 @@
 			// addMipmapsToAllToolStripMenuItem
 			// 
 			this.addMipmapsToAllToolStripMenuItem.Name = "addMipmapsToAllToolStripMenuItem";
-			this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
 			this.addMipmapsToAllToolStripMenuItem.Text = "Add &Mipmaps to All";
 			this.addMipmapsToAllToolStripMenuItem.Click += new System.EventHandler(this.addMipmapsToAllToolStripMenuItem_Click);
 			// 
@@ -457,6 +459,18 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 157);
 			this.tableLayoutPanel1.TabIndex = 6;
 			// 
+			// textureSizeLabel
+			// 
+			this.textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.textureSizeLabel.AutoSize = true;
+			this.textureSizeLabel.Location = new System.Drawing.Point(0, 41);
+			this.textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+			this.textureSizeLabel.Name = "textureSizeLabel";
+			this.textureSizeLabel.Size = new System.Drawing.Size(42, 13);
+			this.textureSizeLabel.TabIndex = 11;
+			this.textureSizeLabel.Text = "Size: ---";
+			this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// textureImage
 			// 
 			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -565,7 +579,7 @@
 			// toolStripStatusLabel1
 			// 
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(58, 17);
 			this.toolStripStatusLabel1.Text = "0 textures";
 			// 
 			// dummyPanel
@@ -578,17 +592,13 @@
 			this.dummyPanel.TabIndex = 3;
 			this.dummyPanel.Visible = false;
 			// 
-			// textureSizeLabel
+			// makePCCompatibleGVMsToolStripMenuItem
 			// 
-			this.textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.textureSizeLabel.AutoSize = true;
-			this.textureSizeLabel.Location = new System.Drawing.Point(0, 41);
-			this.textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-			this.textureSizeLabel.Name = "textureSizeLabel";
-			this.textureSizeLabel.Size = new System.Drawing.Size(42, 13);
-			this.textureSizeLabel.TabIndex = 11;
-			this.textureSizeLabel.Text = "Size: ---";
-			this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.makePCCompatibleGVMsToolStripMenuItem.CheckOnClick = true;
+			this.makePCCompatibleGVMsToolStripMenuItem.Name = "makePCCompatibleGVMsToolStripMenuItem";
+			this.makePCCompatibleGVMsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+			this.makePCCompatibleGVMsToolStripMenuItem.Text = "Make &PC-Compatible GVMs";
+			this.makePCCompatibleGVMsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.makePCCompatibleGVMsToolStripMenuItem_CheckedChanged);
 			// 
 			// MainForm
 			// 
@@ -672,6 +682,7 @@
 		private System.Windows.Forms.Button textureUpButton;
 		private System.Windows.Forms.Button textureDownButton;
 		private System.Windows.Forms.Label textureSizeLabel;
+		private System.Windows.Forms.ToolStripMenuItem makePCCompatibleGVMsToolStripMenuItem;
 	}
 }
 

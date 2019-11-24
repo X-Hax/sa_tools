@@ -184,6 +184,8 @@ namespace TextureEditor
 
 			Settings.MRUList = newlist;
 
+			makePCCompatibleGVMsToolStripMenuItem.Checked = Settings.PCCompatGVM;
+
 			d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
 
 			if (Program.Arguments.Length > 0 && !GetTextures(Program.Arguments[0]))
@@ -311,33 +313,38 @@ namespace TextureEditor
 						{
 							if (tex.DataFormat != GvrDataFormat.Index4 && tex.DataFormat != GvrDataFormat.Index8)
 							{
-								System.Drawing.Imaging.BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-								int stride = bmpd.Stride;
-								byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
-								System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
-								tex.Image.UnlockBits(bmpd);
-								int tlevels = 0;
-								for (int y = 0; y < tex.Image.Height; y++)
+								if (Settings.PCCompatGVM)
 								{
-									int srcaddr = y * Math.Abs(stride);
-									for (int x = 0; x < tex.Image.Width; x++)
+									System.Drawing.Imaging.BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+									int stride = bmpd.Stride;
+									byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
+									System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
+									tex.Image.UnlockBits(bmpd);
+									int tlevels = 0;
+									for (int y = 0; y < tex.Image.Height; y++)
 									{
-										Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
-										if (c.A == 0)
-											tlevels = 1;
-										else if (c.A < 255)
+										int srcaddr = y * Math.Abs(stride);
+										for (int x = 0; x < tex.Image.Width; x++)
 										{
-											tlevels = 2;
-											break;
+											Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
+											if (c.A == 0)
+												tlevels = 1;
+											else if (c.A < 255)
+											{
+												tlevels = 2;
+												break;
+											}
 										}
+										if (tlevels == 2)
+											break;
 									}
-									if (tlevels == 2)
-										break;
+									if (tlevels == 0)
+										tex.DataFormat = GvrDataFormat.Dxt1;
+									else
+										tex.DataFormat = GvrDataFormat.Rgb5a3;
 								}
-								if (tlevels == 0)
-									tex.DataFormat = GvrDataFormat.Dxt1;
 								else
-									tex.DataFormat = GvrDataFormat.Rgb5a3;
+									tex.DataFormat = GvrDataFormat.Argb8888;
 							}
 							GvrTextureEncoder encoder = new GvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
 							encoder.GlobalIndex = tex.GlobalIndex;
@@ -947,6 +954,11 @@ namespace TextureEditor
 					info.Mipmap = true;
 			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].CheckMipmap())
 				mipmapCheckBox.Checked = true;
+		}
+
+		private void makePCCompatibleGVMsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			Settings.PCCompatGVM = makePCCompatibleGVMsToolStripMenuItem.Checked;
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
