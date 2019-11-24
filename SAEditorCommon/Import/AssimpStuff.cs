@@ -1032,8 +1032,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			if (attach != null)
 			{
 				attach.Vertex = VertexChunk.Merge(attach.Vertex);
-				if (attach.Poly != null)
-					attach.Poly = PolyChunk.Merge(attach.Poly);
 				attach.Bounds = bounds.ToSAModel();
 			}
 			foreach (int handle in releasehandles)
@@ -1339,8 +1337,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				}
 				attach.Poly.Add(strip);
 			}
-
-			attach.Poly = PolyChunk.Merge(attach.Poly);
 
 			return attach;
 		}
