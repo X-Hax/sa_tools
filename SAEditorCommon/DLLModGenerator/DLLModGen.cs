@@ -242,7 +242,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
 								{
-									new ModelFile(file).Model.ToStructVariables(writer, false, null);
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
 									writer.WriteLine();
 								}
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
