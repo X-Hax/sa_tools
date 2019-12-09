@@ -2916,8 +2916,8 @@ namespace SA_Tools
 	{
 		public int ID { get; set; }
 		public string Model { get; set; }
-		public string OtherModel { get; set; }
-		[TypeConverter(typeof(Int32HexConverter))]
+		public string LowModel { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint TexList { get; set; }
 		public int Unknown1 { get; set; }
 		public int Unknown2 { get; set; }
@@ -2928,9 +2928,9 @@ namespace SA_Tools
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", ID);
 			sb.AppendFormat("{0}, ", Model);
-			if (!string.IsNullOrEmpty(OtherModel))
+			if (!string.IsNullOrEmpty(LowModel))
 			{
-				sb.AppendFormat("{0}, ", OtherModel);
+				sb.AppendFormat("{0}, ", LowModel);
 			}
 			else
 				sb.Append("NULL, ");

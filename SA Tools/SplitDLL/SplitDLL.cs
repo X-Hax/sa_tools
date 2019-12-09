@@ -546,9 +546,9 @@ namespace SA_Tools.SplitDLL
 									if (ptr != 0)
 									{
 										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-										kart.OtherModel = model.Name;
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Other.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
-										hashes.Add($"{i} Other.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Other.sa2mdl")));
+										kart.LowModel = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
 									}
 									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
 									kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
