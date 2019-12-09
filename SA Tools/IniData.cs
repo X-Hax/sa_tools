@@ -2910,7 +2910,38 @@ namespace SA_Tools
 			sb.Append(" }");
 			return sb.ToString();
 		}
-	};
+	}
+
+	public class KartSpecialInfo
+	{
+		public int ID { get; set; }
+		public string Model { get; set; }
+		public string OtherModel { get; set; }
+		[TypeConverter(typeof(Int32HexConverter))]
+		public uint TexList { get; set; }
+		public int Unknown1 { get; set; }
+		public int Unknown2 { get; set; }
+		public int Unknown3 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", ID);
+			sb.AppendFormat("{0}, ", Model);
+			if (!string.IsNullOrEmpty(OtherModel))
+			{
+				sb.AppendFormat("{0}, ", OtherModel);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0:X}, ", TexList);
+			sb.AppendFormat("{0}, ", Unknown1);
+			sb.AppendFormat("{0}, ", Unknown2);
+			sb.AppendFormat("{0}", Unknown3);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
 
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>

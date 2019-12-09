@@ -527,6 +527,41 @@ namespace SA_Tools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "kartspecialinfolist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartSpecialInfo> result = new List<KartSpecialInfo>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartSpecialInfo kart = new KartSpecialInfo
+									{
+										ID = ByteConverter.ToInt32(datafile, address)
+									};
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									kart.Model = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									int ptr = BitConverter.ToInt32(datafile, address + 8);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										kart.OtherModel = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Other.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{i} Other.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Other.sa2mdl")));
+									}
+									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
+									kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
+									kart.Unknown2 = ByteConverter.ToInt32(datafile, address + 20);
+									kart.Unknown3 = ByteConverter.ToInt32(datafile, address + 24);
+									result.Add(kart);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 					}
 					itemcount++;
 				}

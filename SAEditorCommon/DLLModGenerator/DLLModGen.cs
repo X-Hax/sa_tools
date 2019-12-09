@@ -95,6 +95,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								modified = true;
 						}
 						break;
+					case "kartspecialinfolist":
+						{
+							Dictionary<string, string> hashes = new Dictionary<string, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+							{
+								string[] b = a.Split(':');
+								return (b[0], b[1]);
+							}))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fp in Directory.GetFiles(item.Filename, "*.sa2mdl").Append(Path.Combine(item.Filename, "info.ini")))
+							{
+								string fn = Path.GetFileName(fp);
+								if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+								{
+									modified = true;
+									break;
+								}
+								hashes.Remove(fn);
+							}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
 				}
 				defaultExportState.Add(item.Filename, modified);
 			}
@@ -259,6 +282,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "kartspecialinfolist":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<KartSpecialInfo[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartSpecialInfo {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartSpecialInfo obj = data[i];
+									objs.Add(obj.ToStruct());
+									texlists.Add($"{item.Export}[{i}]", obj.TexList);
+								}
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 					}
 				writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 				writer.WriteLine("{");
@@ -276,6 +319,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 					{
 						case "animindexlist":
 						case "charaobjectdatalist":
+						case "kartspecialinfolist":
 							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
 							break;
 						default:
