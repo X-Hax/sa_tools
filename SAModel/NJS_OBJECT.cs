@@ -115,7 +115,8 @@ namespace SonicRetro.SAModel
 				else
 				{
 					Attach = Attach.Load(file, tmpaddr, imageBase, format, labels);
-					attaches.Add(tmpaddr, Attach);
+					if (attaches != null)
+						attaches.Add(tmpaddr, Attach);
 				}
 				
 			}
