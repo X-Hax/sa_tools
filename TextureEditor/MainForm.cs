@@ -618,21 +618,24 @@ namespace TextureEditor
 
 		private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "txt", Filter = "index.txt|index.txt", FileName = "index.txt" })
 			{
 				if (filename != null)
-					dlg.SelectedPath = Path.GetDirectoryName(filename);
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
 
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-					using (TextWriter texList = File.CreateText(Path.Combine(dlg.SelectedPath, "index.txt")))
+					using (TextWriter texList = File.CreateText(dlg.FileName))
+					{
+						string dir = Path.GetDirectoryName(dlg.FileName);
 						foreach (TextureInfo tex in textures)
 						{
-							tex.Image.Save(Path.Combine(dlg.SelectedPath, tex.Name + ".png"));
+							tex.Image.Save(Path.Combine(dir, tex.Name + ".png"));
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
 							else
 								texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
 						}
+					}
 			}
 		}
 
