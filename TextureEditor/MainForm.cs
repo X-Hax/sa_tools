@@ -563,6 +563,59 @@ namespace TextureEditor
 			}
 		}
 
+		private void importAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "txt", Filter = "index.txt|index.txt", FileName = "index.txt" })
+			{
+				if (filename != null)
+					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+					using (TextReader texList = File.OpenText(dlg.FileName))
+					{
+						string dir = Path.GetDirectoryName(dlg.FileName);
+						listBox1.BeginUpdate();
+						string line = texList.ReadLine();
+						while (line != null)
+						{
+							string[] split = line.Split(',');
+							if (split.Length > 1)
+							{
+								uint gbix = uint.Parse(split[0]);
+								string name = Path.ChangeExtension(split[1], null);
+								Bitmap bmp = new Bitmap(Path.Combine(dir, split[1]));
+								switch (format)
+								{
+									case TextureFormat.PVM:
+										textures.Add(new PvrTextureInfo(name, gbix, bmp));
+										break;
+									case TextureFormat.GVM:
+										textures.Add(new GvrTextureInfo(name, gbix, bmp));
+										break;
+									case TextureFormat.PVMX:
+										PvmxTextureInfo pvmx = new PvmxTextureInfo(name, gbix, bmp);
+										if (split.Length > 2)
+										{
+											string[] dim = split[2].Split('x');
+											if (dim.Length > 1)
+												pvmx.Dimensions = new Size(int.Parse(dim[0]), int.Parse(dim[1]));
+										}
+										textures.Add(pvmx);
+										break;
+									case TextureFormat.PAK:
+										textures.Add(new PakTextureInfo(name, gbix, bmp));
+										break;
+								}
+								listBox1.Items.Add(name);
+
+							}
+						}
+						listBox1.EndUpdate();
+						listBox1.SelectedIndex = textures.Count - 1;
+						UpdateTextureCount();
+					}
+			}
+		}
+
 		private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (FolderBrowserDialog dlg = new FolderBrowserDialog())
