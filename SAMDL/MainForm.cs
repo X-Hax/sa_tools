@@ -47,7 +47,7 @@ namespace SonicRetro.SAModel.SAMDL
 		string currentFileName = "";
 		NJS_OBJECT model;
 		bool hasWeight;
-		NJS_MOTION[] animations;
+		List<NJS_MOTION> animations;
 		NJS_MOTION animation;
 		ModelFile modelFile;
 		ModelFormat outfmt;
@@ -160,8 +160,7 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile = new ModelFile(filename);
 				outfmt = modelFile.Format;
 				model = modelFile.Model;
-				animations = new NJS_MOTION[modelFile.Animations.Count];
-				modelFile.Animations.CopyTo(animations, 0);
+				animations = new List<NJS_MOTION>(modelFile.Animations);
 			}
 			else
 			{
@@ -251,7 +250,7 @@ namespace SonicRetro.SAModel.SAMDL
 												address += 8;
 												i = ByteConverter.ToInt32(file, address);
 											}
-											animations = new List<NJS_MOTION>(anis.Values).ToArray();
+											animations = new List<NJS_MOTION>(anis.Values);
 										}
 									}
 								}
@@ -291,7 +290,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelinfo.ShowDialog(this);
 			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
 			if (modelinfo.checkBox1.Checked)
-				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null) };
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null) };
 			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null);
 			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 			{
@@ -422,7 +421,7 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe = 0;
 
 			outfmt = modelFormat;
-			animations = new NJS_MOTION[0];
+			animations = new List<NJS_MOTION>();
 
 			model = new NJS_OBJECT();
 			model.Morph = false;
@@ -821,7 +820,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						animnum++;
 						animframe = 0;
-						if (animnum == animations.Length) animnum = -1;
+						if (animnum == animations.Count) animnum = -1;
 						if (animnum > -1)
 							animation = animations[animnum];
 						else
@@ -836,7 +835,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						animnum--;
 						animframe = 0;
-						if (animnum == -2) animnum = animations.Length - 1;
+						if (animnum == -2) animnum = animations.Count - 1;
 						if (animnum > -1)
 							animation = animations[animnum];
 						else
@@ -1741,7 +1740,7 @@ namespace SonicRetro.SAModel.SAMDL
 					animframe = 0;
 
 					//outfmt = ModelFormat.GC;
-					animations = new NJS_MOTION[0];
+					animations = new List<NJS_MOTION>();
 
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
@@ -1934,6 +1933,36 @@ namespace SonicRetro.SAModel.SAMDL
 					context.ExportFile(scene, a.FileName, a.FileName.EndsWith("dae") ? "collada" : "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
+		}
+
+		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = "saanim", Filter = "Animation Files|*.saanim", Multiselect = true })
+				if (ofd.ShowDialog(this) == DialogResult.OK)
+				{
+					bool first = true;
+					foreach (string fn in ofd.FileNames)
+					{
+						if (!NJS_MOTION.CheckAnimationFile(fn))
+						{
+							MessageBox.Show(this, $"\"{fn}\" is not a valid animation file.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							return;
+						}
+						NJS_MOTION anim = NJS_MOTION.Load(fn);
+						if (first)
+						{
+							first = false;
+							animframe = 0;
+							animnum = animations.Count;
+							animations.Add(anim);
+							animation = anim;
+							UpdateWeightedModel();
+							DrawEntireModel();
+						}
+						else
+							animations.Add(anim);
+					}
+				}
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
