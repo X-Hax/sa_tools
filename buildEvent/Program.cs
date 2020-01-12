@@ -29,7 +29,7 @@ namespace buildEvent
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
 				EventIniData ini;
-				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".ini"))))
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
 				using (JsonTextReader jtr = new JsonTextReader(tr))
 					ini = js.Deserialize<EventIniData>(jtr);
 				uint key;
