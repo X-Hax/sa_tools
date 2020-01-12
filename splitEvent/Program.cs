@@ -45,6 +45,7 @@ namespace splitEvent
 					ini.Game = Game.SA2B;
 					battle = true;
 					motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
+					ini.Motions = motions.Select(a => a?.Name).ToList();
 					foreach (var mtn in motions.Where(a => a != null))
 						motionfiles[mtn.Name] = new MotionInfo(null, mtn);
 				}
@@ -318,6 +319,7 @@ namespace splitEvent
 		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
 		public List<SceneInfo> Scenes { get; set; } = new List<SceneInfo>();
+		public List<string> Motions { get; set; }
 	}
 
 	public class UpgradeInfo
