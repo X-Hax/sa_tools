@@ -55,7 +55,7 @@ namespace SonicRetro.SAModel
 
 		public int Frames { get; set; }
 		public string Name { get; set; }
-		public int ModelParts => Models.Count;
+		public int ModelParts { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
@@ -440,6 +440,7 @@ namespace SonicRetro.SAModel
 				if (hasdata)
 					Models.Add(i, data);
 			}
+			ModelParts = nummodels;
 		}
 
 		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
