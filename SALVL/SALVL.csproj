@@ -72,6 +72,7 @@
     <Compile Include="AdvancedInfoDialog.Designer.cs">
       <DependentUpon>AdvancedInfoDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="DefaultActionList.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
