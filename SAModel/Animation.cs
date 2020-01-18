@@ -902,6 +902,7 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			result.AddRange(ByteConverter.GetBytes(numpairs));
+			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}
 
