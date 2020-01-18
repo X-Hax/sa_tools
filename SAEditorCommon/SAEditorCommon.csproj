@@ -243,6 +243,12 @@
     <Compile Include="UI\TexturePicker.Designer.cs">
       <DependentUpon>TexturePicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\WelcomeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\WelcomeForm.Designer.cs">
+      <DependentUpon>WelcomeForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
@@ -314,6 +320,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\TextureRemappingDialog.resx">
       <DependentUpon>TextureRemappingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\WelcomeForm.resx">
+      <DependentUpon>WelcomeForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
