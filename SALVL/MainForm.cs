@@ -311,6 +311,8 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
+
 			if (!loaded) return;
 
 			switch (e.Button)
@@ -404,6 +406,13 @@ namespace SonicRetro.SAModel.SALVL
 			}
 
 			DrawLevel();
+		}
+
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+
+			propertyGrid1.Refresh();
 		}
 
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
