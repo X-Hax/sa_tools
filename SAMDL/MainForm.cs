@@ -19,6 +19,8 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
+		Properties.Settings Settings = Properties.Settings.Default;
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -88,6 +90,13 @@ namespace SonicRetro.SAModel.SAMDL
 					AutoDepthStencilFormat = Format.D24X8
 				});
 
+			Settings.Reload();
+
+			if (Settings.ShowWelcomeScreen)
+			{
+				ShowWelcomeScreen();
+			}
+
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
@@ -123,6 +132,32 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
+		}
+
+		void ShowWelcomeScreen()
+		{
+			WelcomeForm welcomeForm = new WelcomeForm();
+			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+
+			// subscribe to our checkchanged event
+			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
+			{
+				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				Settings.Save();
+			};
+
+			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
+			welcomeForm.ThisToolLink.Visible = true;
+
+			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
+			{
+				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SAMDL");
+			};
+
+			welcomeForm.ShowDialog();
+
+			welcomeForm.Dispose();
+			welcomeForm = null;
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -338,6 +373,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (loaded)
+			{
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
@@ -347,6 +383,9 @@ namespace SonicRetro.SAModel.SAMDL
 						e.Cancel = true;
 						break;
 				}
+			}
+
+			Settings.Save();
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1963,6 +2002,11 @@ namespace SonicRetro.SAModel.SAMDL
 							animations.Add(anim);
 					}
 				}
+		}
+
+		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowWelcomeScreen();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

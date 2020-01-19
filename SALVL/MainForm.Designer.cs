@@ -40,6 +40,7 @@
 			this.invisibleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1 = new System.Windows.Forms.UserControl();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +57,7 @@
 			this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
 			this.rotateMode = new System.Windows.Forms.ToolStripButton();
 			this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
+			this.welcomeTutorialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -70,7 +72,8 @@
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.viewToolStripMenuItem,
+            this.helpToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(584, 24);
@@ -259,6 +262,14 @@
 			this.statsToolStripMenuItem.Text = "Stats";
 			this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click_1);
 			// 
+			// helpToolStripMenuItem
+			// 
+			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.welcomeTutorialToolStripMenuItem});
+			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+			this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+			this.helpToolStripMenuItem.Text = "&Help";
+			// 
 			// panel1
 			// 
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -435,6 +446,14 @@
 			this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
 			this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
 			// 
+			// welcomeTutorialToolStripMenuItem
+			// 
+			this.welcomeTutorialToolStripMenuItem.Name = "welcomeTutorialToolStripMenuItem";
+			this.welcomeTutorialToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+			this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+			this.welcomeTutorialToolStripMenuItem.Text = "Welcome / Tutorial";
+			this.welcomeTutorialToolStripMenuItem.Click += new System.EventHandler(this.welcomeTutorialToolStripMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -507,6 +526,8 @@
 		private System.Windows.Forms.ToolStripButton rotateMode;
 		private System.Windows.Forms.ToolStripMenuItem calculateAllBoundsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aSSIMPExportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
 	}
 }
 
