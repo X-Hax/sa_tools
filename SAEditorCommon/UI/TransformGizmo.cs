@@ -105,6 +105,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			transform.Push();
 			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+
+			if (pivot == Pivot.CenterOfMass && isTransformLocal)
+			{
+				// we'll need to correct for the difference in local transform and current position variable (which will be in world space)
+				//Vector3 localMatrixGlobalPosition = Vector3.Zero * localTransformMatrix.;
+				Vector3 localPos = (Vector3)Vector3.Transform(Vector3.Zero, localTransformMatrix);
+				Vector3 offset = position - localPos;
+				transformMatrix = Matrix.Multiply(localTransformMatrix, Matrix.Translation(offset));
+			}
+
 			transform.LoadMatrix(transformMatrix);
 			transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 			switch (mode)
@@ -194,6 +204,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 			transform.Push();
 			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+
+			if (pivot == Pivot.CenterOfMass && isTransformLocal)
+			{
+				// we'll need to correct for the difference in local transform and current position variable (which will be in world space)
+				//Vector3 localMatrixGlobalPosition = Vector3.Zero * localTransformMatrix.;
+				Vector3 localPos = (Vector3)Vector3.Transform(Vector3.Zero, localTransformMatrix);
+				Vector3 offset = position - localPos;
+				transformMatrix = Matrix.Multiply(localTransformMatrix, Matrix.Translation(offset));
+			}
+
 			transform.LoadMatrix(transformMatrix);
 			transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 

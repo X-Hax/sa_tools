@@ -56,6 +56,7 @@
 			this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
 			this.rotateMode = new System.Windows.Forms.ToolStripButton();
 			this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
+			this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -369,7 +370,8 @@
             this.moveModeButton,
             this.rotateModeButton,
             this.rotateMode,
-            this.gizmoSpaceComboBox});
+            this.gizmoSpaceComboBox,
+            this.pivotComboBox});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Size = new System.Drawing.Size(584, 25);
@@ -434,6 +436,16 @@
 			this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
 			this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
 			this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
+			// 
+			// pivotComboBox
+			// 
+			this.pivotComboBox.Enabled = false;
+			this.pivotComboBox.Items.AddRange(new object[] {
+            "CenterMass",
+            "Origin"});
+			this.pivotComboBox.Name = "pivotComboBox";
+			this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
+			this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
 			// 
 			// MainForm
 			// 
@@ -507,6 +519,7 @@
 		private System.Windows.Forms.ToolStripButton rotateMode;
 		private System.Windows.Forms.ToolStripMenuItem calculateAllBoundsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aSSIMPExportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripComboBox pivotComboBox;
 	}
 }
 

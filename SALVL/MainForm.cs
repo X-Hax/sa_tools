@@ -167,6 +167,7 @@ namespace SonicRetro.SAModel.SALVL
 			gizmoSpaceComboBox.Enabled = false;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
+
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			calculateAllBoundsToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
@@ -1124,9 +1125,12 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				transformGizmo.Mode = TransformMode.NONE;
 				gizmoSpaceComboBox.Enabled = true;
+				pivotComboBox.Enabled = true;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+				//DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+
+				SetGizmoPivotAndLocality();
 			}
 		}
 
@@ -1136,9 +1140,11 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
 				gizmoSpaceComboBox.Enabled = true;
+				pivotComboBox.Enabled = true;
 				selectModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				DrawLevel();
+				//DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
@@ -1150,17 +1156,40 @@ namespace SonicRetro.SAModel.SALVL
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
+				pivotComboBox.Enabled = false;
+				pivotComboBox.SelectedIndex = 0;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
-				DrawLevel();
+				//DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
 		private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
 		{
+			SetGizmoPivotAndLocality();
+		}
+
+		private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
+		{
+			SetGizmoPivotAndLocality();
+		}
+
+		void SetGizmoPivotAndLocality()
+		{
 			if (transformGizmo != null)
 			{
-				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex == 0) ? false : true;
+				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
+				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+
+				if (selectedItems.ItemCount > 0)
+				{
+					Item firstItem = selectedItems.Get(0);
+					transformGizmo.SetGizmo(
+						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+				}
+
 				DrawLevel();
 			}
 		}
