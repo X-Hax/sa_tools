@@ -2466,6 +2466,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 								{
 									item.Position = transformGizmo.Move(gizmoMouseInput,
 										item.Position.ToVector3(), cam).ToVertex();
+
+									if (item is LevelItem)
+									{
+										LevelItem levelItem = item as LevelItem; // recalculating the entire bounds could be slow
+										levelItem.CalculateBounds(); // what if we just moved the bounds position instead?
+									}
 								}
 
 								Item firstItem = selectedItems.Get(0);
