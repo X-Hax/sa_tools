@@ -621,7 +621,7 @@ namespace SonicRetro.SAModel.SALVL
 				lastmouse = evloc;
 				return;
 			}
-			Point chg = evloc - (Size)lastmouse;
+			Point mouseDelta = evloc - (Size)lastmouse;
 			if (cameraKeyDown)
 			{
 				// all cam controls are now bound to the middle mouse button
@@ -629,34 +629,34 @@ namespace SonicRetro.SAModel.SALVL
 				{
 					if (zoomKeyDown)
 					{
-						cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
 					}
 					else if (lookKeyDown)
 					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
-						cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 					}
 				}
 				else if (cam.mode == 1)
 				{
 					if (zoomKeyDown)
 					{
-						cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
 					}
 					else if (lookKeyDown)
 					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
-						cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 					}
 				}
 
@@ -666,8 +666,7 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				if (transformGizmo != null)
 				{
-					//transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
-					//throw new System.NotImplementedException();
+					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
 				}
 
 				DrawLevel();

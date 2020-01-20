@@ -5,6 +5,8 @@ using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using Color = System.Drawing.Color;
 
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
 	/// <summary>Describes which axes the Gizmo will operate upon.</summary>
@@ -360,6 +362,62 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam)
 		{
 			return position = (sourcePosition + MoveDirection(input, cam));
+		}
+
+		public void TransformGizmoMove(System.Drawing.Point mouseDelta, EditorCamera cam, EditorItemSelection selectedItems)
+		{
+			if (Enabled)
+			{
+				Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
+
+				switch (Mode)
+				{
+					case TransformMode.NONE:
+						break;
+					case TransformMode.TRANFORM_MOVE:
+						// move all of our editor selected items
+						foreach (Item item in selectedItems.Items)
+						{
+							item.Position = Move(gizmoMouseInput,
+								item.Position.ToVector3(), cam).ToVertex();
+
+							if (item is LevelItem)
+							{
+								LevelItem levelItem = item as LevelItem; // recalculating the entire bounds could be slow
+								levelItem.CalculateBounds(); // what if we just moved the bounds position instead?
+							}
+						}
+
+						Item firstItem = selectedItems.Get(0);
+						//transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
+						SetGizmo(
+							((Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+							firstItem.TransformMatrix);
+						break;
+					case TransformMode.TRANSFORM_ROTATE:
+						// rotate all of our editor selected items
+						foreach (Item item in selectedItems.Items)
+						{
+							item.Rotation = Rotate(gizmoMouseInput, cam, item.Rotation);
+						}
+
+						firstItem = selectedItems.Get(0);
+						SetGizmo(Position, firstItem.TransformMatrix);
+						break;
+					case TransformMode.TRANSFORM_SCALE:
+						// scale all of our editor selected items
+						foreach (Item item in selectedItems.Items)
+						{
+							if (item is IScaleable scalableItem)
+							{
+								scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
+							}
+						}
+						break;
+					default:
+						break;
+				}
+			}
 		}
 		#endregion
 

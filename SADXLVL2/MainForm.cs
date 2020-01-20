@@ -2445,66 +2445,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.Left:
-					foreach(PointHelper pointHelper in PointHelper.Instances)
+					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
 						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-					if (transformGizmo.Enabled)
-					{
-						Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
-
-						switch (transformGizmo.Mode)
-						{
-							case TransformMode.NONE:
-								break;
-							case TransformMode.TRANFORM_MOVE:
-								//Vector3 offset = transformGizmo.MoveDirection(gizmoMouseInput, cam);
-
-								// move all of our editor selected items
-								foreach (Item item in selectedItems.Items)
-								{
-									item.Position = transformGizmo.Move(gizmoMouseInput,
-										item.Position.ToVector3(), cam).ToVertex();
-
-									if (item is LevelItem)
-									{
-										LevelItem levelItem = item as LevelItem; // recalculating the entire bounds could be slow
-										levelItem.CalculateBounds(); // what if we just moved the bounds position instead?
-									}
-								}
-
-								Item firstItem = selectedItems.Get(0);
-								//transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-								transformGizmo.SetGizmo(
-									((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(), 
-									firstItem.TransformMatrix);
-								break;
-							case TransformMode.TRANSFORM_ROTATE:
-								// rotate all of our editor selected items
-								foreach (Item item in selectedItems.Items)
-								{
-									item.Rotation = transformGizmo.Rotate(gizmoMouseInput, cam, item.Rotation);
-								}
-
-								firstItem = selectedItems.Get(0);
-								transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-								break;
-							case TransformMode.TRANSFORM_SCALE:
-								// scale all of our editor selected items
-								foreach(Item item in selectedItems.Items)
-								{
-									if (item is IScaleable scalableItem)
-									{
-										scalableItem.SetScale(transformGizmo.Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
-									}
-								}
-								break;
-							default:
-								break;
-						}
-					}
-
+					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
 
 					DrawLevel();
 					break;
