@@ -103,6 +103,7 @@
 			this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reportBugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.welcomeTutorialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.RenderPanel = new System.Windows.Forms.UserControl();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -747,7 +748,8 @@
 			// helpToolStripMenuItem
 			// 
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reportBugToolStripMenuItem});
+            this.reportBugToolStripMenuItem,
+            this.welcomeTutorialToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
 			this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.helpToolStripMenuItem.Text = "&Help";
@@ -755,9 +757,17 @@
 			// reportBugToolStripMenuItem
 			// 
 			this.reportBugToolStripMenuItem.Name = "reportBugToolStripMenuItem";
-			this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+			this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.reportBugToolStripMenuItem.Text = "Report &Bug";
 			this.reportBugToolStripMenuItem.Click += new System.EventHandler(this.reportBugToolStripMenuItem_Click);
+			// 
+			// welcomeTutorialToolStripMenuItem
+			// 
+			this.welcomeTutorialToolStripMenuItem.Name = "welcomeTutorialToolStripMenuItem";
+			this.welcomeTutorialToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+			this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+			this.welcomeTutorialToolStripMenuItem.Text = "Welcome / Tutorial";
+			this.welcomeTutorialToolStripMenuItem.Click += new System.EventHandler(this.welcomeTutorialToolStripMenuItem_Click);
 			// 
 			// RenderPanel
 			// 
@@ -1345,6 +1355,7 @@
 		private System.Windows.Forms.ToolStripMenuItem statsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem boundsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem upgradeObjDefsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
 	}
 }
 

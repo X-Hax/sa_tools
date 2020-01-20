@@ -98,6 +98,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			InitDisableInvalidControls();
 
+			Settings.Reload();
+
+			if(Settings.ShowWelcomeScreen)
+			{
+				ShowWelcomeScreen();
+			}
+
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
@@ -198,6 +205,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// model library stuff
 			addSelectedLevelItemsToolStripMenuItem.Enabled = false;
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
+		}
+
+		void ShowWelcomeScreen()
+		{
+			WelcomeForm welcomeForm = new WelcomeForm();
+			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+
+			// subscribe to our checkchanged event
+			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
+			{
+				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				Settings.Save();
+			};
+
+			welcomeForm.ThisToolLink.Text = "SADXLVL2 Documentation";
+			welcomeForm.ThisToolLink.Visible = true;
+
+			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) => 
+			{
+				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SADXLVL2");
+			};
+
+			welcomeForm.ShowDialog();
+
+			welcomeForm.Dispose();
+			welcomeForm = null;
 		}
 
 		private void ShowLevelSelect()
@@ -1533,6 +1566,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
+
 			Settings.Save();
 		}
 
@@ -3652,6 +3686,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void upgradeObjDefsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			CopyDefaultObjectDefintions();
+		}
+
+		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowWelcomeScreen();
 		}
 	}
 }

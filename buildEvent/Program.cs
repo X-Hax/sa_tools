@@ -55,7 +55,7 @@ namespace buildEvent
 					foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase)).Select(a => a.Key))
 					{
 						NJS_MOTION motion = NJS_MOTION.Load(Path.Combine(path, file));
-						motionbytes.AddRange(motion.GetBytes((uint)(key + motionbytes.Count), labels, out uint _));
+						motionbytes.AddRange(motion.GetBytes((uint)motionbytes.Count, labels, out uint _));
 						partcounts.Add(motion.Name, motion.ModelParts);
 					}
 					byte[] mfc = motionbytes.ToArray();
