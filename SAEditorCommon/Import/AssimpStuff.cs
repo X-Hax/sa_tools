@@ -837,15 +837,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			bool hasUV = aiMesh.HasTextureCoords(0);
 			List<PolyChunkStrip.Strip> polys = new List<PolyChunkStrip.Strip>();
 			List<ushort> tris = new List<ushort>();
-			Dictionary<ushort, Vector3D> uvmap = new Dictionary<ushort, Vector3D>();
 			foreach (Face aiFace in aiMesh.Faces)
 				for (int i = 0; i < 3; i++)
-				{
-					ushort ind = (ushort)aiFace.Indices[i];
-					if (hasUV)
-						uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
-					tris.Add(ind);
-				}
+					tris.Add((ushort)aiFace.Indices[i]);
 
 			nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 			foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
@@ -858,7 +852,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					var vertexIndex = grp.Indices[j];
 					stripIndices.Add(vertexIndex);
 					if (hasUV)
-						stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
+						stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 				}
 
 				polys.Add(new PolyChunkStrip.Strip(rev, stripIndices.ToArray(), hasUV ? stripuv.ToArray() : null, null));
@@ -1168,43 +1162,55 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 			int polyIndex = 0;
 			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
-			for (int i = 0; i < meshes.Count; i++)
+			foreach (Assimp.Mesh aiMesh in meshes)
 			{
-				NJS_MESHSET meshset;//= new NJS_MESHSET(polyType, meshes[i].Faces.Count, false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
+				bool hasUV = aiMesh.HasTextureCoords(0);
+				bool hasVColor = aiMesh.HasVertexColors(0);
+
+				List<ushort> tris = new List<ushort>();
+				foreach (Face aiFace in aiMesh.Faces)
+					for (int i = 0; i < 3; i++)
+						tris.Add((ushort)aiFace.Indices[i]);
 
 				List<Poly> polys = new List<Poly>();
-
-				//i noticed the primitiveType of the Assimp Mesh is always triangles so...
-				foreach (Face f in meshes[i].Faces)
+				List<UV> stripuv = new List<UV>();
+				List<Color> stripvc = new List<Color>();
+				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					Triangle triangle = new Triangle();
-					triangle.Indexes[0] = (ushort)(f.Indices[0] + polyIndex);
-					triangle.Indexes[1] = (ushort)(f.Indices[1] + polyIndex);
-					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
-					polys.Add(triangle);
-				}
-				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
-				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
-				meshset.MaterialID = (ushort)lookupMaterial[meshes[i].MaterialIndex];
+					bool rev = grp.Indices[1] == grp.Indices[0];
+					var stripIndices = new List<ushort>(grp.Indices.Length);
+					for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
+					{
+						var vertexIndex = grp.Indices[j];
+						stripIndices.Add((ushort)(vertexIndex + polyIndex));
+						if (hasUV)
+							stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
+						if (hasVColor)
+							stripvc.Add(aiMesh.VertexColorChannels[0][vertexIndex].ToColor());
+					}
 
-				if (meshes[i].HasTextureCoords(0))
+					polys.Add(new Strip(stripIndices.ToArray(), rev));
+				}
+
+				NJS_MESHSET meshset = new NJS_MESHSET(polys.ToArray(), false, hasUV, hasVColor)
+				{
+					PolyName = "poly_" + Extensions.GenerateIdentifier(),
+					MaterialID = (ushort)lookupMaterial[aiMesh.MaterialIndex]
+				};
+
+				if (hasUV)
 				{
 					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
-					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
-					{
-						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
-					}
+					stripuv.CopyTo(meshset.UV);
 				}
 
-				if (meshes[i].HasVertexColors(0))
+				if (hasVColor)
 				{
 					meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-					for (int x = 0; x < meshes[i].VertexColorChannels[0].Count; x++)
-					{
-						meshset.VColor[x] = Color.FromArgb((int)(meshes[i].VertexColorChannels[0][x].A * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].R * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].G * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].B * 255.0f));
-					}
+					stripvc.CopyTo(meshset.VColor);
 				}
-				polyIndex += meshes[i].VertexCount;
+				polyIndex += aiMesh.VertexCount;
 				meshsets.Add(meshset);//4B4834
 			}
 			attach.Mesh = meshsets;
@@ -1246,18 +1252,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				List<Strip> polys = new List<Strip>();
 				List<List<UV>> us = null;
 				bool hasUV = aiMesh.HasTextureCoords(0);
-				bool hasVColor = aiMesh.HasVertexColors(0);
 
 				List<ushort> tris = new List<ushort>();
-				Dictionary<ushort, Vector3D> uvmap = new Dictionary<ushort, Vector3D>();
 				foreach (Face aiFace in aiMesh.Faces)
 					for (int i = 0; i < 3; i++)
-					{
-						ushort ind = (ushort)aiFace.Indices[i];
-						if (hasUV)
-							uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
-						tris.Add(ind);
-					}
+						tris.Add((ushort)aiFace.Indices[i]);
 
 				if (hasUV)
 					us = new List<List<UV>>();
@@ -1273,7 +1272,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						var vertexIndex = grp.Indices[j];
 						stripIndices.Add((ushort)(vertexIndex + vertoff));
 						if (hasUV)
-							stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
+							stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 					}
 
 					polys.Add(new Strip(stripIndices.ToArray(), rev));
