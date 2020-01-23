@@ -20,8 +20,8 @@ namespace SA_Tools.SplitDLL
 		{
 #if !DEBUG
 			try
-			{
 #endif
+			{
 				byte[] datafile = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
@@ -562,6 +562,33 @@ namespace SA_Tools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "chaomotiontable":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<string> hashes = new List<string>();
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								for (int i = 0; i < data.Length; i++)
+								{
+									ChaoMotionTableEntry cmte = new ChaoMotionTableEntry();
+									NJS_MOTION motion = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, nodeCount);
+									cmte.Motion = motion.Name;
+									motion.Save(Path.Combine(fileOutputPath, $"{i}.sa2mdl"));
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									cmte.Flag1 = ByteConverter.ToUInt32(datafile, address + 4);
+									cmte.TransitionID = ByteConverter.ToInt32(datafile, address + 8);
+									cmte.Flag2 = ByteConverter.ToUInt32(datafile, address + 12);
+									cmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
+									cmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
+									cmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
+									result.Add(cmte);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 					}
 					itemcount++;
 				}
@@ -591,8 +618,8 @@ namespace SA_Tools.SplitDLL
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
-#if !DEBUG
 			}
+#if !DEBUG
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);

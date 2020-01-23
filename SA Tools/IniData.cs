@@ -2934,10 +2934,42 @@ namespace SA_Tools
 			}
 			else
 				sb.Append("NULL, ");
-			sb.AppendFormat("{0:X}, ", TexList);
+			sb.AppendFormat("{0}, ", TexList.ToCHex());
 			sb.AppendFormat("{0}, ", Unknown1);
 			sb.AppendFormat("{0}, ", Unknown2);
 			sb.AppendFormat("{0}", Unknown3);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class ChaoMotionTableEntry
+	{
+		public string Motion { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Flag1 { get; set; }
+		public int TransitionID { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Flag2 { get; set; }
+		public float StartFrame { get; set; }
+		public float EndFrame { get; set; }
+		public float PlaySpeed { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			if (!string.IsNullOrEmpty(Motion))
+			{
+				sb.AppendFormat("{0}, ", Motion);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", Flag1.ToCHex());
+			sb.AppendFormat("{0}, ", TransitionID);
+			sb.AppendFormat("{0}, ", Flag2.ToCHex());
+			sb.AppendFormat("{0}, ", StartFrame.ToC());
+			sb.AppendFormat("{0}, ", EndFrame.ToC());
+			sb.AppendFormat("{0}", PlaySpeed.ToC());
 			sb.Append(" }");
 			return sb.ToString();
 		}

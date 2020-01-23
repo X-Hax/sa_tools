@@ -118,6 +118,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								modified = true;
 						}
 						break;
+					case "chaomotiontable":
+						{
+							Dictionary<string, string> hashes = new Dictionary<string, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+							{
+								string[] b = a.Split(':');
+								return (b[0], b[1]);
+							}))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fp in Directory.GetFiles(item.Filename, "*.saanim").Append(Path.Combine(item.Filename, "info.ini")))
+							{
+								string fn = Path.GetFileName(fp);
+								if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+								{
+									modified = true;
+									break;
+								}
+								hashes.Remove(fn);
+							}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
 				}
 				defaultExportState.Add(item.Filename, modified);
 			}
@@ -298,6 +321,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 									objs.Add(obj.ToStruct());
 									texlists.Add($"{item.Export}[{i}]", obj.TexList);
 								}
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "chaomotiontable":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
+								{
+									NJS_MOTION.Load(file).ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<ChaoMotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("ChaoMotionTableEntry {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
 							}
