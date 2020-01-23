@@ -571,7 +571,7 @@ namespace SA_Tools.SplitDLL
 								for (int i = 0; i < data.Length; i++)
 								{
 									ChaoMotionTableEntry cmte = new ChaoMotionTableEntry();
-									NJS_MOTION motion = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, nodeCount);
+									NJS_MOTION motion = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, nodeCount, shortrot: true);
 									cmte.Motion = motion.Name;
 									motion.Save(Path.Combine(fileOutputPath, $"{i}.sa2mdl"));
 									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
