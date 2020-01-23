@@ -568,13 +568,21 @@ namespace SA_Tools.SplitDLL
 								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
 								List<string> hashes = new List<string>();
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								for (int i = 0; i < data.Length; i++)
 								{
 									ChaoMotionTableEntry cmte = new ChaoMotionTableEntry();
-									NJS_MOTION motion = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, nodeCount, shortrot: true);
-									cmte.Motion = motion.Name;
-									motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"));
-									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									if (!mtns.ContainsKey(mtnaddr))
+									{
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, shortrot: true);
+										cmte.Motion = motion.Name;
+										mtns.Add(mtnaddr, motion.Name);
+										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"));
+										hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+									}
+									else
+										cmte.Motion = mtns[mtnaddr];
 									cmte.Flag1 = ByteConverter.ToUInt32(datafile, address + 4);
 									cmte.TransitionID = ByteConverter.ToInt32(datafile, address + 8);
 									cmte.Flag2 = ByteConverter.ToUInt32(datafile, address + 12);
