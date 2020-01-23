@@ -225,8 +225,8 @@ namespace SonicRetro.SAModel
 						{
 							if (shortrot)
 							{
-								data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6), ByteConverter.ToInt16(file, tmpaddr + 8)));
-								tmpaddr += 10;
+								data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
+								tmpaddr += 8;
 							}
 							else
 							{
@@ -571,15 +571,18 @@ namespace SonicRetro.SAModel
 					rotframes[model.Key] = model.Value.Rotation.Count;
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 					{
-						result.AddRange(ByteConverter.GetBytes(item.Key));
 						if (ShortRot)
 						{
+							result.AddRange(ByteConverter.GetBytes((short)item.Key));
 							result.AddRange(ByteConverter.GetBytes((short)item.Value.X));
 							result.AddRange(ByteConverter.GetBytes((short)item.Value.Y));
 							result.AddRange(ByteConverter.GetBytes((short)item.Value.Z));
 						}
 						else
+						{
+							result.AddRange(ByteConverter.GetBytes(item.Key));
 							result.AddRange(item.Value.GetBytes());
+						}
 					}
 				}
 				if (model.Value.Scale.Count > 0)
