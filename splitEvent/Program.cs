@@ -131,12 +131,15 @@ namespace splitEvent
 							{
 								EntityInfo ent = new EntityInfo();
 								ent.Model = GetModel(fc, ptr2, key, $"Scene {gn + 1}\\Entity {en + 1} Model.sa2mdl");
-								ent.Motion = GetMotion(fc, ptr2 + 4, key, $"Scene {gn + 1}\\Entity {en + 1} Motion.saanim", motions, modelfiles[ent.Model].Model.CountAnimated());
-								if (ent.Motion != null)
-									modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
-								ent.ShapeMotion = GetMotion(fc, ptr2 + 8, key, $"Scene {gn + 1}\\Entity {en + 1} Shape Motion.saanim", motions, modelfiles[ent.Model].Model.CountMorph());
-								if (ent.ShapeMotion != null)
-									modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+								if (ent.Model != null)
+								{
+									ent.Motion = GetMotion(fc, ptr2 + 4, key, $"Scene {gn + 1}\\Entity {en + 1} Motion.saanim", motions, modelfiles[ent.Model].Model.CountAnimated());
+									if (ent.Motion != null)
+										modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
+									ent.ShapeMotion = GetMotion(fc, ptr2 + 8, key, $"Scene {gn + 1}\\Entity {en + 1} Shape Motion.saanim", motions, modelfiles[ent.Model].Model.CountMorph());
+									if (ent.ShapeMotion != null)
+										modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+								}
 								if (battle)
 								{
 									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
