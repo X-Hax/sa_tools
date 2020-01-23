@@ -30,6 +30,8 @@ namespace SA_Tools.SplitDLL
 		public int Length { get; set; }
 		[IniName("filename")]
 		public string Filename { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<string, string> CustomProperties { get; set; }
 	}
 
 	public class DllIniData
