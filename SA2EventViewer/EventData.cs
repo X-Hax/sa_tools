@@ -85,7 +85,7 @@ namespace SA2EventViewer
 			int ptr = file.GetPointer(address, imageBase);
 			if (ptr != 0)
 			{
-				result = new NJS_OBJECT(file, ptr, imageBase, ModelFormat.Chunk);
+				result = new NJS_OBJECT(file, ptr, imageBase, ModelFormat.Chunk, null);
 				if (models.ContainsKey(result.Name))
 					result = models[result.Name];
 				else

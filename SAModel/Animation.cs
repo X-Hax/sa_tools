@@ -11,14 +11,14 @@ namespace SonicRetro.SAModel
 		public NJS_OBJECT Model { get; private set; }
 		public NJS_MOTION Animation { get; private set; }
 
-		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format)
-			: this(file, address, imageBase, format, new Dictionary<int, string>())
+		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
+			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
 		{
 		}
 
-		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
+		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
+			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
 			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
@@ -57,6 +57,7 @@ namespace SonicRetro.SAModel
 		public string Name { get; set; }
 		public int ModelParts { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
+		public bool ShortRot { get; set; }
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 
@@ -65,14 +66,9 @@ namespace SonicRetro.SAModel
 			Name = "animation_" + Extensions.GenerateIdentifier();
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels)
-			: this(file, address, imageBase, nummodels, new Dictionary<int, string>())
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false)
 		{
-		}
-
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels)
-		{
-			if (labels.ContainsKey(address))
+			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
 			else
 				Name = "animation_" + address.ToString("X8");
@@ -91,6 +87,7 @@ namespace SonicRetro.SAModel
 					InterpolationMode = InterpolationMode.User;
 					break;
 			}
+			ShortRot = shortrot;
 			int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 			for (int i = 0; i < nummodels; i++)
@@ -102,7 +99,7 @@ namespace SonicRetro.SAModel
 				{
 					posoff = ByteConverter.ToUInt32(file, address);
 					if (posoff > 0)
-						posoff = posoff - imageBase;
+						posoff -= imageBase;
 					address += 4;
 				}
 				uint rotoff = 0;
@@ -110,7 +107,7 @@ namespace SonicRetro.SAModel
 				{
 					rotoff = ByteConverter.ToUInt32(file, address);
 					if (rotoff > 0)
-						rotoff = rotoff - imageBase;
+						rotoff -= imageBase;
 					address += 4;
 				}
 				uint scloff = 0;
@@ -118,7 +115,7 @@ namespace SonicRetro.SAModel
 				{
 					scloff = ByteConverter.ToUInt32(file, address);
 					if (scloff > 0)
-						scloff = scloff - imageBase;
+						scloff -= imageBase;
 					address += 4;
 				}
 				uint vecoff = 0;
@@ -226,8 +223,16 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)rotoff;
 						for (int j = 0; j < frames; j++)
 						{
-							data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
-							tmpaddr += 16;
+							if (shortrot)
+							{
+								data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
+								tmpaddr += 8;
+							}
+							else
+							{
+								data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
+								tmpaddr += 16;
+							}
 						}
 					}
 					address += 4;
@@ -443,62 +448,46 @@ namespace SonicRetro.SAModel
 			ModelParts = nummodels;
 		}
 
-		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format)
+		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
 		{
-			return ReadHeader(file, address, imageBase, format, new Dictionary<int, string>());
+			return ReadHeader(file, address, imageBase, format, new Dictionary<int, string>(), attaches);
 		}
 
 		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format,
-			Dictionary<int, string> labels)
+			Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			NJS_OBJECT Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format);
+			NJS_OBJECT Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
 			return new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
 
-		public static NJS_MOTION Load(string filename)
+		public static NJS_MOTION Load(string filename, int nummodels = -1)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			byte version = file[7];
-			if (version > CurrentVersion)
-				throw new FormatException("Not a valid SAANIM file.");
-			if (version == 0)
-				throw new NotImplementedException("Cannot open version 0 animations without a model!");
-			int aniaddr = ByteConverter.ToInt32(file, 8);
-			Dictionary<int, string> labels = new Dictionary<int, string>();
-			int tmpaddr = BitConverter.ToInt32(file, 0xC);
-			if (tmpaddr != 0)
-				labels.Add(aniaddr, file.GetCString(tmpaddr));
 			if (magic == SAANIM)
 			{
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, BitConverter.ToInt32(file, 0x10), labels);
-				ByteConverter.BigEndian = be;
-				return anim;
-			}
-			ByteConverter.BigEndian = be;
-			throw new FormatException("Not a valid SAANIM file.");
-		}
-
-		public static NJS_MOTION Load(string filename, int nummodels)
-		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
-			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			byte version = file[7];
-			if (version > CurrentVersion)
-				throw new FormatException("Not a valid SAANIM file.");
-			int aniaddr = ByteConverter.ToInt32(file, 8);
-			Dictionary<int, string> labels = new Dictionary<int, string>();
-			int tmpaddr = BitConverter.ToInt32(file, 0xC);
-			if (tmpaddr != 0)
-				labels.Add(aniaddr, file.GetCString(tmpaddr));
-			if (magic == SAANIM)
-			{
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels, labels);
+				byte version = file[7];
+				if (version > CurrentVersion)
+				{
+					ByteConverter.BigEndian = be;
+					throw new FormatException("Not a valid SAANIM file.");
+				}
+				int aniaddr = ByteConverter.ToInt32(file, 8);
+				Dictionary<int, string> labels = new Dictionary<int, string>();
+				int tmpaddr = BitConverter.ToInt32(file, 0xC);
+				if (tmpaddr != 0)
+					labels.Add(aniaddr, file.GetCString(tmpaddr));
+				if (version > 0)
+					nummodels = BitConverter.ToInt32(file, 0x10);
+				else if (nummodels == -1)
+				{
+					ByteConverter.BigEndian = be;
+					throw new NotImplementedException("Cannot open version 0 animations without a model!");
+				}
+				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0);
 				ByteConverter.BigEndian = be;
 				return anim;
 			}
@@ -582,8 +571,18 @@ namespace SonicRetro.SAModel
 					rotframes[model.Key] = model.Value.Rotation.Count;
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 					{
-						result.AddRange(ByteConverter.GetBytes(item.Key));
-						result.AddRange(item.Value.GetBytes());
+						if (ShortRot)
+						{
+							result.AddRange(ByteConverter.GetBytes((short)item.Key));
+							result.AddRange(ByteConverter.GetBytes((short)item.Value.X));
+							result.AddRange(ByteConverter.GetBytes((short)item.Value.Y));
+							result.AddRange(ByteConverter.GetBytes((short)item.Value.Z));
+						}
+						else
+						{
+							result.AddRange(ByteConverter.GetBytes(item.Key));
+							result.AddRange(item.Value.GetBytes());
+						}
 					}
 				}
 				if (model.Value.Scale.Count > 0)
@@ -902,6 +901,7 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			result.AddRange(ByteConverter.GetBytes(numpairs));
+			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}
 
@@ -912,7 +912,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] GetBytes(uint imageBase)
 		{
-			return GetBytes(imageBase, out uint address);
+			return GetBytes(imageBase, out _);
 		}
 
 		public void ToStructVariables(TextWriter writer)
@@ -951,7 +951,10 @@ namespace SonicRetro.SAModel
 				if (model.Value.Rotation.Count > 0)
 				{
 					hasRot = true;
-					writer.Write("NJS_MKEY_A ");
+					if (ShortRot)
+						writer.Write("NJS_MKEY_SA ");
+					else
+						writer.Write("NJS_MKEY_A ");
 					writer.Write(id);
 					writer.Write("_");
 					writer.Write(model.Key);
@@ -1496,7 +1499,7 @@ namespace SonicRetro.SAModel
 
 		public byte[] WriteHeader(uint imageBase, uint modeladdr)
 		{
-			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out uint address);
+			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out _);
 		}
 
 		public void Save(string filename)
@@ -1508,7 +1511,7 @@ namespace SonicRetro.SAModel
 			byte[] anim = GetBytes(0x14, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x14));
 			file.Align(0x10);
-			file.AddRange(ByteConverter.GetBytes(ModelParts));
+			file.AddRange(ByteConverter.GetBytes(ModelParts | (ShortRot ? int.MinValue : 0)));
 			file.Align(0x14);
 			file.AddRange(anim);
 			file.Align(4);

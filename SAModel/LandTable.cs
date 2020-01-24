@@ -69,6 +69,7 @@ namespace SonicRetro.SAModel
 			else
 				Name = "landtable_" + address.ToString("X8");
 			short colcnt = ByteConverter.ToInt16(file, address);
+			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
 			switch (format)
 			{
 				case LandTableFormat.SA1:
@@ -87,7 +88,7 @@ namespace SonicRetro.SAModel
 							COLName = "collist_" + tmpaddr.ToString("X8");
 						for (int i = 0; i < colcnt; i++)
 						{
-							COL.Add(new COL(file, tmpaddr, imageBase, format, labels));
+							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, attaches));
 							tmpaddr += SAModel.COL.Size(format);
 						}
 					}
@@ -104,7 +105,7 @@ namespace SonicRetro.SAModel
 							AnimName = "animlist_" + tmpaddr.ToString("X8");
 						for (int i = 0; i < anicnt; i++)
 						{
-							Anim.Add(new GeoAnimData(file, tmpaddr, imageBase, format, labels));
+							Anim.Add(new GeoAnimData(file, tmpaddr, imageBase, format, labels, attaches));
 							tmpaddr += GeoAnimData.Size;
 						}
 					}
@@ -135,7 +136,7 @@ namespace SonicRetro.SAModel
 							COLName = "collist_" + tmpaddr.ToString("X8");
 						for (int i = 0; i < colcnt; i++)
 						{
-							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt)));
+							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt), attaches));
 							tmpaddr += SAModel.COL.Size(format);
 						}
 					}

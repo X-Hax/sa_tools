@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using SA_Tools;
+using SA_Tools.SplitDLL;
+using System.Globalization;
 
 namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 {
@@ -42,7 +44,122 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 				defaultExportState.Add(item.Key, modified);
 			}
 
+			foreach (var item in IniData.DataItems)
+			{
+				bool modified = false;
+				switch (item.Type)
+				{
+					case "animindexlist":
+						{
+							Dictionary<int, string> hashes = new Dictionary<int, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+												 {
+													 string[] b = a.Split(':');
+													 return (int.Parse(b[0], System.Globalization.NumberFormatInfo.InvariantInfo), b[1]);
+												 }))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fn in Directory.GetFiles(item.Filename, "*.saanim"))
+								if (int.TryParse(Path.GetFileNameWithoutExtension(fn), out int i))
+								{
+									if (!hashes.ContainsKey(i) || HelperFunctions.FileHash(fn) != hashes[i])
+									{
+										modified = true;
+										break;
+									}
+									hashes.Remove(i);
+								}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
+					case "charaobjectdatalist":
+						{
+							Dictionary<string, string> hashes = new Dictionary<string, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+							{
+								string[] b = a.Split(':');
+								return (b[0], b[1]);
+							}))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fp in Directory.GetFiles(item.Filename, "*.sa2mdl").Concat(Directory.GetFiles(item.Filename, "*.saanim")).Append(Path.Combine(item.Filename, "info.ini")))
+							{
+								string fn = Path.GetFileName(fp);
+								if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+								{
+									modified = true;
+									break;
+								}
+								hashes.Remove(fn);
+							}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
+					case "kartspecialinfolist":
+						{
+							Dictionary<string, string> hashes = new Dictionary<string, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+							{
+								string[] b = a.Split(':');
+								return (b[0], b[1]);
+							}))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fp in Directory.GetFiles(item.Filename, "*.sa2mdl").Append(Path.Combine(item.Filename, "info.ini")))
+							{
+								string fn = Path.GetFileName(fp);
+								if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+								{
+									modified = true;
+									break;
+								}
+								hashes.Remove(fn);
+							}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
+					case "chaomotiontable":
+						{
+							Dictionary<string, string> hashes = new Dictionary<string, string>();
+							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+							{
+								string[] b = a.Split(':');
+								return (b[0], b[1]);
+							}))
+								hashes.Add(hash.Item1, hash.Item2);
+							foreach (var fp in Directory.GetFiles(item.Filename, "*.saanim").Append(Path.Combine(item.Filename, "info.ini")))
+							{
+								string fn = Path.GetFileName(fp);
+								if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+								{
+									modified = true;
+									break;
+								}
+								hashes.Remove(fn);
+							}
+							if (hashes.Count > 0)
+								modified = true;
+						}
+						break;
+				}
+				defaultExportState.Add(item.Filename, modified);
+			}
+
 			return IniData;
+		}
+
+		private static void CopyDirectory(DirectoryInfo srcdir, string dstdir)
+		{
+			foreach (var d in srcdir.GetDirectories())
+			{
+				string nd = Path.Combine(dstdir, d.Name);
+				Directory.CreateDirectory(nd);
+				CopyDirectory(d, nd);
+			}
+			foreach (var f in srcdir.GetFiles())
+			{
+				f.CopyTo(Path.Combine(dstdir, f.Name), true);
+			}
 		}
 
 		public static void ExportINI(DllIniData IniData,
@@ -54,8 +171,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 				Name = IniData.Name,
 				Game = IniData.Game,
 				Exports = IniData.Exports,
-				TexLists = IniData.TexLists,
-				Files = new DictionaryContainer<FileTypeHash>()
+				TexLists = IniData.TexLists
 			};
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
@@ -77,7 +193,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 						labels.AddRange(mdl.GetLabels());
 						break;
 					case "animation":
-					case "animindex":
 						NJS_MOTION ani = NJS_MOTION.Load(item.Key);
 						labels.Add(ani.Name);
 						break;
@@ -85,6 +200,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null));
 			}
 			output.Items = new List<DllItemInfo>(IniData.Items.Where(a => labels.Contains(a.Label)));
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+			{
+				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
+				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
+				output.DataItems.Add(item);
+			}
 			IniSerializer.Serialize(output, fileName);
 		}
 
@@ -93,7 +214,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 		{
 			using (TextWriter writer = File.CreateText(fileName))
 			{
-				bool SA2 = IniData.Game == Game.SA2B;
+				bool SA2 = IniData.Game == SA_Tools.SplitDLL.Game.SA2B;
 				ModelFormat modelfmt = SA2 ? ModelFormat.Chunk : ModelFormat.BasicDX;
 				LandTableFormat landfmt = SA2 ? LandTableFormat.SA2 : LandTableFormat.SADX;
 				writer.WriteLine("// Generated by SA Tools DLL Mod Generator");
@@ -133,7 +254,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							labels.AddRange(mdl.GetLabels());
 							break;
 						case "animation":
-						case "animindex":
 							NJS_MOTION ani = NJS_MOTION.Load(item.Key);
 							ani.ToStructVariables(writer);
 							labels.Add(ani.Name);
@@ -141,6 +261,87 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+					switch (item.Type)
+					{
+						case "animindexlist":
+							{
+								SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
+								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
+									if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
+										anims.Add(i, NJS_MOTION.Load(file));
+								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
+								{
+									obj.Value.ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								writer.WriteLine("AnimationIndex {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(anims.Count);
+								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
+									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, &{obj.Value.Name} }}");
+								objs.Add("{ -1 }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "charaobjectdatalist":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
+								{
+									NJS_MOTION.Load(file).ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("CharaObjectData {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartspecialinfolist":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<KartSpecialInfo[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartSpecialInfo {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartSpecialInfo obj = data[i];
+									objs.Add(obj.ToStruct());
+									texlists.Add($"{item.Export}[{i}]", obj.TexList);
+								}
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "chaomotiontable":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
+								{
+									NJS_MOTION.Load(file).ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<ChaoMotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("ChaoMotionTableEntry {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+					}
 				writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 				writer.WriteLine("{");
 				writer.WriteLine("\tHMODULE handle = GetModuleHandle(L\"{0}\");", IniData.Name);
@@ -148,7 +349,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 				foreach (KeyValuePair<string, string> item in IniData.Exports.Where(item => exports.Contains(item.Key)))
 					writer.WriteLine("\t{0}{1} = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Value], item.Key);
 				foreach (DllItemInfo item in IniData.Items.Where(item => labels.Contains(item.Label)))
-					writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
+					if (typemap[IniData.Exports[item.Export]].EndsWith("**"))
+						writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
+					else
+						writer.WriteLine("\t*{0} = {1};", item.ToString(), item.Label);
+				foreach (var item in IniData.DataItems.Where(item => itemsToExport[item.Filename]))
+					switch (item.Type)
+					{
+						case "animindexlist":
+						case "charaobjectdatalist":
+						case "kartspecialinfolist":
+							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
+							break;
+						default:
+							writer.WriteLine("\t{0}{1}_exp = ({0})GetProcAddress(handle, \"{1}\");", typemap[item.Type], item.Export);
+							writer.WriteLine("\t*{0}_exp = {0};", item.Export);
+							break;
+					}
 				if (texlists.Count > 0 && IniData.TexLists != null && IniData.TexLists.Items != null)
 				{
 					exports = new List<string>(IniData.TexLists.Where(item => texlists.Values.Contains(item.Key)).Select(item => item.Value.Export).Distinct());

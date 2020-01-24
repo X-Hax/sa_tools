@@ -2861,6 +2861,120 @@ namespace SA_Tools
 		Credits
 	}
 
+	public class CharaObjectData
+	{
+		public string MainModel { get; set; }
+		public string Animation1 { get; set; }
+		public string Animation2 { get; set; }
+		public string Animation3 { get; set; }
+		public string AccessoryModel { get; set; }
+		public string AccessoryAttachNode { get; set; }
+		public string SuperModel { get; set; }
+		public string SuperAnimation1 { get; set; }
+		public string SuperAnimation2 { get; set; }
+		public string SuperAnimation3 { get; set; }
+		public int Unknown1 { get; set; }
+		public int Rating { get; set; }
+		public int DescriptionID { get; set; }
+		public int TextBackTexture { get; set; }
+		public float Unknown5 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", MainModel);
+			sb.AppendFormat("{0}, ", Animation1);
+			sb.AppendFormat("{0}, ", Animation2);
+			sb.AppendFormat("{0}, ", Animation3);
+			if (!string.IsNullOrEmpty(AccessoryModel))
+			{
+				sb.AppendFormat("{0}, ", AccessoryModel);
+				sb.AppendFormat("{0}, ", AccessoryAttachNode);
+			}
+			else
+				sb.Append("NULL, NULL, ");
+			if (!string.IsNullOrEmpty(SuperModel))
+			{
+				sb.AppendFormat("{0}, ", SuperModel);
+				sb.AppendFormat("{0}, ", SuperAnimation1);
+				sb.AppendFormat("{0}, ", SuperAnimation2);
+				sb.AppendFormat("{0}, ", SuperAnimation3);
+			}
+			else
+				sb.Append("NULL, NULL, NULL, NULL, ");
+			sb.AppendFormat("{0}, ", Unknown1);
+			sb.AppendFormat("{0}, ", Rating);
+			sb.AppendFormat("{0}, ", DescriptionID);
+			sb.AppendFormat("{0}, ", TextBackTexture);
+			sb.Append(Unknown5.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class KartSpecialInfo
+	{
+		public int ID { get; set; }
+		public string Model { get; set; }
+		public string LowModel { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint TexList { get; set; }
+		public int Unknown1 { get; set; }
+		public int Unknown2 { get; set; }
+		public int Unknown3 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", ID);
+			sb.AppendFormat("{0}, ", Model);
+			if (!string.IsNullOrEmpty(LowModel))
+			{
+				sb.AppendFormat("{0}, ", LowModel);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", TexList.ToCHex());
+			sb.AppendFormat("{0}, ", Unknown1);
+			sb.AppendFormat("{0}, ", Unknown2);
+			sb.AppendFormat("{0}", Unknown3);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class ChaoMotionTableEntry
+	{
+		public string Motion { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Flag1 { get; set; }
+		public int TransitionID { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Flag2 { get; set; }
+		public float StartFrame { get; set; }
+		public float EndFrame { get; set; }
+		public float PlaySpeed { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			if (!string.IsNullOrEmpty(Motion))
+			{
+				sb.AppendFormat("{0}, ", Motion);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", Flag1.ToCHex());
+			sb.AppendFormat("{0}, ", TransitionID);
+			sb.AppendFormat("{0}, ", Flag2.ToCHex());
+			sb.AppendFormat("{0}, ", StartFrame.ToC());
+			sb.AppendFormat("{0}, ", EndFrame.ToC());
+			sb.AppendFormat("{0}", PlaySpeed.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>

@@ -24,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,7 +72,6 @@
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
     <Compile Include="DLLModGenerator\DLLModGen.cs" />
-    <Compile Include="DLLModGenerator\IniData.cs" />
     <Compile Include="DLLModGenerator\DLLModGenUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -243,6 +243,12 @@
     <Compile Include="UI\TexturePicker.Designer.cs">
       <DependentUpon>TexturePicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\WelcomeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\WelcomeForm.Designer.cs">
+      <DependentUpon>WelcomeForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
@@ -314,6 +320,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\TextureRemappingDialog.resx">
       <DependentUpon>TextureRemappingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\WelcomeForm.resx">
+      <DependentUpon>WelcomeForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

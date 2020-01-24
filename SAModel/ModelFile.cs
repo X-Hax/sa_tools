@@ -41,6 +41,7 @@ namespace SonicRetro.SAModel
 				throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 			Metadata = new Dictionary<uint, byte[]>();
 			Dictionary<int, string> labels = new Dictionary<int, string>();
+			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
 			if (version < 2)
 			{
 				if (version == 1)
@@ -68,7 +69,7 @@ namespace SonicRetro.SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
+				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
 				if (filename != null)
 				{
 					tmpaddr = ByteConverter.ToInt32(file, 0xC);
@@ -209,7 +210,7 @@ namespace SonicRetro.SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels);
+				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);

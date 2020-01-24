@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using SA_Tools;
-using SonicRetro.SAModel;
 
 namespace SA_Tools.SplitMDL
 {
@@ -56,7 +55,7 @@ namespace SA_Tools.SplitMDL
 				List<string> partnames = new List<string>();
 				foreach (KeyValuePair<int, int> item in modeladdrs)
 				{
-					NJS_OBJECT obj = new NJS_OBJECT(mdlfile, item.Value, 0, ModelFormat.Chunk);
+					NJS_OBJECT obj = new NJS_OBJECT(mdlfile, item.Value, 0, ModelFormat.Chunk, new Dictionary<int, Attach>());
 					modelnames[item.Key] = obj.Name;
 					if (!partnames.Contains(obj.Name))
 					{
@@ -74,7 +73,7 @@ namespace SA_Tools.SplitMDL
 				foreach ((string anifilename, byte[] anifile) in animfiles)
 				{
 					Dictionary<int, int> processedanims = new Dictionary<int, int>();
-					Dictionary<int, string> ini = new Dictionary<int, string>();
+					MTNInfo ini = new MTNInfo() { BigEndian = isBigEndian };
 					Directory.CreateDirectory(anifilename);
 					address = 0;
 					i = ByteConverter.ToInt16(anifile, address);
@@ -88,11 +87,11 @@ namespace SA_Tools.SplitMDL
 							anims[i].Save(animfns[i]);
 							processedanims[aniaddr] = i;
 						}
-						ini[i] = "animation_" + aniaddr.ToString("X8");
+						ini.Indexes[(short)i] = "animation_" + aniaddr.ToString("X8");
 						address += 8;
 						i = ByteConverter.ToInt16(anifile, address);
 					}
-					IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(anifilename, anifilename + ".ini"));
+					IniSerializer.Serialize(ini, Path.Combine(anifilename, anifilename + ".ini"));
 				}
 
 				// save output model files
@@ -113,7 +112,7 @@ namespace SA_Tools.SplitMDL
 				}
 
 				// save ini file
-				IniSerializer.Serialize(modelnames, new IniCollectionSettings(IniCollectionMode.IndexOnly),
+				IniSerializer.Serialize(new MDLInfo() { BigEndian = isBigEndian, Indexes = modelnames },
 					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
 			}
 			finally
@@ -121,5 +120,19 @@ namespace SA_Tools.SplitMDL
 				Environment.CurrentDirectory = dir;
 			}
 		}
+	}
+
+	public class MDLInfo
+	{
+		public bool BigEndian { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<int, string> Indexes { get; set; } = new Dictionary<int, string>();
+	}
+
+	public class MTNInfo
+	{
+		public bool BigEndian { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<short, string> Indexes { get; set; } = new Dictionary<short, string>();
 	}
 }

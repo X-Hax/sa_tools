@@ -13,6 +13,7 @@ namespace SonicRetro.SAModel.GC
 		Translucent
 	}
 
+	[Serializable]
 	public class GeometryData
 	{
 		public List<Mesh> OpaqueMeshes { get; private set; }

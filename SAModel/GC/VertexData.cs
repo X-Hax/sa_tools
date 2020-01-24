@@ -8,7 +8,8 @@ using SonicRetro.SAModel;
 
 namespace SonicRetro.SAModel.GC
 {
-    public class VertexData
+	[Serializable]
+	public class VertexData
     {
 		public List<VertexAttribute> VertexAttributes { get; private set; }
         private List<GXVertexAttribute> m_Attributes;

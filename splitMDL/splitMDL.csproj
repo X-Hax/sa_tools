@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitMDL.cs" />
     <Compile Include="SplitMDLGUI.cs">
       <SubType>Form</SubType>
     </Compile>

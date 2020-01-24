@@ -1,4 +1,5 @@
 ﻿using SA_Tools;
+using SA_Tools.SplitMDL;
 using SonicRetro.SAModel;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,18 @@ namespace buildMDL
 			try
 			{
 				Queue<string> argq = new Queue<string>(args);
-				if (argq.Count > 0 && argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
-				{
-					ByteConverter.BigEndian = true;
-					argq.Dequeue();
-				}
+				bool? be = null;
+				if (argq.Count > 0)
+					if (argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
+					{
+						be = true;
+						argq.Dequeue();
+					}
+					else if (argq.Peek().Equals("/le", StringComparison.OrdinalIgnoreCase))
+					{
+						be = false;
+						argq.Dequeue();
+					}
 				string mdlfilename;
 				if (argq.Count > 0)
 				{
@@ -32,25 +40,30 @@ namespace buildMDL
 					mdlfilename = Console.ReadLine();
 				}
 				mdlfilename = Path.GetFullPath(mdlfilename);
+				if (Directory.Exists(mdlfilename))
+					mdlfilename += ".prs";
 				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				SortedDictionary<int, NJS_OBJECT> models = new SortedDictionary<int, NJS_OBJECT>();
 				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
 					if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int i))
 						models.Add(i, new ModelFile(file).Model);
-				Dictionary<int, string> modelnames = IniSerializer.Deserialize<Dictionary<int, string>>(
-					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"),
-					new IniCollectionSettings(IniCollectionMode.IndexOnly));
+				MDLInfo mdlinfo = IniSerializer.Deserialize<MDLInfo>(
+					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
+				if (!be.HasValue)
+					ByteConverter.BigEndian = mdlinfo.BigEndian;
+				else
+					ByteConverter.BigEndian = be.Value;
 				List<byte> mdlfile = new List<byte>();
 				List<byte> modelbytes = new List<byte>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				uint imageBase = (uint)(modelnames.Count * 8) + 8;
+				uint imageBase = (uint)(mdlinfo.Indexes.Count * 8) + 8;
 				foreach (KeyValuePair<int, NJS_OBJECT> item in models)
 				{
 					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out uint address);
 					modelbytes.AddRange(tmp);
 					imageBase += (uint)tmp.Length;
 				}
-				foreach (KeyValuePair<int, string> item in modelnames)
+				foreach (KeyValuePair<int, string> item in mdlinfo.Indexes)
 				{
 					mdlfile.AddRange(ByteConverter.GetBytes(item.Key));
 					mdlfile.AddRange(ByteConverter.GetBytes(labels[item.Value]));

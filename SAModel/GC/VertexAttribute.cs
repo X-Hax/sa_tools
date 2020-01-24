@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.GC
 {
+	[Serializable]
 	public struct VertexAttribute
 	{
         public GXVertexAttribute Attribute { get; set; }

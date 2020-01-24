@@ -98,6 +98,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			InitDisableInvalidControls();
 
+			Settings.Reload();
+
+			if(Settings.ShowWelcomeScreen)
+			{
+				ShowWelcomeScreen();
+			}
+
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
@@ -198,6 +205,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// model library stuff
 			addSelectedLevelItemsToolStripMenuItem.Enabled = false;
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
+		}
+
+		void ShowWelcomeScreen()
+		{
+			WelcomeForm welcomeForm = new WelcomeForm();
+			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+
+			// subscribe to our checkchanged event
+			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
+			{
+				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				Settings.Save();
+			};
+
+			welcomeForm.ThisToolLink.Text = "SADXLVL2 Documentation";
+			welcomeForm.ThisToolLink.Visible = true;
+
+			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) => 
+			{
+				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SADXLVL2");
+			};
+
+			welcomeForm.ShowDialog();
+
+			welcomeForm.Dispose();
+			welcomeForm = null;
 		}
 
 		private void ShowLevelSelect()
@@ -1515,6 +1548,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			gizmoSpaceComboBox.Enabled = true;
 			gizmoSpaceComboBox.SelectedIndex = 0;
+			pivotComboBox.Enabled = true;
+			pivotComboBox.SelectedIndex = 1;
 
 			addAllLevelItemsToolStripMenuItem.Enabled = true;
 			toolStrip1.Enabled = isStageLoaded;
@@ -1531,6 +1566,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
+
 			Settings.Save();
 		}
 
@@ -2409,55 +2445,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.Left:
-					foreach(PointHelper pointHelper in PointHelper.Instances)
+					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
 						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-					if (transformGizmo.Enabled)
-					{
-						Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
-
-						switch (transformGizmo.Mode)
-						{
-							case TransformMode.NONE:
-								break;
-							case TransformMode.TRANFORM_MOVE:
-								// move all of our editor selected items
-								foreach (Item item in selectedItems.Items)
-								{
-									item.Position = transformGizmo.Move(gizmoMouseInput,
-										item.Position.ToVector3(), cam).ToVertex();
-								}
-
-								Item firstItem = selectedItems.Get(0);
-								transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-								break;
-							case TransformMode.TRANSFORM_ROTATE:
-								// rotate all of our editor selected items
-								foreach (Item item in selectedItems.Items)
-								{
-									item.Rotation = transformGizmo.Rotate(gizmoMouseInput, cam, item.Rotation);
-								}
-
-								firstItem = selectedItems.Get(0);
-								transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-								break;
-							case TransformMode.TRANSFORM_SCALE:
-								// scale all of our editor selected items
-								foreach(Item item in selectedItems.Items)
-								{
-									if (item is IScaleable scalableItem)
-									{
-										scalableItem.SetScale(transformGizmo.Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
-									}
-								}
-								break;
-							default:
-								break;
-						}
-					}
-
+					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
 
 					DrawLevel();
 					break;
@@ -2572,8 +2565,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (sender.ItemCount > 0) // set up gizmo
 			{
 				transformGizmo.Enabled = true;
-				transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
-					selectedItems.Get(0).TransformMatrix);
+				SetGizmoPivotAndLocality();
 			}
 			else
 			{
@@ -3245,10 +3237,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
 				gizmoSpaceComboBox.Enabled = true;
+				pivotComboBox.Enabled = true;
 				selectModeButton.Checked = false;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
@@ -3260,27 +3253,40 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
+				pivotComboBox.Enabled = false;
+				pivotComboBox.SelectedIndex = 1;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
 		private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
 		{
-			if (transformGizmo != null)
-			{
-				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
-				DrawLevel();
-			}
+			SetGizmoPivotAndLocality();
 		}
 
 		private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
 		{
+			SetGizmoPivotAndLocality();
+		}
+
+		void SetGizmoPivotAndLocality()
+		{
 			if (transformGizmo != null)
 			{
+				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
 				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+
+				if (selectedItems.ItemCount > 0)
+				{
+					Item firstItem = selectedItems.Get(0);
+					transformGizmo.SetGizmo(
+						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+				}
+
 				DrawLevel();
 			}
 		}
@@ -3293,9 +3299,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
+				pivotComboBox.Enabled = false;
+				pivotComboBox.SelectedIndex = 1;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
-				DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 		#endregion
@@ -3630,6 +3638,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void upgradeObjDefsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			CopyDefaultObjectDefintions();
+		}
+
+		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowWelcomeScreen();
 		}
 	}
 }

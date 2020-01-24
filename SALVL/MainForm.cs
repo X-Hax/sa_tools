@@ -19,6 +19,8 @@ namespace SonicRetro.SAModel.SALVL
 {
 	public partial class MainForm : Form
 	{
+		Properties.Settings Settings = Properties.Settings.Default;
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -44,21 +46,85 @@ namespace SonicRetro.SAModel.SALVL
 		bool loaded;
 		int interval = 20;
 		EditorItemSelection selectedItems = new EditorItemSelection();
+
+		#region UI & Customization
+		EditorOptionsEditor optionsEditor;
+		ActionKeybindEditor keybindEditor;
 		bool lookKeyDown;
 		bool zoomKeyDown;
+		bool cameraKeyDown;
 		TransformGizmo transformGizmo;
+		ActionMappingList actionList;
+		ActionInputCollector actionInputCollector;
+		#endregion
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
+
+			Settings.Reload();
+			if (Settings.ShowWelcomeScreen)
+			{
+				ShowWelcomeScreen();
+			}
+
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+				DefaultActionList.DefaultActionMapping);
+
+			actionInputCollector = new ActionInputCollector();
+			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+			optionsEditor.ResetDefaultKeybindsCommand += () =>
+			{
+				actionList.ActionKeyMappings.Clear();
+
+				foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
+				{
+					actionList.ActionKeyMappings.Add(keymapping);
+				}
+
+				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			};
+
 			Gizmo.InitGizmo(d3ddevice);
 			if (Program.Arguments.Length > 0)
 				LoadFile(Program.Arguments[0]);
 
 			LevelData.StateChanged += LevelData_StateChanged;
 			panel1.MouseWheel += panel1_MouseWheel;
+		}
+
+		void ShowWelcomeScreen()
+		{
+			WelcomeForm welcomeForm = new WelcomeForm();
+			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+
+			// subscribe to our checkchanged event
+			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
+			{
+				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				Settings.Save();
+			};
+
+			welcomeForm.ThisToolLink.Text = "SALVL Documentation";
+			welcomeForm.ThisToolLink.Visible = true;
+
+			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
+			{
+				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SALVL");
+			};
+
+			welcomeForm.ShowDialog();
+
+			welcomeForm.Dispose();
+			welcomeForm = null;
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -135,6 +201,7 @@ namespace SonicRetro.SAModel.SALVL
 			gizmoSpaceComboBox.Enabled = false;
 			gizmoSpaceComboBox.SelectedIndex = 0;
 
+
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			calculateAllBoundsToolStripMenuItem.Enabled = LevelData.geo != null;
 			statsToolStripMenuItem.Enabled = LevelData.geo != null;
@@ -148,6 +215,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (loaded)
+			{
 				switch (MessageBox.Show(this, "Do you want to save?", "SALVL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
@@ -157,6 +225,9 @@ namespace SonicRetro.SAModel.SALVL
 						e.Cancel = true;
 						break;
 				}
+			}
+
+			Settings.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -224,12 +295,43 @@ namespace SonicRetro.SAModel.SALVL
 			d3ddevice.Present();
 		}
 
+		private void UpdateTitlebar()
+		{
+			Text = "SALVL - " + "(" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z
+				+ " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X")
+				+ " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
+		}
+
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 			DrawLevel();
 		}
 
 		#region User Keyboard / Mouse Methods
+		void CustomizeControls()
+		{
+			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
+
+			editor.ShowDialog();
+
+			// copy all our mappings back
+			actionList.ActionKeyMappings.Clear();
+
+			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
+
+			actionInputCollector.SetActions(newMappings);
+
+			// save our controls
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+
+			actionList.Save(saveControlsPath);
+
+			this.BringToFront();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
+		}
+
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			switch (e.KeyCode)
@@ -248,6 +350,8 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyDown(Keys.MButton);
+
 			if (!loaded) return;
 
 			switch (e.Button)
@@ -343,6 +447,13 @@ namespace SonicRetro.SAModel.SALVL
 			DrawLevel();
 		}
 
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+
+			propertyGrid1.Refresh();
+		}
+
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
 			switch (e.KeyCode)
@@ -358,62 +469,145 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void panel1_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (!e.Alt) lookKeyDown = false;
-			if (!e.Control) zoomKeyDown = false;
+			actionInputCollector.KeyUp(e.KeyCode);
 		}
 
 		private void panel1_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (!loaded) return;
-			if (cam.mode == 0)
+			actionInputCollector.KeyDown(e.KeyCode);
+		}
+
+		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
+		{
+			if (!loaded)
+				return;
+
+			bool draw = false; // should the scene redraw after this action
+
+			switch (actionName)
 			{
-				if (e.KeyCode == Keys.E)
-				{
-					cam.Position = new Vector3();
-					DrawLevel();
-				}
+				case ("Camera Mode"):
+					cam.mode = (cam.mode + 1) % 2;
 
-				if (e.KeyCode == Keys.R)
-				{
-					cam.Pitch = 0;
-					cam.Yaw = 0;
-					DrawLevel();
-				}
-			}
-
-			if (e.Alt) { lookKeyDown = true; if (panel1.ContainsFocus) e.Handled = false; }
-			if (e.Control) zoomKeyDown = true;
-
-			if (e.KeyCode == Keys.X)
-			{
-				cam.mode = (cam.mode + 1) % 2;
-
-				if (cam.mode == 1)
-				{
-					if (selectedItems.ItemCount > 0) cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
-					else
+					if (cam.mode == 1)
 					{
-						cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
+						if (selectedItems.GetSelection().Count > 0)
+							cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+						else
+							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
 					}
-				}
 
+					draw = true;
+					break;
+
+				case ("Zoom to target"):
+					if (selectedItems.ItemCount > 1)
+					{
+						BoundingSphere combinedBounds = selectedItems.GetSelection()[0].Bounds;
+
+						for (int i = 0; i < selectedItems.ItemCount; i++)
+						{
+							combinedBounds = Direct3D.Extensions.Merge(combinedBounds, selectedItems.GetSelection()[i].Bounds);
+						}
+
+						cam.MoveToShowBounds(combinedBounds);
+					}
+					else if (selectedItems.ItemCount == 1)
+					{
+						cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
+					}
+
+					draw = true;
+					break;
+
+				case ("Change Render Mode"):
+					if (EditorOptions.RenderFillMode == FillMode.Solid)
+						EditorOptions.RenderFillMode = FillMode.Point;
+					else
+						EditorOptions.RenderFillMode += 1;
+
+					draw = true;
+					break;
+
+				case ("Delete"):
+					foreach (Item item in selectedItems.GetSelection())
+						item.Delete();
+					selectedItems.Clear();
+					draw = true;
+					break;
+
+				case ("Increase camera move speed"):
+					cam.MoveSpeed += 0.0625f;
+					UpdateTitlebar();
+					break;
+
+				case ("Decrease camera move speed"):
+					cam.MoveSpeed -= 0.0625f;
+					UpdateTitlebar();
+					break;
+
+				case ("Reset camera move speed"):
+					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					UpdateTitlebar();
+					break;
+
+				case ("Reset Camera Position"):
+					if (cam.mode == 0)
+					{
+						cam.Position = new Vector3();
+						draw = true;
+					}
+					break;
+
+				case ("Reset Camera Rotation"):
+					if (cam.mode == 0)
+					{
+						cam.Pitch = 0;
+						cam.Yaw = 0;
+						draw = true;
+					}
+					break;
+
+				case ("Camera Move"):
+					cameraKeyDown = false;
+					break;
+
+				case ("Camera Zoom"):
+					zoomKeyDown = false;
+					break;
+
+				case ("Camera Look"):
+					lookKeyDown = false;
+					break;
+
+				default:
+					break;
+			}
+
+			if (draw)
+			{
 				DrawLevel();
 			}
-			if (e.KeyCode == Keys.N)
-			{
-				if (EditorOptions.RenderFillMode == FillMode.Solid)
-					EditorOptions.RenderFillMode = FillMode.Point;
-				else
-					EditorOptions.RenderFillMode += 1;
+		}
 
-				DrawLevel();
-			}
-			if (e.KeyCode == Keys.Delete)
+		private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
+		{
+			switch (actionName)
 			{
-				foreach (Item item in selectedItems.GetSelection())
-					item.Delete();
-				selectedItems.Clear();
-				DrawLevel();
+				case ("Camera Move"):
+					cameraKeyDown = true;
+					break;
+
+				case ("Camera Zoom"):
+					zoomKeyDown = true;
+					break;
+
+				case ("Camera Look"):
+					lookKeyDown = true;
+					break;
+
+				default:
+					break;
 			}
 		}
 
@@ -427,42 +621,42 @@ namespace SonicRetro.SAModel.SALVL
 				lastmouse = evloc;
 				return;
 			}
-			Point chg = evloc - (Size)lastmouse;
-			if (e.Button == MouseButtons.Middle)
+			Point mouseDelta = evloc - (Size)lastmouse;
+			if (cameraKeyDown)
 			{
 				// all cam controls are now bound to the middle mouse button
 				if (cam.mode == 0)
 				{
 					if (zoomKeyDown)
 					{
-						cam.Position += cam.Look * (chg.Y * cam.MoveSpeed);
+						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
 					}
 					else if (lookKeyDown)
 					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
-						cam.Position += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 					}
 				}
 				else if (cam.mode == 1)
 				{
 					if (zoomKeyDown)
 					{
-						cam.Distance += (chg.Y * cam.MoveSpeed) * 3;
+						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
 					}
 					else if (lookKeyDown)
 					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - chg.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - chg.Y * 0x10));
+						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
+						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
-						cam.FocalPoint += cam.Up * (chg.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (chg.X * cam.MoveSpeed) * -1;
+						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
+						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
 					}
 				}
 
@@ -472,8 +666,7 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				if (transformGizmo != null)
 				{
-					//transformGizmo.TransformAffected(chg.X / 2, chg.Y / 2, cam);
-					//throw new System.NotImplementedException();
+					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
 				}
 
 				DrawLevel();
@@ -954,8 +1147,6 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			EditorOptionsEditor optionsEditor = new EditorOptionsEditor(cam);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.Show();
 		}
 
@@ -971,9 +1162,12 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				transformGizmo.Mode = TransformMode.NONE;
 				gizmoSpaceComboBox.Enabled = true;
+				pivotComboBox.Enabled = true;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+				//DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+
+				SetGizmoPivotAndLocality();
 			}
 		}
 
@@ -983,9 +1177,11 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
 				gizmoSpaceComboBox.Enabled = true;
+				pivotComboBox.Enabled = true;
 				selectModeButton.Checked = false;
 				rotateModeButton.Checked = false;
-				DrawLevel();
+				//DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
@@ -997,17 +1193,40 @@ namespace SonicRetro.SAModel.SALVL
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
+				pivotComboBox.Enabled = false;
+				pivotComboBox.SelectedIndex = 0;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
-				DrawLevel();
+				//DrawLevel();
+				SetGizmoPivotAndLocality();
 			}
 		}
 
 		private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
 		{
+			SetGizmoPivotAndLocality();
+		}
+
+		private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
+		{
+			SetGizmoPivotAndLocality();
+		}
+
+		void SetGizmoPivotAndLocality()
+		{
 			if (transformGizmo != null)
 			{
-				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex == 0) ? false : true;
+				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
+				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
+
+				if (selectedItems.ItemCount > 0)
+				{
+					Item firstItem = selectedItems.Get(0);
+					transformGizmo.SetGizmo(
+						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+				}
+
 				DrawLevel();
 			}
 		}
@@ -1073,6 +1292,11 @@ namespace SonicRetro.SAModel.SALVL
 					context.ExportFile(scene, a.FileName, "collada", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
+		}
+
+		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowWelcomeScreen();
 		}
 	}
 }

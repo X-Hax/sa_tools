@@ -86,15 +86,15 @@ namespace SonicRetro.SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
-		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format)
-			: this(file, address, imageBase, format, new Dictionary<int, string>())
+		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
+			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
 		{ }
 
-		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels)
-			: this(file, address, imageBase, format, null, labels)
+		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+			: this(file, address, imageBase, format, null, labels, attaches)
 		{ }
 
-		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels)
+		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
 			if (labels.ContainsKey(address))
 				Name = labels[address];
@@ -108,7 +108,17 @@ namespace SonicRetro.SAModel
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				Attach = Attach.Load(file, tmpaddr, imageBase, format, labels);
+				if(attaches != null && attaches.ContainsKey(tmpaddr))
+				{
+					Attach = attaches[tmpaddr];
+				}
+				else
+				{
+					Attach = Attach.Load(file, tmpaddr, imageBase, format, labels);
+					if (attaches != null)
+						attaches.Add(tmpaddr, Attach);
+				}
+				
 			}
 			Position = new Vertex(file, address + 8);
 			Rotation = new Rotation(file, address + 0x14);
@@ -121,7 +131,7 @@ namespace SonicRetro.SAModel
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, this, labels);
+				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, this, labels, attaches);
 			}
 			while (child != null)
 			{
@@ -132,7 +142,7 @@ namespace SonicRetro.SAModel
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels);
+				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
 			}
 
 			//Assimp.AssimpContext context = new AssimpContext();
@@ -921,6 +931,7 @@ namespace SonicRetro.SAModel
 		public void StripPolyCache()
 		{
 			if (Attach is ChunkAttach attach && attach.Poly != null)
+			{
 				for (int i = 0; i < attach.Poly.Count; i++)
 				{
 					switch (attach.Poly[i].Type)
@@ -928,11 +939,6 @@ namespace SonicRetro.SAModel
 						case ChunkType.Bits_CachePolygonList:
 							PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
 							attach.Poly = attach.Poly.Take(i).ToList();
-							if (attach.Poly.Count == 0)
-							{
-								attach.Poly = null;
-								attach.PolyName = null;
-							}
 							break;
 						case ChunkType.Bits_DrawPolygonList:
 							int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
@@ -941,6 +947,12 @@ namespace SonicRetro.SAModel
 							break;
 					}
 				}
+				if (attach.Poly.Count == 0)
+				{
+					attach.Poly = null;
+					attach.PolyName = null;
+				}
+			}
 			foreach (NJS_OBJECT child in Children)
 				child.StripPolyCache();
 			if (Parent == null && Sibling != null)

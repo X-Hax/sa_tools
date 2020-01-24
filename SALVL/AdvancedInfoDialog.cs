@@ -14,6 +14,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void okButton_Click(object sender, EventArgs e)
 		{
+			LevelData.geo.Name = label.Text;
 			LevelData.geo.TextureFileName = checkBox1.Checked ? null : textureFile.Text;
 			LevelData.geo.TextureList = (uint)textureList.Value;
 			LevelData.geo.Author = author.Text;
@@ -33,6 +34,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void AdvancedInfoDialog_Load(object sender, EventArgs e)
 		{
+			label.Text = LevelData.geo.Name;
 			if (LevelData.geo.TextureFileName == null)
 			{
 				checkBox1.Checked = true;
