@@ -90,6 +90,7 @@ namespace SonicRetro.SAModel.Direct3D
 			attach.Bounds = SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
 		}
 
+		static readonly Matrix EnvironmentMapMatrix = new Matrix(-0.5f, 0, 0, 0, 0, 0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, 0, 1);
 		public static void SetDeviceStates(this NJS_MATERIAL material, Device device, Texture texture, Matrix transform, FillMode fillMode)
 		{
 			device.SetRenderState(RenderState.FillMode, fillMode);
@@ -103,12 +104,12 @@ namespace SonicRetro.SAModel.Direct3D
 					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
 					Power = material.Exponent * material.Exponent
 				};
-				if (!material.SuperSample)
+				/*if (!material.SuperSample)
 				{
 					device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.None);
 					device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
 					device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-				}
+				}*/
 				device.SetTexture(0, material.UseTexture ? texture : null);
 				device.SetRenderState(RenderState.Ambient, (material.IgnoreLighting ? Color.White : Color.Black).ToArgb());
 				device.SetRenderState(RenderState.AlphaBlendEnable, material.UseAlpha);
@@ -180,7 +181,18 @@ namespace SonicRetro.SAModel.Direct3D
 						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseDestinationAlpha);
 						break;
 				}
-				device.SetTextureStageState(0, TextureStage.TexCoordIndex, material.EnvironmentMap ? (int)TextureCoordIndex.SphereMap : 0);
+				if (material.EnvironmentMap)
+				{
+					device.SetTextureStageState(0, TextureStage.TextureTransformFlags, TextureTransform.Count2);
+					device.SetTransform(TransformState.Texture0, EnvironmentMapMatrix);
+					device.SetTextureStageState(0, TextureStage.TexCoordIndex, (int)TextureCoordIndex.CameraSpaceNormal);
+				}
+				else
+				{
+					device.SetTextureStageState(0, TextureStage.TextureTransformFlags, TextureTransform.Disable);
+					device.SetTransform(TransformState.Texture0, Matrix.Identity);
+					device.SetTextureStageState(0, TextureStage.TexCoordIndex, (int)TextureCoordIndex.PassThru);
+				}
 				if (material.ClampU)
 					device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
 				else if (material.FlipU)
