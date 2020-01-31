@@ -1,4 +1,5 @@
 ﻿using FraGag.Compression;
+using Newtonsoft.Json;
 using SA_Tools;
 using SonicRetro.SAModel;
 using System;
@@ -26,7 +27,11 @@ namespace buildEvent
 				else
 					fc = File.ReadAllBytes(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-				EventIniData ini = IniSerializer.Deserialize<EventIniData>(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
+				JsonSerializer js = new JsonSerializer();
+				EventIniData ini;
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+				using (JsonTextReader jtr = new JsonTextReader(tr))
+					ini = js.Deserialize<EventIniData>(jtr);
 				uint key;
 				if (fc[0] == 0x81)
 				{
@@ -38,14 +43,41 @@ namespace buildEvent
 					ByteConverter.BigEndian = false;
 					key = 0xC600000;
 				}
+				bool battle = ini.Game == Game.SA2B;
 				List<byte> modelbytes = new List<byte>(fc);
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				foreach (string file in ini.Files.Where(a => HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint address));
+				foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2mdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
+					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint _));
+				if (battle)
+				{
+					List<byte> motionbytes = new List<byte>(new byte[(ini.Motions.Count + 1) * 8]);
+					Dictionary<string, int> partcounts = new Dictionary<string, int>(ini.Motions.Count);
+					foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase)).Select(a => a.Key))
+					{
+						NJS_MOTION motion = NJS_MOTION.Load(Path.Combine(path, file));
+						motionbytes.AddRange(motion.GetBytes((uint)motionbytes.Count, labels, out uint _));
+						partcounts.Add(motion.Name, motion.ModelParts);
+					}
+					byte[] mfc = motionbytes.ToArray();
+					for (int i = 0; i < ini.Motions.Count; i++)
+					{
+						if (ini.Motions[i] == null)
+							new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }.CopyTo(mfc, i * 8);
+						else
+						{
+							ByteConverter.GetBytes(labels[ini.Motions[i]]).CopyTo(mfc, i * 8);
+							ByteConverter.GetBytes(partcounts[ini.Motions[i]]).CopyTo(mfc, i * 8 + 4);
+						}
+					}
+					File.WriteAllBytes(Path.ChangeExtension(Path.ChangeExtension(filename, null) + "motion", ".bin"), mfc);
+				}
+				else
+					foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
+						modelbytes.AddRange(NJS_MOTION.Load(Path.Combine(path, file)).GetBytes((uint)(key + modelbytes.Count), labels, out uint _));
 				fc = modelbytes.ToArray();
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
-					for (int i = 0; i < (ini.Game == Game.SA2B ? 18 : 16); i++)
+					for (int i = 0; i < (battle ? 18 : 16); i++)
 					{
 						UpgradeInfo info = ini.Upgrades[i];
 						if (info.RootNode != null)
@@ -68,19 +100,58 @@ namespace buildEvent
 				if (ptr != 0)
 					for (int gn = 0; gn <= gcnt; gn++)
 					{
-						GroupInfo info = ini.Groups[gn];
+						SceneInfo info = ini.Scenes[gn];
 						int ptr2 = fc.GetPointer(ptr, key);
 						int ecnt = Math.Min(ByteConverter.ToInt32(fc, ptr + 4), info.Entities?.Count ?? 0);
 						if (ptr2 != 0)
 							for (int en = 0; en < ecnt; en++)
 							{
-								if (labels.ContainsKey(info.Entities[en]))
-									ByteConverter.GetBytes(labels[info.Entities[en]]).CopyTo(fc, ptr2);
-								ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
+								if (labels.ContainsKey(info.Entities[en].Model))
+									ByteConverter.GetBytes(labels[info.Entities[en].Model]).CopyTo(fc, ptr2);
+								if (!battle && labels.ContainsKey(info.Entities[en].Motion))
+									ByteConverter.GetBytes(labels[info.Entities[en].Motion]).CopyTo(fc, ptr2 + 4);
+								if (!battle && labels.ContainsKey(info.Entities[en].ShapeMotion))
+									ByteConverter.GetBytes(labels[info.Entities[en].ShapeMotion]).CopyTo(fc, ptr2 + 8);
+								if (battle && labels.ContainsKey(info.Entities[en].ShadowModel))
+									ByteConverter.GetBytes(labels[info.Entities[en].ShadowModel]).CopyTo(fc, ptr2 + 16);
+								ptr2 += battle ? 0x2C : 0x20;
 							}
+						if (!battle)
+						{
+							ptr2 = fc.GetPointer(ptr + 8, key);
+							if (ptr2 != 0)
+							{
+								int cnt = ByteConverter.ToInt32(fc, ptr + 12);
+								for (int i = 0; i < cnt; i++)
+								{
+									if (labels.ContainsKey(info.CameraMotions[i]))
+										ByteConverter.GetBytes(labels[info.CameraMotions[i]]).CopyTo(fc, ptr2);
+									ptr2 += sizeof(int);
+								}
+							}
+						}
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
-						if (ptr2 != 0 && info.Big != null && labels.ContainsKey(info.Big))
-							ByteConverter.GetBytes(labels[info.Big]).CopyTo(fc, ptr2);
+						if (ptr2 != 0 && info.Big != null)
+						{
+							if (labels.ContainsKey(info.Big.Model))
+								ByteConverter.GetBytes(labels[info.Big.Model]).CopyTo(fc, ptr2);
+							if (!battle)
+							{
+								int ptr3 = fc.GetPointer(ptr2 + 4, key);
+								if (ptr3 != 0)
+								{
+									int cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
+									for (int i = 0; i < cnt; i++)
+									{
+										if (labels.ContainsKey(info.Big.Motions[i][0]))
+											ByteConverter.GetBytes(labels[info.Big.Motions[i][0]]).CopyTo(fc, ptr3);
+										if (labels.ContainsKey(info.Big.Motions[i][1]))
+											ByteConverter.GetBytes(labels[info.Big.Motions[i][1]]).CopyTo(fc, ptr3 + 4);
+										ptr3 += 8;
+									}
+								}
+							}
+						}
 						ptr += 0x20;
 					}
 				ptr = fc.GetPointer(0x18, key);
@@ -105,89 +176,20 @@ namespace buildEvent
 	public class EventIniData
 	{
 		public string Name { get; set; }
-		[IniAlwaysInclude]
+		[JsonIgnore]
 		public Game Game { get; set; }
-		public DictionaryContainer<string, string> Files { get; set; }
-		[IniName("Upgrade")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
-		public List<UpgradeInfo> Upgrades { get; set; }
-		[IniName("Group")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
-		public List<GroupInfo> Groups { get; set; }
-		public DictionaryContainer<int, string> MechParts { get; set; }
+		[JsonProperty(PropertyName = "Game")]
+		public string GameString
+		{
+			get { return Game.ToString(); }
+			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+		}
+		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
+		public List<UpgradeInfo> Upgrades { get; set; } = new List<UpgradeInfo>();
+		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
-
-		public EventIniData()
-		{
-			Files = new DictionaryContainer<string, string>();
-			Upgrades = new List<UpgradeInfo>();
-			Groups = new List<GroupInfo>();
-			MechParts = new DictionaryContainer<int, string>();
-		}
-	}
-
-	public class DictionaryContainer<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
-	{
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<TKey, TValue> Items { get; set; }
-
-		public DictionaryContainer()
-		{
-			Items = new Dictionary<TKey, TValue>();
-		}
-
-		public void Add(TKey key, TValue value)
-		{
-			Items.Add(key, value);
-		}
-
-		public bool ContainsKey(TKey key)
-		{
-			return Items.ContainsKey(key);
-		}
-
-		public bool Remove(TKey key)
-		{
-			return Items.Remove(key);
-		}
-
-		public bool TryGetValue(TKey key, out TValue value)
-		{
-			return Items.TryGetValue(key, out value);
-		}
-
-		public TValue this[TKey key]
-		{
-			get
-			{
-				return Items[key];
-			}
-			set
-			{
-				Items[key] = value;
-			}
-		}
-
-		public void Clear()
-		{
-			Items.Clear();
-		}
-
-		[IniIgnore]
-		public int Count
-		{
-			get { return Items.Count; }
-		}
-
-		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-		{
-			return Items.GetEnumerator();
-		}
-
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		public List<SceneInfo> Scenes { get; set; } = new List<SceneInfo>();
+		public List<string> Motions { get; set; }
 	}
 
 	public class UpgradeInfo
@@ -199,16 +201,28 @@ namespace buildEvent
 		public string Model2 { get; set; }
 	}
 
-	public class GroupInfo
+	public class SceneInfo
 	{
-		[IniName("Entity")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
-		public List<string> Entities { get; set; }
-		public string Big { get; set; }
+		public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
+		public List<string> CameraMotions { get; set; } = new List<string>();
+		public BigInfo Big { get; set; }
+		public int FrameCount { get; set; }
+	}
 
-		public GroupInfo()
-		{
-			Entities = new List<string>();
-		}
+	public class EntityInfo
+	{
+		public string Model { get; set; }
+		public string Motion { get; set; }
+		public string ShapeMotion { get; set; }
+		public string ShadowModel { get; set; }
+		public Vertex Position { get; set; }
+		public uint Flags { get; set; }
+	}
+
+	public class BigInfo
+	{
+		public string Model { get; set; }
+		public List<string[]> Motions { get; set; } = new List<string[]>();
+		public int Unknown { get; set; }
 	}
 }

@@ -30,6 +30,8 @@ namespace SA_Tools.SplitDLL
 		public int Length { get; set; }
 		[IniName("filename")]
 		public string Filename { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<string, string> CustomProperties { get; set; }
 	}
 
 	public class DllIniData
@@ -41,16 +43,22 @@ namespace SA_Tools.SplitDLL
 		public Game Game { get; set; }
 		public DictionaryContainer<string> Exports { get; set; }
 		public DictionaryContainer<FileTypeHash> Files { get; set; }
+		public DictionaryContainer<FileTypeHash> HiddenFiles { get; set; }
 		public TexListContainer TexLists { get; set; }
 		[IniName("Item")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
 		public List<DllItemInfo> Items { get; set; }
+		[IniName("DataItem")]
+		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
+		public List<DllDataItemInfo> DataItems { get; set; }
 
 		public DllIniData()
 		{
 			Exports = new DictionaryContainer<string>();
 			Files = new DictionaryContainer<FileTypeHash>();
+			HiddenFiles = new DictionaryContainer<FileTypeHash>();
 			Items = new List<DllItemInfo>();
+			DataItems = new List<DllDataItemInfo>();
 		}
 	}
 
@@ -247,10 +255,24 @@ namespace SA_Tools.SplitDLL
 		{
 			StringBuilder sb = new StringBuilder(Export);
 			if (Index.HasValue)
-				sb.Append(Index.Value);
+				sb.AppendFormat("[{0}]", Index.Value);
 			if (!string.IsNullOrEmpty(Field))
 				sb.AppendFormat("->{0}", Field);
 			return sb.ToString();
 		}
+	}
+
+	public class DllDataItemInfo
+	{
+		[IniName("type")]
+		public string Type { get; set; }
+		[IniName("export")]
+		public string Export { get; set; }
+		[IniName("filename")]
+		public string Filename { get; set; }
+		[IniName("md5")]
+		public string MD5Hash { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<string, string> CustomProperties { get; set; }
 	}
 }

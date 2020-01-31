@@ -11,12 +11,17 @@ namespace SA_Tools.SplitDLL
 {
 	public static class SplitDLL
 	{
+		static readonly string[] charaobjectnames = new[] {
+										"Sonic", "Shadow", "Tails", "Eggman", "Knuckles", "Rouge",
+										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
+										"Neutral Chao", "Hero Chao", "Dark Chao"
+									};
 		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
 		{
 #if !DEBUG
 			try
-			{
 #endif
+			{
 				byte[] datafile = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
@@ -145,7 +150,7 @@ namespace SA_Tools.SplitDLL
 									{
 										string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 										string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-										
+
 										land.SaveToFile(outputFN, landfmt);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
@@ -156,7 +161,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "model":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -197,7 +202,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -248,7 +253,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "basicmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -269,7 +274,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -290,7 +295,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "basicdxmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -311,7 +316,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -332,7 +337,7 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "chunkmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -353,7 +358,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -379,7 +384,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt);
+									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									ani.Animation.Name = item.Key + "_" + i;
 									DllItemInfo info = new DllItemInfo()
@@ -406,7 +411,7 @@ namespace SA_Tools.SplitDLL
 									{
 										ModelAnimations mdl = models[ani.Model.Name];
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
-										PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);						 
+										PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);
 										mdl.Animations.Add(sb.ToString()); // this is where the problem is
 									}
 									else
@@ -441,27 +446,155 @@ namespace SA_Tools.SplitDLL
 							break;
 						case "animindexlist":
 							{
-								int c = 0;
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
 								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
-									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-
-									NJS_MOTION anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = c,
-										Field = "Animation",
-										Label = anim.Name
-									};
-									anim.Save(outputFN);
-									output.Files[fileName] = new FileTypeHash("animindex", HelperFunctions.FileHash(outputFN));
+									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
-									++c;
 								}
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "charaobjectdatalist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<CharaObjectData> result = new List<CharaObjectData>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									string chnm = charaobjectnames[i];
+									CharaObjectData chara = new CharaObjectData();
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									chara.MainModel = model.Name;
+									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation1 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"));
+									hashes.Add($"{chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation2 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"));
+									hashes.Add($"{chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation3 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"));
+									hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+									hashes.Add($"{chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl")));
+									int ptr = BitConverter.ToInt32(datafile, address + 16);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										chara.AccessoryModel = model.Name;
+										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{chnm} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl")));
+									}
+									ptr = BitConverter.ToInt32(datafile, address + 24);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										chara.SuperModel = model.Name;
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation1 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"));
+										hashes.Add($"Super {chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation2 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"));
+										hashes.Add($"Super {chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation3 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"));
+										hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
+									}
+									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
+									chara.Rating = BitConverter.ToInt32(datafile, address + 44);
+									chara.DescriptionID = BitConverter.ToInt32(datafile, address + 48);
+									chara.TextBackTexture = BitConverter.ToInt32(datafile, address + 52);
+									chara.Unknown5 = BitConverter.ToSingle(datafile, address + 56);
+									result.Add(chara);
+									address += 60;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "kartspecialinfolist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartSpecialInfo> result = new List<KartSpecialInfo>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartSpecialInfo kart = new KartSpecialInfo
+									{
+										ID = ByteConverter.ToInt32(datafile, address)
+									};
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									kart.Model = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									int ptr = BitConverter.ToInt32(datafile, address + 8);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										kart.LowModel = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
+									}
+									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
+									kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
+									kart.Unknown2 = ByteConverter.ToInt32(datafile, address + 20);
+									kart.Unknown3 = ByteConverter.ToInt32(datafile, address + 24);
+									result.Add(kart);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "chaomotiontable":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<string> hashes = new List<string>();
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									ChaoMotionTableEntry cmte = new ChaoMotionTableEntry();
+									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									if (!mtns.ContainsKey(mtnaddr))
+									{
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, shortrot: true);
+										cmte.Motion = motion.Name;
+										mtns.Add(mtnaddr, motion.Name);
+										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"));
+										hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+									}
+									else
+										cmte.Motion = mtns[mtnaddr];
+									cmte.Flag1 = ByteConverter.ToUInt32(datafile, address + 4);
+									cmte.TransitionID = ByteConverter.ToInt32(datafile, address + 8);
+									cmte.Flag2 = ByteConverter.ToUInt32(datafile, address + 12);
+									cmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
+									cmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
+									cmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
+									result.Add(cmte);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
 					}
@@ -493,8 +626,8 @@ namespace SA_Tools.SplitDLL
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
+			}
 #if !DEBUG
-		}
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);

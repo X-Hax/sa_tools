@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SonicRetro.SAModel
 {
@@ -86,6 +87,35 @@ namespace SonicRetro.SAModel
 		object ICloneable.Clone() => Clone();
 
 		public virtual PolyChunk Clone() => (PolyChunk)MemberwiseClone();
+
+		public static List<PolyChunk> Merge(List<PolyChunk> source)
+		{
+			var strips = new List<(NJS_MATERIAL mat, List<PolyChunk> pre, PolyChunkStrip str)>();
+			NJS_MATERIAL curmat = new NJS_MATERIAL();
+			var cnks = new List<PolyChunk>();
+			foreach (var chunk in source)
+			{
+				curmat.UpdateFromPolyChunk(chunk);
+				if (chunk is PolyChunkStrip str)
+				{
+					bool found = false;
+					foreach (var set in strips)
+						if (set.mat.Equals(curmat) && set.str.Type == str.Type)
+						{
+							found = true;
+							set.str.Strips.AddRange(str.Strips);
+							break;
+						}
+					if (!found)
+						strips.Add((curmat, cnks, str));
+					curmat = new NJS_MATERIAL(curmat);
+					cnks = new List<PolyChunk>();
+				}
+				else
+					cnks.Add(chunk);
+			}
+			return strips.SelectMany(a => a.pre.Append(a.str)).ToList();
+		}
 	}
 
 	[Serializable]

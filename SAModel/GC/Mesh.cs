@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.GC
 {
+	[Serializable]
 	public class Mesh
 	{
 		public List<Parameter> Parameters { get; private set; }

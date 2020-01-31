@@ -18,6 +18,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "basicmodel", "Basic Model" },
 			{ "basicdxmodel", "Basic Model (SADX)" },
 			{ "chunkmodel", "Chunk Model" },
+			{ "gcmodel", "SA2B Model" },
 			{ "action", "Action (animation+model)" },
 			{ "animation", "Animation" },
 			{ "objlist", "Object List" },
@@ -373,6 +374,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "chunkmodel":
+							mdl = new ModelFile(data.Filename).Model;
+							name = mdl.Name;
+							mdl.ToStructVariables(writer, false, new List<string>());
+							models.Add(item.Key, mdl.Name);
+							break;
+						case "gcmodel":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
@@ -960,7 +967,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("AnimationIndex {0}[] = {{", name);
 								List<string> objs = new List<string>(anims.Count);
 								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
-									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, {obj.Value.Name} }}");
+									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, &{obj.Value.Name} }}");
 								objs.Add("{ -1 }");
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");

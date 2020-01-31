@@ -9,6 +9,7 @@ using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
+using SonicRetro.SAModel.SAEditorCommon.Import;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -18,6 +19,8 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
+		Properties.Settings Settings = Properties.Settings.Default;
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -45,7 +48,8 @@ namespace SonicRetro.SAModel.SAMDL
 		bool loaded;
 		string currentFileName = "";
 		NJS_OBJECT model;
-		NJS_MOTION[] animations;
+		bool hasWeight;
+		List<NJS_MOTION> animations;
 		NJS_MOTION animation;
 		ModelFile modelFile;
 		ModelFormat outfmt;
@@ -86,6 +90,13 @@ namespace SonicRetro.SAModel.SAMDL
 					AutoDepthStencilFormat = Format.D24X8
 				});
 
+			Settings.Reload();
+
+			if (Settings.ShowWelcomeScreen)
+			{
+				ShowWelcomeScreen();
+			}
+
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
@@ -123,6 +134,32 @@ namespace SonicRetro.SAModel.SAMDL
 				LoadFile(Program.Arguments[0]);
 		}
 
+		void ShowWelcomeScreen()
+		{
+			WelcomeForm welcomeForm = new WelcomeForm();
+			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+
+			// subscribe to our checkchanged event
+			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
+			{
+				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				Settings.Save();
+			};
+
+			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
+			welcomeForm.ThisToolLink.Visible = true;
+
+			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
+			{
+				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SAMDL");
+			};
+
+			welcomeForm.ShowDialog();
+
+			welcomeForm.Dispose();
+			welcomeForm = null;
+		}
+
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (loaded)
@@ -158,8 +195,7 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile = new ModelFile(filename);
 				outfmt = modelFile.Format;
 				model = modelFile.Model;
-				animations = new NJS_MOTION[modelFile.Animations.Count];
-				modelFile.Animations.CopyTo(animations, 0);
+				animations = new List<NJS_MOTION>(modelFile.Animations);
 			}
 			else
 			{
@@ -210,7 +246,7 @@ namespace SonicRetro.SAModel.SAMDL
 								int i = ByteConverter.ToInt32(file, address);
 								while (i != -1)
 								{
-									sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt));
+									sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
 									address += 8;
 									i = ByteConverter.ToInt32(file, address);
 								}
@@ -249,7 +285,7 @@ namespace SonicRetro.SAModel.SAMDL
 												address += 8;
 												i = ByteConverter.ToInt32(file, address);
 											}
-											animations = new List<NJS_MOTION>(anis.Values).ToArray();
+											animations = new List<NJS_MOTION>(anis.Values);
 										}
 									}
 								}
@@ -257,7 +293,7 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 			}
-			if (outfmt == ModelFormat.Chunk)
+			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
 			else
 			{
@@ -269,16 +305,17 @@ namespace SonicRetro.SAModel.SAMDL
 						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
 						catch { }
 			}
+
+			currentFileName = filename;
+
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
-			showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+			showWeightsToolStripMenuItem.Enabled = hasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
-
-			currentFileName = filename;
 
 			AddModelToLibrary(model, false);
 		}
@@ -288,8 +325,8 @@ namespace SonicRetro.SAModel.SAMDL
 			modelinfo.ShowDialog(this);
 			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
 			if (modelinfo.checkBox1.Checked)
-				animations = new NJS_MOTION[] { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex) };
-			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex);
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null) };
+			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null);
 			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
 			{
 				case ModelFormat.Basic:
@@ -336,6 +373,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (loaded)
+			{
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
@@ -345,6 +383,9 @@ namespace SonicRetro.SAModel.SAMDL
 						e.Cancel = true;
 						break;
 				}
+			}
+
+			Settings.Save();
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -419,7 +460,7 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe = 0;
 
 			outfmt = modelFormat;
-			animations = new NJS_MOTION[0];
+			animations = new List<NJS_MOTION>();
 
 			model = new NJS_OBJECT();
 			model.Morph = false;
@@ -483,7 +524,10 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void UpdateStatusString()
 		{
-			Text = "SAMDL: " + currentFileName;
+			if (!string.IsNullOrEmpty(currentFileName))
+				Text = "SAMDL: " + currentFileName;
+			else
+				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
 			animFrameLabel.Text = $"Frame: {animframe}";
@@ -510,7 +554,7 @@ namespace SonicRetro.SAModel.SAMDL
 			MatrixStack transform = new MatrixStack();
 			if (showModelToolStripMenuItem.Checked)
 			{
-				if (outfmt == ModelFormat.Chunk)
+				if (hasWeight)
 					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes), d3ddevice, cam);
 				else if (animation != null)
 					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe), d3ddevice, cam);
@@ -519,7 +563,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 				if (selectedObject != null)
 				{
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight)
 					{
 						NJS_OBJECT[] objs = model.GetObjects();
 						if (selectedObject.Attach != null)
@@ -668,7 +712,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void UpdateWeightedModel()
 		{
-			if (outfmt == ModelFormat.Chunk)
+			if (hasWeight)
 			{
 				if (animation != null)
 					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
@@ -815,7 +859,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						animnum++;
 						animframe = 0;
-						if (animnum == animations.Length) animnum = -1;
+						if (animnum == animations.Count) animnum = -1;
 						if (animnum > -1)
 							animation = animations[animnum];
 						else
@@ -830,7 +874,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						animnum--;
 						animframe = 0;
-						if (animnum == -2) animnum = animations.Length - 1;
+						if (animnum == -2) animnum = animations.Count - 1;
 						if (animnum > -1)
 							animation = animations[animnum];
 						else
@@ -1151,7 +1195,7 @@ namespace SonicRetro.SAModel.SAMDL
 				Near.Z = 0;
 				Far = Near;
 				Far.Z = -1;
-				if (outfmt == ModelFormat.Chunk)
+				if (hasWeight)
 					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
 				else
 					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
@@ -1198,7 +1242,7 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = selectedObject;
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach || (selectedObject.Attach is ChunkAttach ca && ca.Poly?.Count > 0);
+				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1215,7 +1259,7 @@ namespace SonicRetro.SAModel.SAMDL
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
-			if (showWeightsToolStripMenuItem.Checked && model.HasWeight)
+			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
 			DrawEntireModel();
@@ -1355,24 +1399,25 @@ namespace SonicRetro.SAModel.SAMDL
 			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
 			if (selectedObject.Attach != null)
 				attach.Name = selectedObject.Attach.Name;
-			if (attach is BasicAttach batt)
+			switch (attach)
 			{
-				batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-				batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
-				batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
-				batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
-				foreach (NJS_MESHSET m in batt.Mesh)
-				{
-					m.PolyName = "poly_" + Extensions.GenerateIdentifier();
-					m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
-					m.UVName = "uv_" + Extensions.GenerateIdentifier();
-					m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-				}
-			}
-			else if (attach is ChunkAttach catt)
-			{
-				catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-				catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+				case BasicAttach batt:
+					batt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					batt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+					batt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+					batt.MeshName = "mesh_" + Extensions.GenerateIdentifier();
+					foreach (NJS_MESHSET m in batt.Mesh)
+					{
+						m.PolyName = "poly_" + Extensions.GenerateIdentifier();
+						m.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+						m.UVName = "uv_" + Extensions.GenerateIdentifier();
+						m.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+					}
+					break;
+				case ChunkAttach catt:
+					catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+					break;
 			}
 			selectedObject.Attach = attach;
 			attach.ProcessVertexData();
@@ -1390,11 +1435,9 @@ namespace SonicRetro.SAModel.SAMDL
 				case BasicAttach bscatt:
 					mats = bscatt.Material;
 					break;
-				case ChunkAttach cnkatt:
-					mats = cnkatt.MeshInfo.Select(a => a.Material).ToList();
-					break;
 				default:
-					return;
+					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+					break;
 			}
 			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfo))
 			{
@@ -1421,6 +1464,29 @@ namespace SonicRetro.SAModel.SAMDL
 								break;
 						}
 					cnkatt.Poly = chunks;
+					break;
+				case GC.GCAttach gcatt:
+					matind = 0;
+					foreach (var msh in gcatt.GeometryData.OpaqueMeshes.Concat(gcatt.GeometryData.TranslucentMeshes))
+					{
+						msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+						if (mats[matind].UseTexture)
+						{
+							GC.TextureParameter.TileMode tm = GC.TextureParameter.TileMode.Mask;
+							if (mats[matind].ClampU)
+								tm &= ~GC.TextureParameter.TileMode.WrapU;
+							if (mats[matind].FlipU)
+								tm &= ~GC.TextureParameter.TileMode.MirrorU;
+							if (mats[matind].ClampV)
+								tm &= ~GC.TextureParameter.TileMode.WrapV;
+							if (mats[matind].FlipV)
+								tm &= ~GC.TextureParameter.TileMode.MirrorV;
+							msh.Parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
+						}
+						msh.Parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
+						msh.Parameters.Add(new GC.BlendAlphaParameter() { SourceAlpha = mats[matind].SourceAlpha, DestinationAlpha = mats[matind].DestinationAlpha });
+						matind++;
+					}
 					break;
 			}
 		}
@@ -1589,8 +1655,19 @@ namespace SonicRetro.SAModel.SAMDL
 										if (dlg.TextureMap.ContainsKey(tex.TextureID))
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
+							case GC.GCAttach gatt:
+								foreach (var msh in gatt.GeometryData.OpaqueMeshes.Concat(gatt.GeometryData.TranslucentMeshes))
+								{
+									var tp = (GC.TextureParameter)msh.Parameters.LastOrDefault(a => a is GC.TextureParameter);
+									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
+									{
+										msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+										msh.Parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
+									}
+								}
+								break;
 						}
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight)
 					{
 						meshes = model.ProcessWeightedModel().ToArray();
 						UpdateWeightedModel();
@@ -1682,15 +1759,15 @@ namespace SonicRetro.SAModel.SAMDL
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 
-			using (OpenFileDialog a = new OpenFileDialog
+			using (OpenFileDialog ofd = new OpenFileDialog
 			{
 				DefaultExt = "fbx",
 				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
 			})
 			{
-				if (a.ShowDialog() == DialogResult.OK)
+				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					string objFileName = a.FileName;
+					string objFileName = ofd.FileName;
 					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 					loaded = false;
 					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
@@ -1702,14 +1779,94 @@ namespace SonicRetro.SAModel.SAMDL
 					animframe = 0;
 
 					//outfmt = ModelFormat.GC;
-					animations = new NJS_MOTION[0];
+					animations = new List<NJS_MOTION>();
+
 					treeView1.Nodes.Clear();
 					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
 					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
+
+					/*
+					if (scene.Animations.Count > 0)
+					{
+						animations = new NJS_MOTION[scene.Animations.Count];
+						using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+						{
+							if (dlg.ShowDialog(this) == DialogResult.OK)
+							{
+								string animSavePath = dlg.SelectedPath;
+
+								for (int i = 0; i < scene.Animations.Count; i++)
+								{
+									NJS_MOTION motion = new NJS_MOTION();
+									Assimp.Animation anim = scene.Animations[i];
+
+									Dictionary<string, Assimp.NodeAnimationChannel> chans = new Dictionary<string, Assimp.NodeAnimationChannel>();
+									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels.Where(a => a.NodeName.Contains("_$AssimpFbx$_")))
+									{
+										string name = animChannel.NodeName.Remove(animChannel.NodeName.IndexOf("_$AssimpFbx$_"));
+										if (chans.ContainsKey(name))
+										{
+											if (animChannel.HasPositionKeys)
+												chans[name].PositionKeys.AddRange(animChannel.PositionKeys);
+											if (animChannel.HasRotationKeys)
+												chans[name].RotationKeys.AddRange(animChannel.RotationKeys);
+											if (animChannel.HasScalingKeys)
+												chans[name].ScalingKeys.AddRange(animChannel.ScalingKeys);
+										}
+										else
+										{
+											animChannel.NodeName = name;
+											chans[name] = animChannel;
+										}
+									}
+
+									Dictionary<string, int> getIndex = new Dictionary<string, int>();
+									NJS_OBJECT[] objectArray = model.GetObjects();
+									for(int j = 0; j < objectArray.Length; j++)
+									{
+										getIndex.Add(objectArray[j].Name, j);
+										
+									}
+
+									//did it like this instead of using nodeanimationchannelscount because for example, chao dont like if all the nodes arent present and im guessing the other animation functions dont either
+									motion.ModelParts = objectArray.Length;
+
+									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels)
+									{
+										AnimModelData modelData = new AnimModelData();
+										if(animChannel.HasPositionKeys)
+											foreach(Assimp.VectorKey vecKey in animChannel.PositionKeys)
+											{
+												modelData.Position.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+											}
+
+										if (animChannel.HasRotationKeys)
+											foreach (Assimp.QuaternionKey rotKey in animChannel.RotationKeys)
+											{
+												Assimp.Vector3D rotationConverted = rotKey.Value.ToEulerAngles();
+												modelData.Rotation.Add((int)rotKey.Time, new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z)));
+											}
+
+										if (animChannel.HasScalingKeys)
+											foreach (Assimp.VectorKey vecKey in animChannel.ScalingKeys)
+											{
+												modelData.Scale.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+											}
+
+										motion.Models.Add(getIndex[animChannel.NodeName], modelData);
+									}
+									animations[i] = motion;
+								}
+
+							}
+						}
+					}
+					*/
+
 					editMaterialsToolStripMenuItem.Enabled = true;
 
-					if (outfmt == ModelFormat.Chunk)
+					if (hasWeight = model.HasWeight)
 						meshes = model.ProcessWeightedModel().ToArray();
 					else
 					{
@@ -1722,7 +1879,7 @@ namespace SonicRetro.SAModel.SAMDL
 								catch { }
 					}
 
-					showWeightsToolStripMenuItem.Enabled = model.HasWeight;
+					showWeightsToolStripMenuItem.Enabled = hasWeight;
 
 					AddTreeNode(model, treeView1.Nodes);
 					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
@@ -1815,6 +1972,41 @@ namespace SonicRetro.SAModel.SAMDL
 					context.ExportFile(scene, a.FileName, a.FileName.EndsWith("dae") ? "collada" : "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 				}
 			}
+		}
+
+		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = "saanim", Filter = "Animation Files|*.saanim", Multiselect = true })
+				if (ofd.ShowDialog(this) == DialogResult.OK)
+				{
+					bool first = true;
+					foreach (string fn in ofd.FileNames)
+					{
+						if (!NJS_MOTION.CheckAnimationFile(fn))
+						{
+							MessageBox.Show(this, $"\"{fn}\" is not a valid animation file.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							return;
+						}
+						NJS_MOTION anim = NJS_MOTION.Load(fn);
+						if (first)
+						{
+							first = false;
+							animframe = 0;
+							animnum = animations.Count;
+							animations.Add(anim);
+							animation = anim;
+							UpdateWeightedModel();
+							DrawEntireModel();
+						}
+						else
+							animations.Add(anim);
+					}
+				}
+		}
+
+		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowWelcomeScreen();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

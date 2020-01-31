@@ -50,7 +50,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return obj.AssimpExport(scene, texInfo, parent);
 		}
 
-		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExportWeighted(this NJS_OBJECT obj, Scene scene, Matrix parentMatrix, string[] texInfo, Node parent)
 		{
 			NodeNames = new List<string>();
 			NodeTransforms = new List<Matrix>();
@@ -195,7 +195,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						NJS_MATERIAL cur_mat = meshInfo.Material;
 						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
 						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
-						if (cur_mat.UseTexture && texInfo != null)
+						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
 							TextureWrapMode wrapU = TextureWrapMode.Wrap;
@@ -365,7 +365,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
-		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo = null, Node parent = null)
+		private static Node AssimpExport(this NJS_OBJECT obj, Scene scene, string[] texInfo, Node parent)
 		{
 			int mdlindex = -1;
 			return AssimpExport(obj, scene, texInfo, parent, ref mdlindex);
@@ -401,67 +401,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			node.Transform = nodeTransform;//nodeTransform;
 
 			node.Name = nodename;
-			int startMeshIndex = scene.MeshCount;
 			if (obj.Attach != null)
 			{
-				if (obj.Attach is GC.GCAttach gcAttach)
-					gcAttach.AssimpExport(scene, texInfo);
-				else
-				{
-					int nameMeshIndex = 0;
-					foreach (MeshInfo meshInfo in obj.Attach.MeshInfo)
-					{
-						Assimp.Mesh mesh = new Assimp.Mesh($"{obj.Attach.Name}_mesh_{nameMeshIndex}");
-
-						NJS_MATERIAL cur_mat = meshInfo.Material;
-						Material materoial = new Material() { Name = $"{obj.Attach.Name}_material_{nameMeshIndex++}" };
-						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
-						if (cur_mat.UseTexture && texInfo != null)
-						{
-							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
-							TextureWrapMode wrapU = TextureWrapMode.Wrap;
-							TextureWrapMode wrapV = TextureWrapMode.Wrap;
-							if (cur_mat.ClampU)
-								wrapU = TextureWrapMode.Clamp;
-							else if (cur_mat.FlipU)
-								wrapU = TextureWrapMode.Mirror;
-
-							if (cur_mat.ClampV)
-								wrapV = TextureWrapMode.Clamp;
-							else if (cur_mat.FlipV)
-								wrapV = TextureWrapMode.Mirror;
-
-							Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
-								Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
-								wrapU, wrapV, 0); //wrapmode and shit add here
-							materoial.AddMaterialTexture(ref tex);
-						}
-						int matIndex = scene.MaterialCount;
-						scene.Materials.Add(materoial);
-						mesh.MaterialIndex = matIndex;
-
-						mesh.PrimitiveType = PrimitiveType.Triangle;
-						ushort[] tris = meshInfo.ToTriangles();
-						for (int i = 0; i < tris.Length; i += 3)
-						{
-							Face face = new Face();
-							face.Indices.AddRange(new int[] { mesh.Vertices.Count + 2, mesh.Vertices.Count + 1, mesh.Vertices.Count });
-							for (int j = 0; j < 3; j++)
-							{
-								mesh.Vertices.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Position.X, meshInfo.Vertices[tris[i + j]].Position.Y, meshInfo.Vertices[tris[i + j]].Position.Z));
-								mesh.Normals.Add(new Vector3D(meshInfo.Vertices[tris[i + j]].Normal.X, meshInfo.Vertices[tris[i + j]].Normal.Y, meshInfo.Vertices[tris[i + j]].Normal.Z));
-								if (meshInfo.Vertices[tris[i + j]].Color.HasValue)
-									mesh.VertexColorChannels[0].Add(meshInfo.Vertices[tris[i + j]].Color.Value.ToAssimp());
-								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[tris[i + j]].UV.U, meshInfo.Vertices[tris[i + j]].UV.V, 1.0f));
-							}
-							mesh.Faces.Add(face);
-						}
-
-						scene.Meshes.Add(mesh);
-					}
-				}
-				int endMeshIndex = scene.MeshCount;
-				for (int i = startMeshIndex; i < endMeshIndex; i++)
+				foreach (int i in ExportAttachMeshes(obj.Attach, scene, texInfo))
 				{
 					node.MeshIndices.Add(i);
 					//Node meshChildNode = new Node("meshnode_" + i);
@@ -478,215 +420,203 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return node;
 		}
 
-		private static void AssimpExport(this GC.GCAttach attach, Scene scene, string[] textures = null)
+		public static List<int> ExportAttachMeshes(this Attach attach, Scene scene, string[] texInfo = null)
 		{
-			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
-			bool hasUV = attach.VertexData.TexCoord_0.Count != 0;
-			bool hasVColor = attach.VertexData.Color_0.Count != 0;
-			int nameMeshIndex = 0;
-			foreach (GC.Mesh m in attach.GeometryData.OpaqueMeshes)
+			List<int> result = new List<int>();
+			if (attach is GC.GCAttach gcAttach)
 			{
-				Assimp.Mesh mesh = new Assimp.Mesh(attach.Name + "_mesh_" + nameMeshIndex);
-				nameMeshIndex++;
-				mesh.PrimitiveType = PrimitiveType.Triangle;
-				List<Vector3D> positions = new List<Vector3D>();
-				List<Vector3D> normals = new List<Vector3D>();
-				List<Vector3D> texcoords = new List<Vector3D>();
-				List<Color4D> colors = new List<Color4D>();
-				foreach (GC.Parameter param in m.Parameters)
+				bool hasUV = gcAttach.VertexData.TexCoord_0.Count != 0;
+				bool hasVColor = gcAttach.VertexData.Color_0.Count != 0;
+				int nameMeshIndex = 0;
+				foreach (GC.Mesh m in gcAttach.GeometryData.OpaqueMeshes)
 				{
-					if (param.ParameterType == GC.ParameterType.Texture)
-					{
-						GC.TextureParameter tex = param as GC.TextureParameter;
-						MaterialBuffer.UseTexture = true;
-						MaterialBuffer.TextureID = tex.TextureID;
-						if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.MirrorU))
-							MaterialBuffer.FlipU = true;
-						if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.MirrorV))
-							MaterialBuffer.FlipV = true;
-						if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.WrapU))
-							MaterialBuffer.ClampU = true;
-						if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.WrapV))
-							MaterialBuffer.ClampV = true;
-
-						MaterialBuffer.ClampU &= tex.Tile.HasFlag(GC.TextureParameter.TileMode.Unk_1);
-						MaterialBuffer.ClampV &= tex.Tile.HasFlag(GC.TextureParameter.TileMode.Unk_1);
-					}
-					else if (param.ParameterType == GC.ParameterType.TexCoordGen)
-					{
-						GC.TexCoordGenParameter gen = param as GC.TexCoordGenParameter;
-						if (gen.TexGenSrc == GC.GXTexGenSrc.Normal)
-							MaterialBuffer.EnvironmentMap = true;
-						else MaterialBuffer.EnvironmentMap = false;
-					}
-					else if (param.ParameterType == GC.ParameterType.BlendAlpha)
-					{
-						GC.BlendAlphaParameter blend = param as GC.BlendAlphaParameter;
-						MaterialBuffer.SourceAlpha = blend.SourceAlpha;
-						MaterialBuffer.DestinationAlpha = blend.DestinationAlpha;
-					}
+					result.Add(scene.Meshes.Count);
+					scene.Meshes.Add(ExportGCMesh(gcAttach, m, scene, hasUV, hasVColor, texInfo, ref nameMeshIndex));
 				}
-
-				foreach (GC.Primitive prim in m.Primitives)
+				foreach (GC.Mesh m in gcAttach.GeometryData.TranslucentMeshes)
 				{
-					for (int i = 0; i < prim.ToTriangles().Count; i += 3)
-					{
-						Face newPoly = new Face();
-						newPoly.Indices.AddRange(new int[] { positions.Count + 2, positions.Count + 1, positions.Count });
-						for (int j = 0; j < 3; j++)
-						{
-							GC.Vector3 vertex = attach.VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
-							positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
-							if (attach.VertexData.Normals.Count > 0)
-							{
-								GC.Vector3 normal = attach.VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
-								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
-							}
-							if (hasUV)
-							{
-								GC.Vector2 normal = attach.VertexData.TexCoord_0[(int)prim.ToTriangles()[i + j].UVIndex];
-								texcoords.Add(new Vector3D(normal.X, normal.Y, 1.0f));
-							}
-							//implement VColor
-							if (hasVColor)
-							{
-								GC.Color c = attach.VertexData.Color_0[(int)prim.ToTriangles()[i + j].Color0Index];
-								colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
-							}
-						}
-						//vertData.Add(new SAModel.VertexData(
-
-						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
-						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
-						mesh.Faces.Add(newPoly);
-					}
+					result.Add(scene.Meshes.Count);
+					scene.Meshes.Add(ExportGCMesh(gcAttach, m, scene, hasUV, hasVColor, texInfo, ref nameMeshIndex));
 				}
-
-				mesh.Vertices.AddRange(positions);
-				if (normals.Count > 0)
-					mesh.Normals.AddRange(normals);
-				if (texcoords.Count > 0)
-					mesh.TextureCoordinateChannels[0].AddRange(texcoords);
-				if (colors.Count > 0)
-					mesh.VertexColorChannels[0].AddRange(colors);
-				Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
-				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
-				if (MaterialBuffer.UseTexture && textures != null)
-				{
-					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
-					TextureWrapMode wrapU = TextureWrapMode.Wrap;
-					TextureWrapMode wrapV = TextureWrapMode.Wrap;
-					if (MaterialBuffer.ClampU)
-						wrapU = TextureWrapMode.Clamp;
-					else if (MaterialBuffer.FlipU)
-						wrapU = TextureWrapMode.Mirror;
-
-					if (MaterialBuffer.ClampV)
-						wrapV = TextureWrapMode.Clamp;
-					else if (MaterialBuffer.FlipV)
-						wrapV = TextureWrapMode.Mirror;
-
-					Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
-						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
-						wrapU, wrapV, 0); //wrapmode and shit add here
-					materoial.AddMaterialTexture(ref tex);
-
-				}
-				int matIndex = scene.MaterialCount;
-				scene.Materials.Add(materoial);
-				mesh.MaterialIndex = matIndex;
-				meshes.Add(mesh);
+				MaterialBuffer = new NJS_MATERIAL();
 			}
-			nameMeshIndex = 0;
-			foreach (GC.Mesh m in attach.GeometryData.TranslucentMeshes)
+			else
 			{
-				Assimp.Mesh mesh = new Assimp.Mesh(attach.Name + "_transparentmesh_" + nameMeshIndex);
-				nameMeshIndex++;
-				mesh.PrimitiveType = PrimitiveType.Triangle;
-				List<Vector3D> positions = new List<Vector3D>();
-				List<Vector3D> normals = new List<Vector3D>();
-				List<Vector3D> texcoords = new List<Vector3D>();
-				List<Color4D> colors = new List<Color4D>();
-				foreach (GC.Primitive prim in m.Primitives)
+				int nameMeshIndex = 0;
+				foreach (MeshInfo meshInfo in attach.MeshInfo)
 				{
+					Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
 
-					for (int i = 0; i < prim.ToTriangles().Count; i += 3)
+					NJS_MATERIAL cur_mat = meshInfo.Material;
+					Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" };
+					materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+					if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 					{
-						Face newPoly = new Face();
-						newPoly.Indices.AddRange(new int[] { positions.Count + 2, positions.Count + 1, positions.Count });
-						for (int j = 0; j < 3; j++)
-						{
-							GC.Vector3 vertex = attach.VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
-							positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
-							if (attach.VertexData.Normals.Count > 0)
-							{
-								GC.Vector3 normal = attach.VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
-								normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
-							}
-							if (hasUV)
-							{
-								GC.Vector2 normal = attach.VertexData.TexCoord_0[(int)prim.ToTriangles()[i + j].UVIndex];
-								texcoords.Add(new Vector3D(normal.X, normal.Y, 1.0f));
-							}
-							if (hasVColor)
-							{
-								GC.Color c = attach.VertexData.Color_0[(int)prim.ToTriangles()[i + j].Color0Index];
-								colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
-							}
-						}
-						//vertData.Add(new SAModel.VertexData(
+						string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
+						TextureWrapMode wrapU = TextureWrapMode.Wrap;
+						TextureWrapMode wrapV = TextureWrapMode.Wrap;
+						if (cur_mat.ClampU)
+							wrapU = TextureWrapMode.Clamp;
+						else if (cur_mat.FlipU)
+							wrapU = TextureWrapMode.Mirror;
 
-						//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-						//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
-						//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-						//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
-						mesh.Faces.Add(newPoly);
+						if (cur_mat.ClampV)
+							wrapV = TextureWrapMode.Clamp;
+						else if (cur_mat.FlipV)
+							wrapV = TextureWrapMode.Mirror;
+
+						TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
+							TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
+							wrapU, wrapV, 0); //wrapmode and shit add here
+						materoial.AddMaterialTexture(ref tex);
+					}
+					int matIndex = scene.MaterialCount;
+					scene.Materials.Add(materoial);
+					mesh.MaterialIndex = matIndex;
+
+					for (int i = 0; i < meshInfo.Vertices.Length; i++)
+					{
+						mesh.Vertices.Add(meshInfo.Vertices[i].Position.ToAssimp());
+						mesh.Normals.Add(meshInfo.Vertices[i].Normal.ToAssimp());
+						if (meshInfo.Vertices[i].Color.HasValue)
+							mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
+						if (meshInfo.Vertices[i].UV != null)
+							mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
 					}
 
-
+					mesh.PrimitiveType = PrimitiveType.Triangle;
+					ushort[] tris = meshInfo.ToTriangles();
+					for (int i = 0; i < tris.Length; i += 3)
+					{
+						Face face = new Face();
+						face.Indices.AddRange(new int[] { tris[i], tris[i + 1], tris[i + 2] });
+						mesh.Faces.Add(face);
+					}
+					result.Add(scene.Meshes.Count);
+					scene.Meshes.Add(mesh);
 				}
-				mesh.Vertices.AddRange(positions);
-				if (normals.Count > 0)
-					mesh.Normals.AddRange(normals);
-				if (texcoords.Count > 0)
-					mesh.TextureCoordinateChannels[0].AddRange(texcoords);
-				if (colors.Count > 0)
-					mesh.VertexColorChannels[0].AddRange(colors);
-				Material materoial = new Material() { Name = "material_" + nameMeshIndex };
-				materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
-				if (MaterialBuffer.UseTexture && textures != null)
-				{
-					string texPath = Path.GetFileName(textures[MaterialBuffer.TextureID]);
-					TextureWrapMode wrapU = TextureWrapMode.Wrap;
-					TextureWrapMode wrapV = TextureWrapMode.Wrap;
-					if (MaterialBuffer.ClampU)
-						wrapU = TextureWrapMode.Clamp;
-					else if (MaterialBuffer.FlipU)
-						wrapU = TextureWrapMode.Mirror;
-
-					if (MaterialBuffer.ClampV)
-						wrapV = TextureWrapMode.Clamp;
-					else if (MaterialBuffer.FlipV)
-						wrapV = TextureWrapMode.Mirror;
-					Assimp.TextureSlot tex = new Assimp.TextureSlot(texPath, Assimp.TextureType.Diffuse, 0,
-						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
-						wrapU, wrapV, 0); //wrapmode and shit add here
-					Assimp.TextureSlot alpha = new Assimp.TextureSlot(texPath, Assimp.TextureType.Opacity, 0,
-						Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
-						wrapU, wrapV, 0); //wrapmode and shit add here
-					materoial.AddMaterialTexture(ref tex);
-					materoial.AddMaterialTexture(ref alpha);
-
-				}
-				int matIndex = scene.MaterialCount;
-				scene.Materials.Add(materoial);
-				mesh.MaterialIndex = matIndex;
-				meshes.Add(mesh);
 			}
-			scene.Meshes.AddRange(meshes);
-			MaterialBuffer = new NJS_MATERIAL();
+			return result;
+		}
+
+		private static Assimp.Mesh ExportGCMesh(GC.GCAttach gcAttach, GC.Mesh m, Scene scene, bool hasUV, bool hasVColor, string[] texInfo, ref int nameMeshIndex)
+		{
+			Assimp.Mesh mesh = new Assimp.Mesh(gcAttach.Name + "_mesh_" + nameMeshIndex);
+			nameMeshIndex++;
+			mesh.PrimitiveType = PrimitiveType.Triangle;
+			List<Vector3D> positions = new List<Vector3D>();
+			List<Vector3D> normals = new List<Vector3D>();
+			List<Vector3D> texcoords = new List<Vector3D>();
+			List<Color4D> colors = new List<Color4D>();
+			foreach (GC.Parameter param in m.Parameters)
+			{
+				if (param.ParameterType == GC.ParameterType.Texture)
+				{
+					GC.TextureParameter tex = param as GC.TextureParameter;
+					MaterialBuffer.UseTexture = true;
+					MaterialBuffer.TextureID = tex.TextureID;
+					if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.MirrorU))
+						MaterialBuffer.FlipU = true;
+					if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.MirrorV))
+						MaterialBuffer.FlipV = true;
+					if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.WrapU))
+						MaterialBuffer.ClampU = true;
+					if (!tex.Tile.HasFlag(GC.TextureParameter.TileMode.WrapV))
+						MaterialBuffer.ClampV = true;
+
+					MaterialBuffer.ClampU &= tex.Tile.HasFlag(GC.TextureParameter.TileMode.Unk_1);
+					MaterialBuffer.ClampV &= tex.Tile.HasFlag(GC.TextureParameter.TileMode.Unk_1);
+				}
+				else if (param.ParameterType == GC.ParameterType.TexCoordGen)
+				{
+					GC.TexCoordGenParameter gen = param as GC.TexCoordGenParameter;
+					if (gen.TexGenSrc == GC.GXTexGenSrc.Normal)
+						MaterialBuffer.EnvironmentMap = true;
+					else MaterialBuffer.EnvironmentMap = false;
+				}
+				else if (param.ParameterType == GC.ParameterType.BlendAlpha)
+				{
+					GC.BlendAlphaParameter blend = param as GC.BlendAlphaParameter;
+					MaterialBuffer.SourceAlpha = blend.SourceAlpha;
+					MaterialBuffer.DestinationAlpha = blend.DestinationAlpha;
+				}
+			}
+
+			foreach (GC.Primitive prim in m.Primitives)
+			{
+				for (int i = 0; i < prim.ToTriangles().Count; i += 3)
+				{
+					Face newPoly = new Face();
+					newPoly.Indices.AddRange(new int[] { positions.Count + 2, positions.Count + 1, positions.Count });
+					for (int j = 0; j < 3; j++)
+					{
+						GC.Vector3 vertex = gcAttach.VertexData.Positions[(int)prim.ToTriangles()[i + j].PositionIndex];
+						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
+						if (gcAttach.VertexData.Normals.Count > 0)
+						{
+							GC.Vector3 normal = gcAttach.VertexData.Normals[(int)prim.ToTriangles()[i + j].NormalIndex];
+							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+						}
+						if (hasUV)
+						{
+							GC.Vector2 normal = gcAttach.VertexData.TexCoord_0[(int)prim.ToTriangles()[i + j].UVIndex];
+							texcoords.Add(new Vector3D(normal.X, normal.Y, 1.0f));
+						}
+						//implement VColor
+						if (hasVColor)
+						{
+							GC.Color c = gcAttach.VertexData.Color_0[(int)prim.ToTriangles()[i + j].Color0Index];
+							colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
+						}
+					}
+					//vertData.Add(new SAModel.VertexData(
+
+					//VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
+					//VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
+					//hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
+					//hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
+					mesh.Faces.Add(newPoly);
+				}
+			}
+
+			mesh.Vertices.AddRange(positions);
+			if (normals.Count > 0)
+				mesh.Normals.AddRange(normals);
+			if (texcoords.Count > 0)
+				mesh.TextureCoordinateChannels[0].AddRange(texcoords);
+			if (colors.Count > 0)
+				mesh.VertexColorChannels[0].AddRange(colors);
+			Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
+			materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
+			if (MaterialBuffer.UseTexture && texInfo != null)
+			{
+				string texPath = Path.GetFileName(texInfo[MaterialBuffer.TextureID]);
+				TextureWrapMode wrapU = TextureWrapMode.Wrap;
+				TextureWrapMode wrapV = TextureWrapMode.Wrap;
+				if (MaterialBuffer.ClampU)
+					wrapU = TextureWrapMode.Clamp;
+				else if (MaterialBuffer.FlipU)
+					wrapU = TextureWrapMode.Mirror;
+
+				if (MaterialBuffer.ClampV)
+					wrapV = TextureWrapMode.Clamp;
+				else if (MaterialBuffer.FlipV)
+					wrapV = TextureWrapMode.Mirror;
+
+				TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
+					TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
+					wrapU, wrapV, 0); //wrapmode and shit add here
+				materoial.AddMaterialTexture(ref tex);
+
+			}
+			int matIndex = scene.MaterialCount;
+			scene.Materials.Add(materoial);
+			mesh.MaterialIndex = matIndex;
+			return mesh;
+		}
+
+		private static void AssimpExport(this GC.GCAttach gcAttach, Scene scene, string[] textures = null)
+		{
 		}
 		#endregion
 
@@ -749,16 +679,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static Dictionary<string, int> nodeIndexForSort = new Dictionary<string, int>();
+		static Dictionary<string, Node> nodemap = new Dictionary<string, Node>();
 
 		private static void FillNodeIndexForSort(Scene scene, Node aiNode, ref int mdlindex)
 		{
 			mdlindex++;
 			nodeIndexForSort.Add(aiNode.Name, mdlindex);
+			nodemap.Add(aiNode.Name, aiNode);
 			foreach (Node child in aiNode.Children)
 				FillNodeIndexForSort(scene, child, ref mdlindex);
 		}
 
-		class MeshData
+		class ChunkMeshData
 		{
 			public string FirstNode { get; set; }
 			public Dictionary<string, List<VertexChunk>> Vertex { get; set; }
@@ -768,7 +700,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			public SharpDX.BoundingSphere Bounds { get; set; }
 			public int CacheHandle { get; set; }
 
-			public MeshData(int vcount)
+			public ChunkMeshData(int vcount)
 			{
 				VertexCount = vcount;
 				Vertex = new Dictionary<string, List<VertexChunk>>();
@@ -812,9 +744,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		}
 
 		static readonly NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-		private static MeshData ProcessMesh(Assimp.Mesh aiMesh, Scene scene, string[] texInfo = null)
+		private static ChunkMeshData ProcessMeshChunk(Assimp.Mesh aiMesh, Scene scene, string[] texInfo, out string[] bones)
 		{
-			MeshData result = new MeshData(aiMesh.VertexCount);
+			ChunkMeshData result = new ChunkMeshData(aiMesh.VertexCount);
 			result.Bounds = SharpDX.BoundingSphere.FromPoints(aiMesh.Vertices.Select(a => a.ToSharpDX()).ToArray());
 			var verts = new List<VertInfo>(aiMesh.VertexCount);
 			for (int i = 0; i < aiMesh.VertexCount; i++)
@@ -822,6 +754,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<string> sortedbones = new List<string>();
 			var matrices = new Dictionary<string, Matrix>();
 			if (aiMesh.HasBones)
+			{
+				bones = aiMesh.Bones.Select(a => a.Name).ToArray();
 				foreach (var bone in aiMesh.Bones.Where(a => a.HasVertexWeights).OrderBy(a => nodeIndexForSort[a.Name]))
 				{
 					sortedbones.Add(bone.Name);
@@ -829,6 +763,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						verts[weight.VertexID].weights.Add(new VertWeight(bone.Name, weight.Weight));
 					matrices[bone.Name] = bone.OffsetMatrix.ToSharpDX();
 				}
+			}
+			else
+				bones = null;
 			if (sortedbones.Count > 1)
 			{
 				result.FirstNode = sortedbones.First();
@@ -900,15 +837,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			bool hasUV = aiMesh.HasTextureCoords(0);
 			List<PolyChunkStrip.Strip> polys = new List<PolyChunkStrip.Strip>();
 			List<ushort> tris = new List<ushort>();
-			Dictionary<ushort, Vector3D> uvmap = new Dictionary<ushort, Vector3D>();
 			foreach (Face aiFace in aiMesh.Faces)
 				for (int i = 0; i < 3; i++)
-				{
-					ushort ind = (ushort)aiFace.Indices[i];
-					if (hasUV)
-						uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
-					tris.Add(ind);
-				}
+					tris.Add((ushort)aiFace.Indices[i]);
 
 			nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
 			foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
@@ -921,7 +852,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					var vertexIndex = grp.Indices[j];
 					stripIndices.Add(vertexIndex);
 					if (hasUV)
-						stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
+						stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 				}
 
 				polys.Add(new PolyChunkStrip.Strip(rev, stripIndices.ToArray(), hasUV ? stripuv.ToArray() : null, null));
@@ -932,8 +863,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			if (currentAiMat != null)
 			{
 				//output mat first then texID, thats how the official exporter worked
-				PolyChunkMaterial material = new PolyChunkMaterial();
-				result.Poly.Add(material);
+				result.Poly.Add(new PolyChunkMaterial() { SourceAlpha = AlphaInstruction.SourceAlpha, DestinationAlpha = AlphaInstruction.InverseSourceAlpha });
 				if (currentAiMat.HasTextureDiffuse)
 				{
 					if (texInfo != null)
@@ -989,19 +919,42 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		{
 			VertexCacheManager.Clear();
 			nodeIndexForSort.Clear();
+			nodemap.Clear();
 
 			//get node indices for sorting
 			int mdlindex = -1;
-			FillNodeIndexForSort(scene, scene.RootNode,ref mdlindex);
-			List<MeshData> meshdata = new List<MeshData>();
+			FillNodeIndexForSort(scene, scene.RootNode, ref mdlindex);
+			List<ChunkMeshData> meshdata = new List<ChunkMeshData>();
+			Dictionary<string, int> bonelist = new Dictionary<string, int>();
 			foreach (var mesh in scene.Meshes)
-				meshdata.Add(ProcessMesh(mesh, scene, texInfo));
+			{
+				meshdata.Add(ProcessMeshChunk(mesh, scene, texInfo, out var bones));
+				if (bones != null)
+					foreach (string b in bones)
+						if (bonelist.ContainsKey(b))
+							bonelist[b]++;
+						else
+							bonelist[b] = 1;
+			}
+			Dictionary<Node, int> roots = new Dictionary<Node, int>();
+			foreach (var (name, count) in bonelist)
+			{
+				Node n = nodemap[name];
+				while (n.Parent != scene.RootNode)
+				{
+					n = n.Parent;
+				}
+				if (roots.ContainsKey(n))
+					roots[n] += count;
+				else
+					roots[n] = count;
+			}
 			mdlindex = -1;
-			return AssimpImportWeighted(scene.RootNode.Children[0], scene, meshdata, ref mdlindex);
+			return AssimpImportWeighted(roots.OrderByDescending(a => a.Value).First().Key, meshdata, ref mdlindex);
 		}
 
 		static readonly System.Text.RegularExpressions.Regex nodenameregex = new System.Text.RegularExpressions.Regex("^n[0-9]{3}_", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
-		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, Scene scene, List<MeshData> meshdata, ref int mdlindex)
+		private static NJS_OBJECT AssimpImportWeighted(Node aiNode, List<ChunkMeshData> meshdata, ref int mdlindex)
 		{
 			NJS_OBJECT obj = new NJS_OBJECT { Animate = true, Morph = true };
 			if (nodenameregex.IsMatch(aiNode.Name))
@@ -1079,7 +1032,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				VertexCacheManager.Release(handle);
 			foreach (Node child in aiNode.Children)
 			{
-				NJS_OBJECT c = AssimpImportWeighted(child, scene, meshdata, ref mdlindex);
+				NJS_OBJECT c = AssimpImportWeighted(child, meshdata, ref mdlindex);
 				//HACK: workaround for those weird empty nodes created by most 3d editors
 				if (child.Name == "")
 				{
@@ -1107,12 +1060,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			obj.Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 			//Scale = new Vertex(1, 1, 1);
-			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
-			foreach (int i in node.MeshIndices)
-				meshes.Add(scene.Meshes[i]);
 
 			if (node.HasMeshes)
 			{
+				var meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
 				if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
 					obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
 				else if (format == ModelFormat.GC)
@@ -1211,43 +1162,55 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 			int polyIndex = 0;
 			List<NJS_MESHSET> meshsets = new List<NJS_MESHSET>();
-			for (int i = 0; i < meshes.Count; i++)
+			foreach (Assimp.Mesh aiMesh in meshes)
 			{
-				NJS_MESHSET meshset;//= new NJS_MESHSET(polyType, meshes[i].Faces.Count, false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
+				bool hasUV = aiMesh.HasTextureCoords(0);
+				bool hasVColor = aiMesh.HasVertexColors(0);
+
+				List<ushort> tris = new List<ushort>();
+				foreach (Face aiFace in aiMesh.Faces)
+					for (int i = 0; i < 3; i++)
+						tris.Add((ushort)aiFace.Indices[i]);
 
 				List<Poly> polys = new List<Poly>();
-
-				//i noticed the primitiveType of the Assimp Mesh is always triangles so...
-				foreach (Face f in meshes[i].Faces)
+				List<UV> stripuv = new List<UV>();
+				List<Color> stripvc = new List<Color>();
+				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					Triangle triangle = new Triangle();
-					triangle.Indexes[0] = (ushort)(f.Indices[0] + polyIndex);
-					triangle.Indexes[1] = (ushort)(f.Indices[1] + polyIndex);
-					triangle.Indexes[2] = (ushort)(f.Indices[2] + polyIndex);
-					polys.Add(triangle);
-				}
-				meshset = new NJS_MESHSET(polys.ToArray(), false, meshes[i].HasTextureCoords(0), meshes[i].HasVertexColors(0));
-				meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
-				meshset.MaterialID = (ushort)lookupMaterial[meshes[i].MaterialIndex];
+					bool rev = grp.Indices[1] == grp.Indices[0];
+					var stripIndices = new List<ushort>(grp.Indices.Length);
+					for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
+					{
+						var vertexIndex = grp.Indices[j];
+						stripIndices.Add((ushort)(vertexIndex + polyIndex));
+						if (hasUV)
+							stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
+						if (hasVColor)
+							stripvc.Add(aiMesh.VertexColorChannels[0][vertexIndex].ToColor());
+					}
 
-				if (meshes[i].HasTextureCoords(0))
+					polys.Add(new Strip(stripIndices.ToArray(), rev));
+				}
+
+				NJS_MESHSET meshset = new NJS_MESHSET(polys.ToArray(), false, hasUV, hasVColor)
+				{
+					PolyName = "poly_" + Extensions.GenerateIdentifier(),
+					MaterialID = (ushort)lookupMaterial[aiMesh.MaterialIndex]
+				};
+
+				if (hasUV)
 				{
 					meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
-					for (int x = 0; x < meshes[i].TextureCoordinateChannels[0].Count; x++)
-					{
-						meshset.UV[x] = new UV() { U = meshes[i].TextureCoordinateChannels[0][x].X, V = meshes[i].TextureCoordinateChannels[0][x].Y };
-					}
+					stripuv.CopyTo(meshset.UV);
 				}
 
-				if (meshes[i].HasVertexColors(0))
+				if (hasVColor)
 				{
 					meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-					for (int x = 0; x < meshes[i].VertexColorChannels[0].Count; x++)
-					{
-						meshset.VColor[x] = Color.FromArgb((int)(meshes[i].VertexColorChannels[0][x].A * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].R * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].G * 255.0f), (int)(meshes[i].VertexColorChannels[0][x].B * 255.0f));
-					}
+					stripvc.CopyTo(meshset.VColor);
 				}
-				polyIndex += meshes[i].VertexCount;
+				polyIndex += aiMesh.VertexCount;
 				meshsets.Add(meshset);//4B4834
 			}
 			attach.Mesh = meshsets;
@@ -1289,18 +1252,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				List<Strip> polys = new List<Strip>();
 				List<List<UV>> us = null;
 				bool hasUV = aiMesh.HasTextureCoords(0);
-				bool hasVColor = aiMesh.HasVertexColors(0);
 
 				List<ushort> tris = new List<ushort>();
-				Dictionary<ushort, Assimp.Vector3D> uvmap = new Dictionary<ushort, Assimp.Vector3D>();
 				foreach (Face aiFace in aiMesh.Faces)
 					for (int i = 0; i < 3; i++)
-					{
-						ushort ind = (ushort)aiFace.Indices[i];
-						if (hasUV)
-							uvmap[ind] = aiMesh.TextureCoordinateChannels[0][aiFace.Indices[i]];
-						tris.Add(ind);
-					}
+						tris.Add((ushort)aiFace.Indices[i]);
 
 				if (hasUV)
 					us = new List<List<UV>>();
@@ -1316,7 +1272,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						var vertexIndex = grp.Indices[j];
 						stripIndices.Add((ushort)(vertexIndex + vertoff));
 						if (hasUV)
-							stripuv.Add(new UV() { U = uvmap[vertexIndex].X, V = uvmap[vertexIndex].Y });
+							stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 					}
 
 					polys.Add(new Strip(stripIndices.ToArray(), rev));
@@ -1334,12 +1290,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				Assimp.Mesh aiMesh = meshes[i];
 
 				//material stuff
-				Assimp.Material currentAiMat = materials[aiMesh.MaterialIndex];
+				Material currentAiMat = materials[aiMesh.MaterialIndex];
 				if (currentAiMat != null)
 				{
 					//output mat first then texID, thats how the official exporter worked
-					PolyChunkMaterial material = new PolyChunkMaterial();
-					attach.Poly.Add(material);
+					attach.Poly.Add(new PolyChunkMaterial() { SourceAlpha = AlphaInstruction.SourceAlpha, DestinationAlpha = AlphaInstruction.InverseSourceAlpha });
 					if (currentAiMat.HasTextureDiffuse)
 					{
 						if (textures != null)
@@ -1382,25 +1337,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				attach.Poly.Add(strip);
 			}
 
-
 			return attach;
 		}
 
-		private static GC.GCAttach AssimpImportGC(List<Assimp.Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
+		private static GC.GCAttach AssimpImportGC(List<Material> materials, List<Assimp.Mesh> meshes, string[] textures = null)
 		{
-			GC.GCAttach attach = new GC.GCAttach();
-			//NvTriStripDotNet.NvStripifier nvStripifier = new NvTriStripDotNet.NvStripifier() { StitchStrips = false, UseRestart = false };
-			attach.Name = "attach_" + Extensions.GenerateIdentifier();
+			GC.GCAttach attach = new GC.GCAttach
+			{
+				Name = "attach_" + Extensions.GenerateIdentifier()
+			};
 			//setup names!!!
 			List<GC.Mesh> gcmeshes = new List<GC.Mesh>();
 			List<Vector3D> vertices = new List<Vector3D>();
 			List<Vector3D> normals = new List<Vector3D>();
-			List<Vector2> texcoords = new List<Vector2>();
+			List<GC.Vector2> texcoords = new List<GC.Vector2>();
 			List<GC.Color> colors = new List<GC.Color>();
 			List<GC.VertexAttribute> vertexAttribs = new List<GC.VertexAttribute>();
 			foreach (Assimp.Mesh m in meshes)
 			{
-				Assimp.Material currentAiMat = null;
+				Material currentAiMat = null;
 				if (m.MaterialIndex >= 0)
 				{
 					currentAiMat = materials[m.MaterialIndex];
@@ -1421,7 +1376,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (m.HasTextureCoords(0))
 				{
 					foreach (Vector3D texcoord in m.TextureCoordinateChannels[0])
-						texcoords.Add(new Vector2(texcoord.X, texcoord.Y));
+						texcoords.Add(new GC.Vector2(texcoord.X, texcoord.Y));
 				}
 				if (m.HasVertexColors(0))
 				{
@@ -1431,40 +1386,44 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				}
 
 				//VertexAttribute stuff
-				GC.VertexAttribute posAttrib = new GC.VertexAttribute();
-				posAttrib.Attribute = GC.GXVertexAttribute.Position;
-				posAttrib.FractionalBitCount = 12;
-				posAttrib.DataType = GC.GXDataType.Float32;
-				posAttrib.ComponentCount = GC.GXComponentCount.Position_XYZ;
-				vertexAttribs.Add(posAttrib);
+				vertexAttribs.Add(new GC.VertexAttribute
+				{
+					Attribute = GC.GXVertexAttribute.Position,
+					FractionalBitCount = 12,
+					DataType = GC.GXDataType.Float32,
+					ComponentCount = GC.GXComponentCount.Position_XYZ
+				});
 
 				if (m.HasTextureCoords(0))
 				{
-					GC.VertexAttribute texAttrib = new GC.VertexAttribute();
-					texAttrib.Attribute = GC.GXVertexAttribute.Tex0;
-					texAttrib.FractionalBitCount = 4;
-					texAttrib.DataType = GC.GXDataType.Signed16;
-					texAttrib.ComponentCount = GC.GXComponentCount.TexCoord_ST;
-					vertexAttribs.Add(texAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Tex0,
+						FractionalBitCount = 4,
+						DataType = GC.GXDataType.Signed16,
+						ComponentCount = GC.GXComponentCount.TexCoord_ST
+					});
 				}
 
 				if (m.HasVertexColors(0))
 				{
-					GC.VertexAttribute clrAttrib = new GC.VertexAttribute();
-					clrAttrib.Attribute = GC.GXVertexAttribute.Color0;
-					clrAttrib.FractionalBitCount = 4;
-					clrAttrib.DataType = GC.GXDataType.RGBA8;
-					clrAttrib.ComponentCount = GC.GXComponentCount.Color_RGBA;
-					vertexAttribs.Add(clrAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Color0,
+						FractionalBitCount = 4,
+						DataType = GC.GXDataType.RGBA8,
+						ComponentCount = GC.GXComponentCount.Color_RGBA
+					});
 				}
 				else
 				{
-					GC.VertexAttribute nrmAttrib = new GC.VertexAttribute();
-					nrmAttrib.Attribute = GC.GXVertexAttribute.Normal;
-					nrmAttrib.FractionalBitCount = 12;
-					nrmAttrib.DataType = GC.GXDataType.Float32;
-					nrmAttrib.ComponentCount = GC.GXComponentCount.Normal_XYZ;
-					vertexAttribs.Add(nrmAttrib);
+					vertexAttribs.Add(new GC.VertexAttribute
+					{
+						Attribute = GC.GXVertexAttribute.Normal,
+						FractionalBitCount = 12,
+						DataType = GC.GXDataType.Float32,
+						ComponentCount = GC.GXComponentCount.Normal_XYZ
+					});
 				}
 
 				//Parameter stuff
@@ -1477,37 +1436,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				if (m.HasTextureCoords(0))
 					indexattr |= GC.IndexAttributeParameter.IndexAttributeFlags.HasUV | GC.IndexAttributeParameter.IndexAttributeFlags.UV16BitIndex;
 
-				GC.IndexAttributeParameter indexParam = new GC.IndexAttributeParameter(indexattr);
-				parameters.Add(indexParam);
+				parameters.Add(new GC.IndexAttributeParameter(indexattr));
 
-				GC.VtxAttrFmtParameter posparam = new GC.VtxAttrFmtParameter(5120, GC.GXVertexAttribute.Position);
-				parameters.Add(posparam);
+				parameters.Add(new GC.VtxAttrFmtParameter(5120, GC.GXVertexAttribute.Position));
 
 				if (m.HasVertexColors(0))
 				{
-					GC.VtxAttrFmtParameter colorparam = new GC.VtxAttrFmtParameter(27136, GC.GXVertexAttribute.Color0);
-					parameters.Add(colorparam);
+					parameters.Add(new GC.VtxAttrFmtParameter(27136, GC.GXVertexAttribute.Color0));
 				}
 				else
 				{
-					GC.VtxAttrFmtParameter normalParam = new GC.VtxAttrFmtParameter(9216, GC.GXVertexAttribute.Normal);
-					parameters.Add(normalParam);
+					parameters.Add(new GC.VtxAttrFmtParameter(9216, GC.GXVertexAttribute.Normal));
 				}
 				if (m.HasTextureCoords(0))
 				{
-					GC.VtxAttrFmtParameter texparam = new GC.VtxAttrFmtParameter(33544, GC.GXVertexAttribute.Tex0);
-					parameters.Add(texparam);
+					parameters.Add(new GC.VtxAttrFmtParameter(33544, GC.GXVertexAttribute.Tex0));
 				}
 
 				if (m.HasVertexColors(0))
 				{
-					GC.LightingParameter lightParam = new GC.LightingParameter(0xB11, 1);
-					parameters.Add(lightParam);
+					parameters.Add(new GC.LightingParameter(0xB11, 1));
 				}
 				else
 				{
-					GC.LightingParameter lightParam = new GC.LightingParameter(0x211, 1);
-					parameters.Add(lightParam);
+					parameters.Add(new GC.LightingParameter(0x211, 1));
 				}
 
 				if (currentAiMat != null)
@@ -1517,17 +1469,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						if (textures != null)
 						{
 							int texId = 0;
-							GC.TextureParameter.TileMode tileMode = 0;
-							if (currentAiMat.TextureDiffuse.WrapModeU == TextureWrapMode.Mirror)
-								tileMode |= GC.TextureParameter.TileMode.MirrorU;
-							else tileMode |= GC.TextureParameter.TileMode.WrapU;
-							if (currentAiMat.TextureDiffuse.WrapModeV == TextureWrapMode.Mirror)
-								tileMode |= GC.TextureParameter.TileMode.MirrorV;
-							else tileMode |= GC.TextureParameter.TileMode.WrapV;
+							GC.TextureParameter.TileMode tileMode = GC.TextureParameter.TileMode.Mask;
+							switch (currentAiMat.TextureDiffuse.WrapModeU)
+							{
+								case TextureWrapMode.Clamp:
+									tileMode &= ~GC.TextureParameter.TileMode.WrapU;
+									break;
+								case TextureWrapMode.Mirror:
+									tileMode &= ~GC.TextureParameter.TileMode.MirrorU;
+									break;
+							}
+							switch (currentAiMat.TextureDiffuse.WrapModeV)
+							{
+								case TextureWrapMode.Clamp:
+									tileMode &= ~GC.TextureParameter.TileMode.WrapV;
+									break;
+								case TextureWrapMode.Mirror:
+									tileMode &= ~GC.TextureParameter.TileMode.MirrorV;
+									break;
+							}
 							for (int i = 0; i < textures.Length; i++)
 								if (textures[i] == Path.GetFileNameWithoutExtension(currentAiMat.TextureDiffuse.FilePath))
 									texId = i;
-							GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, GC.TextureParameter.TileMode.WrapU | GC.TextureParameter.TileMode.WrapV);
+							GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, tileMode);
 							parameters.Add(texParam);
 
 						}
@@ -1542,7 +1506,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						parameters.Add(texParam);
 					}
 				}
-				/* old stripifying code, im gonna leave it here just incase
 				List<ushort> tris = new List<ushort>();
 
 				foreach (Face f in m.Faces)
@@ -1556,56 +1519,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					Primitive prim = new Primitive(GXPrimitiveType.TriangleStrip);
-					//List<UV> stripuv = new List<UV>();
+					GC.Primitive prim = new GC.Primitive(GC.GXPrimitiveType.TriangleStrip);
 					for (var j = 0; j < grp.Indices.Length; j++)
 					{
-						Vertex vert = new Vertex();
-						vert.PositionIndex = vertStartIndex + (uint)grp.Indices[j];
-						if (m.HasNormals)
-							vert.NormalIndex = normStartIndex + (uint)grp.Indices[j];
-						if (m.HasTextureCoords(0))
-							vert.UVIndex = uvStartIndex + (uint)grp.Indices[j];
-						//if (m.HasVertexColors(0))
-							//vert.Color0Index = colorStartIndex + (uint)grp.Indices[j];
-						prim.Vertices.Add(vert);
-					}
-					primitives.Add(prim);
-				}
-				*/
-				foreach (Face f in m.Faces)
-				{
-					GC.Primitive prim = new GC.Primitive(GC.GXPrimitiveType.Triangles);
-					foreach (int index in f.Indices)
-					{
 						GC.Vertex vert = new GC.Vertex();
-
-						vert.PositionIndex = vertStartIndex + (uint)index;
-
+						vert.PositionIndex = vertStartIndex + grp.Indices[j];
 						if (m.HasTextureCoords(0))
-							vert.UVIndex = uvStartIndex + (uint)index;
-
+							vert.UVIndex = uvStartIndex + grp.Indices[j];
 						if (m.HasVertexColors(0))
-							vert.Color0Index = colorStartIndex + (uint)index;
-						else
-							if (m.HasNormals)
-							vert.NormalIndex = vertStartIndex + (uint)index;
-
+							vert.Color0Index = colorStartIndex + grp.Indices[j];
+						else if (m.HasNormals)
+							vert.NormalIndex = vertStartIndex + grp.Indices[j];
 						prim.Vertices.Add(vert);
 					}
 					primitives.Add(prim);
 				}
-				GC.Mesh gcm = new GC.Mesh(parameters, primitives);
-				gcmeshes.Add(gcm);
+				gcmeshes.Add(new GC.Mesh(parameters, primitives));
 			}
 
-			List<Vector3> gcvertices = new List<Vector3>();
+			List<GC.Vector3> gcvertices = new List<GC.Vector3>();
 			foreach (Vector3D aivert in vertices)
-				gcvertices.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+				gcvertices.Add(new GC.Vector3(aivert.X, aivert.Y, aivert.Z));
 
-			List<Vector3> gcnormals = new List<Vector3>();
+			List<GC.Vector3> gcnormals = new List<GC.Vector3>();
 			foreach (Vector3D aivert in normals)
-				gcnormals.Add(new Vector3(aivert.X, aivert.Y, aivert.Z));
+				gcnormals.Add(new GC.Vector3(aivert.X, aivert.Y, aivert.Z));
 
 			attach.VertexData.VertexAttributes.AddRange(vertexAttribs);
 

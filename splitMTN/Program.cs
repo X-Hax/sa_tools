@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SA_Tools;
+using SA_Tools.SplitMDL;
+using SonicRetro.SAModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SA_Tools;
-using SonicRetro.SAModel;
 
 namespace splitMTN
 {
@@ -15,11 +16,18 @@ namespace splitMTN
 			try
 			{
 				Queue<string> argq = new Queue<string>(args);
-				if (argq.Count > 0 && argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
-				{
-					ByteConverter.BigEndian = true;
-					argq.Dequeue();
-				}
+				bool? be = null;
+				if (argq.Count > 0)
+					if (argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
+					{
+						be = true;
+						argq.Dequeue();
+					}
+					else if (argq.Peek().Equals("/le", StringComparison.OrdinalIgnoreCase))
+					{
+						be = false;
+						argq.Dequeue();
+					}
 				string filename;
 				if (argq.Count > 0)
 				{
@@ -38,9 +46,21 @@ namespace splitMTN
 					file = FraGag.Compression.Prs.Decompress(file);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename));
 				Dictionary<int, int> processedanims = new Dictionary<int, int>();
-				Dictionary<int, string> ini = new Dictionary<int, string>();
+				switch (be)
+				{
+					case true:
+						ByteConverter.BigEndian = true;
+						break;
+					case null:
+						short ile = ByteConverter.ToInt16(file, 0);
+						ByteConverter.BigEndian = true;
+						if (ile < ByteConverter.ToInt16(file, 0))
+							ByteConverter.BigEndian = false;
+						break;
+				}
+				MTNInfo ini = new MTNInfo { BigEndian = ByteConverter.BigEndian };
 				int address = 0;
-				int i = ByteConverter.ToInt16(file, address);
+				short i = ByteConverter.ToInt16(file, address);
 				while (i != -1)
 				{
 					int aniaddr = ByteConverter.ToInt32(file, address + 4);
@@ -50,11 +70,11 @@ namespace splitMTN
 						.Save(Path.GetFileNameWithoutExtension(filename) + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 						processedanims[aniaddr] = i;
 					}
-					ini[i] = "animation_" + aniaddr.ToString("X8");
+					ini.Indexes[i] = "animation_" + aniaddr.ToString("X8");
 					address += 8;
 					i = ByteConverter.ToInt16(file, address);
 				}
-				IniSerializer.Serialize(ini, new IniCollectionSettings(IniCollectionMode.IndexOnly), Path.Combine(Path.GetFileNameWithoutExtension(filename), Path.GetFileNameWithoutExtension(filename) + ".ini"));
+				IniSerializer.Serialize(ini, Path.Combine(Path.GetFileNameWithoutExtension(filename), Path.GetFileNameWithoutExtension(filename) + ".ini"));
 			}
 			finally
 			{
