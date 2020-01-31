@@ -582,7 +582,9 @@ namespace TextureEditor
 							{
 								uint gbix = uint.Parse(split[0]);
 								string name = Path.ChangeExtension(split[1], null);
-								Bitmap bmp = new Bitmap(Path.Combine(dir, split[1]));
+								Bitmap bmp;
+								using (Bitmap tmp = new Bitmap(Path.Combine(dir, split[1])))
+									bmp = new Bitmap(tmp);
 								switch (format)
 								{
 									case TextureFormat.PVM:
@@ -608,6 +610,7 @@ namespace TextureEditor
 								listBox1.Items.Add(name);
 
 							}
+							line = texList.ReadLine();
 						}
 						listBox1.EndUpdate();
 						listBox1.SelectedIndex = textures.Count - 1;
