@@ -50,6 +50,8 @@ namespace buildEvent
 					modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint _));
 				if (battle)
 				{
+					foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2bmdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
+						modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, out uint _));
 					List<byte> motionbytes = new List<byte>(new byte[(ini.Motions.Count + 1) * 8]);
 					Dictionary<string, int> partcounts = new Dictionary<string, int>(ini.Motions.Count);
 					foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase)).Select(a => a.Key))
@@ -108,12 +110,20 @@ namespace buildEvent
 							{
 								if (labels.ContainsKey(info.Entities[en].Model))
 									ByteConverter.GetBytes(labels[info.Entities[en].Model]).CopyTo(fc, ptr2);
-								if (!battle && labels.ContainsKey(info.Entities[en].Motion))
-									ByteConverter.GetBytes(labels[info.Entities[en].Motion]).CopyTo(fc, ptr2 + 4);
-								if (!battle && labels.ContainsKey(info.Entities[en].ShapeMotion))
-									ByteConverter.GetBytes(labels[info.Entities[en].ShapeMotion]).CopyTo(fc, ptr2 + 8);
-								if (battle && labels.ContainsKey(info.Entities[en].ShadowModel))
-									ByteConverter.GetBytes(labels[info.Entities[en].ShadowModel]).CopyTo(fc, ptr2 + 16);
+								if (!battle)
+								{
+									if (labels.ContainsKey(info.Entities[en].Motion))
+										ByteConverter.GetBytes(labels[info.Entities[en].Motion]).CopyTo(fc, ptr2 + 4);
+									if (labels.ContainsKey(info.Entities[en].ShapeMotion))
+										ByteConverter.GetBytes(labels[info.Entities[en].ShapeMotion]).CopyTo(fc, ptr2 + 8);
+								}
+								else
+								{
+									if (labels.ContainsKey(info.Entities[en].GCModel))
+										ByteConverter.GetBytes(labels[info.Entities[en].GCModel]).CopyTo(fc, ptr2 + 12);
+									if (labels.ContainsKey(info.Entities[en].ShadowModel))
+										ByteConverter.GetBytes(labels[info.Entities[en].ShadowModel]).CopyTo(fc, ptr2 + 16);
+								}
 								ptr2 += battle ? 0x2C : 0x20;
 							}
 						if (!battle)
@@ -214,6 +224,7 @@ namespace buildEvent
 		public string Model { get; set; }
 		public string Motion { get; set; }
 		public string ShapeMotion { get; set; }
+		public string GCModel { get; set; }
 		public string ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		public uint Flags { get; set; }

@@ -37,7 +37,7 @@ namespace buildMDL
 				else
 				{
 					Console.Write("File: ");
-					mdlfilename = Console.ReadLine();
+					mdlfilename = Console.ReadLine().Trim('"');
 				}
 				mdlfilename = Path.GetFullPath(mdlfilename);
 				if (Directory.Exists(mdlfilename))
