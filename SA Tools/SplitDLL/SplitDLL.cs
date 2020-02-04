@@ -583,7 +583,8 @@ namespace SA_Tools.SplitDLL
 									}
 									else
 										cmte.Motion = mtns[mtnaddr];
-									cmte.Flag1 = ByteConverter.ToUInt32(datafile, address + 4);
+									cmte.Flag1 = ByteConverter.ToUInt16(datafile, address + 4);
+									cmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
 									cmte.TransitionID = ByteConverter.ToInt32(datafile, address + 8);
 									cmte.Flag2 = ByteConverter.ToUInt32(datafile, address + 12);
 									cmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);

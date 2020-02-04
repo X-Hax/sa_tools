@@ -2947,7 +2947,8 @@ namespace SA_Tools
 	{
 		public string Motion { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public uint Flag1 { get; set; }
+		public ushort Flag1 { get; set; }
+		public ushort Pose{ get; set; }
 		public int TransitionID { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint Flag2 { get; set; }
@@ -2965,6 +2966,7 @@ namespace SA_Tools
 			else
 				sb.Append("NULL, ");
 			sb.AppendFormat("{0}, ", Flag1.ToCHex());
+			sb.AppendFormat("{0}, ", Pose.ToCHex());
 			sb.AppendFormat("{0}, ", TransitionID);
 			sb.AppendFormat("{0}, ", Flag2.ToCHex());
 			sb.AppendFormat("{0}, ", StartFrame.ToC());
