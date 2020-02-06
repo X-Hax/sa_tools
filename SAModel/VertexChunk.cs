@@ -100,7 +100,7 @@ namespace SonicRetro.SAModel
 		{
 			Header1 = ByteConverter.ToUInt32(file, address);
 			Header2 = ByteConverter.ToUInt32(file, address + 4);
-			address = address + 8;
+			address += 8;
 			for (int i = 0; i < GetVertCount(); i++)
 			{
 				switch (Type)
@@ -327,7 +327,7 @@ namespace SonicRetro.SAModel
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
-					vertlimit = 65535 / 4;
+					vertlimit = 65535 / 7;
 					if (Vertices.Count > vertlimit)
 					{
 						next = new VertexChunk(Type)
