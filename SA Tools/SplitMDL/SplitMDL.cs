@@ -9,13 +9,12 @@ namespace SA_Tools.SplitMDL
 {
 	public static class SplitMDL
 	{
-		public static void Split(bool isBigEndian, string filePath, string outputFolder, string[] animationPaths)
+		public static void Split(bool? isBigEndian, string filePath, string outputFolder, string[] animationPaths)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
 			{
 				if (outputFolder[outputFolder.Length - 1] != '/') outputFolder = string.Concat(outputFolder, "/");
-				ByteConverter.BigEndian = isBigEndian;
 
 				// get file name, read it from the console if nothing
 				string mdlfilename = filePath;
@@ -26,6 +25,28 @@ namespace SA_Tools.SplitMDL
 				byte[] mdlfile = File.ReadAllBytes(mdlfilename);
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
+				switch (isBigEndian)
+				{
+					case true:
+						ByteConverter.BigEndian = true;
+						break;
+					case false:
+						ByteConverter.BigEndian = false;
+						break;
+					case null:
+						ByteConverter.BigEndian = false;
+						int addr = 0;
+						short ile = ByteConverter.ToInt16(mdlfile, 0);
+						if (ile == 0)
+						{
+							ile = ByteConverter.ToInt16(mdlfile, 8);
+							addr = 8;
+						}
+						ByteConverter.BigEndian = true;
+						if (ile < ByteConverter.ToInt16(mdlfile, addr))
+							ByteConverter.BigEndian = false;
+						break;
+				}
 				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				(string filename, byte[] data)[] animfiles = new (string, byte[])[animationPaths.Length];
 				for (int j = 0; j < animationPaths.Length; j++)
@@ -73,7 +94,7 @@ namespace SA_Tools.SplitMDL
 				foreach ((string anifilename, byte[] anifile) in animfiles)
 				{
 					Dictionary<int, int> processedanims = new Dictionary<int, int>();
-					MTNInfo ini = new MTNInfo() { BigEndian = isBigEndian };
+					MTNInfo ini = new MTNInfo() { BigEndian = ByteConverter.BigEndian };
 					Directory.CreateDirectory(anifilename);
 					address = 0;
 					i = ByteConverter.ToInt16(anifile, address);
@@ -112,7 +133,7 @@ namespace SA_Tools.SplitMDL
 				}
 
 				// save ini file
-				IniSerializer.Serialize(new MDLInfo() { BigEndian = isBigEndian, Indexes = modelnames },
+				IniSerializer.Serialize(new MDLInfo() { BigEndian = ByteConverter.BigEndian, Indexes = modelnames },
 					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
 			}
 			finally
