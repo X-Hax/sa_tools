@@ -197,10 +197,14 @@ namespace SA2CutsceneTextEditor
 					fc.AddRange(ByteConverter.GetBytes(msg.Character));
 					fc.AddRange(ByteConverter.GetBytes(addr));
 					addr += (uint)(encoding.GetByteCount(msg.Text) + 1);
+					if (msg.Centered)
+						++addr;
 				}
 			foreach (Scene scene in scenes)
 				foreach (Message msg in scene.Messages)
 				{
+					if (msg.Centered)
+						fc.Add((byte)'\a');
 					fc.AddRange(encoding.GetBytes(msg.Text));
 					fc.Add(0);
 				}
@@ -309,6 +313,7 @@ namespace SA2CutsceneTextEditor
 				messagePanel.Enabled = true;
 				messageRemoveButton.Enabled = CurrentScene.Messages.Count > 1;
 				messageCharacter.Value = CurrentMessage.Character;
+				messageCentered.Checked = CurrentMessage.Centered;
 				messageEdit.Text = CurrentMessage.Text.Replace("\n", Environment.NewLine);
 			}
 		}
@@ -333,6 +338,11 @@ namespace SA2CutsceneTextEditor
 		private void messageCharacter_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMessage.Character = (int)messageCharacter.Value;
+		}
+
+		private void messageCentered_CheckedChanged(object sender, EventArgs e)
+		{
+			CurrentMessage.Centered = messageCentered.Checked;
 		}
 
 		private void messageEdit_TextChanged(object sender, EventArgs e)
@@ -417,6 +427,7 @@ namespace SA2CutsceneTextEditor
 	public class Message
 	{
 		public int Character { get; set; }
+		public bool Centered { get; set; } = true;
 		public string Text { get; set; } = string.Empty;
 
 		public static int Size => 8;
@@ -427,14 +438,18 @@ namespace SA2CutsceneTextEditor
 		{
 			Character = ByteConverter.ToInt32(file, address);
 			Text = file.GetCString((int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), encoding);
+			if (Text.StartsWith("\a"))
+				Text = Text.TrimStart('\a');
+			else
+				Centered = false;
 		}
 
 		public string GetPreview()
 		{
 			int i = Text.IndexOf('\n');
 			if (i != -1)
-				return Text.Remove(i).TrimStart('\a');
-			return Text.TrimStart('\a');
+				return Text.Remove(i);
+			return Text;
 		}
 	}
 

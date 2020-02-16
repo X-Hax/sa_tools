@@ -614,10 +614,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			mesh.MaterialIndex = matIndex;
 			return mesh;
 		}
-
-		private static void AssimpExport(this GC.GCAttach gcAttach, Scene scene, string[] textures = null)
-		{
-		}
 		#endregion
 
 		#region Import
