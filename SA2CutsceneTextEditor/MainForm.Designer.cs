@@ -58,6 +58,7 @@
 			this.sceneAddButton = new System.Windows.Forms.Button();
 			this.sceneNum = new System.Windows.Forms.ComboBox();
 			this.messagePanel = new System.Windows.Forms.Panel();
+			this.messageCentered = new System.Windows.Forms.CheckBox();
 			this.messageCharacter = new System.Windows.Forms.NumericUpDown();
 			this.messageRemoveButton = new System.Windows.Forms.Button();
 			this.messageAddButton = new System.Windows.Forms.Button();
@@ -339,6 +340,7 @@
 			// 
 			// messagePanel
 			// 
+			this.messagePanel.Controls.Add(this.messageCentered);
 			this.messagePanel.Controls.Add(this.messageCharacter);
 			this.messagePanel.Controls.Add(label3);
 			this.messagePanel.Controls.Add(this.messageEdit);
@@ -348,6 +350,17 @@
 			this.messagePanel.Name = "messagePanel";
 			this.messagePanel.Size = new System.Drawing.Size(334, 199);
 			this.messagePanel.TabIndex = 6;
+			// 
+			// messageCentered
+			// 
+			this.messageCentered.AutoSize = true;
+			this.messageCentered.Location = new System.Drawing.Point(151, 5);
+			this.messageCentered.Name = "messageCentered";
+			this.messageCentered.Size = new System.Drawing.Size(69, 17);
+			this.messageCentered.TabIndex = 3;
+			this.messageCentered.Text = "Centered";
+			this.messageCentered.UseVisualStyleBackColor = true;
+			this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
 			// 
 			// messageCharacter
 			// 
@@ -479,6 +492,7 @@
 		private System.Windows.Forms.ToolStripMenuItem findNextToolStripMenuItem;
 		private System.Windows.Forms.NumericUpDown sceneID;
 		private System.Windows.Forms.NumericUpDown messageCharacter;
+		private System.Windows.Forms.CheckBox messageCentered;
 	}
 }
 

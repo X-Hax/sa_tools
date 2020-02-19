@@ -158,6 +158,17 @@ namespace SA2EventViewer
 									catch { }
 							scenemeshes.Add(entmesh);
 						}
+					else if (entity.GCModel != null)
+					{
+						entity.Model.ProcessVertexData();
+						NJS_OBJECT[] models = entity.GCModel.GetObjects();
+						Mesh[] entmesh = new Mesh[models.Length];
+						for (int i = 0; i < models.Length; i++)
+							if (models[i].Attach != null)
+								try { entmesh[i] = models[i].Attach.CreateD3DMesh(); }
+								catch { }
+						scenemeshes.Add(entmesh);
+					}
 					else
 						scenemeshes.Add(null);
 				}
@@ -232,49 +243,55 @@ namespace SA2EventViewer
 			List<RenderInfo> renderList = new List<RenderInfo>();
 			for (int i = 0; i < @event.Scenes[0].Entities.Count; i++)
 			{
-				if (@event.Scenes[0].Entities[i].Model != null)
-					if (@event.Scenes[0].Entities[i].Model.HasWeight)
+				NJS_OBJECT model = @event.Scenes[0].Entities[i].Model;
+				if (model == null)
+					model = @event.Scenes[0].Entities[i].GCModel;
+				if (model != null)
+					if (model.HasWeight)
 					{
-						renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[0][i]));
+						renderList.AddRange(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[0][i]));
 						if (@event.Scenes[0].Entities[i] == selectedObject)
-							renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeWeightedInvert(transform.Top, meshes[0][i]));
+							renderList.AddRange(model.DrawModelTreeWeightedInvert(transform.Top, meshes[0][i]));
 					}
 					else
 					{
-						renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[0][i]));
+						renderList.AddRange(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[0][i]));
 						if (@event.Scenes[0].Entities[i] == selectedObject)
-							renderList.AddRange(@event.Scenes[0].Entities[i].Model.DrawModelTreeInvert(transform, meshes[0][i]));
+							renderList.AddRange(model.DrawModelTreeInvert(transform, meshes[0][i]));
 					}
 			}
 			if (scenenum > 0)
 			{
 				for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
 				{
-					if (@event.Scenes[scenenum].Entities[i].Model != null)
-						if (@event.Scenes[scenenum].Entities[i].Model.HasWeight)
+					NJS_OBJECT model = @event.Scenes[scenenum].Entities[i].Model;
+					if (model == null)
+						model = @event.Scenes[scenenum].Entities[i].GCModel;
+					if (model != null)
+						if (model.HasWeight)
 						{
 							if (animframe != -1 && @event.Scenes[scenenum].Entities[i].Motion != null)
 							{
 								transform.Push();
 								transform.NJTranslate(@event.Scenes[scenenum].Entities[i].Motion.Models[0].GetPosition(animframe));
 							}
-							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[scenenum][i]));
+							renderList.AddRange(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes[scenenum][i]));
 							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
-								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeWeightedInvert(transform.Top, meshes[scenenum][i]));
+								renderList.AddRange(model.DrawModelTreeWeightedInvert(transform.Top, meshes[scenenum][i]));
 							if (animframe != -1 && @event.Scenes[scenenum].Entities[i].Motion != null)
 								transform.Pop();
 						}
 						else if (animframe == -1 || @event.Scenes[scenenum].Entities[i].Motion == null)
 						{
-							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i]));
+							renderList.AddRange(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i]));
 							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
-								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeInvert(transform, meshes[scenenum][i]));
+								renderList.AddRange(model.DrawModelTreeInvert(transform, meshes[scenenum][i]));
 						}
 						else
 						{
-							renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
+							renderList.AddRange(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
 							if (@event.Scenes[scenenum].Entities[i] == selectedObject)
-								renderList.AddRange(@event.Scenes[scenenum].Entities[i].Model.DrawModelTreeAnimatedInvert(transform, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
+								renderList.AddRange(model.DrawModelTreeAnimatedInvert(transform, meshes[scenenum][i], @event.Scenes[scenenum].Entities[i].Motion, animframe));
 						}
 				}
 				if (@event.Scenes[scenenum].Big?.Model != null)

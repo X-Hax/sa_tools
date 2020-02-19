@@ -94,6 +94,22 @@ namespace SA2EventViewer
 			}
 			return result;
 		}
+
+		public static NJS_OBJECT GetGCModel(byte[] file, int address, uint imageBase, Dictionary<string, NJS_OBJECT> models)
+		{
+			NJS_OBJECT result = null;
+			int ptr = file.GetPointer(address, imageBase);
+			if (ptr != 0)
+			{
+				result = new NJS_OBJECT(file, ptr, imageBase, ModelFormat.GC, null);
+				if (models.ContainsKey(result.Name))
+					result = models[result.Name];
+				else
+					foreach (NJS_OBJECT obj in result.GetObjects())
+						models[obj.Name] = obj;
+			}
+			return result;
+		}
 	}
 
 	public class EventScene
@@ -148,6 +164,8 @@ namespace SA2EventViewer
 		[Browsable(false)]
 		public NJS_MOTION ShapeMotion { get; set; }
 		[Browsable(false)]
+		public NJS_OBJECT GCModel { get; set; }
+		[Browsable(false)]
 		public NJS_OBJECT ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
@@ -162,6 +180,7 @@ namespace SA2EventViewer
 			{
 				Motion = motions[ByteConverter.ToInt32(file, address + 4)];
 				ShapeMotion = motions[ByteConverter.ToInt32(file, address + 8)];
+				GCModel = Event.GetGCModel(file, address + 12, imageBase, models);
 				ShadowModel = Event.GetModel(file, address + 16, imageBase, models);
 				Position = new Vertex(file, address + 24);
 				Flags = ByteConverter.ToUInt32(file, address + 40);

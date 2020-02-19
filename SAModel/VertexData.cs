@@ -113,12 +113,12 @@ namespace SonicRetro.SAModel
 
 		public override int GetHashCode()
 		{
-			return Position.GetHashCode() ^ Normal.GetHashCode() ^ Color.GetHashCode() ^ (UV == null ? 0 : UV.GetHashCode());
+			return Position.GetHashCode() ^ Normal.GetHashCode() ^ (Color?.GetHashCode() ?? 0) ^ (UV?.GetHashCode() ?? 0);
 		}
 
 		public bool Equals(VertexData other)
 		{
-			return Position.Equals(other.Position) && Normal.Equals(other.Normal) && Color == other.Color &&
+			return Position.Equals(other.Position) && Equals(Normal, other.Normal) && Color == other.Color &&
 			       (UV == null ? other.UV == null : UV.Equals(other.UV));
 		}
 	}

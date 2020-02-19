@@ -142,6 +142,7 @@ namespace splitEvent
 								}
 								if (battle)
 								{
+									ent.GCModel = GetGCModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
 									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
 									ent.Position = new Vertex(fc, ptr2 + 24);
 									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 40);
@@ -263,6 +264,28 @@ namespace splitEvent
 			return name;
 		}
 
+		private static string GetGCModel(byte[] fc, int address, uint key, string fn)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"object_{ptr3:X8}";
+				if (!nodenames.Contains(name))
+				{
+					NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.GC, null);
+					name = obj.Name;
+					List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
+					foreach (string s in names)
+						if (modelfiles.ContainsKey(s))
+							modelfiles.Remove(s);
+					nodenames.AddRange(names);
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj));
+				}
+			}
+			return name;
+		}
+
 		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
 		{
 			NJS_MOTION mtn = null;
@@ -347,6 +370,7 @@ namespace splitEvent
 		public string Model { get; set; }
 		public string Motion { get; set; }
 		public string ShapeMotion { get; set; }
+		public string GCModel { get; set; }
 		public string ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		public uint Flags { get; set; }
