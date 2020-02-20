@@ -212,7 +212,7 @@ namespace splitEvent
 				foreach (var item in modelfiles.Values)
 				{
 					string fp = Path.Combine(path, item.Filename);
-					ModelFile.CreateFile(fp, item.Model, item.Motions.ToArray(), null, null, null, ModelFormat.Chunk);
+					ModelFile.CreateFile(fp, item.Model, item.Motions.ToArray(), null, null, null, item.Format);
 					ini.Files.Add(item.Filename, HelperFunctions.FileHash(fp));
 				}
 				JsonSerializer js = new JsonSerializer
@@ -258,7 +258,7 @@ namespace splitEvent
 						if (modelfiles.ContainsKey(s))
 							modelfiles.Remove(s);
 					nodenames.AddRange(names);
-					modelfiles.Add(obj.Name, new ModelInfo(fn, obj));
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk));
 				}
 			}
 			return name;
@@ -280,7 +280,7 @@ namespace splitEvent
 						if (modelfiles.ContainsKey(s))
 							modelfiles.Remove(s);
 					nodenames.AddRange(names);
-					modelfiles.Add(obj.Name, new ModelInfo(fn, obj));
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.GC));
 				}
 			}
 			return name;
@@ -308,12 +308,14 @@ namespace splitEvent
 	{
 		public string Filename { get; set; }
 		public NJS_OBJECT Model { get; set; }
+		public ModelFormat Format { get; set; }
 		public List<string> Motions { get; set; } = new List<string>();
 
-		public ModelInfo(string fn, NJS_OBJECT obj)
+		public ModelInfo(string fn, NJS_OBJECT obj, ModelFormat format)
 		{
 			Filename = fn;
 			Model = obj;
+			Format = format;
 		}
 	}
 
