@@ -142,7 +142,7 @@ namespace splitEvent
 								}
 								if (battle)
 								{
-									ent.GCModel = GetGCModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
+									ent.GCModel = GetGCModel(fc, ptr2 + 12, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
 									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
 									ent.Position = new Vertex(fc, ptr2 + 24);
 									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 40);
