@@ -426,12 +426,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			if (attach is GC.GCAttach gcAttach)
 			{
 				int nameMeshIndex = 0;
-				foreach (GC.Mesh m in gcAttach.opaqueMeshes)
+				foreach (GC.GCMesh m in gcAttach.opaqueMeshes)
 				{
 					result.Add(scene.Meshes.Count);
 					scene.Meshes.Add(ExportGCMesh(gcAttach, m, scene, texInfo, ref nameMeshIndex));
 				}
-				foreach (GC.Mesh m in gcAttach.translucentMeshes)
+				foreach (GC.GCMesh m in gcAttach.translucentMeshes)
 				{
 					result.Add(scene.Meshes.Count);
 					scene.Meshes.Add(ExportGCMesh(gcAttach, m, scene, texInfo, ref nameMeshIndex));
@@ -497,7 +497,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
-		private static Assimp.Mesh ExportGCMesh(GC.GCAttach gcAttach, GC.Mesh m, Scene scene, string[] texInfo, ref int nameMeshIndex)
+		private static Assimp.Mesh ExportGCMesh(GC.GCAttach gcAttach, GC.GCMesh m, Scene scene, string[] texInfo, ref int nameMeshIndex)
 		{
 			Assimp.Mesh mesh = new Assimp.Mesh(gcAttach.Name + "_mesh_" + nameMeshIndex);
 			nameMeshIndex++;
@@ -506,7 +506,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<Vector3D> normals = new List<Vector3D>();
 			List<Vector3D> texcoords = new List<Vector3D>();
 			List<Color4D> colors = new List<Color4D>();
-			foreach (GC.Parameter param in m.parameters)
+			foreach (GC.GCParameter param in m.parameters)
 			{
 				if (param.type == GC.ParameterType.Texture)
 				{
@@ -545,7 +545,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			List<GC.IOVtx> gcColors = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Color0)?.data;
 			List<GC.IOVtx> gcUVs = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Tex0)?.data;
 
-			foreach (GC.Primitive prim in m.primitives)
+			foreach (GC.GCPrimitive prim in m.primitives)
 			{
 				for (int i = 0; i < prim.ToTriangles().Count; i += 3)
 				{
@@ -1345,12 +1345,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				Name = "attach_" + Extensions.GenerateIdentifier()
 			};
 			//setup names!!!
-			List<GC.Mesh> gcmeshes = new List<GC.Mesh>();
+			List<GC.GCMesh> gcmeshes = new List<GC.GCMesh>();
 			List<Vector3D> vertices = new List<Vector3D>();
 			List<Vector3D> normals = new List<Vector3D>();
 			List<GC.UV> texcoords = new List<GC.UV>();
 			List<GC.Color> colors = new List<GC.Color>();
-			List<GC.VertexAttribute> vertexAttribs = new List<GC.VertexAttribute>();
+			List<GC.GCVertexSet> vertexAttribs = new List<GC.GCVertexSet>();
 			foreach (Assimp.Mesh m in meshes)
 			{
 				Material currentAiMat = null;
@@ -1359,8 +1359,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					currentAiMat = materials[m.MaterialIndex];
 				}
 
-				List<GC.Primitive> primitives = new List<GC.Primitive>();
-				List<GC.Parameter> parameters = new List<GC.Parameter>();
+				List<GC.GCPrimitive> primitives = new List<GC.GCPrimitive>();
+				List<GC.GCParameter> parameters = new List<GC.GCParameter>();
 
 				ushort vertStartIndex = (ushort)vertices.Count;
 				ushort normStartIndex = (ushort)normals.Count;
@@ -1476,7 +1476,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
-					GC.Primitive prim = new GC.Primitive(GC.GCPrimitiveType.TriangleStrip);
+					GC.GCPrimitive prim = new GC.GCPrimitive(GC.GCPrimitiveType.TriangleStrip);
 					for (var j = 0; j < grp.Indices.Length; j++)
 					{
 						GC.Loop vert = new GC.Loop();
@@ -1491,7 +1491,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					primitives.Add(prim);
 				}
-				gcmeshes.Add(new GC.Mesh(parameters, primitives));
+				gcmeshes.Add(new GC.GCMesh(parameters, primitives));
 			}
 
 			List<GC.Vector3> gcvertices = new List<GC.Vector3>();
@@ -1503,26 +1503,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				gcnormals.Add(new GC.Vector3(aivert.X, aivert.Y, aivert.Z));
 
 			//VertexAttribute stuff
-			GC.VertexAttribute vtxPositions = new GC.VertexAttribute(GC.GCVertexAttribute.Position);
+			GC.GCVertexSet vtxPositions = new GC.GCVertexSet(GC.GCVertexAttribute.Position);
 			vtxPositions.data.AddRange(gcvertices);
 			attach.vertexData.Add(vtxPositions);
 
 			if (texcoords.Count > 0)
 			{
-				GC.VertexAttribute vtxUV = new GC.VertexAttribute(GC.GCVertexAttribute.Tex0);
+				GC.GCVertexSet vtxUV = new GC.GCVertexSet(GC.GCVertexAttribute.Tex0);
 				vtxUV.data.AddRange(texcoords);
 				attach.vertexData.Add(vtxUV);
 			}
 
 			if (colors.Count > 0)
 			{
-				GC.VertexAttribute vtxColors = new GC.VertexAttribute(GC.GCVertexAttribute.Color0);
+				GC.GCVertexSet vtxColors = new GC.GCVertexSet(GC.GCVertexAttribute.Color0);
 				vtxColors.data.AddRange(colors);
 				attach.vertexData.Add(vtxColors);
 			}
 			else
 			{
-				GC.VertexAttribute vtxNormals = new GC.VertexAttribute(GC.GCVertexAttribute.Normal);
+				GC.GCVertexSet vtxNormals = new GC.GCVertexSet(GC.GCVertexAttribute.Normal);
 				vtxNormals.data.AddRange(gcnormals);
 				attach.vertexData.Add(vtxNormals);
 			}

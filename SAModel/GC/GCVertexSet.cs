@@ -8,7 +8,7 @@ namespace SonicRetro.SAModel.GC
 	/// A vertex data set, which can hold various data
 	/// </summary>
 	[Serializable]
-	public class VertexAttribute
+	public class GCVertexSet
 	{
 		/// <summary>
 		/// The type of vertex data that is stored
@@ -80,7 +80,7 @@ namespace SonicRetro.SAModel.GC
 		/// Creates a new empty vertex attribute using the default struct setups
 		/// </summary>
 		/// <param name="attributeType">The attribute type of the vertex attribute</param>
-		public VertexAttribute(GCVertexAttribute attributeType)
+		public GCVertexSet(GCVertexAttribute attributeType)
 		{
 			attribute = attributeType;
 
@@ -116,7 +116,7 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="dataType"></param>
 		/// <param name="structType"></param>
 		/// <param name="fractionalBitCount"></param>
-		public VertexAttribute(GCVertexAttribute attribute, GCDataType dataType, GCStructType structType)
+		public GCVertexSet(GCVertexAttribute attribute, GCDataType dataType, GCStructType structType)
 		{
 			this.attribute = attribute;
 			this.dataType = dataType;
@@ -130,7 +130,7 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="file">The files contents</param>
 		/// <param name="address">The starting address of the file</param>
 		/// <param name="imageBase">The image base of the addresses</param>
-		public VertexAttribute(byte[] file, uint address, uint imageBase)
+		public GCVertexSet(byte[] file, uint address, uint imageBase)
 		{
 			attribute = (GCVertexAttribute)file[address];
 			if (attribute == GCVertexAttribute.Null) return;

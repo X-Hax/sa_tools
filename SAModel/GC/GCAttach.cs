@@ -13,17 +13,17 @@ namespace SonicRetro.SAModel.GC
 		/// <summary>
 		/// The seperate sets of vertex data in this attach
 		/// </summary>
-		public readonly List<VertexAttribute> vertexData;
+		public readonly List<GCVertexSet> vertexData;
 
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
-		public readonly List<Mesh> opaqueMeshes;
+		public readonly List<GCMesh> opaqueMeshes;
 
 		/// <summary>
 		/// The meshes with translucent rendering properties
 		/// </summary>
-		public readonly List<Mesh> translucentMeshes;
+		public readonly List<GCMesh> translucentMeshes;
 
 
 		/// <summary>
@@ -33,9 +33,9 @@ namespace SonicRetro.SAModel.GC
 		{
 			Name = "gcattach_" + Extensions.GenerateIdentifier();
 
-			vertexData = new List<VertexAttribute>();
-			opaqueMeshes = new List<Mesh>();
-			translucentMeshes = new List<Mesh>();
+			vertexData = new List<GCVertexSet>();
+			opaqueMeshes = new List<GCMesh>();
+			translucentMeshes = new List<GCMesh>();
 			Bounds = new BoundingSphere();
 		}
 
@@ -66,22 +66,22 @@ namespace SonicRetro.SAModel.GC
 			Bounds = new BoundingSphere(file, address + 20);
 
 			// reading vertex data
-			vertexData = new List<VertexAttribute>();
-			VertexAttribute vertexSet = new VertexAttribute(file, vertexAddress, imageBase);
+			vertexData = new List<GCVertexSet>();
+			GCVertexSet vertexSet = new GCVertexSet(file, vertexAddress, imageBase);
 			while(vertexSet.attribute != GCVertexAttribute.Null)
 			{
 				vertexData.Add(vertexSet);
 				vertexAddress += 16;
-				vertexSet = new VertexAttribute(file, vertexAddress, imageBase);
+				vertexSet = new GCVertexSet(file, vertexAddress, imageBase);
 			}
 
 			// reading geometry
 			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
 
-			opaqueMeshes = new List<Mesh>();
+			opaqueMeshes = new List<GCMesh>();
 			for (int i = 0; i < opaqueCount; i++)
 			{
-				Mesh mesh = new Mesh(file, opaqueAddress, imageBase, indexFlags);
+				GCMesh mesh = new GCMesh(file, opaqueAddress, imageBase, indexFlags);
 
 				GCIndexAttributeFlags? t = mesh.IndexFlags;
 				if (t.HasValue) indexFlags = t.Value;
@@ -90,10 +90,10 @@ namespace SonicRetro.SAModel.GC
 				opaqueAddress += 16;
 			}
 
-			translucentMeshes = new List<Mesh>();
+			translucentMeshes = new List<GCMesh>();
 			for (int i = 0; i < translucentCount; i++)
 			{
-				Mesh mesh = new Mesh(file, translucentAddress, imageBase, indexFlags);
+				GCMesh mesh = new GCMesh(file, translucentAddress, imageBase, indexFlags);
 
 				GCIndexAttributeFlags? t = mesh.IndexFlags;
 				if (t.HasValue) indexFlags = t.Value;
@@ -125,7 +125,7 @@ namespace SonicRetro.SAModel.GC
 				writer.Write(Bounds.GetBytes());
 
 				// writing vertex data
-				foreach(VertexAttribute vtx in vertexData)
+				foreach(GCVertexSet vtx in vertexData)
 				{
 					vtx.WriteData(writer);
 				}
@@ -133,7 +133,7 @@ namespace SonicRetro.SAModel.GC
 				uint vtxAddr = (uint)writer.BaseStream.Length + imageBase;
 
 				// writing vertex attributes
-				foreach (VertexAttribute vtx in vertexData)
+				foreach (GCVertexSet vtx in vertexData)
 				{
 					vtx.WriteAttribute(writer, imageBase);
 				}
@@ -142,13 +142,13 @@ namespace SonicRetro.SAModel.GC
 
 				// writing geometry data
 				GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-				foreach(Mesh m in opaqueMeshes)
+				foreach(GCMesh m in opaqueMeshes)
 				{
 					GCIndexAttributeFlags? t = m.IndexFlags;
 					if (t.HasValue) indexFlags = t.Value;
 					m.WriteData(writer, indexFlags);
 				}
-				foreach (Mesh m in translucentMeshes)
+				foreach (GCMesh m in translucentMeshes)
 				{
 					GCIndexAttributeFlags? t = m.IndexFlags;
 					if (t.HasValue) indexFlags = t.Value;
@@ -157,12 +157,12 @@ namespace SonicRetro.SAModel.GC
 
 				// writing geometry properties
 				uint opaqueAddress = (uint)writer.BaseStream.Length + imageBase;
-				foreach (Mesh m in opaqueMeshes)
+				foreach (GCMesh m in opaqueMeshes)
 				{
 					m.WriteProperties(writer, imageBase);
 				}
 				uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
-				foreach (Mesh m in translucentMeshes)
+				foreach (GCMesh m in translucentMeshes)
 				{
 					m.WriteProperties(writer, imageBase);
 				}
@@ -198,11 +198,11 @@ namespace SonicRetro.SAModel.GC
 			NJS_MATERIAL mat = new NJS_MATERIAL();
 
 			mat.UseAlpha = false;
-			foreach (Mesh m in opaqueMeshes)
+			foreach (GCMesh m in opaqueMeshes)
 				meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
 
 			mat.UseAlpha = true;
-			foreach (Mesh m in translucentMeshes)
+			foreach (GCMesh m in translucentMeshes)
 				meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
 
 			MeshInfo = meshInfo.ToArray();

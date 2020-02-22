@@ -23,7 +23,7 @@ namespace SonicRetro.SAModel.GC
 	/// Used to store geometry information (like materials).
 	/// </summary>
 	[Serializable]
-	public abstract class Parameter
+	public abstract class GCParameter
 	{
 		/// <summary>
 		/// The type of parameter
@@ -40,7 +40,7 @@ namespace SonicRetro.SAModel.GC
 		/// Used only in child classes.
 		/// </summary>
 		/// <param name="type">The type of parameter to create</param>
-		protected Parameter(ParameterType type)
+		protected GCParameter(ParameterType type)
 		{
 			this.type = type;
 			data = 0;
@@ -52,9 +52,9 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="file">The file contents</param>
 		/// <param name="address">The address at which the parameter is located</param>
 		/// <returns>Any of the parameter types</returns>
-		public static Parameter Read(byte[] file, int address)
+		public static GCParameter Read(byte[] file, int address)
 		{
-			Parameter result = null;
+			GCParameter result = null;
 			ParameterType paramType = (ParameterType)BitConverter.ToUInt32(file, address);
 
 			switch (paramType)
@@ -106,7 +106,7 @@ namespace SonicRetro.SAModel.GC
 	/// A geometry object needs to have one for each 
 	/// </summary>
 	[Serializable]
-	public class VtxAttrFmtParameter : Parameter
+	public class VtxAttrFmtParameter : GCParameter
 	{
 		/// <summary>
 		/// The attribute type that this parameter applies for
@@ -185,7 +185,7 @@ namespace SonicRetro.SAModel.GC
 	/// Holds information about the vertex data thats stored in the geometry
 	/// </summary>
 	[Serializable]
-	public class IndexAttributeParameter : Parameter
+	public class IndexAttributeParameter : GCParameter
 	{
 		/// <summary>
 		/// Holds information about the vertex data thats stored in the geometry 
@@ -226,7 +226,7 @@ namespace SonicRetro.SAModel.GC
 	/// Holds lighting information
 	/// </summary>
 	[Serializable]
-	public class LightingParameter : Parameter
+	public class LightingParameter : GCParameter
 	{
 		/// <summary>
 		/// Lighting flags. Pretty much unknown how they work
@@ -308,7 +308,7 @@ namespace SonicRetro.SAModel.GC
 	/// The blending information for the surface of the geometry
 	/// </summary>
 	[Serializable]
-	public class BlendAlphaParameter : Parameter
+	public class BlendAlphaParameter : GCParameter
 	{
 		/// <summary>
 		/// NJ Blendmode for the source alpha
@@ -388,7 +388,7 @@ namespace SonicRetro.SAModel.GC
 	/// Ambient color of the geometry
 	/// </summary>
 	[Serializable]
-	public class AmbientColorParameter : Parameter
+	public class AmbientColorParameter : GCParameter
 	{
 		/// <summary>
 		/// The Color of the 
@@ -419,7 +419,7 @@ namespace SonicRetro.SAModel.GC
 	/// Texture information for the geometry
 	/// </summary>
 	[Serializable]
-	public class TextureParameter : Parameter
+	public class TextureParameter : GCParameter
 	{
 		/// <summary>
 		/// The id of the texture
@@ -470,7 +470,7 @@ namespace SonicRetro.SAModel.GC
 	/// No idea what this is for, but its needed
 	/// </summary>
 	[Serializable]
-	public class Unknown9Parameter : Parameter
+	public class Unknown9Parameter : GCParameter
 	{
 		/// <summary>
 		/// No idea what this does. Default is 4
@@ -516,7 +516,7 @@ namespace SonicRetro.SAModel.GC
 	/// Determines where or how the geometry gets the texture coordinates
 	/// </summary>
 	[Serializable]
-	public class TexCoordGenParameter : Parameter
+	public class TexCoordGenParameter : GCParameter
 	{
 		/// <summary>
 		/// The output location of the generated texture coordinates

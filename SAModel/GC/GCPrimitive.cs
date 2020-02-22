@@ -45,7 +45,7 @@ namespace SonicRetro.SAModel.GC
 	/// A collection of polygons
 	/// </summary>
 	[Serializable]
-	public class Primitive
+	public class GCPrimitive
 	{
 		/// <summary>
 		/// The way in which triangles are being stored
@@ -61,7 +61,7 @@ namespace SonicRetro.SAModel.GC
 		/// Create a new empty Primitive
 		/// </summary>
 		/// <param name="type">The type of primitive</param>
-		public Primitive(GCPrimitiveType type)
+		public GCPrimitive(GCPrimitiveType type)
 		{
 			primitiveType = type;
 			loops = new List<Loop>();
@@ -73,7 +73,7 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="file">The files contents as a byte array</param>
 		/// <param name="address">The starting address of the primitive</param>
 		/// <param name="indexFlags">How the indices of the loops are structured</param>
-		public Primitive(byte[] file, int address, GCIndexAttributeFlags indexFlags, out int end)
+		public GCPrimitive(byte[] file, int address, GCIndexAttributeFlags indexFlags, out int end)
 		{
 			primitiveType = (GCPrimitiveType)file[address];
 

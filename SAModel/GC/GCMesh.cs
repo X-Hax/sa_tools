@@ -9,17 +9,17 @@ namespace SonicRetro.SAModel.GC
 	/// A single mesh, with its own parameter and primitive data <br/>
 	/// </summary>
 	[Serializable]
-	public class Mesh
+	public class GCMesh
 	{
 		/// <summary>
 		/// The parameters that this mesh sets
 		/// </summary>
-		public readonly List<Parameter> parameters;
+		public readonly List<GCParameter> parameters;
 
 		/// <summary>
 		/// The polygon data
 		/// </summary>
-		public readonly List<Primitive> primitives;
+		public readonly List<GCPrimitive> primitives;
 
 		/// <summary>
 		/// The index attribute flags of this mesh. If it has no IndexAttribParam, it will return null
@@ -53,10 +53,10 @@ namespace SonicRetro.SAModel.GC
 		/// <summary>
 		/// Create an empty mesh
 		/// </summary>
-		public Mesh()
+		public GCMesh()
 		{
-			parameters = new List<Parameter>();
-			primitives = new List<Primitive>();
+			parameters = new List<GCParameter>();
+			primitives = new List<GCPrimitive>();
 		}
 
 		/// <summary>
@@ -64,7 +64,7 @@ namespace SonicRetro.SAModel.GC
 		/// </summary>
 		/// <param name="parameters"></param>
 		/// <param name="primitives"></param>
-		public Mesh(List<Parameter> parameters, List<Primitive> primitives)
+		public GCMesh(List<GCParameter> parameters, List<GCPrimitive> primitives)
 		{
 			this.parameters = parameters;
 			this.primitives = primitives;
@@ -77,7 +77,7 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="address">The address at which the mesh is located</param>
 		/// <param name="imageBase">The imagebase (used for when reading from an exe)</param>
 		/// <param name="index">Indexattribute parameter of the previous mesh</param>
-		public Mesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
+		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
 		{
 			// getting the addresses and sizes
 			int parameters_offset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
@@ -87,10 +87,10 @@ namespace SonicRetro.SAModel.GC
 			int primitives_size = ByteConverter.ToInt32(file, address + 12);
 
 			// reading the parameters
-			parameters = new List<Parameter>();
+			parameters = new List<GCParameter>();
 			for (int i = 0; i < parameters_count; i++)
 			{
-				parameters.Add(Parameter.Read(file, parameters_offset));
+				parameters.Add(GCParameter.Read(file, parameters_offset));
 				parameters_offset += 8;
 			}
 
@@ -100,14 +100,14 @@ namespace SonicRetro.SAModel.GC
 				indexFlags = flags.Value;
 
 			// reading the primitives
-			primitives = new List<Primitive>();
+			primitives = new List<GCPrimitive>();
 			int end_pos = primitives_offset + primitives_size;
 
 			while (primitives_offset < end_pos)
 			{
 				// if the primitive isnt valid
 				if (file[primitives_offset] == 0) break;
-				primitives.Add(new Primitive(file, primitives_offset, indexFlags, out primitives_offset));
+				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
 			}
 		}
 
@@ -120,14 +120,14 @@ namespace SonicRetro.SAModel.GC
 		{
 			paramAddress = (uint)writer.BaseStream.Length;
 
-			foreach(Parameter param in parameters)
+			foreach(GCParameter param in parameters)
 			{
 				param.Write(writer);
 			}
 
 			primitiveAddress = (uint)writer.BaseStream.Length;
 
-			foreach(Primitive prim in primitives)
+			foreach(GCPrimitive prim in primitives)
 			{
 				prim.Write(writer, indexFlags);
 			}
@@ -165,7 +165,7 @@ namespace SonicRetro.SAModel.GC
 		public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs)
 		{
 			// setting the material properties according to the parameters
-			foreach (Parameter param in parameters)
+			foreach (GCParameter param in parameters)
 			{
 				switch (param.type)
 				{
@@ -201,7 +201,7 @@ namespace SonicRetro.SAModel.GC
 			List<Loop> corners = new List<Loop>();
 			List<Poly> polys = new List<Poly>();
 
-			foreach (Primitive prim in primitives)
+			foreach (GCPrimitive prim in primitives)
 			{
 				int j = 0;
 				ushort[] indices = new ushort[prim.loops.Count];

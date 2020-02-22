@@ -50,11 +50,11 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GC\GCAttach.cs" />
     <Compile Include="GC\GCEnums.cs" />
-    <Compile Include="GC\Mesh.cs" />
-    <Compile Include="GC\Parameter.cs" />
-    <Compile Include="GC\Primitive.cs" />
+    <Compile Include="GC\GCMesh.cs" />
+    <Compile Include="GC\GCParameter.cs" />
+    <Compile Include="GC\GCPrimitive.cs" />
+    <Compile Include="GC\GCVertexSet.cs" />
     <Compile Include="GC\Structs.cs" />
-    <Compile Include="GC\VertexAttribute.cs" />
     <Compile Include="GeoAnimData.cs" />
     <Compile Include="LandTable.cs" />
     <Compile Include="NJS_MATERIAL.cs" />
