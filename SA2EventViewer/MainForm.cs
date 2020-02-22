@@ -160,7 +160,7 @@ namespace SA2EventViewer
 						}
 					else if (entity.GCModel != null)
 					{
-						entity.Model.ProcessVertexData();
+						entity.GCModel.ProcessVertexData();
 						NJS_OBJECT[] models = entity.GCModel.GetObjects();
 						Mesh[] entmesh = new Mesh[models.Length];
 						for (int i = 0; i < models.Length; i++)

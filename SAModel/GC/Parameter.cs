@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
-using SonicRetro.SAModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SonicRetro.SAModel.GC
 {
-	public enum ParameterType
+	/// <summary>
+	/// The types of parameter that exist
+	/// </summary>
+	public enum ParameterType : uint
 	{
 		VtxAttrFmt = 0,
 		IndexAttributeFlags = 1,
@@ -19,345 +17,589 @@ namespace SonicRetro.SAModel.GC
 		Unknown_9 = 9,
 		TexCoordGen = 10,
 	}
-
+	
+	/// <summary>
+	/// Base class for all GC parameter types. <br/>
+	/// Used to store geometry information (like materials).
+	/// </summary>
 	[Serializable]
 	public abstract class Parameter
 	{
-		public ParameterType ParameterType { get; protected set; }
+		/// <summary>
+		/// The type of parameter
+		/// </summary>
+		public readonly ParameterType type;
 
-		public abstract void Read(byte[] file, int address);
-		public abstract void Write(BinaryWriter writer);
+		/// <summary>
+		/// All parameter data is stored in these 4 bytes
+		/// </summary>
+		protected uint data;
+
+		/// <summary>
+		/// Base constructor for an empty parameter. <br/>
+		/// Used only in child classes.
+		/// </summary>
+		/// <param name="type">The type of parameter to create</param>
+		protected Parameter(ParameterType type)
+		{
+			this.type = type;
+			data = 0;
+		}
+
+		/// <summary>
+		/// Create a parameter object from a file and address
+		/// </summary>
+		/// <param name="file">The file contents</param>
+		/// <param name="address">The address at which the parameter is located</param>
+		/// <returns>Any of the parameter types</returns>
+		public static Parameter Read(byte[] file, int address)
+		{
+			Parameter result = null;
+			ParameterType paramType = (ParameterType)BitConverter.ToUInt32(file, address);
+
+			switch (paramType)
+			{
+				case ParameterType.VtxAttrFmt:
+					result = new VtxAttrFmtParameter(GCVertexAttribute.Null);
+					break;
+				case ParameterType.IndexAttributeFlags:
+					result = new IndexAttributeParameter();
+					break;
+				case ParameterType.Lighting:
+					result = new LightingParameter();
+					break;
+				case ParameterType.BlendAlpha:
+					result = new BlendAlphaParameter();
+					break;
+				case ParameterType.AmbientColor:
+					result = new AmbientColorParameter();
+					break;
+				case ParameterType.Texture:
+					result = new TextureParameter();
+					break;
+				case ParameterType.Unknown_9:
+					result = new Unknown9Parameter();
+					break;
+				case ParameterType.TexCoordGen:
+					result = new TexCoordGenParameter();
+					break;
+			}
+
+			result.data = ByteConverter.ToUInt32(file, address + 4);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Writes the parameter contents to a stream
+		/// </summary>
+		/// <param name="writer">The stream writer</param>
+		public void Write(BinaryWriter writer)
+		{
+			writer.Write((uint)type);
+			writer.Write(data);
+		}
 	}
 
+	/// <summary>
+	/// Parameter that is relevent for Vertex data. <br/>
+	/// A geometry object needs to have one for each 
+	/// </summary>
 	[Serializable]
 	public class VtxAttrFmtParameter : Parameter
 	{
-		public GXVertexAttribute VertexAttribute { get; private set; }
-		public ushort Unknown_1 { get; private set; }
-		public VtxAttrFmtParameter()
+		/// <summary>
+		/// The attribute type that this parameter applies for
+		/// </summary>
+		public GCVertexAttribute VertexAttribute
 		{
-			ParameterType = ParameterType.VtxAttrFmt;
-		}
-		public VtxAttrFmtParameter(ushort Unknown, GXVertexAttribute vertexAttrib)
-		{
-			ParameterType = ParameterType.VtxAttrFmt;
-			Unknown_1 = Unknown;
-			VertexAttribute = vertexAttrib;
-		}
-		public override void Read(byte[] file, int address)
-		{
-			Unknown_1 = ByteConverter.ToUInt16(file, address);
-			VertexAttribute = (GXVertexAttribute)(ByteConverter.ToUInt16(file, address + 2) + 8);
+			get
+			{
+				return (GCVertexAttribute)(data >> 16);
+			}
+			set
+			{
+				data &= 0xFFFF;
+				data |= ((uint)value) << 16;
+			}
 		}
 
-		public override void Write(BinaryWriter writer)
+		/// <summary>
+		/// Seems to be some type of address of buffer length. <br/>
+		/// Sa2 only uses a specific value for each attribute type either way
+		/// </summary>
+		public ushort Unknown
 		{
-			writer.Write((int)ParameterType);
-			writer.Write((ushort)Unknown_1);
-			writer.Write((ushort)(VertexAttribute - 8));
+			get
+			{
+				return (ushort)(data & 0xFFFF);
+			}
+			set
+			{
+				data &= 0xFFFF0000;
+				data |= value;
+			}
+		}
+
+		/// <summary>
+		/// Creates a new parameter with the default value according to each attribute type <br/> (which are the only ones that work ingame)
+		/// </summary>
+		/// <param name="vertexAttrib">The vertex attribute type that the parameter is for</param>
+		public VtxAttrFmtParameter(GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
+		{
+			VertexAttribute = vertexAttrib;
+
+			// Setting the default values
+			switch (vertexAttrib)
+			{
+				case GCVertexAttribute.Position:
+					Unknown = 5120;
+					break;
+				case GCVertexAttribute.Normal:
+					Unknown = 9216;
+					break;
+				case GCVertexAttribute.Color0:
+					Unknown = 27136;
+					break;
+				case GCVertexAttribute.Tex0:
+					Unknown = 33544;
+					break;
+				default:
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Allows to manually create a Vertex attribute parameter
+		/// </summary>
+		/// <param name="Unknown"></param>
+		/// <param name="vertexAttrib">The vertex attribute type that the parameter is for</param>
+		public VtxAttrFmtParameter(ushort Unknown, GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
+		{
+			this.Unknown = Unknown;
+			VertexAttribute = vertexAttrib;
 		}
 	}
+
+	/// <summary>
+	/// Holds information about the vertex data thats stored in the geometry
+	/// </summary>
 	[Serializable]
 	public class IndexAttributeParameter : Parameter
 	{
-		[Flags]
-		public enum IndexAttributeFlags : ushort
+		/// <summary>
+		/// Holds information about the vertex data thats stored in the geometry 
+		/// </summary>
+		public GCIndexAttributeFlags IndexAttributes
 		{
-			Bit0 = 1 << 0, // Unused
-			Bit1 = 1 << 1, // Unused
-			Position16BitIndex = 1 << 2,
-			HasPosition = 1 << 3,
-			Normal16BitIndex = 1 << 4,
-			HasNormal = 1 << 5,
-			Color16BitIndex = 1 << 6,
-			HasColor = 1 << 7,
-			Bit8 = 1 << 8, // Unused
-			Bit9 = 1 << 9, // Unused
-			UV16BitIndex = 1 << 10,
-			HasUV = 1 << 11,
-			Bit12 = 1 << 12, // Unused
-			Bit13 = 1 << 13, // Unused
-			Bit14 = 1 << 14, // Unused
-			Bit15 = 1 << 15, // Unused
+			get
+			{
+				return (GCIndexAttributeFlags)data;
+			}
+			set
+			{
+				data = (uint)value;
+			}
 		}
 
-		public IndexAttributeFlags IndexAttributes { get; private set; }
-
-		public IndexAttributeParameter()
+		/// <summary>
+		/// Creates an empty index attribute parameter
+		/// </summary>
+		public IndexAttributeParameter() : base(ParameterType.IndexAttributeFlags)
 		{
-			ParameterType = ParameterType.IndexAttributeFlags;
+			//this always exists
+			IndexAttributes &= GCIndexAttributeFlags.HasPosition;
 		}
-		public IndexAttributeParameter(IndexAttributeFlags flags)
+
+		/// <summary>
+		/// Creates an index attribute parameter based on existing flags
+		/// </summary>
+		/// <param name="flags"></param>
+		public IndexAttributeParameter(GCIndexAttributeFlags flags) : base(ParameterType.IndexAttributeFlags)
 		{
-			ParameterType = ParameterType.IndexAttributeFlags;
 			IndexAttributes = flags;
 		}
 
-		public override void Read(byte[] file, int address)
-		{
-			IndexAttributes = (IndexAttributeFlags)ByteConverter.ToInt32(file, address);
-		}
-
-		public override void Write(BinaryWriter writer)
-		{
-			writer.Write((int)ParameterType);
-			writer.Write((int)IndexAttributes);
-		}
 	}
 
+	/// <summary>
+	/// Holds lighting information
+	/// </summary>
 	[Serializable]
 	public class LightingParameter : Parameter
 	{
-		public ushort Unknown1 { get; private set; }
-		public ushort Unknown2 { get; private set; }
-
-		public LightingParameter()
+		/// <summary>
+		/// Lighting flags. Pretty much unknown how they work
+		/// </summary>
+		public ushort LightingFlags
 		{
-			ParameterType = ParameterType.Lighting;
+			get
+			{
+				return (ushort)(data & 0xFFFF);
+			}
+			set
+			{
+				data &= 0xFFFF0000;
+				data |= value;
+			}
 		}
 
-		public LightingParameter(ushort Unk1, ushort Unk2)
+		/// <summary>
+		/// Which shadow stencil the geometry should use. <br/>
+		/// Ranges from 0 - 15
+		/// </summary>
+		public byte ShadowStencil
 		{
-			ParameterType = ParameterType.Lighting;
-			Unknown1 = Unk1;
-			Unknown2 = Unk2;
+			get
+			{
+				return (byte)((data >> 16) & 0xF);
+			}
+			set
+			{
+				data &= 0xFFF0FFFF;
+				data |= (uint)((value & 0xF) << 16);
+			}
 		}
 
-		public override void Read(byte[] file, int address)
+		public byte Unknown1
 		{
-			Unknown1 = ByteConverter.ToUInt16(file, address);
-			Unknown2 = ByteConverter.ToUInt16(file, address + 2);
+			get
+			{
+				return (byte)((data >> 20) & 0xF);
+			}
+			set
+			{
+				data &= 0xFFF0FFFF;
+				data |= (uint)((value & 0xF) << 20);
+			}
 		}
 
-		public override void Write(BinaryWriter writer)
+		public byte Unknown2
 		{
-			writer.Write((int)ParameterType);
-			writer.Write(Unknown1);
-			writer.Write(Unknown2);
+			get
+			{
+				return (byte)((data >> 24) & 0xFF);
+			}
+			set
+			{
+				data &= 0xFFF0FFFF;
+				data |= (uint)(value << 24);
+			}
+		} 
+
+		/// <summary>
+		/// Creates a lighting parameter with the default data
+		/// </summary>
+		public LightingParameter() : base(ParameterType.Lighting)
+		{
+			//default value
+			LightingFlags = 0xB11;
+			ShadowStencil = 1;
+		}
+
+		public LightingParameter(ushort lightingFlags, byte shadowStencil) : base(ParameterType.Lighting)
+		{
+			LightingFlags = lightingFlags;
+			ShadowStencil = shadowStencil;
 		}
 	}
 
+	/// <summary>
+	/// The blending information for the surface of the geometry
+	/// </summary>
 	[Serializable]
 	public class BlendAlphaParameter : Parameter
 	{
-		private int m_Data;
-
-		public AlphaInstruction SourceAlpha
+		/// <summary>
+		/// NJ Blendmode for the source alpha
+		/// </summary>
+		public AlphaInstruction NJSourceAlpha
 		{
 			get
 			{
-				return GXToNJAlphaInstruction((GXBlendModeControl)((m_Data >> 11) & 7));
+				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 11) & 7));
 			}
 			set
 			{
-				int inst = (int)NJtoGXBlendModeControl(value);
-				m_Data &= ~(7 << 11);
-				m_Data |= (inst & 7) << 11;
+				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
+				data &= 0xFFFFC7FF; // ~(7 << 11)
+				data |= (inst & 7) << 11;
 			}
 		}
 
-		public AlphaInstruction DestinationAlpha
+		/// <summary>
+		/// NJ Blendmode for the destination alpha
+		/// </summary>
+		public AlphaInstruction NJDestAlpha
 		{
 			get
 			{
-				return GXToNJAlphaInstruction((GXBlendModeControl)((m_Data >> 8) & 7));
+				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 8) & 7));
 			}
 			set
 			{
-				int inst = (int)NJtoGXBlendModeControl(value);
-				m_Data &= ~(7 << 8);
-				m_Data |= (inst & 7) << 8;
+				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
+				data &= 0xFFFFF8FF; // ~(7 << 8)
+				data |= (inst & 7) << 8;
 			}
 		}
 
-		public BlendAlphaParameter()
+		/// <summary>
+		/// Blendmode for the source alpha
+		/// </summary>
+		public GCBlendModeControl SourceAlpha
 		{
-			ParameterType = ParameterType.BlendAlpha;
-			m_Data = 0;
-		}
-
-		public override void Read(byte[] file, int address)
-		{
-			m_Data = ByteConverter.ToInt32(file, address);
-		}
-
-		public override void Write(BinaryWriter writer)
-		{
-			writer.Write((int)ParameterType);
-			writer.Write(m_Data);
-		}
-
-		public static AlphaInstruction GXToNJAlphaInstruction(GXBlendModeControl gx)
-		{
-			switch (gx)
+			get
 			{
-				case GXBlendModeControl.SrcAlpha:
-					return AlphaInstruction.SourceAlpha;
-				case GXBlendModeControl.DstAlpha:
-					return AlphaInstruction.DestinationAlpha;
-				case GXBlendModeControl.InverseSrcAlpha:
-					return AlphaInstruction.InverseSourceAlpha;
-				case GXBlendModeControl.InverseDstAlpha:
-					return AlphaInstruction.InverseDestinationAlpha;
-				case GXBlendModeControl.SrcColor:
-					return AlphaInstruction.OtherColor;
-				case GXBlendModeControl.InverseSrcColor:
-					return AlphaInstruction.InverseOtherColor;
-				case GXBlendModeControl.One:
-					return AlphaInstruction.One;
-				case GXBlendModeControl.Zero:
-					return AlphaInstruction.Zero;
+				return (GCBlendModeControl)((data >> 11) & 7);
 			}
-
-			return AlphaInstruction.Zero;
+			set
+			{
+				uint inst = (uint)value;
+				data &= 0xFFFFC7FF; // ~(7 << 11)
+				data |= (inst & 7) << 11;
+			}
 		}
 
-		public static GXBlendModeControl NJtoGXBlendModeControl(AlphaInstruction nj)
+		/// <summary>
+		/// Blendmode for the destination alpha
+		/// </summary>
+		public GCBlendModeControl DestAlpha
 		{
-			switch (nj)
+			get
 			{
-				case AlphaInstruction.SourceAlpha:
-					return GXBlendModeControl.SrcAlpha;
-				case AlphaInstruction.DestinationAlpha:
-					return GXBlendModeControl.DstAlpha;
-				case AlphaInstruction.InverseSourceAlpha:
-					return GXBlendModeControl.InverseSrcAlpha;
-				case AlphaInstruction.InverseDestinationAlpha:
-					return GXBlendModeControl.InverseDstAlpha;
-				case AlphaInstruction.OtherColor:
-					return GXBlendModeControl.SrcColor;
-				case AlphaInstruction.InverseOtherColor:
-					return GXBlendModeControl.InverseSrcColor;
-				case AlphaInstruction.One:
-					return GXBlendModeControl.One;
-				case AlphaInstruction.Zero:
-					return GXBlendModeControl.Zero;
+				return (GCBlendModeControl)((data >> 8) & 7);
 			}
+			set
+			{
+				uint inst = (uint)value;
+				data &= 0xFFFFF8FF; // ~(7 << 8)
+				data |= (inst & 7) << 8;
+			}
+		}
 
-			return GXBlendModeControl.Zero;
+		public BlendAlphaParameter() : base(ParameterType.BlendAlpha)
+		{
+
 		}
 	}
 
+	/// <summary>
+	/// Ambient color of the geometry
+	/// </summary>
 	[Serializable]
 	public class AmbientColorParameter : Parameter
 	{
-		public System.Drawing.Color AmbientColor { get; private set; }
-		public AmbientColorParameter()
+		/// <summary>
+		/// The Color of the 
+		/// </summary>
+		public Color AmbientColor
 		{
-			ParameterType = ParameterType.AmbientColor;
-		}
-		public override void Read(byte[] file, int address)
-		{
-			AmbientColor = System.Drawing.Color.FromArgb(ByteConverter.ToInt32(file, address));
+			get
+			{
+				Color col = new Color()
+				{
+					ARGB = data
+				};
+				return col;
+			}
+			set
+			{
+				data = value.ARGB;
+			}
 		}
 
-		public override void Write(BinaryWriter writer)
+		public AmbientColorParameter() : base(ParameterType.AmbientColor)
 		{
-			writer.Write((int)ParameterType);
-			writer.Write(AmbientColor.B);
-			writer.Write(AmbientColor.G);
-			writer.Write(AmbientColor.R);
-			writer.Write(AmbientColor.A);
+			data = uint.MaxValue; // white is default
 		}
 	}
 
+	/// <summary>
+	/// Texture information for the geometry
+	/// </summary>
 	[Serializable]
 	public class TextureParameter : Parameter
 	{
-		[Flags]
-		public enum TileMode
+		/// <summary>
+		/// The id of the texture
+		/// </summary>
+		public ushort TextureID
 		{
-			WrapU = 1 << 0,
-			MirrorU = 1 << 1,
-			WrapV = 1 << 2,
-			MirrorV = 1 << 3,
-			Unk_1 = 1 << 4,
-			Mask = (1 << 5) - 1
+			get
+			{
+				return (ushort)(data & 0xFFFF);
+			}
+			set
+			{
+				data &= 0xFFFF0000;
+				data |= value;
+			}
 		}
-		public ushort TextureID { get; private set; }
-		public TileMode Tile { get; private set; }
-		public TextureParameter()
+
+		/// <summary>
+		/// Texture Tiling properties
+		/// </summary>
+		public GCTileMode Tile
 		{
-			ParameterType = ParameterType.Texture;
+			get
+			{
+				return (GCTileMode)(data >> 16);
+			}
+			set
+			{
+				data &= 0xFFFF;
+				data |= ((uint)value) << 16;
+			}
+		}
+
+		public TextureParameter() : base(ParameterType.Texture)
+		{
 			TextureID = 0;
-			Tile = TileMode.WrapU | TileMode.WrapV;
+			Tile = GCTileMode.WrapU | GCTileMode.WrapV;
 		}
-		public TextureParameter(ushort TexID, TileMode tileMode)
+
+		public TextureParameter(ushort TexID, GCTileMode tileMode) : base(ParameterType.Texture)
 		{
-			ParameterType = ParameterType.Texture;
 			TextureID = TexID;
 			Tile = tileMode;
 		}
-
-		public override void Read(byte[] file, int address)
-		{
-			TextureID = ByteConverter.ToUInt16(file, address);
-			Tile = (TileMode)ByteConverter.ToUInt16(file, address + 2);
-		}
-
-		public override void Write(BinaryWriter writer)
-		{
-			writer.Write((int)ParameterType);
-			writer.Write((ushort)TextureID);
-			writer.Write((ushort)Tile);
-		}
 	}
 
+	/// <summary>
+	/// No idea what this is for, but its needed
+	/// </summary>
 	[Serializable]
 	public class Unknown9Parameter : Parameter
 	{
-		public ushort Unknown1 { get; private set; }
-		public ushort Unknown2 { get; private set; }
-
-		public Unknown9Parameter()
+		/// <summary>
+		/// No idea what this does. Default is 4
+		/// </summary>
+		public ushort Unknown1
 		{
-			ParameterType = ParameterType.Unknown_9;
+			get
+			{
+				return (ushort)(data & 0xFFFF);
+			}
+			set
+			{
+				data &= 0xFFFF0000;
+				data |= (uint)value;
+			}
 		}
 
-		public override void Read(byte[] file, int address)
+		/// <summary>
+		/// No idea what this does. Default is 0
+		/// </summary>
+		public ushort Unknown2
 		{
-			Unknown1 = ByteConverter.ToUInt16(file, address);
-			Unknown2 = ByteConverter.ToUInt16(file, address + 2);
+			get
+			{
+				return (ushort)(data >> 16);
+			}
+			set
+			{
+				data &= 0xFFFF;
+				data |= (uint)value << 16;
+			}
 		}
 
-		public override void Write(BinaryWriter writer)
+		public Unknown9Parameter() : base(ParameterType.Unknown_9)
 		{
-			writer.Write((int)ParameterType);
-			writer.Write(Unknown1);
-			writer.Write(Unknown2);
+			// default values
+			Unknown1 = 4;
+			Unknown2 = 0;
 		}
 	}
 
+	/// <summary>
+	/// Determines where or how the geometry gets the texture coordinates
+	/// </summary>
 	[Serializable]
 	public class TexCoordGenParameter : Parameter
 	{
-		public ushort Unknown1 { get; private set; }
-		public ushort Unknown2 { get; private set; }
-		public GXTexCoordID TexCoordID{ get; private set; }
-		public GXTexGenType TexGenType { get; private set; }
-		public GXTexGenSrc TexGenSrc { get; private set; }
-		public int MatrixIndex { get; private set; }
-		public TexCoordGenParameter()
+		/// <summary>
+		/// The output location of the generated texture coordinates
+		/// </summary>
+		public GCTexCoordID TexCoordID
 		{
-			ParameterType = ParameterType.TexCoordGen;
+			get
+			{
+				return (GCTexCoordID)((data >> 16) & 0xFF);
+			}
+			set
+			{
+				data &= 0xFF00FFFF;
+				data |= (uint)value << 16;
+			}
 		}
 
-		public override void Read(byte[] file, int address)
+		/// <summary>
+		/// The function to use for generating the texture coordinates
+		/// </summary>
+		public GCTexGenType TexGenType
 		{
-			TexCoordID = (GXTexCoordID)file[address + 2];
-			TexGenType = (GXTexGenType)(ByteConverter.ToUInt16(file, address) >> 12);
-			TexGenSrc = (GXTexGenSrc)((ByteConverter.ToUInt32(file, address) >> 4) & 0xFF);
-			MatrixIndex = 0x1E + (file[address] & 0xF) * 3;
-			//im just gonna keep this for now
-			Unknown1 = ByteConverter.ToUInt16(file, address);
-			Unknown2 = ByteConverter.ToUInt16(file, address + 2);
+			get
+			{
+				return (GCTexGenType)((data >> 12) & 0xF);
+			}
+			set
+			{
+				data &= 0xFFFF0FFF;
+				data |= (uint)value << 12;
+			}
 		}
 
-		public override void Write(BinaryWriter writer)
+		/// <summary>
+		/// The source which should be used to generate the texture coordinates
+		/// </summary>
+		public GCTexGenSrc TexGenSrc
 		{
-			writer.Write((int)ParameterType);
-			writer.Write(Unknown1);
-			writer.Write(Unknown2);
+			get
+			{
+				return (GCTexGenSrc)((data >> 4) & 0xFF);
+			}
+			set
+			{
+				data &= 0xFFFFF00F;
+				data |= (uint)value << 4;
+			}
+		}
+
+		/// <summary>
+		/// The id of the matrix to use for generating the texture coordinates
+		/// </summary>
+		public GCTexGenMatrix MatrixID
+		{
+			get
+			{
+				return (GCTexGenMatrix)(data & 0xF);
+			}
+			set
+			{
+				data &= 0xFFFFFFF0;
+				data |= (uint)value;
+			}
+		}
+
+		public TexCoordGenParameter() : base(ParameterType.TexCoordGen)
+		{
+
+		}
+
+		/// <summary>
+		/// Create a custom Texture coordinate generation parameter
+		/// </summary>
+		/// <param name="texCoordID">The output location of the generated texture coordinates</param>
+		/// <param name="texGenType">The function to use for generating the texture coordinates</param>
+		/// <param name="texGenSrc">The source which should be used to generate the texture coordinates</param>
+		/// <param name="matrixID">The id of the matrix to use for generating the texture coordinates</param>
+		public TexCoordGenParameter(GCTexCoordID texCoordID, GCTexGenType texGenType, GCTexGenSrc texGenSrc, GCTexGenMatrix matrixID) : base(ParameterType.TexCoordGen)
+		{
+			TexCoordID = texCoordID;
+			TexGenType = texGenType;
+			TexGenSrc = texGenSrc;
+			MatrixID = matrixID;
 		}
 	}
 }

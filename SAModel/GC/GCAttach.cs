@@ -4,21 +4,48 @@ using System.IO;
 
 namespace SonicRetro.SAModel.GC
 {
+	/// <summary>
+	/// An attach/mesh using the Gamecube format
+	/// </summary>
 	[Serializable]
 	public class GCAttach : Attach
 	{
-		public VertexData VertexData { get; private set; }
-		public GeometryData GeometryData { get; private set; }
+		/// <summary>
+		/// The seperate sets of vertex data in this attach
+		/// </summary>
+		public readonly List<VertexAttribute> vertexData;
 
+		/// <summary>
+		/// The meshes with opaque rendering properties
+		/// </summary>
+		public readonly List<Mesh> opaqueMeshes;
+
+		/// <summary>
+		/// The meshes with translucent rendering properties
+		/// </summary>
+		public readonly List<Mesh> translucentMeshes;
+
+
+		/// <summary>
+		/// Create a new empty GC attach
+		/// </summary>
 		public GCAttach()
 		{
 			Name = "gcattach_" + Extensions.GenerateIdentifier();
 
-			VertexData = new VertexData();
-			GeometryData = new GeometryData();
+			vertexData = new List<VertexAttribute>();
+			opaqueMeshes = new List<Mesh>();
+			translucentMeshes = new List<Mesh>();
 			Bounds = new BoundingSphere();
 		}
 
+		/// <summary>
+		/// Reads a GC attach from a file
+		/// </summary>
+		/// <param name="file">The files contents</param>
+		/// <param name="address">The address at which the attach is located</param>
+		/// <param name="imageBase">The imagebase of the file</param>
+		/// <param name="labels">The labels of the file</param>
 		public GCAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
 			if (labels.ContainsKey(address))
@@ -26,157 +53,127 @@ namespace SonicRetro.SAModel.GC
 			else
 				Name = "attach_" + address.ToString("X8");
 
-			// The struct is 36/0x24 bytes long.
+			// The struct is 36/0x24 bytes long
 
-			VertexData = new VertexData();
-			GeometryData = new GeometryData();
+			uint vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
+			//uint gap = ByteConverter.ToUInt32(file, address + 4);
+			int opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
+			int translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
-			uint vertex_attribute_offset = ByteConverter.ToUInt32(file, address) - imageBase;
-			int unknown_1 = ByteConverter.ToInt32(file, address + 4);
-			int opaque_geometry_data_offset = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
-			int translucent_geometry_data_offset = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
-
-			int opaque_geometry_count = ByteConverter.ToInt16(file, address + 16);
-			int translucent_geometry_count = ByteConverter.ToInt16(file, address + 18);
-
+			int opaqueCount = ByteConverter.ToInt16(file, address + 16);
+			int translucentCount = ByteConverter.ToInt16(file, address + 18);
 
 			Bounds = new BoundingSphere(file, address + 20);
-			VertexData.Load(file, vertex_attribute_offset, imageBase);
 
-			if (opaque_geometry_count > 0)
+			// reading vertex data
+			vertexData = new List<VertexAttribute>();
+			VertexAttribute vertexSet = new VertexAttribute(file, vertexAddress, imageBase);
+			while(vertexSet.attribute != GCVertexAttribute.Null)
 			{
-				GeometryData.Load(file, opaque_geometry_data_offset, imageBase, opaque_geometry_count, GeometryType.Opaque);
+				vertexData.Add(vertexSet);
+				vertexAddress += 16;
+				vertexSet = new VertexAttribute(file, vertexAddress, imageBase);
 			}
 
-			if (translucent_geometry_count > 0)
+			// reading geometry
+			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
+
+			opaqueMeshes = new List<Mesh>();
+			for (int i = 0; i < opaqueCount; i++)
 			{
-				GeometryData.Load(file, translucent_geometry_data_offset, imageBase, translucent_geometry_count, GeometryType.Translucent);
+				Mesh mesh = new Mesh(file, opaqueAddress, imageBase, indexFlags);
+
+				GCIndexAttributeFlags? t = mesh.IndexFlags;
+				if (t.HasValue) indexFlags = t.Value;
+
+				opaqueMeshes.Add(mesh);
+				opaqueAddress += 16;
+			}
+
+			translucentMeshes = new List<Mesh>();
+			for (int i = 0; i < translucentCount; i++)
+			{
+				Mesh mesh = new Mesh(file, translucentAddress, imageBase, indexFlags);
+
+				GCIndexAttributeFlags? t = mesh.IndexFlags;
+				if (t.HasValue) indexFlags = t.Value;
+
+				translucentMeshes.Add(mesh);
+				translucentAddress += 16;
 			}
 		}
 
-		public void ExportOBJ(string file_name)
-		{
-			StringWriter writer = new StringWriter();
-
-			if (VertexData.CheckAttribute(GXVertexAttribute.Position))
-			{
-				for (int i = 0; i < VertexData.Positions.Count; i++)
-				{
-					Vector3 pos = VertexData.Positions[i];
-					writer.WriteLine($"v {pos.X} {pos.Y} {pos.Z}");
-				}
-			}
-
-			if (VertexData.CheckAttribute(GXVertexAttribute.Normal))
-			{
-				for (int i = 0; i < VertexData.Normals.Count; i++)
-				{
-					Vector3 nrm = VertexData.Normals[i];
-					writer.WriteLine($"vn {nrm.X} {nrm.Y} {nrm.Z}");
-				}
-			}
-
-			if (VertexData.CheckAttribute(GXVertexAttribute.Tex0))
-			{
-				for (int i = 0; i < VertexData.TexCoord_0.Count; i++)
-				{
-					Vector2 tex = VertexData.TexCoord_0[i];
-					writer.WriteLine($"vt {tex.X} {tex.Y}");
-				}
-			}
-
-			int mesh_index = 0;
-
-			foreach (Mesh m in GeometryData.OpaqueMeshes)
-			{
-				writer.WriteLine($"o mesh_{ mesh_index++ }");
-				foreach (Primitive p in m.Primitives)
-				{
-					List<Vertex> triangles = p.ToTriangles();
-					if (triangles == null)
-						continue;
-
-					for (int i = 0; i < triangles.Count; i += 3)
-					{
-						int pos_1 = (int)triangles[i].PositionIndex;
-						int pos_2 = (int)triangles[i + 1].PositionIndex;
-						int pos_3 = (int)triangles[i + 2].PositionIndex;
-
-						string empty = "";
-
-						int tex_1 = 0; int tex_2 = 0; int tex_3 = 0;
-						int nrm_1 = 0; int nrm_2 = 0; int nrm_3 = 0;
-
-						bool has_tex = VertexData.TexCoord_0.Count > 0;
-						bool has_nrm = VertexData.Normals.Count > 0;
-
-						if (has_tex)
-						{
-							tex_1 = (int)triangles[i].UVIndex;
-							tex_2 = (int)triangles[i + 1].UVIndex;
-							tex_3 = (int)triangles[i + 2].UVIndex;
-						}
-						if (has_nrm)
-						{
-							nrm_1 = (int)triangles[i].NormalIndex;
-							nrm_2 = (int)triangles[i + 1].NormalIndex;
-							nrm_3 = (int)triangles[i + 2].NormalIndex;
-						}
-
-						string v1 = $"{pos_1 + 1}{(has_tex ? "/" + tex_1.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_1.ToString() : empty)}";
-						string v2 = $"{pos_2 + 1}{(has_tex ? "/" + tex_2.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_2.ToString() : empty)}";
-						string v3 = $"{pos_3 + 1}{(has_tex ? "/" + tex_3.ToString() : empty) }{(!has_tex ? "/" : empty) + (has_nrm ? "/" + nrm_3.ToString() : empty)}";
-
-						writer.WriteLine($"f { v1 } { v2 } { v3 }");
-					}
-				}
-			}
-
-			foreach (Mesh m in GeometryData.TranslucentMeshes)
-			{
-				foreach (Primitive p in m.Primitives)
-				{
-					List<Vertex> triangles = p.ToTriangles();
-					if (triangles == null)
-						continue;
-
-					for (int i = 0; i < triangles.Count; i += 3)
-					{
-						int pos_1 = (int)triangles[i].PositionIndex;
-						int pos_2 = (int)triangles[i + 1].PositionIndex;
-						int pos_3 = (int)triangles[i + 2].PositionIndex;
-
-						writer.WriteLine($"f {pos_1 + 1} {pos_2 + 1} {pos_3 + 1}");
-					}
-				}
-			}
-
-			File.WriteAllText(file_name, writer.ToString());
-		}
-
+		/// <summary>
+		/// Writes the attaches contents into a byte array
+		/// </summary>
+		/// <param name="imageBase">The files imagebase</param>
+		/// <param name="DX">Unused</param>
+		/// <param name="labels">The files labels</param>
+		/// <param name="address"></param>
+		/// <returns></returns>
 		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
 			byte[] output;
 
 			using (MemoryStream strm = new MemoryStream())
 			{
-				BinaryWriter gc_file = new BinaryWriter(strm);
+				BinaryWriter writer = new BinaryWriter(strm);
 
-				gc_file.Write(0);
-				gc_file.Write(0);
-				gc_file.Write(0);
-				gc_file.Write(0);
+				writer.Write(new byte[16]); // address placeholders
+				writer.Write((ushort)opaqueMeshes.Count);
+				writer.Write((ushort)translucentMeshes.Count);
+				writer.Write(Bounds.GetBytes());
 
-				gc_file.Write((short)GeometryData.OpaqueMeshes.Count);
-				gc_file.Write((short)GeometryData.TranslucentMeshes.Count);
+				// writing vertex data
+				foreach(VertexAttribute vtx in vertexData)
+				{
+					vtx.WriteData(writer);
+				}
 
-				gc_file.Write(Bounds.Center.X);
-				gc_file.Write(Bounds.Center.Y);
-				gc_file.Write(Bounds.Center.Z);
-				gc_file.Write(Bounds.Radius);
+				uint vtxAddr = (uint)writer.BaseStream.Length + imageBase;
 
-				VertexData.WriteVertexAttributes(gc_file, imageBase);
-				GeometryData.WriteGeometryData(gc_file, imageBase);
+				// writing vertex attributes
+				foreach (VertexAttribute vtx in vertexData)
+				{
+					vtx.WriteAttribute(writer, imageBase);
+				}
+				writer.Write((byte)255);
+				writer.Write(new byte[15]); // empty vtx attribute
+
+				// writing geometry data
+				GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
+				foreach(Mesh m in opaqueMeshes)
+				{
+					GCIndexAttributeFlags? t = m.IndexFlags;
+					if (t.HasValue) indexFlags = t.Value;
+					m.WriteData(writer, indexFlags);
+				}
+				foreach (Mesh m in translucentMeshes)
+				{
+					GCIndexAttributeFlags? t = m.IndexFlags;
+					if (t.HasValue) indexFlags = t.Value;
+					m.WriteData(writer, indexFlags);
+				}
+
+				// writing geometry properties
+				uint opaqueAddress = (uint)writer.BaseStream.Length + imageBase;
+				foreach (Mesh m in opaqueMeshes)
+				{
+					m.WriteProperties(writer, imageBase);
+				}
+				uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
+				foreach (Mesh m in translucentMeshes)
+				{
+					m.WriteProperties(writer, imageBase);
+				}
+
+				// replacing the placeholders
+				writer.Seek(0, SeekOrigin.Begin);
+				writer.Write(vtxAddr);
+				writer.Write(0);
+				writer.Write(opaqueAddress);
+				writer.Write(translucentAddress);
+				writer.Seek(0, SeekOrigin.End);
 
 				output = strm.ToArray();
 			}
@@ -186,121 +183,75 @@ namespace SonicRetro.SAModel.GC
 			return output;
 		}
 
-		public override string ToStruct(bool DX)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		NJS_MATERIAL cur_mat = new NJS_MATERIAL();
+		/// <summary>
+		/// Processes the vertex data to be rendered
+		/// </summary>
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> meshInfo = new List<MeshInfo>();
-			bool hasUV = VertexData.TexCoord_0.Count != 0;
-			bool hasVColor = VertexData.Color_0.Count != 0;
-			foreach (Mesh m in GeometryData.OpaqueMeshes)
-			{
-				meshInfo.Add(ProcessMesh(m, hasUV, hasVColor, false));
-				cur_mat = new NJS_MATERIAL(cur_mat);
-			}
 
-			foreach (Mesh m in GeometryData.TranslucentMeshes)
-			{
-				meshInfo.Add(ProcessMesh(m, hasUV, hasVColor, true));
-				cur_mat = new NJS_MATERIAL(cur_mat);
-			}
+			List<IOVtx> positions	= vertexData.Find(x => x.attribute == GCVertexAttribute.Position)?.data;
+			List<IOVtx> normals		= vertexData.Find(x => x.attribute == GCVertexAttribute.Normal)?.data;
+			List<IOVtx> colors		= vertexData.Find(x => x.attribute == GCVertexAttribute.Color0)?.data;
+			List<IOVtx> uvs			= vertexData.Find(x => x.attribute == GCVertexAttribute.Tex0)?.data;
+
+			NJS_MATERIAL mat = new NJS_MATERIAL();
+
+			mat.UseAlpha = false;
+			foreach (Mesh m in opaqueMeshes)
+				meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
+
+			mat.UseAlpha = true;
+			foreach (Mesh m in translucentMeshes)
+				meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
 
 			MeshInfo = meshInfo.ToArray();
 		}
 
-		private MeshInfo ProcessMesh(Mesh m, bool hasUV, bool hasVColor, bool useAlpha)
+		/// <summary>
+		/// Creates a C Struct string identical to the data given (WIP)
+		/// </summary>
+		/// <param name="DX">Unused</param>
+		/// <returns></returns>
+		public override string ToStruct(bool DX)
 		{
-			List<SAModel.VertexData> vertData = new List<SAModel.VertexData>();
-			List<Poly> polys = new List<Poly>();
-
-			foreach (Parameter param in m.Parameters)
-			{
-				if (param.ParameterType == ParameterType.Texture)
-				{
-					TextureParameter tex = param as TextureParameter;
-					cur_mat.TextureID = tex.TextureID;
-					if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorU))
-						cur_mat.FlipU = true;
-					if (!tex.Tile.HasFlag(TextureParameter.TileMode.MirrorV))
-						cur_mat.FlipV = true;
-					if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapU))
-						cur_mat.ClampU = true;
-					if (!tex.Tile.HasFlag(TextureParameter.TileMode.WrapV))
-						cur_mat.ClampV = true;
-
-					cur_mat.ClampU &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
-					cur_mat.ClampV &= tex.Tile.HasFlag(TextureParameter.TileMode.Unk_1);
-				}
-				else if (param.ParameterType == ParameterType.TexCoordGen)
-				{
-					TexCoordGenParameter gen = param as TexCoordGenParameter;
-					if (gen.TexGenSrc == GXTexGenSrc.Normal)
-						cur_mat.EnvironmentMap = true;
-					else cur_mat.EnvironmentMap = false;
-				}
-				else if (param.ParameterType == ParameterType.BlendAlpha)
-				{
-					BlendAlphaParameter blend = param as BlendAlphaParameter;
-					cur_mat.SourceAlpha = blend.SourceAlpha;
-					cur_mat.DestinationAlpha = blend.DestinationAlpha;
-				}
-			}
-
-			foreach (Primitive prim in m.Primitives)
-			{
-				List<Poly> newPolys = new List<Poly>();
-				switch (prim.PrimitiveType)
-				{
-					case GXPrimitiveType.Triangles:
-						for (int i = 0; i < prim.Vertices.Count / 3; i++)
-						{
-							newPolys.Add(new Triangle());
-						}
-						break;
-					case GXPrimitiveType.TriangleStrip:
-						newPolys.Add(new Strip(prim.Vertices.Count, false));
-						break;
-				}
-
-				for (int i = 0; i < prim.Vertices.Count; i++)
-				{
-					if (prim.PrimitiveType == GXPrimitiveType.Triangles)
-					{
-						newPolys[i / 3].Indexes[i % 3] = (ushort)vertData.Count;
-					}
-					else newPolys[0].Indexes[i] = (ushort)vertData.Count;
-
-					vertData.Add(new SAModel.VertexData(
-						VertexData.Positions[(int)prim.Vertices[i].PositionIndex],
-						VertexData.Normals.Count > 0 ? VertexData.Normals[(int)prim.Vertices[i].NormalIndex] : new Vector3(0, 1, 0),
-						hasVColor ? VertexData.Color_0[(int)prim.Vertices[i].Color0Index] : new GC.Color { R = 1, G = 1, B = 1, A = 1 },
-						hasUV ? VertexData.TexCoord_0[(int)prim.Vertices[i].UVIndex] : new Vector2() { X = 0, Y = 0 }));
-				}
-				polys.AddRange(newPolys);
-			}
-
-			cur_mat.UseAlpha = useAlpha;
-			var result = new MeshInfo(cur_mat, polys.ToArray(), vertData.ToArray(), hasUV, hasVColor);
-			return result;
+			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// WIP
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="DX">Unused</param>
+		/// <param name="labels"></param>
+		/// <param name="textures"></param>
+		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		#region Unused
+
+		/// <summary>
+		/// Unused
+		/// </summary>
+		/// <param name="motion"></param>
+		/// <param name="frame"></param>
+		/// <param name="animindex"></param>
 		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Unused
+		/// </summary>
+		/// <returns></returns>
 		public override Attach Clone()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }
