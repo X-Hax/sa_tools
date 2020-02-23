@@ -265,20 +265,20 @@
             this.selectedItemsToolStripMenuItem,
             this.everythingToolStripMenuItem});
 			this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
-			this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.oBJToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
 			this.oBJToolStripMenuItem.Text = "Assimp";
 			// 
 			// levelGeoToolStripMenuItem
 			// 
 			this.levelGeoToolStripMenuItem.Name = "levelGeoToolStripMenuItem";
-			this.levelGeoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.levelGeoToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.levelGeoToolStripMenuItem.Text = "&Level Geo";
 			this.levelGeoToolStripMenuItem.Click += new System.EventHandler(this.levelGeoToolStripMenuItem_Click);
 			// 
 			// selectedItemsToolStripMenuItem
 			// 
 			this.selectedItemsToolStripMenuItem.Name = "selectedItemsToolStripMenuItem";
-			this.selectedItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.selectedItemsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.selectedItemsToolStripMenuItem.Text = "&Selected Items";
 			this.selectedItemsToolStripMenuItem.Click += new System.EventHandler(this.selectedItemsToolStripMenuItem_Click);
 			// 
@@ -286,7 +286,7 @@
 			// 
 			this.everythingToolStripMenuItem.Enabled = false;
 			this.everythingToolStripMenuItem.Name = "everythingToolStripMenuItem";
-			this.everythingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.everythingToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.everythingToolStripMenuItem.Text = "&Everything";
 			this.everythingToolStripMenuItem.Click += new System.EventHandler(this.everythingToolStripMenuItem_Click);
 			// 
@@ -295,13 +295,13 @@
 			this.sA1MDLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectedItemsToolStripMenuItem1});
 			this.sA1MDLToolStripMenuItem.Name = "sA1MDLToolStripMenuItem";
-			this.sA1MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sA1MDLToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
 			this.sA1MDLToolStripMenuItem.Text = "SA1MDL";
 			// 
 			// selectedItemsToolStripMenuItem1
 			// 
 			this.selectedItemsToolStripMenuItem1.Name = "selectedItemsToolStripMenuItem1";
-			this.selectedItemsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+			this.selectedItemsToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
 			this.selectedItemsToolStripMenuItem1.Text = "&Selected Items";
 			this.selectedItemsToolStripMenuItem1.Click += new System.EventHandler(this.selectedItemsToolStripMenuItem1_Click);
 			// 
@@ -1032,8 +1032,7 @@
 			// 
 			// importFileDialog
 			// 
-			this.importFileDialog.FileName = "file";
-			this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable|*.txt";
+			this.importFileDialog.Filter = "Model Files|*.obj;*.objf;*.txt;*.dae;*.fbx";
 			this.importFileDialog.Multiselect = true;
 			this.importFileDialog.RestoreDirectory = true;
 			this.importFileDialog.Title = "Select a file to import.";
