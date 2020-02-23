@@ -1467,24 +1467,24 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 				case GC.GCAttach gcatt:
 					matind = 0;
-					foreach (var msh in gcatt.GeometryData.OpaqueMeshes.Concat(gcatt.GeometryData.TranslucentMeshes))
+					foreach (var msh in gcatt.opaqueMeshes.Concat(gcatt.translucentMeshes))
 					{
-						msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+						msh.parameters.RemoveAll(a => a is GC.TextureParameter);
 						if (mats[matind].UseTexture)
 						{
-							GC.TextureParameter.TileMode tm = GC.TextureParameter.TileMode.Mask;
+							GC.GCTileMode tm = GC.GCTileMode.Mask;
 							if (mats[matind].ClampU)
-								tm &= ~GC.TextureParameter.TileMode.WrapU;
+								tm &= ~GC.GCTileMode.WrapU;
 							if (mats[matind].FlipU)
-								tm &= ~GC.TextureParameter.TileMode.MirrorU;
+								tm &= ~GC.GCTileMode.MirrorU;
 							if (mats[matind].ClampV)
-								tm &= ~GC.TextureParameter.TileMode.WrapV;
+								tm &= ~GC.GCTileMode.WrapV;
 							if (mats[matind].FlipV)
-								tm &= ~GC.TextureParameter.TileMode.MirrorV;
-							msh.Parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
+								tm &= ~GC.GCTileMode.MirrorV;
+							msh.parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
 						}
-						msh.Parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
-						msh.Parameters.Add(new GC.BlendAlphaParameter() { SourceAlpha = mats[matind].SourceAlpha, DestinationAlpha = mats[matind].DestinationAlpha });
+						msh.parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
+						msh.parameters.Add(new GC.BlendAlphaParameter() { NJSourceAlpha = mats[matind].SourceAlpha, NJDestAlpha = mats[matind].DestinationAlpha });
 						matind++;
 					}
 					break;
@@ -1656,13 +1656,13 @@ namespace SonicRetro.SAModel.SAMDL
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
 							case GC.GCAttach gatt:
-								foreach (var msh in gatt.GeometryData.OpaqueMeshes.Concat(gatt.GeometryData.TranslucentMeshes))
+								foreach (var msh in gatt.opaqueMeshes.Concat(gatt.translucentMeshes))
 								{
-									var tp = (GC.TextureParameter)msh.Parameters.LastOrDefault(a => a is GC.TextureParameter);
+									var tp = (GC.TextureParameter)msh.parameters.LastOrDefault(a => a is GC.TextureParameter);
 									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
 									{
-										msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
-										msh.Parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
+										msh.parameters.RemoveAll(a => a is GC.TextureParameter);
+										msh.parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
 									}
 								}
 								break;
