@@ -102,7 +102,7 @@ namespace SonicRetro.SAModel
 			Color = System.Drawing.Color.FromArgb(color.red, color.alpha, color.blue, color.green);
 
 			//Color = color;
-			UV = new UV() { U = uv.x, V = uv.y };
+			UV = new UV() { U = uv.XF, V = uv.YF };
 		}
 
 		public override bool Equals(object obj)
