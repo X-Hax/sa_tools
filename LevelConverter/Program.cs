@@ -30,10 +30,10 @@ namespace LevelConverter
 						List<COL> newcollist = new List<COL>();
 						foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach != null))
 						{
-							if ((col.SurfaceFlags & SurfaceFlags.Visible) == SurfaceFlags.Visible)
+							if ((col.SurfaceFlags & SA1SurfaceFlags.Visible) == SA1SurfaceFlags.Visible)
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
-								newcol.SurfaceFlags = SurfaceFlags.Visible;
+								newcol.SurfaceFlags = SA1SurfaceFlags.Visible;
 								newcol.Model = new NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
@@ -50,9 +50,9 @@ namespace LevelConverter
 								}
 								newcollist.Add(newcol);
 							}
-							if ((col.SurfaceFlags & ~SurfaceFlags.Visible) != 0)
+							if ((col.SurfaceFlags & ~SA1SurfaceFlags.Visible) != 0)
 							{
-								col.SurfaceFlags &= ~SurfaceFlags.Visible;
+								col.SurfaceFlags &= ~SA1SurfaceFlags.Visible;
 								newcollist.Add(col);
 							}
 						}

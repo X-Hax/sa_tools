@@ -62,7 +62,7 @@ namespace SonicRetro.SAModel
 	}
 
 	[Flags]
-	public enum SurfaceFlags : int
+	public enum SA1SurfaceFlags : int
 	{
 		Solid                 = 0x1,
 		Water                 = 0x2,
@@ -75,6 +75,25 @@ namespace SonicRetro.SAModel
 		Hurt                  = 0x10000,
 		Footprints            = 0x100000,
 		Visible               = unchecked((int)0x80000000)
+	}
+
+	[Flags]
+	public enum SA2SurfaceFlags : int
+	{
+		Solid			= 0x01,
+		Water			= 0x02,
+		Diggable		= 0x20,
+		Unclimbable		= 0x80,
+		StandOnSlope	= 0x100,
+		Hurt			= 0x0400,
+		CannotLand		= 0x1000,
+		Water2			= 0x2000,
+		NoShadows		= 0x8000,
+		NoFog			= 0x400000,
+		Unknown24		= 0x01000000,
+		Unknown29		= 0x20000000,
+		Unknown30		= 0x40000000,
+		Visible			= unchecked((int)0x80000000)
 	}
 
 	public enum LandTableFormat
