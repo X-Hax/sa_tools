@@ -266,7 +266,7 @@
             this.everythingToolStripMenuItem});
 			this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
 			this.oBJToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
-			this.oBJToolStripMenuItem.Text = "OBJ";
+			this.oBJToolStripMenuItem.Text = "Assimp";
 			// 
 			// levelGeoToolStripMenuItem
 			// 
@@ -284,6 +284,7 @@
 			// 
 			// everythingToolStripMenuItem
 			// 
+			this.everythingToolStripMenuItem.Enabled = false;
 			this.everythingToolStripMenuItem.Name = "everythingToolStripMenuItem";
 			this.everythingToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.everythingToolStripMenuItem.Text = "&Everything";
@@ -1031,8 +1032,7 @@
 			// 
 			// importFileDialog
 			// 
-			this.importFileDialog.FileName = "file";
-			this.importFileDialog.Filter = "*.OBJ Format|*.obj;*.objf|NodeTable|*.txt";
+			this.importFileDialog.Filter = "Model Files|*.obj;*.objf;*.txt;*.dae;*.fbx";
 			this.importFileDialog.Multiselect = true;
 			this.importFileDialog.RestoreDirectory = true;
 			this.importFileDialog.Title = "Select a file to import.";
