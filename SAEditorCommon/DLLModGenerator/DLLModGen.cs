@@ -55,7 +55,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
 												 {
 													 string[] b = a.Split(':');
-													 return (int.Parse(b[0], System.Globalization.NumberFormatInfo.InvariantInfo), b[1]);
+													 return (int.Parse(b[0], NumberFormatInfo.InvariantInfo), b[1]);
 												 }))
 								hashes.Add(hash.Item1, hash.Item2);
 							foreach (var fn in Directory.GetFiles(item.Filename, "*.saanim"))

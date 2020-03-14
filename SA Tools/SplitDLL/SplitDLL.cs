@@ -579,7 +579,7 @@ namespace SA_Tools.SplitDLL
 										cmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
 										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"));
-										hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
 									}
 									else
 										cmte.Motion = mtns[mtnaddr];
