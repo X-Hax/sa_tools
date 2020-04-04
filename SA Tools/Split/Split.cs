@@ -13,7 +13,9 @@ namespace SA_Tools.Split
 	{
 		public static int SplitFile(string datafilename, string inifilename, string projectFolderName)
 		{
+#if !DEBUG
 			try
+#endif
 			{
 				byte[] datafile = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
@@ -409,6 +411,7 @@ namespace SA_Tools.Split
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
 			}
+#if !DEBUG
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
@@ -417,7 +420,7 @@ namespace SA_Tools.Split
 				Console.ReadLine();
 				return (int)SplitERRORVALUE.UnhandledException;
 			}
-
+#endif
 			return (int)SplitERRORVALUE.Success;
 		}
 	}
