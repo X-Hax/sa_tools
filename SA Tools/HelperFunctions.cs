@@ -189,13 +189,25 @@ namespace SA_Tools
 
 		public static Encoding GetEncoding() { return jpenc; }
 
-		public static Encoding GetEncoding(Languages language)
+		public static Encoding GetEncoding(Languages language) => GetEncoding(Game.SA1, language);
+
+		public static Encoding GetEncoding(Game game, Languages language)
 		{
 			switch (language)
 			{
 				case Languages.Japanese:
-				case Languages.English:
 					return jpenc;
+				case Languages.English:
+					switch (game)
+					{
+						case Game.SA1:
+						case Game.SADX:
+							return jpenc;
+						case Game.SA2:
+						case Game.SA2B:
+							return euenc;
+					}
+					throw new ArgumentOutOfRangeException("game");
 				default:
 					return euenc;
 			}
@@ -255,12 +267,14 @@ namespace SA_Tools
 				return "0x" + i.ToString("X");
 		}
 
-		public static string ToC(this string str) { return str.ToC(Languages.Japanese); }
+		public static string ToC(this string str) => str.ToC(Languages.Japanese);
 
-		public static string ToC(this string str, Languages language)
+		public static string ToC(this string str, Languages language) => ToC(str, Game.SA1, language);
+
+		public static string ToC(this string str, Game game, Languages language)
 		{
 			if (str == null) return "NULL";
-			Encoding enc = GetEncoding(language);
+			Encoding enc = GetEncoding(game, language);
 			StringBuilder result = new StringBuilder("\"");
 			foreach (char item in str)
 			{

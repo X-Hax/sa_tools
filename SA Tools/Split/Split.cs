@@ -55,7 +55,7 @@ namespace SA_Tools.Split
 				Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
 				Stopwatch timer = new Stopwatch();
 				timer.Start();
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in inifile.Files)
+				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in new List<KeyValuePair<string, SA_Tools.FileInfo>>( inifile.Files))
 				{
 					if (string.IsNullOrEmpty(item.Key)) continue;
 					string filedesc = item.Key;
@@ -349,6 +349,32 @@ namespace SA_Tools.Split
 							break;
 						case "storysequence":
 							SA2StoryList.Load(datafile, address).Save(fileOutputPath);
+							break;
+						case "masterstringlist":
+							{
+								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								for (int l = 0; l < 5; l++)
+								{
+									Languages lng = (Languages)l;
+									System.Text.Encoding enc = HelperFunctions.GetEncoding(inifile.Game, lng);
+									string ld = Path.Combine(fileOutputPath, lng.ToString());
+									Directory.CreateDirectory(ld);
+									int ptr = datafile.GetPointer(address, imageBase);
+									for (int i = 0; i < cnt; i++)
+									{
+										int ptr2 = datafile.GetPointer(ptr, imageBase);
+										if (ptr2 != 0)
+										{
+											string fn = Path.Combine(ld, $"{i}.txt");
+											File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
+											inifile.Files.Add($"{filedesc} {lng} {i}", new FileInfo() { Type = "string", Filename = fn, PointerList = new int[] { ptr }, MD5Hash = HelperFunctions.FileHash(fn), CustomProperties = new Dictionary<string, string>() { { "language", lng.ToString() } } });
+										}
+										ptr += 4;
+									}
+									address += 4;
+								}
+								inifile.Files.Remove(filedesc);
+							}
 							break;
 						default: // raw binary
 							{

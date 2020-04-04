@@ -51,7 +51,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "bmitemattrlist", "BM Item Attributes List" },
 			{ "creditstextlist", "Credits Text List" },
 			{ "animindexlist", "Animation Index List" },
-			{ "storysequence", "Story Sequence" }
+			{ "storysequence", "Story Sequence" },
+			{ "string", "String" }
 		};
 
 		public static SA_Tools.IniData LoadINI(string filename,
@@ -225,7 +226,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 						}
 					break;
-					case ("animindexlist"):
+					case "animindexlist":
 						modified = false;
 
 						string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
@@ -983,6 +984,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								objs.Add("{ StoryEntryType_End }");
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
+							}
+							break;
+						case "string":
+							{
+								string str = File.ReadAllText(data.Filename).Replace("\r\n", "\n");
+								Languages lang = Languages.Japanese;
+								if (data.CustomProperties.ContainsKey("language"))
+									lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+								writer.WriteLine("const char *{0} = {1}; {2}", name, str.ToC(lang), str.ToComment());
 							}
 							break;
 					}
