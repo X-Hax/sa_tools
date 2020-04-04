@@ -376,6 +376,7 @@ namespace SA_Tools.Split
 									address += 4;
 								}
 								inifile.Files.Remove(filedesc);
+								nohash = true;
 							}
 							break;
 						default: // raw binary
