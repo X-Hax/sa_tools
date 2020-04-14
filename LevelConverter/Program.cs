@@ -19,7 +19,7 @@ namespace LevelConverter
 			else
 			{
 				Console.Write("File: ");
-				filename = Console.ReadLine();
+				filename = Console.ReadLine().Trim('"');
 			}
 			LandTable level = LandTable.LoadFromFile(filename);
 			Dictionary<string, Attach> visitedAttaches = new Dictionary<string, Attach>();

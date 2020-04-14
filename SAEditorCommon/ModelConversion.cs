@@ -362,13 +362,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 							material.IgnoreLighting = c2.IgnoreLight;
 							material.IgnoreSpecular = c2.IgnoreSpecular;
 							material.UseAlpha = c2.UseAlpha;
-							bool hasVColor = false;
+							bool hasStripVColor = false;
 							switch (chunk.Type)
 							{
 								case ChunkType.Strip_StripColor:
 								case ChunkType.Strip_StripUVNColor:
 								case ChunkType.Strip_StripUVHColor:
-									hasVColor = true;
+									hasStripVColor = true;
 									break;
 							}
 							bool hasUV = false;
@@ -384,11 +384,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 									break;
 							}
 							bool hasVertVColor = false;
-							if (!hasVColor && c2.Strips.All(a => a.Indexes.All(b => ColorBuffer[b].HasValue)))
+							if (!hasStripVColor && c2.Strips.All(a => a.Indexes.All(b => ColorBuffer[b].HasValue)))
 								hasVertVColor = true;
+							bool hasVColor = hasStripVColor || hasVertVColor;
 							List<Strip> strips = new List<Strip>(c2.StripCount);
 							List<UV> uvs = hasUV ? new List<UV>() : null;
-							List<Color> vcolors = hasVColor || hasVertVColor ? new List<Color>() : null;
+							List<Color> vcolors = hasVColor ? new List<Color>() : null;
 							foreach (PolyChunkStrip.Strip strip in c2.Strips)
 							{
 								minVtx = Math.Min(minVtx, strip.Indexes.Min());
@@ -396,7 +397,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 								strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
 								if (hasUV)
 									uvs.AddRange(strip.UVs);
-								if (hasVColor)
+								if (hasStripVColor)
 									vcolors.AddRange(strip.VColors);
 								else if (hasVertVColor)
 									foreach (short i in strip.Indexes)
@@ -405,7 +406,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
 							NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
 							if (hasUV)
 								uvs.CopyTo(mesh.UV);
-							if (hasVColor || hasVertVColor)
+							if (hasVColor)
 								vcolors.CopyTo(mesh.VColor);
 							mesh.MaterialID = (ushort)basatt.Material.Count;
 							basatt.Mesh.Add(mesh);
