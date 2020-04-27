@@ -355,15 +355,18 @@ namespace SonicRetro.SAModel
 					animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
 					result.AddRange(tmpbyte);
 				}
+				uint mtnaddr;
 				if (labels.ContainsKey(Anim[i].Animation.Name))
-					animaniaddrs[i] = labels[Anim[i].Animation.Name];
+					mtnaddr = labels[Anim[i].Animation.Name];
 				else
 				{
 					result.Align(4);
-					tmpbyte = Anim[i].Animation.WriteHeader(imageBase + (uint)result.Count, animmdladdrs[i], labels, out tmpaddr);
-					animaniaddrs[i] = tmpaddr + (uint)result.Count + imageBase;
-					result.AddRange(tmpbyte);
+					result.AddRange(Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, labels, out mtnaddr));
 				}
+				result.Align(4);
+				animaniaddrs[i] = (uint)result.Count + imageBase;
+				result.AddRange(ByteConverter.GetBytes(animmdladdrs[i]));
+				result.AddRange(ByteConverter.GetBytes(mtnaddr));
 			}
 			uint coladdr;
 			if (COL.Count > 0)
