@@ -50,6 +50,7 @@
 			this.windows1252ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bigEndianGCSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lineEdit = new System.Windows.Forms.RichTextBox();
 			this.messageRemoveButton = new System.Windows.Forms.Button();
 			this.messageAddButton = new System.Windows.Forms.Button();
@@ -65,7 +66,7 @@
 			this.lineAddButton = new System.Windows.Forms.Button();
 			this.lineNum = new System.Windows.Forms.ComboBox();
 			this.messagePanel = new System.Windows.Forms.Panel();
-			this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.messageCentered = new System.Windows.Forms.CheckBox();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -83,17 +84,17 @@
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+			toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new System.Drawing.Size(133, 6);
+			toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
 			// 
 			// toolStripSeparator3
 			// 
 			toolStripSeparator3.Name = "toolStripSeparator3";
-			toolStripSeparator3.Size = new System.Drawing.Size(133, 6);
+			toolStripSeparator3.Size = new System.Drawing.Size(152, 6);
 			// 
 			// label4
 			// 
@@ -114,7 +115,7 @@
 			// toolStripSeparator4
 			// 
 			toolStripSeparator4.Name = "toolStripSeparator4";
-			toolStripSeparator4.Size = new System.Drawing.Size(133, 6);
+			toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
 			// 
 			// label1
 			// 
@@ -181,14 +182,14 @@
 			// saveAsToolStripMenuItem
 			// 
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.saveAsToolStripMenuItem.Text = "Save &As";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// exportToolStripMenuItem
 			// 
 			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.exportToolStripMenuItem.Text = "&Export...";
 			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
 			// 
@@ -197,7 +198,7 @@
 			this.recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             emptyToolStripMenuItem});
 			this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
 			this.recentFilesToolStripMenuItem.Text = "&Recent Files";
 			this.recentFilesToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentFilesToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -261,6 +262,15 @@
 			this.findToolStripMenuItem.Text = "&Find...";
 			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
 			// 
+			// findNextToolStripMenuItem
+			// 
+			this.findNextToolStripMenuItem.Enabled = false;
+			this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
+			this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+			this.findNextToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			this.findNextToolStripMenuItem.Text = "Find &Next";
+			this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
+			// 
 			// lineEdit
 			// 
 			this.lineEdit.AcceptsTab = true;
@@ -268,9 +278,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.lineEdit.DetectUrls = false;
-			this.lineEdit.Location = new System.Drawing.Point(12, 87);
+			this.lineEdit.Location = new System.Drawing.Point(12, 112);
 			this.lineEdit.Name = "lineEdit";
-			this.lineEdit.Size = new System.Drawing.Size(310, 124);
+			this.lineEdit.Size = new System.Drawing.Size(310, 99);
 			this.lineEdit.TabIndex = 15;
 			this.lineEdit.Text = "";
 			this.lineEdit.TextChanged += new System.EventHandler(this.lineEdit_TextChanged);
@@ -312,6 +322,7 @@
 			// 
 			// linePanel
 			// 
+			this.linePanel.Controls.Add(this.messageCentered);
 			this.linePanel.Controls.Add(this.waitTimeSelector);
 			this.linePanel.Controls.Add(this.waitTimeCheckBox);
 			this.linePanel.Controls.Add(this.voiceSelector);
@@ -454,14 +465,16 @@
 			this.messagePanel.Size = new System.Drawing.Size(334, 255);
 			this.messagePanel.TabIndex = 19;
 			// 
-			// findNextToolStripMenuItem
+			// messageCentered
 			// 
-			this.findNextToolStripMenuItem.Enabled = false;
-			this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
-			this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.findNextToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.findNextToolStripMenuItem.Text = "Find &Next";
-			this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
+			this.messageCentered.AutoSize = true;
+			this.messageCentered.Location = new System.Drawing.Point(12, 89);
+			this.messageCentered.Name = "messageCentered";
+			this.messageCentered.Size = new System.Drawing.Size(69, 17);
+			this.messageCentered.TabIndex = 22;
+			this.messageCentered.Text = "Centered";
+			this.messageCentered.UseVisualStyleBackColor = true;
+			this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
 			// 
 			// MainForm
 			// 
@@ -525,6 +538,7 @@
 		private System.Windows.Forms.Panel messagePanel;
 		private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem findNextToolStripMenuItem;
+		private System.Windows.Forms.CheckBox messageCentered;
 	}
 }
 

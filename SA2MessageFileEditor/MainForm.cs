@@ -292,6 +292,7 @@ namespace SA2MessageFileEditor
 				int? wait = CurrentLine.WaitTime;
 				if (waitTimeCheckBox.Checked = wait.HasValue)
 					waitTimeSelector.TotalFrames = wait.Value;
+				messageCentered.Checked = CurrentLine.Centered;
 				lineEdit.Text = CurrentLine.Text.Replace("\n", Environment.NewLine);
 			}
 		}
@@ -375,6 +376,11 @@ namespace SA2MessageFileEditor
 			CurrentLine.WaitTime = waitTimeSelector.TotalFrames;
 		}
 
+		private void messageCentered_CheckedChanged(object sender, EventArgs e)
+		{
+			CurrentLine.Centered = messageCentered.Checked;
+		}
+
 		private void lineEdit_TextChanged(object sender, EventArgs e)
 		{
 			CurrentLine.Text = lineEdit.Text.Replace(Environment.NewLine, "\n");
@@ -433,6 +439,7 @@ namespace SA2MessageFileEditor
 		public int? Voice { get; set; }
 		public int? Audio { get; set; }
 		public int? WaitTime { get; set; }
+		public bool Centered { get; set; } = true;
 		public string Text { get; set; } = string.Empty;
 
 		static int ParseInt(string str, ref int c)
@@ -489,11 +496,19 @@ namespace SA2MessageFileEditor
 				if (next == -1)
 				{
 					msg.Text = text.Substring(c);
+					if (msg.Text.StartsWith("\a"))
+						msg.Text = msg.Text.TrimStart('\a');
+					else
+						msg.Centered = false;
 					break;
 				}
 				if (next != c)
 				{
 					msg.Text = text.Substring(c, next - c);
+					if (msg.Text.StartsWith("\a"))
+						msg.Text = msg.Text.TrimStart('\a');
+					else
+						msg.Centered = false;
 					c = next;
 				}
 				result.Add(msg);
@@ -531,6 +546,8 @@ namespace SA2MessageFileEditor
 				sb.Append(WaitTime.Value);
 			}
 			sb.Append(' ');
+			if (Centered)
+				sb.Append('\a');
 			sb.Append(Text);
 			return sb.ToString();
 		}
@@ -539,8 +556,8 @@ namespace SA2MessageFileEditor
 		{
 			int i = Text.IndexOf('\n');
 			if (i != -1)
-				return Text.Remove(i).TrimStart('\a');
-			return Text.TrimStart('\a');
+				return Text.Remove(i);
+			return Text;
 		}
 	}
 
