@@ -10,7 +10,7 @@ using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
 namespace buildEvent
 {
-	class Program
+	static class Program
 	{
 		static void Main(string[] args)
 		{
@@ -84,15 +84,15 @@ namespace buildEvent
 						UpgradeInfo info = ini.Upgrades[i];
 						if (info.RootNode != null)
 						{
-							if (labels.ContainsKey(info.RootNode))
+							if (labels.ContainsKeySafe(info.RootNode))
 								ByteConverter.GetBytes(labels[info.RootNode]).CopyTo(fc, ptr);
-							if (labels.ContainsKey(info.AttachNode1))
+							if (labels.ContainsKeySafe(info.AttachNode1))
 								ByteConverter.GetBytes(labels[info.AttachNode1]).CopyTo(fc, ptr + 4);
-							if (labels.ContainsKey(info.Model1))
+							if (labels.ContainsKeySafe(info.Model1))
 								ByteConverter.GetBytes(labels[info.Model1]).CopyTo(fc, ptr + 8);
-							if (info.AttachNode2 != null && labels.ContainsKey(info.AttachNode2))
+							if (labels.ContainsKeySafe(info.AttachNode2))
 								ByteConverter.GetBytes(labels[info.AttachNode2]).CopyTo(fc, ptr + 12);
-							if (info.Model2 != null && labels.ContainsKey(info.Model2))
+							if (labels.ContainsKeySafe(info.Model2))
 								ByteConverter.GetBytes(labels[info.Model2]).CopyTo(fc, ptr + 16);
 						}
 						ptr += 0x14;
@@ -108,20 +108,20 @@ namespace buildEvent
 						if (ptr2 != 0)
 							for (int en = 0; en < ecnt; en++)
 							{
-								if (labels.ContainsKey(info.Entities[en].Model))
+								if (labels.ContainsKeySafe(info.Entities[en].Model))
 									ByteConverter.GetBytes(labels[info.Entities[en].Model]).CopyTo(fc, ptr2);
 								if (!battle)
 								{
-									if (labels.ContainsKey(info.Entities[en].Motion))
+									if (labels.ContainsKeySafe(info.Entities[en].Motion))
 										ByteConverter.GetBytes(labels[info.Entities[en].Motion]).CopyTo(fc, ptr2 + 4);
-									if (labels.ContainsKey(info.Entities[en].ShapeMotion))
+									if (labels.ContainsKeySafe(info.Entities[en].ShapeMotion))
 										ByteConverter.GetBytes(labels[info.Entities[en].ShapeMotion]).CopyTo(fc, ptr2 + 8);
 								}
 								else
 								{
-									if (labels.ContainsKey(info.Entities[en].GCModel))
+									if (labels.ContainsKeySafe(info.Entities[en].GCModel))
 										ByteConverter.GetBytes(labels[info.Entities[en].GCModel]).CopyTo(fc, ptr2 + 12);
-									if (labels.ContainsKey(info.Entities[en].ShadowModel))
+									if (labels.ContainsKeySafe(info.Entities[en].ShadowModel))
 										ByteConverter.GetBytes(labels[info.Entities[en].ShadowModel]).CopyTo(fc, ptr2 + 16);
 								}
 								ptr2 += battle ? 0x2C : 0x20;
@@ -134,7 +134,7 @@ namespace buildEvent
 								int cnt = ByteConverter.ToInt32(fc, ptr + 12);
 								for (int i = 0; i < cnt; i++)
 								{
-									if (labels.ContainsKey(info.CameraMotions[i]))
+									if (labels.ContainsKeySafe(info.CameraMotions[i]))
 										ByteConverter.GetBytes(labels[info.CameraMotions[i]]).CopyTo(fc, ptr2);
 									ptr2 += sizeof(int);
 								}
@@ -143,7 +143,7 @@ namespace buildEvent
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
 						if (ptr2 != 0 && info.Big != null)
 						{
-							if (labels.ContainsKey(info.Big.Model))
+							if (labels.ContainsKeySafe(info.Big.Model))
 								ByteConverter.GetBytes(labels[info.Big.Model]).CopyTo(fc, ptr2);
 							if (!battle)
 							{
@@ -153,9 +153,9 @@ namespace buildEvent
 									int cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
 									for (int i = 0; i < cnt; i++)
 									{
-										if (labels.ContainsKey(info.Big.Motions[i][0]))
+										if (labels.ContainsKeySafe(info.Big.Motions[i][0]))
 											ByteConverter.GetBytes(labels[info.Big.Motions[i][0]]).CopyTo(fc, ptr3);
-										if (labels.ContainsKey(info.Big.Motions[i][1]))
+										if (labels.ContainsKeySafe(info.Big.Motions[i][1]))
 											ByteConverter.GetBytes(labels[info.Big.Motions[i][1]]).CopyTo(fc, ptr3 + 4);
 										ptr3 += 8;
 									}
@@ -168,18 +168,23 @@ namespace buildEvent
 				if (ptr != 0)
 					for (int i = 0; i < 18; i++)
 					{
-						if (ini.MechParts.ContainsKey(i) && labels.ContainsKey(ini.MechParts[i]))
+						if (ini.MechParts.ContainsKey(i) && labels.ContainsKeySafe(ini.MechParts[i]))
 							ByteConverter.GetBytes(labels[ini.MechParts[i]]).CopyTo(fc, ptr);
 						ptr += 4;
 					}
 				ptr = fc.GetPointer(0x1C, key);
-				if (ptr != 0 && ini.TailsTails != null && labels.ContainsKey(ini.TailsTails))
+				if (ptr != 0 && labels.ContainsKeySafe(ini.TailsTails))
 						ByteConverter.GetBytes(labels[ini.TailsTails]).CopyTo(fc, ptr);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					Prs.Compress(fc, filename);
 				else
 					File.WriteAllBytes(filename, fc);
 			}
+		}
+
+		public static bool ContainsKeySafe<TValue>(this IDictionary<string, TValue> dict, string key)
+		{
+			return key != null && dict.ContainsKey(key);
 		}
 	}
 
