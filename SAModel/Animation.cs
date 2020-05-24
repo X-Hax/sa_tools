@@ -90,6 +90,7 @@ namespace SonicRetro.SAModel
 			ShortRot = shortrot;
 			int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+			int vtxcount = -1;
 			for (int i = 0; i < nummodels; i++)
 			{
 				AnimModelData data = new AnimModelData();
@@ -273,32 +274,31 @@ namespace SonicRetro.SAModel
 					if (vertoff != 0 && frames > 0)
 					{
 						hasdata = true;
+						if (vtxcount < 0)
+						{
+							tmpaddr = (int)vertoff;
+							List<int> ptrs = new List<int>();
+							for (int j = 0; j < frames; j++)
+							{
+								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+								tmpaddr += 8;
+							}
+							ptrs.Sort();
+							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+						}
 						tmpaddr = (int)vertoff;
-						List<(int frame, int ptr)> frameptrs = new List<(int frame, int ptr)>();
-						List<int> ptrs = new List<int>();
 						for (int j = 0; j < frames; j++)
 						{
+							Vertex[] verts = new Vertex[vtxcount];
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							frameptrs.Add((ByteConverter.ToInt32(file, tmpaddr), newaddr));
-							ptrs.AddUnique(newaddr);
-							tmpaddr += 8;
-						}
-						int lastaddr = (int)vertoff;
-						Dictionary<int, Vertex[]> vertdata = new Dictionary<int, Vertex[]>();
-						foreach (int newaddr in ptrs.OrderByDescending(a=>a))
-						{
-							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
-							lastaddr = newaddr;
-							tmpaddr = newaddr;
 							for (int k = 0; k < verts.Length; k++)
 							{
-								verts[k] = new Vertex(file, tmpaddr);
-								tmpaddr += Vertex.Size;
+								verts[k] = new Vertex(file, newaddr);
+								newaddr += Vertex.Size;
 							}
-							vertdata[newaddr] = verts;
+							data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
+							tmpaddr += 8;
 						}
-						foreach (var (frame, ptr) in frameptrs)
-							data.Vertex.Add(frame, vertdata[ptr]);
 					}
 					address += 4;
 				}
@@ -308,32 +308,31 @@ namespace SonicRetro.SAModel
 					if (normoff != 0 && frames > 0)
 					{
 						hasdata = true;
+						if (vtxcount < 0)
+						{
+							tmpaddr = (int)normoff;
+							List<int> ptrs = new List<int>();
+							for (int j = 0; j < frames; j++)
+							{
+								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+								tmpaddr += 8;
+							}
+							ptrs.Sort();
+							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+						}
 						tmpaddr = (int)normoff;
-						List<(int frame, int ptr)> frameptrs = new List<(int frame, int ptr)>();
-						List<int> ptrs = new List<int>();
 						for (int j = 0; j < frames; j++)
 						{
+							Vertex[] verts = new Vertex[vtxcount];
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							frameptrs.Add((ByteConverter.ToInt32(file, tmpaddr), newaddr));
-							ptrs.AddUnique(newaddr);
-							tmpaddr += 8;
-						}
-						int lastaddr = (int)normoff;
-						Dictionary<int, Vertex[]> vertdata = new Dictionary<int, Vertex[]>();
-						foreach (int newaddr in ptrs.OrderByDescending(a => a))
-						{
-							Vertex[] verts = new Vertex[(lastaddr - newaddr) / Vertex.Size];
-							lastaddr = newaddr;
-							tmpaddr = newaddr;
 							for (int k = 0; k < verts.Length; k++)
 							{
-								verts[k] = new Vertex(file, tmpaddr);
-								tmpaddr += Vertex.Size;
+								verts[k] = new Vertex(file, newaddr);
+								newaddr += Vertex.Size;
 							}
-							vertdata[newaddr] = verts;
+							data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
+							tmpaddr += 8;
 						}
-						foreach (var (frame, ptr) in frameptrs)
-							data.Normal.Add(frame, vertdata[ptr]);
 					}
 					address += 4;
 				}
