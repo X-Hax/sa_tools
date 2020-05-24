@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using SA_Tools;
 using SonicRetro.SAModel;
@@ -67,6 +68,7 @@ namespace SA_Tools.SplitDLL
 				}
 				int itemcount = 0;
 				List<string> labels = new List<string>();
+				Dictionary<string, string> anilabels = new Dictionary<string, string>();
 				ModelAnimationsDictionary models = new ModelAnimationsDictionary();
 				DllIniData output = new DllIniData()
 				{
@@ -385,13 +387,21 @@ namespace SA_Tools.SplitDLL
 								{
 									ptr = (int)(ptr - imageBase);
 									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
-									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									ani.Animation.Name = item.Key + "_" + i;
+									string nm = item.Key + "_" + i;
+									bool saveani = false;
+									if (!anilabels.ContainsKey(ani.Animation.Name))
+									{
+										anilabels.Add(ani.Animation.Name, nm);
+										ani.Animation.Name = nm;
+										saveani = true;
+									}
+									else
+										nm = anilabels[ani.Animation.Name];
 									DllItemInfo info = new DllItemInfo()
 									{
 										Export = name,
 										Index = i,
-										Label = ani.Animation.Name,
+										Label = nm,
 										Field = "motion"
 									};
 									output.Items.Add(info);
@@ -405,8 +415,11 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-									ani.Animation.Save(outputFN);
-									output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+									if (saveani)
+									{
+										ani.Animation.Save(outputFN);
+										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+									}
 									if (models.Contains(ani.Model.Name))
 									{
 										ModelAnimations mdl = models[ani.Model.Name];
@@ -420,12 +433,51 @@ namespace SA_Tools.SplitDLL
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										string animationName = Path.GetFileName(outputFN);
 
-										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, idx + "->object",
+										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 											null, modelfmt);
 										output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
 									}
 								}
 								address += 4;
+							}
+							break;
+						case "motionarray":
+							{
+								int[] nodecounts = data.CustomProperties["nodecounts"].Split(',').Select(a => int.Parse(a)).ToArray();
+								for (int i = 0; i < data.Length; i++)
+								{
+									int ptr = BitConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										ptr = (int)(ptr - imageBase);
+										NJS_MOTION ani = new NJS_MOTION(datafile, ptr, imageBase, nodecounts[i]);
+										string nm = item.Key + "_" + i;
+										bool saveani = false;
+										if (!anilabels.ContainsKey(ani.Name))
+										{
+											anilabels.Add(ani.Name, nm);
+											ani.Name = nm;
+											saveani = true;
+										}
+										else
+											nm = anilabels[ani.Name];
+										DllItemInfo info = new DllItemInfo()
+										{
+											Export = name,
+											Index = i,
+											Label = nm
+										};
+										output.Items.Add(info);
+										if (saveani)
+										{
+											string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+											string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+											ani.Save(outputFN);
+											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+										}
+									}
+									address += 4;
+								}
 							}
 							break;
 						case "texlist":
