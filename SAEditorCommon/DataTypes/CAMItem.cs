@@ -313,7 +313,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(Position);
-			//transform.NJRotateY(Rotation.Y);
+			transform.NJRotateY(Rotation.Y);
 
 			switch (CollisionType)
 			{
@@ -405,7 +405,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			transform.Push();
 			transform.NJTranslate(Position);
-			//transform.NJRotateY(Rotation.Y);
+			transform.NJRotateY(Rotation.Y);
 
 			switch (CollisionType)
 			{
