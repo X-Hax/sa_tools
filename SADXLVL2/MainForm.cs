@@ -3615,5 +3615,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			ShowWelcomeScreen();
 		}
+
+		private void boundsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DrawLevel();
+		}
 	}
 }
