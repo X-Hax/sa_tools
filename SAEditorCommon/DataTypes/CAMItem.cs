@@ -92,15 +92,54 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			PATHCAM       = 0x4b
 		}
 
+		public enum SADXCamColType : byte
+		{
+			CamCol_Sphere = 0,
+			CamCol_Plane = 1,
+			CamCol_Block = 2,
+		}
+
+		public enum SADXCamAdjustType : byte
+		{
+			CamAdjust_NONE = 0x0,
+			CamAdjust_NORMAL = 0x1,
+			CamAdjust_NORMAL_S = 0x2,
+			CamAdjust_SLOW = 0x3,
+			CamAdjust_SLOW_S = 0x4,
+			CamAdjust_TIME = 0x5,
+			CamAdjust_THREE1 = 0x6,
+			CamAdjust_THREE1C = 0x7,
+			CamAdjust_THREE2 = 0x8,
+			CamAdjust_THREE2C = 0x9,
+			CamAdjust_THREE3 = 0xA,
+			CamAdjust_THREE3C = 0xB,
+			CamAdjust_THREE4 = 0xC,
+			CamAdjust_THREE4C = 0xD,
+			CamAdjust_THREE5 = 0xE,
+			CamAdjust_THREE5C = 0xF,
+			CamAdjust_RELATIVE1 = 0x10,
+			CamAdjust_RELATIVE1C = 0x11,
+			CamAdjust_RELATIVE2 = 0x12,
+			CamAdjust_RELATIVE2C = 0x13,
+			CamAdjust_RELATIVE3 = 0x14,
+			CamAdjust_RELATIVE3C = 0x15,
+			CamAdjust_RELATIVE4 = 0x16,
+			CamAdjust_RELATIVE4C = 0x17,
+			CamAdjust_RELATIVE5 = 0x18,
+			CamAdjust_RELATIVE5C = 0x19,
+			CamAdjust_RELATIVE6C = 0x1A,
+			CamAdjust_FORFREECAMERA = 0x1B,
+		}
+
 		#region Camera Data Vars
 		public SADXCamType CamType { get; set; }
-		public byte CollisionType { get; set; }
-		public byte PanSpeed { get; set; }
+		public SADXCamColType CollisionType { get; set; }
+		public SADXCamAdjustType AdjustType { get; set; }
 		public byte Priority { get; set; }
 		public Vertex Scale { get; set; }
 		//public Int32 NotUsed { get; set; }
-		public short ViewAngleX { get; set; }
-		public short ViewAngleY { get; set; }
+		public short CameraAngleX { get; set; }
+		public short CameraAngleY { get; set; }
 		public Vertex PointA { get; set; }
 		public Vertex PointB { get; set; }
 		public float Variable { get; set; }
@@ -123,11 +162,29 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				float largestScale = Scale.X;
-				if (Scale.Y > largestScale) largestScale = Scale.Y;
-				if (Scale.Z > largestScale) largestScale = Scale.Z;
-
-				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = (1.5f * largestScale) };
+				float largestScale;
+				float BoundsScale;
+				switch (CollisionType)
+				{
+					case (SADXCamColType.CamCol_Sphere):
+						BoundsScale = Scale.X;
+						break;
+					case (SADXCamColType.CamCol_Plane):
+						largestScale = Scale.X;
+						if (Scale.Y > largestScale) largestScale = Scale.Y;
+						BoundsScale = largestScale;
+						break;
+					case (SADXCamColType.CamCol_Block):
+						largestScale = Scale.X;
+						if (Scale.Y > largestScale) largestScale = Scale.Y;
+						if (Scale.Z > largestScale) largestScale = Scale.Z;
+						BoundsScale = largestScale;
+						break;
+					default:
+						BoundsScale = Scale.X;
+						break;
+				}
+				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = (1.5f * BoundsScale) };
 			}
 		}
 
@@ -158,13 +215,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public CAMItem(Vertex position, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
-			CamType = (SADXCamType)0x23;
+			CamType = (SADXCamType.NEWFOLLOW);
 
 			Position = position;
 			Rotation = new Rotation();
 			Scale = new Vertex(1, 1, 1);
-			Priority = 2;
-			PanSpeed = 0x14;
+			Priority = 0;
+			AdjustType = (SADXCamAdjustType.CamAdjust_RELATIVE3);
+			CollisionType = (SADXCamColType.CamCol_Block);
 
 			PointA = new Vertex(position.X + 25, position.Y - 38, position.Z);
 			PointB = new Vertex(position.X - 40, position.Y - 38, position.Z);
@@ -185,14 +243,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			: base(selectionManager)
 		{
 			CamType = (SADXCamType)file[address];
-			CollisionType = file[address + 1];
-			PanSpeed = file[address + 2];
-			Priority = file[address + 3];
+			Priority = file[address + 1];
+			AdjustType = (SADXCamAdjustType)file[address + 2];
+			CollisionType = (SADXCamColType)file[address + 3];
 			Rotation = new Rotation(BitConverter.ToInt16(file, address + 4), BitConverter.ToInt16(file, address + 6), 0);
 			Position = new Vertex(file, address + 8);
 			Scale = new Vertex(file, address + 20);
-			ViewAngleX = BitConverter.ToInt16(file, address + 32);
-			ViewAngleY = BitConverter.ToInt16(file, address + 34);
+			CameraAngleX = BitConverter.ToInt16(file, address + 32);
+			CameraAngleY = BitConverter.ToInt16(file, address + 34);
 			PointA = new Vertex(file, address + 36);
 			PointB = new Vertex(file, address + 48);
 			Variable = BitConverter.ToSingle(file, address + 60);
@@ -204,18 +262,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public static void Init()
 		{
-			VolumeMesh = Mesh.Box(2f, 2f, 2f);
-			Material = new NJS_MATERIAL
-			{
-				DiffuseColor = Color.FromArgb(200, Color.Purple),
-				SpecularColor = Color.Black,
-				UseAlpha = true,
-				DoubleSided = false,
-				Exponent = 10,
-				IgnoreSpecular = false,
-				UseTexture = false
-			};
-
 			pointHelperA = new PointHelper { BoxTexture = Gizmo.ATexture, DrawCube = true };
 			pointHelperB = new PointHelper { BoxTexture = Gizmo.BTexture, DrawCube = true };
 		}
@@ -224,7 +270,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#region Saving
 		public byte[] GetBytes()
 		{
-			List<byte> bytes = new List<byte>(0x40) { (byte)CamType, CollisionType, PanSpeed, Priority };
+			List<byte> bytes = new List<byte>(0x40) { (byte)CamType, Priority, (byte)AdjustType, (byte)CollisionType };
 
 			unchecked
 			{
@@ -235,8 +281,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			bytes.AddRange(Position.GetBytes());
 			bytes.AddRange(Scale.GetBytes());
 
-			bytes.AddRange(BitConverter.GetBytes(ViewAngleX));
-			bytes.AddRange(BitConverter.GetBytes(ViewAngleY));
+			bytes.AddRange(BitConverter.GetBytes(CameraAngleX));
+			bytes.AddRange(BitConverter.GetBytes(CameraAngleY));
 
 			bytes.AddRange(PointA.GetBytes());
 			bytes.AddRange(PointB.GetBytes());
@@ -267,9 +313,68 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(Position);
-			transform.NJRotateY(Rotation.Y);
-			transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
+			//transform.NJRotateY(Rotation.Y);
 
+			switch (CollisionType)
+			{
+				case (SADXCamColType.CamCol_Sphere):
+					VolumeMesh = Mesh.Sphere(2f, 6, 8);
+					Material = new NJS_MATERIAL
+					{
+						DiffuseColor = Color.FromArgb(200, Color.Blue),
+						SpecularColor = Color.Black,
+						UseAlpha = true,
+						DoubleSided = false,
+						Exponent = 10,
+						IgnoreSpecular = false,
+						UseTexture = false
+					};
+					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					break;
+				case (SADXCamColType.CamCol_Plane):
+					VolumeMesh = Mesh.Box(2f, 2f, 0f);
+					Material = new NJS_MATERIAL
+					{
+						DiffuseColor = Color.FromArgb(200, Color.Green),
+						SpecularColor = Color.Black,
+						UseAlpha = true,
+						DoubleSided = false,
+						Exponent = 10,
+						IgnoreSpecular = false,
+						UseTexture = false
+					};
+					transform.NJScale((Scale.X), (Scale.Y), (1f));
+					break;
+				case (SADXCamColType.CamCol_Block):
+					VolumeMesh = Mesh.Box(2f, 2f, 2f);
+					Material = new NJS_MATERIAL
+					{
+						DiffuseColor = Color.FromArgb(200, Color.Purple),
+						SpecularColor = Color.Black,
+						UseAlpha = true,
+						DoubleSided = false,
+						Exponent = 10,
+						IgnoreSpecular = false,
+						UseTexture = false
+					};
+					transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
+					break;
+				default:
+					VolumeMesh = Mesh.Sphere(2f, 6, 8);
+					Material = new NJS_MATERIAL
+					{
+						DiffuseColor = Color.FromArgb(200, Color.Blue),
+						SpecularColor = Color.Black,
+						UseAlpha = true,
+						DoubleSided = false,
+						Exponent = 10,
+						IgnoreSpecular = false,
+						UseTexture = false
+					};
+					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					break;
+			}
+			
 			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, Bounds);
 
 			if (Selected)
@@ -300,8 +405,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			transform.Push();
 			transform.NJTranslate(Position);
-			transform.NJRotateY(Rotation.Y);
-			transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
+			//transform.NJRotateY(Rotation.Y);
+
+			switch (CollisionType)
+			{
+				case (SADXCamColType.CamCol_Sphere):
+					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					break;
+				case (SADXCamColType.CamCol_Plane):
+					transform.NJScale((Scale.X), (Scale.Y), (1f));
+					break;
+				case (SADXCamColType.CamCol_Block):
+					transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
+					break;
+				default:
+					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					break;
+			}
 
 			HitResult result = VolumeMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 
