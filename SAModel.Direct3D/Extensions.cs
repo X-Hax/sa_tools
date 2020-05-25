@@ -231,7 +231,7 @@ namespace SonicRetro.SAModel.Direct3D
 			List<Vector3> verts = new List<Vector3>();
 			foreach (VertexData vert in attach.MeshInfo[mesh].Vertices)
 				verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), transform));
-			return SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
+			return Calculate(verts);
 		}
 
 		public static void CalculateBounds(this COL col)
@@ -241,7 +241,65 @@ namespace SonicRetro.SAModel.Direct3D
 			foreach (MeshInfo mesh in col.Model.Attach.MeshInfo)
 				foreach (VertexData vert in mesh.Vertices)
 					verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), matrix));
-			col.Bounds = SharpDX.BoundingSphere.FromPoints(verts.ToArray()).ToSAModel();
+			col.Bounds = Calculate(verts);
+		}
+
+		/// <summary>
+		/// We are using this implementation of Ritter's Bounding Sphere,
+		/// because whatever was going on with SharpDX's BoundingSphere class was catastrophically under-shooting
+		/// the bounds.
+		/// </summary>
+		/// <param name="aPoints"></param>
+		/// <returns></returns>
+		private static BoundingSphere Calculate(IEnumerable<Vector3> aPoints)
+		{
+			Vector3 one = new Vector3(1, 1, 1);
+
+			Vector3 xmin, xmax, ymin, ymax, zmin, zmax;
+			xmin = ymin = zmin = one * float.PositiveInfinity;
+			xmax = ymax = zmax = one * float.NegativeInfinity;
+			foreach (Vector3 p in aPoints)
+			{
+				if (p.X < xmin.X) xmin = p;
+				if (p.X > xmax.X) xmax = p;
+				if (p.Y < ymin.Y) ymin = p;
+				if (p.Y > ymax.Y) ymax = p;
+				if (p.Z < zmin.Z) zmin = p;
+				if (p.Z > zmax.Z) zmax = p;
+			}
+			float xSpan = (xmax - xmin).LengthSquared();
+			float ySpan = (ymax - ymin).LengthSquared();
+			float zSpan = (zmax - zmin).LengthSquared();
+			Vector3 dia1 = xmin;
+			Vector3 dia2 = xmax;
+			var maxSpan = xSpan;
+			if (ySpan > maxSpan)
+			{
+				maxSpan = ySpan;
+				dia1 = ymin; dia2 = ymax;
+			}
+			if (zSpan > maxSpan)
+			{
+				dia1 = zmin; dia2 = zmax;
+			}
+			Vector3 center = (dia1 + dia2) * 0.5f;
+			float sqRad = (dia2 - center).LengthSquared();
+			float radius = (float)Math.Sqrt(sqRad);
+
+			foreach (var p in aPoints)
+			{
+				float d = (p - center).LengthSquared();
+				if (d > sqRad)
+				{
+					var r = (float)Math.Sqrt(d);
+					radius = r;
+					sqRad = radius * radius;
+					var offset = r - radius;
+					center = (radius * center + offset * p) / r;
+				}
+			}
+			return new BoundingSphere(center.ToVertex(), radius * 1.125f); // fixed multiplier hack because while ours 
+				// undershoots less than SharpDX's, there still is some and this should handle it in most cases.
 		}
 
 		public static BoundingSphere Merge(BoundingSphere sphereA, BoundingSphere sphereB)
