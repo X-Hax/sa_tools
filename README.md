@@ -1,6 +1,8 @@
 # Sonic Adventure Toolset
 SA Tools is a toolkit for modifying and extracting data from the Sonic Adventure series of games. Before using these tools, we recommend having an understanding of basic 3d theory. If you're unfamiliar with the topic, read this overview [here](https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Basic_theory) 
 
+[Download SA Tools here](http://mm.reimuhakurei.net/SA%20Tools.7z)
+
 When you're ready to use SA Tools, get started based on your use case below:
 
 # [I want to make a new mod!](https://github.com/sonicretro/sa_tools/wiki/Starting-a-new-Mod-Project)
