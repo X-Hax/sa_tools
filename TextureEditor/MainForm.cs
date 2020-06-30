@@ -29,11 +29,13 @@ namespace TextureEditor
 
 		private void SetFilename(string filename)
 		{
-			do
+			if (Settings.MRUList.Count > 10)
 			{
-				Settings.MRUList.RemoveAt(Settings.MRUList.Count - 1);
+				for (int i = 9; i < Settings.MRUList.Count; i++)
+				{
+					Settings.MRUList.RemoveAt(i);
+				}
 			}
-			while (Settings.MRUList.Count > 10);
 			this.filename = filename;
 				if (Settings.MRUList.Contains(filename))
 			{
