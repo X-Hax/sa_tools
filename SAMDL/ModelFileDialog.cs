@@ -5,6 +5,24 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class ModelFileDialog : Form
 	{
+		public struct ModelFileType
+		{
+			public string name_or_type;
+			public UInt32 key;
+		};
+
+		public static readonly ModelFileType[] ModelFileTypes = new[] {
+		new ModelFileType { name_or_type = "EXE", key = 0x00400000u },
+		new ModelFileType { name_or_type = "DLL", key = 0x10000000u },
+		new ModelFileType { name_or_type = "1ST_READ.BIN", key = 0x8C010000u },
+		new ModelFileType { name_or_type = "SA1 level", key = 0x0C900000u },
+		new ModelFileType { name_or_type = "SA2 level", key = 0x8C500000u },
+		new ModelFileType { name_or_type = "SA1 event/misc file", key = 0xCB80000u },
+		new ModelFileType { name_or_type = "SA2 event file", key = 0xC600000u },
+		new ModelFileType { name_or_type = "SA2PC event file", key = 0x8125FE60u },
+		new ModelFileType { name_or_type = "Model file", key = 0u },
+		};
+
 		public ModelFileDialog()
 		{
 			InitializeComponent();
@@ -12,7 +30,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void Dialog1_Load(object sender, EventArgs e)
 		{
-			comboBox2.SelectedIndex = 1;
+			this.ComboBox1.Items.Clear();
+			for (int i = 0; i < ModelFileTypes.Length; i++)
+			{
+				this.ComboBox1.Items.Add(ModelFileTypes[i].name_or_type);
+			}
 		}
 
 		private void CheckBox3_CheckedChanged(object sender, EventArgs e)
@@ -22,36 +44,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			switch (ComboBox1.SelectedIndex)
-			{
-				case 0:
-					numericUpDown2.Value = 0x00400000u;
-					break;
-				case 1:
-					numericUpDown2.Value = 0x10000000u;
-					break;
-				case 2:
-					numericUpDown2.Value = 0x8C010000u;
-					break;
-				case 3:
-					numericUpDown2.Value = 0x0C900000u;
-					break;
-				case 4:
-					numericUpDown2.Value = 0x8C500000u;
-					break;
-				case 5:
-					numericUpDown2.Value = 0xCB80000u;
-					break;
-				case 6:
-					numericUpDown2.Value = 0xC600000u;
-					break;
-				case 7:
-					numericUpDown2.Value = 0x8125FE60u;
-					break;
-				case 8:
-					numericUpDown2.Value = 0u;
-					break;
-			}
+			numericUpDown2.Value = ModelFileTypes[ComboBox1.SelectedIndex].key;
 		}
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)

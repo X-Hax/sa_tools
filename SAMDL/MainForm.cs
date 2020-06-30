@@ -179,6 +179,43 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadFile(a.FileName);
 		}
+		public struct ModelFileType
+		{
+			public string name_or_type;
+			public UInt32 key;
+			public int data_type;
+		};
+
+		public static readonly ModelFileType[] KnownFileTypes = new[] {
+		new ModelFileType { name_or_type = "1ST_READ", key = 0x8C010000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADV00", key = 0x0C900000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADV02", key = 0x0C900000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADV03", key = 0x0C900000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADV0100", key = 0x0C920000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADV0130", key = 0x0C920000u, data_type = 0 },
+		new ModelFileType { name_or_type = "AL_GARDEN00", key = 0x0CB80000u, data_type = 0 },
+		new ModelFileType { name_or_type = "AL_GARDEN01", key = 0x0CB80000u, data_type = 0 },
+		new ModelFileType { name_or_type = "AL_GARDEN02", key = 0x0CB80000u, data_type = 0 },
+		new ModelFileType { name_or_type = "AL_RACE", key = 0x0CB80000u, data_type = 0 },
+		new ModelFileType { name_or_type = "A_MOT", key = 0x0CC00000u, data_type = 0 },
+		new ModelFileType { name_or_type = "B_MOT", key = 0x0CC00000u, data_type = 0 },
+		new ModelFileType { name_or_type = "E_MOT", key = 0x0CC00000u, data_type = 0 },
+		new ModelFileType { name_or_type = "S_SBMOT", key = 0x0CB08000u, data_type = 0 },
+		new ModelFileType { name_or_type = "ADVERTISE", key = 0x8C900000u, data_type = 0 },
+		new ModelFileType { name_or_type = "MOVIE", key = 0x8CEB0000u, data_type = 0 },
+		};
+
+		private int CheckKnownFile(string filename)
+		{
+			for (int i = 0; i < KnownFileTypes.Length; i++)
+			{
+				if (Path.GetFileNameWithoutExtension(filename).Equals(KnownFileTypes[i].name_or_type, StringComparison.OrdinalIgnoreCase))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
 
 		private void LoadFile(string filename)
 		{
@@ -210,6 +247,7 @@ namespace SonicRetro.SAModel.SAMDL
 					modelinfo.numericUpDown2.Enabled = false;
 					modelinfo.ComboBox1.Enabled = false;
 					modelinfo.checkBox2.Checked = modelinfo.checkBox2.Enabled = false;
+					modelinfo.comboBox2.SelectedIndex = 1;
 					LoadBinFile(file);
 				}
 				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
@@ -226,6 +264,14 @@ namespace SonicRetro.SAModel.SAMDL
 				else
 					using (FileTypeDialog ftd = new FileTypeDialog())
 					{
+						int u = CheckKnownFile(filename);
+						if (u != -1)
+						{
+							modelinfo.numericUpDown2.Value = KnownFileTypes[u].key;
+							modelinfo.comboBox2.SelectedIndex = KnownFileTypes[u].data_type;
+							LoadBinFile(file);
+						}
+						else modelinfo.comboBox2.SelectedIndex = 1;
 						if (ftd.ShowDialog(this) != DialogResult.OK)
 							return;
 						if (ftd.typBinary.Checked)
