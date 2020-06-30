@@ -858,32 +858,25 @@ namespace SonicRetro.SAModel
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
 			writer.WriteLine("EvalFlags ( " + ((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | ") + " ),");
-			writer.WriteLine("Model  " + (Attach != null ? "&" + Attach.Name : "NULL") + ",");
-			writer.Write("OPosition ( ");
-			foreach (float value in Position.ToArray())
-			{
-				writer.Write(value.ToC());
-				writer.Write(", ");
-			}
-			writer.WriteLine("),");
-			writer.Write("OAngle ( ");
-			foreach (float value in Rotation.ToArray())
-			{
-				writer.Write(value.ToC());
-				writer.Write(", ");
-			}
-			writer.WriteLine("),");
-			writer.Write("OScale ( ");
-			foreach (float value in Scale.ToArray())
-			{
-				writer.Write(value.ToC());
-				writer.Write(", ");
-			}
-			writer.WriteLine("),");
+			writer.WriteLine("Model " + (Attach != null ? Attach.Name : "NULL") + ",");
+			writer.WriteLine("OPosition ( " + Position.X.ToC() + ", " + Position.Y.ToC() + ", " + Position.Z.ToC()+" ),");
+			writer.WriteLine("OAngle ( " + ((float)Rotation.X / 182.044f).ToC() + ", " + ((float)Rotation.Y / 182.044f).ToC() + ", " + ((float)Rotation.Z / 182.044f).ToC() + " ),");
+			writer.WriteLine("OScale ( " + Scale.X.ToC() + ", " + Scale.Y.ToC() + ", "+ Scale.Z.ToC() + " ),");
 			writer.WriteLine("Child " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
 			writer.WriteLine("Sibling " + (Sibling != null ? Sibling.Name : "NULL"));
 			writer.WriteLine("END");
 			writer.WriteLine("OBJECT_END");
+			if (Parent == null)
+			{
+				writer.WriteLine("");
+				writer.WriteLine("DEFAULT_START");
+				writer.WriteLine("");
+				writer.WriteLine("#ifndef DEFAULT_OBJECT_NAME");
+				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name);
+				writer.WriteLine("#endif");
+				writer.WriteLine("");
+				writer.WriteLine("DEFAULT_END");
+			}
 		}
 
 		public void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)

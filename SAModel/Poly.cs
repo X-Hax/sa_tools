@@ -106,6 +106,13 @@ namespace SonicRetro.SAModel
 			result.Append(base.ToStruct());
 			return result.ToString();
 		}
+
+		public override string ToNJA()
+		{
+			StringBuilder result = new StringBuilder();
+			result.Append(base.ToNJA());
+			return result.ToString();
+		}
 	}
 
 	[Serializable]
@@ -133,6 +140,14 @@ namespace SonicRetro.SAModel
 		}
 
 		public virtual string ToStruct()
+		{
+			List<string> s = new List<string>(Indexes.Length);
+			for (int i = 0; i < Indexes.Length; i++)
+				s.Add(Indexes[i].ToString());
+			return string.Join(", ", s.ToArray());
+		}
+
+		public virtual string ToNJA()
 		{
 			List<string> s = new List<string>(Indexes.Length);
 			for (int i = 0; i < Indexes.Length; i++)

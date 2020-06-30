@@ -447,14 +447,19 @@ namespace SonicRetro.SAModel
 						writer.WriteLine("START");
 
 						List<string> plys = new List<string>(Mesh[i].Poly.Count);
-						foreach (Poly item in Mesh[i].Poly)
+						for (int p = 0; p < Mesh[i].Poly.Count; p++)
 						{
+							Poly item = Mesh[i].Poly[p];
 							if (item.PolyType == Basic_PolyType.Strips)
 							{
 								Strip strip = item as Strip;
 								plys.Add("Strip(" + (strip.Reversed ? "0x8000, " : "0x0,") + strip.Indexes.Length.ToString() + ")");
+								plys.Add(item.ToNJA());
 							}
-							plys.Add(item.ToStruct());
+							else
+							{
+								plys.Add(item.ToNJA());
+							}
 						}
 						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
 						writer.WriteLine("END");
@@ -568,8 +573,8 @@ namespace SonicRetro.SAModel
 			writer.WriteLine("Materials " + MaterialName + ",");
 			writer.WriteLine("MeshsetNum " + Mesh.Count + ",");
 			writer.WriteLine("MatNum " + Material.Count + ",");
-			writer.WriteLine("Center " + Bounds.Center.X + "," + Bounds.Center.Y + "," + Bounds.Center.Z  + ",");
-			writer.WriteLine("Radius " + Bounds.Radius + ",");
+			writer.WriteLine("Center " + Bounds.Center.X.ToC() + ", " + Bounds.Center.Y.ToC() + ", " + Bounds.Center.Z.ToC()  + ",");
+			writer.WriteLine("Radius " + Bounds.Radius.ToC() + ",");
 			writer.WriteLine("END");
 		}
 		public override void ProcessVertexData()
