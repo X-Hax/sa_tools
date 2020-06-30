@@ -78,47 +78,6 @@ namespace ProjectManager
 		private void GameConfig_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (this.DialogResult == DialogResult.Abort) return;
-
-			SaveSettings();
-
-			// check validitiy
-
-			// check validity
-			string sadxFailReason = "";
-			bool sadxpcValid = GamePathChecker.CheckSADXPCValid(
-				Program.Settings.SADXPCPath, out sadxFailReason);
-
-			if (!sadxpcValid)
-			{
-				MessageBox.Show(sadxFailReason, "SADX PC Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-
-			string sa2PCFailReason = "";
-			bool sa2PCValid = GamePathChecker.CheckSA2PCValid(
-				Program.Settings.SA2PCPath, out sa2PCFailReason);
-
-			if (!sa2PCValid)
-			{
-				MessageBox.Show(sa2PCFailReason, "SA2 PC Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-
-			if (!Program.AnyGamesConfigured())
-			{
-				DialogResult dialogResult = MessageBox.Show("No games configured", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-
-				if (dialogResult == DialogResult.Cancel)
-				{
-					this.DialogResult = DialogResult.Abort;
-					e.Cancel = false;
-					Application.Exit();
-					return;
-				}
-				else
-				{
-					return;
-				}
-			}
-
 			e.Cancel = true;
 			this.Hide();
 		}
