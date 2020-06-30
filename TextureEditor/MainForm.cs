@@ -608,7 +608,7 @@ namespace TextureEditor
 											if (dim.Length > 1)
 												pvmx.Dimensions = new Size(int.Parse(dim[0]), int.Parse(dim[1]));
 										}
-										textures.Add(pvmx);
+											textures.Add(pvmx);
 										break;
 									case TextureFormat.PAK:
 										textures.Add(new PakTextureInfo(name, gbix, bmp));
@@ -643,7 +643,7 @@ namespace TextureEditor
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
 							else
-								texList.WriteLine("{0},{1}", tex.GlobalIndex, tex.Name + ".png");
+								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + ".png", tex.Image.Width, tex.Image.Height);
 						}
 					}
 			}
@@ -726,6 +726,15 @@ namespace TextureEditor
 						pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
+						break;
+					case PvmxTextureInfo pvmx:
+						if (pvmx.Dimensions.HasValue)
+						{
+							dataFormatLabel.Text = $"Original size: {pvmx.Dimensions.Value.Width}x{pvmx.Dimensions.Value.Height}";
+							dataFormatLabel.Show();
+						}
+						else dataFormatLabel.Hide();
+						pixelFormatLabel.Hide();
 						break;
 					default:
 						dataFormatLabel.Hide();

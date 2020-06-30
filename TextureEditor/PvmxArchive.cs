@@ -65,6 +65,7 @@ namespace TextureEditor
 							off += sizeof(int);
 							size.Height = BitConverter.ToInt32(file, off);
 							off += sizeof(int);
+							tex.Dimensions = size;
 							break;
 
 						default:
