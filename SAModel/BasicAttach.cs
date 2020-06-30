@@ -425,12 +425,11 @@ namespace SonicRetro.SAModel
 				labels.Add(MaterialName);
 				writer.Write("MATERIAL ");
 				writer.Write(MaterialName + "[]" + Environment.NewLine);
-				//writer.WriteLine("[] = {");
-				writer.WriteLine("START");
+				writer.WriteLine("START" + Environment.NewLine);
 				List<string> mtls = new List<string>(Material.Count);
 				foreach (NJS_MATERIAL item in Material)
 					mtls.Add(item.ToNJA(textures));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mtls.ToArray()));
+				writer.WriteLine(string.Join(Environment.NewLine, mtls.ToArray()));
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
@@ -527,7 +526,7 @@ namespace SonicRetro.SAModel
 				List<string> mshs = new List<string>(Mesh.Count);
 				foreach (NJS_MESHSET item in Mesh)
 					mshs.Add(item.ToNJA(DX));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", mshs.ToArray()));
+				writer.WriteLine(string.Join(Environment.NewLine, mshs.ToArray()));
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
@@ -575,7 +574,7 @@ namespace SonicRetro.SAModel
 			writer.WriteLine("MatNum " + Material.Count + ",");
 			writer.WriteLine("Center " + Bounds.Center.X.ToC() + ", " + Bounds.Center.Y.ToC() + ", " + Bounds.Center.Z.ToC()  + ",");
 			writer.WriteLine("Radius " + Bounds.Radius.ToC() + ",");
-			writer.WriteLine("END");
+			writer.WriteLine("END" + Environment.NewLine);
 		}
 		public override void ProcessVertexData()
 		{

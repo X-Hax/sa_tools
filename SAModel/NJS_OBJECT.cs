@@ -841,7 +841,7 @@ namespace SonicRetro.SAModel
 				Sibling.ToNJA(writer, DX, labels, textures);
 				writer.WriteLine();
 			}
-			writer.WriteLine("OBJECT_START");
+			writer.WriteLine("OBJECT_START" + Environment.NewLine);
 			if (Attach is BasicAttach)
 			{
 				BasicAttach basicattach = Attach as BasicAttach;
@@ -864,18 +864,15 @@ namespace SonicRetro.SAModel
 			writer.WriteLine("OScale ( " + Scale.X.ToC() + ", " + Scale.Y.ToC() + ", "+ Scale.Z.ToC() + " ),");
 			writer.WriteLine("Child " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
 			writer.WriteLine("Sibling " + (Sibling != null ? Sibling.Name : "NULL"));
-			writer.WriteLine("END");
+			writer.WriteLine("END" + Environment.NewLine);
 			writer.WriteLine("OBJECT_END");
 			if (Parent == null)
 			{
-				writer.WriteLine("");
-				writer.WriteLine("DEFAULT_START");
-				writer.WriteLine("");
-				writer.WriteLine("#ifndef DEFAULT_OBJECT_NAME");
+				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
+				writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
 				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name);
 				writer.WriteLine("#endif");
-				writer.WriteLine("");
-				writer.WriteLine("DEFAULT_END");
+				writer.WriteLine(Environment.NewLine + "DEFAULT_END");
 			}
 		}
 

@@ -202,28 +202,28 @@ namespace SonicRetro.SAModel
 		
 		public string ToNJA(bool DX)
 		{
-			StringBuilder result = new StringBuilder("MESHSTART ");
+			StringBuilder result = new StringBuilder("MESHSTART"+ Environment.NewLine);
 			result.Append("TypeMatId ( " + (StructEnums.NJD_MESHSET)((int)PolyType << 0xE) + ",");
 			result.Append(MaterialID & 0x3FFF);
-			result.Append("), ");
+			result.Append(")," + Environment.NewLine);
 			result.Append("MeshNum ");
 			result.Append(Poly != null ? (ushort)Poly.Count : 0);
-			result.Append(", ");
+			result.Append("," + Environment.NewLine);
 			result.Append("Meshes ");
 			result.Append(Poly != null ? PolyName : "NULL");
-			result.Append(", ");
-			result.Append("PolyAttrs NULL, ");
+			result.Append("," + Environment.NewLine);
+			result.Append("PolyAttrs NULL," + Environment.NewLine);
 			result.Append("PolyNormal ");
 			result.Append(PolyNormal != null ? PolyNormalName : "NULL");
-			result.Append(", ");
+			result.Append("," + Environment.NewLine);
 			result.Append("VertColor ");
 			result.Append(VColor != null ? VColorName : "NULL");
-			result.Append(", ");
+			result.Append("," + Environment.NewLine);
 			result.Append("VertUV ");
 			result.Append(UV != null ? UVName : "NULL");
 			if (DX)
 				result.Append(", NULL");
-			result.Append(" MESHEND");
+			result.Append(Environment.NewLine + "MESHEND" + Environment.NewLine);
 			return result.ToString();
 		}
 
