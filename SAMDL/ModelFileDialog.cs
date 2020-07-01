@@ -30,26 +30,78 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void Dialog1_Load(object sender, EventArgs e)
 		{
-			this.ComboBox1.Items.Clear();
+			this.ComboBox_FileType.Items.Clear();
 			for (int i = 0; i < ModelFileTypes.Length; i++)
 			{
-				this.ComboBox1.Items.Add(ModelFileTypes[i].name_or_type);
+				this.ComboBox_FileType.Items.Add(ModelFileTypes[i].name_or_type);
 			}
 		}
 
 		private void CheckBox3_CheckedChanged(object sender, EventArgs e)
 		{
-			NumericUpDown1.Hexadecimal = CheckBox3.Checked;
+			NumericUpDown_ModelAddress.Hexadecimal = CheckBox_Hex.Checked;
 		}
 
 		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			numericUpDown2.Value = ModelFileTypes[ComboBox1.SelectedIndex].key;
+			NumericUpDown_Key.Value = ModelFileTypes[ComboBox_FileType.SelectedIndex].key;
 		}
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			numericUpDown3.Enabled = checkBox1.Checked;
+			NumericUpDown_AnimationAddress.Enabled = CheckBox_LoadAnimation.Checked;
+		}
+
+		private void typBinary_CheckedChanged(object sender, EventArgs e)
+		{
+			ComboBox_FileType.Enabled = true;
+			ComboBox_Format.Enabled = true;
+			NumericUpDown_ModelAddress.Enabled = true;
+			NumericUpDown_Key.Enabled = true;
+			NumericUpDown_AnimationAddress.Enabled = true;
+			CheckBox_LoadAnimation.Enabled = true;
+			CheckBox_BigEndian.Enabled = true;
+			CheckBox_Hex.Enabled = true;
+			CheckBox_Memory.Enabled = true;
+			Label_Key.Enabled = true;
+			Label_Key.Enabled = true;
+			Label_ModelAddress.Enabled = true;
+			Label_AnimationAddress.Enabled = true;
+			Label_Format.Enabled = true;
+		}
+
+		private void typSA2MDL_CheckedChanged(object sender, EventArgs e)
+		{
+			ComboBox_FileType.Enabled = false;
+			ComboBox_Format.Enabled = false;
+			NumericUpDown_ModelAddress.Enabled = false;
+			NumericUpDown_Key.Enabled = false;
+			NumericUpDown_AnimationAddress.Enabled = false;
+			CheckBox_LoadAnimation.Enabled = false;
+			CheckBox_BigEndian.Enabled = false;
+			CheckBox_Hex.Enabled = false;
+			CheckBox_Memory.Enabled = false;
+			Label_Key.Enabled = false;
+			Label_ModelAddress.Enabled = false;
+			Label_AnimationAddress.Enabled = false;
+			Label_Format.Enabled = false;
+		}
+
+		private void typSA2BMDL_CheckedChanged(object sender, EventArgs e)
+		{
+			ComboBox_FileType.Enabled = false;
+			ComboBox_Format.Enabled = false;
+			NumericUpDown_ModelAddress.Enabled = false;
+			NumericUpDown_Key.Enabled = false;
+			NumericUpDown_AnimationAddress.Enabled = false;
+			CheckBox_LoadAnimation.Enabled = false;
+			CheckBox_BigEndian.Enabled = false;
+			CheckBox_Hex.Enabled = false;
+			CheckBox_Memory.Enabled = false;
+			Label_Key.Enabled = false;
+			Label_ModelAddress.Enabled = false;
+			Label_AnimationAddress.Enabled = false;
+			Label_Format.Enabled = false;
 		}
 	}
 }

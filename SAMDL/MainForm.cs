@@ -243,101 +243,102 @@ namespace SonicRetro.SAModel.SAMDL
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
 				if (baseaddr.HasValue)
 				{
-					modelinfo.numericUpDown2.Value = baseaddr.Value;
-					modelinfo.numericUpDown2.Enabled = false;
-					modelinfo.ComboBox1.Enabled = false;
-					modelinfo.checkBox2.Checked = modelinfo.checkBox2.Enabled = false;
-					modelinfo.comboBox2.SelectedIndex = 1;
-					LoadBinFile(file);
+					modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
+					modelinfo.NumericUpDown_Key.Enabled = false;
+					modelinfo.ComboBox_FileType.Enabled = false;
+					modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
+					modelinfo.ComboBox_Format.SelectedIndex = 1;
 				}
 				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
 					ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
-					modelinfo.numericUpDown2.Value = 0;
-					modelinfo.numericUpDown2.Enabled = false;
-					modelinfo.ComboBox1.Enabled = false;
-					modelinfo.checkBox2.Enabled = false;
-					modelinfo.checkBox2.Checked = true;
-					LoadBinFile(file);
+					modelinfo.NumericUpDown_Key.Value = 0;
+					modelinfo.NumericUpDown_Key.Enabled = false;
+					modelinfo.ComboBox_FileType.Enabled = false;
+					modelinfo.CheckBox_BigEndian.Enabled = false;
+					modelinfo.CheckBox_BigEndian.Checked = true;
 				}
 				else
-					using (FileTypeDialog ftd = new FileTypeDialog())
+				{
+					int u = CheckKnownFile(filename);
+					if (u != -1)
 					{
-						int u = CheckKnownFile(filename);
-						if (u != -1)
+						modelinfo.NumericUpDown_Key.Value = KnownFileTypes[u].key;
+						modelinfo.ComboBox_Format.SelectedIndex = KnownFileTypes[u].data_type;
+					}
+					else modelinfo.ComboBox_Format.SelectedIndex = 1;
+					if (modelinfo.typBinary.Checked)
+					{
+						modelinfo.NumericUpDown_Key.Enabled = true;
+						modelinfo.ComboBox_FileType.Enabled = true;
+						modelinfo.CheckBox_BigEndian.Enabled = true;
+					}
+				}
+				modelinfo.ShowDialog(this);
+				if (modelinfo.DialogResult == DialogResult.OK)
+				{
+					if (modelinfo.typBinary.Checked)
+					{
+						LoadBinFile(file);						
+					}
+					else
+					{
+						ModelFormat fmt = outfmt = ModelFormat.Chunk;
+						ByteConverter.BigEndian = modelinfo.typSA2BMDL.Checked;
+						using (SA2MDLDialog dlg = new SA2MDLDialog())
 						{
-							modelinfo.numericUpDown2.Value = KnownFileTypes[u].key;
-							modelinfo.comboBox2.SelectedIndex = KnownFileTypes[u].data_type;
-							LoadBinFile(file);
-						}
-						else modelinfo.comboBox2.SelectedIndex = 1;
-						if (ftd.ShowDialog(this) != DialogResult.OK)
-							return;
-						if (ftd.typBinary.Checked)
-						{
-							modelinfo.numericUpDown2.Enabled = true;
-							modelinfo.ComboBox1.Enabled = true;
-							modelinfo.checkBox2.Enabled = true;
-							LoadBinFile(file);
-						}
-						else if (ftd.typSA2MDL.Checked | ftd.typSA2BMDL.Checked)
-						{
-							ModelFormat fmt = outfmt = ModelFormat.Chunk;
-							ByteConverter.BigEndian = ftd.typSA2BMDL.Checked;
-							using (SA2MDLDialog dlg = new SA2MDLDialog())
+							int address = 0;
+							SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
+							int i = ByteConverter.ToInt32(file, address);
+							while (i != -1)
 							{
-								int address = 0;
-								SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
-								int i = ByteConverter.ToInt32(file, address);
-								while (i != -1)
+								sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
+								address += 8;
+								i = ByteConverter.ToInt32(file, address);
+							}
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+								dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+							dlg.ShowDialog(this);
+							i = 0;
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+							{
+								if (i == dlg.modelChoice.SelectedIndex)
 								{
-									sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
-									address += 8;
-									i = ByteConverter.ToInt32(file, address);
+									model = item.Value;
+									break;
 								}
-								foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-									dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
-								dlg.ShowDialog(this);
-								i = 0;
-								foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+								i++;
+							}
+							if (dlg.checkBox1.Checked)
+							{
+								using (OpenFileDialog anidlg = new OpenFileDialog()
 								{
-									if (i == dlg.modelChoice.SelectedIndex)
-									{
-										model = item.Value;
-										break;
-									}
-									i++;
-								}
-								if (dlg.checkBox1.Checked)
+									DefaultExt = "bin",
+									Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
+								})
 								{
-									using (OpenFileDialog anidlg = new OpenFileDialog()
+									if (anidlg.ShowDialog(this) == DialogResult.OK)
 									{
-										DefaultExt = "bin",
-										Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
-									})
-									{
-										if (anidlg.ShowDialog(this) == DialogResult.OK)
+										byte[] anifile = File.ReadAllBytes(anidlg.FileName);
+										if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+											anifile = FraGag.Compression.Prs.Decompress(anifile);
+										address = 0;
+										SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+										i = ByteConverter.ToInt32(file, address);
+										while (i != -1)
 										{
-											byte[] anifile = File.ReadAllBytes(anidlg.FileName);
-											if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-												anifile = FraGag.Compression.Prs.Decompress(anifile);
-											address = 0;
-											SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+											anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+											address += 8;
 											i = ByteConverter.ToInt32(file, address);
-											while (i != -1)
-											{
-												anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
-												address += 8;
-												i = ByteConverter.ToInt32(file, address);
-											}
-											animations = new List<NJS_MOTION>(anis.Values);
 										}
+										animations = new List<NJS_MOTION>(anis.Values);
 									}
 								}
 							}
 						}
 					}
+				}
 			}
 			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
@@ -365,15 +366,15 @@ namespace SonicRetro.SAModel.SAMDL
 
 			AddModelToLibrary(model, false);
 		}
-
 		private void LoadBinFile(byte[] file)
 		{
-			modelinfo.ShowDialog(this);
-			ByteConverter.BigEndian = modelinfo.checkBox2.Checked;
-			if (modelinfo.checkBox1.Checked)
-				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)modelinfo.numericUpDown3.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null) };
-			model = new NJS_OBJECT(file, (int)modelinfo.NumericUpDown1.Value, (uint)modelinfo.numericUpDown2.Value, (ModelFormat)modelinfo.comboBox2.SelectedIndex, null);
-			switch ((ModelFormat)modelinfo.comboBox2.SelectedIndex)
+			int address = (int)modelinfo.NumericUpDown_ModelAddress.Value;
+			if (modelinfo.CheckBox_Memory.Checked) address -= (int)modelinfo.NumericUpDown_Key.Value;
+			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
+			if (modelinfo.CheckBox_LoadAnimation.Checked)
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)modelinfo.NumericUpDown_AnimationAddress.Value, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+			model = new NJS_OBJECT(file, address, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+			switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
 			{
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:
