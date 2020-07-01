@@ -80,6 +80,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void textureBox_Click(object sender, EventArgs e)
 		{
+			if (textures == null)
+			{
+				MessageBox.Show("No textures loaded!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			using (TexturePicker texPicker = new TexturePicker(textures, materials[comboMaterial.SelectedIndex].TextureID))
 			{
 				if (texPicker.ShowDialog(this) == DialogResult.OK)
