@@ -19,5 +19,15 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			Close();
 		}
+
+		private void modelChoice_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			okButton.Enabled = true;
+		}
+
+		private void SA2MDLDialog_Load(object sender, EventArgs e)
+		{
+			okButton.Enabled = false;
+		}
 	}
 }
