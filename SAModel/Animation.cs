@@ -460,6 +460,18 @@ namespace SonicRetro.SAModel
 				Model.CountAnimated(), labels);
 		}
 
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
+		{
+			return ReadDirect(file, count, motionaddress, imageBase, format, new Dictionary<int, string>(), attaches);
+		}
+
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, ModelFormat format,
+			Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+		{
+			return new NJS_MOTION(file, motionaddress, imageBase,
+				count, labels);
+		}
+
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
 		{
 			bool be = ByteConverter.BigEndian;
