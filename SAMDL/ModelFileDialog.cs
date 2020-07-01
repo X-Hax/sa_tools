@@ -138,7 +138,6 @@ namespace SonicRetro.SAModel.SAMDL
 			CheckBox_Hex_Motion.Enabled = RadioButton_Object.Checked;
 			CheckBox_Memory_Motion.Enabled = RadioButton_Object.Checked;
 			CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
-			CheckBox_LoadMotion.Checked = RadioButton_Object.Checked;
 		}
 
 	}
