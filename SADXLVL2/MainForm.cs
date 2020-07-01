@@ -77,6 +77,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
 		ushort mouseWrapThreshold = 2;
+		bool mouseHide = false;
+		Point mouseBackup;
 
 		TransformGizmo transformGizmo;
 		ActionMappingList actionList;
@@ -2409,8 +2411,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			bool performedWrap = false;
 
-			if (e.Button != MouseButtons.None)
+			if (e.Button == MouseButtons.Middle)
 			{
+				if (!mouseHide)
+				{
+					mouseBackup = Cursor.Position;
+					mouseHide = true;
+					Cursor.Hide();
+				}
 				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 
 				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
@@ -2438,7 +2446,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 					performedWrap = true;
 				}
 			}
-
+			else if (mouseHide)
+			{
+				mouseHide = false;
+				Cursor.Position = mouseBackup;
+				Cursor.Show();
+			}
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
