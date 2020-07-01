@@ -47,74 +47,42 @@ namespace SonicRetro.SAModel.SAMDL
 			NumericUpDown_Key.Value = ModelFileTypes[ComboBox_FileType.SelectedIndex].key;
 		}
 
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		private void CheckBox_LoadMotion_CheckedChanged(object sender, EventArgs e)
 		{
 			NumericUpDown_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+			Label_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+			CheckBox_Hex_Motion.Enabled = CheckBox_LoadMotion.Checked;
+			CheckBox_Memory_Motion.Enabled = CheckBox_LoadMotion.Checked;
 		}
 
 		private void typBinary_CheckedChanged(object sender, EventArgs e)
 		{
-			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
 			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
 			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
 			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
 			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
 			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
 			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
-			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
 			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
 			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
 			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
 			Label_Key.Enabled = RadioButton_Binary.Checked;
 			Label_Key.Enabled = RadioButton_Binary.Checked;
 			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
-			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
 			Label_Format.Enabled = RadioButton_Binary.Checked;
-		}
-
-		private void RadioButton_SA2MDL_CheckedChanged(object sender, EventArgs e)
-		{
-			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
-			Label_Structure.Enabled = RadioButton_Binary.Checked;
-			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
-			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
-			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
-			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
-			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
-			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
-			Label_Key.Enabled = RadioButton_Binary.Checked;
-			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
-			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
-			Label_Format.Enabled = RadioButton_Binary.Checked;
-		}
-
-		private void RadioButton_SA2BMDL_CheckedChanged(object sender, EventArgs e)
-		{
-			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
-			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
-			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
-			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
-			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
-			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
-			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
-			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
-			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
-			Label_Key.Enabled = RadioButton_Binary.Checked;
-			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
-			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
-			Label_Format.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_MotionAddress.Enabled = false;
+			Label_MotionAddress.Enabled = false;
+			CheckBox_Hex_Motion.Enabled = false;
+			CheckBox_Memory_Motion.Enabled = false;
+			CheckBox_LoadMotion.Enabled = false;
+			if (RadioButton_Object.Checked && RadioButton_Binary.Checked)
+			{
+				CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
+				NumericUpDown_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+				Label_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+				CheckBox_Hex_Motion.Enabled = CheckBox_LoadMotion.Checked;
+				CheckBox_Memory_Motion.Enabled = CheckBox_LoadMotion.Checked;
+			}
 		}
 
 		private void CheckBox_Hex_Motion_CheckedChanged(object sender, EventArgs e)
@@ -124,20 +92,18 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void RadioButton_Object_CheckedChanged(object sender, EventArgs e)
 		{
-			NumericUpDown_MotionAddress.Enabled = RadioButton_Object.Checked;
-			Label_MotionAddress.Enabled = RadioButton_Object.Checked;
-			CheckBox_Hex_Motion.Enabled = RadioButton_Object.Checked;
-			CheckBox_Memory_Motion.Enabled = RadioButton_Object.Checked;
 			CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
-		}
-
-		private void RadioButton_Action_CheckedChanged(object sender, EventArgs e)
-		{
-			NumericUpDown_MotionAddress.Enabled = RadioButton_Object.Checked;
-			Label_MotionAddress.Enabled = RadioButton_Object.Checked;
-			CheckBox_Hex_Motion.Enabled = RadioButton_Object.Checked;
-			CheckBox_Memory_Motion.Enabled = RadioButton_Object.Checked;
-			CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
+			NumericUpDown_MotionAddress.Enabled = false;
+			Label_MotionAddress.Enabled = false;
+			CheckBox_Hex_Motion.Enabled = false;
+			CheckBox_Memory_Motion.Enabled = false;
+			if (RadioButton_Object.Checked)
+			{
+				NumericUpDown_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+				Label_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
+				CheckBox_Hex_Motion.Enabled = CheckBox_LoadMotion.Checked;
+				CheckBox_Memory_Motion.Enabled = CheckBox_LoadMotion.Checked;
+			}
 		}
 
 	}

@@ -175,7 +175,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.CheckBox_LoadMotion.TabIndex = 18;
             this.CheckBox_LoadMotion.Text = "Load Motion";
             this.CheckBox_LoadMotion.UseVisualStyleBackColor = true;
-            this.CheckBox_LoadMotion.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.CheckBox_LoadMotion.CheckedChanged += new System.EventHandler(this.CheckBox_LoadMotion_CheckedChanged);
             // 
             // NumericUpDown_MotionAddress
             // 
@@ -231,8 +231,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.RadioButton_SA2MDL.Size = new System.Drawing.Size(90, 17);
             this.RadioButton_SA2MDL.TabIndex = 23;
             this.RadioButton_SA2MDL.Text = "SA2 MDL File";
-            this.RadioButton_SA2MDL.UseVisualStyleBackColor = true;
-            this.RadioButton_SA2MDL.CheckedChanged += new System.EventHandler(this.RadioButton_SA2MDL_CheckedChanged);
+			this.RadioButton_SA2MDL.UseVisualStyleBackColor = true;
             // 
             // RadioButton_SA2BMDL
             // 
@@ -243,7 +242,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.RadioButton_SA2BMDL.TabIndex = 24;
             this.RadioButton_SA2BMDL.Text = "SA2B MDL File";
             this.RadioButton_SA2BMDL.UseVisualStyleBackColor = true;
-            this.RadioButton_SA2BMDL.CheckedChanged += new System.EventHandler(this.RadioButton_SA2BMDL_CheckedChanged);
             // 
             // Label_Type
             // 
@@ -295,7 +293,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.RadioButton_Action.TabIndex = 29;
             this.RadioButton_Action.Text = "Action";
             this.RadioButton_Action.UseVisualStyleBackColor = true;
-            this.RadioButton_Action.CheckedChanged += new System.EventHandler(this.RadioButton_Action_CheckedChanged);
             // 
             // CheckBox_Memory_Motion
             // 
