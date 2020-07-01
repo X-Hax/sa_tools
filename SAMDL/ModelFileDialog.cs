@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void CheckBox3_CheckedChanged(object sender, EventArgs e)
 		{
-			NumericUpDown_ModelAddress.Hexadecimal = CheckBox_Hex.Checked;
+			NumericUpDown_ObjectAddress.Hexadecimal = CheckBox_Hex_Object.Checked;
 		}
 
 		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,59 +49,97 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			NumericUpDown_AnimationAddress.Enabled = CheckBox_LoadAnimation.Checked;
+			NumericUpDown_MotionAddress.Enabled = CheckBox_LoadMotion.Checked;
 		}
 
 		private void typBinary_CheckedChanged(object sender, EventArgs e)
 		{
-			ComboBox_FileType.Enabled = true;
-			ComboBox_Format.Enabled = true;
-			NumericUpDown_ModelAddress.Enabled = true;
-			NumericUpDown_Key.Enabled = true;
-			NumericUpDown_AnimationAddress.Enabled = true;
-			CheckBox_LoadAnimation.Enabled = true;
-			CheckBox_BigEndian.Enabled = true;
-			CheckBox_Hex.Enabled = true;
-			CheckBox_Memory.Enabled = true;
-			Label_Key.Enabled = true;
-			Label_Key.Enabled = true;
-			Label_ModelAddress.Enabled = true;
-			Label_AnimationAddress.Enabled = true;
-			Label_Format.Enabled = true;
+			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
+			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
+			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
+			Label_Key.Enabled = RadioButton_Binary.Checked;
+			Label_Key.Enabled = RadioButton_Binary.Checked;
+			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
+			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			Label_Format.Enabled = RadioButton_Binary.Checked;
 		}
 
-		private void typSA2MDL_CheckedChanged(object sender, EventArgs e)
+		private void RadioButton_SA2MDL_CheckedChanged(object sender, EventArgs e)
 		{
-			ComboBox_FileType.Enabled = false;
-			ComboBox_Format.Enabled = false;
-			NumericUpDown_ModelAddress.Enabled = false;
-			NumericUpDown_Key.Enabled = false;
-			NumericUpDown_AnimationAddress.Enabled = false;
-			CheckBox_LoadAnimation.Enabled = false;
-			CheckBox_BigEndian.Enabled = false;
-			CheckBox_Hex.Enabled = false;
-			CheckBox_Memory.Enabled = false;
-			Label_Key.Enabled = false;
-			Label_ModelAddress.Enabled = false;
-			Label_AnimationAddress.Enabled = false;
-			Label_Format.Enabled = false;
+			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
+			Label_Structure.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
+			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
+			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
+			Label_Key.Enabled = RadioButton_Binary.Checked;
+			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
+			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			Label_Format.Enabled = RadioButton_Binary.Checked;
 		}
 
-		private void typSA2BMDL_CheckedChanged(object sender, EventArgs e)
+		private void RadioButton_SA2BMDL_CheckedChanged(object sender, EventArgs e)
 		{
-			ComboBox_FileType.Enabled = false;
-			ComboBox_Format.Enabled = false;
-			NumericUpDown_ModelAddress.Enabled = false;
-			NumericUpDown_Key.Enabled = false;
-			NumericUpDown_AnimationAddress.Enabled = false;
-			CheckBox_LoadAnimation.Enabled = false;
-			CheckBox_BigEndian.Enabled = false;
-			CheckBox_Hex.Enabled = false;
-			CheckBox_Memory.Enabled = false;
-			Label_Key.Enabled = false;
-			Label_ModelAddress.Enabled = false;
-			Label_AnimationAddress.Enabled = false;
-			Label_Format.Enabled = false;
+			CheckBox_Memory_Motion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Motion.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Object.Enabled = RadioButton_Binary.Checked;
+			RadioButton_Action.Enabled = RadioButton_Binary.Checked;
+			ComboBox_FileType.Enabled = RadioButton_Binary.Checked;
+			ComboBox_Format.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_ObjectAddress.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_Key.Enabled = RadioButton_Binary.Checked;
+			NumericUpDown_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			CheckBox_LoadMotion.Enabled = RadioButton_Binary.Checked;
+			CheckBox_BigEndian.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Hex_Object.Enabled = RadioButton_Binary.Checked;
+			CheckBox_Memory_Object.Enabled = RadioButton_Binary.Checked;
+			Label_Key.Enabled = RadioButton_Binary.Checked;
+			Label_ModelAddress.Enabled = RadioButton_Binary.Checked;
+			Label_MotionAddress.Enabled = RadioButton_Binary.Checked;
+			Label_Format.Enabled = RadioButton_Binary.Checked;
 		}
+
+		private void CheckBox_Hex_Motion_CheckedChanged(object sender, EventArgs e)
+		{
+			NumericUpDown_MotionAddress.Hexadecimal = CheckBox_Hex_Motion.Checked;
+		}
+
+		private void RadioButton_Object_CheckedChanged(object sender, EventArgs e)
+		{
+			NumericUpDown_MotionAddress.Enabled = RadioButton_Object.Checked;
+			Label_MotionAddress.Enabled = RadioButton_Object.Checked;
+			CheckBox_Hex_Motion.Enabled = RadioButton_Object.Checked;
+			CheckBox_Memory_Motion.Enabled = RadioButton_Object.Checked;
+			CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
+		}
+
+		private void RadioButton_Action_CheckedChanged(object sender, EventArgs e)
+		{
+			NumericUpDown_MotionAddress.Enabled = RadioButton_Object.Checked;
+			Label_MotionAddress.Enabled = RadioButton_Object.Checked;
+			CheckBox_Hex_Motion.Enabled = RadioButton_Object.Checked;
+			CheckBox_Memory_Motion.Enabled = RadioButton_Object.Checked;
+			CheckBox_LoadMotion.Enabled = RadioButton_Object.Checked;
+			CheckBox_LoadMotion.Checked = RadioButton_Object.Checked;
+		}
+
 	}
 }

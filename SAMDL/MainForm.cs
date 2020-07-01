@@ -45,9 +45,11 @@ namespace SonicRetro.SAModel.SAMDL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorOptionsEditor optionsEditor;
 
+		bool unsaved = false;
 		bool loaded;
 		string currentFileName = "";
 		NJS_OBJECT model;
+		NJS_ACTION action;
 		bool hasWeight;
 		List<NJS_MOTION> animations;
 		NJS_MOTION animation;
@@ -179,41 +181,132 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadFile(a.FileName);
 		}
-		public struct ModelFileType
+
+		public static readonly string[] SA2BMDLFiles =
+		{
+			"DWALKMDL",
+			"EWALK2MDL",
+			"SHADOW1MDL",
+			"SONIC1MDL",
+		};
+
+		public static readonly string[] SA2MDLFiles =
+		{
+			"BKNUCKMDL",
+			"BROUGEMDL",
+			"BWALKMDL",
+			"CHAOS0MDL",
+			"CWALKMDL",
+			"EGGMDL",
+			"EWALK1MDL",
+			"EWALKMDL",
+			"HEWALKMDL",
+			"HKNUCKMDL",
+			"HROUGEMDL",
+			"HSHADOWMDL",
+			"HSONICMDL",
+			"HTWALKMDL",
+			"KNUCKMDL",
+			"METALSONICMDL",
+			"MILESMDL",
+			"PSOSHADOWMDL",
+			"PSOSONICMDL",
+			"ROUGEMDL",
+			"SONICMDL",
+			"SSHADOWMDL",
+			"SSONICMDL",
+			"TERIOSMDL",
+			"TICALMDL",
+			"TWALK1MDL",
+			"TWALKMDL",
+			"XEWALKMDL",
+			"XKNUCKMDL",
+			"XROUGEMDL",
+			"XSHADOWMDL",
+			"XSONICMDL",
+			"XTWALKMDL",
+		};
+
+		public struct BinaryModelType
 		{
 			public string name_or_type;
 			public UInt32 key;
 			public int data_type;
 		};
 
-		public static readonly ModelFileType[] KnownFileTypes = new[] {
-		new ModelFileType { name_or_type = "1ST_READ", key = 0x8C010000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADV00", key = 0x0C900000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADV02", key = 0x0C900000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADV03", key = 0x0C900000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADV0100", key = 0x0C920000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADV0130", key = 0x0C920000u, data_type = 0 },
-		new ModelFileType { name_or_type = "AL_GARDEN00", key = 0x0CB80000u, data_type = 0 },
-		new ModelFileType { name_or_type = "AL_GARDEN01", key = 0x0CB80000u, data_type = 0 },
-		new ModelFileType { name_or_type = "AL_GARDEN02", key = 0x0CB80000u, data_type = 0 },
-		new ModelFileType { name_or_type = "AL_RACE", key = 0x0CB80000u, data_type = 0 },
-		new ModelFileType { name_or_type = "A_MOT", key = 0x0CC00000u, data_type = 0 },
-		new ModelFileType { name_or_type = "B_MOT", key = 0x0CC00000u, data_type = 0 },
-		new ModelFileType { name_or_type = "E_MOT", key = 0x0CC00000u, data_type = 0 },
-		new ModelFileType { name_or_type = "S_SBMOT", key = 0x0CB08000u, data_type = 0 },
-		new ModelFileType { name_or_type = "ADVERTISE", key = 0x8C900000u, data_type = 0 },
-		new ModelFileType { name_or_type = "MOVIE", key = 0x8CEB0000u, data_type = 0 },
+		public static readonly BinaryModelType[] KnownBinaryFiles = new[] {
+		new BinaryModelType { name_or_type = "1ST_READ", key = 0x8C010000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV00", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV02", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV03", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV0100", key = 0x0C920000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV01OBJ", key = 0x0C920000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADV0130", key = 0x0C920000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "AL_GARDEN00", key = 0x0CB80000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "AL_GARDEN01", key = 0x0CB80000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "AL_GARDEN02", key = 0x0CB80000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "AL_RACE", key = 0x0CB80000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "AL_MAIN", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_CHAOS0", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_CHAOS2", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_CHAOS4", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_CHAOS6", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_CHAOS7", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_E101", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_E101R", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_EGM1", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_EGM2", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_EGM3", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_ROBO", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "SBOARD", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "SHOOTING", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "TIKAL_PROG", key = 0x0CB00000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "MINICART", key = 0x0C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "A_MOT", key = 0x0CC00000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "B_MOT", key = 0x0CC00000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "E_MOT", key = 0x0CC00000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "S_MOT", key = 0x0CC00000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "S_SBMOT", key = 0x0CB08000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "ADVERTISE", key = 0x8C900000u, data_type = 0 },
+		new BinaryModelType { name_or_type = "MOVIE", key = 0x8CEB0000u, data_type = 0 },
 		};
 
 		private int CheckKnownFile(string filename)
 		{
-			for (int i = 0; i < KnownFileTypes.Length; i++)
+			if (Path.GetFileNameWithoutExtension(filename).Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(KnownFileTypes[i].name_or_type, StringComparison.OrdinalIgnoreCase))
+				return -4;
+			}
+
+			else if (Path.GetFileNameWithoutExtension(filename).Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
+			{
+				return -5;
+			}
+
+			for (int i = 0; i < SA2BMDLFiles.Length; i++)
+			{
+				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				{
+					return -3;
+				}
+			}
+
+			for (int i = 0; i < SA2MDLFiles.Length; i++)
+			{
+				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				{
+					return -2;
+				}
+			}
+
+			for (int i = 0; i < KnownBinaryFiles.Length; i++)
+			{
+				if (Path.GetFileNameWithoutExtension(filename).Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
 				{
 					return i;
 				}
 			}
+
 			return -1;
 		}
 
@@ -262,13 +355,31 @@ namespace SonicRetro.SAModel.SAMDL
 				else
 				{
 					int u = CheckKnownFile(filename);
-					if (u != -1)
+					if (u == -5)
 					{
-						modelinfo.NumericUpDown_Key.Value = KnownFileTypes[u].key;
-						modelinfo.ComboBox_Format.SelectedIndex = KnownFileTypes[u].data_type;
+						modelinfo.NumericUpDown_Key.Value = 0xC600000u;
+						modelinfo.ComboBox_Format.SelectedIndex = 2;
+					}
+					else if (u == -4)
+					{
+						modelinfo.NumericUpDown_Key.Value = 0xCB80000u;
+						modelinfo.ComboBox_Format.SelectedIndex = 0;
+					}
+					else if (u == -3)
+					{
+						modelinfo.RadioButton_SA2BMDL.Checked = true;
+					}
+					else if (u == -2)
+					{
+						modelinfo.RadioButton_SA2MDL.Checked = true;
+					}
+					else if (u != -1)
+					{
+						modelinfo.NumericUpDown_Key.Value = KnownBinaryFiles[u].key;
+						modelinfo.ComboBox_Format.SelectedIndex = KnownBinaryFiles[u].data_type;
 					}
 					else modelinfo.ComboBox_Format.SelectedIndex = 1;
-					if (modelinfo.typBinary.Checked)
+					if (modelinfo.RadioButton_Binary.Checked)
 					{
 						modelinfo.NumericUpDown_Key.Enabled = true;
 						modelinfo.ComboBox_FileType.Enabled = true;
@@ -278,14 +389,14 @@ namespace SonicRetro.SAModel.SAMDL
 				modelinfo.ShowDialog(this);
 				if (modelinfo.DialogResult == DialogResult.OK)
 				{
-					if (modelinfo.typBinary.Checked)
+					if (modelinfo.RadioButton_Binary.Checked)
 					{
-						LoadBinFile(file);						
+						LoadBinFile(file);
 					}
 					else
 					{
 						ModelFormat fmt = outfmt = ModelFormat.Chunk;
-						ByteConverter.BigEndian = modelinfo.typSA2BMDL.Checked;
+						ByteConverter.BigEndian = modelinfo.RadioButton_SA2BMDL.Checked;
 						using (SA2MDLDialog dlg = new SA2MDLDialog())
 						{
 							int address = 0;
@@ -339,6 +450,7 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 					}
 				}
+				else return;
 			}
 			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
@@ -363,17 +475,28 @@ namespace SonicRetro.SAModel.SAMDL
 			showWeightsToolStripMenuItem.Enabled = hasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
-
 			AddModelToLibrary(model, false);
+			unsaved = false;
 		}
 		private void LoadBinFile(byte[] file)
 		{
-			int address = (int)modelinfo.NumericUpDown_ModelAddress.Value;
-			if (modelinfo.CheckBox_Memory.Checked) address -= (int)modelinfo.NumericUpDown_Key.Value;
+			int objectaddress = (int)modelinfo.NumericUpDown_ObjectAddress.Value;
+			int motionaddress = (int)modelinfo.NumericUpDown_MotionAddress.Value;
+			if (modelinfo.CheckBox_Memory_Object.Checked) objectaddress -= (int)modelinfo.NumericUpDown_Key.Value;
+			if (modelinfo.CheckBox_Memory_Motion.Checked) motionaddress -= (int)modelinfo.NumericUpDown_Key.Value;
 			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
-			if (modelinfo.CheckBox_LoadAnimation.Checked)
-				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)modelinfo.NumericUpDown_AnimationAddress.Value, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
-			model = new NJS_OBJECT(file, address, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+			if (modelinfo.RadioButton_Object.Checked)
+			{
+				model = new NJS_OBJECT(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				if (modelinfo.CheckBox_LoadMotion.Checked)
+					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+			}
+			else 
+			{
+				action = new NJS_ACTION(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				model = action.Model;
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+			}
 			switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
 			{
 				case ModelFormat.Basic:
@@ -419,7 +542,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (loaded)
+			if (loaded && unsaved)
 			{
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
@@ -453,6 +576,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
 					Save(a.FileName);
+					unsaved = false;
 				}
 			}
 		}
@@ -524,6 +648,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			currentFileName = "";
 			UpdateStatusString();
+			unsaved = false;
 		}
 
 		private void NewFileOperation(ModelFormat modelFormat)
@@ -1472,6 +1597,7 @@ namespace SonicRetro.SAModel.SAMDL
 			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(); }
 			catch { }
 			DrawEntireModel();
+			unsaved = true;
 		}
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1536,6 +1662,7 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 					break;
 			}
+			unsaved = true;
 		}
 
 		private void importOBJToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1574,6 +1701,7 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 
 					DrawEntireModel();
+					unsaved = true;
 				}
 		}
 
@@ -1640,6 +1768,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			UpdateWeightedModel();
+			unsaved = true;
 		}
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1687,6 +1816,7 @@ namespace SonicRetro.SAModel.SAMDL
 			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfo))
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
+					unsaved = true;
 					foreach (Attach att in model.GetObjects().Where(a => a.Attach != null).Select(a => a.Attach))
 						switch (att)
 						{
@@ -1933,7 +2063,7 @@ namespace SonicRetro.SAModel.SAMDL
 					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
-
+					unsaved = true;
 					AddModelToLibrary(model, false);
 				}
 			}
