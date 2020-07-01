@@ -576,7 +576,6 @@ namespace SonicRetro.SAModel.SAMDL
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
 					Save(a.FileName);
-					unsaved = false;
 				}
 			}
 		}
@@ -593,6 +592,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			currentFileName = fileName;
 			UpdateStatusString();
+			unsaved = false;
 		}
 
 		private void saveMenuItem_Click(object sender, EventArgs e)
@@ -605,7 +605,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (!doOperation)
 				{
 					// ask if we're sure we want to over-write
-					DialogResult dialogResult = MessageBox.Show("Are you sure? You will lose any unsaved work.", "Are you sure?", MessageBoxButtons.YesNo);
+					DialogResult dialogResult = MessageBox.Show("This will overwrite the currently open file.", "Are you sure?", MessageBoxButtons.YesNo);
 
 					doOperation = dialogResult == DialogResult.Yes;
 				}
