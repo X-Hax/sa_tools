@@ -39,7 +39,7 @@
             // 
             this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(12, 39);
+            this.progressBar.Location = new System.Drawing.Point(12, 69);
             this.progressBar.MaximumSize = new System.Drawing.Size(344, 23);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(344, 23);
@@ -49,26 +49,24 @@
             // 
             // labelTask
             // 
-            this.labelTask.AutoSize = true;
             this.labelTask.Location = new System.Drawing.Point(12, 9);
             this.labelTask.Name = "labelTask";
-            this.labelTask.Size = new System.Drawing.Size(53, 13);
+            this.labelTask.Size = new System.Drawing.Size(344, 13);
             this.labelTask.TabIndex = 1;
             this.labelTask.Text = "labelTask";
             // 
             // labelStep
             // 
-            this.labelStep.AutoSize = true;
-            this.labelStep.Location = new System.Drawing.Point(12, 22);
+            this.labelStep.Location = new System.Drawing.Point(12, 33);
             this.labelStep.Name = "labelStep";
-            this.labelStep.Size = new System.Drawing.Size(51, 13);
+            this.labelStep.Size = new System.Drawing.Size(344, 33);
             this.labelStep.TabIndex = 2;
             this.labelStep.Text = "labelStep";
             // 
             // checkAutoClose
             // 
             this.checkAutoClose.AutoSize = true;
-            this.checkAutoClose.Location = new System.Drawing.Point(12, 72);
+            this.checkAutoClose.Location = new System.Drawing.Point(12, 102);
             this.checkAutoClose.Name = "checkAutoClose";
             this.checkAutoClose.Size = new System.Drawing.Size(127, 17);
             this.checkAutoClose.TabIndex = 4;
@@ -79,7 +77,7 @@
             // buttonOK
             // 
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(281, 68);
+            this.buttonOK.Location = new System.Drawing.Point(281, 98);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 5;
@@ -93,7 +91,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(368, 103);
+            this.ClientSize = new System.Drawing.Size(368, 133);
             this.ControlBox = false;
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.checkAutoClose);
