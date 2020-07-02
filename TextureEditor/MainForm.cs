@@ -8,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using VrSharp.GvrTexture;
-using VrSharp.PvrTexture;
+using VrSharp.Gvr;
+using VrSharp.Pvr;
 
 namespace TextureEditor
 {
@@ -92,12 +92,13 @@ namespace TextureEditor
 			}
 			else
 			{
-				if (pvmfile.Is(pvmdata, filename))
+					MemoryStream stream = new MemoryStream(pvmdata);
+					if (PvmArchive.Identify(stream))
 					format = TextureFormat.PVM;
 				else
 				{
 					pvmfile = new GvmArchive();
-					if (!pvmfile.Is(pvmdata, filename))
+					if (!GvmArchive.Identify(stream))
 					{
 						MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 						return false;
@@ -822,7 +823,8 @@ namespace TextureEditor
 										pvmfile = new GvmArchive();
 										break;
 								}
-								if (!pvmfile.Is(pvmdata, file))
+								MemoryStream stream = new MemoryStream(pvmdata);
+								if (!PvmArchive.Identify(stream) && !GvmArchive.Identify(stream))
 								{
 									MessageBox.Show(this, "Could not open file \"" + file + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 									continue;

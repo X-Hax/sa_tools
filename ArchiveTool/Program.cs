@@ -104,10 +104,11 @@ namespace ArchiveTool
 							byte[] pvmdata = File.ReadAllBytes(filePath);
 							if (extension == ".prs") pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 							pvmfile = new PvmArchive();
-							if (!pvmfile.Is(pvmdata, filePath))
+							MemoryStream stream = new MemoryStream(pvmdata);
+							if (!PvmArchive.Identify(stream))
 							{
 								pvmfile = new GvmArchive();
-								if (!pvmfile.Is(pvmdata, filePath))
+								if (!GvmArchive.Identify(stream))
 								{
 									File.WriteAllBytes(Path.ChangeExtension(filePath, ".bin"), pvmdata);
 									IsBIN = true;
