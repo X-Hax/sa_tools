@@ -174,7 +174,7 @@
 			this.saveMenuItem.Enabled = false;
 			this.saveMenuItem.Name = "saveMenuItem";
 			this.saveMenuItem.Size = new System.Drawing.Size(168, 22);
-			this.saveMenuItem.Text = "&Save...";
+			this.saveMenuItem.Text = "&Save";
 			this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
 			// 
 			// saveAsToolStripMenuItem
