@@ -361,7 +361,9 @@ namespace SonicRetro.SAModel
 				else
 				{
 					result.Align(4);
-					result.AddRange(Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, labels, out mtnaddr));
+					tmpbyte = Anim[i].Animation.GetBytes(imageBase + (uint)result.Count, labels, out tmpaddr);
+					mtnaddr = tmpaddr + (uint)result.Count + imageBase;
+					result.AddRange(tmpbyte);
 				}
 				result.Align(4);
 				animaniaddrs[i] = (uint)result.Count + imageBase;
