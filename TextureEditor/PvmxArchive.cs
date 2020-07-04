@@ -124,7 +124,8 @@ namespace TextureEditor
 				long size;
 				using (MemoryStream ms = new MemoryStream())
 				{
-					tex.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+					System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
+					bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 					texdata.Add(new OffData(str.Position, ms.ToArray()));
 					size = ms.Length;
 				}

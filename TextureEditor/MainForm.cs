@@ -640,7 +640,8 @@ namespace TextureEditor
 						string dir = Path.GetDirectoryName(dlg.FileName);
 						foreach (TextureInfo tex in textures)
 						{
-							tex.Image.Save(Path.Combine(dir, tex.Name + ".png"));
+							System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
+							bmp.Save(Path.Combine(dir, tex.Name + ".png"));
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
 							else
@@ -1019,7 +1020,10 @@ namespace TextureEditor
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-					textures[listBox1.SelectedIndex].Image.Save(dlg.FileName);
+				{
+					System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(textures[listBox1.SelectedIndex].Image);
+					bmp.Save(dlg.FileName);
+				}
 
 			listBox1.Select();
 		}
