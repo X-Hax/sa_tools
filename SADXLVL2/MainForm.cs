@@ -1549,9 +1549,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Enabled = true;
 
 			gizmoSpaceComboBox.Enabled = true;
-			gizmoSpaceComboBox.SelectedIndex = 0;
+			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
 			pivotComboBox.Enabled = true;
-			pivotComboBox.SelectedIndex = 1;
+			if (pivotComboBox.SelectedIndex == -1) pivotComboBox.SelectedIndex = 0;
 
 			addAllLevelItemsToolStripMenuItem.Enabled = true;
 			toolStrip1.Enabled = isStageLoaded;

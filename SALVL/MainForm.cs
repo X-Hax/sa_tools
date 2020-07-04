@@ -198,9 +198,10 @@ namespace SonicRetro.SAModel.SALVL
 			}
 			loaded = true;
 			transformGizmo = new TransformGizmo();
-			gizmoSpaceComboBox.Enabled = false;
-			gizmoSpaceComboBox.SelectedIndex = 0;
-
+			gizmoSpaceComboBox.Enabled = true;
+			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
+			pivotComboBox.Enabled = true;
+			if (pivotComboBox.SelectedIndex == -1) pivotComboBox.SelectedIndex = 0;
 
 			clearLevelToolStripMenuItem.Enabled = LevelData.geo != null;
 			calculateAllBoundsToolStripMenuItem.Enabled = LevelData.geo != null;
