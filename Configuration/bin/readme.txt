@@ -8,4 +8,5 @@ ModelRelabeler: Copies labels from one model file to another
 ModelConverter: Converts .sa1mdl files to .sa2mdl and vice versa
 PAKTool: Extracts and builds .PAK archives
 SETCodeGenerator: Creates object loading code from a SET file and an object list
+SplitNB: Extracts models from .NB files
 TextureRemap: Remaps texture IDs in a model file
