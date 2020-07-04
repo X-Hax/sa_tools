@@ -34,7 +34,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void doneButton_Click(object sender, EventArgs e)
 		{
-			if(!showOnStartCheckbox.Checked) MessageBox.Show("You can view this dialog at any time by going to the 'Help->Welcome / Tutorial' menu option, or by pressing F1");
 			this.Close();
 		}
 	}
