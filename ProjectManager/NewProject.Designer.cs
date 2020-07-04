@@ -177,7 +177,7 @@
 			this.Controls.Add(this.BackButton);
 			this.Controls.Add(this.NextButton);
 			this.Name = "NewProject";
-			this.Text = "NewProject";
+			this.Text = "New Project";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NewProject_FormClosing);
 			this.Shown += new System.EventHandler(this.NewProject_Shown);
 			this.groupBox1.ResumeLayout(false);

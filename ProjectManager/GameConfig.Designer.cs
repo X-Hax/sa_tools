@@ -121,7 +121,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "GameConfig";
-            this.Text = "GameConfig";
+            this.Text = "Game Configuration";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameConfig_FormClosing);
             this.VisibleChanged += new System.EventHandler(this.GameConfig_VisibleChanged);
             this.ResumeLayout(false);

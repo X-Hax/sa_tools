@@ -82,7 +82,7 @@
             this.Controls.Add(this.InfoButton);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "ManualSplit";
-            this.Text = "ManualSplit";
+            this.Text = "Manual Split";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ManualSplit_FormClosing);
             this.ResumeLayout(false);
 

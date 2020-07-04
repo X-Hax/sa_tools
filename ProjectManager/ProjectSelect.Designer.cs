@@ -46,6 +46,9 @@
             // 
             // projectListBox
             // 
+            this.projectListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.projectListBox.FormattingEnabled = true;
             this.projectListBox.Location = new System.Drawing.Point(12, 43);
             this.projectListBox.Name = "projectListBox";
@@ -55,6 +58,7 @@
             // 
             // OKButton
             // 
+            this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Location = new System.Drawing.Point(376, 419);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -65,6 +69,7 @@
             // 
             // BackButton
             // 
+            this.BackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.BackButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BackButton.Location = new System.Drawing.Point(12, 419);
             this.BackButton.Name = "BackButton";
@@ -86,7 +91,7 @@
             this.Controls.Add(this.projectListBox);
             this.Controls.Add(this.InstructionLabel);
             this.Name = "ProjectSelect";
-            this.Text = "ProjectSelect";
+            this.Text = "Select a Project";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProjectSelect_FormClosing);
             this.Shown += new System.EventHandler(this.ProjectSelect_Shown);
             this.ResumeLayout(false);
