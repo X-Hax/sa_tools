@@ -975,11 +975,31 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 
 				case ("Delete"):
-					/*foreach (Item item in selectedItems.GetSelection())
-						item.Delete();
-					selectedItems.Clear();*/
-					throw new System.NotImplementedException();
-					draw = true;
+					if (selectedObject != null && selectedObject.Parent != null)
+					{
+						bool doOperation = false;
+						DialogResult dialogResult = MessageBox.Show("This will delete the selected model and all its child models. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+						doOperation = dialogResult == DialogResult.Yes;
+						if (doOperation)
+						{
+							selectedObject.ClearChildren();
+							selectedObject.Parent.RemoveChild(selectedObject);
+							selectedObject = null;
+							model.ProcessVertexData();
+							NJS_OBJECT[] models = model.GetObjects();
+							meshes = new Mesh[models.Length];
+							for (int i = 0; i < models.Length; i++)
+								if (models[i].Attach != null)
+									try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+									catch { }
+							treeView1.Nodes.Clear();
+							nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+							AddTreeNode(model, treeView1.Nodes);
+							SelectedItemChanged();
+							unsaved = true;
+							draw = true;
+						}
+					}
 					break;
 
 				case ("Increase camera move speed"):
@@ -988,7 +1008,7 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 
 				case ("Decrease camera move speed"):
-					cam.MoveSpeed -= 0.0625f;
+					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					//UpdateTitlebar();
 					break;
 
