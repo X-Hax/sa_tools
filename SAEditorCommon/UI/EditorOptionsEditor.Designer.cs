@@ -130,7 +130,7 @@
             // drawDistSlider
             // 
             this.drawDistSlider.Location = new System.Drawing.Point(6, 38);
-            this.drawDistSlider.Maximum = 10000;
+            this.drawDistSlider.Maximum = 30000;
             this.drawDistSlider.Minimum = 1000;
             this.drawDistSlider.Name = "drawDistSlider";
             this.drawDistSlider.Size = new System.Drawing.Size(227, 45);
