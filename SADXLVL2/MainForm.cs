@@ -73,6 +73,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
+		bool hideLibraries;
+		int splitterDistanceBackup;
 
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
@@ -151,6 +153,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			};
 
 			sceneGraphControl1.InitSceneControl(selectedItems);
+			splitterDistanceBackup = splitContainer2.SplitterDistance;
 		}
 
 		/// <summary>
@@ -3632,6 +3635,26 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void boundsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DrawLevel();
+		}
+
+		private void splitContainer2_Click(object sender, EventArgs e)
+		{
+			if (!hideLibraries)
+			{
+				hideLibraries = true;
+				splitterDistanceBackup = splitContainer2.SplitterDistance;
+				splitContainer2.SplitterDistance = splitterDistanceBackup + splitContainer2.Panel2.Height;
+			}
+			else
+			{
+				hideLibraries = false;
+				splitContainer2.SplitterDistance = splitterDistanceBackup;
+			}
+		}
+
+		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			if (!hideLibraries)	splitterDistanceBackup = splitContainer2.SplitterDistance;
 		}
 	}
 }
