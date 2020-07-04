@@ -365,6 +365,12 @@ namespace SADXsndSharp
 				return Icon.FromHandle(ExtractIconA(0, "C:\\Windows\\system32\\shell32.dll", 0));
 			}
 		}
+
+		private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
+
 	}
 
 	internal class FENTRY
