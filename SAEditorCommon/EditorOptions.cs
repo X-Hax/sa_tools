@@ -15,7 +15,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		#region Render Options
 		private static FillMode renderFillMode = FillMode.Solid;
 		private static Cull renderCullMode = Cull.None;
-		private static float renderDrawDistance = 3500f;
+		private static float renderDrawDistance = 6000f;
 		private static bool overrideLighting = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
