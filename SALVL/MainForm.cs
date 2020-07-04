@@ -150,6 +150,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void LoadFile(string filename)
 		{
 			loaded = false;
+			loadTexturesToolStripMenuItem.Enabled = false;
 			UseWaitCursor = true;
 			Enabled = false;
 			LevelData.leveltexs = null;
@@ -197,6 +198,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 			loaded = true;
+			loadTexturesToolStripMenuItem.Enabled = true;
 			transformGizmo = new TransformGizmo();
 			gizmoSpaceComboBox.Enabled = true;
 			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
@@ -1298,6 +1300,30 @@ namespace SonicRetro.SAModel.SALVL
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowWelcomeScreen();
+		}
+
+		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+			{
+				if (!string.IsNullOrEmpty(LevelData.geo.TextureFileName))
+					a.FileName = LevelData.geo.TextureFileName + ".pvm";
+				else
+					a.FileName = string.Empty;
+				if (a.ShowDialog(this) == DialogResult.OK)
+				{
+					BMPInfo[] TexBmps = TextureArchive.GetTextures(a.FileName);
+					Texture[] texs = new Texture[TexBmps.Length];
+					for (int j = 0; j < TexBmps.Length; j++)
+						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+					string texname = Path.GetFileNameWithoutExtension(a.FileName);
+					if (!LevelData.TextureBitmaps.ContainsKey(texname))
+						LevelData.TextureBitmaps.Add(texname, TexBmps);
+					if (!LevelData.Textures.ContainsKey(texname))
+						LevelData.Textures.Add(texname, texs);
+					LevelData.leveltexs = texname;
+				}
+			}
 		}
 	}
 }
