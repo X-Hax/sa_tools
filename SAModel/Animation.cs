@@ -90,7 +90,6 @@ namespace SonicRetro.SAModel
 			ShortRot = shortrot;
 			int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
-			int vtxcount = -1;
 			for (int i = 0; i < nummodels; i++)
 			{
 				AnimModelData data = new AnimModelData();
@@ -268,24 +267,27 @@ namespace SonicRetro.SAModel
 					}
 					address += 4;
 				}
+				int vtxcount = -1;
 				if (animtype.HasFlag(AnimFlags.Vertex))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
 					if (vertoff != 0 && frames > 0)
 					{
 						hasdata = true;
-						if (vtxcount < 0)
+						tmpaddr = (int)vertoff;
+						List<int> ptrs = new List<int>();
+						for (int j = 0; j < frames; j++)
 						{
-							tmpaddr = (int)vertoff;
-							List<int> ptrs = new List<int>();
-							for (int j = 0; j < frames; j++)
-							{
-								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-								tmpaddr += 8;
-							}
+							ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+							tmpaddr += 8;
+						}
+						if (ptrs.Count > 1)
+						{
 							ptrs.Sort();
 							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
 						}
+						else
+							vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
 						tmpaddr = (int)vertoff;
 						for (int j = 0; j < frames; j++)
 						{
@@ -317,8 +319,13 @@ namespace SonicRetro.SAModel
 								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
 								tmpaddr += 8;
 							}
-							ptrs.Sort();
-							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+							if (ptrs.Count > 1)
+							{
+								ptrs.Sort();
+								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+							}
+							else
+								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
 						}
 						tmpaddr = (int)normoff;
 						for (int j = 0; j < frames; j++)
