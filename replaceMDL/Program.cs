@@ -57,7 +57,7 @@ namespace replaceMDL
 			foreach (KeyValuePair<int, string> item in modelnames.ToList())
 				if (objects.Any((obj) => obj.Name == item.Value))
 					modelnames[item.Key] = repobjects[Array.IndexOf(objects, objects.Single((o) => o.Name == item.Value))].Name;
-			ModelFile.CreateFile(mdlfilename, repmodel.Model, null, null, repmodel.Author, repmodel.Description, "replaceMDL", repmodel.Metadata, repmodel.Format);
+			ModelFile.CreateFile(mdlfilename, repmodel.Model, null, repmodel.Author, repmodel.Description, repmodel.Metadata, repmodel.Format);
 			IniSerializer.Serialize(modelnames, inisettings, inifilename);
 		}
 	}
