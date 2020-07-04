@@ -75,6 +75,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool isPointOperation;
 		bool hideLibraries;
 		int splitterDistanceBackup;
+		bool displayDeathZonesManual;
 
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
@@ -1363,6 +1364,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 								lightList.Add(lightData);
 						}
 
+						if (levelact.Act > 0 && lightList.Count <= 0)
+						{
+							for (int i = 1; i < levelact.Act + 1; i++)
+							{
+								foreach (SA1StageLightData lightData in stageLightList)
+								{
+									if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
+										lightList.Add(lightData);
+								}
+							}
+						}
+
 						if (lightList.Count > 0)
 						{
 							for (int i = 0; i < 4; i++) // clear all default lights
@@ -1540,8 +1553,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// The whole view menu!
 			viewToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
-			deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
-
+			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			else deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 			advancedToolStripMenuItem.Enabled = true;
 			addToolStripMenuItem1.Enabled = true;
 			addToolStripMenuItem.Enabled = true;
@@ -3171,6 +3184,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			displayDeathZonesManual = !displayDeathZonesManual;
 			DrawLevel();
 		}
 
