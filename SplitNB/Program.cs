@@ -24,7 +24,6 @@ namespace SplitNB
 					filename = Console.ReadLine();
 				}
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
-				Environment.CurrentDirectory = Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename)).FullName;
 				byte[] file = File.ReadAllBytes(filename);
 				if (BitConverter.ToInt32(file, 0) != 0x04424A4E)
 				{
@@ -32,6 +31,7 @@ namespace SplitNB
 					Environment.CurrentDirectory = dir;
 					return;
 				}
+				Environment.CurrentDirectory = Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename)).FullName;
 				int numfiles = BitConverter.ToInt16(file, 4);
 				int curaddr = 8;
 				for (int i = 0; i < numfiles; i++)
