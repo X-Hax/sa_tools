@@ -1,1 +1,1 @@
-splitDLL system/ADV03MODELS.DLL adv03models.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/ADV03MODELS.DLL -d adv03models.ini -o output/

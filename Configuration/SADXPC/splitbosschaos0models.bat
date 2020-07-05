@@ -1,1 +1,1 @@
-splitDLL system/BOSSCHAOS0MODELS.DLL bosschaos0models.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/BOSSCHAOS0MODELS.DLL -d bosschaos0models.ini -o output/

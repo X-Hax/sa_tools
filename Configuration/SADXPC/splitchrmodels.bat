@@ -1,5 +1,5 @@
 IF EXIST system/CHRMODELS_orig.dll (
-splitDLL system/CHRMODELS_orig.DLL chrmodels.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/CHRMODELS_orig.DLL -d chrmodels.ini -o output/
 ) ELSE (
-splitDLL system/CHRMODELS.DLL chrmodels.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/CHRMODELS.DLL -d chrmodels.ini -o output/
 )

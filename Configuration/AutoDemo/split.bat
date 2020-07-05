@@ -1,32 +1,33 @@
-split 1ST_READ.bin 1ST_READ.ini
-split STG00.prs STG00.ini
-split STG01.prs STG01.ini
-split STG02.prs STG02.ini
-split STG03.prs STG03.ini
-split STG04.prs STG04.ini
-split STG05.prs STG05.ini
-split STG06.prs STG06.ini
-split STG07.prs STG07.ini
-split STG08.prs STG08.ini
-split STG09.prs STG09.ini
-split STG10.prs STG10.ini
-split B_CHAOS0.prs B_CHAOS0.ini
-split B_CHAOS2.prs B_CHAOS2.ini
-split B_CHAOS4.prs B_CHAOS4.ini
-split B_CHAOS7.prs B_CHAOS7.ini
-split B_EGM1.prs B_EGM1.ini
-split B_EGM3.prs B_EGM3.ini
-split B_ROBO.prs B_ROBO.ini
-split B_E101_R.prs B_E101_R.ini
-split ADV00.prs ADV00.ini
-split ADV02.prs ADV02.ini
-split ADV0100.prs ADV0100.ini
-split ADV0130.prs ADV0130.ini
-split MINICART.prs MINICART.ini
-split SBOARD.prs SBOARD.ini
-split AL_GARDEN00.prs AL_GARDEN00.ini
-split AL_GARDEN01.prs AL_GARDEN01.ini
-split AL_GARDEN02.prs AL_GARDEN02.ini
-split AL_RACE.prs AL_RACE.ini
-split LAND1800.bin LAND1800.ini
-split S_MOT.prs S_MOT.ini
+cd ../ProjectManager
+projectmanager -m Split -f ../AutoDemo/data/1ST_READ.bin -d ../AutoDemo/1ST_READ.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/ADV00.PRS -d ../AutoDemo/ADV00.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/ADV0100.PRS -d ../AutoDemo/ADV0100.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/ADV0130.PRS -d ../AutoDemo/ADV0130.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/ADV02.PRS -d ../AutoDemo/ADV02.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/AL_GARDEN00.PRS -d ../AutoDemo/AL_GARDEN00.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/AL_GARDEN01.PRS -d ../AutoDemo/AL_GARDEN01.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/AL_GARDEN02.PRS -d ../AutoDemo/AL_GARDEN02.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/AL_RACE.PRS -d ../AutoDemo/AL_RACE.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_CHAOS0.PRS -d ../AutoDemo/B_CHAOS0.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_CHAOS2.PRS -d ../AutoDemo/B_CHAOS2.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_CHAOS4.PRS -d ../AutoDemo/B_CHAOS4.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_CHAOS7.PRS -d ../AutoDemo/B_CHAOS7.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_E101_R.PRS -d ../AutoDemo/B_E101_R.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_EGM1.PRS -d ../AutoDemo/B_EGM1.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_EGM3.PRS -d ../AutoDemo/B_EGM3.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/B_ROBO.PRS -d ../AutoDemo/B_ROBO.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/LAND1800.BIN -d ../AutoDemo/LAND1800.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/MINICART.PRS -d ../AutoDemo/MINICART.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/S_MOT.PRS -d ../AutoDemo/S_MOT.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/SBOARD.PRS -d ../AutoDemo/SBOARD.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG00.PRS -d ../AutoDemo/STG00.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG01.PRS -d ../AutoDemo/STG01.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG02.PRS -d ../AutoDemo/STG02.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG03.PRS -d ../AutoDemo/STG03.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG04.PRS -d ../AutoDemo/STG04.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG05.PRS -d ../AutoDemo/STG05.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG06.PRS -d ../AutoDemo/STG06.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG07.PRS -d ../AutoDemo/STG07.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG08.PRS -d ../AutoDemo/STG08.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG09.PRS -d ../AutoDemo/STG09.ini -o ../output/
+projectmanager -m Split -f ../AutoDemo/data/STG10.PRS -d ../AutoDemo/STG10.ini -o ../output/

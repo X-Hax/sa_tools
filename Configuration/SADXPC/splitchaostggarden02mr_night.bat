@@ -1,1 +1,1 @@
-splitDLL system/CHAOSTGGARDEN02MR_NIGHT.DLL chaostggarden02mr_night.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/CHAOSTGGARDEN02MR_NIGHT.DLL -d chaostggarden02mr_night.ini -o output/

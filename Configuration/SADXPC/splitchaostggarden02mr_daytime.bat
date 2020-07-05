@@ -1,1 +1,1 @@
-splitDLL system/CHAOSTGGARDEN02MR_DAYTIME.DLL chaostggarden02mr_daytime.ini
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/CHAOSTGGARDEN02MR_DAYTIME.DLL -d chaostggarden02mr_daytime.ini -o output/
