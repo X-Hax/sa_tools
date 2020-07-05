@@ -85,7 +85,16 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			#endregion
 
 			#region Font Setup
-			onscreenFont = new Font(d3dDevice, 0, 14, FontWeight.DoNotCare, 0, false, FontCharacterSet.Oem, FontPrecision.TrueType, FontQuality.ClearType, FontPitchAndFamily.DontCare, "Verdana");
+			onscreenFont = new Font(d3dDevice, new FontDescription
+			{
+				Height = 24,
+				FaceName = "Verdana",
+				Weight = FontWeight.Black,
+				CharacterSet = FontCharacterSet.Oem,
+				PitchAndFamily = FontPitchAndFamily.Default,
+				OutputPrecision = FontPrecision.TrueType,
+				Quality = FontQuality.ClearType
+			});
 			#endregion
 		}
 
