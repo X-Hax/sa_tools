@@ -142,7 +142,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			LevelData.AddLevelItem(this);
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
 			LevelData.geo.COL.Remove(COL);
 

@@ -150,6 +150,7 @@ namespace SonicRetro.SAModel.SALVL
 		private void LoadFile(string filename)
 		{
 			loaded = false;
+			selectedItems = new EditorItemSelection();
 			loadTexturesToolStripMenuItem.Enabled = false;
 			UseWaitCursor = true;
 			Enabled = false;
@@ -534,7 +535,7 @@ namespace SonicRetro.SAModel.SALVL
 
 				case ("Delete"):
 					foreach (Item item in selectedItems.GetSelection())
-						item.Delete();
+						item.Delete(selectedItems);
 					selectedItems.Clear();
 					draw = true;
 					break;
@@ -765,7 +766,7 @@ namespace SonicRetro.SAModel.SALVL
 			foreach (Item item in selectedItems.GetSelection())
 				if (item.CanCopy)
 				{
-					item.Delete();
+					item.Delete(selectedItems);
 					selitems.Add(item);
 				}
 			selectedItems.Clear();
@@ -811,7 +812,7 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			foreach (Item item in selectedItems.GetSelection())
 				if (item.CanCopy)
-					item.Delete();
+					item.Delete(selectedItems);
 			selectedItems.Clear();
 			DrawLevel();
 		}

@@ -298,8 +298,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			LevelData.CAMItems[LevelData.Character].Add(this);
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
+			selectionManager.SelectionChanged -= selectionManager_SelectionChanged;
 			LevelData.CAMItems[LevelData.Character].Remove(this);
 		}
 		#endregion

@@ -330,8 +330,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return result;
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
+			selectionManager.SelectionChanged -= selectionManager_SelectionChanged;
 			LevelData.LevelSplines.Remove(this);
 		}
 

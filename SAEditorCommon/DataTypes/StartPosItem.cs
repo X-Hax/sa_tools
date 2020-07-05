@@ -52,9 +52,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			throw new NotImplementedException();
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
-			throw new NotImplementedException();
+			
 		}
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)

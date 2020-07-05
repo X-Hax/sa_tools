@@ -106,7 +106,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			LevelData.MissionSETItems[LevelData.Character].Add(this);
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
 			LevelData.MissionSETItems[LevelData.Character].Remove(this);
 		}

@@ -16,9 +16,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[ParenthesizePropertyName(true)]
 		public string Type { get { return GetType().Name; } }
 
-		private bool selected;
 		[Browsable(false)]
-		public bool Selected { get { return selected; } }
+		public bool Selected { get; private set; }
 		private BoundingSphere bounds = new BoundingSphere();
 		[ParenthesizePropertyName(true)]
 		public virtual BoundingSphere Bounds { get { return bounds; } }
@@ -36,7 +35,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
 		public abstract void Paste();
-		public abstract void Delete();
+		protected abstract void DeleteInternal(EditorItemSelection selectionManager);
+
+		public void Delete(EditorItemSelection selectionManager)
+		{
+			selectionManager.SelectionChanged -= selectionManager_SelectionChanged;
+			DeleteInternal(selectionManager);
+		}
+
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
 		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform);
 
@@ -47,7 +53,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		void selectionManager_SelectionChanged(EditorItemSelection sender)
 		{
-			selected = (sender.GetSelection().Contains(this));
+			Selected = sender.Contains(this);
 		}
 
 		#region IComponent Members

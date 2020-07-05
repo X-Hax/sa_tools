@@ -90,7 +90,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				LevelData.DeathZones.Add(this);
 		}
 
-		public override void Delete()
+		protected override void DeleteInternal(EditorItemSelection selectionManager)
 		{
 			LevelData.DeathZones.Remove(this);
 		}

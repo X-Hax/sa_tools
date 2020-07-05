@@ -658,7 +658,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 				// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
 				// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
 				if (isStageLoaded)
+				{
 					LevelData.Clear();
+					selectedItems = new EditorItemSelection();
+					sceneGraphControl1.InitSceneControl(selectedItems);
+				}
 
 				isStageLoaded = false;
 
@@ -2066,7 +2070,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				case ("Delete"):
 					foreach (Item item in selectedItems.GetSelection())
-						item.Delete();
+						item.Delete(selectedItems);
 					selectedItems.Clear();
 					draw = true;
 					break;
@@ -2627,7 +2631,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				if (item.CanCopy)
 				{
-					item.Delete();
+					item.Delete(selectedItems);
 					selitems.Add(item);
 				}
 			}
@@ -2684,7 +2688,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			foreach (Item item in selectedItems.GetSelection())
 			{
-				item.Delete();
+				item.Delete(selectedItems);
 			}
 
 			selectedItems.Clear();
