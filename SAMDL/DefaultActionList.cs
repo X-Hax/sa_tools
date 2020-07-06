@@ -111,8 +111,8 @@ namespace SonicRetro.SAModel.SAMDL
 			new ActionKeyMapping()
 			{
 				Name = "Camera Look",
-				MainKey = Keys.Menu,
-				AltKey = Keys.LShiftKey,
+				MainKey = Keys.ShiftKey,
+				AltKey = Keys.None,
 				Description = "Combine with Camera Move to mouselook the camera.",
 				FireType = ActionFireType.OnHold,
 				IsSearchable = true,
