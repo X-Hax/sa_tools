@@ -84,6 +84,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			progressBar.Maximum = max;
 			EnableCloseOptions = enableCloseOptions;
 			checkAutoClose.Checked = autoClose;
+			checkAutoClose.Visible = enableCloseOptions;
+			buttonOK.Visible = enableCloseOptions;
 			labelTask.Text = "";
 			labelStep.Text = "";
 		}
@@ -101,19 +103,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				// Not using progressBar.Step() because dirt hacks
 				progressValue = progressValue + 1;
-
-				if (EnableCloseOptions)
+				if (progressBar.Value == progressBar.Maximum)
 				{
-					if (progressBar.Value == progressBar.Maximum)
-					{
-						if (checkAutoClose.Checked)
-							Close();
-						else
-							buttonOK.Enabled = true;
-					}
+					if (checkAutoClose.Checked)
+						Close();
+					else 
+						buttonOK.Enabled = true;
 				}
 			}
-		}
+		}		
 
 		/// <summary>
 		/// Sets the current task to display on the window. (Upper label)
@@ -161,7 +159,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private void SetOkEnabledState()
 		{
 			if (progressBar.Value < progressBar.Maximum)
-				buttonOK.Enabled = !checkAutoClose.Checked;
+				buttonOK.Enabled = false;
+			else
+				buttonOK.Enabled = true;
 		}
 
 		private void checkAutoClose_CheckedChanged(object sender, EventArgs e)
