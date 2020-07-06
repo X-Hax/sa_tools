@@ -943,7 +943,8 @@ namespace SonicRetro.SAModel.SALVL
 				using (StreamWriter objstream = new StreamWriter(a.FileName, false))
 				using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
 				{
-					int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length + LevelData.geo.COL.Count;
+					int stepCount = LevelData.geo.COL.Count;
+					if (LevelData.TextureBitmaps.Count > 0) stepCount += LevelData.TextureBitmaps[LevelData.leveltexs].Length;
 					if (LevelData.geo.Anim != null)
 						stepCount += LevelData.geo.Anim.Count;
 
