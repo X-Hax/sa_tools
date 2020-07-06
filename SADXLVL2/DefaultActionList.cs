@@ -166,7 +166,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				Name = "Camera Look",
 				MainKey = Keys.Menu,
-				AltKey = Keys.None,
+				AltKey = Keys.LShiftKey,
 				Description = "Combine with Camera Move to mouselook the camera.",
 				FireType = ActionFireType.OnHold,
 				IsSearchable = true,
