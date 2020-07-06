@@ -263,6 +263,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						return;
 				}
 
+				UncheckMenuItems(changeLevelToolStripMenuItem);
 				CheckMenuItemByTag(changeLevelToolStripMenuItem, stageToLoad);
 				LoadStage(stageToLoad);
 			}
@@ -283,7 +284,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
-				ObjectHelper.Init(d3ddevice, Properties.Resources.UnknownImg);
+				ObjectHelper.Init(d3ddevice);
 			}
 		}
 
@@ -687,13 +688,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					Invoke((Action<IWin32Window>)progress.Show, this);
 
-					if (d3ddevice == null)
+				if (d3ddevice == null)
 					{
 						progress.SetTask("Initializing Direct3D...");
 						Invoke((Action)InitializeDirect3D);
 						progress.StepProgress();
 					}
-
+					d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
 					progress.SetTaskAndStep("Loading level data:", "Geometry");
 
 					if (string.IsNullOrEmpty(level.LevelGeometry))
@@ -767,11 +768,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					progress.StepProgress();
 
-					#endregion
+				#endregion
 
-					#region Death Zones
+				#region Death Zones
 
-					progress.SetTaskAndStep("Death Zones:", "Initializing...");
+				progress.SetTaskAndStep("Death Zones:", "Initializing...");
 
 					if (string.IsNullOrEmpty(level.DeathZones))
 						LevelData.DeathZones = null;
@@ -1580,6 +1581,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			toolStrip1.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
+			Application.OpenForms[0].Focus();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1796,7 +1798,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!isStageLoaded)
+			if (!isStageLoaded || !Enabled)
 				return;
 
 			cam.FOV = (float)(Math.PI / 4);
@@ -1889,7 +1891,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
-			#region Adding SET Layout
+			#region Adding Mission SET Layout
 			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
 			{
 				foreach (MissionSETItem item in LevelData.MissionSETItems[LevelData.Character])

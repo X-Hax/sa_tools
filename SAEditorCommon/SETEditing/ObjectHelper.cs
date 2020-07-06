@@ -2,6 +2,7 @@
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,15 +21,19 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			new FVF_PositionTextured(new Vector3(8, -8, 0), new Vector2(0, 1))
 		};
 		private static readonly short[] SquareInds = { 0, 1, 2, 1, 3, 2 };
+		private static NJS_OBJECT QuestionBoxModel;
 		private static Mesh SquareMesh;
+		private static Mesh QuestionBoxMesh;
 		private static BoundingSphere SquareBounds;
 
-		public static void Init(Device device, Bitmap unknownBitmap)
+		public static void Init(Device device)
 		{
+			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
+			QuestionBoxMesh = ObjectHelper.GetMeshes(QuestionBoxModel).First();
 			SquareMesh = new Mesh<FVF_PositionTextured>(SquareVerts, new short[][] { SquareInds });
 			SquareBounds = SharpDX.BoundingSphere.FromPoints(SquareVerts.Select(a => a.Position).ToArray()).ToSAModel();
 
-			QuestionMark = unknownBitmap != null ? unknownBitmap.ToTexture(device) : new Texture(device, 16, 16, 0, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			QuestionMark = Resources.questionmark_t.ToTexture(device);
 		}
 
 		internal static Texture QuestionMark;
@@ -70,7 +75,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 			};
 			if (texture == null)
 				texture = QuestionMark;
-			result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, texture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
+			result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, texture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			if (selected)
 			{
 				mat = new NJS_MATERIAL
@@ -78,7 +83,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 					DiffuseColor = Color.Yellow,
 					UseAlpha = false
 				};
-				result.Add(new RenderInfo(SquareMesh, 0, transform.Top, mat, null, FillMode.Wireframe, new BoundingSphere(center.X, center.Y, center.Z, 8)));
+				result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, null, FillMode.Wireframe, new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			}
 			return result.ToArray();
 		}
@@ -90,7 +95,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
 		public static BoundingSphere GetSpriteBounds(MatrixStack transform, float scale)
 		{
-			return new BoundingSphere(Vector3.TransformCoordinate(SquareBounds.Center.ToVector3(), transform.Top).ToVertex(), SquareBounds.Radius * scale);
+			return GetModelBounds(QuestionBoxModel, transform, scale, new BoundingSphere());
 		}
 
 		public static float BAMSToRad(int BAMS)
