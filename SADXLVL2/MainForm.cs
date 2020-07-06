@@ -54,6 +54,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		EditorOptionsEditor optionsEditor;
 		ActionKeybindEditor keybindEditor;
 		Direct3D.Mesh boundsMesh;
+		Sprite textSprite;
+		Dictionary<string, int> MessageList;
 		#endregion
 
 		#region Stage Variables
@@ -100,7 +102,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
 			modelLibraryControl1.InitRenderer();
-
+			MessageList = new Dictionary<string, int>();
 			InitDisableInvalidControls();
 
 			Settings.Reload();
@@ -213,6 +215,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
 		}
 
+		void AddMessage(string message, int timer)
+		{
+			if (!MessageList.ContainsKey(message)) MessageList.Add(message, timer);
+		}
+
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
@@ -272,7 +279,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						SwapEffect = SwapEffect.Discard,
 						EnableAutoDepthStencil = true,
 						AutoDepthStencilFormat = Format.D24X8
-					});
+			});
 
 				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
@@ -662,6 +669,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.Clear();
 					selectedItems = new EditorItemSelection();
 					sceneGraphControl1.InitSceneControl(selectedItems);
+					PointHelper.Instances.Clear();
 				}
 
 				isStageLoaded = false;
@@ -905,13 +913,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if(compileErrors.Count > 0)
 						{
 							DialogResult result = MessageBox.Show("There were compile errors. Would you like to try upgrading the object definitions? This will over-write any changes to them that you've made!",
-								"Would you like to try upgrading?", MessageBoxButtons.YesNo);
+								"Would you like to try upgrading?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
 							if(result == DialogResult.Yes)
 							{
 								CopyDefaultObjectDefintions();
 								initerror = true;
-								MessageBox.Show("Please re-load the level");
+								AddMessage("Please reload the level to complete the operation.", 180);
 								return;
 							}
 						}
@@ -939,12 +947,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 							// TODO: Proper logging. Who knows where this file may end up
 							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
-
-							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
 											+
 											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.",
-								"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+											"\n\nPlease check the log for details.", 300);
 						}
 
 						// Loading SET Layout
@@ -1056,8 +1062,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 											foreach (CompilerError item in res.Errors)
 												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
 
-											MessageBox.Show("Failed to compile object code file:\n" + defgroup.CodeFile + errors,
-												"Object compilation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+											AddMessage("Failed to compile object code file:\n" + defgroup.CodeFile + errors, 300);
 
 											def = new DefaultObjectDefinition();
 										}
@@ -1178,11 +1183,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 							// TODO: Proper logging. Who knows where this file may end up
 							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
 
-							MessageBox.Show(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+							AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
 											+
 											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.",
-								"Error loading models", MessageBoxButtons.OK, MessageBoxIcon.Information);
+											"\n\nPlease check the log for details.", 180);
 						}
 					}
 					else
@@ -1407,8 +1411,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 						else
 						{
-							MessageBox.Show("No lights were found for this stage. Using default lights instead.", "No lights found",
-								MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							AddMessage("No lights were found for this stage. Using default lights instead.", 180);
 
 							EditorOptions.SetDefaultLights(d3ddevice, false);
 						}
@@ -1945,6 +1948,27 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				pointHelper.Draw(d3ddevice, cam);
 			}
+
+			StringBuilder MessageString = new StringBuilder();
+
+			foreach (var key in MessageList.Keys.ToList())
+			{
+				if (d3ddevice != null) MessageList[key] = MessageList[key] - 1;
+				if (MessageList[key] <= 0) MessageList.Remove(key);
+				else MessageString.AppendFormat(key + "\n");
+			}
+
+			if (MessageList.Count > 0 && d3ddevice != null)
+			{
+				textSprite = new Sprite(d3ddevice);
+				textSprite.Begin(SpriteFlags.AlphaBlend);
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 17, 17, Color.Black.ToRawColorBGRA());
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 16, 16, Color.FromArgb(245, 220, 220, 240).ToRawColorBGRA());
+				textSprite.End();
+				textSprite.Dispose();
+			}
+			MessageString.Clear();
+
 			#endregion
 
 			d3ddevice.Present();
@@ -1964,7 +1988,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LevelData_PointOperation()
 		{
-			MessageBox.Show(this, "You have just begun a Point To operation. Left click on the point or item you want the selected item(s) to point to, or right click to cancel.", "SADXLVL2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			AddMessage("You have just begun a Point To operation.\nLeft click on the point or item you want the selected item(s) to point to, or right click to cancel.", 300);
 			isPointOperation = true;
 		}
 
@@ -2662,7 +2686,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (obj == null)
 			{
-				MessageBox.Show("Paste operation failed - this is a known issue and is being worked on.");
+				AddMessage("Paste operation failed - feature not implemented.", 180);
 				return; // todo: finish implementing proper copy/paste
 			}
 
@@ -2784,14 +2808,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (importFileDialog.ShowDialog() != DialogResult.OK)
 				return;
 
-			DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel);
+			DialogResult userClearLevelResult = MessageBox.Show("Do you want to clear the level models first?", "Clear Level?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
 			if (userClearLevelResult == DialogResult.Cancel)
 				return;
 
 			if (userClearLevelResult == DialogResult.Yes)
 			{
-				DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo);
+				DialogResult clearAnimsResult = MessageBox.Show("Do you also want to clear any animated level models?", "Clear anims too?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
 				LevelData.ClearLevelGeometry();
 
@@ -2806,7 +2830,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				selectedItems.Add(LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
-					MessageBox.Show(errorMsg);
+					AddMessage(errorMsg+"\n", 300);
 			}
 
 			LevelData.InvalidateRenderState();
@@ -2877,7 +2901,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							failReasons.AppendFormat("{0} failed because: {1}", failure.Key, failure.Value);
 						}
 
-						MessageBox.Show(failReasons.ToString());
+						AddMessage(failReasons.ToString(), 300);
 					}
 
 					modelLibraryControl1.FullReRender();
@@ -3141,7 +3165,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					foreach (NJS_MESHSET meshSet in model.Mesh)
 					{
-						vColors += meshSet.VColor.Length;
+						if (meshSet.VColor != null) vColors += meshSet.VColor.Length;
 
 						switch (meshSet.PolyType)
 						{
@@ -3174,7 +3198,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				selectionAppend = "Multiple objects selected, can't display selection stats.";
 			}
 
-			MessageBox.Show(LevelData.GetStats() + string.Format("{0}\n", selectionAppend));
+			MessageBox.Show(LevelData.GetStats() + string.Format("\n{0}\n", selectionAppend),"Level/selection stats");
 		}
 
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -3208,7 +3232,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
-			if (errorFlag) MessageBox.Show(errorMsg);
+			if (errorFlag) AddMessage(errorMsg, 300);
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3317,7 +3341,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (selectedItems.ItemCount > 0)
 			{
-				MessageBox.Show("To use this feature you must have a selection!");
+				AddMessage("To use this feature you must have a selection!", 180);
 				return;
 			}
 
@@ -3620,9 +3644,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void addAllLevelItemsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult result = MessageBox.Show("This operation can be very slow! Are you sure?", "Are you sure?", MessageBoxButtons.YesNo);
+			DialogResult result = MessageBox.Show("This operation can be very slow! Are you sure?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-			if (result == DialogResult.OK)
+			if (result == DialogResult.Yes)
 			{
 				modelLibraryControl1.BeginUpdate();
 
