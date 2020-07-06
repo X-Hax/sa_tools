@@ -346,6 +346,7 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
+    <None Include="Resources\questionmark.sa1mdl" />
     <None Include="Resources\xy_move_x.sa1mdl" />
     <None Include="Resources\x_move_x.sa1mdl" />
     <None Include="Resources\x_null.sa1mdl" />
@@ -370,6 +371,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Hourglass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\questionmark_t.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
