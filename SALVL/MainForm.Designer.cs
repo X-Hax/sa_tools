@@ -20,6 +20,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +60,9 @@
             this.rotateMode = new System.Windows.Forms.ToolStripButton();
             this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -86,7 +89,10 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.toolStripSeparator1,
             this.loadTexturesToolStripMenuItem,
+            this.unloadTexturesToolStripMenuItem,
+            this.toolStripSeparator2,
             this.editInfoToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.importToolStripMenuItem,
@@ -102,6 +108,14 @@
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // loadTexturesToolStripMenuItem
+            // 
+            this.loadTexturesToolStripMenuItem.Enabled = false;
+            this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadTexturesToolStripMenuItem.Text = "Load textures...";
+            this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
             // editInfoToolStripMenuItem
             // 
@@ -468,13 +482,23 @@
             this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
             this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
             // 
-            // loadTexturesToolStripMenuItem
+            // unloadTexturesToolStripMenuItem
             // 
-            this.loadTexturesToolStripMenuItem.Enabled = false;
-            this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
-            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.loadTexturesToolStripMenuItem.Text = "Load textures...";
-            this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
+            this.unloadTexturesToolStripMenuItem.Enabled = false;
+            this.unloadTexturesToolStripMenuItem.Name = "unloadTexturesToolStripMenuItem";
+            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unloadTexturesToolStripMenuItem.Text = "Unload textures";
+            this.unloadTexturesToolStripMenuItem.Click += new System.EventHandler(this.unloadTexturesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // MainForm
             // 
@@ -552,6 +576,9 @@
 		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem unloadTexturesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }
 

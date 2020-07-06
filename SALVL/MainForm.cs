@@ -166,7 +166,13 @@ namespace SonicRetro.SAModel.SALVL
 				using (LevelFileDialog dlg = new LevelFileDialog())
 				{
 					dlg.ShowDialog(this);
-					LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (LandTableFormat)dlg.comboBox2.SelectedIndex);
+					if (dlg.DialogResult != DialogResult.OK)
+					{
+						Enabled = true;
+						UseWaitCursor = false;
+						return;
+					}
+					else LevelData.geo = new LandTable(file, (int)dlg.NumericUpDown1.Value, (uint)dlg.numericUpDown2.Value, (LandTableFormat)dlg.comboBox2.SelectedIndex);
 				}
 			}
 			LevelData.ClearLevelItems();
@@ -178,7 +184,8 @@ namespace SonicRetro.SAModel.SALVL
 
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
-			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+			unloadTexturesToolStripMenuItem.Enabled = false;
+			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs", Title = "Load textures" })
 			{
 				if (!string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					a.FileName = LevelData.geo.TextureFileName + ".pvm";
@@ -196,6 +203,7 @@ namespace SonicRetro.SAModel.SALVL
 					if (!LevelData.Textures.ContainsKey(texname))
 						LevelData.Textures.Add(texname, texs);
 					LevelData.leveltexs = texname;
+					unloadTexturesToolStripMenuItem.Enabled = true;
 				}
 			}
 			loaded = true;
@@ -1324,8 +1332,18 @@ namespace SonicRetro.SAModel.SALVL
 					if (!LevelData.Textures.ContainsKey(texname))
 						LevelData.Textures.Add(texname, texs);
 					LevelData.leveltexs = texname;
+					unloadTexturesToolStripMenuItem.Enabled = true;
 				}
+				DrawLevel();
 			}
+		}
+
+		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			LevelData.leveltexs = null;
+			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+			LevelData.Textures = new Dictionary<string, Texture[]>();
+			DrawLevel();
 		}
 	}
 }
