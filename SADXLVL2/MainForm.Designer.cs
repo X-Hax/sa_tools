@@ -143,6 +143,7 @@
 			this.toolTails = new System.Windows.Forms.ToolStripButton();
 			this.toolSonic = new System.Windows.Forms.ToolStripButton();
 			this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
+			this.BackgroundPanel = new System.Windows.Forms.Panel();
 			this.menuStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -1203,6 +1204,16 @@
 			this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
 			this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
 			// 
+			// BackgroundPanel
+			// 
+			this.BackgroundPanel.AutoSize = true;
+			this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
+			this.BackgroundPanel.Name = "BackgroundPanel";
+			this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
+			this.BackgroundPanel.TabIndex = 2;
+			// 
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1211,6 +1222,7 @@
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.menuStrip1);
+			this.Controls.Add(this.BackgroundPanel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
 			this.MainMenuStrip = this.menuStrip1;
@@ -1358,6 +1370,7 @@
 		private System.Windows.Forms.ToolStripMenuItem boundsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem upgradeObjDefsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
+		private System.Windows.Forms.Panel BackgroundPanel;
 	}
 }
 

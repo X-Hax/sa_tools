@@ -60,7 +60,8 @@
             this.rotateMode = new System.Windows.Forms.ToolStripButton();
             this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.BackgroundPanel = new System.Windows.Forms.Panel();
+			this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
@@ -481,10 +482,20 @@
             this.pivotComboBox.Name = "pivotComboBox";
             this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
             this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
-            // 
-            // unloadTexturesToolStripMenuItem
-            // 
-            this.unloadTexturesToolStripMenuItem.Enabled = false;
+			// 
+			// BackgroundPanel
+			// 
+			this.BackgroundPanel.AutoSize = true;
+			this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
+			this.BackgroundPanel.Name = "BackgroundPanel";
+			this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
+			this.BackgroundPanel.TabIndex = 2;
+			// 
+			// 
+			// unloadTexturesToolStripMenuItem
+			// 
+			this.unloadTexturesToolStripMenuItem.Enabled = false;
             this.unloadTexturesToolStripMenuItem.Name = "unloadTexturesToolStripMenuItem";
             this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unloadTexturesToolStripMenuItem.Text = "Unload textures";
@@ -508,7 +519,8 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Controls.Add(this.BackgroundPanel);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
@@ -575,6 +587,7 @@
 		private System.Windows.Forms.ToolStripComboBox pivotComboBox;
 		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
+		private System.Windows.Forms.Panel BackgroundPanel;
 		private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem unloadTexturesToolStripMenuItem;
