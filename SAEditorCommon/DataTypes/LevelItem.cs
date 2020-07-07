@@ -6,6 +6,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
+using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
 
@@ -173,7 +174,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			if (COL.Model.Attach is BasicAttach)
 			{
-				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, LevelData.TextureBitmaps[LevelData.leveltexs]))
+				BMPInfo[] textures;
+				if (LevelData.leveltexs == null) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, textures))
 				{
 					pw.FormUpdated += pw_FormUpdated;
 					pw.ShowDialog();
