@@ -629,15 +629,22 @@ namespace TextureEditor
 
 		private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "txt", Filter = "index.txt|index.txt", FileName = "index.txt" })
+			
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "texturepack" })
 			{
+	
 				if (filename != null)
+				{
 					dlg.InitialDirectory = Path.GetDirectoryName(filename);
+					dlg.FileName = Path.GetFileNameWithoutExtension(filename);
+				}
 
 				if (dlg.ShowDialog(this) == DialogResult.OK)
-					using (TextWriter texList = File.CreateText(dlg.FileName))
+				{
+					Directory.CreateDirectory(dlg.FileName);
+					string dir = Path.Combine(Path.GetDirectoryName(dlg.FileName), Path.GetFileName(dlg.FileName));
+					using (TextWriter texList = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
-						string dir = Path.GetDirectoryName(dlg.FileName);
 						foreach (TextureInfo tex in textures)
 						{
 							System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
@@ -648,6 +655,7 @@ namespace TextureEditor
 								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + ".png", tex.Image.Width, tex.Image.Height);
 						}
 					}
+				}
 			}
 		}
 

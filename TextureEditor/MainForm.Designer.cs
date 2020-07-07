@@ -76,6 +76,7 @@
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.dummyPanel = new System.Windows.Forms.Panel();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.importAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
@@ -137,7 +138,8 @@
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
-            this.importAllToolStripMenuItem,
+			this.toolStripSeparator3,
+			this.importAllToolStripMenuItem,
             this.exportAllToolStripMenuItem,
             this.toolStripSeparator1,
             this.recentFilesToolStripMenuItem,
@@ -257,7 +259,7 @@
 			this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
 			this.exportAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
 			this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-			this.exportAllToolStripMenuItem.Text = "&Export All...";
+			this.exportAllToolStripMenuItem.Text = "&Export texture pack...";
 			this.exportAllToolStripMenuItem.Click += new System.EventHandler(this.exportAllToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
@@ -602,12 +604,18 @@
 			this.dummyPanel.TabIndex = 3;
 			this.dummyPanel.Visible = false;
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(183, 6);
+			//
+			// 
 			// importAllToolStripMenuItem
 			// 
 			this.importAllToolStripMenuItem.Name = "importAllToolStripMenuItem";
 			this.importAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
 			this.importAllToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-			this.importAllToolStripMenuItem.Text = "&Import All...";
+			this.importAllToolStripMenuItem.Text = "&Import texture pack...";
 			this.importAllToolStripMenuItem.Click += new System.EventHandler(this.importAllToolStripMenuItem_Click);
 			// 
 			// MainForm
@@ -694,6 +702,7 @@
 		private System.Windows.Forms.Label textureSizeLabel;
 		private System.Windows.Forms.ToolStripMenuItem makePCCompatibleGVMsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 	}
 }
 
