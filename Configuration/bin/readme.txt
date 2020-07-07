@@ -10,3 +10,4 @@ PAKTool: Extracts and builds .PAK archives
 SETCodeGenerator: Creates object loading code from a SET file and an object list
 SplitNB: Extracts models from .NB files
 TextureRemap: Remaps texture IDs in a model file
+USplit: Universal tool to extract any data supported by SA Tools from a binary file
