@@ -18,14 +18,14 @@ namespace USplit
 			bool bigendian = false;
 			if (args.Length == 0)
 			{
-				Console.WriteLine("USplit is a tool that lets you extract any data supported by SA Tools from any binary file.\n");
+				Console.WriteLine("USplit is a tool that lets you extract any data supported by SA Tools from any binary file.");
 				Console.WriteLine("Usage: usplit <GAME> <FILENAME> <KEY> <TYPE> <ADDRESS> <PARAMETER1> <PARAMETER2> [-name <NAME>]\n");
-				Console.WriteLine("Argument description:\n");
+				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian.\n");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.\n");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
-					"binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address>,\n" +
+					"binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
 					"objlist, startpos, texlist, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist, soundtestlist,\nnextlevellist, "+
 					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist, pathlist,\nstagelightdatalist, weldlist" +
 					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
@@ -33,7 +33,7 @@ namespace USplit
 					"masterstringlist <count>, cutscenetext <count>, recapscreen <count>, npctext <count>\n");
 				Console.WriteLine("<ADDRESS>: The location of data in the file.\n");
 				Console.WriteLine("<PARAMETER1>: length, count, secondary address etc. depending on data type\n");
-				Console.WriteLine("<PARAMETER2>: 'hex' for binary for length to be treated as hexadecimal, language for string array\n");
+				Console.WriteLine("<PARAMETER2>: 'hex' for binary to read length as hexadecimal, 'shortrot' for animation to read rotation as short\n");
 				Console.WriteLine("<NAME>: Output file name (optional)\n");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
@@ -169,8 +169,10 @@ namespace USplit
 					break;
 				case "animation":
 					{
+						bool shortrot_enabled = false;
+						if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
 						NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(args[5], NumberStyles.AllowHexSpecifier), imageBase, modelfmt, new Dictionary<int, Attach>());
-						new NJS_MOTION(datafile, address, imageBase, mdl.CountAnimated()).Save(fileOutputPath + ".saanim");
+						new NJS_MOTION(datafile, address, imageBase, mdl.CountAnimated(), shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
 						string[] mdlanis = new string[0];
 						mdlanis = (fileOutputPath + ".saanim").Split(',');
 						ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
