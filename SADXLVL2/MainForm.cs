@@ -21,6 +21,7 @@ using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
+using SharpDX.Mathematics.Interop;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -656,117 +657,117 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-				int steps = 10;
+			int steps = 10;
+			if (d3ddevice == null)
+				++steps;
+
+			toolStrip1.Enabled = false;
+			LevelData.SuppressEvents = true;
+
+			// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
+			// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
+			if (isStageLoaded)
+			{
+				LevelData.Clear();
+				selectedItems = new EditorItemSelection();
+				sceneGraphControl1.InitSceneControl(selectedItems);
+				PointHelper.Instances.Clear();
+			}
+
+			isStageLoaded = false;
+
+			using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
+			{
+				IniLevelData level = ini.Levels[levelID];
+
+				string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
+				//string modpath = ini.ModPath;
+
+				SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
+				LevelData.leveltexs = null;
+				cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+
+				Invoke((Action<IWin32Window>)progress.Show, this);
+
 				if (d3ddevice == null)
-					++steps;
-
-				toolStrip1.Enabled = false;
-				LevelData.SuppressEvents = true;
-
-				// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
-				// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
-				if (isStageLoaded)
 				{
-					LevelData.Clear();
-					selectedItems = new EditorItemSelection();
-					sceneGraphControl1.InitSceneControl(selectedItems);
-					PointHelper.Instances.Clear();
+					progress.SetTask("Initializing Direct3D...");
+					Invoke((Action)InitializeDirect3D);
+					progress.StepProgress();
+				}
+				d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+				progress.SetTaskAndStep("Loading level data:", "Geometry");
+
+				if (string.IsNullOrEmpty(level.LevelGeometry))
+					LevelData.geo = null;
+				else
+				{
+					LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
+					LevelData.ClearLevelItems();
+
+					for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					{
+						LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
+					}
 				}
 
-				isStageLoaded = false;
+				progress.StepProgress();
+				progress.SetStep("Textures");
 
-				using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
+				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+				LevelData.Textures = new Dictionary<string, Texture[]>();
+				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 				{
-					IniLevelData level = ini.Levels[levelID];
+					string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) +".PVM";
+					string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
 
-					string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-					//string modpath = ini.ModPath;
+					BMPInfo[] TexBmps =
+						TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
+					Texture[] texs = new Texture[TexBmps.Length];
+					for (int j = 0; j < TexBmps.Length; j++)
+						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+					if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+						LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+					if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+					LevelData.leveltexs = LevelData.geo.TextureFileName;
+				}
 
-					SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
-					LevelData.leveltexs = null;
-					cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+				progress.StepProgress();
 
-					Invoke((Action<IWin32Window>)progress.Show, this);
+				#region Start Positions
 
-				if (d3ddevice == null)
-					{
-						progress.SetTask("Initializing Direct3D...");
-						Invoke((Action)InitializeDirect3D);
-						progress.StepProgress();
-					}
-					d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-					progress.SetTaskAndStep("Loading level data:", "Geometry");
+				progress.SetTaskAndStep("Setting up start positions...");
 
-					if (string.IsNullOrEmpty(level.LevelGeometry))
-						LevelData.geo = null;
+				LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
+				for (int i = 0; i < LevelData.StartPositions.Length; i++)
+				{
+					progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
+
+					IniCharInfo character;
+					if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
+						character = ini.Characters["SuperSonic"];
 					else
+						character = ini.Characters[LevelData.Characters[i]];
+
+					Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
+						SA1StartPosList.Load(character.StartPositions);
+
+					Vertex pos = new Vertex();
+					int rot = 0;
+
+					if (posini.ContainsKey(levelact))
 					{
-						LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
-						LevelData.ClearLevelItems();
-
-						for (int i = 0; i < LevelData.geo.COL.Count; i++)
-						{
-							LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
-						}
+						pos = posini[levelact].Position;
+						rot = posini[levelact].YRotation;
 					}
+					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 
-					progress.StepProgress();
-					progress.SetStep("Textures");
+					LoadTextureList(character.TextureList, syspath);
+				}
 
-					LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-					LevelData.Textures = new Dictionary<string, Texture[]>();
-					if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
-					{
-						string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) +".PVM";
-						string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
-
-						BMPInfo[] TexBmps =
-							TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
-						Texture[] texs = new Texture[TexBmps.Length];
-						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-						LevelData.leveltexs = LevelData.geo.TextureFileName;
-					}
-
-					progress.StepProgress();
-
-					#region Start Positions
-
-					progress.SetTaskAndStep("Setting up start positions...");
-
-					LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
-					for (int i = 0; i < LevelData.StartPositions.Length; i++)
-					{
-						progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
-
-						IniCharInfo character;
-						if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
-							character = ini.Characters["SuperSonic"];
-						else
-							character = ini.Characters[LevelData.Characters[i]];
-
-						Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
-							SA1StartPosList.Load(character.StartPositions);
-
-						Vertex pos = new Vertex();
-						int rot = 0;
-
-						if (posini.ContainsKey(levelact))
-						{
-							pos = posini[levelact].Position;
-							rot = posini[levelact].YRotation;
-						}
-						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
-							character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
-
-						LoadTextureList(character.TextureList, syspath);
-					}
-
-					progress.StepProgress();
+				progress.StepProgress();
 
 				#endregion
 
@@ -774,420 +775,385 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				progress.SetTaskAndStep("Death Zones:", "Initializing...");
 
-					if (string.IsNullOrEmpty(level.DeathZones))
-						LevelData.DeathZones = null;
-					else
+				if (string.IsNullOrEmpty(level.DeathZones))
+					LevelData.DeathZones = null;
+				else
+				{
+					LevelData.DeathZones = new List<DeathZoneItem>();
+					DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
+					string path = Path.GetDirectoryName(level.DeathZones);
+					for (int i = 0; i < dzini.Length; i++)
 					{
-						LevelData.DeathZones = new List<DeathZoneItem>();
-						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
-						string path = Path.GetDirectoryName(level.DeathZones);
-						for (int i = 0; i < dzini.Length; i++)
-						{
-							progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
-							LevelData.DeathZones.Add(new DeathZoneItem(
-								new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
-									.Model,
-								dzini[i].Flags, selectedItems));
-						}
+						LevelData.DeathZones.Add(new DeathZoneItem(
+							new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
+								.Model,
+							dzini[i].Flags, selectedItems));
+					}
+				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Textures and Texture Lists
+
+				progress.SetTaskAndStep("Loading textures for:");
+
+				progress.SetStep("Common objects");
+				// Loads common object textures (e.g OBJ_REGULAR)
+				LoadTextureList(ini.ObjectTextureList, syspath);
+
+				progress.SetStep("Mission objects");
+				// Loads mission object textures
+				LoadTextureList(ini.MissionTextureList, syspath);
+
+				progress.SetTaskAndStep("Loading stage texture lists...");
+
+				// Loads the textures in the texture list for this stage (e.g BEACH01)
+				foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+				{
+					LevelTextureList texini = LevelTextureList.Load(file);
+					if (texini.Level != levelact)
+						continue;
+
+					LoadTextureList(texini.TextureList, syspath);
+				}
+
+				progress.SetTaskAndStep("Loading textures for:", "Objects");
+				// Object texture list(s)
+				LoadTextureList(level.ObjectTextureList, syspath);
+
+				progress.SetStep("Stage");
+				// The stage textures... again? "Extra"?
+				if (level.Textures != null && level.Textures.Length > 0)
+					foreach (string tex in level.Textures)
+					{
+						LoadPVM(tex, syspath);
+
+						if (string.IsNullOrEmpty(LevelData.leveltexs))
+							LevelData.leveltexs = tex;
 					}
 
-					progress.StepProgress();
+				progress.StepProgress();
 
-					#endregion
+				#endregion
 
-					#region Textures and Texture Lists
+				#region Object Definitions / SET Layout
 
-					progress.SetTaskAndStep("Loading textures for:");
+				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
-					progress.SetStep("Common objects");
-					// Loads common object textures (e.g OBJ_REGULAR)
-					LoadTextureList(ini.ObjectTextureList, syspath);
+				LevelData.ObjDefs = new List<ObjectDefinition>();
+				Dictionary<string, ObjectData> objdefini =
+					IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
 
-					progress.SetStep("Mission objects");
-					// Loads mission object textures
-					LoadTextureList(ini.MissionTextureList, syspath);
+				LevelData.MisnObjDefs = new List<ObjectDefinition>();
 
-					progress.SetTaskAndStep("Loading stage texture lists...");
+				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
+				{
+					List<ObjectData> objectErrors = new List<ObjectData>();
+					ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
+					Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
 
-					// Loads the textures in the texture list for this stage (e.g BEACH01)
-					foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+					List<KeyValuePair<string, string>> compileErrors = new List<KeyValuePair<string, string>>();
+
+					for (int ID = 0; ID < objlstini.Length; ID++)
 					{
-						LevelTextureList texini = LevelTextureList.Load(file);
-						if (texini.Level != levelact)
-							continue;
-						
-						LoadTextureList(texini.TextureList, syspath);
-					}
+						string codeaddr = objlstini[ID].CodeString;
 
-					progress.SetTaskAndStep("Loading textures for:", "Objects");
-					// Object texture list(s)
-					LoadTextureList(level.ObjectTextureList, syspath);
+						if (!objdefini.ContainsKey(codeaddr))
+							codeaddr = "0";
 
-					progress.SetStep("Stage");
-					// The stage textures... again? "Extra"?
-					if (level.Textures != null && level.Textures.Length > 0)
-						foreach (string tex in level.Textures)
+						ObjectData defgroup = objdefini[codeaddr];
+						ObjectDefinition def;
+
+						if (!string.IsNullOrEmpty(defgroup.CodeFile))
 						{
-							LoadPVM(tex, syspath);
+							progress.SetStep("Compiling: " + defgroup.CodeFile);
 
-							if (string.IsNullOrEmpty(LevelData.leveltexs))
-								LevelData.leveltexs = tex;
-						}
+							bool errorOccured = false;
+							string errorText = "";
 
-					progress.StepProgress();
+							def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
 
-					#endregion
-
-					#region Object Definitions / SET Layout
-
-					progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
-
-					LevelData.ObjDefs = new List<ObjectDefinition>();
-					Dictionary<string, ObjectData> objdefini =
-						IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
-
-					LevelData.MisnObjDefs = new List<ObjectDefinition>();
-
-					if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
-					{
-						List<ObjectData> objectErrors = new List<ObjectData>();
-						ObjectListEntry[] objlstini = ObjectList.Load(level.ObjectList, false);
-						Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
-
-						List<KeyValuePair<string, string>> compileErrors = new List<KeyValuePair<string, string>>();
-
-						for (int ID = 0; ID < objlstini.Length; ID++)
-						{
-							string codeaddr = objlstini[ID].CodeString;
-
-							if (!objdefini.ContainsKey(codeaddr))
-								codeaddr = "0";
-
-							ObjectData defgroup = objdefini[codeaddr];
-							ObjectDefinition def;
-
-							if (!string.IsNullOrEmpty(defgroup.CodeFile))
+							if (errorOccured)
 							{
-								progress.SetStep("Compiling: " + defgroup.CodeFile);
+								KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
+									defgroup.CodeFile, errorText);
 
-								bool errorOccured = false;
-								string errorText = "";
-
-								def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
-
-								if (errorOccured)
-								{
-									KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
-										defgroup.CodeFile, errorText);
-
-									compileErrors.Add(errorValue);
-								}
-							}
-							else
-							{
-								def = new DefaultObjectDefinition();
-							}
-
-							LevelData.ObjDefs.Add(def);
-
-							// The only reason .Model is checked for null is for objects that don't yet have any
-							// models defined for them. It would be annoying seeing that error all the time!
-							if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
-							{
-								progress.SetStep("Loading: " + defgroup.Model);
-								// Otherwise, if the model file doesn't exist and/or no texture file is defined,
-								// load the "default object" instead ("?").
-								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-									!LevelData.Textures.ContainsKey(defgroup.Texture))
-								{
-									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-									objectErrors.Add(error);
-									defgroup.Model = null;
-								}
-							}
-
-							def.Init(defgroup, objlstini[ID].Name);
-							def.SetInternalName(objlstini[ID].Name);
-						}
-
-						if(compileErrors.Count > 0)
-						{
-							DialogResult result = MessageBox.Show("There were compile errors. Would you like to try upgrading the object definitions? This will over-write any changes to them that you've made!",
-								"Would you like to try upgrading?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-							if(result == DialogResult.Yes)
-							{
-								CopyDefaultObjectDefintions();
-								initerror = true;
-								AddMessage("Please reload the level to complete the operation.", 180);
-								return;
-							}
-						}
-
-						// Checks if there have been any errors added to the error list and does its thing
-						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
-						if (objectErrors.Count > 0)
-						{
-							int count = objectErrors.Count;
-							List<string> errorStrings = new List<string> { "The following objects failed to load:" };
-
-							foreach (ObjectData o in objectErrors)
-							{
-								bool texEmpty = string.IsNullOrEmpty(o.Texture);
-								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
-								errorStrings.Add("");
-								errorStrings.Add("Object:\t\t" + o.Name);
-								errorStrings.Add("\tModel:");
-								errorStrings.Add("\t\tName:\t" + o.Model);
-								errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
-								errorStrings.Add("\tTexture:");
-								errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
-								errorStrings.Add("\t\tExists:\t" + texExists);
-							}
-
-							// TODO: Proper logging. Who knows where this file may end up
-							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
-						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-											+
-											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.", 300);
-						}
-
-						// Loading SET Layout
-						progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-						if (LevelData.ObjDefs.Count > 0)
-						{
-							LevelData.SETName = level.SETName ?? level.LevelID;
-							string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-							string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-							LevelData.InitSETItems();
-							for (int i = 0; i < LevelData.SETChars.Length; i++)
-							{
-								string formatted = string.Format(setstr, LevelData.SETChars[i]);
-								string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
-
-								string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
-
-								if (File.Exists(useSetPath))
-								{
-									progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
-									LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
-								}
-								else
-									LevelData.AssignSetList(i, new List<SETItem>());
+								compileErrors.Add(errorValue);
 							}
 						}
 						else
 						{
-							LevelData.NullifySETItems();
+							def = new DefaultObjectDefinition();
+						}
+
+						LevelData.ObjDefs.Add(def);
+
+						// The only reason .Model is checked for null is for objects that don't yet have any
+						// models defined for them. It would be annoying seeing that error all the time!
+						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+						{
+							progress.SetStep("Loading: " + defgroup.Model);
+							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+							// load the "default object" instead ("?").
+							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+								!LevelData.Textures.ContainsKey(defgroup.Texture))
+							{
+								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+								objectErrors.Add(error);
+								defgroup.Model = null;
+							}
+						}
+
+						def.Init(defgroup, objlstini[ID].Name);
+						def.SetInternalName(objlstini[ID].Name);
+					}
+
+					if(compileErrors.Count > 0)
+					{
+						DialogResult result = MessageBox.Show("There were compile errors. Would you like to try upgrading the object definitions? This will over-write any changes to them that you've made!",
+							"Would you like to try upgrading?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+						if(result == DialogResult.Yes)
+						{
+							CopyDefaultObjectDefintions();
+							initerror = true;
+							AddMessage("Please reload the level to complete the operation.", 180);
+							return;
+						}
+					}
+
+					// Checks if there have been any errors added to the error list and does its thing
+					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+					if (objectErrors.Count > 0)
+					{
+						int count = objectErrors.Count;
+						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+
+						foreach (ObjectData o in objectErrors)
+						{
+							bool texEmpty = string.IsNullOrEmpty(o.Texture);
+							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+							errorStrings.Add("");
+							errorStrings.Add("Object:\t\t" + o.Name);
+							errorStrings.Add("\tModel:");
+							errorStrings.Add("\t\tName:\t" + o.Model);
+							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+							errorStrings.Add("\tTexture:");
+							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+							errorStrings.Add("\t\tExists:\t" + texExists);
+						}
+
+						// TODO: Proper logging. Who knows where this file may end up
+						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+											+
+											"\nThe level will still display, but the objects in question will not display their proper models." +
+											"\n\nPlease check the log for details.", 300);
+					}
+
+					// Loading SET Layout
+					progress.SetTaskAndStep("Loading SET items", "Initializing...");
+
+					if (LevelData.ObjDefs.Count > 0)
+					{
+						LevelData.SETName = level.SETName ?? level.LevelID;
+						string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
+						string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+						LevelData.InitSETItems();
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
+						{
+							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+							string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+							string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+
+							if (File.Exists(useSetPath))
+							{
+								progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
+								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							}
+							else
+								LevelData.AssignSetList(i, new List<SETItem>());
 						}
 					}
 					else
 					{
 						LevelData.NullifySETItems();
 					}
+				}
+				else
+				{
+					LevelData.NullifySETItems();
+				}
 
-					if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
+				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
+				{
+					List<ObjectData> objectErrors = new List<ObjectData>();
+					ObjectListEntry[] objlstini = ObjectList.Load(ini.MissionObjectList, false);
+
+					for (int ID = 0; ID < objlstini.Length; ID++)
 					{
-						List<ObjectData> objectErrors = new List<ObjectData>();
-						ObjectListEntry[] objlstini = ObjectList.Load(ini.MissionObjectList, false);
+						string codeaddr = objlstini[ID].CodeString;
 
-						for (int ID = 0; ID < objlstini.Length; ID++)
+						if (!objdefini.ContainsKey(codeaddr))
+							codeaddr = "0";
+
+						ObjectData defgroup = objdefini[codeaddr];
+						ObjectDefinition def;
+
+						if (!string.IsNullOrEmpty(defgroup.CodeFile))
 						{
-							string codeaddr = objlstini[ID].CodeString;
+							progress.SetStep("Compiling: " + defgroup.CodeFile);
 
-							if (!objdefini.ContainsKey(codeaddr))
-								codeaddr = "0";
+							// TODO: Split this out to a function
+							#region Compile object code files
 
-							ObjectData defgroup = objdefini[codeaddr];
-							ObjectDefinition def;
-
-							if (!string.IsNullOrEmpty(defgroup.CodeFile))
+							string ty = defgroup.CodeType;
+							string dllfile = Path.Combine("dllcache", ty + ".dll");
+							DateTime modDate = DateTime.MinValue;
+							if (File.Exists(dllfile))
+								modDate = File.GetLastWriteTime(dllfile);
+							string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
+							if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+								def =
+									(ObjectDefinition)
+										Activator.CreateInstance(
+											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+												.GetType(ty));
+							else
 							{
-								progress.SetStep("Compiling: " + defgroup.CodeFile);
-
-								// TODO: Split this out to a function
-								#region Compile object code files
-
-								string ty = defgroup.CodeType;
-								string dllfile = Path.Combine("dllcache", ty + ".dll");
-								DateTime modDate = DateTime.MinValue;
-								if (File.Exists(dllfile))
-									modDate = File.GetLastWriteTime(dllfile);
-								string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
-								if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
-									def =
-										(ObjectDefinition)
-											Activator.CreateInstance(
-												Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-													.GetType(ty));
-								else
+								string ext = Path.GetExtension(fp);
+								CodeDomProvider pr = null;
+								switch (ext.ToLowerInvariant())
 								{
-									string ext = Path.GetExtension(fp);
-									CodeDomProvider pr = null;
-									switch (ext.ToLowerInvariant())
-									{
-										case ".cs":
-											pr = new Microsoft.CSharp.CSharpCodeProvider();
-											break;
-										case ".vb":
-											pr = new Microsoft.VisualBasic.VBCodeProvider();
-											break;
-									}
-									if (pr != null)
-									{
-										// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-										// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-										CompilerParameters para =
-											new CompilerParameters(new string[]
-											{
+									case ".cs":
+										pr = new Microsoft.CSharp.CSharpCodeProvider();
+										break;
+									case ".vb":
+										pr = new Microsoft.VisualBasic.VBCodeProvider();
+										break;
+								}
+								if (pr != null)
+								{
+									// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+									// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+									CompilerParameters para =
+										new CompilerParameters(new string[]
+										{
 													"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
 													Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
 													Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
 													Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
 													Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-											})
-											{
-												GenerateExecutable = false,
-												GenerateInMemory = false,
-												IncludeDebugInformation = true,
-												OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-											};
-										CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-										if (res.Errors.HasErrors)
+										})
 										{
-											// TODO: Merge with existing object error handler. I add too many ToDos.
-											string errors = null;
-											foreach (CompilerError item in res.Errors)
-												errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
+											GenerateExecutable = false,
+											GenerateInMemory = false,
+											IncludeDebugInformation = true,
+											OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+										};
+									CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+									if (res.Errors.HasErrors)
+									{
+										// TODO: Merge with existing object error handler. I add too many ToDos.
+										string errors = null;
+										foreach (CompilerError item in res.Errors)
+											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
 
-											AddMessage("Failed to compile object code file:\n" + defgroup.CodeFile + errors, 300);
+										AddMessage("Failed to compile object code file:\n" + defgroup.CodeFile + errors, 300);
 
-											def = new DefaultObjectDefinition();
-										}
-										else
-										{
-											def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-										}
+										def = new DefaultObjectDefinition();
 									}
 									else
-										def = new DefaultObjectDefinition();
-								}
-
-
-								#endregion
-							}
-							else
-							{
-								def = new DefaultObjectDefinition();
-							}
-
-							LevelData.MisnObjDefs.Add(def);
-
-							// The only reason .Model is checked for null is for objects that don't yet have any
-							// models defined for them. It would be annoying seeing that error all the time!
-							if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
-							{
-								progress.SetStep("Loading: " + defgroup.Model);
-								// Otherwise, if the model file doesn't exist and/or no texture file is defined,
-								// load the "default object" instead ("?").
-								if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
-									!LevelData.Textures.ContainsKey(defgroup.Texture))
-								{
-									ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-									objectErrors.Add(error);
-									defgroup.Model = null;
-								}
-							}
-
-							def.Init(defgroup, objlstini[ID].Name);
-							def.SetInternalName(objlstini[ID].Name);
-						}
-
-						// Loading SET Layout
-						progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
-
-						if (LevelData.MisnObjDefs.Count > 0)
-						{
-							string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
-							string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
-
-							string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
-							string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
-							LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
-							for (int i = 0; i < LevelData.SETChars.Length; i++)
-							{
-								List<MissionSETItem> list = new List<MissionSETItem>();
-								byte[] setfile = null;
-								byte[] prmfile = null;
-
-								string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
-								string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
-
-								string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
-								string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
-
-								string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
-								string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
-
-								if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-								if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-
-								if (setfile != null)
-								{
-									progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
-
-									int count = BitConverter.ToInt32(setfile, 0);
-									int setaddr = 0x20;
-									int prmaddr = 0x20;
-									for (int j = 0; j < count; j++)
 									{
-										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-										MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
-										list.Add(ent);
-										setaddr += 0x20;
-										prmaddr += 0xC;
+										def = (ObjectDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 									}
 								}
-								LevelData.MissionSETItems[i] = list;
+								else
+									def = new DefaultObjectDefinition();
 							}
+
+
+							#endregion
 						}
 						else
 						{
-							LevelData.MissionSETItems = null;
+							def = new DefaultObjectDefinition();
 						}
 
-						// Checks if there have been any errors added to the error list and does its thing
-						// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
-						if (objectErrors.Count > 0)
+						LevelData.MisnObjDefs.Add(def);
+
+						// The only reason .Model is checked for null is for objects that don't yet have any
+						// models defined for them. It would be annoying seeing that error all the time!
+						if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
 						{
-							int count = objectErrors.Count;
-							List<string> errorStrings = new List<string> { "The following objects failed to load:" };
-
-							foreach (ObjectData o in objectErrors)
+							progress.SetStep("Loading: " + defgroup.Model);
+							// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+							// load the "default object" instead ("?").
+							if (!File.Exists(defgroup.Model) || string.IsNullOrEmpty(defgroup.Texture) ||
+								!LevelData.Textures.ContainsKey(defgroup.Texture))
 							{
-								bool texEmpty = string.IsNullOrEmpty(o.Texture);
-								bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
-								errorStrings.Add("");
-								errorStrings.Add("Object:\t\t" + o.Name);
-								errorStrings.Add("\tModel:");
-								errorStrings.Add("\t\tName:\t" + o.Model);
-								errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
-								errorStrings.Add("\tTexture:");
-								errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
-								errorStrings.Add("\t\tExists:\t" + texExists);
+								ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+								objectErrors.Add(error);
+								defgroup.Model = null;
 							}
+						}
 
-							// TODO: Proper logging. Who knows where this file may end up
-							File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+						def.Init(defgroup, objlstini[ID].Name);
+						def.SetInternalName(objlstini[ID].Name);
+					}
 
-							AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-											+
-											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.", 180);
+					// Loading SET Layout
+					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+
+					if (LevelData.MisnObjDefs.Count > 0)
+					{
+						string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+						string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
+
+						string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+						string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
+						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
+						{
+							List<MissionSETItem> list = new List<MissionSETItem>();
+							byte[] setfile = null;
+							byte[] prmfile = null;
+
+							string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+							string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
+
+							string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+							string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+							string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
+							string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
+
+							if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+							if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+
+							if (setfile != null)
+							{
+								progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
+
+								int count = BitConverter.ToInt32(setfile, 0);
+								int setaddr = 0x20;
+								int prmaddr = 0x20;
+								for (int j = 0; j < count; j++)
+								{
+									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+									list.Add(ent);
+									setaddr += 0x20;
+									prmaddr += 0xC;
+								}
+							}
+							LevelData.MissionSETItems[i] = list;
 						}
 					}
 					else
@@ -1195,96 +1161,131 @@ namespace SonicRetro.SAModel.SADXLVL2
 						LevelData.MissionSETItems = null;
 					}
 
-					progress.StepProgress();
-
-					#endregion
-
-					#region CAM Layout
-
-					progress.SetTaskAndStep("Loading CAM items", "Initializing...");
-
-					string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
-					string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
-
-					LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					// Checks if there have been any errors added to the error list and does its thing
+					// This thing is a mess. If anyone can think of a cleaner way to do this, be my guest.
+					if (objectErrors.Count > 0)
 					{
-						List<CAMItem> list = new List<CAMItem>();
-						byte[] camfile = null;
+						int count = objectErrors.Count;
+						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
 
-						string camfmt = string.Format(camstr, LevelData.SETChars[i]);
-						string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
-
-						string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
-
-						/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-							camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-						else if (File.Exists(formatted))*/
-							if(File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
-
-						if (camfile != null)
+						foreach (ObjectData o in objectErrors)
 						{
-							progress.SetTask("CAM: " + formatted.Replace(Environment.CurrentDirectory, ""));
-
-							int count = BitConverter.ToInt32(camfile, 0);
-							int address = 0x40;
-							for (int j = 0; j < count; j++)
-							{
-								progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
-
-								CAMItem ent = new CAMItem(camfile, address, selectedItems);
-								list.Add(ent);
-								address += 0x40;
-							}
+							bool texEmpty = string.IsNullOrEmpty(o.Texture);
+							bool texExists = (!string.IsNullOrEmpty(o.Texture) && LevelData.Textures.ContainsKey(o.Texture));
+							errorStrings.Add("");
+							errorStrings.Add("Object:\t\t" + o.Name);
+							errorStrings.Add("\tModel:");
+							errorStrings.Add("\t\tName:\t" + o.Model);
+							errorStrings.Add("\t\tExists:\t" + File.Exists(o.Model));
+							errorStrings.Add("\tTexture:");
+							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
+							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
 
-						LevelData.CAMItems[i] = list;
+						// TODO: Proper logging. Who knows where this file may end up
+						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+
+						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+										+
+										"\nThe level will still display, but the objects in question will not display their proper models." +
+										"\n\nPlease check the log for details.", 180);
+					}
+				}
+				else
+				{
+					LevelData.MissionSETItems = null;
+				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region CAM Layout
+
+				progress.SetTaskAndStep("Loading CAM items", "Initializing...");
+
+				string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
+				string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
+
+				LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
+				{
+					List<CAMItem> list = new List<CAMItem>();
+					byte[] camfile = null;
+
+					string camfmt = string.Format(camstr, LevelData.SETChars[i]);
+					string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
+
+					string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
+
+					/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+						camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
+					else if (File.Exists(formatted))*/
+					if(File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
+
+					if (camfile != null)
+					{
+						progress.SetTask("CAM: " + formatted.Replace(Environment.CurrentDirectory, ""));
+
+						int count = BitConverter.ToInt32(camfile, 0);
+						int address = 0x40;
+						for (int j = 0; j < count; j++)
+						{
+							progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+							CAMItem ent = new CAMItem(camfile, address, selectedItems);
+							list.Add(ent);
+							address += 0x40;
+						}
 					}
 
-					CAMItem.Init();
+					LevelData.CAMItems[i] = list;
+				}
 
-					progress.StepProgress();
+				CAMItem.Init();
 
-					#endregion
+				progress.StepProgress();
 
-					#region Loading Level Effects
+				#endregion
 
-					LevelData.leveleff = null;
-					if (!string.IsNullOrEmpty(level.Effects))
+				#region Loading Level Effects
+
+				LevelData.leveleff = null;
+				if (!string.IsNullOrEmpty(level.Effects))
+				{
+					progress.SetTaskAndStep("Loading Level Effects...");
+
+					LevelDefinition def = null;
+					string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+					string dllfile = Path.Combine("dllcache", ty + ".dll");
+					DateTime modDate = DateTime.MinValue;
+
+					if (File.Exists(dllfile))
+						modDate = File.GetLastWriteTime(dllfile);
+
+					string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
+					if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 					{
-						progress.SetTaskAndStep("Loading Level Effects...");
-
-						LevelDefinition def = null;
-						string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
-						string dllfile = Path.Combine("dllcache", ty + ".dll");
-						DateTime modDate = DateTime.MinValue;
-
-						if (File.Exists(dllfile))
-							modDate = File.GetLastWriteTime(dllfile);
-
-						string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-						if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+						def =
+							(LevelDefinition)
+								Activator.CreateInstance(
+									Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
+					}
+					else
+					{
+						string ext = Path.GetExtension(fp);
+						CodeDomProvider pr = null;
+						switch (ext.ToLowerInvariant())
 						{
-							def =
-								(LevelDefinition)
-									Activator.CreateInstance(
-										Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
+							case ".cs":
+								pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
+								break;
+							case ".vb":
+								pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
+								break;
 						}
-						else
+						if (pr != null)
 						{
-							string ext = Path.GetExtension(fp);
-							CodeDomProvider pr = null;
-							switch (ext.ToLowerInvariant())
-							{
-								case ".cs":
-									pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
-									break;
-								case ".vb":
-									pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
-									break;
-							}
-							if (pr != null)
-							{
 							// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
 							// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
 							CompilerParameters para =
@@ -1303,128 +1304,134 @@ namespace SonicRetro.SAModel.SADXLVL2
 									OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
 								};
 							CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-								if (!res.Errors.HasErrors)
-									def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-							}
-						}
-
-						if (def != null)
-							def.Init(level, levelact.Act);
-
-						LevelData.leveleff = def;
-					}
-
-					progress.StepProgress();
-
-					#endregion
-
-					#region Loading Splines
-
-					LevelData.LevelSplines = new List<SplineData>();
-					SplineData.Init();
-
-					if (!string.IsNullOrEmpty(ini.Paths))
-					{
-						progress.SetTaskAndStep("Reticulating splines...");
-
-						String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
-							levelact.ToString());
-
-						if (Directory.Exists(splineDirectory))
-						{
-							List<string> pathFiles = new List<string>();
-
-							for (int i = 0; i < int.MaxValue; i++)
-							{
-								string path = string.Concat(splineDirectory, string.Format("/{0}.ini", i));
-								if (File.Exists(path))
-								{
-									pathFiles.Add(path);
-								}
-								else
-									break;
-							}
-
-							foreach (string pathFile in pathFiles) // looping through path files
-							{
-								SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
-
-								newSpline.RebuildMesh(d3ddevice);
-
-								LevelData.LevelSplines.Add(newSpline);
-							}
+							if (!res.Errors.HasErrors)
+								def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 						}
 					}
 
-					progress.StepProgress();
+					if (def != null)
+						def.Init(level, levelact.Act);
 
-					#endregion
-
-					#region Stage Lights
-					progress.SetTaskAndStep("Loading lights...");
-
-					if ((stageLightList != null) && (stageLightList.Count > 0))
-					{
-						List<SA1StageLightData> lightList = new List<SA1StageLightData>();
-
-						foreach (SA1StageLightData lightData in stageLightList)
-						{
-							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act))
-								lightList.Add(lightData);
-						}
-
-						if (levelact.Act > 0 && lightList.Count <= 0)
-						{
-							for (int i = 1; i < levelact.Act + 1; i++)
-							{
-								foreach (SA1StageLightData lightData in stageLightList)
-								{
-									if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
-										lightList.Add(lightData);
-								}
-							}
-						}
-
-						if (lightList.Count > 0)
-						{
-							for (int i = 0; i < 4; i++) // clear all default lights
-							{
-								d3ddevice.EnableLight(i, false);
-							}
-
-							for (int i = 0; i < lightList.Count * 2; i++)
-							{
-								int originalIndex = (i < lightList.Count) ? i : i - lightList.Count;
-								SA1StageLightData lightData = lightList[originalIndex];
-
-								Light light = new Light()
-								{
-									Type = lightData.UseDirection ? LightType.Directional : LightType.Point,
-									Diffuse = lightData.RGB.ToRawColor4(),
-									Ambient = lightData.AmbientRGB.ToRawColor4(),
-									Specular = Color.Black.ToRawColor4(),
-									Direction = lightData.Direction.ToVector3(),
-									Range = lightData.Dif // guessing here
-								};
-								d3ddevice.SetLight(i, ref light);
-								d3ddevice.EnableLight(i, true);
-							}
-						}
-						else
-						{
-							AddMessage("No lights were found for this stage. Using default lights instead.", 180);
-
-							EditorOptions.SetDefaultLights(d3ddevice, false);
-						}
-					}
-
-					progress.StepProgress();
-					#endregion
-
-					transformGizmo = new TransformGizmo();
-
-					Invoke((Action)progress.Close);
+					LevelData.leveleff = def;
 				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Loading Splines
+
+				LevelData.LevelSplines = new List<SplineData>();
+				SplineData.Init();
+
+				if (!string.IsNullOrEmpty(ini.Paths))
+				{
+					progress.SetTaskAndStep("Reticulating splines...");
+
+					String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
+						levelact.ToString());
+
+					if (Directory.Exists(splineDirectory))
+					{
+						List<string> pathFiles = new List<string>();
+
+						for (int i = 0; i < int.MaxValue; i++)
+						{
+							string path = string.Concat(splineDirectory, string.Format("/{0}.ini", i));
+							if (File.Exists(path))
+							{
+								pathFiles.Add(path);
+							}
+							else
+								break;
+						}
+
+						foreach (string pathFile in pathFiles) // looping through path files
+						{
+							SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+							newSpline.RebuildMesh(d3ddevice);
+
+							LevelData.LevelSplines.Add(newSpline);
+						}
+					}
+				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Stage Lights
+				progress.SetTaskAndStep("Loading lights...");
+
+				if ((stageLightList != null) && (stageLightList.Count > 0))
+				{
+					List<SA1StageLightData> lightList = new List<SA1StageLightData>();
+
+					foreach (SA1StageLightData lightData in stageLightList)
+					{
+						if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act))
+							lightList.Add(lightData);
+					}
+
+					if (levelact.Act > 0 && lightList.Count <= 0)
+					{
+						for (int i = 1; i < levelact.Act + 1; i++)
+						{
+							foreach (SA1StageLightData lightData in stageLightList)
+							{
+								if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
+									lightList.Add(lightData);
+							}
+						}
+					}
+
+					if (lightList.Count > 0)
+					{
+
+						for (int i = 0; i < lightList.Count; i++)
+						{
+							SA1StageLightData lightData = lightList[i];
+							Light light = new Light
+							{
+								Type = LightType.Directional,
+								Direction = lightData.Direction.ToVector3(),
+							};
+							//Set ambient and specular color only for the first light
+							if (i == 0)
+							{
+								light.Ambient = new RawColor4(
+									lightData.AmbientRGB.X,
+									lightData.AmbientRGB.Y,
+									lightData.AmbientRGB.Z,
+									1.0f);
+								light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+							}
+							//Set non-ambient lights
+							light.Diffuse = new RawColor4(
+								lightData.RGB.X * lightData.Multiplier,
+								lightData.RGB.Y * lightData.Multiplier,
+								lightData.RGB.Z * lightData.Multiplier,
+								1.0f);
+							d3ddevice.SetLight(i, ref light);
+							d3ddevice.EnableLight(i, lightData.UseDirection);
+						}
+					}
+					else
+					{
+						AddMessage("No lights were found for this stage. Using default lights instead.", 180);
+
+						EditorOptions.SetDefaultLights(d3ddevice, false);
+					}
+				}
+
+				progress.StepProgress();
+				#endregion
+
+				transformGizmo = new TransformGizmo();
+
+				Invoke((Action)progress.Close);
+			}
 #if !DEBUG
 			}
 			catch (Exception ex)

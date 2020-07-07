@@ -114,8 +114,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3ddevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
 			d3ddevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Anisotropic);
 			d3ddevice.SetRenderState(RenderState.Lighting, !overrideLighting);
-			d3ddevice.SetRenderState(RenderState.SpecularEnable, true);
-			if (!OverrideLighting) d3ddevice.SetRenderState(RenderState.Ambient, Color.Black.ToArgb());
+			d3ddevice.SetRenderState(RenderState.SpecularEnable, false);
+			if (!overrideLighting) d3ddevice.SetRenderState(RenderState.Ambient, Color.Black.ToArgb());
 			else d3ddevice.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
 			d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, false);
 			d3ddevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
@@ -124,8 +124,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3ddevice.SetRenderState(RenderState.AlphaTestEnable, true);
 			d3ddevice.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
 			d3ddevice.SetRenderState(RenderState.AmbientMaterialSource, ColorSource.Material);
-			d3ddevice.SetRenderState(RenderState.DiffuseMaterialSource, ColorSource.Material);
-			d3ddevice.SetRenderState(RenderState.SpecularMaterialSource, ColorSource.Material);
+			d3ddevice.SetRenderState(RenderState.DiffuseMaterialSource, ColorSource.Color1);
+			d3ddevice.SetRenderState(RenderState.SpecularMaterialSource, ColorSource.Color2);
 			d3ddevice.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.BlendDiffuseAlpha);
 			d3ddevice.SetRenderState(RenderState.ColorVertex, true);
 			d3ddevice.SetRenderState(RenderState.ZEnable, true);
