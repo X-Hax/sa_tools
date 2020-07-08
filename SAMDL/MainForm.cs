@@ -471,7 +471,7 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = hasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
@@ -582,14 +582,24 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void Save(string fileName)
 		{
+			string[] animfiles = new string[animations.Count];
+			if (saveAnimationsToolStripMenuItem.Checked)
+			{
+				for (int u = 0; u < animations.Count; u++)
+				{
+					animations[u].Save(Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + ".saanim");
+					animfiles[u] = Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + ".saanim";
+				}
+			}
+			else animfiles = null;
 			if (modelFile != null)
 				modelFile.SaveToFile(fileName);
 			else
 			{
-				ModelFile.CreateFile(fileName, model, null, null, null, null, outfmt);
+				ModelFile.CreateFile(fileName, model, animfiles, null, null, null, outfmt);
 				modelFile = new ModelFile(fileName);
 			}
-
+			
 			currentFileName = fileName;
 			UpdateStatusString();
 			unsaved = false;
@@ -643,7 +653,7 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedObject = model;
 
 			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-			textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
 			currentFileName = "";
@@ -1277,7 +1287,7 @@ namespace SonicRetro.SAModel.SAMDL
 					for (int j = 0; j < TextureInfo.Length; j++)
 						Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
 
-					textureRemappingToolStripMenuItem.Enabled = loaded;
+					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
 					DrawEntireModel();
 				}
 			}
@@ -1352,7 +1362,7 @@ namespace SonicRetro.SAModel.SAMDL
 						sw.WriteLine(" */");
 						sw.WriteLine();
 						string[] texnames = null;
-						if (TexturePackName != null)
+						if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
 						{
 							texnames = new string[TextureInfo.Length];
 							for (int i = 0; i < TextureInfo.Length; i++)
@@ -1365,6 +1375,13 @@ namespace SonicRetro.SAModel.SAMDL
 							sw.WriteLine();
 						}
 						model.ToStructVariables(sw, dx, labels, texnames);
+						if (saveAnimationsToolStripMenuItem.Checked && animations.Count() > 0)
+						{
+							foreach (NJS_MOTION anim in animations)
+							{
+								anim.ToStructVariables(sw);
+							}
+						}
 					}
 				}
 		}
@@ -2080,7 +2097,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 					AddTreeNode(model, treeView1.Nodes);
 					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-					textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
 					unsaved = true;
@@ -2204,6 +2221,14 @@ namespace SonicRetro.SAModel.SAMDL
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowWelcomeScreen();
+		}
+
+		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			TextureInfo = null;
+			Textures = null;
+			DrawEntireModel();
+			unloadTextureToolStripMenuItem.Enabled = false;
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
