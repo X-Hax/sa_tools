@@ -49,6 +49,7 @@ namespace SonicRetro.SAModel.SAMDL
 		bool loaded;
 		string currentFileName = "";
 		NJS_OBJECT model;
+		NJS_OBJECT tempmodel;
 		NJS_ACTION action;
 		bool hasWeight;
 		List<NJS_MOTION> animations;
@@ -313,6 +314,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void LoadFile(string filename)
 		{
 			loaded = false;
+			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			timer1.Stop();
 			modelFile = null;
@@ -487,15 +489,40 @@ namespace SonicRetro.SAModel.SAMDL
 			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
 			if (modelinfo.RadioButton_Object.Checked)
 			{
-				model = new NJS_OBJECT(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				tempmodel = new NJS_OBJECT(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				if (tempmodel.Sibling != null)
+				{
+					model = new NJS_OBJECT { Name = "Root" };
+					model.AddChild(tempmodel);
+				}
+				else model = tempmodel;
 				if (modelinfo.CheckBox_LoadMotion.Checked)
 					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
 			}
-			else 
+			else if (modelinfo.RadioButton_Action.Checked)
 			{
 				action = new NJS_ACTION(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
 				model = action.Model;
 				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+			}
+			else
+			{
+				model = new NJS_OBJECT { Name = "Model" };
+				switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
+				{
+					case ModelFormat.Basic:
+						model.Attach = new BasicAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, false);
+						break;
+					case ModelFormat.BasicDX:
+						model.Attach = new BasicAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, true);
+						break;
+					case ModelFormat.Chunk:
+						model.Attach = new ChunkAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value);
+						break;
+					case ModelFormat.GC:
+						model.Attach = new GC.GCAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, null);
+						break;
+				}
 			}
 			switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
 			{
@@ -632,6 +659,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void NewFile(ModelFormat modelFormat)
 		{
 			loaded = false;
+			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
 			timer1.Stop();
 			modelFile = null;
@@ -1984,6 +2012,7 @@ namespace SonicRetro.SAModel.SAMDL
 					string objFileName = ofd.FileName;
 					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 					loaded = false;
+					if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
 					timer1.Stop();
 					modelFile = null;
@@ -2223,12 +2252,17 @@ namespace SonicRetro.SAModel.SAMDL
 			ShowWelcomeScreen();
 		}
 
-		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
+		private void UnloadTextures()
 		{
 			TextureInfo = null;
 			Textures = null;
-			DrawEntireModel();
 			unloadTextureToolStripMenuItem.Enabled = false;
+		}
+
+		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			UnloadTextures();
+			DrawEntireModel();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

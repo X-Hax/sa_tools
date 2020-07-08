@@ -37,7 +37,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.NumericUpDown_ObjectAddress = new System.Windows.Forms.NumericUpDown();
             this.Label_ModelAddress = new System.Windows.Forms.Label();
             this.CheckBox_Hex_Object = new System.Windows.Forms.CheckBox();
-            this.NumericUpDown_Key = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.ComboBox_Format = new System.Windows.Forms.ComboBox();
             this.Label_Format = new System.Windows.Forms.Label();
             this.CheckBox_LoadMotion = new System.Windows.Forms.CheckBox();
@@ -55,10 +54,12 @@ namespace SonicRetro.SAModel.SAMDL
             this.CheckBox_Memory_Motion = new System.Windows.Forms.CheckBox();
             this.CheckBox_Hex_Motion = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.RadioButton_Attach = new System.Windows.Forms.RadioButton();
+            this.NumericUpDown_Key = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
             this.SuspendLayout();
             // 
             // OK_Button
@@ -134,14 +135,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.CheckBox_Hex_Object.Text = "Hex";
             this.CheckBox_Hex_Object.UseVisualStyleBackColor = true;
             this.CheckBox_Hex_Object.CheckedChanged += new System.EventHandler(this.CheckBox3_CheckedChanged);
-            // 
-            // NumericUpDown_Key
-            // 
-            this.NumericUpDown_Key.Hexadecimal = true;
-            this.NumericUpDown_Key.Location = new System.Drawing.Point(66, 19);
-            this.NumericUpDown_Key.Name = "NumericUpDown_Key";
-            this.NumericUpDown_Key.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_Key.TabIndex = 15;
             // 
             // ComboBox_Format
             // 
@@ -231,7 +224,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.RadioButton_SA2MDL.Size = new System.Drawing.Size(90, 17);
             this.RadioButton_SA2MDL.TabIndex = 23;
             this.RadioButton_SA2MDL.Text = "SA2 MDL File";
-			this.RadioButton_SA2MDL.UseVisualStyleBackColor = true;
+            this.RadioButton_SA2MDL.UseVisualStyleBackColor = true;
             // 
             // RadioButton_SA2BMDL
             // 
@@ -319,6 +312,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.RadioButton_Attach);
             this.groupBox1.Controls.Add(this.CheckBox_Hex_Motion);
             this.groupBox1.Controls.Add(this.ComboBox_Format);
             this.groupBox1.Controls.Add(this.CheckBox_LoadMotion);
@@ -344,6 +338,24 @@ namespace SonicRetro.SAModel.SAMDL
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Binary data";
             // 
+            // RadioButton_Attach
+            // 
+            this.RadioButton_Attach.AutoSize = true;
+            this.RadioButton_Attach.Location = new System.Drawing.Point(187, 126);
+            this.RadioButton_Attach.Name = "RadioButton_Attach";
+            this.RadioButton_Attach.Size = new System.Drawing.Size(94, 17);
+            this.RadioButton_Attach.TabIndex = 32;
+            this.RadioButton_Attach.Text = "Model (Attach)";
+            this.RadioButton_Attach.UseVisualStyleBackColor = true;
+            // 
+            // NumericUpDown_Key
+            // 
+            this.NumericUpDown_Key.Hexadecimal = true;
+            this.NumericUpDown_Key.Location = new System.Drawing.Point(66, 19);
+            this.NumericUpDown_Key.Name = "NumericUpDown_Key";
+            this.NumericUpDown_Key.Size = new System.Drawing.Size(98, 20);
+            this.NumericUpDown_Key.TabIndex = 15;
+            // 
             // ModelFileDialog
             // 
             this.AcceptButton = this.OK_Button;
@@ -365,10 +377,10 @@ namespace SonicRetro.SAModel.SAMDL
             this.Text = "SA1/SA2 Model Editor";
             this.Load += new System.EventHandler(this.Dialog1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -397,5 +409,6 @@ namespace SonicRetro.SAModel.SAMDL
 		internal CheckBox CheckBox_Memory_Motion;
 		internal CheckBox CheckBox_Hex_Motion;
 		private GroupBox groupBox1;
+		internal RadioButton RadioButton_Attach;
 	}
 }
