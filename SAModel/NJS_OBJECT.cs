@@ -279,6 +279,7 @@ namespace SonicRetro.SAModel
 		{
 			children.Add(child);
 			child.Parent = this;
+			if (child.Sibling != null) AddChild(child.Sibling);
 		}
 
 		public void AddChildren(IEnumerable<NJS_OBJECT> children)
