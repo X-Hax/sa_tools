@@ -39,6 +39,12 @@ namespace SonicRetro.SAModel
 			V = short.Parse(uv[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
 		}
 
+		public UV(float u, float v)
+		{
+			U = u;
+			V = v;
+		}
+
 		public byte[] GetBytes()
 		{
 			return GetBytes(false);
