@@ -85,6 +85,7 @@
             this.animNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.newModelUnloadsTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.swapUVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -281,6 +282,7 @@
             this.preferencesToolStripMenuItem,
             this.findToolStripMenuItem,
             this.textureRemappingToolStripMenuItem,
+            this.swapUVToolStripMenuItem,
             this.toolStripSeparator4,
             this.saveAnimationsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem,
@@ -579,6 +581,15 @@
             this.newModelUnloadsTexturesToolStripMenuItem.Text = "Unload textures on new model";
             this.newModelUnloadsTexturesToolStripMenuItem.ToolTipText = "Unload textures when a new model is loaded or created.";
             // 
+            // swapUVToolStripMenuItem
+            // 
+            this.swapUVToolStripMenuItem.Name = "swapUVToolStripMenuItem";
+            this.swapUVToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.swapUVToolStripMenuItem.Text = "Swap U/V";
+			this.swapUVToolStripMenuItem.Enabled = false;
+			this.swapUVToolStripMenuItem.ToolTipText = "Switch Us and Vs around. For Basic models only.";
+            this.swapUVToolStripMenuItem.Click += new System.EventHandler(this.swapUVToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -670,5 +681,6 @@
 		private System.Windows.Forms.ToolStripMenuItem saveAnimationsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportTextureNamesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newModelUnloadsTexturesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem swapUVToolStripMenuItem;
 	}
 }

@@ -316,6 +316,8 @@ namespace SonicRetro.SAModel.SAMDL
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+			if (Path.GetExtension(filename) == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
+			else swapUVToolStripMenuItem.Enabled = false;
 			timer1.Stop();
 			modelFile = null;
 			animation = null;
@@ -529,12 +531,15 @@ namespace SonicRetro.SAModel.SAMDL
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:
 					outfmt = ModelFormat.Basic;
+					swapUVToolStripMenuItem.Enabled = true;
 					break;
 				case ModelFormat.Chunk:
 					outfmt = ModelFormat.Chunk;
+					swapUVToolStripMenuItem.Enabled = false;
 					break;
 				case ModelFormat.GC:
 					outfmt = ModelFormat.GC;
+					swapUVToolStripMenuItem.Enabled = false;
 					break;
 			}
 		}
@@ -609,9 +614,10 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void Save(string fileName)
 		{
-			string[] animfiles = new string[animations.Count];
-			if (saveAnimationsToolStripMenuItem.Checked)
+			string[] animfiles;
+			if (animations != null && saveAnimationsToolStripMenuItem.Checked)
 			{
+				animfiles = new string[animations.Count()];
 				for (int u = 0; u < animations.Count; u++)
 				{
 					animations[u].Save(Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + ".saanim");
@@ -1403,7 +1409,7 @@ namespace SonicRetro.SAModel.SAMDL
 							sw.WriteLine();
 						}
 						model.ToStructVariables(sw, dx, labels, texnames);
-						if (saveAnimationsToolStripMenuItem.Checked && animations.Count() > 0)
+						if (saveAnimationsToolStripMenuItem.Checked && animations != null)
 						{
 							foreach (NJS_MOTION anim in animations)
 							{
@@ -2263,6 +2269,38 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			UnloadTextures();
 			DrawEntireModel();
+		}
+
+		private void SwapUV(NJS_OBJECT obj)
+		{
+			if (obj.Attach != null && obj.Attach is BasicAttach)
+			{
+				BasicAttach att = (BasicAttach)obj.Attach;
+				foreach (NJS_MESHSET m in att.Mesh)
+				{
+					for (int u = 0; u < m.UV.Length; u++)
+					{
+						m.UV[u] = new UV(m.UV[u].V, m.UV[u].U);
+					}
+					att.ProcessVertexData();
+					NJS_OBJECT[] objs = model.GetObjects();
+					meshes[Array.IndexOf(objs, obj)] = att.CreateD3DMesh();
+				}
+			}
+			if (obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT child in obj.Children)
+				{
+					SwapUV(child);
+				}
+			}
+			DrawEntireModel();
+			unsaved = true;
+		}
+
+		private void swapUVToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (model != null) SwapUV(model);
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
