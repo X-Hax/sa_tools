@@ -56,15 +56,18 @@
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureRemappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.swapUVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.saveAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportTextureNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newModelUnloadsTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showNodeConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showWeightsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showAdvancedCameraInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.welcomeTutorialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,10 +85,10 @@
             this.exportOBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cameraAngleLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cameraModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.newModelUnloadsTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.swapUVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -188,7 +191,7 @@
             this.unloadTextureToolStripMenuItem.Enabled = false;
             this.unloadTextureToolStripMenuItem.Name = "unloadTextureToolStripMenuItem";
             this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.unloadTextureToolStripMenuItem.Text = "Unload textures";
+            this.unloadTextureToolStripMenuItem.Text = "Unload Textures";
             this.unloadTextureToolStripMenuItem.Click += new System.EventHandler(this.unloadTextureToolStripMenuItem_Click);
             // 
             // loadAnimationToolStripMenuItem
@@ -294,7 +297,7 @@
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -303,7 +306,7 @@
             this.findToolStripMenuItem.Enabled = false;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.findToolStripMenuItem.Text = "&Find...";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
@@ -311,14 +314,23 @@
             // 
             this.textureRemappingToolStripMenuItem.Enabled = false;
             this.textureRemappingToolStripMenuItem.Name = "textureRemappingToolStripMenuItem";
-            this.textureRemappingToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.textureRemappingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.textureRemappingToolStripMenuItem.Text = "&Texture Remapping...";
             this.textureRemappingToolStripMenuItem.Click += new System.EventHandler(this.textureRemappingToolStripMenuItem_Click);
+            // 
+            // swapUVToolStripMenuItem
+            // 
+            this.swapUVToolStripMenuItem.Enabled = false;
+            this.swapUVToolStripMenuItem.Name = "swapUVToolStripMenuItem";
+            this.swapUVToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.swapUVToolStripMenuItem.Text = "Swap U/V";
+            this.swapUVToolStripMenuItem.ToolTipText = "Switch Us and Vs around. For Basic models only.";
+            this.swapUVToolStripMenuItem.Click += new System.EventHandler(this.swapUVToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(232, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
             // 
             // saveAnimationsToolStripMenuItem
             // 
@@ -326,8 +338,8 @@
             this.saveAnimationsToolStripMenuItem.CheckOnClick = true;
             this.saveAnimationsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveAnimationsToolStripMenuItem.Name = "saveAnimationsToolStripMenuItem";
-            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.saveAnimationsToolStripMenuItem.Text = "Save animations";
+            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.saveAnimationsToolStripMenuItem.Text = "Save Animations";
             this.saveAnimationsToolStripMenuItem.ToolTipText = "Save animation data with SA1/SA2MDL files and export animations in C structs.\nThi" +
     "s only applies to newly created SA1/SA2MDL files.";
             // 
@@ -335,9 +347,17 @@
             // 
             this.exportTextureNamesToolStripMenuItem.CheckOnClick = true;
             this.exportTextureNamesToolStripMenuItem.Name = "exportTextureNamesToolStripMenuItem";
-            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.exportTextureNamesToolStripMenuItem.Text = "Export texture names";
-            this.exportTextureNamesToolStripMenuItem.ToolTipText = "Use texture names in materials instead of texture IDs when exporting structs";
+            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.exportTextureNamesToolStripMenuItem.Text = "Export Texture Names";
+            this.exportTextureNamesToolStripMenuItem.ToolTipText = "Use texture names in materials instead of texture IDs when exporting C structs.";
+            // 
+            // newModelUnloadsTexturesToolStripMenuItem
+            // 
+            this.newModelUnloadsTexturesToolStripMenuItem.CheckOnClick = true;
+            this.newModelUnloadsTexturesToolStripMenuItem.Name = "newModelUnloadsTexturesToolStripMenuItem";
+            this.newModelUnloadsTexturesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.newModelUnloadsTexturesToolStripMenuItem.Text = "Auto Unload Textures";
+            this.newModelUnloadsTexturesToolStripMenuItem.ToolTipText = "Unload textures when a new model is loaded or created.";
             // 
             // viewToolStripMenuItem
             // 
@@ -346,6 +366,7 @@
             this.showNodesToolStripMenuItem,
             this.showNodeConnectionsToolStripMenuItem,
             this.showWeightsToolStripMenuItem,
+            this.showAdvancedCameraInfoToolStripMenuItem,
             this.modelLibraryToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -392,6 +413,14 @@
             this.modelLibraryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.modelLibraryToolStripMenuItem.Text = "Model &Library";
             this.modelLibraryToolStripMenuItem.Click += new System.EventHandler(this.modelLibraryToolStripMenuItem_Click);
+            // 
+            // showAdvancedCameraInfoToolStripMenuItem
+            // 
+            this.showAdvancedCameraInfoToolStripMenuItem.CheckOnClick = true;
+            this.showAdvancedCameraInfoToolStripMenuItem.Name = "showAdvancedCameraInfoToolStripMenuItem";
+            this.showAdvancedCameraInfoToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.showAdvancedCameraInfoToolStripMenuItem.Text = "Show Camera Rotation";
+            this.showAdvancedCameraInfoToolStripMenuItem.ToolTipText = "Show more details on camera mode, rotation etc.";
             // 
             // helpToolStripMenuItem
             // 
@@ -440,7 +469,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(320, 514);
+            this.panel1.Size = new System.Drawing.Size(300, 514);
             this.panel1.TabIndex = 1;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -470,7 +499,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(584, 514);
-            this.splitContainer1.SplitterDistance = 320;
+            this.splitContainer1.SplitterDistance = 300;
             this.splitContainer1.TabIndex = 2;
             // 
             // splitContainer2
@@ -487,7 +516,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(260, 514);
+            this.splitContainer2.Size = new System.Drawing.Size(280, 514);
             this.splitContainer2.SplitterDistance = 255;
             this.splitContainer2.TabIndex = 16;
             // 
@@ -497,7 +526,7 @@
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(260, 255);
+            this.treeView1.Size = new System.Drawing.Size(280, 255);
             this.treeView1.TabIndex = 1;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -509,7 +538,7 @@
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid1.Size = new System.Drawing.Size(260, 255);
+            this.propertyGrid1.Size = new System.Drawing.Size(280, 255);
             this.propertyGrid1.TabIndex = 14;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -545,6 +574,8 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cameraPosLabel,
+            this.cameraAngleLabel,
+            this.cameraModeLabel,
             this.animNameLabel,
             this.animFrameLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 538);
@@ -559,6 +590,16 @@
             this.cameraPosLabel.Size = new System.Drawing.Size(106, 19);
             this.cameraPosLabel.Text = "Camera Pos: 0, 0, 0";
             // 
+            // cameraAngleLabel
+            // 
+            this.cameraAngleLabel.Name = "cameraAngleLabel";
+            this.cameraAngleLabel.Size = new System.Drawing.Size(0, 19);
+            // 
+            // cameraModeLabel
+            // 
+            this.cameraModeLabel.Name = "cameraModeLabel";
+            this.cameraModeLabel.Size = new System.Drawing.Size(0, 19);
+            // 
             // animNameLabel
             // 
             this.animNameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
@@ -572,23 +613,6 @@
             this.animFrameLabel.Name = "animFrameLabel";
             this.animFrameLabel.Size = new System.Drawing.Size(56, 19);
             this.animFrameLabel.Text = "Frame: 0";
-            // 
-            // newModelUnloadsTexturesToolStripMenuItem
-            // 
-            this.newModelUnloadsTexturesToolStripMenuItem.CheckOnClick = true;
-            this.newModelUnloadsTexturesToolStripMenuItem.Name = "newModelUnloadsTexturesToolStripMenuItem";
-            this.newModelUnloadsTexturesToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.newModelUnloadsTexturesToolStripMenuItem.Text = "Unload textures on new model";
-            this.newModelUnloadsTexturesToolStripMenuItem.ToolTipText = "Unload textures when a new model is loaded or created.";
-            // 
-            // swapUVToolStripMenuItem
-            // 
-            this.swapUVToolStripMenuItem.Name = "swapUVToolStripMenuItem";
-            this.swapUVToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.swapUVToolStripMenuItem.Text = "Swap U/V";
-			this.swapUVToolStripMenuItem.Enabled = false;
-			this.swapUVToolStripMenuItem.ToolTipText = "Switch Us and Vs around. For Basic models only.";
-            this.swapUVToolStripMenuItem.Click += new System.EventHandler(this.swapUVToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -682,5 +706,8 @@
 		private System.Windows.Forms.ToolStripMenuItem exportTextureNamesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newModelUnloadsTexturesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem swapUVToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel cameraModeLabel;
+		private System.Windows.Forms.ToolStripStatusLabel cameraAngleLabel;
+		private System.Windows.Forms.ToolStripMenuItem showAdvancedCameraInfoToolStripMenuItem;
 	}
 }

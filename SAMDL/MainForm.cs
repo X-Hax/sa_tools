@@ -740,14 +740,32 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void UpdateStatusString()
 		{
+			string cameramode = "Move";
+			string look = "Look";
+			string zoom = "Zoom";
 			if (!string.IsNullOrEmpty(currentFileName))
 				Text = "SAMDL: " + currentFileName;
 			else
 				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
+			if (showAdvancedCameraInfoToolStripMenuItem.Checked)
+			{
+				if (lookKeyDown) cameramode = look;
+				if (zoomKeyDown) cameramode = zoom;
+				cameraAngleLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+				cameraModeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X") + " Yaw: " + cam.Yaw.ToString("X") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
+				cameraModeLabel.Text = $"Mode: " + cameramode + ", Speed: " + cam.MoveSpeed;
+			}
+			else 
+			{
+				cameraAngleLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.None;
+				cameraModeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.None;
+				cameraAngleLabel.Text = "";
+				cameraModeLabel.Text = "";
+			}
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
 			animFrameLabel.Text = $"Frame: {animframe}";
-			// + " X=" + cam.Position.X + " Y=" + cam.Position.Y + " Z=" + cam.Position.Z + " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X") + " Interval=" + cameraMotionInterval + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + (animation != null ? " Animation=" + animation.Name + " Frame=" + animframe : "");
 		}
 
 		#region Rendering Methods
@@ -1048,17 +1066,17 @@ namespace SonicRetro.SAModel.SAMDL
 
 				case ("Increase camera move speed"):
 					cam.MoveSpeed += 0.0625f;
-					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Decrease camera move speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
-					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Reset camera move speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
-					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Reset Camera Position"):
