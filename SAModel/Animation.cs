@@ -22,6 +22,11 @@ namespace SonicRetro.SAModel
 			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
+		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
+		{
+			Model = model;
+			Animation = animation;
+		}
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
