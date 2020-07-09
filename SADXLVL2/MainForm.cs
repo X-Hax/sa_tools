@@ -2466,7 +2466,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (e.Button == MouseButtons.Middle)
 			{
-				if (!mouseHide)
+				if (alternativeCameraToolStripMenuItem.Checked && !mouseHide)
 				{
 					mouseBackup = Cursor.Position;
 					mouseHide = true;
