@@ -1037,31 +1037,8 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 
 				case ("Delete"):
-					if (selectedObject != null && selectedObject.Parent != null)
-					{
-						bool doOperation = false;
-						DialogResult dialogResult = MessageBox.Show("This will delete the selected model and all its child models. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
-						doOperation = dialogResult == DialogResult.Yes;
-						if (doOperation)
-						{
-							selectedObject.ClearChildren();
-							selectedObject.Parent.RemoveChild(selectedObject);
-							selectedObject = null;
-							model.ProcessVertexData();
-							NJS_OBJECT[] models = model.GetObjects();
-							meshes = new Mesh[models.Length];
-							for (int i = 0; i < models.Length; i++)
-								if (models[i].Attach != null)
-									try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-									catch { }
-							treeView1.Nodes.Clear();
-							nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-							AddTreeNode(model, treeView1.Nodes);
-							SelectedItemChanged();
-							unsaved = true;
-							draw = true;
-						}
-					}
+					DeleteSelectedModel();
+					draw = true;
 					break;
 
 				case ("Increase camera move speed"):
@@ -1504,6 +1481,9 @@ namespace SonicRetro.SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
+				addChildToolStripMenuItem.Enabled = true;
+				clearChildrenToolStripMenuItem.Enabled = selectedObject.Children.Count > 0;
+				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1515,7 +1495,10 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = null;
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
+				addChildToolStripMenuItem.Enabled = false;
 				editMaterialsToolStripMenuItem.Enabled = false;
+				clearChildrenToolStripMenuItem.Enabled = false;
+				deleteToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
@@ -2319,6 +2302,81 @@ namespace SonicRetro.SAModel.SAMDL
 		private void swapUVToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (model != null) SwapUV(model);
+		}
+
+		private void DeleteSelectedModel()
+		{
+			if (selectedObject != null && selectedObject.Parent != null)
+			{
+				bool doOperation = false;
+				DialogResult dialogResult = MessageBox.Show("This will delete the selected model and all its child models. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+				doOperation = dialogResult == DialogResult.Yes;
+				if (doOperation)
+				{
+					selectedObject.ClearChildren();
+					selectedObject.Parent.RemoveChild(selectedObject);
+					selectedObject = null;
+					RefreshModel();
+					SelectedItemChanged();
+					unsaved = true;
+				}
+			}
+		}
+
+		private void RefreshModel()
+		{
+			model.ProcessVertexData();
+			NJS_OBJECT[] models = model.GetObjects();
+			meshes = new Mesh[models.Length];
+			for (int i = 0; i < models.Length; i++)
+				if (models[i].Attach != null)
+					try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+					catch { }
+			treeView1.Nodes.Clear();
+			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+			AddTreeNode(model, treeView1.Nodes);
+		}
+
+		private void ClearChildren()
+		{
+			if (selectedObject != null)
+			{
+				bool doOperation = false;
+				DialogResult dialogResult = MessageBox.Show("This will delete the model's children. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+				doOperation = dialogResult == DialogResult.Yes;
+				if (doOperation)
+				{
+					selectedObject.ClearChildren();
+					RefreshModel();
+					DrawEntireModel();
+					SelectedItemChanged();
+					unsaved = true;
+				}
+			}
+		}
+
+		private void addChildToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (selectedObject != null)
+			{
+				selectedObject.AddChild(new NJS_OBJECT());
+				RefreshModel();
+				DrawEntireModel();
+				SelectedItemChanged();
+				unsaved = true;
+			}
+		}
+
+		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DeleteSelectedModel();
+			DrawEntireModel();
+		}
+
+		private void clearChildrenToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ClearChildren();
+			DrawEntireModel();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
