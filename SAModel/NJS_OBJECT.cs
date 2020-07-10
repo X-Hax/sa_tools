@@ -32,7 +32,17 @@ namespace SonicRetro.SAModel
 
 		public string Name { get; set; }
 
+		public bool IgnorePosition { get; set; }
+
+		public bool IgnoreRotation { get; set; }
+
+		public bool IgnoreScale { get; set; }
+
 		public bool RotateZYX { get; set; }
+
+		public bool SkipDraw { get; set; }
+
+		public bool SkipChildren { get; set; }
 
 		[DefaultValue(true)]
 		public bool Animate { get; set; }
@@ -102,6 +112,11 @@ namespace SonicRetro.SAModel
 				Name = "object_" + address.ToString("X8");
 			ObjectFlags flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
 			RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
+			SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
+			IgnorePosition = (flags & ObjectFlags.NoPosition) == ObjectFlags.NoPosition;
+			IgnoreRotation = (flags & ObjectFlags.NoRotate) == ObjectFlags.NoRotate;
+			IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
 			Animate = (flags & ObjectFlags.NoAnimate) == 0;
 			Morph = (flags & ObjectFlags.NoMorph) == 0;
 			int tmpaddr = ByteConverter.ToInt32(file, address + 4);
@@ -216,15 +231,15 @@ namespace SonicRetro.SAModel
 		public ObjectFlags GetFlags()
 		{
 			ObjectFlags flags = 0;
-			if (Position.IsEmpty)
+			if (IgnorePosition || Position.IsEmpty)
 				flags = ObjectFlags.NoPosition;
-			if (Rotation.IsEmpty)
+			if (IgnoreRotation || Rotation.IsEmpty)
 				flags |= ObjectFlags.NoRotate;
-			if (Scale.X == 1 && Scale.Y == 1 && Scale.Z == 1)
+			if (IgnoreScale || (Scale.X == 1 && Scale.Y == 1 && Scale.Z == 1))
 				flags |= ObjectFlags.NoScale;
-			if (Attach == null)
+			if (Attach == null || SkipDraw)
 				flags |= ObjectFlags.NoDisplay;
-			if (Children.Count == 0)
+			if (Children.Count == 0 || SkipChildren)
 				flags |= ObjectFlags.NoChildren;
 			if (RotateZYX)
 				flags |= ObjectFlags.RotateZYX;
