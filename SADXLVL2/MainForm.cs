@@ -71,6 +71,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		#endregion
 
 		#region UI & Customization
+		bool skipDefs;
 		bool lookKeyDown;
 		bool zoomKeyDown;
 		bool cameraKeyDown;
@@ -141,7 +142,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor = new EditorOptionsEditor(cam, true, true);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
@@ -253,7 +254,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
 			{
 				if (dialog.ShowDialog() == DialogResult.OK)
+				{
 					stageToLoad = dialog.SelectedStage;
+					skipDefs = dialog.skipobjdefs;
+				}
 			}
 
 			if (!string.IsNullOrEmpty(stageToLoad))
@@ -868,7 +872,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						ObjectData defgroup = objdefini[codeaddr];
 						ObjectDefinition def;
 
-						if (!string.IsNullOrEmpty(defgroup.CodeFile))
+						if (!skipDefs && !string.IsNullOrEmpty(defgroup.CodeFile))
 						{
 							progress.SetStep("Compiling: " + defgroup.CodeFile);
 
@@ -1005,7 +1009,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						ObjectData defgroup = objdefini[codeaddr];
 						ObjectDefinition def;
 
-						if (!string.IsNullOrEmpty(defgroup.CodeFile))
+						if (!skipDefs && !string.IsNullOrEmpty(defgroup.CodeFile))
 						{
 							progress.SetStep("Compiling: " + defgroup.CodeFile);
 
@@ -1839,9 +1843,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
-			List<RenderInfo> renderlist = new List<RenderInfo>();
+			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
+			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
 			#region Adding Level Geometry
+			
 			if (LevelData.LevelItems != null)
 			{
 				foreach (LevelItem item in LevelData.LevelItems)
@@ -1856,28 +1862,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 
 					if (display)
-						renderlist.AddRange(item.Render(d3ddevice, cam, transform));
+						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
 
-			renderlist.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
-
-			#region Adding splines
-			if (splinesToolStripMenuItem.Checked)
-			{
-				foreach (SplineData spline in LevelData.LevelSplines)
-					renderlist.AddRange(spline.Render(d3ddevice, cam, transform));
-			}
-			#endregion
-
-			#region Adding SET Layout
-			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
-			{
-				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
-					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
-			}
-			#endregion
+			renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
 
 			#region Adding Death Zones
 			if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
@@ -1885,16 +1875,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 				foreach (DeathZoneItem item in LevelData.DeathZones)
 				{
 					if (item.Visible)
-						renderlist.AddRange(item.Render(d3ddevice, cam, transform));
+						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
+
+			#region Adding SET Layout
+			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
+			{
+				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+			}
+			#endregion
+
 
 			#region Adding CAM Layout
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
 				foreach (CAMItem item in LevelData.CAMItems[LevelData.Character])
-					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1902,7 +1901,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
 			{
 				foreach (MissionSETItem item in LevelData.MissionSETItems[LevelData.Character])
-					renderlist.AddRange(item.Render(d3ddevice, cam, transform));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+			}
+			#endregion
+
+			#region Adding splines
+			if (splinesToolStripMenuItem.Checked)
+			{
+				foreach (SplineData spline in LevelData.LevelSplines)
+					renderlist_set.AddRange(spline.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1921,7 +1928,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
 						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
-						renderlist.Add(info);
+						renderlist_set.Add(info);
 					}
 				}
 				debugBoundsStack.Pop();
@@ -1932,7 +1939,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				if (dragPlaceLevelModel != null && dragPlaceLevelMesh != null)
 				{
-					renderlist.AddRange(dragPlaceLevelModel.DrawModel(
+					renderlist_set.AddRange(dragPlaceLevelModel.DrawModel(
 						d3ddevice.GetRenderState<FillMode>(RenderState.FillMode),
 						transform,
 						LevelData.Textures[LevelData.leveltexs],
@@ -1941,7 +1948,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			RenderInfo.Draw(renderlist, d3ddevice, cam);
+			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
+			cam.BuildFrustum(view, projection);
+			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
+
+			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.RenderDrawDistance);
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
+			cam.BuildFrustum(view, projection);
+			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 
@@ -3179,13 +3198,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 						switch (meshSet.PolyType)
 						{
 							case Basic_PolyType.Triangles:
-								faces =+ meshSet.Poly.Count;
+								faces = +meshSet.Poly.Count;
 								break;
 							case Basic_PolyType.Quads:
-								faces =+ meshSet.Poly.Count;
+								faces = +meshSet.Poly.Count;
 								break;
 							case Basic_PolyType.NPoly:
-								faces =+ meshSet.Poly.Count;
+								faces = +meshSet.Poly.Count;
 								break;
 							case Basic_PolyType.Strips:
 								foreach (Strip strip in meshSet.Poly)
@@ -3198,16 +3217,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 					}
 
-					selectionAppend = string.Format("{0}\nverts: {1}\nfaces: {2}\nvColors: {3}\nmaterials: {4}\nmeshes: {5}",
+					selectionAppend = string.Format("Name: {0}\nVertices: {1}\nFaces: {2}\nVertex Colors: {3}\nMaterials: {4}\nMeshes: {5}",
 					levelItem.Name, model.Vertex.Length, faces, vColors, model.Material.Count, model.Mesh.Count);
 				}
 			}
-			else if(levelItemCount > 1)
+			else if (levelItemCount > 1)
 			{
 				selectionAppend = "Multiple objects selected, can't display selection stats.";
 			}
+			else selectionAppend = "SET/CAM object selected, can't display selection stats.";
 
-			MessageBox.Show(LevelData.GetStats() + string.Format("\n{0}\n", selectionAppend),"Level/selection stats");
+			MessageBox.Show("Level stats:\n"+LevelData.GetStats() + string.Format("\n\nSelection stats:\n{0}\n", selectionAppend),"Level/selection stats");
 		}
 
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

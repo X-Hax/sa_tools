@@ -10,7 +10,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 		/// Gets the "tag" for the selected stage. (e.g "Action Stages\Emerald Coast")
 		/// </summary>
 		public string SelectedStage { get; private set; }
-		
+
+		public bool skipobjdefs { get; private set; }
 		private readonly Dictionary<string, List<string>> levels;
 
 		// TODO: Add parameter to select last loaded stage on open.
@@ -63,6 +64,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void buttonOK_Click(object sender, EventArgs e)
 		{
 			SelectedStage = comboCategories.GetItemText(comboCategories.SelectedItem) + '\\' + listStages.GetItemText(listStages.SelectedItem);
+			skipobjdefs = checkBox_SkipDefs.Checked;
 		}
 	}
 }
