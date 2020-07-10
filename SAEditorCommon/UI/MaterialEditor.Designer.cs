@@ -62,18 +62,20 @@
             this.specColorBox = new System.Windows.Forms.Panel();
             this.diffuseColorBox = new System.Windows.Forms.Panel();
             this.exponentTextBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.textureBox = new System.Windows.Forms.PictureBox();
             this.exponentLabel = new System.Windows.Forms.Label();
             this.specColorLabel = new System.Windows.Forms.Label();
             this.diffuseLabel = new System.Windows.Forms.Label();
             this.doneButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.label3 = new System.Windows.Forms.Label();
+            this.alphaSpecularNumeric = new System.Windows.Forms.NumericUpDown();
             this.flagsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
             this.generalSettingBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // comboMaterial
@@ -121,9 +123,9 @@
             this.flagsGroupBox.Controls.Add(this.clampUCheck);
             this.flagsGroupBox.Controls.Add(this.superSampleCheck);
             this.flagsGroupBox.Controls.Add(this.pickStatusCheck);
-            this.flagsGroupBox.Location = new System.Drawing.Point(278, 39);
+            this.flagsGroupBox.Location = new System.Drawing.Point(307, 39);
             this.flagsGroupBox.Name = "flagsGroupBox";
-            this.flagsGroupBox.Size = new System.Drawing.Size(246, 193);
+            this.flagsGroupBox.Size = new System.Drawing.Size(239, 182);
             this.flagsGroupBox.TabIndex = 4;
             this.flagsGroupBox.TabStop = false;
             this.flagsGroupBox.Text = "Flags";
@@ -131,7 +133,7 @@
             // labelFlags
             // 
             this.labelFlags.AutoSize = true;
-            this.labelFlags.Location = new System.Drawing.Point(47, 174);
+            this.labelFlags.Location = new System.Drawing.Point(47, 156);
             this.labelFlags.Name = "labelFlags";
             this.labelFlags.Size = new System.Drawing.Size(35, 13);
             this.labelFlags.TabIndex = 16;
@@ -140,7 +142,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 174);
+            this.label2.Location = new System.Drawing.Point(6, 156);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 15;
@@ -343,25 +345,26 @@
             // 
             // generalSettingBox
             // 
+            this.generalSettingBox.Controls.Add(this.alphaSpecularNumeric);
+            this.generalSettingBox.Controls.Add(this.label3);
             this.generalSettingBox.Controls.Add(this.labelAlpha);
             this.generalSettingBox.Controls.Add(this.alphaDiffuseNumeric);
             this.generalSettingBox.Controls.Add(this.dstAlphaCombo);
-            this.generalSettingBox.Controls.Add(this.destinationAlphaLabel);
-            this.generalSettingBox.Controls.Add(this.srcAlphaCombo);
-            this.generalSettingBox.Controls.Add(this.srcAlphaLabel);
-            this.generalSettingBox.Controls.Add(this.filterModeDropDown);
-            this.generalSettingBox.Controls.Add(this.filterModeLabel);
             this.generalSettingBox.Controls.Add(this.specColorBox);
             this.generalSettingBox.Controls.Add(this.diffuseColorBox);
+            this.generalSettingBox.Controls.Add(this.destinationAlphaLabel);
             this.generalSettingBox.Controls.Add(this.exponentTextBox);
-            this.generalSettingBox.Controls.Add(this.label1);
+            this.generalSettingBox.Controls.Add(this.srcAlphaCombo);
+            this.generalSettingBox.Controls.Add(this.filterModeLabel);
+            this.generalSettingBox.Controls.Add(this.srcAlphaLabel);
             this.generalSettingBox.Controls.Add(this.textureBox);
+            this.generalSettingBox.Controls.Add(this.filterModeDropDown);
             this.generalSettingBox.Controls.Add(this.exponentLabel);
             this.generalSettingBox.Controls.Add(this.specColorLabel);
             this.generalSettingBox.Controls.Add(this.diffuseLabel);
             this.generalSettingBox.Location = new System.Drawing.Point(12, 39);
             this.generalSettingBox.Name = "generalSettingBox";
-            this.generalSettingBox.Size = new System.Drawing.Size(254, 193);
+            this.generalSettingBox.Size = new System.Drawing.Size(289, 223);
             this.generalSettingBox.TabIndex = 3;
             this.generalSettingBox.TabStop = false;
             this.generalSettingBox.Text = "General";
@@ -369,7 +372,7 @@
             // labelAlpha
             // 
             this.labelAlpha.AutoSize = true;
-            this.labelAlpha.Location = new System.Drawing.Point(151, 17);
+            this.labelAlpha.Location = new System.Drawing.Point(141, 23);
             this.labelAlpha.Name = "labelAlpha";
             this.labelAlpha.Size = new System.Drawing.Size(37, 13);
             this.labelAlpha.TabIndex = 2;
@@ -377,7 +380,7 @@
             // 
             // alphaDiffuseNumeric
             // 
-            this.alphaDiffuseNumeric.Location = new System.Drawing.Point(194, 13);
+            this.alphaDiffuseNumeric.Location = new System.Drawing.Point(184, 19);
             this.alphaDiffuseNumeric.Maximum = new decimal(new int[] {
             255,
             0,
@@ -402,9 +405,9 @@
             "InverseSourceAlpha",
             "DestinationAlpha",
             "InverseDestinationAlpha"});
-            this.dstAlphaCombo.Location = new System.Drawing.Point(101, 166);
+            this.dstAlphaCombo.Location = new System.Drawing.Point(139, 188);
             this.dstAlphaCombo.Name = "dstAlphaCombo";
-            this.dstAlphaCombo.Size = new System.Drawing.Size(147, 21);
+            this.dstAlphaCombo.Size = new System.Drawing.Size(141, 21);
             this.dstAlphaCombo.TabIndex = 14;
             this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
             this.dstAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -412,7 +415,7 @@
             // destinationAlphaLabel
             // 
             this.destinationAlphaLabel.AutoSize = true;
-            this.destinationAlphaLabel.Location = new System.Drawing.Point(101, 150);
+            this.destinationAlphaLabel.Location = new System.Drawing.Point(136, 169);
             this.destinationAlphaLabel.Name = "destinationAlphaLabel";
             this.destinationAlphaLabel.Size = new System.Drawing.Size(93, 13);
             this.destinationAlphaLabel.TabIndex = 13;
@@ -431,9 +434,9 @@
             "InverseSourceAlpha",
             "DestinationAlpha",
             "InverseDestinationAlpha"});
-            this.srcAlphaCombo.Location = new System.Drawing.Point(101, 126);
+            this.srcAlphaCombo.Location = new System.Drawing.Point(139, 145);
             this.srcAlphaCombo.Name = "srcAlphaCombo";
-            this.srcAlphaCombo.Size = new System.Drawing.Size(147, 21);
+            this.srcAlphaCombo.Size = new System.Drawing.Size(141, 21);
             this.srcAlphaCombo.TabIndex = 12;
             this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
             this.srcAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -441,7 +444,7 @@
             // srcAlphaLabel
             // 
             this.srcAlphaLabel.AutoSize = true;
-            this.srcAlphaLabel.Location = new System.Drawing.Point(101, 110);
+            this.srcAlphaLabel.Location = new System.Drawing.Point(136, 129);
             this.srcAlphaLabel.Name = "srcAlphaLabel";
             this.srcAlphaLabel.Size = new System.Drawing.Size(74, 13);
             this.srcAlphaLabel.TabIndex = 11;
@@ -456,9 +459,9 @@
             "Bilinear",
             "Trilinear",
             "Reserved"});
-            this.filterModeDropDown.Location = new System.Drawing.Point(101, 86);
+            this.filterModeDropDown.Location = new System.Drawing.Point(139, 105);
             this.filterModeDropDown.Name = "filterModeDropDown";
-            this.filterModeDropDown.Size = new System.Drawing.Size(147, 21);
+            this.filterModeDropDown.Size = new System.Drawing.Size(141, 21);
             this.filterModeDropDown.TabIndex = 10;
             this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
             this.filterModeDropDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -466,7 +469,7 @@
             // filterModeLabel
             // 
             this.filterModeLabel.AutoSize = true;
-            this.filterModeLabel.Location = new System.Drawing.Point(101, 70);
+            this.filterModeLabel.Location = new System.Drawing.Point(139, 89);
             this.filterModeLabel.Name = "filterModeLabel";
             this.filterModeLabel.Size = new System.Drawing.Size(62, 13);
             this.filterModeLabel.TabIndex = 9;
@@ -475,7 +478,7 @@
             // specColorBox
             // 
             this.specColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.specColorBox.Location = new System.Drawing.Point(88, 40);
+            this.specColorBox.Location = new System.Drawing.Point(87, 44);
             this.specColorBox.Name = "specColorBox";
             this.specColorBox.Size = new System.Drawing.Size(37, 19);
             this.specColorBox.TabIndex = 5;
@@ -486,7 +489,7 @@
             // diffuseColorBox
             // 
             this.diffuseColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.diffuseColorBox.Location = new System.Drawing.Point(88, 15);
+            this.diffuseColorBox.Location = new System.Drawing.Point(87, 19);
             this.diffuseColorBox.Name = "diffuseColorBox";
             this.diffuseColorBox.Size = new System.Drawing.Size(37, 19);
             this.diffuseColorBox.TabIndex = 1;
@@ -496,28 +499,19 @@
             // 
             // exponentTextBox
             // 
-            this.exponentTextBox.Location = new System.Drawing.Point(194, 39);
+            this.exponentTextBox.Location = new System.Drawing.Point(87, 69);
             this.exponentTextBox.Name = "exponentTextBox";
-            this.exponentTextBox.Size = new System.Drawing.Size(54, 20);
+            this.exponentTextBox.Size = new System.Drawing.Size(37, 20);
             this.exponentTextBox.TabIndex = 7;
             this.exponentTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             this.exponentTextBox.Leave += new System.EventHandler(this.exponentTextBox_Leave);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 70);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Diffuse Map:";
-            // 
             // textureBox
             // 
             this.textureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textureBox.Location = new System.Drawing.Point(9, 86);
+            this.textureBox.Location = new System.Drawing.Point(8, 96);
             this.textureBox.Name = "textureBox";
-            this.textureBox.Size = new System.Drawing.Size(86, 86);
+            this.textureBox.Size = new System.Drawing.Size(116, 113);
             this.textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.textureBox.TabIndex = 4;
             this.textureBox.TabStop = false;
@@ -526,7 +520,7 @@
             // exponentLabel
             // 
             this.exponentLabel.AutoSize = true;
-            this.exponentLabel.Location = new System.Drawing.Point(133, 43);
+            this.exponentLabel.Location = new System.Drawing.Point(29, 72);
             this.exponentLabel.Name = "exponentLabel";
             this.exponentLabel.Size = new System.Drawing.Size(55, 13);
             this.exponentLabel.TabIndex = 6;
@@ -535,7 +529,7 @@
             // specColorLabel
             // 
             this.specColorLabel.AutoSize = true;
-            this.specColorLabel.Location = new System.Drawing.Point(6, 43);
+            this.specColorLabel.Location = new System.Drawing.Point(5, 47);
             this.specColorLabel.Name = "specColorLabel";
             this.specColorLabel.Size = new System.Drawing.Size(79, 13);
             this.specColorLabel.TabIndex = 4;
@@ -544,7 +538,7 @@
             // diffuseLabel
             // 
             this.diffuseLabel.AutoSize = true;
-            this.diffuseLabel.Location = new System.Drawing.Point(12, 18);
+            this.diffuseLabel.Location = new System.Drawing.Point(14, 24);
             this.diffuseLabel.Name = "diffuseLabel";
             this.diffuseLabel.Size = new System.Drawing.Size(70, 13);
             this.diffuseLabel.TabIndex = 0;
@@ -552,7 +546,8 @@
             // 
             // doneButton
             // 
-            this.doneButton.Location = new System.Drawing.Point(449, 238);
+            this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.doneButton.Location = new System.Drawing.Point(471, 234);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 23);
             this.doneButton.TabIndex = 0;
@@ -567,13 +562,35 @@
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(141, 47);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(37, 13);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "Alpha:";
+            // 
+            // alphaSpecularNumeric
+            // 
+            this.alphaSpecularNumeric.Location = new System.Drawing.Point(184, 44);
+            this.alphaSpecularNumeric.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.alphaSpecularNumeric.Name = "alphaSpecularNumeric";
+            this.alphaSpecularNumeric.Size = new System.Drawing.Size(54, 20);
+            this.alphaSpecularNumeric.TabIndex = 16;
+            this.alphaSpecularNumeric.ValueChanged += new System.EventHandler(this.alphaSpecularNumeric_ValueChanged);
+            // 
             // MaterialEditor
             // 
             this.AcceptButton = this.doneButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(536, 277);
+            this.ClientSize = new System.Drawing.Size(555, 269);
             this.ControlBox = false;
             this.Controls.Add(this.doneButton);
             this.Controls.Add(this.generalSettingBox);
@@ -598,6 +615,7 @@
             this.generalSettingBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -627,7 +645,6 @@
         private System.Windows.Forms.Label specColorLabel;
         private System.Windows.Forms.Label diffuseLabel;
         private System.Windows.Forms.PictureBox textureBox;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox exponentTextBox;
         private System.Windows.Forms.Panel diffuseColorBox;
         private System.Windows.Forms.ComboBox filterModeDropDown;
@@ -645,5 +662,7 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Label labelFlags;
 		private System.Windows.Forms.Label label2;
-    }
+		private System.Windows.Forms.NumericUpDown alphaSpecularNumeric;
+		private System.Windows.Forms.Label label3;
+	}
 }

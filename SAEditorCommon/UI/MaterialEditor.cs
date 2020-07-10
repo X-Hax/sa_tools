@@ -45,6 +45,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			diffuseColorBox.BackColor = materials[index].DiffuseColor;
 			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
 			specColorBox.BackColor = materials[index].SpecularColor;
+			alphaSpecularNumeric.Value = materials[index].SpecularColor.A;
 			if(textures != null && materials[index].TextureID < textures.Length) textureBox.Image = textures[materials[index].TextureID].Image;
 			exponentTextBox.Text = materials[index].Exponent.ToString();
 			filterModeDropDown.SelectedIndex = (int)materials[index].FilterMode;
@@ -102,8 +103,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			colorDialog.Color = materials[comboMaterial.SelectedIndex].DiffuseColor;
 			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
-				diffuseColorBox.BackColor = colorDialog.Color;
-				materials[comboMaterial.SelectedIndex].DiffuseColor = colorDialog.Color;
+				materials[comboMaterial.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, colorDialog.Color);
+				diffuseColorBox.BackColor = materials[comboMaterial.SelectedIndex].DiffuseColor;
 				RaiseFormUpdated();
 			}
 		}
@@ -113,8 +114,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			colorDialog.Color = materials[comboMaterial.SelectedIndex].SpecularColor;
 			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
-				specColorBox.BackColor = colorDialog.Color;
-				materials[comboMaterial.SelectedIndex].SpecularColor = colorDialog.Color;
+				materials[comboMaterial.SelectedIndex].SpecularColor = Color.FromArgb((int)alphaSpecularNumeric.Value, colorDialog.Color);
+				specColorBox.BackColor = materials[comboMaterial.SelectedIndex].SpecularColor;
 				RaiseFormUpdated();
 			}
 		}
@@ -149,6 +150,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private void alphaDiffuseNumeric_ValueChanged(object sender, EventArgs e)
 		{
 			materials[comboMaterial.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, materials[comboMaterial.SelectedIndex].DiffuseColor);
+			diffuseColorBox.BackColor = materials[comboMaterial.SelectedIndex].DiffuseColor;
 			RaiseFormUpdated();
 		}
 
@@ -292,6 +294,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					}
 					break;
 			}
+		}
+
+		private void alphaSpecularNumeric_ValueChanged(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].SpecularColor = Color.FromArgb((int)alphaSpecularNumeric.Value, materials[comboMaterial.SelectedIndex].SpecularColor);
+			specColorBox.BackColor = materials[comboMaterial.SelectedIndex].SpecularColor;
+			RaiseFormUpdated();
 		}
 	}
 }
