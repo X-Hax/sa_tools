@@ -115,12 +115,14 @@ namespace SADXsndSharp
 					list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
 					foreach (FENTRY item in list)
 					{
+						Text = $"SADXsndSharp - Saving item " + list.IndexOf(item) + " of " + files.Count.ToString() + ", please wait...";
 						sw.WriteLine(item.name);
 						File.WriteAllBytes(Path.Combine(dir, item.name), Compress.ProcessBuffer(item.file));
 					}
 					sw.Flush();
 					sw.Close();
 				}
+				Text = "SADXsndSharp - " + Path.GetFileName(filename);
 			}
 		}
 
