@@ -509,50 +509,50 @@ namespace SADXsndSharp
 			const byte NIBBLE_LOW = 0x0F;
 
 			//TODO:
-			private static void CompressBuffer(ref byte[] CompressedBuffer, byte[] DecompressedBuffer /*Starting at + 20*/)
+			private static void CompressBuffer(byte[] compressedBuffer, byte[] decompressedBuffer /*Starting at + 20*/)
 			{
 				
 			}
 			
 			// Decompresses a Lempel-Ziv buffer.
 			// TODO: Add documentation
-			private static void DecompressBuffer(ref byte[] DecompressedBuffer, byte[] CompressedBuffer /*Starting at + 20*/)
+			private static void DecompressBuffer(byte[] decompressedBuffer, byte[] compressedBuffer /*Starting at + 20*/)
 			{
 				
-				int CompressedBufferPointer = 0;
-				int DecompressedBufferPointer = 0;
+				int compressedBufferPointer = 0;
+				int decompressedBufferPointer = 0;
 
 				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
-				byte[] SlidingDictionary = new byte[SLIDING_LEN];
+				byte[] slidingDictionary = new byte[SLIDING_LEN];
 
 				//Set an offset to the dictionary insertion point
-				uint DictionaryInsertionOffset = SLIDING_LEN - 18;
+				uint dictionaryInsertionOffset = SLIDING_LEN - 18;
 
 				// Decompression chunk flags
-				byte CommandCounter = 0;
-				byte DecompressCommand = 0;
+				byte commandCounter = 0;
+				byte decompressCommand = 0;
 
-				while (DecompressedBufferPointer < DecompressedBuffer.Length)
+				while (decompressedBufferPointer < decompressedBuffer.Length)
 				{
-					//Is the decompress counter zero? Load the command
-					if (CommandCounter == 0)
+					// Is the decompress counter zero? Load the next chunk
+					if (commandCounter == 0)
 					{
-						CommandCounter = 8; //Each command has 8 sub commands, one bit per command
-						DecompressCommand = CompressedBuffer[CompressedBufferPointer++];
+						commandCounter = 8; // Each chunk header has 8 flags
+						decompressCommand = compressedBuffer[compressedBufferPointer++];
 					}
 
 					// Each chunk header is a byte and is a collection of 8 flags
 					// If the flag is set, load a character
 					// If the flag is clear, load an offset/length pair  
-					if ((DecompressCommand & 1) != 0)
+					if ((decompressCommand & 1) != 0)
 					{
 						// Copy the character
-						byte RawByte = CompressedBuffer[CompressedBufferPointer++];
-						DecompressedBuffer[DecompressedBufferPointer++] = RawByte;
+						byte rawByte = compressedBuffer[compressedBufferPointer++];
+						decompressedBuffer[decompressedBufferPointer++] = rawByte;
 
 						// Add the character to the dictionary, and slide the dictionary
-						SlidingDictionary[DictionaryInsertionOffset++] = RawByte;
-						DictionaryInsertionOffset &= SLIDING_MASK;
+						slidingDictionary[dictionaryInsertionOffset++] = rawByte;
+						dictionaryInsertionOffset &= SLIDING_MASK;
 
 					}
 					else
@@ -570,31 +570,31 @@ namespace SADXsndSharp
 						 *	};
 						 *	
 						 */
-						byte CurrentByte = CompressedBuffer[CompressedBufferPointer++];
-						byte NextByte = CompressedBuffer[CompressedBufferPointer++];
+						byte CurrentByte = compressedBuffer[compressedBufferPointer++];
+						byte NextByte = compressedBuffer[compressedBufferPointer++];
 
 						// Get the offset from the offset/length pair
-						int DictionaryOffset = ((NextByte & NIBBLE_HIGH) << 4) | CurrentByte;
+						int offset = ((NextByte & NIBBLE_HIGH) << 4) | CurrentByte;
 
 						// Get the length from the offset/length pair
-						int RunLength = (NextByte & NIBBLE_LOW) + 3; // The smallest length possible for an offset/length pair is 3
+						int length = (NextByte & NIBBLE_LOW) + 3; // The smallest length possible for an offset/length pair is 3
 
-						for (int i = 0; i < RunLength; i++)
+						for (int i = 0; i < length; i++)
 						{
-							byte RawByte = SlidingDictionary[(DictionaryOffset + i) & SLIDING_MASK];
-							DecompressedBuffer[DecompressedBufferPointer++] = RawByte;
+							byte rawByte = slidingDictionary[(offset + i) & SLIDING_MASK];
+							decompressedBuffer[decompressedBufferPointer++] = rawByte;
 
-							if (DecompressedBufferPointer >= DecompressedBuffer.Length) return;
+							if (decompressedBufferPointer >= decompressedBuffer.Length) return;
 
 							// Add the character to the dictionary, and slide the dictionary
-							SlidingDictionary[DictionaryInsertionOffset++] = RawByte;
-							DictionaryInsertionOffset &= SLIDING_MASK;
+							slidingDictionary[dictionaryInsertionOffset++] = rawByte;
+							dictionaryInsertionOffset &= SLIDING_MASK;
 						}
 					}
 
 					//Rotate the sub command
-					CommandCounter--;
-					DecompressCommand >>= 1;
+					commandCounter--;
+					decompressCommand >>= 1;
 				}
 			}
 
@@ -619,7 +619,7 @@ namespace SADXsndSharp
 					}
 
 					//Decompress the whole buffer
-					DecompressBuffer(ref DecompressedBuffer, CompBuf);
+					DecompressBuffer(DecompressedBuffer, CompBuf);
 
 					//Switch the buffers around so the decompressed one gets saved instead
 					return DecompressedBuffer;
