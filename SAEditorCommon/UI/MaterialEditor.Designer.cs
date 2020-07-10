@@ -51,31 +51,31 @@
             this.superSampleCheck = new System.Windows.Forms.CheckBox();
             this.pickStatusCheck = new System.Windows.Forms.CheckBox();
             this.generalSettingBox = new System.Windows.Forms.GroupBox();
+            this.alphaSpecularNumeric = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
             this.labelAlpha = new System.Windows.Forms.Label();
             this.alphaDiffuseNumeric = new System.Windows.Forms.NumericUpDown();
             this.dstAlphaCombo = new System.Windows.Forms.ComboBox();
-            this.destinationAlphaLabel = new System.Windows.Forms.Label();
-            this.srcAlphaCombo = new System.Windows.Forms.ComboBox();
-            this.srcAlphaLabel = new System.Windows.Forms.Label();
-            this.filterModeDropDown = new System.Windows.Forms.ComboBox();
-            this.filterModeLabel = new System.Windows.Forms.Label();
             this.specColorBox = new System.Windows.Forms.Panel();
             this.diffuseColorBox = new System.Windows.Forms.Panel();
+            this.destinationAlphaLabel = new System.Windows.Forms.Label();
             this.exponentTextBox = new System.Windows.Forms.TextBox();
+            this.srcAlphaCombo = new System.Windows.Forms.ComboBox();
+            this.filterModeLabel = new System.Windows.Forms.Label();
+            this.srcAlphaLabel = new System.Windows.Forms.Label();
             this.textureBox = new System.Windows.Forms.PictureBox();
+            this.filterModeDropDown = new System.Windows.Forms.ComboBox();
             this.exponentLabel = new System.Windows.Forms.Label();
             this.specColorLabel = new System.Windows.Forms.Label();
             this.diffuseLabel = new System.Windows.Forms.Label();
             this.doneButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.label3 = new System.Windows.Forms.Label();
-            this.alphaSpecularNumeric = new System.Windows.Forms.NumericUpDown();
             this.flagsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
             this.generalSettingBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // comboMaterial
@@ -369,10 +369,32 @@
             this.generalSettingBox.TabStop = false;
             this.generalSettingBox.Text = "General";
             // 
+            // alphaSpecularNumeric
+            // 
+            this.alphaSpecularNumeric.Location = new System.Drawing.Point(184, 44);
+            this.alphaSpecularNumeric.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.alphaSpecularNumeric.Name = "alphaSpecularNumeric";
+            this.alphaSpecularNumeric.Size = new System.Drawing.Size(54, 20);
+            this.alphaSpecularNumeric.TabIndex = 16;
+            this.alphaSpecularNumeric.ValueChanged += new System.EventHandler(this.alphaSpecularNumeric_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(141, 47);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(37, 13);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "Alpha:";
+            // 
             // labelAlpha
             // 
             this.labelAlpha.AutoSize = true;
-            this.labelAlpha.Location = new System.Drawing.Point(141, 23);
+            this.labelAlpha.Location = new System.Drawing.Point(141, 22);
             this.labelAlpha.Name = "labelAlpha";
             this.labelAlpha.Size = new System.Drawing.Size(37, 13);
             this.labelAlpha.TabIndex = 2;
@@ -412,69 +434,6 @@
             this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
             this.dstAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
-            // destinationAlphaLabel
-            // 
-            this.destinationAlphaLabel.AutoSize = true;
-            this.destinationAlphaLabel.Location = new System.Drawing.Point(136, 169);
-            this.destinationAlphaLabel.Name = "destinationAlphaLabel";
-            this.destinationAlphaLabel.Size = new System.Drawing.Size(93, 13);
-            this.destinationAlphaLabel.TabIndex = 13;
-            this.destinationAlphaLabel.Text = "Destination Alpha:";
-            // 
-            // srcAlphaCombo
-            // 
-            this.srcAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.srcAlphaCombo.FormattingEnabled = true;
-            this.srcAlphaCombo.Items.AddRange(new object[] {
-            "Zero",
-            "One",
-            "OtherColor",
-            "InverseOtherColor",
-            "SourceAlpha",
-            "InverseSourceAlpha",
-            "DestinationAlpha",
-            "InverseDestinationAlpha"});
-            this.srcAlphaCombo.Location = new System.Drawing.Point(139, 145);
-            this.srcAlphaCombo.Name = "srcAlphaCombo";
-            this.srcAlphaCombo.Size = new System.Drawing.Size(141, 21);
-            this.srcAlphaCombo.TabIndex = 12;
-            this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
-            this.srcAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
-            // 
-            // srcAlphaLabel
-            // 
-            this.srcAlphaLabel.AutoSize = true;
-            this.srcAlphaLabel.Location = new System.Drawing.Point(136, 129);
-            this.srcAlphaLabel.Name = "srcAlphaLabel";
-            this.srcAlphaLabel.Size = new System.Drawing.Size(74, 13);
-            this.srcAlphaLabel.TabIndex = 11;
-            this.srcAlphaLabel.Text = "Source Alpha:";
-            // 
-            // filterModeDropDown
-            // 
-            this.filterModeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterModeDropDown.FormattingEnabled = true;
-            this.filterModeDropDown.Items.AddRange(new object[] {
-            "PointSampled",
-            "Bilinear",
-            "Trilinear",
-            "Reserved"});
-            this.filterModeDropDown.Location = new System.Drawing.Point(139, 105);
-            this.filterModeDropDown.Name = "filterModeDropDown";
-            this.filterModeDropDown.Size = new System.Drawing.Size(141, 21);
-            this.filterModeDropDown.TabIndex = 10;
-            this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
-            this.filterModeDropDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
-            // 
-            // filterModeLabel
-            // 
-            this.filterModeLabel.AutoSize = true;
-            this.filterModeLabel.Location = new System.Drawing.Point(139, 89);
-            this.filterModeLabel.Name = "filterModeLabel";
-            this.filterModeLabel.Size = new System.Drawing.Size(62, 13);
-            this.filterModeLabel.TabIndex = 9;
-            this.filterModeLabel.Text = "Filter Mode:";
-            // 
             // specColorBox
             // 
             this.specColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -497,6 +456,15 @@
         "olor\' will act as a tint to the model.");
             this.diffuseColorBox.Click += new System.EventHandler(this.diffuseColorBox_Click);
             // 
+            // destinationAlphaLabel
+            // 
+            this.destinationAlphaLabel.AutoSize = true;
+            this.destinationAlphaLabel.Location = new System.Drawing.Point(136, 169);
+            this.destinationAlphaLabel.Name = "destinationAlphaLabel";
+            this.destinationAlphaLabel.Size = new System.Drawing.Size(93, 13);
+            this.destinationAlphaLabel.TabIndex = 13;
+            this.destinationAlphaLabel.Text = "Destination Alpha:";
+            // 
             // exponentTextBox
             // 
             this.exponentTextBox.Location = new System.Drawing.Point(87, 69);
@@ -505,6 +473,44 @@
             this.exponentTextBox.TabIndex = 7;
             this.exponentTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             this.exponentTextBox.Leave += new System.EventHandler(this.exponentTextBox_Leave);
+            // 
+            // srcAlphaCombo
+            // 
+            this.srcAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.srcAlphaCombo.FormattingEnabled = true;
+            this.srcAlphaCombo.Items.AddRange(new object[] {
+            "Zero",
+            "One",
+            "OtherColor",
+            "InverseOtherColor",
+            "SourceAlpha",
+            "InverseSourceAlpha",
+            "DestinationAlpha",
+            "InverseDestinationAlpha"});
+            this.srcAlphaCombo.Location = new System.Drawing.Point(139, 145);
+            this.srcAlphaCombo.Name = "srcAlphaCombo";
+            this.srcAlphaCombo.Size = new System.Drawing.Size(141, 21);
+            this.srcAlphaCombo.TabIndex = 12;
+            this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
+            this.srcAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
+            // 
+            // filterModeLabel
+            // 
+            this.filterModeLabel.AutoSize = true;
+            this.filterModeLabel.Location = new System.Drawing.Point(139, 89);
+            this.filterModeLabel.Name = "filterModeLabel";
+            this.filterModeLabel.Size = new System.Drawing.Size(62, 13);
+            this.filterModeLabel.TabIndex = 9;
+            this.filterModeLabel.Text = "Filter Mode:";
+            // 
+            // srcAlphaLabel
+            // 
+            this.srcAlphaLabel.AutoSize = true;
+            this.srcAlphaLabel.Location = new System.Drawing.Point(136, 129);
+            this.srcAlphaLabel.Name = "srcAlphaLabel";
+            this.srcAlphaLabel.Size = new System.Drawing.Size(74, 13);
+            this.srcAlphaLabel.TabIndex = 11;
+            this.srcAlphaLabel.Text = "Source Alpha:";
             // 
             // textureBox
             // 
@@ -516,6 +522,22 @@
             this.textureBox.TabIndex = 4;
             this.textureBox.TabStop = false;
             this.textureBox.Click += new System.EventHandler(this.textureBox_Click);
+            // 
+            // filterModeDropDown
+            // 
+            this.filterModeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.filterModeDropDown.FormattingEnabled = true;
+            this.filterModeDropDown.Items.AddRange(new object[] {
+            "PointSampled",
+            "Bilinear",
+            "Trilinear",
+            "Reserved"});
+            this.filterModeDropDown.Location = new System.Drawing.Point(139, 105);
+            this.filterModeDropDown.Name = "filterModeDropDown";
+            this.filterModeDropDown.Size = new System.Drawing.Size(141, 21);
+            this.filterModeDropDown.TabIndex = 10;
+            this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
+            this.filterModeDropDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
             // exponentLabel
             // 
@@ -538,7 +560,7 @@
             // diffuseLabel
             // 
             this.diffuseLabel.AutoSize = true;
-            this.diffuseLabel.Location = new System.Drawing.Point(14, 24);
+            this.diffuseLabel.Location = new System.Drawing.Point(14, 22);
             this.diffuseLabel.Name = "diffuseLabel";
             this.diffuseLabel.Size = new System.Drawing.Size(70, 13);
             this.diffuseLabel.TabIndex = 0;
@@ -561,28 +583,6 @@
             this.toolTip.AutoPopDelay = 30000;
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(141, 47);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(37, 13);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "Alpha:";
-            // 
-            // alphaSpecularNumeric
-            // 
-            this.alphaSpecularNumeric.Location = new System.Drawing.Point(184, 44);
-            this.alphaSpecularNumeric.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.alphaSpecularNumeric.Name = "alphaSpecularNumeric";
-            this.alphaSpecularNumeric.Size = new System.Drawing.Size(54, 20);
-            this.alphaSpecularNumeric.TabIndex = 16;
-            this.alphaSpecularNumeric.ValueChanged += new System.EventHandler(this.alphaSpecularNumeric_ValueChanged);
             // 
             // MaterialEditor
             // 
@@ -613,9 +613,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).EndInit();
             this.generalSettingBox.ResumeLayout(false);
             this.generalSettingBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.alphaDiffuseNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.alphaSpecularNumeric)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
