@@ -143,7 +143,7 @@
             this.drawDistSlider.SmallChange = 100;
             this.drawDistSlider.TabIndex = 0;
             this.drawDistSlider.TickFrequency = 500;
-            this.drawDistSlider.Value = 1000;
+            this.drawDistSlider.Value = 6000;
             this.drawDistSlider.Scroll += new System.EventHandler(this.drawDistSlider_Scroll);
             // 
             // doneButton
@@ -224,7 +224,7 @@
             this.levelDrawDistSlider.SmallChange = 100;
             this.levelDrawDistSlider.TabIndex = 3;
             this.levelDrawDistSlider.TickFrequency = 500;
-            this.levelDrawDistSlider.Value = 1000;
+            this.levelDrawDistSlider.Value = 6000;
 			this.levelDrawDistSlider.Scroll += new System.EventHandler(this.levelDrawDistSlider_Scroll);
 			// 
 			// setDrawDistLabel
@@ -248,7 +248,7 @@
             this.setDrawDistSlider.SmallChange = 100;
             this.setDrawDistSlider.TabIndex = 5;
             this.setDrawDistSlider.TickFrequency = 500;
-            this.setDrawDistSlider.Value = 1000;
+            this.setDrawDistSlider.Value = 3000;
 			this.setDrawDistSlider.Scroll += new System.EventHandler(this.setDrawDistSlider_Scroll);
 			// 
 			// EditorOptionsEditor
