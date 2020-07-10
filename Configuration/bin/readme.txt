@@ -9,5 +9,6 @@ ModelConverter: Converts .sa1mdl files to .sa2mdl and vice versa
 PAKTool: Extracts and builds .PAK archives
 SETCodeGenerator: Creates object loading code from a SET file and an object list
 SplitNB: Extracts models from .NB files
+StructExporter: Converts .sa1lvl, .sa2lvl, .sa1mdl, .sa2mdl and .saanim files to C structs
 TextureRemap: Remaps texture IDs in a model file
 USplit: Universal tool to extract any data supported by SA Tools from a binary file
