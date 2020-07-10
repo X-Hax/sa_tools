@@ -508,6 +508,56 @@ namespace SADXsndSharp
 			const byte NIBBLE_HIGH = 0xF0;
 			const byte NIBBLE_LOW = 0x0F;
 
+			struct OffsetLengthPair
+			{
+				const ushort OFFSET_MASK = 0xFFF0;
+				const ushort LENGTH_MASK = 0x000F;
+
+				private ushort val;
+				public byte LowNibble
+				{
+					get
+					{
+						return (byte)(val & NIBBLE_LOW);
+					}
+					set
+					{
+						val &= NIBBLE_HIGH;
+						val |= value;
+					}
+				}
+				public byte HighNibble
+				{
+					get
+					{
+						return (byte)(val >> 8);
+					}
+					set
+					{
+						val &= NIBBLE_LOW;
+						val |= (ushort)(value << 8);
+					}
+				}
+
+				//TODO: Set
+				public int Offset
+				{
+					get
+					{
+						return val >> 4;
+					}
+				}
+
+				//TODO: Set
+				public int Length
+				{
+					get
+					{
+						return (val & LENGTH_MASK) + 3;
+					}
+				}
+			}
+
 			//TODO:
 			private static void CompressBuffer(byte[] compressedBuffer, byte[] decompressedBuffer /*Starting at + 20*/)
 			{
@@ -518,10 +568,11 @@ namespace SADXsndSharp
 			// TODO: Add documentation
 			private static void DecompressBuffer(byte[] decompressedBuffer, byte[] compressedBuffer /*Starting at + 20*/)
 			{
-				
+				OffsetLengthPair olPair = new OffsetLengthPair();
+
 				int compressedBufferPointer = 0;
 				int decompressedBufferPointer = 0;
-
+				
 				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
 				byte[] slidingDictionary = new byte[SLIDING_LEN];
 
@@ -570,14 +621,15 @@ namespace SADXsndSharp
 						 *	};
 						 *	
 						 */
-						byte CurrentByte = compressedBuffer[compressedBufferPointer++];
-						byte NextByte = compressedBuffer[compressedBufferPointer++];
+
+						olPair.HighNibble = compressedBuffer[compressedBufferPointer++];
+						olPair.LowNibble = compressedBuffer[compressedBufferPointer++];
 
 						// Get the offset from the offset/length pair
-						int offset = ((NextByte & NIBBLE_HIGH) << 4) | CurrentByte;
+						int offset = olPair.Offset;
 
 						// Get the length from the offset/length pair
-						int length = (NextByte & NIBBLE_LOW) + 3; // The smallest length possible for an offset/length pair is 3
+						int length = olPair.Length;
 
 						for (int i = 0; i < length; i++)
 						{
