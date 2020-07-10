@@ -16,6 +16,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		private static FillMode renderFillMode = FillMode.Solid;
 		private static Cull renderCullMode = Cull.None;
 		private static float renderDrawDistance = 6000f;
+		private static float levelDrawDistance = 6000f;
+		private static float setDrawDistance = 3000f;
 		private static bool overrideLighting = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
@@ -23,6 +25,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public static FillMode RenderFillMode { get { return renderFillMode; } set { renderFillMode = value; } }
 		public static Cull RenderCullMode { get { return renderCullMode; } set { renderCullMode = value; } }
 		public static float RenderDrawDistance { get { return renderDrawDistance; } set { renderDrawDistance = value; } }
+		public static float LevelDrawDistance { get { return levelDrawDistance; } set { levelDrawDistance = value; } }
+		public static float SetItemDrawDistance { get { return setDrawDistance; } set { setDrawDistance = value; } }
 		public static bool OverrideLighting { get { return overrideLighting; } set { overrideLighting = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }
 		public static Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }

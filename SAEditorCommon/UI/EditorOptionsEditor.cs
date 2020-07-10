@@ -16,23 +16,54 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private EditorCamera camera;
 		private ToolTip toolTip = new ToolTip();
 
-		public EditorOptionsEditor(EditorCamera camera)
+		public EditorOptionsEditor(EditorCamera camera, bool setdist_enabled_a, bool leveldist_enabled_a)
 		{
 			InitializeComponent();
 			this.camera = camera;
 			drawDistSlider.Value = (int)EditorOptions.RenderDrawDistance;
 			fillModeDropDown.SelectedIndex = (int)EditorOptions.RenderFillMode - 1;
 			cullModeDropdown.SelectedIndex = (int)EditorOptions.RenderCullMode - 1;
-			drawDistLabel.Text = String.Format("Draw Distance: {0}", drawDistSlider.Value);
+			if (setdist_enabled_a)
+			{
+				setDrawDistLabel.Enabled = true;
+				setDrawDistSlider.Enabled = true;
+
+			}
+			if (leveldist_enabled_a)
+			{
+				levelDrawDistLabel.Enabled = true;
+				levelDrawDistSlider.Enabled = true;
+			}
+			drawDistLabel.Text = String.Format("General: {0}", drawDistSlider.Value);
+			levelDrawDistLabel.Text = String.Format("Level Geometry: {0}", levelDrawDistSlider.Value); ;
+			setDrawDistLabel.Text = String.Format("SET/CAM Items: {0}", setDrawDistSlider.Value);
 			toolTip.SetToolTip(fullBrightCheck, "If the scene's lighting is making it hard to work, use this to temporarily set the lighting to flat-white.");
 			fullBrightCheck.Checked = EditorOptions.OverrideLighting;
 		}
 
 		private void drawDistSlider_Scroll(object sender, EventArgs e)
 		{
-			drawDistLabel.Text = String.Format("Draw Distance: {0}", drawDistSlider.Value);
+			if (drawDistSlider.Value < levelDrawDistSlider.Value) levelDrawDistSlider.Value = drawDistSlider.Value;
+			if (drawDistSlider.Value < setDrawDistSlider.Value) setDrawDistSlider.Value = drawDistSlider.Value;
+			drawDistLabel.Text = String.Format("General: {0}", drawDistSlider.Value);
 			EditorOptions.RenderDrawDistance = drawDistSlider.Value;
 			camera.DrawDistance = EditorOptions.RenderDrawDistance;
+			FormUpdated();
+		}
+
+		private void levelDrawDistSlider_Scroll(object sender, EventArgs e)
+		{
+			if (drawDistSlider.Value < levelDrawDistSlider.Value) drawDistSlider.Value = levelDrawDistSlider.Value;
+			levelDrawDistLabel.Text = String.Format("Level Geometry: {0}", levelDrawDistSlider.Value);
+			EditorOptions.LevelDrawDistance = levelDrawDistSlider.Value;
+			FormUpdated();
+		}
+
+		private void setDrawDistSlider_Scroll(object sender, EventArgs e)
+		{
+			if (drawDistSlider.Value < setDrawDistSlider.Value) drawDistSlider.Value = setDrawDistSlider.Value;
+			setDrawDistLabel.Text = String.Format("SET/CAM Items: {0}", setDrawDistSlider.Value);
+			EditorOptions.SetItemDrawDistance = setDrawDistSlider.Value;
 			FormUpdated();
 		}
 

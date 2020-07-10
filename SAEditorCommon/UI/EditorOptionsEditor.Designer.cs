@@ -38,11 +38,19 @@
             this.drawDistSlider = new System.Windows.Forms.TrackBar();
             this.doneButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.KeyboardShortcutButton = new System.Windows.Forms.Button();
             this.ResetDefaultKeybindButton = new System.Windows.Forms.Button();
+            this.KeyboardShortcutButton = new System.Windows.Forms.Button();
+            this.drawDistGroupBox = new System.Windows.Forms.GroupBox();
+            this.levelDrawDistLabel = new System.Windows.Forms.Label();
+            this.levelDrawDistSlider = new System.Windows.Forms.TrackBar();
+            this.setDrawDistLabel = new System.Windows.Forms.Label();
+            this.setDrawDistSlider = new System.Windows.Forms.TrackBar();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawDistSlider)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.drawDistGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.setDrawDistSlider)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -52,11 +60,9 @@
             this.groupBox1.Controls.Add(this.cullingLabel);
             this.groupBox1.Controls.Add(this.polyFillLabel);
             this.groupBox1.Controls.Add(this.fillModeDropDown);
-            this.groupBox1.Controls.Add(this.drawDistLabel);
-            this.groupBox1.Controls.Add(this.drawDistSlider);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(239, 226);
+            this.groupBox1.Size = new System.Drawing.Size(255, 168);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Render Options";
@@ -64,7 +70,7 @@
             // fullBrightCheck
             // 
             this.fullBrightCheck.AutoSize = true;
-            this.fullBrightCheck.Location = new System.Drawing.Point(18, 191);
+            this.fullBrightCheck.Location = new System.Drawing.Point(15, 136);
             this.fullBrightCheck.Name = "fullBrightCheck";
             this.fullBrightCheck.Size = new System.Drawing.Size(198, 17);
             this.fullBrightCheck.TabIndex = 5;
@@ -80,7 +86,7 @@
             "None (Draws both sides)",
             "Clockwise",
             "Counter-Clockwise"});
-            this.cullModeDropdown.Location = new System.Drawing.Point(18, 153);
+            this.cullModeDropdown.Location = new System.Drawing.Point(15, 98);
             this.cullModeDropdown.Name = "cullModeDropdown";
             this.cullModeDropdown.Size = new System.Drawing.Size(196, 21);
             this.cullModeDropdown.TabIndex = 4;
@@ -89,7 +95,7 @@
             // cullingLabel
             // 
             this.cullingLabel.AutoSize = true;
-            this.cullingLabel.Location = new System.Drawing.Point(15, 137);
+            this.cullingLabel.Location = new System.Drawing.Point(12, 82);
             this.cullingLabel.Name = "cullingLabel";
             this.cullingLabel.Size = new System.Drawing.Size(90, 13);
             this.cullingLabel.TabIndex = 2;
@@ -98,7 +104,7 @@
             // polyFillLabel
             // 
             this.polyFillLabel.AutoSize = true;
-            this.polyFillLabel.Location = new System.Drawing.Point(15, 81);
+            this.polyFillLabel.Location = new System.Drawing.Point(12, 26);
             this.polyFillLabel.Name = "polyFillLabel";
             this.polyFillLabel.Size = new System.Drawing.Size(93, 13);
             this.polyFillLabel.TabIndex = 3;
@@ -112,7 +118,7 @@
             "Vertex-Only",
             "Wireframe",
             "Solid"});
-            this.fillModeDropDown.Location = new System.Drawing.Point(18, 97);
+            this.fillModeDropDown.Location = new System.Drawing.Point(15, 42);
             this.fillModeDropDown.Name = "fillModeDropDown";
             this.fillModeDropDown.Size = new System.Drawing.Size(196, 21);
             this.fillModeDropDown.TabIndex = 2;
@@ -121,15 +127,15 @@
             // drawDistLabel
             // 
             this.drawDistLabel.AutoSize = true;
-            this.drawDistLabel.Location = new System.Drawing.Point(15, 21);
+            this.drawDistLabel.Location = new System.Drawing.Point(15, 25);
             this.drawDistLabel.Name = "drawDistLabel";
-            this.drawDistLabel.Size = new System.Drawing.Size(80, 13);
+            this.drawDistLabel.Size = new System.Drawing.Size(47, 13);
             this.drawDistLabel.TabIndex = 1;
-            this.drawDistLabel.Text = "Draw Distance:";
+            this.drawDistLabel.Text = "General:";
             // 
             // drawDistSlider
             // 
-            this.drawDistSlider.Location = new System.Drawing.Point(6, 38);
+            this.drawDistSlider.Location = new System.Drawing.Point(6, 41);
             this.drawDistSlider.Maximum = 30000;
             this.drawDistSlider.Minimum = 1000;
             this.drawDistSlider.Name = "drawDistSlider";
@@ -143,7 +149,7 @@
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(437, 252);
+            this.doneButton.Location = new System.Drawing.Point(443, 252);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 23);
             this.doneButton.TabIndex = 1;
@@ -155,22 +161,12 @@
             // 
             this.groupBox2.Controls.Add(this.ResetDefaultKeybindButton);
             this.groupBox2.Controls.Add(this.KeyboardShortcutButton);
-            this.groupBox2.Location = new System.Drawing.Point(257, 12);
+            this.groupBox2.Location = new System.Drawing.Point(12, 186);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(255, 226);
+            this.groupBox2.Size = new System.Drawing.Size(255, 89);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Input Options";
-            // 
-            // KeyboardShortcutButton
-            // 
-            this.KeyboardShortcutButton.Location = new System.Drawing.Point(6, 21);
-            this.KeyboardShortcutButton.Name = "KeyboardShortcutButton";
-            this.KeyboardShortcutButton.Size = new System.Drawing.Size(243, 23);
-            this.KeyboardShortcutButton.TabIndex = 0;
-            this.KeyboardShortcutButton.Text = "Configure Keyboard Shortcuts";
-            this.KeyboardShortcutButton.UseVisualStyleBackColor = true;
-            this.KeyboardShortcutButton.Click += new System.EventHandler(this.KeyboardShortcutButton_Click);
             // 
             // ResetDefaultKeybindButton
             // 
@@ -182,14 +178,88 @@
             this.ResetDefaultKeybindButton.UseVisualStyleBackColor = true;
             this.ResetDefaultKeybindButton.Click += new System.EventHandler(this.ResetDefaultKeybindButton_Click);
             // 
-            // EditorOptionsEditor
+            // KeyboardShortcutButton
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.KeyboardShortcutButton.Location = new System.Drawing.Point(6, 21);
+            this.KeyboardShortcutButton.Name = "KeyboardShortcutButton";
+            this.KeyboardShortcutButton.Size = new System.Drawing.Size(243, 23);
+            this.KeyboardShortcutButton.TabIndex = 0;
+            this.KeyboardShortcutButton.Text = "Configure Keyboard Shortcuts";
+            this.KeyboardShortcutButton.UseVisualStyleBackColor = true;
+            this.KeyboardShortcutButton.Click += new System.EventHandler(this.KeyboardShortcutButton_Click);
+            // 
+            // drawDistGroupBox
+            // 
+            this.drawDistGroupBox.Controls.Add(this.setDrawDistSlider);
+            this.drawDistGroupBox.Controls.Add(this.setDrawDistLabel);
+            this.drawDistGroupBox.Controls.Add(this.levelDrawDistSlider);
+            this.drawDistGroupBox.Controls.Add(this.levelDrawDistLabel);
+            this.drawDistGroupBox.Controls.Add(this.drawDistSlider);
+            this.drawDistGroupBox.Controls.Add(this.drawDistLabel);
+            this.drawDistGroupBox.Location = new System.Drawing.Point(275, 12);
+            this.drawDistGroupBox.Name = "drawDistGroupBox";
+            this.drawDistGroupBox.Size = new System.Drawing.Size(243, 234);
+            this.drawDistGroupBox.TabIndex = 3;
+            this.drawDistGroupBox.TabStop = false;
+            this.drawDistGroupBox.Text = "Draw Distance";
+            // 
+            // levelDrawDistLabel
+            // 
+            this.levelDrawDistLabel.AutoSize = true;
+            this.levelDrawDistLabel.Enabled = false;
+            this.levelDrawDistLabel.Location = new System.Drawing.Point(15, 89);
+            this.levelDrawDistLabel.Name = "levelDrawDistLabel";
+            this.levelDrawDistLabel.Size = new System.Drawing.Size(84, 13);
+            this.levelDrawDistLabel.TabIndex = 2;
+            this.levelDrawDistLabel.Text = "Level Geometry:";
+            // 
+            // levelDrawDistSlider
+            // 
+            this.levelDrawDistSlider.Enabled = false;
+            this.levelDrawDistSlider.Location = new System.Drawing.Point(6, 105);
+            this.levelDrawDistSlider.Maximum = 30000;
+            this.levelDrawDistSlider.Minimum = 1000;
+            this.levelDrawDistSlider.Name = "levelDrawDistSlider";
+            this.levelDrawDistSlider.Size = new System.Drawing.Size(227, 45);
+            this.levelDrawDistSlider.SmallChange = 100;
+            this.levelDrawDistSlider.TabIndex = 3;
+            this.levelDrawDistSlider.TickFrequency = 500;
+            this.levelDrawDistSlider.Value = 1000;
+			this.levelDrawDistSlider.Scroll += new System.EventHandler(this.levelDrawDistSlider_Scroll);
+			// 
+			// setDrawDistLabel
+			// 
+			this.setDrawDistLabel.AutoSize = true;
+            this.setDrawDistLabel.Enabled = false;
+            this.setDrawDistLabel.Location = new System.Drawing.Point(15, 153);
+            this.setDrawDistLabel.Name = "setDrawDistLabel";
+            this.setDrawDistLabel.Size = new System.Drawing.Size(87, 13);
+            this.setDrawDistLabel.TabIndex = 4;
+            this.setDrawDistLabel.Text = "SET/CAM Items:";
+			// 
+			// setDrawDistSlider
+			// 
+			this.setDrawDistSlider.Enabled = false;
+            this.setDrawDistSlider.Location = new System.Drawing.Point(6, 169);
+            this.setDrawDistSlider.Maximum = 30000;
+            this.setDrawDistSlider.Minimum = 1000;
+            this.setDrawDistSlider.Name = "setDrawDistSlider";
+            this.setDrawDistSlider.Size = new System.Drawing.Size(227, 45);
+            this.setDrawDistSlider.SmallChange = 100;
+            this.setDrawDistSlider.TabIndex = 5;
+            this.setDrawDistSlider.TickFrequency = 500;
+            this.setDrawDistSlider.Value = 1000;
+			this.setDrawDistSlider.Scroll += new System.EventHandler(this.setDrawDistSlider_Scroll);
+			// 
+			// EditorOptionsEditor
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 287);
+            this.ClientSize = new System.Drawing.Size(530, 287);
+            this.Controls.Add(this.drawDistGroupBox);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.doneButton);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.doneButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "EditorOptionsEditor";
@@ -200,6 +270,10 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawDistSlider)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.drawDistGroupBox.ResumeLayout(false);
+            this.drawDistGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.setDrawDistSlider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -218,5 +292,10 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button KeyboardShortcutButton;
         private System.Windows.Forms.Button ResetDefaultKeybindButton;
-    }
+		private System.Windows.Forms.GroupBox drawDistGroupBox;
+		private System.Windows.Forms.TrackBar setDrawDistSlider;
+		private System.Windows.Forms.Label setDrawDistLabel;
+		private System.Windows.Forms.TrackBar levelDrawDistSlider;
+		private System.Windows.Forms.Label levelDrawDistLabel;
+	}
 }

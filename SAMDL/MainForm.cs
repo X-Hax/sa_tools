@@ -101,7 +101,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 
 			EditorOptions.Initialize(d3ddevice);
-			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor = new EditorOptionsEditor(cam, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>

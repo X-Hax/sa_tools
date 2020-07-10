@@ -87,7 +87,7 @@ namespace SA2EventViewer
 			EditorOptions.Initialize(d3ddevice);
 			EditorOptions.OverrideLighting = true;
 			EditorOptions.RenderDrawDistance = 10000;
-			optionsEditor = new EditorOptionsEditor(cam);
+			optionsEditor = new EditorOptionsEditor(cam, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
