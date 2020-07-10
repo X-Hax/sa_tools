@@ -502,18 +502,33 @@ namespace SADXsndSharp
 
 		internal static class Compress
 		{
+			const uint SLIDING_LEN = 0x1000;
+			const uint SLIDING_MASK = 0xFFF;
+
+			const byte NIBBLE_HIGH = 0xF0;
+			const byte NIBBLE_LOW = 0x0F;
+
+			//TODO:
+			private static void CompressBuffer(ref byte[] CompressedBuffer, byte[] DecompressedBuffer /*Starting at + 20*/)
+			{
+				
+			}
+			
+			// Decompresses a Lempel-Ziv buffer.
+			// TODO: Add documentation
 			private static void DecompressBuffer(ref byte[] DecompressedBuffer, byte[] CompressedBuffer /*Starting at + 20*/)
 			{
+				
 				int CompressedBufferPointer = 0;
 				int DecompressedBufferPointer = 0;
 
 				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
-				byte[] SlidingDictionary = new byte[4096];
+				byte[] SlidingDictionary = new byte[SLIDING_LEN];
 
 				//Set an offset to the dictionary insertion point
-				uint DictionaryInsertionOffset = 4078;
+				uint DictionaryInsertionOffset = SLIDING_LEN - 18;
 
-				//Decompression command
+				// Decompression chunk flags
 				byte CommandCounter = 0;
 				byte DecompressCommand = 0;
 
@@ -523,56 +538,57 @@ namespace SADXsndSharp
 					if (CommandCounter == 0)
 					{
 						CommandCounter = 8; //Each command has 8 sub commands, one bit per command
-						DecompressCommand = CompressedBuffer[CompressedBufferPointer];
-						CompressedBufferPointer++;
+						DecompressCommand = CompressedBuffer[CompressedBufferPointer++];
 					}
 
-					//Each command is a byte and is actually composed of 8 sub commands
-					//A bit of 1 means to copy the byte exactly as it is, and add it to the dictionary
-					//A bit of 0 means to load a special encoded format describing a repetition.
-					if ((DecompressCommand & 1) == 1)
+					// Each chunk header is a byte and is a collection of 8 flags
+					// If the flag is set, load a character
+					// If the flag is clear, load an offset/length pair  
+					if ((DecompressCommand & 1) != 0)
 					{
-						//Copy the byte exactly over
-						byte RawByte = CompressedBuffer[CompressedBufferPointer];
-						CompressedBufferPointer++;
-						DecompressedBuffer[DecompressedBufferPointer] = RawByte;
-						DecompressedBufferPointer++;
+						// Copy the character
+						byte RawByte = CompressedBuffer[CompressedBufferPointer++];
+						DecompressedBuffer[DecompressedBufferPointer++] = RawByte;
 
-						//Add the byte to the dictionary
-						SlidingDictionary[DictionaryInsertionOffset] = RawByte;
-						DictionaryInsertionOffset = (DictionaryInsertionOffset + 1) & 0xFFF; //Slide the dictionary
+						// Add the character to the dictionary, and slide the dictionary
+						SlidingDictionary[DictionaryInsertionOffset++] = RawByte;
+						DictionaryInsertionOffset &= SLIDING_MASK;
 
 					}
 					else
 					{
-						//The sub command tells us there is a repetition
-						//unsigned short RepetitionCode=(CompressedBufferPointer[1] << 8) | CompressedBufferPointer[0];
-						byte CurrentByte = CompressedBuffer[CompressedBufferPointer];
-						byte NextByte = CompressedBuffer[CompressedBufferPointer + 1]; //Lower nibble is the repetition count or RunLength
-						CompressedBufferPointer += 2;
+						// Load the offset/length pair
 
-						//Calculate the offset of the byte to use in the sliding dictionary
-						int DictionaryOffset = ((NextByte & 0xF0) << 4) | CurrentByte;
+						// Structure reperesnted in C:
+						/*
+						 *	typedef unsigned short u16;
+						 *	
+						 *	struct OffsetLengthPair
+						 *	{
+						 *		u16 offset : 12;
+						 *		u16 length : 4;
+						 *	};
+						 *	
+						 */
+						byte CurrentByte = CompressedBuffer[CompressedBufferPointer++];
+						byte NextByte = CompressedBuffer[CompressedBufferPointer++];
 
-						//It is not really run length compression, but instead it is a dictionary based method
-						//I just ran out of ideas what to name the variables
-						int RunCounter = 0;
-						int RunLength = (NextByte & 0xF) + 3; //Compression defines a repetition to be at minimum three bytes
+						// Get the offset from the offset/length pair
+						int DictionaryOffset = ((NextByte & NIBBLE_HIGH) << 4) | CurrentByte;
 
-						while (RunCounter < RunLength)
+						// Get the length from the offset/length pair
+						int RunLength = (NextByte & NIBBLE_LOW) + 3; // The smallest length possible for an offset/length pair is 3
+
+						for (int i = 0; i < RunLength; i++)
 						{
-							byte RawByte = SlidingDictionary[((RunCounter + DictionaryOffset) & 0xFFF)];
-							DecompressedBuffer[DecompressedBufferPointer] = RawByte;
-							DecompressedBufferPointer++;
+							byte RawByte = SlidingDictionary[(DictionaryOffset + i) & SLIDING_MASK];
+							DecompressedBuffer[DecompressedBufferPointer++] = RawByte;
 
-							if (DecompressedBufferPointer >= DecompressedBuffer.Length)
-								return;
+							if (DecompressedBufferPointer >= DecompressedBuffer.Length) return;
 
-							//Add the byte to the dictionary
-							SlidingDictionary[DictionaryInsertionOffset] = RawByte;
-							DictionaryInsertionOffset = (DictionaryInsertionOffset + 1) & 0xFFF; //Slide the dictionary
-
-							RunCounter++;
+							// Add the character to the dictionary, and slide the dictionary
+							SlidingDictionary[DictionaryInsertionOffset++] = RawByte;
+							DictionaryInsertionOffset &= SLIDING_MASK;
 						}
 					}
 
