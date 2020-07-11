@@ -2354,6 +2354,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			item = null;
 			Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
 			Viewport viewport = d3ddevice.Viewport;
+			viewport.Width = RenderPanel.Width;
+			viewport.Height = RenderPanel.Height;
 			Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 			Matrix view = d3ddevice.GetTransform(TransformState.View);
 			Vector3 Near, Far;
@@ -2559,6 +2561,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.None:
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
+					viewport.Width = RenderPanel.Width;
+					viewport.Height = RenderPanel.Height;
 					Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 					Matrix view = d3ddevice.GetTransform(TransformState.View);
 					Vector3 Near = mousepos;
@@ -3629,6 +3633,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				Vector3 mousepos = new Vector3(mousePanelPoint.X, mousePanelPoint.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
+				viewport.Width = RenderPanel.Width;
+				viewport.Height = RenderPanel.Height;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Matrix camMatrix = cam.ToMatrix();
@@ -3793,5 +3799,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			
 			return mru;
 		}
+
 	}
 }
