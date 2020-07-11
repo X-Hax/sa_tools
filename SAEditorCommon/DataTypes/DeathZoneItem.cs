@@ -51,8 +51,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			: base(selectionManager)
 		{
 			Model = model;
+			if (model.Attach is BasicAttach)
+			{
+				BasicAttach attach = (BasicAttach)model.Attach;
+				if (attach.Material.Count == 0) attach.Material.Add(new NJS_MATERIAL());
+				attach.Material[0].DiffuseColor = System.Drawing.Color.FromArgb(96, 255, 0, 0);
+				attach.Material[0].Flags = 0x96102400;
+			}
 			model.ProcessVertexData();
 			Flags = flags;
+			
 			Mesh = Model.Attach.CreateD3DMesh();
 
 			rotateZYX = Model.RotateZYX;
@@ -80,14 +88,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (LevelData.Textures.Count > 0)
 			{
-				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
+				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, true));
 			}
 			else
 			{
-				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, false));
+				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, true));
 			}
 			if (Selected)
-				result.AddRange(Model.DrawModelInvert(transform, Mesh, false));
+				result.AddRange(Model.DrawModelInvert(transform, Mesh, true));
 			return result;
 		}
 
