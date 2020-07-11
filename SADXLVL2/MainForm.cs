@@ -121,7 +121,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (Program.args.Length > 0)
 			{
-				systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
+				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
 				LoadINI(Program.args[0]);
 				ShowLevelSelect();
 			}
