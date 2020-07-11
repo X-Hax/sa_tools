@@ -42,12 +42,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			string sadxGamePathInvalidReason = "";
 
-			if (!SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
+			if (args.Length == 0 && !SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
 			{
-				MessageBox.Show(string.Format("The SADX game folder was incorrect because: {0}.\n Please run ProjectManager to configure SADX game path.",
-					sadxGamePathInvalidReason), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-				return;
+				sadxGameFolder = "";
 			}
 			else sadxGameFolder = settings.SADXPCPath;
 

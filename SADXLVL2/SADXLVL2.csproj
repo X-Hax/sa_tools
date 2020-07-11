@@ -94,6 +94,12 @@
     <Compile Include="ProjectSelectDialog.Designer.cs">
       <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="PathWarning.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathWarning.Designer.cs">
+      <DependentUpon>PathWarning.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -115,6 +121,9 @@
     </Compile>
     <EmbeddedResource Include="ProjectSelectDialog.resx">
       <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PathWarning.resx">
+      <DependentUpon>PathWarning.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />

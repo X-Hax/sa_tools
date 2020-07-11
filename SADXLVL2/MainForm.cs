@@ -2,6 +2,7 @@
 using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -50,6 +51,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData ini;
+		string logFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SADXLVL2.log";
+		List<string> log = new List<string>();
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
@@ -106,7 +109,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			modelLibraryControl1.InitRenderer();
 			MessageList = new Dictionary<string, int>();
 			InitDisableInvalidControls();
-
+			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			Settings.Reload();
 
 			if(Settings.ShowWelcomeScreen)
@@ -118,11 +121,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (Program.args.Length > 0)
 			{
+				systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
 				LoadINI(Program.args[0]);
 				ShowLevelSelect();
 			}
-			else
+			else if (Program.SADXGameFolder == "")
 			{
+				ShowPathWarning();
+			}
+			else
+				{
 				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
 				{
 					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
@@ -295,7 +303,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenNewProject();
+			if (Program.SADXGameFolder == "")
+			{
+				ShowPathWarning();
+			}
+			else OpenNewProject();
 		}
 
 		private void LoadProject(string projectName)
@@ -565,13 +577,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
 
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
-				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
+				Texture[] d3dTextures;
+				if (textureBitmaps != null)
+				{
+					d3dTextures = new Texture[textureBitmaps.Length];
+					for (int i = 0; i < textureBitmaps.Length; i++)
+						d3dTextures[i] = textureBitmaps[i].Image.ToTexture(d3ddevice);
 
-				for (int i = 0; i < textureBitmaps.Length; i++)
-					d3dTextures[i] = textureBitmaps[i].Image.ToTexture(d3ddevice);
-
-				LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
-				LevelData.Textures.Add(pvmName, d3dTextures);
+					LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
+					LevelData.Textures.Add(pvmName, d3dTextures);
+				}
+				else
+				{
+					log.Add("Unable to load texture file: " + GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
+				}
 			}
 		}
 
@@ -925,7 +944,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						{
 							CopyDefaultObjectDefintions();
 							initerror = true;
-							AddMessage("Please reload the level to complete the operation.", 180);
+							MessageBox.Show("Please reload the level to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
 							return;
 						}
 					}
@@ -935,7 +954,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+						List<string> errorStrings = new List<string> { "SET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -950,13 +969,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
-
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
-						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-											+
-											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.", 300);
+						log.AddRange(errorStrings.ToArray());
+						AddMessage(count + ((count == 1) ? " SET object" : " SET objects") + " failed to load their model(s).\n"
+											+ "Please check SET object load errors in the log for details.", 300);
 					}
 
 					// Loading SET Layout
@@ -981,17 +996,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
 							}
 							else
+							{
 								LevelData.AssignSetList(i, new List<SETItem>());
+							}
 						}
 					}
 					else
 					{
 						LevelData.NullifySETItems();
+						AddMessage("Object definitions not found, SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
+					AddMessage("Object definitions not found, SET files skipped", 180);
 				}
 
 				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
@@ -1140,7 +1159,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
 							if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
 
-							if (setfile != null)
+							if (setfile != null && prmfile != null)
 							{
 								progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
 
@@ -1170,7 +1189,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+						List<string> errorStrings = new List<string> { "Mission SET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -1186,13 +1205,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
 
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+						log.AddRange(errorStrings.ToArray());
 
-						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-										+
-										"\nThe level will still display, but the objects in question will not display their proper models." +
-										"\n\nPlease check the log for details.", 180);
+						AddMessage(count + ((count == 1) ? " Mission SET object" : " Mission SET objects") + " failed to load their model(s).\n"
+										+ "Please check Mission SET object load errors in the log for details.", 180);
 					}
 				}
 				else
@@ -1435,15 +1451,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo = new TransformGizmo();
 
 				Invoke((Action)progress.Close);
+				if (MessageList.Count > 0)
+				{
+					log.AddRange(MessageList.Keys);
+				}
+				File.AppendAllLines(logFilePath, log);
 			}
 #if !DEBUG
 			}
 			catch (Exception ex)
 			{
+				log.Add(ex.ToString());
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + Path.Combine(Environment.CurrentDirectory, "SADXLVL2.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + logFilePath + ".",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				File.WriteAllText("SADXLVL2.log", ex.ToString());
 				initerror = true;
 			}
 #endif
@@ -3726,6 +3747,61 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
 		{
 			if (!hideLibraries)	splitterDistanceBackup = splitContainer2.SplitterDistance;
+		}
+
+		private bool ShowPathWarning()
+		{
+			bool result;
+			using (PathWarning dialog = new PathWarning(this, GetRecentFiles()))
+			{
+				if (result = (dialog.ShowDialog() == DialogResult.OK))
+				{
+					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
+					if (Settings.MRUList.Count > 10)
+					{
+						for (int i = 9; i < Settings.MRUList.Count; i++)
+						{
+							Settings.MRUList.RemoveAt(i);
+						}
+					}
+					if (!Settings.MRUList.Contains(dialog.SelectedItem)) Settings.MRUList.Insert(0, dialog.SelectedItem);
+					else
+					{
+						Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(dialog.SelectedItem));
+						Settings.MRUList.Insert(0, dialog.SelectedItem);
+					}
+					LoadINI(dialog.SelectedItem);
+					ShowLevelSelect();
+				}
+				if (dialog.RemovedItems.Count > 0)
+				{
+					foreach (string deleted in dialog.RemovedItems)
+					{
+						if (Settings.MRUList.Contains(deleted)) Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(deleted));
+					}
+				}
+			}
+			return result;
+		}
+
+		private StringCollection GetRecentFiles()
+		{
+			if (Settings.MRUList == null)
+				Settings.MRUList = new StringCollection();
+
+			StringCollection mru = new StringCollection();
+
+			foreach (string item in Settings.MRUList)
+			{
+				if (File.Exists(item))
+				{
+					mru.Add(item);
+				}
+			}
+
+			Settings.MRUList = mru;
+			
+			return mru;
 		}
 	}
 }
