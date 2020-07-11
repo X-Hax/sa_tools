@@ -66,8 +66,6 @@
             this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllOfTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointOneObjectAtAnotherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,6 +89,7 @@
             this.cAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.missionSETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alternativeCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,6 +106,34 @@
             this.RenderPanel = new System.Windows.Forms.UserControl();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.pointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.libraryTabControl = new System.Windows.Forms.TabControl();
+            this.modelLibraryPage = new System.Windows.Forms.TabPage();
+            this.setLibraryPage = new System.Windows.Forms.TabPage();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.BackgroundPanel = new System.Windows.Forms.Panel();
+            this.sceneGraphControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.SceneGraphControl();
+            this.modelLibraryControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.ModelLibraryControl();
+            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
+            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
+            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
+            this.scaleModeButton = new System.Windows.Forms.ToolStripButton();
+            this.toolBig = new System.Windows.Forms.ToolStripButton();
+            this.toolGamma = new System.Windows.Forms.ToolStripButton();
+            this.toolAmy = new System.Windows.Forms.ToolStripButton();
+            this.toolKnuckles = new System.Windows.Forms.ToolStripButton();
+            this.toolTails = new System.Windows.Forms.ToolStripButton();
+            this.toolSonic = new System.Windows.Forms.ToolStripButton();
+            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelPieceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -117,34 +144,6 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.pointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.sceneGraphControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.SceneGraphControl();
-            this.libraryTabControl = new System.Windows.Forms.TabControl();
-            this.modelLibraryPage = new System.Windows.Forms.TabPage();
-            this.modelLibraryControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.ModelLibraryControl();
-            this.setLibraryPage = new System.Windows.Forms.TabPage();
-            this.splitter1 = new System.Windows.Forms.Splitter();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
-            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
-            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
-            this.scaleModeButton = new System.Windows.Forms.ToolStripButton();
-            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.toolBig = new System.Windows.Forms.ToolStripButton();
-            this.toolGamma = new System.Windows.Forms.ToolStripButton();
-            this.toolAmy = new System.Windows.Forms.ToolStripButton();
-            this.toolKnuckles = new System.Windows.Forms.ToolStripButton();
-            this.toolTails = new System.Windows.Forms.ToolStripButton();
-            this.toolSonic = new System.Windows.Forms.ToolStripButton();
-            this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.alternativeCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -468,23 +467,6 @@
             this.duplicateToToolStripMenuItem.Text = "Duplicate &To";
             this.duplicateToToolStripMenuItem.Click += new System.EventHandler(this.duplicateToToolStripMenuItem_Click);
             // 
-            // duplicateToolStripMenuItem
-            // 
-            this.duplicateToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.copy;
-            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
-            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
-            // 
-            // deleteSelectedToolStripMenuItem
-            // 
-            this.deleteSelectedToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.delete;
-            this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
-            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
-            this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
             // pointOneObjectAtAnotherToolStripMenuItem
             // 
             this.pointOneObjectAtAnotherToolStripMenuItem.Name = "pointOneObjectAtAnotherToolStripMenuItem";
@@ -548,7 +530,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
             this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-            this.characterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.characterToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.characterToolStripMenuItem.Text = "&Character";
             this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
             // 
@@ -597,7 +579,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-            this.levelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.levelToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.levelToolStripMenuItem.Text = "&Level";
             this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
             // 
@@ -625,7 +607,7 @@
             // 
             this.deathZonesToolStripMenuItem.CheckOnClick = true;
             this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
-            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.deathZonesToolStripMenuItem.Text = "&Death Zones";
             this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
             // 
@@ -635,7 +617,7 @@
             this.backgroundToolStripMenuItem.CheckOnClick = true;
             this.backgroundToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.backgroundToolStripMenuItem.Text = "&Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
@@ -645,7 +627,7 @@
             this.sETITemsToolStripMenuItem.CheckOnClick = true;
             this.sETITemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.sETITemsToolStripMenuItem.Name = "sETITemsToolStripMenuItem";
-            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.sETITemsToolStripMenuItem.Text = "SET Items";
             this.sETITemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
             // 
@@ -653,7 +635,7 @@
             // 
             this.cAMItemsToolStripMenuItem.CheckOnClick = true;
             this.cAMItemsToolStripMenuItem.Name = "cAMItemsToolStripMenuItem";
-            this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.cAMItemsToolStripMenuItem.Text = "CAM Items";
             this.cAMItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.cAMItemsToolStripMenuItem_CheckedChanged);
             // 
@@ -661,7 +643,7 @@
             // 
             this.missionSETItemsToolStripMenuItem.CheckOnClick = true;
             this.missionSETItemsToolStripMenuItem.Name = "missionSETItemsToolStripMenuItem";
-            this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
             this.missionSETItemsToolStripMenuItem.Click += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
             // 
@@ -671,14 +653,22 @@
             this.splinesToolStripMenuItem.CheckOnClick = true;
             this.splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
-            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.splinesToolStripMenuItem.Text = "Splines";
             this.splinesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.splinesToolStripMenuItem_CheckedChanged);
+            // 
+            // alternativeCameraToolStripMenuItem
+            // 
+            this.alternativeCameraToolStripMenuItem.CheckOnClick = true;
+            this.alternativeCameraToolStripMenuItem.Name = "alternativeCameraToolStripMenuItem";
+            this.alternativeCameraToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.alternativeCameraToolStripMenuItem.Text = "Alternative Camera";
+            this.alternativeCameraToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides mouse cursor.";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
             // 
             // debugToolStripMenuItem
             // 
@@ -687,7 +677,7 @@
             this.boundsToolStripMenuItem,
             this.upgradeObjDefsToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.debugToolStripMenuItem.Text = "Debug";
             // 
             // statsToolStripMenuItem
@@ -780,7 +770,7 @@
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(661, 506);
+            this.RenderPanel.Size = new System.Drawing.Size(664, 491);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
             this.RenderPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragEnter);
@@ -812,6 +802,338 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(108, 142);
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(104, 6);
+            // 
+            // pointToolStripMenuItem
+            // 
+            this.pointToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.point;
+            this.pointToolStripMenuItem.Name = "pointToolStripMenuItem";
+            this.pointToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.pointToolStripMenuItem.Text = "Point";
+            this.pointToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 67);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+            this.splitContainer1.Size = new System.Drawing.Size(1203, 774);
+            this.splitContainer1.SplitterDistance = 860;
+            this.splitContainer1.TabIndex = 2;
+            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.libraryTabControl);
+            this.splitContainer2.Size = new System.Drawing.Size(856, 770);
+            this.splitContainer2.SplitterDistance = 491;
+            this.splitContainer2.TabIndex = 3;
+            this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.sceneGraphControl1);
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.RenderPanel);
+            this.splitContainer3.Size = new System.Drawing.Size(856, 491);
+            this.splitContainer3.SplitterDistance = 188;
+            this.splitContainer3.TabIndex = 0;
+            this.splitContainer3.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer3_SplitterMoved);
+            // 
+            // libraryTabControl
+            // 
+            this.libraryTabControl.Controls.Add(this.modelLibraryPage);
+            this.libraryTabControl.Controls.Add(this.setLibraryPage);
+            this.libraryTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.libraryTabControl.Location = new System.Drawing.Point(0, 0);
+            this.libraryTabControl.Name = "libraryTabControl";
+            this.libraryTabControl.SelectedIndex = 0;
+            this.libraryTabControl.Size = new System.Drawing.Size(856, 275);
+            this.libraryTabControl.TabIndex = 0;
+            // 
+            // modelLibraryPage
+            // 
+            this.modelLibraryPage.Controls.Add(this.modelLibraryControl1);
+            this.modelLibraryPage.Location = new System.Drawing.Point(4, 22);
+            this.modelLibraryPage.Name = "modelLibraryPage";
+            this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(3);
+            this.modelLibraryPage.Size = new System.Drawing.Size(848, 249);
+            this.modelLibraryPage.TabIndex = 1;
+            this.modelLibraryPage.Text = "Model Library";
+            this.modelLibraryPage.UseVisualStyleBackColor = true;
+            // 
+            // setLibraryPage
+            // 
+            this.setLibraryPage.Location = new System.Drawing.Point(4, 22);
+            this.setLibraryPage.Name = "setLibraryPage";
+            this.setLibraryPage.Padding = new System.Windows.Forms.Padding(3);
+            this.setLibraryPage.Size = new System.Drawing.Size(848, 249);
+            this.setLibraryPage.TabIndex = 0;
+            this.setLibraryPage.Text = "SET Library";
+            this.setLibraryPage.UseVisualStyleBackColor = true;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+            this.propertyGrid1.Size = new System.Drawing.Size(335, 770);
+            this.propertyGrid1.TabIndex = 13;
+            this.propertyGrid1.ToolbarVisible = false;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+            // 
+            // importFileDialog
+            // 
+            this.importFileDialog.Filter = "Model Files|*.obj;*.objf;*.txt;*.dae;*.fbx";
+            this.importFileDialog.Multiselect = true;
+            this.importFileDialog.RestoreDirectory = true;
+            this.importFileDialog.Title = "Select a file to import.";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Enabled = false;
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(36, 36);
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectModeButton,
+            this.moveModeButton,
+            this.rotateModeButton,
+            this.scaleModeButton,
+            this.gizmoSpaceComboBox,
+            this.toolBig,
+            this.toolGamma,
+            this.toolAmy,
+            this.toolKnuckles,
+            this.toolTails,
+            this.toolSonic,
+            this.pivotComboBox});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(1203, 43);
+            this.toolStrip1.TabIndex = 3;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // gizmoSpaceComboBox
+            // 
+            this.gizmoSpaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.gizmoSpaceComboBox.Items.AddRange(new object[] {
+            "Global",
+            "Local"});
+            this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
+            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 43);
+            this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
+            // 
+            // pivotComboBox
+            // 
+            this.pivotComboBox.Items.AddRange(new object[] {
+            "CenterMass",
+            "Origin"});
+            this.pivotComboBox.Name = "pivotComboBox";
+            this.pivotComboBox.Size = new System.Drawing.Size(121, 43);
+            this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
+            // 
+            // BackgroundPanel
+            // 
+            this.BackgroundPanel.AutoSize = true;
+            this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
+            this.BackgroundPanel.Name = "BackgroundPanel";
+            this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
+            this.BackgroundPanel.TabIndex = 2;
+            // 
+            // sceneGraphControl1
+            // 
+            this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
+            this.sceneGraphControl1.Name = "sceneGraphControl1";
+            this.sceneGraphControl1.Size = new System.Drawing.Size(188, 491);
+            this.sceneGraphControl1.TabIndex = 0;
+            // 
+            // modelLibraryControl1
+            // 
+            this.modelLibraryControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modelLibraryControl1.Location = new System.Drawing.Point(3, 3);
+            this.modelLibraryControl1.Name = "modelLibraryControl1";
+            this.modelLibraryControl1.SelectedModel = null;
+            this.modelLibraryControl1.Size = new System.Drawing.Size(842, 243);
+            this.modelLibraryControl1.TabIndex = 0;
+            // 
+            // selectModeButton
+            // 
+            this.selectModeButton.Checked = true;
+            this.selectModeButton.CheckOnClick = true;
+            this.selectModeButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.selectModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.selectModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.SelectIcon;
+            this.selectModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.selectModeButton.Name = "selectModeButton";
+            this.selectModeButton.Size = new System.Drawing.Size(40, 40);
+            this.selectModeButton.Text = "toolStripButton1";
+            this.selectModeButton.ToolTipText = "Select Item Mode";
+            this.selectModeButton.Click += new System.EventHandler(this.selectModeButton_Click);
+            // 
+            // moveModeButton
+            // 
+            this.moveModeButton.CheckOnClick = true;
+            this.moveModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.moveModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.MoveIcon;
+            this.moveModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.moveModeButton.Name = "moveModeButton";
+            this.moveModeButton.Size = new System.Drawing.Size(40, 40);
+            this.moveModeButton.Text = "toolStripButton1";
+            this.moveModeButton.ToolTipText = "Move Item Mode";
+            this.moveModeButton.Click += new System.EventHandler(this.moveModeButton_Click);
+            // 
+            // rotateModeButton
+            // 
+            this.rotateModeButton.CheckOnClick = true;
+            this.rotateModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.rotateModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.RotateIcon;
+            this.rotateModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.rotateModeButton.Name = "rotateModeButton";
+            this.rotateModeButton.Size = new System.Drawing.Size(40, 40);
+            this.rotateModeButton.Text = "toolStripButton1";
+            this.rotateModeButton.ToolTipText = "Rotate Item Mode";
+            this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
+            // 
+            // scaleModeButton
+            // 
+            this.scaleModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.scaleModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.ScaleIcon;
+            this.scaleModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.scaleModeButton.Name = "scaleModeButton";
+            this.scaleModeButton.Size = new System.Drawing.Size(40, 40);
+            this.scaleModeButton.Text = "toolStripButton1";
+            this.scaleModeButton.ToolTipText = "Scale Mode";
+            this.scaleModeButton.Click += new System.EventHandler(this.scaleModeButton_Click);
+            // 
+            // toolBig
+            // 
+            this.toolBig.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolBig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolBig.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zankib;
+            this.toolBig.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolBig.Name = "toolBig";
+            this.toolBig.Size = new System.Drawing.Size(40, 40);
+            this.toolBig.Text = "B";
+            this.toolBig.ToolTipText = "Switch to Big\'s item layout";
+            this.toolBig.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // toolGamma
+            // 
+            this.toolGamma.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolGamma.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolGamma.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_e;
+            this.toolGamma.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolGamma.Name = "toolGamma";
+            this.toolGamma.Size = new System.Drawing.Size(40, 40);
+            this.toolGamma.Text = "E";
+            this.toolGamma.ToolTipText = "Switch to Gamma\'s item layout";
+            this.toolGamma.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // toolAmy
+            // 
+            this.toolAmy.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolAmy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolAmy.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_a;
+            this.toolAmy.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolAmy.Name = "toolAmy";
+            this.toolAmy.Size = new System.Drawing.Size(40, 40);
+            this.toolAmy.Text = "A";
+            this.toolAmy.ToolTipText = "Switch to Amy\'s item layout";
+            this.toolAmy.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // toolKnuckles
+            // 
+            this.toolKnuckles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolKnuckles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolKnuckles.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_k;
+            this.toolKnuckles.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolKnuckles.Name = "toolKnuckles";
+            this.toolKnuckles.Size = new System.Drawing.Size(40, 40);
+            this.toolKnuckles.Text = "K";
+            this.toolKnuckles.ToolTipText = "Switch to Knuckles\'s item layout";
+            this.toolKnuckles.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // toolTails
+            // 
+            this.toolTails.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolTails.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolTails.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_t;
+            this.toolTails.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolTails.Name = "toolTails";
+            this.toolTails.Size = new System.Drawing.Size(40, 40);
+            this.toolTails.Text = "M";
+            this.toolTails.ToolTipText = "Switch to Tails\'s item layout";
+            this.toolTails.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // toolSonic
+            // 
+            this.toolSonic.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolSonic.Checked = true;
+            this.toolSonic.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolSonic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolSonic.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_s;
+            this.toolSonic.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolSonic.Name = "toolSonic";
+            this.toolSonic.Size = new System.Drawing.Size(40, 40);
+            this.toolSonic.Text = "S";
+            this.toolSonic.ToolTipText = "Switch to Sonic\'s item layout";
+            this.toolSonic.Click += new System.EventHandler(this.onClickCharacterButton);
+            // 
+            // duplicateToolStripMenuItem
+            // 
+            this.duplicateToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.copy;
+            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
+            this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
+            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
+            // 
+            // deleteSelectedToolStripMenuItem
+            // 
+            this.deleteSelectedToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.delete;
+            this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
+            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
+            this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -820,6 +1142,7 @@
             this.deathZoneToolStripMenuItem,
             this.cameraToolStripMenuItem,
             this.missionObjectToolStripMenuItem});
+            this.addToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.add;
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.addToolStripMenuItem.Text = "&Add...";
@@ -827,35 +1150,35 @@
             // levelPieceToolStripMenuItem
             // 
             this.levelPieceToolStripMenuItem.Name = "levelPieceToolStripMenuItem";
-            this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.levelPieceToolStripMenuItem.Text = "&Level Piece";
             this.levelPieceToolStripMenuItem.Click += new System.EventHandler(this.levelPieceToolStripMenuItem_Click);
             // 
             // objectToolStripMenuItem
             // 
             this.objectToolStripMenuItem.Name = "objectToolStripMenuItem";
-            this.objectToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.objectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.objectToolStripMenuItem.Text = "&Object";
             this.objectToolStripMenuItem.Click += new System.EventHandler(this.objectToolStripMenuItem_Click);
             // 
             // deathZoneToolStripMenuItem
             // 
             this.deathZoneToolStripMenuItem.Name = "deathZoneToolStripMenuItem";
-            this.deathZoneToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.deathZoneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deathZoneToolStripMenuItem.Text = "&Death Zone";
             this.deathZoneToolStripMenuItem.Click += new System.EventHandler(this.deathZoneToolStripMenuItem_Click);
             // 
             // cameraToolStripMenuItem
             // 
             this.cameraToolStripMenuItem.Name = "cameraToolStripMenuItem";
-            this.cameraToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.cameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cameraToolStripMenuItem.Text = "&Camera";
             this.cameraToolStripMenuItem.Click += new System.EventHandler(this.cameraToolStripMenuItem_Click);
             // 
             // missionObjectToolStripMenuItem
             // 
             this.missionObjectToolStripMenuItem.Name = "missionObjectToolStripMenuItem";
-            this.missionObjectToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.missionObjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.missionObjectToolStripMenuItem.Text = "&Mission Object";
             this.missionObjectToolStripMenuItem.Click += new System.EventHandler(this.missionObjectToolStripMenuItem_Click);
             // 
@@ -892,345 +1215,13 @@
             this.deleteToolStripMenuItem.Text = "&Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(104, 6);
-            // 
-            // pointToolStripMenuItem
-            // 
-            this.pointToolStripMenuItem.Name = "pointToolStripMenuItem";
-            this.pointToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.pointToolStripMenuItem.Text = "Point";
-            this.pointToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 52);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Panel1.Controls.Add(this.splitter1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer1.Size = new System.Drawing.Size(1203, 789);
-            this.splitContainer1.SplitterDistance = 860;
-            this.splitContainer1.TabIndex = 2;
-			this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
-			// 
-			// splitContainer2
-			// 
-			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer2.Location = new System.Drawing.Point(3, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.libraryTabControl);
-            this.splitContainer2.Size = new System.Drawing.Size(853, 785);
-            this.splitContainer2.SplitterDistance = 506;
-            this.splitContainer2.TabIndex = 3;
-            this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
-            // 
-            // splitContainer3
-            // 
-            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Name = "splitContainer3";
-			this.splitContainer3.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer3_SplitterMoved);
-			// 
-			// splitContainer3.Panel1
-			// 
-			this.splitContainer3.Panel1.Controls.Add(this.sceneGraphControl1);
-            // 
-            // splitContainer3.Panel2
-            // 
-            this.splitContainer3.Panel2.Controls.Add(this.RenderPanel);
-            this.splitContainer3.Size = new System.Drawing.Size(853, 506);
-            this.splitContainer3.SplitterDistance = 188;
-            this.splitContainer3.TabIndex = 0;
-            // 
-            // sceneGraphControl1
-            // 
-            this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
-            this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(188, 506);
-            this.sceneGraphControl1.TabIndex = 0;
-            // 
-            // libraryTabControl
-            // 
-            this.libraryTabControl.Controls.Add(this.modelLibraryPage);
-            this.libraryTabControl.Controls.Add(this.setLibraryPage);
-            this.libraryTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.libraryTabControl.Location = new System.Drawing.Point(0, 0);
-            this.libraryTabControl.Name = "libraryTabControl";
-            this.libraryTabControl.SelectedIndex = 0;
-            this.libraryTabControl.Size = new System.Drawing.Size(853, 275);
-            this.libraryTabControl.TabIndex = 0;
-            // 
-            // modelLibraryPage
-            // 
-            this.modelLibraryPage.Controls.Add(this.modelLibraryControl1);
-            this.modelLibraryPage.Location = new System.Drawing.Point(4, 22);
-            this.modelLibraryPage.Name = "modelLibraryPage";
-            this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(3);
-            this.modelLibraryPage.Size = new System.Drawing.Size(845, 249);
-            this.modelLibraryPage.TabIndex = 1;
-            this.modelLibraryPage.Text = "Model Library";
-            this.modelLibraryPage.UseVisualStyleBackColor = true;
-            // 
-            // modelLibraryControl1
-            // 
-            this.modelLibraryControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modelLibraryControl1.Location = new System.Drawing.Point(3, 3);
-            this.modelLibraryControl1.Name = "modelLibraryControl1";
-            this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(839, 243);
-            this.modelLibraryControl1.TabIndex = 0;
-            // 
-            // setLibraryPage
-            // 
-            this.setLibraryPage.Location = new System.Drawing.Point(4, 22);
-            this.setLibraryPage.Name = "setLibraryPage";
-            this.setLibraryPage.Padding = new System.Windows.Forms.Padding(3);
-            this.setLibraryPage.Size = new System.Drawing.Size(845, 249);
-            this.setLibraryPage.TabIndex = 0;
-            this.setLibraryPage.Text = "SET Library";
-            this.setLibraryPage.UseVisualStyleBackColor = true;
-            // 
-            // splitter1
-            // 
-            this.splitter1.Location = new System.Drawing.Point(0, 0);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 785);
-            this.splitter1.TabIndex = 2;
-            this.splitter1.TabStop = false;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-            this.propertyGrid1.Size = new System.Drawing.Size(335, 785);
-            this.propertyGrid1.TabIndex = 13;
-            this.propertyGrid1.ToolbarVisible = false;
-            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            // 
-            // importFileDialog
-            // 
-            this.importFileDialog.Filter = "Model Files|*.obj;*.objf;*.txt;*.dae;*.fbx";
-            this.importFileDialog.Multiselect = true;
-            this.importFileDialog.RestoreDirectory = true;
-            this.importFileDialog.Title = "Select a file to import.";
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Enabled = false;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.selectModeButton,
-            this.moveModeButton,
-            this.rotateModeButton,
-            this.scaleModeButton,
-            this.gizmoSpaceComboBox,
-            this.toolBig,
-            this.toolGamma,
-            this.toolAmy,
-            this.toolKnuckles,
-            this.toolTails,
-            this.toolSonic,
-            this.pivotComboBox});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1203, 25);
-            this.toolStrip1.TabIndex = 3;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // selectModeButton
-            // 
-            this.selectModeButton.Checked = true;
-            this.selectModeButton.CheckOnClick = true;
-            this.selectModeButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.selectModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.selectModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.SelectIcon;
-            this.selectModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.selectModeButton.Name = "selectModeButton";
-            this.selectModeButton.Size = new System.Drawing.Size(23, 22);
-            this.selectModeButton.Text = "toolStripButton1";
-            this.selectModeButton.ToolTipText = "Select Item Mode";
-            this.selectModeButton.Click += new System.EventHandler(this.selectModeButton_Click);
-            // 
-            // moveModeButton
-            // 
-            this.moveModeButton.CheckOnClick = true;
-            this.moveModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.moveModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.MoveIcon;
-            this.moveModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.moveModeButton.Name = "moveModeButton";
-            this.moveModeButton.Size = new System.Drawing.Size(23, 22);
-            this.moveModeButton.Text = "toolStripButton1";
-            this.moveModeButton.ToolTipText = "Move Item Mode";
-            this.moveModeButton.Click += new System.EventHandler(this.moveModeButton_Click);
-            // 
-            // rotateModeButton
-            // 
-            this.rotateModeButton.CheckOnClick = true;
-            this.rotateModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.rotateModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.RotateIcon;
-            this.rotateModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.rotateModeButton.Name = "rotateModeButton";
-            this.rotateModeButton.Size = new System.Drawing.Size(23, 22);
-            this.rotateModeButton.Text = "toolStripButton1";
-            this.rotateModeButton.ToolTipText = "Rotate Item Mode";
-            this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
-            // 
-            // scaleModeButton
-            // 
-            this.scaleModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.scaleModeButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.ScaleIcon;
-            this.scaleModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.scaleModeButton.Name = "scaleModeButton";
-            this.scaleModeButton.Size = new System.Drawing.Size(23, 22);
-            this.scaleModeButton.Text = "toolStripButton1";
-            this.scaleModeButton.ToolTipText = "Scale Mode";
-            this.scaleModeButton.Click += new System.EventHandler(this.scaleModeButton_Click);
-            // 
-            // gizmoSpaceComboBox
-            // 
-            this.gizmoSpaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.gizmoSpaceComboBox.Items.AddRange(new object[] {
-            "Global",
-            "Local"});
-            this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
-            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 25);
-            this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
-            // 
-            // toolBig
-            // 
-            this.toolBig.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolBig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolBig.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zankib;
-            this.toolBig.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolBig.Name = "toolBig";
-            this.toolBig.Size = new System.Drawing.Size(23, 22);
-            this.toolBig.Text = "B";
-            this.toolBig.ToolTipText = "Switch to Big\'s item layout";
-            this.toolBig.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // toolGamma
-            // 
-            this.toolGamma.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolGamma.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolGamma.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_e;
-            this.toolGamma.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolGamma.Name = "toolGamma";
-            this.toolGamma.Size = new System.Drawing.Size(23, 22);
-            this.toolGamma.Text = "E";
-            this.toolGamma.ToolTipText = "Switch to Gamma\'s item layout";
-            this.toolGamma.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // toolAmy
-            // 
-            this.toolAmy.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolAmy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolAmy.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_a;
-            this.toolAmy.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolAmy.Name = "toolAmy";
-            this.toolAmy.Size = new System.Drawing.Size(23, 22);
-            this.toolAmy.Text = "A";
-            this.toolAmy.ToolTipText = "Switch to Amy\'s item layout";
-            this.toolAmy.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // toolKnuckles
-            // 
-            this.toolKnuckles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolKnuckles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolKnuckles.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_k;
-            this.toolKnuckles.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolKnuckles.Name = "toolKnuckles";
-            this.toolKnuckles.Size = new System.Drawing.Size(23, 22);
-            this.toolKnuckles.Text = "K";
-            this.toolKnuckles.ToolTipText = "Switch to Knuckles\'s item layout";
-            this.toolKnuckles.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // toolTails
-            // 
-            this.toolTails.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolTails.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolTails.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_t;
-            this.toolTails.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolTails.Name = "toolTails";
-            this.toolTails.Size = new System.Drawing.Size(23, 22);
-            this.toolTails.Text = "M";
-            this.toolTails.ToolTipText = "Switch to Tails\'s item layout";
-            this.toolTails.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // toolSonic
-            // 
-            this.toolSonic.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolSonic.Checked = true;
-            this.toolSonic.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.toolSonic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolSonic.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_s;
-            this.toolSonic.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolSonic.Name = "toolSonic";
-            this.toolSonic.Size = new System.Drawing.Size(23, 22);
-            this.toolSonic.Text = "S";
-            this.toolSonic.ToolTipText = "Switch to Sonic\'s item layout";
-            this.toolSonic.Click += new System.EventHandler(this.onClickCharacterButton);
-            // 
-            // pivotComboBox
-            // 
-            this.pivotComboBox.Items.AddRange(new object[] {
-            "CenterMass",
-            "Origin"});
-            this.pivotComboBox.Name = "pivotComboBox";
-            this.pivotComboBox.Size = new System.Drawing.Size(121, 25);
-            this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
-            // 
-            // BackgroundPanel
-            // 
-            this.BackgroundPanel.AutoSize = true;
-            this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
-            this.BackgroundPanel.Name = "BackgroundPanel";
-            this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
-            this.BackgroundPanel.TabIndex = 2;
-            // 
-            // alternativeCameraToolStripMenuItem
-            // 
-            this.alternativeCameraToolStripMenuItem.CheckOnClick = true;
-            this.alternativeCameraToolStripMenuItem.Name = "alternativeCameraToolStripMenuItem";
-            this.alternativeCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.alternativeCameraToolStripMenuItem.Text = "Alternative Camera";
-            this.alternativeCameraToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides mouse cursor.";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1203, 841);
-            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.BackgroundPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1343,7 +1334,6 @@
 		private System.Windows.Forms.ToolStripMenuItem missionObjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolClearMissionSetItems;
         private System.Windows.Forms.ToolStripComboBox pivotComboBox;
-        private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.TabControl libraryTabControl;

@@ -151,8 +151,10 @@
     <None Include="Resources\delete.png" />
     <None Include="Resources\paste.png" />
     <None Include="Resources\UnknownImg.png" />
+    <None Include="Resources\add.png" />
     <Content Include="Resources\MoveIcon.png" />
     <Content Include="Resources\RotateIcon.png" />
+    <None Include="Resources\ScaleIcon.png" />
     <Content Include="Resources\SelectIcon.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
