@@ -78,7 +78,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
-			result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
+			if (LevelData.Textures.Count > 0)
+			{
+				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, false));
+			}
+			else
+			{
+				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, false));
+			}
 			if (Selected)
 				result.AddRange(Model.DrawModelInvert(transform, Mesh, false));
 			return result;
