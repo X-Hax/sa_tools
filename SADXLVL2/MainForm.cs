@@ -1855,11 +1855,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
-			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
-			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
-			cam.BuildFrustum(view, projection);
-
+			
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
@@ -1968,14 +1964,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
 
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.RenderDrawDistance);
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
 
@@ -1985,7 +1979,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.DrawDistance = 100000;
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
 
 			foreach (PointHelper pointHelper in PointHelper.Instances)
