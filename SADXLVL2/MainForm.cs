@@ -709,9 +709,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.leveltexs = null;
 				cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
-				Invoke((Action<IWin32Window>)progress.Show, this);
+					Invoke((Action<IWin32Window>)progress.Show, this);
 
-				if (d3ddevice == null)
+					if (d3ddevice == null)
 				{
 					progress.SetTask("Initializing Direct3D...");
 					Invoke((Action)InitializeDirect3D);
@@ -745,14 +745,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					BMPInfo[] TexBmps =
 						TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
-					Texture[] texs = new Texture[TexBmps.Length];
-					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-					if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-					if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-					LevelData.leveltexs = LevelData.geo.TextureFileName;
+						if (TexBmps != null)
+						{
+							Texture[] texs = new Texture[TexBmps.Length];
+							for (int j = 0; j < TexBmps.Length; j++)
+								texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+							if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+								LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+							if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+								LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+							LevelData.leveltexs = LevelData.geo.TextureFileName;
+						}
 				}
 
 				progress.StepProgress();
@@ -970,7 +973,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 						log.AddRange(errorStrings.ToArray());
 						AddMessage(count + ((count == 1) ? " SET object" : " SET objects") + " failed to load their model(s).\n"
-											+ "Please check SET object load errors in the log for details.", 300);
+											+ "Please check SET object load errors in the log for details.\n", 300);
 					}
 
 					// Loading SET Layout
@@ -1207,7 +1210,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						log.AddRange(errorStrings.ToArray());
 
 						AddMessage(count + ((count == 1) ? " Mission SET object" : " Mission SET objects") + " failed to load their model(s).\n"
-										+ "Please check Mission SET object load errors in the log for details.", 180);
+										+ "Please check Mission SET object load errors in the log for details.\n", 180);
 					}
 				}
 				else
@@ -1449,8 +1452,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				transformGizmo = new TransformGizmo();
 
-				Invoke((Action)progress.Close);
-				if (MessageList.Count > 0)
+					Invoke((Action)progress.Close);
+					if (MessageList.Count > 0)
 				{
 					log.AddRange(MessageList.Keys);
 				}
@@ -1460,7 +1463,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			catch (Exception ex)
 			{
-				log.Add(ex.ToString());
+				log.Add(ex.ToString()+"\n");
+				File.AppendAllLines(logFilePath, log);
 				MessageBox.Show(
 					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + logFilePath + ".",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
