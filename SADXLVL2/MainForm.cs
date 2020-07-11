@@ -80,8 +80,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
-		bool hideLibraries;
-		int splitterDistanceBackup;
 		bool displayDeathZonesManual;
 
 		// TODO: Make these both configurable.
@@ -116,7 +114,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				ShowWelcomeScreen();
 			}
-
+			if (Settings.LibrarySplitterPosition != 0) splitContainer2.SplitterDistance = Settings.LibrarySplitterPosition;
+			if (Settings.ItemsSplitterPosition != 0) splitContainer3.SplitterDistance = Settings.ItemsSplitterPosition;
+			if (Settings.PropertiesSplitterPosition != 0) splitContainer1.SplitterDistance = Settings.PropertiesSplitterPosition;
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
@@ -166,7 +166,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			};
 
 			sceneGraphControl1.InitSceneControl(selectedItems);
-			splitterDistanceBackup = splitContainer2.SplitterDistance;
 		}
 
 		/// <summary>
@@ -3729,24 +3728,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void splitContainer2_Click(object sender, EventArgs e)
+		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (!hideLibraries)
-			{
-				hideLibraries = true;
-				splitterDistanceBackup = splitContainer2.SplitterDistance;
-				splitContainer2.SplitterDistance = splitterDistanceBackup + splitContainer2.Panel2.Height;
-			}
-			else
-			{
-				hideLibraries = false;
-				splitContainer2.SplitterDistance = splitterDistanceBackup;
-			}
+			Settings.PropertiesSplitterPosition = splitContainer1.SplitterDistance;
+		}
+
+		private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			Settings.ItemsSplitterPosition = splitContainer3.SplitterDistance;
 		}
 
 		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (!hideLibraries)	splitterDistanceBackup = splitContainer2.SplitterDistance;
+			Settings.LibrarySplitterPosition = splitContainer2.SplitterDistance;
 		}
 
 		private bool ShowPathWarning()
