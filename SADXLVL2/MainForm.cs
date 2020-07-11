@@ -1852,16 +1852,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.BeginScene();
 			//all drawings after this line
 			MatrixStack transform = new MatrixStack();
+			EditorOptions.RenderStateCommonSetup(d3ddevice);
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
-
-			cam.DrawDistance = EditorOptions.RenderDrawDistance;
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
 			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
-
-			EditorOptions.RenderStateCommonSetup(d3ddevice);
 
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
@@ -1985,6 +1982,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.EndScene(); // scene drawings go before this line
 
 			#region Draw Helper Objects
+			cam.DrawDistance = 100000;
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			d3ddevice.SetTransform(TransformState.View, view);
+			cam.BuildFrustum(view, projection);
+
 			foreach (PointHelper pointHelper in PointHelper.Instances)
 			{
 				pointHelper.DrawBox(d3ddevice, cam);
