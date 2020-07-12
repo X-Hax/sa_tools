@@ -127,7 +127,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
-			if (!string.IsNullOrEmpty(LevelData.leveltexs))
+			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0)
 				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
 			else
 				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible));
@@ -175,7 +175,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			if (COL.Model.Attach is BasicAttach)
 			{
 				BMPInfo[] textures;
-				if (LevelData.leveltexs == null) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+				if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
 				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, textures))
 				{
 					pw.FormUpdated += pw_FormUpdated;

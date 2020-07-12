@@ -16,6 +16,7 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
 	{
 		public static BMPInfo[] GetTextures(string filename)
 		{
+			if (!File.Exists(filename)) return null;
 			List<BMPInfo> functionReturnValue = new List<BMPInfo>();
 			bool gvm = false;
 			ArchiveBase pvmfile = null;

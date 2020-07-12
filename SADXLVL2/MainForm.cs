@@ -2,6 +2,7 @@
 using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -50,6 +51,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData ini;
+		string logFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SADXLVL2.log";
+		List<string> log = new List<string>();
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
@@ -77,8 +80,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
-		bool hideLibraries;
-		int splitterDistanceBackup;
 		bool displayDeathZonesManual;
 
 		// TODO: Make these both configurable.
@@ -106,23 +107,30 @@ namespace SonicRetro.SAModel.SADXLVL2
 			modelLibraryControl1.InitRenderer();
 			MessageList = new Dictionary<string, int>();
 			InitDisableInvalidControls();
-
+			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			Settings.Reload();
 
 			if(Settings.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
-
+			if (Settings.LibrarySplitterPosition != 0) splitContainer2.SplitterDistance = Settings.LibrarySplitterPosition;
+			if (Settings.ItemsSplitterPosition != 0) splitContainer3.SplitterDistance = Settings.ItemsSplitterPosition;
+			if (Settings.PropertiesSplitterPosition != 0) splitContainer1.SplitterDistance = Settings.PropertiesSplitterPosition;
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
 			{
+				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
 				LoadINI(Program.args[0]);
 				ShowLevelSelect();
 			}
-			else
+			else if (Program.SADXGameFolder == "")
 			{
+				ShowPathWarning();
+			}
+			else
+				{
 				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
 				{
 					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
@@ -158,7 +166,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			};
 
 			sceneGraphControl1.InitSceneControl(selectedItems);
-			splitterDistanceBackup = splitContainer2.SplitterDistance;
 		}
 
 		/// <summary>
@@ -295,7 +302,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenNewProject();
+			if (Program.SADXGameFolder == "")
+			{
+				ShowPathWarning();
+			}
+			else OpenNewProject();
 		}
 
 		private void LoadProject(string projectName)
@@ -565,13 +576,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 				string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
 
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
-				Texture[] d3dTextures = new Texture[textureBitmaps.Length];
+				Texture[] d3dTextures;
+				if (textureBitmaps != null)
+				{
+					d3dTextures = new Texture[textureBitmaps.Length];
+					for (int i = 0; i < textureBitmaps.Length; i++)
+						d3dTextures[i] = textureBitmaps[i].Image.ToTexture(d3ddevice);
 
-				for (int i = 0; i < textureBitmaps.Length; i++)
-					d3dTextures[i] = textureBitmaps[i].Image.ToTexture(d3ddevice);
-
-				LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
-				LevelData.Textures.Add(pvmName, d3dTextures);
+					LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
+					LevelData.Textures.Add(pvmName, d3dTextures);
+				}
+				else
+				{
+					log.Add("Unable to load texture file: " + GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
+				}
 			}
 		}
 
@@ -691,9 +709,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.leveltexs = null;
 				cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
-				Invoke((Action<IWin32Window>)progress.Show, this);
+					Invoke((Action<IWin32Window>)progress.Show, this);
 
-				if (d3ddevice == null)
+					if (d3ddevice == null)
 				{
 					progress.SetTask("Initializing Direct3D...");
 					Invoke((Action)InitializeDirect3D);
@@ -727,14 +745,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					BMPInfo[] TexBmps =
 						TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
-					Texture[] texs = new Texture[TexBmps.Length];
-					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-					if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-					if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-					LevelData.leveltexs = LevelData.geo.TextureFileName;
+						if (TexBmps != null)
+						{
+							Texture[] texs = new Texture[TexBmps.Length];
+							for (int j = 0; j < TexBmps.Length; j++)
+								texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+							if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+								LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+							if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+								LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+							LevelData.leveltexs = LevelData.geo.TextureFileName;
+						}
 				}
 
 				progress.StepProgress();
@@ -925,7 +946,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						{
 							CopyDefaultObjectDefintions();
 							initerror = true;
-							AddMessage("Please reload the level to complete the operation.", 180);
+							MessageBox.Show("Please reload the level to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
 							return;
 						}
 					}
@@ -935,7 +956,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+						List<string> errorStrings = new List<string> { "SET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -950,13 +971,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
-
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
-						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-											+
-											"\nThe level will still display, but the objects in question will not display their proper models." +
-											"\n\nPlease check the log for details.", 300);
+						log.AddRange(errorStrings.ToArray());
+						AddMessage(count + ((count == 1) ? " SET object" : " SET objects") + " failed to load their model(s).\n"
+											+ "Please check SET object load errors in the log for details.\n", 300);
 					}
 
 					// Loading SET Layout
@@ -981,17 +998,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
 							}
 							else
+							{
 								LevelData.AssignSetList(i, new List<SETItem>());
+							}
 						}
 					}
 					else
 					{
 						LevelData.NullifySETItems();
+						AddMessage("Object definitions not found, SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
+					AddMessage("Object definitions not found, SET files skipped", 180);
 				}
 
 				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
@@ -1140,7 +1161,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							if(File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
 							if(File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
 
-							if (setfile != null)
+							if (setfile != null && prmfile != null)
 							{
 								progress.SetTask("SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
 
@@ -1170,7 +1191,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "The following objects failed to load:" };
+						List<string> errorStrings = new List<string> { "Mission SET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -1186,13 +1207,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
 
-						// TODO: Proper logging. Who knows where this file may end up
-						File.WriteAllLines("SADXLVL2.log", errorStrings.ToArray());
+						log.AddRange(errorStrings.ToArray());
 
-						AddMessage(count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
-										+
-										"\nThe level will still display, but the objects in question will not display their proper models." +
-										"\n\nPlease check the log for details.", 180);
+						AddMessage(count + ((count == 1) ? " Mission SET object" : " Mission SET objects") + " failed to load their model(s).\n"
+										+ "Please check Mission SET object load errors in the log for details.\n", 180);
 					}
 				}
 				else
@@ -1434,16 +1452,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				transformGizmo = new TransformGizmo();
 
-				Invoke((Action)progress.Close);
+					Invoke((Action)progress.Close);
+					if (MessageList.Count > 0)
+				{
+					log.AddRange(MessageList.Keys);
+				}
+				File.AppendAllLines(logFilePath, log);
 			}
 #if !DEBUG
 			}
 			catch (Exception ex)
 			{
+				log.Add(ex.ToString()+"\n");
+				File.AppendAllLines(logFilePath, log);
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + Path.Combine(Environment.CurrentDirectory, "SADXLVL2.log") + ".\nSend this to MainMemory on the Sonic Retro forums.",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + logFilePath + ".",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				File.WriteAllText("SADXLVL2.log", ex.ToString());
 				initerror = true;
 			}
 #endif
@@ -1832,17 +1856,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.BeginScene();
 			//all drawings after this line
 			MatrixStack transform = new MatrixStack();
+			EditorOptions.RenderStateCommonSetup(d3ddevice);
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
-
-			cam.DrawDistance = EditorOptions.RenderDrawDistance;
-			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
-			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
-			cam.BuildFrustum(view, projection);
-
-			EditorOptions.RenderStateCommonSetup(d3ddevice);
-
+			
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
@@ -1951,20 +1968,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
 
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.RenderDrawDistance);
 			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
 			d3ddevice.SetTransform(TransformState.Projection, projection);
-			d3ddevice.SetTransform(TransformState.View, view);
 			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 
 			#region Draw Helper Objects
+			cam.DrawDistance = 100000;
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			cam.BuildFrustum(view, projection);
+
 			foreach (PointHelper pointHelper in PointHelper.Instances)
 			{
 				pointHelper.DrawBox(d3ddevice, cam);
@@ -2338,6 +2358,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			item = null;
 			Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
 			Viewport viewport = d3ddevice.Viewport;
+			viewport.Width = RenderPanel.Width;
+			viewport.Height = RenderPanel.Height;
 			Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 			Matrix view = d3ddevice.GetTransform(TransformState.View);
 			Vector3 Near, Far;
@@ -2543,6 +2565,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.None:
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
+					viewport.Width = RenderPanel.Width;
+					viewport.Height = RenderPanel.Height;
 					Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 					Matrix view = d3ddevice.GetTransform(TransformState.View);
 					Vector3 Near = mousepos;
@@ -3613,6 +3637,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				Vector3 mousepos = new Vector3(mousePanelPoint.X, mousePanelPoint.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
+				viewport.Width = RenderPanel.Width;
+				viewport.Height = RenderPanel.Height;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Matrix camMatrix = cam.ToMatrix();
@@ -3708,24 +3734,75 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void splitContainer2_Click(object sender, EventArgs e)
+		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (!hideLibraries)
-			{
-				hideLibraries = true;
-				splitterDistanceBackup = splitContainer2.SplitterDistance;
-				splitContainer2.SplitterDistance = splitterDistanceBackup + splitContainer2.Panel2.Height;
-			}
-			else
-			{
-				hideLibraries = false;
-				splitContainer2.SplitterDistance = splitterDistanceBackup;
-			}
+			Settings.PropertiesSplitterPosition = splitContainer1.SplitterDistance;
+		}
+
+		private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			Settings.ItemsSplitterPosition = splitContainer3.SplitterDistance;
 		}
 
 		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (!hideLibraries)	splitterDistanceBackup = splitContainer2.SplitterDistance;
+			Settings.LibrarySplitterPosition = splitContainer2.SplitterDistance;
 		}
+
+		private bool ShowPathWarning()
+		{
+			bool result;
+			using (PathWarning dialog = new PathWarning(this, GetRecentFiles()))
+			{
+				if (result = (dialog.ShowDialog() == DialogResult.OK))
+				{
+					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
+					if (Settings.MRUList.Count > 10)
+					{
+						for (int i = 9; i < Settings.MRUList.Count; i++)
+						{
+							Settings.MRUList.RemoveAt(i);
+						}
+					}
+					if (!Settings.MRUList.Contains(dialog.SelectedItem)) Settings.MRUList.Insert(0, dialog.SelectedItem);
+					else
+					{
+						Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(dialog.SelectedItem));
+						Settings.MRUList.Insert(0, dialog.SelectedItem);
+					}
+					LoadINI(dialog.SelectedItem);
+					ShowLevelSelect();
+				}
+				if (dialog.RemovedItems.Count > 0)
+				{
+					foreach (string deleted in dialog.RemovedItems)
+					{
+						if (Settings.MRUList.Contains(deleted)) Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(deleted));
+					}
+				}
+			}
+			return result;
+		}
+
+		private StringCollection GetRecentFiles()
+		{
+			if (Settings.MRUList == null)
+				Settings.MRUList = new StringCollection();
+
+			StringCollection mru = new StringCollection();
+
+			foreach (string item in Settings.MRUList)
+			{
+				if (File.Exists(item))
+				{
+					mru.Add(item);
+				}
+			}
+
+			Settings.MRUList = mru;
+			
+			return mru;
+		}
+
 	}
 }

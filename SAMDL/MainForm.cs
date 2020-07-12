@@ -1426,6 +1426,8 @@ namespace SonicRetro.SAModel.SAMDL
 				HitResult dist;
 				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
+				viewport.Width = panel1.Width;
+				viewport.Height = panel1.Height;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Vector3 Near, Far;
