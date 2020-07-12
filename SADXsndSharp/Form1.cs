@@ -508,53 +508,130 @@ namespace SADXsndSharp
 			const byte NIBBLE_HIGH = 0xF0;
 			const byte NIBBLE_LOW = 0x0F;
 
+			//TODO: Documentation
+			struct OffsetLengthPair
+			{
+				const ushort OFFSET_MASK = 0xFFF0;
+				const ushort LENGTH_MASK = 0x000F;
+
+				private ushort val;
+				public byte LowNibble
+				{
+					get
+					{
+						return (byte)(val & NIBBLE_LOW);
+					}
+					set
+					{
+						val &= NIBBLE_HIGH;
+						val |= value;
+					}
+				}
+				public byte HighNibble
+				{
+					get
+					{
+						return (byte)(val >> 8);
+					}
+					set
+					{
+						val &= NIBBLE_LOW;
+						val |= (ushort)(value << 8);
+					}
+				}
+
+				//TODO: Set
+				public int Offset
+				{
+					get
+					{
+						return val >> 4;
+					}
+				}
+
+				//TODO: Set
+				public int Length
+				{
+					get
+					{
+						return (val & LENGTH_MASK) + 3;
+					}
+				}
+			}
+
+			//TODO: Documentation
+			struct ChunkHeader
+			{
+				private byte flags;
+				private byte mask;
+
+				// TODO: Documentation
+				public bool ReadFlag(out bool flag)
+				{
+					bool endOfHeader = mask != 0x00;
+
+					flag = (flags & mask) != 0;
+
+					mask <<= 1;
+					return endOfHeader;
+				}
+
+				public ChunkHeader(byte flags)
+				{
+					this.flags = flags;
+					this.mask = 0x01;
+				}
+			}
+
 			//TODO:
-			private static void CompressBuffer(byte[] compressedBuffer, byte[] decompressedBuffer /*Starting at + 20*/)
+			private static void CompressBuffer(byte[] compBuf, byte[] decompBuf /*Starting at + 20*/)
 			{
 				
 			}
 			
 			// Decompresses a Lempel-Ziv buffer.
 			// TODO: Add documentation
-			private static void DecompressBuffer(byte[] decompressedBuffer, byte[] compressedBuffer /*Starting at + 20*/)
+			private static void DecompressBuffer(byte[] decompBuf, byte[] compBuf /*Starting at + 20*/)
 			{
-				
-				int compressedBufferPointer = 0;
-				int decompressedBufferPointer = 0;
+				OffsetLengthPair olPair = new OffsetLengthPair();
 
+				int compBufPtr = 0;
+				int decompBufPtr = 0;
+				
 				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
-				byte[] slidingDictionary = new byte[SLIDING_LEN];
+				byte[] slidingDict = new byte[SLIDING_LEN];
 
 				//Set an offset to the dictionary insertion point
-				uint dictionaryInsertionOffset = SLIDING_LEN - 18;
+				uint dictInsertionOffset = SLIDING_LEN - 18;
 
-				// Decompression chunk flags
-				byte commandCounter = 0;
-				byte decompressCommand = 0;
+				// Current chunk header
+				ChunkHeader chunkHeader = new ChunkHeader();
 
-				while (decompressedBufferPointer < decompressedBuffer.Length)
+				while (decompBufPtr < decompBuf.Length)
 				{
-					// Is the decompress counter zero? Load the next chunk
-					if (commandCounter == 0)
+					// At the start of each chunk...
+					if (!chunkHeader.ReadFlag(out bool flag))
 					{
-						commandCounter = 8; // Each chunk header has 8 flags
-						decompressCommand = compressedBuffer[compressedBufferPointer++];
+						// Load the chunk header
+						chunkHeader = new ChunkHeader(compBuf[compBufPtr++]);
+						chunkHeader.ReadFlag(out flag);	
 					}
 
 					// Each chunk header is a byte and is a collection of 8 flags
+					
 					// If the flag is set, load a character
-					// If the flag is clear, load an offset/length pair  
-					if ((decompressCommand & 1) != 0)
+					if (flag)
 					{
 						// Copy the character
-						byte rawByte = compressedBuffer[compressedBufferPointer++];
-						decompressedBuffer[decompressedBufferPointer++] = rawByte;
+						byte rawByte = compBuf[compBufPtr++];
+						decompBuf[decompBufPtr++] = rawByte;
 
 						// Add the character to the dictionary, and slide the dictionary
-						slidingDictionary[dictionaryInsertionOffset++] = rawByte;
-						dictionaryInsertionOffset &= SLIDING_MASK;
+						slidingDict[dictInsertionOffset++] = rawByte;
+						dictInsertionOffset &= SLIDING_MASK;
 
 					}
+					// If the flag is clear, load an offset/length pair
 					else
 					{
 						// Load the offset/length pair
@@ -570,31 +647,28 @@ namespace SADXsndSharp
 						 *	};
 						 *	
 						 */
-						byte CurrentByte = compressedBuffer[compressedBufferPointer++];
-						byte NextByte = compressedBuffer[compressedBufferPointer++];
+
+						olPair.HighNibble = compBuf[compBufPtr++];
+						olPair.LowNibble = compBuf[compBufPtr++];
 
 						// Get the offset from the offset/length pair
-						int offset = ((NextByte & NIBBLE_HIGH) << 4) | CurrentByte;
+						int offset = olPair.Offset;
 
 						// Get the length from the offset/length pair
-						int length = (NextByte & NIBBLE_LOW) + 3; // The smallest length possible for an offset/length pair is 3
+						int length = olPair.Length;
 
 						for (int i = 0; i < length; i++)
 						{
-							byte rawByte = slidingDictionary[(offset + i) & SLIDING_MASK];
-							decompressedBuffer[decompressedBufferPointer++] = rawByte;
+							byte rawByte = slidingDict[(offset + i) & SLIDING_MASK];
+							decompBuf[decompBufPtr++] = rawByte;
 
-							if (decompressedBufferPointer >= decompressedBuffer.Length) return;
+							if (decompBufPtr >= decompBuf.Length) return;
 
 							// Add the character to the dictionary, and slide the dictionary
-							slidingDictionary[dictionaryInsertionOffset++] = rawByte;
-							dictionaryInsertionOffset &= SLIDING_MASK;
+							slidingDict[dictInsertionOffset++] = rawByte;
+							dictInsertionOffset &= SLIDING_MASK;
 						}
 					}
-
-					//Rotate the sub command
-					commandCounter--;
-					decompressCommand >>= 1;
 				}
 			}
 
