@@ -1,6 +1,6 @@
 ﻿namespace SADXFontEdit
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,21 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.extractAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportIndividualCharactersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.latinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.japaneseLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.russianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.TilePicture = new System.Windows.Forms.Panel();
@@ -60,8 +56,7 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
@@ -76,6 +71,7 @@
             this.importToolStripMenuItem,
             this.toolStripSeparator2,
             this.extractAllToolStripMenuItem,
+            this.exportIndividualCharactersToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator1,
             this.quitToolStripMenuItem});
@@ -90,17 +86,17 @@
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(267, 6);
-            // 
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.importToolStripMenuItem.Text = "&Import...";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(267, 6);
             // 
             // extractAllToolStripMenuItem
             // 
@@ -109,6 +105,14 @@
             this.extractAllToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.extractAllToolStripMenuItem.Text = "&Export...";
             this.extractAllToolStripMenuItem.Click += new System.EventHandler(this.extractAllToolStripMenuItem_Click);
+            // 
+            // exportIndividualCharactersToolStripMenuItem
+            // 
+            this.exportIndividualCharactersToolStripMenuItem.Enabled = false;
+            this.exportIndividualCharactersToolStripMenuItem.Name = "exportIndividualCharactersToolStripMenuItem";
+            this.exportIndividualCharactersToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exportIndividualCharactersToolStripMenuItem.Text = "Export &characters...";
+            this.exportIndividualCharactersToolStripMenuItem.Click += new System.EventHandler(this.exportIndividualCharactersToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -129,46 +133,6 @@
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.quitToolStripMenuItem.Text = "&Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
-            // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.latinToolStripMenuItem,
-            this.japaneseLayoutToolStripMenuItem,
-            this.russianToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(130, 29);
-            this.viewToolStripMenuItem.Text = "Character set";
-            // 
-            // latinToolStripMenuItem
-            // 
-            this.latinToolStripMenuItem.Checked = true;
-            this.latinToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.latinToolStripMenuItem.Name = "latinToolStripMenuItem";
-            this.latinToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
-            this.latinToolStripMenuItem.Text = "Latin";
-            this.latinToolStripMenuItem.Click += new System.EventHandler(this.latinToolStripMenuItem_Click);
-            // 
-            // japaneseLayoutToolStripMenuItem
-            // 
-            this.japaneseLayoutToolStripMenuItem.CheckOnClick = true;
-            this.japaneseLayoutToolStripMenuItem.Name = "japaneseLayoutToolStripMenuItem";
-            this.japaneseLayoutToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
-            this.japaneseLayoutToolStripMenuItem.Text = "Japanese";
-            this.japaneseLayoutToolStripMenuItem.Click += new System.EventHandler(this.japaneseLayoutToolStripMenuItem_Click);
-            // 
-            // russianToolStripMenuItem
-            // 
-            this.russianToolStripMenuItem.Name = "russianToolStripMenuItem";
-            this.russianToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
-            this.russianToolStripMenuItem.Text = "Russian";
-            this.russianToolStripMenuItem.Click += new System.EventHandler(this.russianToolStripMenuItem_Click);
-            // 
-            // imageList1
-            // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(32, 32);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // listBox1
             // 
@@ -244,7 +208,7 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Zoom:";
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -256,7 +220,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "SADXFontEdit";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -279,19 +243,15 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAllToolStripMenuItem;
-        private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Panel panel3;
         internal System.Windows.Forms.Panel TilePicture;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TrackBar trackBar1;
-		private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem japaneseLayoutToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem latinToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem russianToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportIndividualCharactersToolStripMenuItem;
 	}
 }
 

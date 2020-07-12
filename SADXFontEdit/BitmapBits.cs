@@ -76,7 +76,7 @@ namespace SADXFontEdit
             Array.Copy(source.Bits, Bits, Bits.Length);
         }
 
-        public BitmapBits(byte[] file, int address)
+        public BitmapBits(byte[] file, int address, bool reverse)
         {
             Width = Height = 24;
             Bits = new bool[24 * 24];
@@ -85,14 +85,28 @@ namespace SADXFontEdit
                 int srcaddr = y * 3 + address;
                 for (int x = 0; x < 24; x += 8)
                 {
-                    this[x + 0, y] = ((file[srcaddr + (x / 8)] >> 7) & 1) == 1;
-                    this[x + 1, y] = ((file[srcaddr + (x / 8)] >> 6) & 1) == 1;
-                    this[x + 2, y] = ((file[srcaddr + (x / 8)] >> 5) & 1) == 1;
-                    this[x + 3, y] = ((file[srcaddr + (x / 8)] >> 4) & 1) == 1;
-                    this[x + 4, y] = ((file[srcaddr + (x / 8)] >> 3) & 1) == 1;
-                    this[x + 5, y] = ((file[srcaddr + (x / 8)] >> 2) & 1) == 1;
-                    this[x + 6, y] = ((file[srcaddr + (x / 8)] >> 1) & 1) == 1;
-                    this[x + 7, y] = (file[srcaddr + (x / 8)] & 1) == 1;
+					if (reverse)
+					{
+						this[x + 7, y] = ((file[srcaddr + (x / 8)] >> 7) & 1) == 1;
+						this[x + 6, y] = ((file[srcaddr + (x / 8)] >> 6) & 1) == 1;
+						this[x + 5, y] = ((file[srcaddr + (x / 8)] >> 5) & 1) == 1;
+						this[x + 4, y] = ((file[srcaddr + (x / 8)] >> 4) & 1) == 1;
+						this[x + 3, y] = ((file[srcaddr + (x / 8)] >> 3) & 1) == 1;
+						this[x + 2, y] = ((file[srcaddr + (x / 8)] >> 2) & 1) == 1;
+						this[x + 1, y] = ((file[srcaddr + (x / 8)] >> 1) & 1) == 1;
+						this[x + 0, y] = (file[srcaddr + (x / 8)] & 1) == 1;
+					}
+					else
+					{
+						this[x + 0, y] = ((file[srcaddr + (x / 8)] >> 7) & 1) == 1;
+						this[x + 1, y] = ((file[srcaddr + (x / 8)] >> 6) & 1) == 1;
+						this[x + 2, y] = ((file[srcaddr + (x / 8)] >> 5) & 1) == 1;
+						this[x + 3, y] = ((file[srcaddr + (x / 8)] >> 4) & 1) == 1;
+						this[x + 4, y] = ((file[srcaddr + (x / 8)] >> 3) & 1) == 1;
+						this[x + 5, y] = ((file[srcaddr + (x / 8)] >> 2) & 1) == 1;
+						this[x + 6, y] = ((file[srcaddr + (x / 8)] >> 1) & 1) == 1;
+						this[x + 7, y] = (file[srcaddr + (x / 8)] & 1) == 1;
+					}
                 }
             }
         }
