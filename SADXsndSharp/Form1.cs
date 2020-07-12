@@ -511,41 +511,14 @@ namespace SADXsndSharp
 			//TODO: Documentation
 			struct OffsetLengthPair
 			{
-				const ushort OFFSET_MASK = 0xFFF0;
-				const ushort LENGTH_MASK = 0x000F;
-
-				private ushort val;
-				public byte LowNibble
-				{
-					get
-					{
-						return (byte)(val & NIBBLE_LOW);
-					}
-					set
-					{
-						val &= NIBBLE_HIGH;
-						val |= value;
-					}
-				}
-				public byte HighNibble
-				{
-					get
-					{
-						return (byte)(val >> 8);
-					}
-					set
-					{
-						val &= NIBBLE_LOW;
-						val |= (ushort)(value << 8);
-					}
-				}
+				public byte highByte, lowByte;
 
 				//TODO: Set
 				public int Offset
 				{
 					get
 					{
-						return val >> 4;
+						return ((lowByte & NIBBLE_HIGH) << 4) | highByte;
 					}
 				}
 
@@ -554,7 +527,7 @@ namespace SADXsndSharp
 				{
 					get
 					{
-						return (val & LENGTH_MASK) + 3;
+						return (lowByte & NIBBLE_LOW) + 3;
 					}
 				}
 			}
@@ -586,9 +559,9 @@ namespace SADXsndSharp
 			//TODO:
 			private static void CompressBuffer(byte[] compBuf, byte[] decompBuf /*Starting at + 20*/)
 			{
-				
+
 			}
-			
+
 			// Decompresses a Lempel-Ziv buffer.
 			// TODO: Add documentation
 			private static void DecompressBuffer(byte[] decompBuf, byte[] compBuf /*Starting at + 20*/)
@@ -597,7 +570,7 @@ namespace SADXsndSharp
 
 				int compBufPtr = 0;
 				int decompBufPtr = 0;
-				
+
 				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
 				byte[] slidingDict = new byte[SLIDING_LEN];
 
@@ -614,11 +587,11 @@ namespace SADXsndSharp
 					{
 						// Load the chunk header
 						chunkHeader = new ChunkHeader(compBuf[compBufPtr++]);
-						chunkHeader.ReadFlag(out flag);	
+						chunkHeader.ReadFlag(out flag);
 					}
 
 					// Each chunk header is a byte and is a collection of 8 flags
-					
+
 					// If the flag is set, load a character
 					if (flag)
 					{
@@ -635,21 +608,8 @@ namespace SADXsndSharp
 					else
 					{
 						// Load the offset/length pair
-
-						// Structure reperesnted in C:
-						/*
-						 *	typedef unsigned short u16;
-						 *	
-						 *	struct OffsetLengthPair
-						 *	{
-						 *		u16 offset : 12;
-						 *		u16 length : 4;
-						 *	};
-						 *	
-						 */
-
-						olPair.HighNibble = compBuf[compBufPtr++];
-						olPair.LowNibble = compBuf[compBufPtr++];
+						olPair.highByte = compBuf[compBufPtr++];
+						olPair.lowByte = compBuf[compBufPtr++];
 
 						// Get the offset from the offset/length pair
 						int offset = olPair.Offset;
