@@ -580,22 +580,25 @@ namespace SADXsndSharp
 				uint dictionaryInsertionOffset = SLIDING_LEN - 18;
 
 				// Decompression chunk flags
-				byte commandCounter = 0;
-				byte decompressCommand = 0;
+				byte chunkFlags = 0;
+
+				// Flag mask
+				byte flagsMask = 0x00;
 
 				while (decompressedBufferPointer < decompressedBuffer.Length)
 				{
-					// Is the decompress counter zero? Load the next chunk
-					if (commandCounter == 0)
+					// At the start of each chunk, load the chunk header
+					if (flagsMask == 0x00)
 					{
-						commandCounter = 8; // Each chunk header has 8 flags
-						decompressCommand = compressedBuffer[compressedBufferPointer++];
+						// Each chunk header has 8 flags
+						flagsMask = 0x01;
+						chunkFlags = compressedBuffer[compressedBufferPointer++];
 					}
 
 					// Each chunk header is a byte and is a collection of 8 flags
 					// If the flag is set, load a character
 					// If the flag is clear, load an offset/length pair  
-					if ((decompressCommand & 1) != 0)
+					if ((chunkFlags & flagsMask) != 0)
 					{
 						// Copy the character
 						byte rawByte = compressedBuffer[compressedBufferPointer++];
@@ -644,9 +647,8 @@ namespace SADXsndSharp
 						}
 					}
 
-					//Rotate the sub command
-					commandCounter--;
-					decompressCommand >>= 1;
+					// Rotate the mask
+					flagsMask <<= 1;
 				}
 			}
 
