@@ -3249,7 +3249,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				selectionAppend = "Multiple objects selected, can't display selection stats.";
 			}
-			else selectionAppend = "SET/CAM object selected, can't display selection stats.";
+			else selectionAppend = "Select a level geometry item to show selection stats.";
 
 			MessageBox.Show("Level stats:\n"+LevelData.GetStats() + string.Format("\n\nSelection stats:\n{0}\n", selectionAppend),"Level/selection stats");
 		}
