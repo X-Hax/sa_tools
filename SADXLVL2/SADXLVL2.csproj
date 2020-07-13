@@ -186,6 +186,13 @@
     <None Include="Resources\save.png" />
     <None Include="Resources\help.png" />
     <None Include="Resources\bug.png" />
+    <None Include="Resources\stats.png" />
+    <None Include="Resources\bounds.png" />
+    <None Include="Resources\levelitem.png" />
+    <None Include="Resources\duplicate.png" />
+    <None Include="Resources\startpos.png" />
+    <None Include="Resources\geoanim.png" />
+    <None Include="Resources\find.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

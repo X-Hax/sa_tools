@@ -3864,5 +3864,27 @@ namespace SonicRetro.SAModel.SADXLVL2
 			missionItemsButton.Checked = missionSETItemsToolStripMenuItem.Checked;
 			DrawLevel();
 		}
+
+		private void JumpToStartPos()
+		{
+			if (LevelData.Character < LevelData.StartPositions.Length)
+			{
+				cam.Position = new Vector3(LevelData.StartPositions[LevelData.Character].Position.X, LevelData.StartPositions[LevelData.Character].Position.Y + 10, LevelData.StartPositions[LevelData.Character].Position.Z);
+				ushort rot = (ushort)LevelData.StartPositions[LevelData.Character].YRotation;
+				cam.Yaw = (ushort)(-rot-0x4000);
+				cam.Pitch = 0;
+				DrawLevel(); //Had to do it twice because it doesn't draw SET objects properly if you do it once
+				DrawLevel();
+			}
+		}
+		private void jumpToStartPositionToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			JumpToStartPos();
+		}
+
+		private void moveToStartButton_Click(object sender, EventArgs e)
+		{
+			JumpToStartPos();
+		}
 	}
 }
