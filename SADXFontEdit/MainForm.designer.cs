@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,6 +37,8 @@
             this.extractAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportIndividualCharactersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fONTDATAFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simpleFormatFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -116,11 +117,27 @@
             // 
             // saveAsToolStripMenuItem
             // 
+            this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fONTDATAFileToolStripMenuItem,
+            this.simpleFormatFileToolStripMenuItem});
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.saveAsToolStripMenuItem.Text = "Save &As...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.saveAsToolStripMenuItem.Text = "Save &As";
+            // 
+            // fONTDATAFileToolStripMenuItem
+            // 
+            this.fONTDATAFileToolStripMenuItem.Name = "fONTDATAFileToolStripMenuItem";
+            this.fONTDATAFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.fONTDATAFileToolStripMenuItem.Text = "FONTDATA file...";
+            this.fONTDATAFileToolStripMenuItem.Click += new System.EventHandler(this.fONTDATAFileToolStripMenuItem_Click);
+            // 
+            // simpleFormatFileToolStripMenuItem
+            // 
+            this.simpleFormatFileToolStripMenuItem.Name = "simpleFormatFileToolStripMenuItem";
+            this.simpleFormatFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.simpleFormatFileToolStripMenuItem.Text = "Simple format file...";
+            this.simpleFormatFileToolStripMenuItem.Click += new System.EventHandler(this.simpleFormatFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -252,6 +269,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportIndividualCharactersToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem fONTDATAFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem simpleFormatFileToolStripMenuItem;
 	}
 }
 

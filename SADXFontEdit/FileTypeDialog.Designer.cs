@@ -206,9 +206,12 @@
             this.Controls.Add(this.radioButton_Fontdata);
             this.Controls.Add(this.radioButton_Simple);
             this.Controls.Add(this.groupBox_Codepage);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FileTypeDialog";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Open";
             this.groupBox_Codepage.ResumeLayout(false);
             this.groupBox_Codepage.PerformLayout();

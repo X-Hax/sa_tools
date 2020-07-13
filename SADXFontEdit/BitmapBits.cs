@@ -154,24 +154,42 @@ namespace SADXFontEdit
             return newbmp;
         }
 
-        public byte[] GetBytes()
+        public byte[] GetBytes(bool invert)
         {
             byte[] bmpbits = new byte[3 * 24];
             for (int y = 0; y < Height; y++)
             {
                 int srcaddr = y * 3;
-                for (int x = 0; x < Width; x += 8)
-                {
-                    byte pix = (byte)(this[x + 7, y] ? 1 : 0);
-                    pix |= (byte)((this[x + 6, y] ? 1 : 0) << 1);
-                    pix |= (byte)((this[x + 5, y] ? 1 : 0) << 2);
-                    pix |= (byte)((this[x + 4, y] ? 1 : 0) << 3);
-                    pix |= (byte)((this[x + 3, y] ? 1 : 0) << 4);
-                    pix |= (byte)((this[x + 2, y] ? 1 : 0) << 5);
-                    pix |= (byte)((this[x + 1, y] ? 1 : 0) << 6);
-                    pix |= (byte)((this[x, y] ? 1 : 0) << 7);
-                    bmpbits[srcaddr + (x / 8)] = pix;
-                }
+				if (!invert)
+				{
+					for (int x = 0; x < Width; x += 8)
+					{
+						byte pix = (byte)(this[x + 7, y] ? 1 : 0);
+						pix |= (byte)((this[x + 6, y] ? 1 : 0) << 1);
+						pix |= (byte)((this[x + 5, y] ? 1 : 0) << 2);
+						pix |= (byte)((this[x + 4, y] ? 1 : 0) << 3);
+						pix |= (byte)((this[x + 3, y] ? 1 : 0) << 4);
+						pix |= (byte)((this[x + 2, y] ? 1 : 0) << 5);
+						pix |= (byte)((this[x + 1, y] ? 1 : 0) << 6);
+						pix |= (byte)((this[x, y] ? 1 : 0) << 7);
+						bmpbits[srcaddr + (x / 8)] = pix;
+					}
+				}
+				else
+				{
+					for (int x = 0; x < Width; x += 8)
+					{
+						byte pix = (byte)(this[x + 0, y] ? 1 : 0);
+						pix |= (byte)((this[x + 1, y] ? 1 : 0) << 1);
+						pix |= (byte)((this[x + 2, y] ? 1 : 0) << 2);
+						pix |= (byte)((this[x + 3, y] ? 1 : 0) << 3);
+						pix |= (byte)((this[x + 4, y] ? 1 : 0) << 4);
+						pix |= (byte)((this[x + 5, y] ? 1 : 0) << 5);
+						pix |= (byte)((this[x + 6, y] ? 1 : 0) << 6);
+						pix |= (byte)((this[x + 7, y] ? 1 : 0) << 7);
+						bmpbits[srcaddr + (x / 8)] = pix;
+					}
+				}
             }
             return bmpbits;
         }

@@ -67,7 +67,7 @@ namespace SADXFontEdit
 					{
 
 						files.Add(new FontItem(file, i * itemlength, oldformat, (ushort)i));
-						if (!ftd.custom)
+						if (!ftd.charmap)
 						{
 							if (ftd.charset == 50220)
 							{
@@ -89,7 +89,7 @@ namespace SADXFontEdit
 								origtext[1] = (byte)(files[i].ID >> 8);
 								utf16String = Encoding.GetEncoding(1200).GetString(origtext);
 							}
-							else
+							else if (!oldformat)
 							{
 								origtext = new byte[1];
 								origtext[0] = (byte)files[i].ID;
@@ -104,6 +104,7 @@ namespace SADXFontEdit
 						listBox1.Items.Add(files[i].ID.ToString("X4") + ' ' + utf16String);
 					}
 					listBox1.EndUpdate();
+					listBox1.SelectedIndex = 0;
 					extractAllToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
 					Text = "SADXFontEdit - " + filename + " / Total characters: " + files.Count.ToString();
 				}
@@ -122,22 +123,6 @@ namespace SADXFontEdit
 				LoadFile(a.FileName);
 			}
 
-		}
-
-		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog a = new SaveFileDialog()
-			{
-				DefaultExt = "bin",
-				Filter = "BIN Files|*.bin|All Files|*.*"
-			};
-			if (a.ShowDialog() == DialogResult.OK)
-			{
-				List<byte> file = new List<byte>();
-				foreach (FontItem item in files)
-					file.AddRange(item.GetBytes());
-				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
-			}
 		}
 
 		private void extractAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -305,6 +290,7 @@ namespace SADXFontEdit
 						listBox1.Items.Add(files[z].ID.ToString("X4") + ' ' + files[z].character);
 					}
 					listBox1.EndUpdate();
+					listBox1.SelectedIndex = 0;
 					Text = "SADXFontEdit - " + a.FileName + " / Total characters: " + files.Count.ToString();
 					extractAllToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = true;
 				}
@@ -324,6 +310,38 @@ namespace SADXFontEdit
 						item.bits.ToBitmap(pal).Save(System.IO.Path.Combine(dir, item.ID.ToString("X4") + ".png"));
 					}
 				}
+			}
+		}
+
+		private void fONTDATAFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog a = new SaveFileDialog()
+			{
+				DefaultExt = "bin",
+				Filter = "BIN Files|*.bin|All Files|*.*"
+			};
+			if (a.ShowDialog() == DialogResult.OK)
+			{
+				List<byte> file = new List<byte>();
+				foreach (FontItem item in files)
+					file.AddRange(item.GetBytes());
+				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
+			}
+		}
+
+		private void simpleFormatFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog a = new SaveFileDialog()
+			{
+				DefaultExt = "bin",
+				Filter = "BIN Files|*.bin|All Files|*.*"
+			};
+			if (a.ShowDialog() == DialogResult.OK)
+			{
+				List<byte> file = new List<byte>();
+				foreach (FontItem item in files)
+					file.AddRange(item.bits.GetBytes(true));
+				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
 			}
 		}
 	}
@@ -361,7 +379,7 @@ namespace SADXFontEdit
             List<byte> result = new List<byte>();
             result.AddRange(BitConverter.GetBytes(ID));
             result.AddRange(miscdata);
-            result.AddRange(bits.GetBytes());
+            result.AddRange(bits.GetBytes(false));
             return result.ToArray();
         }
     }

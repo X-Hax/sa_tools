@@ -15,7 +15,7 @@ namespace SADXFontEdit
 	{
 		public int charset;
 		public bool fontdata;
-		public bool custom;
+		public bool charmap;
 		public string customfile;
 
 		public FileTypeDialog(string filename)
@@ -26,6 +26,8 @@ namespace SADXFontEdit
 				radioButton_Fontdata.Checked = true;
 				radioButton_Simple.Checked = false;
 				groupBox_Codepage.Enabled = true;
+				if (Path.GetFileName(filename).Substring(8, 1).ToLowerInvariant() == "0") radioButton_J2022.Checked = true;
+				else radioButton_1252.Checked = true;
 			}
 			else
 			{
@@ -91,7 +93,7 @@ namespace SADXFontEdit
 
 		private void checkBox_CharMap_CheckedChanged(object sender, EventArgs e)
 		{
-			custom = checkBox_CharMap.Checked;
+			charmap = checkBox_CharMap.Checked;
 		}
 	}
 }
