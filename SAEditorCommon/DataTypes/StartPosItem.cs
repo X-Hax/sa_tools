@@ -76,7 +76,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			transform.Push();
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
-			transform.NJRotateY(YRotation);
+			transform.NJRotateY(-0x8000 - YRotation);
 			if (LevelData.Textures.Count > 0)
 			{
 				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes));
