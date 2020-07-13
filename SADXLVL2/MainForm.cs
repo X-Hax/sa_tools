@@ -32,6 +32,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 	// (Example: sETItemsToolStripMenuItem1 is a dropdown menu. sETITemsToolStripMenuItem is a toggle.)
 	public partial class MainForm : Form
 	{
+		ProgressDialog progress;
 		Properties.Settings Settings = Properties.Settings.Default;
 
 		public MainForm()
@@ -100,6 +101,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
@@ -679,27 +681,28 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-			int steps = 10;
-			if (d3ddevice == null)
-				++steps;
+				int steps = 10;
+				if (d3ddevice == null)
+					++steps;
 
-			toolStrip1.Enabled = false;
-			LevelData.SuppressEvents = true;
+				toolStrip1.Enabled = false;
+				LevelData.SuppressEvents = true;
 
-			// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
-			// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
-			if (isStageLoaded)
-			{
-				LevelData.Clear();
-				selectedItems = new EditorItemSelection();
-				sceneGraphControl1.InitSceneControl(selectedItems);
-				PointHelper.Instances.Clear();
-			}
+				// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
+				// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
+				if (isStageLoaded)
+				{
+					LevelData.Clear();
+					selectedItems = new EditorItemSelection();
+					sceneGraphControl1.InitSceneControl(selectedItems);
+					PointHelper.Instances.Clear();
+				}
 
-			isStageLoaded = false;
+				isStageLoaded = false;
 
-			using (ProgressDialog progress = new ProgressDialog("Loading stage: " + levelName, steps))
-			{
+				progress.SetTask("Loading stage: " + levelName);
+				progress.ResetSteps();
+				progress.SetMaxSteps(steps);
 				IniLevelData level = ini.Levels[levelID];
 
 				string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
@@ -709,9 +712,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.leveltexs = null;
 				cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
-					Invoke((Action<IWin32Window>)progress.Show, this);
+				Invoke((Action)progress.Show);
 
-					if (d3ddevice == null)
+				if (d3ddevice == null)
 				{
 					progress.SetTask("Initializing Direct3D...");
 					Invoke((Action)InitializeDirect3D);
@@ -745,17 +748,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					BMPInfo[] TexBmps =
 						TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
-						if (TexBmps != null)
-						{
-							Texture[] texs = new Texture[TexBmps.Length];
-							for (int j = 0; j < TexBmps.Length; j++)
-								texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-							if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-								LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-							if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-								LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-							LevelData.leveltexs = LevelData.geo.TextureFileName;
-						}
+					if (TexBmps != null)
+					{
+						Texture[] texs = new Texture[TexBmps.Length];
+						for (int j = 0; j < TexBmps.Length; j++)
+							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+							LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+						LevelData.leveltexs = LevelData.geo.TextureFileName;
+					}
 				}
 
 				progress.StepProgress();
@@ -1446,19 +1449,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 						EditorOptions.SetDefaultLights(d3ddevice, false);
 					}
 				}
-
-				progress.StepProgress();
 				#endregion
 
 				transformGizmo = new TransformGizmo();
 
-					Invoke((Action)progress.Close);
-					if (MessageList.Count > 0)
+				if (MessageList.Count > 0)
 				{
 					log.AddRange(MessageList.Keys);
 				}
 				File.AppendAllLines(logFilePath, log);
-			}
 #if !DEBUG
 			}
 			catch (Exception ex)
@@ -1616,7 +1615,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			toolStrip1.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
-			Application.OpenForms[0].Focus();
+			progress.StepProgress();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -3056,7 +3055,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void ExportLevelObj(string fileName, bool selectedOnly)
 		{
-			int stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length;
+			int stepCount = 0;
+			int numSteps = 0;
+			if (LevelData.TextureBitmaps.Count > 0)
+			{
+				stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length;
+				numSteps = stepCount;
+			}
 			List<COL> cols = LevelData.geo.COL;
 			if (selectedOnly)
 				cols = selectedItems.Items.OfType<LevelItem>().Select(a => a.CollisionData).ToList();
@@ -3077,12 +3082,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 			progress.Show(this);
 			progress.SetTaskAndStep("Exporting...");
 
-			for (int i = 0; i < LevelData.TextureBitmaps[LevelData.leveltexs].Length; i++)
+			for (int i = 0; i < numSteps; i++)
 			{
 				BMPInfo bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
 				texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
 				bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
-				progress.Step = $"Texture {i + 1}/{LevelData.TextureBitmaps[LevelData.leveltexs].Length}";
+				progress.Step = $"Texture {i + 1}/{numSteps}";
 				progress.StepProgress();
 				Application.DoEvents();
 			}
