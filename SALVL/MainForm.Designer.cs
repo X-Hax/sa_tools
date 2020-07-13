@@ -49,21 +49,21 @@
             this.panel1 = new System.Windows.Forms.UserControl();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
-            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
-            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
-            this.rotateMode = new System.Windows.Forms.ToolStripButton();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.selectModeButton = new System.Windows.Forms.ToolStripButton();
+            this.moveModeButton = new System.Windows.Forms.ToolStripButton();
+            this.rotateModeButton = new System.Windows.Forms.ToolStripButton();
+            this.scaleModeButton = new System.Windows.Forms.ToolStripButton();
+            this.gizmoSpaceComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.BackgroundPanel = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -338,15 +338,48 @@
             this.pasteToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 114);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.add;
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.addToolStripMenuItem.Text = "&Add...";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.levelPieceToolStripMenuItem_Click);
+            // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.cut;
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.cutToolStripMenuItem.Text = "Cu&t";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.copy;
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.copyToolStripMenuItem.Text = "&Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Enabled = false;
+            this.pasteToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.paste;
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.pasteToolStripMenuItem.Text = "&Paste";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.delete;
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "&Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -389,12 +422,13 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.Enabled = false;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(36, 36);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectModeButton,
             this.moveModeButton,
             this.rotateModeButton,
-            this.rotateMode,
+            this.scaleModeButton,
             this.gizmoSpaceComboBox,
             this.pivotComboBox});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -402,6 +436,51 @@
             this.toolStrip1.Size = new System.Drawing.Size(584, 43);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // selectModeButton
+            // 
+            this.selectModeButton.Checked = true;
+            this.selectModeButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.selectModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.selectModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.SelectIcon;
+            this.selectModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.selectModeButton.Name = "selectModeButton";
+            this.selectModeButton.Size = new System.Drawing.Size(40, 40);
+            this.selectModeButton.Text = "toolStripButton1";
+            this.selectModeButton.ToolTipText = "Select Mode";
+            this.selectModeButton.Click += new System.EventHandler(this.selectModeButton_Click);
+            // 
+            // moveModeButton
+            // 
+            this.moveModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.moveModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.MoveIcon;
+            this.moveModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.moveModeButton.Name = "moveModeButton";
+            this.moveModeButton.Size = new System.Drawing.Size(40, 40);
+            this.moveModeButton.Text = "toolStripButton1";
+            this.moveModeButton.ToolTipText = "Move Mode";
+            this.moveModeButton.Click += new System.EventHandler(this.moveModeButton_Click);
+            // 
+            // rotateModeButton
+            // 
+            this.rotateModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.rotateModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.RotateIcon;
+            this.rotateModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.rotateModeButton.Name = "rotateModeButton";
+            this.rotateModeButton.Size = new System.Drawing.Size(40, 40);
+            this.rotateModeButton.Text = "toolStripButton1";
+            this.rotateModeButton.ToolTipText = "Rotate Mode";
+            this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
+            // 
+            // scaleModeButton
+            // 
+            this.scaleModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.scaleModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.ScaleIcon;
+            this.scaleModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.scaleModeButton.Name = "scaleModeButton";
+            this.scaleModeButton.Size = new System.Drawing.Size(40, 40);
+            this.scaleModeButton.Text = "toolStripButton1";
+            this.scaleModeButton.Click += new System.EventHandler(this.scaleModeButton_Click);
             // 
             // gizmoSpaceComboBox
             // 
@@ -432,87 +511,6 @@
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(584, 564);
             this.BackgroundPanel.TabIndex = 2;
-            // 
-            // selectModeButton
-            // 
-            this.selectModeButton.Checked = true;
-            this.selectModeButton.CheckOnClick = true;
-            this.selectModeButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.selectModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.selectModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.SelectIcon;
-            this.selectModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.selectModeButton.Name = "selectModeButton";
-            this.selectModeButton.Size = new System.Drawing.Size(40, 40);
-            this.selectModeButton.Text = "toolStripButton1";
-            this.selectModeButton.ToolTipText = "Select Mode";
-            this.selectModeButton.Click += new System.EventHandler(this.selectModeButton_Click);
-            // 
-            // moveModeButton
-            // 
-            this.moveModeButton.CheckOnClick = true;
-            this.moveModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.moveModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.MoveIcon;
-            this.moveModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.moveModeButton.Name = "moveModeButton";
-            this.moveModeButton.Size = new System.Drawing.Size(40, 40);
-            this.moveModeButton.Text = "toolStripButton1";
-            this.moveModeButton.ToolTipText = "Move Mode";
-            this.moveModeButton.Click += new System.EventHandler(this.moveModeButton_Click);
-            // 
-            // rotateModeButton
-            // 
-            this.rotateModeButton.CheckOnClick = true;
-            this.rotateModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.rotateModeButton.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.RotateIcon;
-            this.rotateModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.rotateModeButton.Name = "rotateModeButton";
-            this.rotateModeButton.Size = new System.Drawing.Size(40, 40);
-            this.rotateModeButton.Text = "toolStripButton1";
-            this.rotateModeButton.ToolTipText = "Rotate Mode";
-            this.rotateModeButton.Click += new System.EventHandler(this.rotateModeButton_Click);
-            // 
-            // rotateMode
-            // 
-            this.rotateMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.rotateMode.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.ScaleIcon;
-            this.rotateMode.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.rotateMode.Name = "rotateMode";
-            this.rotateMode.Size = new System.Drawing.Size(40, 40);
-            this.rotateMode.Text = "toolStripButton1";
-            this.rotateMode.Click += new System.EventHandler(this.rotateMode_Click);
-            // 
-            // cutToolStripMenuItem
-            // 
-            this.cutToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.cut;
-            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.cutToolStripMenuItem.Text = "Cu&t";
-            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
-            // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.copy;
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.copyToolStripMenuItem.Text = "&Copy";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
-            // 
-            // pasteToolStripMenuItem
-            // 
-            this.pasteToolStripMenuItem.Enabled = false;
-            this.pasteToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.paste;
-            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.pasteToolStripMenuItem.Text = "&Paste";
-            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.delete;
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deleteToolStripMenuItem.Text = "&Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -584,7 +582,7 @@
         private System.Windows.Forms.ToolStripButton moveModeButton;
         private System.Windows.Forms.ToolStripButton rotateModeButton;
 		private System.Windows.Forms.ToolStripComboBox gizmoSpaceComboBox;
-		private System.Windows.Forms.ToolStripButton rotateMode;
+		private System.Windows.Forms.ToolStripButton scaleModeButton;
 		private System.Windows.Forms.ToolStripMenuItem calculateAllBoundsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aSSIMPExportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripComboBox pivotComboBox;

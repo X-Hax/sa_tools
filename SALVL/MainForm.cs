@@ -151,7 +151,7 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			loaded = false;
 			selectedItems = new EditorItemSelection();
-			loadTexturesToolStripMenuItem.Enabled = false;
+			toolStrip1.Enabled = loadTexturesToolStripMenuItem.Enabled = false;
 			UseWaitCursor = true;
 			Enabled = false;
 			LevelData.leveltexs = null;
@@ -207,7 +207,8 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 			loaded = true;
-			loadTexturesToolStripMenuItem.Enabled = true;
+			toolStrip1.Enabled = loadTexturesToolStripMenuItem.Enabled = true;
+			 
 			transformGizmo = new TransformGizmo();
 			gizmoSpaceComboBox.Enabled = true;
 			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
@@ -1180,8 +1181,10 @@ namespace SonicRetro.SAModel.SALVL
 				transformGizmo.Mode = TransformMode.NONE;
 				gizmoSpaceComboBox.Enabled = true;
 				pivotComboBox.Enabled = true;
+				selectModeButton.Checked = true;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
+				scaleModeButton.Checked = false;
 				//DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 
 				SetGizmoPivotAndLocality();
@@ -1196,7 +1199,9 @@ namespace SonicRetro.SAModel.SALVL
 				gizmoSpaceComboBox.Enabled = true;
 				pivotComboBox.Enabled = true;
 				selectModeButton.Checked = false;
+				moveModeButton.Checked = true;
 				rotateModeButton.Checked = false;
+				scaleModeButton.Checked = false;
 				//DrawLevel();
 				SetGizmoPivotAndLocality();
 			}
@@ -1213,7 +1218,9 @@ namespace SonicRetro.SAModel.SALVL
 				pivotComboBox.Enabled = false;
 				pivotComboBox.SelectedIndex = 0;
 				selectModeButton.Checked = false;
+				rotateModeButton.Checked = true;
 				moveModeButton.Checked = false;
+				scaleModeButton.Checked = false;
 				//DrawLevel();
 				SetGizmoPivotAndLocality();
 			}
@@ -1248,7 +1255,7 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 
-		private void rotateMode_Click(object sender, EventArgs e)
+		private void scaleModeButton_Click(object sender, EventArgs e)
 		{
 			if (transformGizmo != null)
 			{
@@ -1256,8 +1263,10 @@ namespace SonicRetro.SAModel.SALVL
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
+				scaleModeButton.Checked = true;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
+				rotateModeButton.Checked = false;
 				DrawLevel();
 			}
 		}

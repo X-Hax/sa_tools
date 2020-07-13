@@ -3313,7 +3313,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo.Mode = TransformMode.NONE;
 				gizmoSpaceComboBox.Enabled = true;
 				moveModeButton.Checked = false;
+				selectModeButton.Checked = true;
 				rotateModeButton.Checked = false;
+				scaleModeButton.Checked = false;
 				DrawLevel(); // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
@@ -3326,6 +3328,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				gizmoSpaceComboBox.Enabled = true;
 				pivotComboBox.Enabled = true;
 				selectModeButton.Checked = false;
+				moveModeButton.Checked = true;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
@@ -3342,6 +3345,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				gizmoSpaceComboBox.Enabled = false;
 				pivotComboBox.Enabled = false;
 				pivotComboBox.SelectedIndex = 1;
+				rotateModeButton.Checked = true;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
 				scaleModeButton.Checked = false;
@@ -3389,7 +3393,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				pivotComboBox.Enabled = false;
 				pivotComboBox.SelectedIndex = 1;
 				selectModeButton.Checked = false;
+				scaleModeButton.Checked = true;
 				moveModeButton.Checked = false;
+				rotateModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
 			}
 		}
