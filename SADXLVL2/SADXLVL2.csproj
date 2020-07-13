@@ -173,6 +173,13 @@
     <None Include="Resources\hyoji_zankib.png" />
     <None Include="Resources\add.png" />
     <None Include="Resources\point.png" />
+    <None Include="Resources\settings.png" />
+    <None Include="Resources\deathzone.png" />
+    <None Include="Resources\background.png" />
+    <None Include="Resources\set.png" />
+    <None Include="Resources\cam.png" />
+    <None Include="Resources\mis.png" />
+    <None Include="Resources\splines.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

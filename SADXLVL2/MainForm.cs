@@ -1595,8 +1595,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// The whole view menu!
 			viewToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
-			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
-			else deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			else deathZonesToolStripMenuItem.Enabled = deathZonesButton.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 			advancedToolStripMenuItem.Enabled = true;
 			addToolStripMenuItem1.Enabled = true;
 			addToolStripMenuItem.Enabled = true;
@@ -3183,11 +3183,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			propertyGrid1.Refresh();
 		}
 
-		private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DrawLevel();
-		}
-
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (BugReportDialog dlg = new BugReportDialog("SADXLVL2", null))
@@ -3261,16 +3256,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			setItemsButton.Checked = sETITemsToolStripMenuItem.Checked;
 			DrawLevel();
 		}
 
 		private void cAMItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			camItemsButton.Checked = cAMItemsToolStripMenuItem.Checked;
 			DrawLevel();
 		}
 		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			displayDeathZonesManual = !displayDeathZonesManual;
+			deathZonesButton.Checked = deathZonesToolStripMenuItem.Checked;
 			DrawLevel();
 		}
 
@@ -3424,6 +3422,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			splinesButton.Checked = splinesToolStripMenuItem.Checked;
 			DrawLevel();
 		}
 
@@ -3815,5 +3814,55 @@ namespace SonicRetro.SAModel.SADXLVL2
 			return mru;
 		}
 
+		private void deathZonesButton_Click(object sender, EventArgs e)
+		{
+			deathZonesToolStripMenuItem.Checked = !deathZonesToolStripMenuItem.Checked;
+			deathZonesButton.Checked = deathZonesToolStripMenuItem.Checked;
+			DrawLevel();
+		}
+
+		private void settingsButton_Click(object sender, EventArgs e)
+		{
+			optionsEditor.Show();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
+		}
+
+		private void splinesButton_Click(object sender, EventArgs e)
+		{
+			splinesToolStripMenuItem.Checked = !splinesToolStripMenuItem.Checked;
+		}
+
+		private void backgroundButton_Click(object sender, EventArgs e)
+		{
+			backgroundToolStripMenuItem.Checked = !backgroundToolStripMenuItem.Checked;
+		}
+
+		private void setItemsButton_Click(object sender, EventArgs e)
+		{
+			sETITemsToolStripMenuItem.Checked = !sETITemsToolStripMenuItem.Checked;
+		}
+
+		private void camItemsButton_Click(object sender, EventArgs e)
+		{
+			cAMItemsToolStripMenuItem.Checked = !cAMItemsToolStripMenuItem.Checked;
+		}
+
+		private void missionItemsButton_Click(object sender, EventArgs e)
+		{
+			missionSETItemsToolStripMenuItem.Checked = !missionSETItemsToolStripMenuItem.Checked;
+		}
+
+		private void backgroundToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			backgroundButton.Checked = backgroundToolStripMenuItem.Checked;
+			DrawLevel();
+		}
+
+		private void missionSETItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			missionItemsButton.Checked = missionSETItemsToolStripMenuItem.Checked;
+			DrawLevel();
+		}
 	}
 }

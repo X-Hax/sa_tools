@@ -143,6 +143,13 @@
             this.toolTails = new System.Windows.Forms.ToolStripButton();
             this.toolSonic = new System.Windows.Forms.ToolStripButton();
             this.pivotComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.deathZonesButton = new System.Windows.Forms.ToolStripButton();
+            this.backgroundButton = new System.Windows.Forms.ToolStripButton();
+            this.setItemsButton = new System.Windows.Forms.ToolStripButton();
+            this.camItemsButton = new System.Windows.Forms.ToolStripButton();
+            this.missionItemsButton = new System.Windows.Forms.ToolStripButton();
+            this.splinesButton = new System.Windows.Forms.ToolStripButton();
+            this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -526,11 +533,11 @@
             this.deathZonesToolStripMenuItem,
             this.backgroundToolStripMenuItem,
             this.sETITemsToolStripMenuItem,
-            this.cAMItemsToolStripMenuItem,
             this.missionSETItemsToolStripMenuItem,
             this.splinesToolStripMenuItem,
             this.alternativeCameraToolStripMenuItem,
             this.toolStripSeparator2,
+            this.cAMItemsToolStripMenuItem,
             this.debugToolStripMenuItem});
             this.viewToolStripMenuItem.Enabled = false;
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -547,7 +554,7 @@
             this.gammaToolStripMenuItem,
             this.bigToolStripMenuItem});
             this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
-            this.characterToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.characterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.characterToolStripMenuItem.Text = "&Character";
             this.characterToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.characterToolStripMenuItem_DropDownItemClicked);
             // 
@@ -596,7 +603,7 @@
             this.invisibleToolStripMenuItem,
             this.allToolStripMenuItem});
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-            this.levelToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.levelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.levelToolStripMenuItem.Text = "&Level";
             this.levelToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.levelToolStripMenuItem_DropDownItemClicked);
             // 
@@ -624,7 +631,7 @@
             // 
             this.deathZonesToolStripMenuItem.CheckOnClick = true;
             this.deathZonesToolStripMenuItem.Name = "deathZonesToolStripMenuItem";
-            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.deathZonesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deathZonesToolStripMenuItem.Text = "&Death Zones";
             this.deathZonesToolStripMenuItem.Click += new System.EventHandler(this.deathZonesToolStripMenuItem_Click);
             // 
@@ -634,9 +641,9 @@
             this.backgroundToolStripMenuItem.CheckOnClick = true;
             this.backgroundToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.backgroundToolStripMenuItem.Text = "&Background";
-            this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
+            this.backgroundToolStripMenuItem.CheckedChanged += new System.EventHandler(this.backgroundToolStripMenuItem_CheckedChanged);
             // 
             // sETITemsToolStripMenuItem
             // 
@@ -644,7 +651,7 @@
             this.sETITemsToolStripMenuItem.CheckOnClick = true;
             this.sETITemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.sETITemsToolStripMenuItem.Name = "sETITemsToolStripMenuItem";
-            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.sETITemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sETITemsToolStripMenuItem.Text = "SET Items";
             this.sETITemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
             // 
@@ -652,7 +659,7 @@
             // 
             this.cAMItemsToolStripMenuItem.CheckOnClick = true;
             this.cAMItemsToolStripMenuItem.Name = "cAMItemsToolStripMenuItem";
-            this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.cAMItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cAMItemsToolStripMenuItem.Text = "CAM Items";
             this.cAMItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.cAMItemsToolStripMenuItem_CheckedChanged);
             // 
@@ -660,9 +667,9 @@
             // 
             this.missionSETItemsToolStripMenuItem.CheckOnClick = true;
             this.missionSETItemsToolStripMenuItem.Name = "missionSETItemsToolStripMenuItem";
-            this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
-            this.missionSETItemsToolStripMenuItem.Click += new System.EventHandler(this.sETITemsToolStripMenuItem_CheckedChanged);
+            this.missionSETItemsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.missionSETItemsToolStripMenuItem_CheckedChanged);
             // 
             // splinesToolStripMenuItem
             // 
@@ -670,7 +677,7 @@
             this.splinesToolStripMenuItem.CheckOnClick = true;
             this.splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
-            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.splinesToolStripMenuItem.Text = "Splines";
             this.splinesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.splinesToolStripMenuItem_CheckedChanged);
             // 
@@ -678,14 +685,14 @@
             // 
             this.alternativeCameraToolStripMenuItem.CheckOnClick = true;
             this.alternativeCameraToolStripMenuItem.Name = "alternativeCameraToolStripMenuItem";
-            this.alternativeCameraToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.alternativeCameraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.alternativeCameraToolStripMenuItem.Text = "Alternative Camera";
             this.alternativeCameraToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides mouse cursor.";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // debugToolStripMenuItem
             // 
@@ -694,7 +701,7 @@
             this.boundsToolStripMenuItem,
             this.upgradeObjDefsToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.debugToolStripMenuItem.Text = "Debug";
             // 
             // statsToolStripMenuItem
@@ -1057,7 +1064,14 @@
             this.toolKnuckles,
             this.toolTails,
             this.toolSonic,
-            this.pivotComboBox});
+            this.pivotComboBox,
+            this.deathZonesButton,
+            this.backgroundButton,
+            this.setItemsButton,
+            this.camItemsButton,
+            this.missionItemsButton,
+            this.splinesButton,
+            this.settingsButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1203, 43);
@@ -1202,6 +1216,82 @@
             this.pivotComboBox.Name = "pivotComboBox";
             this.pivotComboBox.Size = new System.Drawing.Size(121, 43);
             this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
+            // 
+            // deathZonesButton
+            // 
+            this.deathZonesButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.deathZonesButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.deathzone;
+            this.deathZonesButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.deathZonesButton.Name = "deathZonesButton";
+            this.deathZonesButton.Size = new System.Drawing.Size(40, 40);
+            this.deathZonesButton.Text = "Show Death Zones";
+            this.deathZonesButton.Click += new System.EventHandler(this.deathZonesButton_Click);
+            // 
+            // backgroundButton
+            // 
+            this.backgroundButton.Checked = true;
+            this.backgroundButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.backgroundButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.backgroundButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.background;
+            this.backgroundButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.backgroundButton.Name = "backgroundButton";
+            this.backgroundButton.Size = new System.Drawing.Size(40, 40);
+            this.backgroundButton.Text = "Show Skybox";
+            this.backgroundButton.Click += new System.EventHandler(this.backgroundButton_Click);
+            // 
+            // setItemsButton
+            // 
+            this.setItemsButton.Checked = true;
+            this.setItemsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.setItemsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.setItemsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.set;
+            this.setItemsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.setItemsButton.Name = "setItemsButton";
+            this.setItemsButton.Size = new System.Drawing.Size(40, 40);
+            this.setItemsButton.Text = "Show SET Items";
+            this.setItemsButton.Click += new System.EventHandler(this.setItemsButton_Click);
+            // 
+            // camItemsButton
+            // 
+            this.camItemsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.camItemsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cam;
+            this.camItemsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.camItemsButton.Name = "camItemsButton";
+            this.camItemsButton.Size = new System.Drawing.Size(40, 40);
+            this.camItemsButton.Text = "Show CAM Items";
+            this.camItemsButton.Click += new System.EventHandler(this.camItemsButton_Click);
+            // 
+            // missionItemsButton
+            // 
+            this.missionItemsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.missionItemsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.mis;
+            this.missionItemsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.missionItemsButton.Name = "missionItemsButton";
+            this.missionItemsButton.Size = new System.Drawing.Size(40, 40);
+            this.missionItemsButton.Text = "Show Mission SET Items";
+            this.missionItemsButton.Click += new System.EventHandler(this.missionItemsButton_Click);
+            // 
+            // splinesButton
+            // 
+            this.splinesButton.Checked = true;
+            this.splinesButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.splinesButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.splinesButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.splines;
+            this.splinesButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.splinesButton.Name = "splinesButton";
+            this.splinesButton.Size = new System.Drawing.Size(40, 40);
+            this.splinesButton.Text = "Show Splines";
+            this.splinesButton.Click += new System.EventHandler(this.splinesButton_Click);
+            // 
+            // settingsButton
+            // 
+            this.settingsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.settingsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.settings;
+            this.settingsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.settingsButton.Name = "settingsButton";
+            this.settingsButton.Size = new System.Drawing.Size(40, 40);
+            this.settingsButton.Text = "Preferences";
+            this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
             // BackgroundPanel
             // 
@@ -1369,6 +1459,13 @@
 		private System.Windows.Forms.ToolStripMenuItem welcomeTutorialToolStripMenuItem;
 		private System.Windows.Forms.Panel BackgroundPanel;
 		private System.Windows.Forms.ToolStripMenuItem alternativeCameraToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton settingsButton;
+		private System.Windows.Forms.ToolStripButton deathZonesButton;
+		private System.Windows.Forms.ToolStripButton backgroundButton;
+		private System.Windows.Forms.ToolStripButton setItemsButton;
+		private System.Windows.Forms.ToolStripButton camItemsButton;
+		private System.Windows.Forms.ToolStripButton missionItemsButton;
+		private System.Windows.Forms.ToolStripButton splinesButton;
 	}
 }
 
