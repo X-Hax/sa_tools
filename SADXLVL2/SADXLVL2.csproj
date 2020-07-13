@@ -180,6 +180,12 @@
     <None Include="Resources\cam.png" />
     <None Include="Resources\mis.png" />
     <None Include="Resources\splines.png" />
+    <None Include="Resources\advanced.png" />
+    <None Include="Resources\import.png" />
+    <None Include="Resources\export.png" />
+    <None Include="Resources\save.png" />
+    <None Include="Resources\help.png" />
+    <None Include="Resources\bug.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
