@@ -52,15 +52,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData ini;
-		string logFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SADXLVL2.log";
-		List<string> log = new List<string>();
+		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SADXLVL2.log");
+		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
 		ActionKeybindEditor keybindEditor;
 		Direct3D.Mesh boundsMesh;
-		Sprite textSprite;
-		Dictionary<string, int> MessageList;
 		#endregion
 
 		#region Stage Variables
@@ -107,8 +105,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
 			modelLibraryControl1.InitRenderer();
-			MessageList = new Dictionary<string, int>();
 			InitDisableInvalidControls();
+			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			Settings.Reload();
 
@@ -225,12 +223,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addSelectedLevelItemsToolStripMenuItem.Enabled = false;
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
 		}
-
-		void AddMessage(string message, int timer)
-		{
-			if (!MessageList.ContainsKey(message)) MessageList.Add(message, timer);
-		}
-
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
@@ -296,6 +288,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						AutoDepthStencilFormat = Format.D24X8
 			});
 
+				osd = new OnScreenDisplay(d3ddevice);
 				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
 				ObjectHelper.Init(d3ddevice);
@@ -531,6 +524,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			string[] itempath = levelID.Split('\\');
 			levelName = itempath[itempath.Length - 1];
 			LevelData.LevelName = levelName;
+			log.Add("----Loading a new level: " + levelName+ "----");
 			Text = "SADXLVL2 - Loading " + levelName + "...";
 
 #if !DEBUG
@@ -959,7 +953,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "SET object load errors:" };
+						List<string> errorStrings = new List<string> { "\nSET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -974,8 +968,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
-						log.AddRange(errorStrings.ToArray());
-						AddMessage(count + ((count == 1) ? " SET object" : " SET objects") + " failed to load their model(s).\n"
+						log.AddRange(errorStrings);
+						osd.AddMessage(levelName + ":\n" + count + ((count == 1) ? " SET object" : " SET objects") + " failed to load their model(s).\n"
 											+ "Please check SET object load errors in the log for details.\n", 300);
 					}
 
@@ -1009,13 +1003,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 					{
 						LevelData.NullifySETItems();
-						AddMessage("Object definitions not found, SET files skipped", 180);
+						osd.AddMessage("Object definitions not found, SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
-					AddMessage("Object definitions not found, SET files skipped", 180);
+					osd.AddMessage("Object definitions not found, SET files skipped", 180);
 				}
 
 				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
@@ -1092,7 +1086,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 										foreach (CompilerError item in res.Errors)
 											errors += String.Format("\n\n{0}, {1}: {2}", item.Line, item.Column, item.ErrorText);
 
-										AddMessage("Failed to compile object code file:\n" + defgroup.CodeFile + errors, 300);
+										log.Add("Failed to compile object code file:\n" + defgroup.CodeFile + errors);
+										osd.AddMessage("Failed to compile object code file:\n" + defgroup.CodeFile, 180);
 
 										def = new DefaultObjectDefinition();
 									}
@@ -1194,7 +1189,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (objectErrors.Count > 0)
 					{
 						int count = objectErrors.Count;
-						List<string> errorStrings = new List<string> { "Mission SET object load errors:" };
+						List<string> errorStrings = new List<string> { "\nMission SET object load errors:" };
 
 						foreach (ObjectData o in objectErrors)
 						{
@@ -1210,9 +1205,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 							errorStrings.Add("\t\tExists:\t" + texExists);
 						}
 
-						log.AddRange(errorStrings.ToArray());
+						log.AddRange(errorStrings);
 
-						AddMessage(count + ((count == 1) ? " Mission SET object" : " Mission SET objects") + " failed to load their model(s).\n"
+						osd.AddMessage(levelName + ":\n" + count + ((count == 1) ? " Mission SET object" : " Mission SET objects") + " failed to load their model(s).\n"
 										+ "Please check Mission SET object load errors in the log for details.\n", 180);
 					}
 				}
@@ -1444,8 +1439,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 					else
 					{
-						AddMessage("No lights were found for this stage. Using default lights instead.", 180);
-
+						osd.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
+						log.Add("No lights were found for this stage. Using default lights.");
 						EditorOptions.SetDefaultLights(d3ddevice, false);
 					}
 				}
@@ -1453,19 +1448,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				transformGizmo = new TransformGizmo();
 
-				if (MessageList.Count > 0)
-				{
-					log.AddRange(MessageList.Keys);
-				}
-				File.AppendAllLines(logFilePath, log);
+				log.Add("----Level load complete: " + levelName + "----\n");
+				log.WriteLog();
 #if !DEBUG
 			}
 			catch (Exception ex)
 			{
 				log.Add(ex.ToString()+"\n");
-				File.AppendAllLines(logFilePath, log);
+				log.WriteLog();
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to " + logFilePath + ".",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to SADXLVL2's folder.",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				initerror = true;
 			}
@@ -1995,27 +1987,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				pointHelper.Draw(d3ddevice, cam);
 			}
-
-			StringBuilder MessageString = new StringBuilder();
-
-			foreach (var key in MessageList.Keys.ToList())
-			{
-				if (d3ddevice != null) MessageList[key] = MessageList[key] - 1;
-				if (MessageList[key] <= 0) MessageList.Remove(key);
-				else MessageString.AppendFormat(key + "\n");
-			}
-
-			if (MessageList.Count > 0 && d3ddevice != null)
-			{
-				textSprite = new Sprite(d3ddevice);
-				textSprite.Begin(SpriteFlags.AlphaBlend);
-				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 17, 17, Color.Black.ToRawColorBGRA());
-				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 16, 16, Color.FromArgb(245, 220, 220, 240).ToRawColorBGRA());
-				textSprite.End();
-				textSprite.Dispose();
-			}
-			MessageString.Clear();
-
+			
+			osd.ProcessMessages();
 			#endregion
 
 			d3ddevice.Present();
@@ -2035,7 +2008,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LevelData_PointOperation()
 		{
-			AddMessage("You have just begun a Point To operation.\nLeft click on the point or item you want the selected item(s) to point to, or right click to cancel.", 300);
+			osd.AddMessage("You have just begun a Point To operation.\nLeft click on the point or item you want the selected item(s) to point to, or right click to cancel.", 300);
 			isPointOperation = true;
 		}
 
@@ -2737,7 +2710,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (obj == null)
 			{
-				AddMessage("Paste operation failed - feature not implemented.", 180);
+				osd.AddMessage("Paste operation failed - feature not implemented.", 180);
 				return; // todo: finish implementing proper copy/paste
 			}
 
@@ -2881,7 +2854,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				selectedItems.Add(LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems));
 
 				if (errorFlag)
-					AddMessage(errorMsg+"\n", 300);
+					osd.AddMessage(errorMsg+"\n", 300);
 			}
 
 			LevelData.InvalidateRenderState();
@@ -2952,7 +2925,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							failReasons.AppendFormat("{0} failed because: {1}", failure.Key, failure.Value);
 						}
 
-						AddMessage(failReasons.ToString(), 300);
+						osd.AddMessage(failReasons.ToString(), 300);
 					}
 
 					modelLibraryControl1.FullReRender();
@@ -3288,7 +3261,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
-			if (errorFlag) AddMessage(errorMsg, 300);
+			if (errorFlag) osd.AddMessage(errorMsg, 300);
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3403,7 +3376,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (selectedItems.ItemCount > 0)
 			{
-				AddMessage("To use this feature you must have a selection!", 180);
+				osd.AddMessage("To use this feature you must have a selection!", 180);
 				return;
 			}
 
