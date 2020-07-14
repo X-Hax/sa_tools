@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewProject));
 			this.SADXPCButton = new System.Windows.Forms.RadioButton();
 			this.SA2RadioButton = new System.Windows.Forms.RadioButton();
 			this.NextButton = new System.Windows.Forms.Button();
@@ -176,6 +177,7 @@
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.BackButton);
 			this.Controls.Add(this.NextButton);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "NewProject";
 			this.Text = "New Project";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NewProject_FormClosing);

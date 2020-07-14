@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectActions));
 			this.ProjectNameLAbel = new System.Windows.Forms.Label();
 			this.GameSpecificOptions = new System.Windows.Forms.GroupBox();
 			this.SADXTweaker2Button = new System.Windows.Forms.Button();
@@ -178,6 +179,7 @@
 			this.Controls.Add(this.buildGroup);
 			this.Controls.Add(this.GameSpecificOptions);
 			this.Controls.Add(this.ProjectNameLAbel);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ProjectActions";
 			this.Text = "Project Actions";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProjectActions_FormClosing);
