@@ -519,7 +519,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			UseWaitCursor = true;
 			Enabled = false;
-
+			if (osd != null) osd.ClearMessageList();
 			levelID = id;
 			string[] itempath = levelID.Split('\\');
 			levelName = itempath[itempath.Length - 1];
@@ -2477,7 +2477,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			bool performedWrap = false;
 
-			if (e.Button == MouseButtons.Middle)
+			if (e.Button == MouseButtons.Middle || transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE)
 			{
 				if (alternativeCameraToolStripMenuItem.Checked && !mouseHide)
 				{
