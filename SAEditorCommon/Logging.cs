@@ -140,6 +140,13 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			if (!MessageList.ContainsKey(message)) MessageList.Add(message, timer);
 		}
+		/// <summary>
+		/// Clears current OSD message list.
+		/// </summary>
+		public void ClearMessageList()
+		{
+			MessageList.Clear();
+		}
 		internal class OSDItem
 		{
 			public string text;
