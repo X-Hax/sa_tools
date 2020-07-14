@@ -39,15 +39,15 @@ namespace StructExporter
 			outputfile = Path.GetFileNameWithoutExtension(filename) + ".c";
 			if (args.Length > 1)
 			{
-				if (args[args.Length - 1] == "-nodx") dx = false;
-				if (args[1] != "-nodx")
+				if (args[args.Length - 1].ToLowerInvariant() == "-nodx") dx = false;
+				if (args[1].ToLowerInvariant() != "-nodx")
 				{ 
 					outputfile = args[1]; 
 				}
 			}
 			byte[] file = File.ReadAllBytes(filename);
 			extension = Path.GetExtension(filename);
-			switch (extension)
+			switch (extension.ToLowerInvariant())
 			{
 				case ".sa2lvl":
 				case ".sa1lvl":
@@ -171,6 +171,14 @@ namespace StructExporter
 						sw.WriteLine();
 						animation.ToStructVariables(sw);
 						break;
+					}
+				default:
+					{
+						Console.WriteLine("Unsupported file extension.");
+						Console.WriteLine("Supported file types: sa1lvl, sa2lvl, sa1mdl, sa2mdl, saanim\n");
+						Console.WriteLine("Press ENTER to exit.");
+						Console.ReadLine();
+						return;
 					}
 			}
 		}

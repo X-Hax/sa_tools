@@ -40,37 +40,40 @@ namespace USplit
 				return;
 			}
 			//Args list: game, filename, key, type, address, [address2/count], [language], [name]
-			switch (args[0])
+			switch (args[0].ToLowerInvariant())
 			{
-				case "SA1":
+				case "sa1":
 					game = Game.SA1;
 					break;
-				case "SA1_b":
+				case "sa1_b":
 					game = Game.SA1;
 					bigendian = true;
 					break;
-				case "SADX":
+				case "sadx":
 					game = Game.SADX;
 					break;
-				case "SADX_b":
+				case "sadx_b":
 					game = Game.SADX;
 					bigendian = true;
 					break;
-				case "SA2":
+				case "sa2":
 					game = Game.SA2;
 					break;
-				case "SA2_b":
+				case "sa2_b":
 					game = Game.SA2;
 					bigendian = true;
 					break;
-				case "SA2B":
+				case "sa2b":
 					game = Game.SA2B;
 					break;
-				case "SA2B_b":
+				case "sa2b_b":
 					game = Game.SA2B;
 					bigendian = true;
 					break;
 				default:
+					Console.WriteLine("Error parsing game type.\nCorrect game types are: SA1, SADX, SA2, SA2B.");
+					Console.WriteLine("Press ENTER to exit.");
+					Console.ReadLine();
 					return;
 			}
 			string model_extension = ".sa1mdl";
@@ -122,7 +125,7 @@ namespace USplit
 				fileOutputPath = dir + "\\" + args[args.Length - 1];
 				Console.WriteLine("Name: {0}", args[args.Length - 1]);
 			}
-			switch (type)
+			switch (type.ToLowerInvariant())
 			{
 				case "landtable":
 					new LandTable(datafile, address, imageBase, landfmt).SaveToFile(fileOutputPath + landtable_extension, landfmt);
@@ -393,7 +396,12 @@ namespace USplit
 					}
 					break;
 				default:
-					break;
+					{
+						Console.WriteLine("Error parsing data type. Run the program without arguments for a list of usable data types.");
+						Console.WriteLine("Press ENTER to exit.");
+						Console.ReadLine();
+						return;
+					}
 			}
 		}
 	}
