@@ -1,1 +1,1 @@
-"../ProjectManager/projectmanager.exe" -m Split -f data/system/ADV00MODELS.DLL -d adv00models.ini -o ../../output/
+"../ProjectManager/projectmanager.exe" -m Split -f data/system/ADV00MODELS.DLL -d adv00models.ini -o output/
