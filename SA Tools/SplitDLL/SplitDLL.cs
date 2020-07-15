@@ -152,7 +152,11 @@ namespace SA_Tools.SplitDLL
 									{
 										string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
 										string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString())) 
+										{
+											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext);
+											fileName= Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext);
+										}
 										land.SaveToFile(outputFN, landfmt);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
@@ -216,6 +220,10 @@ namespace SA_Tools.SplitDLL
 									if (!labels.Contains(mdl.Name))
 									{
 										string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext);
+										}
 										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
 										labels.AddRange(mdl.GetLabels());
 									}
@@ -246,6 +254,10 @@ namespace SA_Tools.SplitDLL
 									if (!labels.Contains(dummy.Name))
 									{
 										string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + modelext);
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext);
+										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
 										labels.AddRange(mdl.GetLabels());
 									}
@@ -288,6 +300,10 @@ namespace SA_Tools.SplitDLL
 									if (!labels.Contains(mdl.Name))
 									{
 										string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
+										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
 										labels.AddRange(mdl.GetLabels());
 									}
@@ -330,6 +346,10 @@ namespace SA_Tools.SplitDLL
 									if (!labels.Contains(mdl.Name))
 									{
 										string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
+										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
 										labels.AddRange(mdl.GetLabels());
 									}
@@ -372,6 +392,10 @@ namespace SA_Tools.SplitDLL
 									if (!labels.Contains(mdl.Name))
 									{
 										string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
+										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
 										labels.AddRange(mdl.GetLabels());
 									}
@@ -415,6 +439,11 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+									if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+									{
+										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
+										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
+									}
 									if (saveani)
 									{
 										ani.Animation.Save(outputFN);
@@ -472,6 +501,11 @@ namespace SA_Tools.SplitDLL
 										{
 											string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 											string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+											if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+											{
+												outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
+												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
+											}
 											ani.Save(outputFN);
 											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 										}
