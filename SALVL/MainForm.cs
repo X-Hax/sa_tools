@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -20,6 +21,8 @@ namespace SonicRetro.SAModel.SALVL
 	public partial class MainForm : Form
 	{
 		Properties.Settings Settings = Properties.Settings.Default;
+		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log");
+		OnScreenDisplay osd;
 
 		public MainForm()
 		{
@@ -30,14 +33,16 @@ namespace SonicRetro.SAModel.SALVL
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			File.WriteAllText("SALVL.log", e.Exception.ToString());
+			log.Add(e.Exception.ToString());
+			log.WriteLog();
 			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SALVL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
 		void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			File.WriteAllText("SALVL.log", e.ExceptionObject.ToString());
+			log.Add(e.ExceptionObject.GetType().Name.ToString());
+			log.WriteLog();
 			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
@@ -63,6 +68,7 @@ namespace SonicRetro.SAModel.SALVL
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
+			osd = new OnScreenDisplay(d3ddevice);
 
 			Settings.Reload();
 			if (Settings.ShowWelcomeScreen)
@@ -677,12 +683,9 @@ namespace SonicRetro.SAModel.SALVL
 
 				DrawLevel();
 			}
-			if (e.Button == MouseButtons.Left)
+			if (e.Button == MouseButtons.Left && transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE)
 			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-				}
+				transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
 
 				DrawLevel();
 
@@ -804,7 +807,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			if (objs == null)
 			{
-				MessageBox.Show("Paste operation failed - this is a known issue and is being worked on.");
+				osd.AddMessage("Paste operation failed - feature not implemented.", 180);
 				return; // todo: finish implementing proper copy/paste
 			}
 
@@ -849,7 +852,7 @@ namespace SonicRetro.SAModel.SALVL
 
 				if (errorFlag)
 				{
-					MessageBox.Show(errorMsg);
+					osd.AddMessage(errorMsg, 300);
 				}
 			}
 		}
@@ -879,7 +882,7 @@ namespace SonicRetro.SAModel.SALVL
 
 				if (errorFlag)
 				{
-					MessageBox.Show(errorMsg);
+					osd.AddMessage(errorMsg, 300);
 				}
 			}
 		}
@@ -997,8 +1000,7 @@ namespace SonicRetro.SAModel.SALVL
 
 					if (errorFlag)
 					{
-						MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.", "Failure",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
+						osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
 					}
 
 					#region Material Exporting
@@ -1146,14 +1148,67 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void statsToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
-			MessageBox.Show(LevelData.GetStats());
+			string selectionAppend = "";
+
+			int levelItemCount = selectedItems.Items.Count(item => item is LevelItem);
+
+			if (levelItemCount == 1)
+			{
+				LevelItem levelItem = (LevelItem)selectedItems.Items.First(item => item is LevelItem);
+				NJS_OBJECT levelNJSObject = levelItem.CollisionData.Model;
+
+				int faces = 0;
+				int vColors = 0;
+
+
+				if (levelNJSObject.Attach is BasicAttach)
+				{
+					BasicAttach model = ((BasicAttach)levelNJSObject.Attach);
+
+					foreach (NJS_MESHSET meshSet in model.Mesh)
+					{
+						if (meshSet.VColor != null) vColors += meshSet.VColor.Length;
+
+						switch (meshSet.PolyType)
+						{
+							case Basic_PolyType.Triangles:
+								faces = +meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.Quads:
+								faces = +meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.NPoly:
+								faces = +meshSet.Poly.Count;
+								break;
+							case Basic_PolyType.Strips:
+								foreach (Strip strip in meshSet.Poly)
+								{
+									faces += strip.Size;
+								}
+								break;
+							default:
+								break;
+						}
+					}
+
+					selectionAppend = string.Format("Name: {0}\nVertices: {1}\nFaces: {2}\nVertex Colors: {3}\nMaterials: {4}\nMeshes: {5}",
+					levelItem.Name, model.Vertex.Length, faces, vColors, model.Material.Count, model.Mesh.Count);
+				}
+			}
+			else if (levelItemCount > 1)
+			{
+				selectionAppend = "Multiple objects selected, can't display selection stats.";
+			}
+			else selectionAppend = "Select a level geometry item to show selection stats.";
+
+			MessageBox.Show("Level stats:\n" + LevelData.GetStats() + string.Format("\n\nSelection stats:\n{0}\n", selectionAppend), "Level/selection stats");
 		}
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
-			if (errorFlag) MessageBox.Show(errorMsg);
+			if (errorFlag) osd.AddMessage(errorMsg, 180);
 		}
 
 		private void debugLightingToolStripMenuItem_Click(object sender, EventArgs e)
