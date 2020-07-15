@@ -152,10 +152,20 @@
     <None Include="Resources\paste.png" />
     <None Include="Resources\UnknownImg.png" />
     <None Include="Resources\add.png" />
+    <None Include="Resources\info.png" />
+    <None Include="Resources\messages.png" />
+    <None Include="Resources\duplicate.png" />
+    <None Include="Resources\help.png" />
+    <None Include="Resources\import.png" />
+    <None Include="Resources\export.png" />
     <Content Include="Resources\MoveIcon.png" />
+    <None Include="Resources\open.png" />
     <Content Include="Resources\RotateIcon.png" />
     <None Include="Resources\ScaleIcon.png" />
+    <None Include="Resources\save.png" />
     <Content Include="Resources\SelectIcon.png" />
+    <None Include="Resources\stats.png" />
+    <None Include="Resources\settings.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

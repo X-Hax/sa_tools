@@ -68,7 +68,7 @@ namespace SonicRetro.SAModel.SALVL
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
-			osd = new OnScreenDisplay(d3ddevice);
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 
 			Settings.Reload();
 			if (Settings.ShowWelcomeScreen)
@@ -84,7 +84,7 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			optionsEditor = new EditorOptionsEditor(cam, true, true);
+			optionsEditor = new EditorOptionsEditor(cam, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
@@ -307,7 +307,7 @@ namespace SonicRetro.SAModel.SALVL
 						renderlist.AddRange(LevelData.GetLevelitemAtIndex(i).Render(d3ddevice, cam, transform));
 				}
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
-
+			osd.ProcessMessages();
 			d3ddevice.EndScene(); // scene drawings go before this line
 
 			transformGizmo.Draw(d3ddevice, cam);
@@ -509,15 +509,16 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				case ("Camera Mode"):
 					cam.mode = (cam.mode + 1) % 2;
-
+					string cammode = "Normal";
 					if (cam.mode == 1)
 					{
+						cammode = "Orbit";
 						if (selectedItems.GetSelection().Count > 0)
 							cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
 						else
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
 					}
-
+					osd.UpdateOSDItem("Camera mode: " + cammode, panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -537,16 +538,24 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
 					}
-
+					osd.UpdateOSDItem("Camera zoomed to target", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Change Render Mode"):
+					string rendermode = "Solid";
 					if (EditorOptions.RenderFillMode == FillMode.Solid)
+					{
 						EditorOptions.RenderFillMode = FillMode.Point;
+						rendermode = "Point";
+					}
 					else
+					{
 						EditorOptions.RenderFillMode += 1;
-
+						if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
+						else rendermode = "Wireframe";
+					}
+					osd.UpdateOSDItem("Render mode: " + rendermode, panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -560,22 +569,29 @@ namespace SonicRetro.SAModel.SALVL
 				case ("Increase camera move speed"):
 					cam.MoveSpeed += 0.0625f;
 					UpdateTitlebar();
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					draw = true;
 					break;
 
 				case ("Decrease camera move speed"):
-					cam.MoveSpeed -= 0.0625f;
+					cam.MoveSpeed = Math.Max(0.0625f, cam.MoveSpeed -= 0.0625f);
 					UpdateTitlebar();
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					draw = true;
 					break;
 
 				case ("Reset camera move speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					UpdateTitlebar();
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					draw = true;
 					break;
 
 				case ("Reset Camera Position"):
 					if (cam.mode == 0)
 					{
 						cam.Position = new Vector3();
+						osd.UpdateOSDItem("Reset camera position", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -585,6 +601,8 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
+						draw = true;
+						osd.UpdateOSDItem("Reset camera rotation", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -651,16 +669,19 @@ namespace SonicRetro.SAModel.SALVL
 					if (zoomKeyDown)
 					{
 						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
+						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 					else if (lookKeyDown)
 					{
 						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
 						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
 						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
 						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 				}
 				else if (cam.mode == 1)
@@ -668,16 +689,19 @@ namespace SonicRetro.SAModel.SALVL
 					if (zoomKeyDown)
 					{
 						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
+						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 					else if (lookKeyDown)
 					{
 						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
 						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
+						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 					else if (!lookKeyDown && !zoomKeyDown) // pan
 					{
 						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
 						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
+						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					}
 				}
 
@@ -774,6 +798,8 @@ namespace SonicRetro.SAModel.SALVL
 					transformGizmo.Enabled = false;
 				}
 			}
+			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
 		}
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1240,9 +1266,9 @@ namespace SonicRetro.SAModel.SALVL
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				//DrawLevel(); // possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
-
 				SetGizmoPivotAndLocality();
+				osd.UpdateOSDItem("Transform mode: Select", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				DrawLevel(); // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
 
@@ -1257,8 +1283,9 @@ namespace SonicRetro.SAModel.SALVL
 				moveModeButton.Checked = true;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				//DrawLevel();
 				SetGizmoPivotAndLocality();
+				osd.UpdateOSDItem("Transform mode: Move", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				DrawLevel();
 			}
 		}
 
@@ -1276,28 +1303,30 @@ namespace SonicRetro.SAModel.SALVL
 				rotateModeButton.Checked = true;
 				moveModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				//DrawLevel();
 				SetGizmoPivotAndLocality();
+				osd.UpdateOSDItem("Transform mode: Rotate", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				DrawLevel();
 			}
 		}
 
 		private void gizmoSpaceComboBox_DropDownClosed(object sender, EventArgs e)
 		{
-			SetGizmoPivotAndLocality();
+			SetGizmoPivotAndLocality(false);
 		}
 
 		private void pivotComboBox_DropDownClosed(object sender, EventArgs e)
 		{
-			SetGizmoPivotAndLocality();
+			SetGizmoPivotAndLocality(false);
 		}
 
-		void SetGizmoPivotAndLocality()
+		void SetGizmoPivotAndLocality(bool silent = true)
 		{
 			if (transformGizmo != null)
 			{
+				string pivotmode = "Origin";
+				string globalorlocal = "Global";
 				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
 				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
-
 				if (selectedItems.ItemCount > 0)
 				{
 					Item firstItem = selectedItems.Get(0);
@@ -1305,7 +1334,9 @@ namespace SonicRetro.SAModel.SALVL
 						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
 						firstItem.TransformMatrix);
 				}
-
+				if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
+				if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
+				if (!silent) osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				DrawLevel();
 			}
 		}
@@ -1322,6 +1353,8 @@ namespace SonicRetro.SAModel.SALVL
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
+				SetGizmoPivotAndLocality();
+				osd.UpdateOSDItem("Transform mode: Scale", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				DrawLevel();
 			}
 		}
@@ -1331,6 +1364,8 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
+			osd.UpdateOSDItem("Calculated all bounds", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			DrawLevel();
 		}
 
 		private void ASSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1412,6 +1447,29 @@ namespace SonicRetro.SAModel.SALVL
 			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
 			LevelData.Textures = new Dictionary<string, Texture[]>();
 			DrawLevel();
+		}
+
+		private void MessageTimer_Tick(object sender, EventArgs e)
+		{
+			if (d3ddevice != null && osd != null)
+				if (osd.UpdateTimer() == true) DrawLevel();
+		}
+
+		private void showHintsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			osd.show_osd = showHintsToolStripMenuItem.Checked;
+			hintsButton.Checked = showHintsToolStripMenuItem.Checked;
+		}
+
+		private void hintsButton_Click(object sender, EventArgs e)
+		{
+			showHintsToolStripMenuItem.Checked = !showHintsToolStripMenuItem.Checked;
+			hintsButton.Checked = showHintsToolStripMenuItem.Checked;
+		}
+
+		private void preferencesButton_Click(object sender, EventArgs e)
+		{
+			optionsEditor.Show();
 		}
 	}
 }
