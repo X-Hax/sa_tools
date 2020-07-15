@@ -76,17 +76,20 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		Sprite textSprite;
 		public Device d3ddevice;
 		public bool timer_freeze;
-		public bool show_osd = true;
+		public RawColorBGRA logcolor;
+		public bool show_osd { get; set; }
 		/// <summary>
 		/// Initializes an OSD which displays colored text/log on screen.
 		/// </summary>
 		/// <param name="device">Direct3D device to draw on</param>
-		public OnScreenDisplay(Device device)
+		public OnScreenDisplay(Device device, RawColorBGRA color)
 		{
 			MessageList = new Dictionary<string, int>();
 			OSDItems = new List<OSDItem>();
 			textSprite = new Sprite(device);
 			d3ddevice = device;
+			logcolor = color;
+			show_osd = true;
 		}
 
 		/// <summary>
@@ -108,15 +111,22 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			{
 				foreach (OSDItem osd in OSDItems.ToList())
 				{
-					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + 1, osd.pos_y + 1, Color.Black.ToRawColorBGRA());
-					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x, osd.pos_y, osd.color);
+					SharpDX.Rectangle rec = EditorOptions.OnscreenFont.MeasureText(null, osd.text, FontDrawFlags.Right);
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + 1 + rec.X, osd.pos_y + 1, Color.Black.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + rec.X, osd.pos_y + 1, Color.Black.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x - 1 + rec.X, osd.pos_y - 1, Color.Black.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + rec.X, osd.pos_y - 1, Color.Black.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + rec.X, osd.pos_y, osd.color);
 				}
 			}
 			//Process messages
 			if (MessageList.Count > 0 && d3ddevice != null)
 			{
 				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 9, 9, Color.Black.ToRawColorBGRA());
-				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 8, 8, Color.FromArgb(245, 220, 220, 240).ToRawColorBGRA());
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 7, 7, Color.Black.ToRawColorBGRA());
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 7, 9, Color.Black.ToRawColorBGRA());
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 9, 7, Color.Black.ToRawColorBGRA());
+				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 8, 8, logcolor);
 			}
 			textSprite.End();
 			//Refresh messages after drawing
@@ -164,7 +174,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				{
 					osd.text = text;
 					if (timer != 0) osd.timer = timer;
-					osd.pos_x = pos_x;
+					osd.pos_x = pos_x - 8;
 					osd.pos_y = pos_y;
 					osd.color = color;
 					return;
@@ -174,7 +184,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			newosd.text = text;
 			newosd.id = identifier;
 			newosd.timer = timer;
-			newosd.pos_x = pos_x;
+			newosd.pos_x = pos_x - 8;
 			newosd.pos_y = pos_y;
 			newosd.color = color;
 			OSDItems.Add(newosd);

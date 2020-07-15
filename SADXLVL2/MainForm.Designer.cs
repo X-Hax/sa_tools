@@ -122,7 +122,10 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.pointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.showHintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.showHintsButton = new System.Windows.Forms.ToolStripButton();
+			this.MessageTimer = new System.Windows.Forms.Timer(this.components);
+			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.libraryTabControl = new System.Windows.Forms.TabControl();
@@ -558,8 +561,9 @@
             this.toolStripSeparator2,
             this.jumpToStartPositionToolStripMenuItem,
             this.alternativeCameraToolStripMenuItem,
-            this.debugToolStripMenuItem});
-            this.viewToolStripMenuItem.Enabled = false;
+		    this.debugToolStripMenuItem,
+			this.showHintsToolStripMenuItem});
+			this.viewToolStripMenuItem.Enabled = false;
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -772,10 +776,21 @@
             this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Obj Defs";
             this.upgradeObjDefsToolStripMenuItem.Click += new System.EventHandler(this.upgradeObjDefsToolStripMenuItem_Click);
-            // 
-            // modelLibraryToolStripMenuItem
-            // 
-            this.modelLibraryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			// 
+			// showHintsToolStripMenuItem
+			// 
+			this.showHintsToolStripMenuItem.Checked = true;
+			this.showHintsToolStripMenuItem.CheckOnClick = true;
+			this.showHintsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.showHintsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.messages;
+			this.showHintsToolStripMenuItem.Name = "showHintsToolStripMenuItem";
+			this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(288, 34);
+			this.showHintsToolStripMenuItem.Text = "Show Hints";
+			this.showHintsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showHintsToolStripMenuItem_CheckedChanged);
+			// 
+			// modelLibraryToolStripMenuItem
+			// 
+			this.modelLibraryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addSelectedLevelItemsToolStripMenuItem,
             this.addAllLevelItemsToolStripMenuItem,
             this.clearAllToolStripMenuItem,
@@ -1110,8 +1125,9 @@
             this.missionItemsButton,
             this.splinesButton,
             this.moveToStartButton,
-            this.settingsButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.settingsButton,
+			this.showHintsButton});
+			this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1203, 43);
             this.toolStrip1.TabIndex = 3;
@@ -1341,19 +1357,37 @@
             this.settingsButton.Size = new System.Drawing.Size(40, 40);
             this.settingsButton.Text = "Preferences";
             this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
-            // 
-            // BackgroundPanel
-            // 
-            this.BackgroundPanel.AutoSize = true;
+			// 
+			// showHintsButton
+			// 
+			this.showHintsButton.Checked = true;
+			this.showHintsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.showHintsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.showHintsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.messages;
+			this.showHintsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.showHintsButton.Name = "showHintsButton";
+			this.showHintsButton.Size = new System.Drawing.Size(40, 40);
+			this.showHintsButton.Text = "Show Hints";
+			this.showHintsButton.Click += new System.EventHandler(this.showHintsButton_Click);
+			// 
+			// BackgroundPanel
+			// 
+			this.BackgroundPanel.AutoSize = true;
             this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
             this.BackgroundPanel.TabIndex = 2;
-            // 
-            // sceneGraphControl1
-            // 
-            this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			// 
+			// MessageTimer
+			// 
+			this.MessageTimer.Enabled = true;
+			this.MessageTimer.Interval = 1;
+			this.MessageTimer.Tick += new System.EventHandler(this.MessageTimer_Tick);
+			// 
+			// sceneGraphControl1
+			// 
+			this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
             this.sceneGraphControl1.Name = "sceneGraphControl1";
             this.sceneGraphControl1.Size = new System.Drawing.Size(188, 491);
@@ -1535,6 +1569,9 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripButton moveToStartButton;
 		private System.Windows.Forms.ToolStripMenuItem jumpToStartPositionToolStripMenuItem;
+		private System.Windows.Forms.Timer MessageTimer;
+		private System.Windows.Forms.ToolStripMenuItem showHintsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton showHintsButton;
 	}
 }
 
