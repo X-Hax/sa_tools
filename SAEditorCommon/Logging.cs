@@ -11,7 +11,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 {
 	public class Logger
 	{
-		private bool filecreated;
 		private string file;
 		public List<string> LogQueue { get; set; }
 		/// <summary>
@@ -77,7 +76,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		Sprite textSprite;
 		public Device d3ddevice;
 		public bool timer_freeze;
-
+		public bool show_osd = true;
 		/// <summary>
 		/// Initializes an OSD which displays colored text/log on screen.
 		/// </summary>
@@ -96,38 +95,30 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public void ProcessMessages()
 		{
 			StringBuilder MessageString = new StringBuilder();
-
-			//Process log messages
+			//Update timers on render because the form's timer freezes when stuff is rendered
+			UpdateTimer();
+			//Create the full log string
 			foreach (var key in MessageList.Keys.ToList())
 			{
-				if (d3ddevice != null && !timer_freeze) MessageList[key]--;
-				if (MessageList[key] <= 0) MessageList.Remove(key);
-				else MessageString.AppendFormat(key + "\n");
+				MessageString.AppendFormat(key + "\n");
 			}
-
+			textSprite.Begin(SpriteFlags.AlphaBlend);
 			//Process OSD items
-			foreach (OSDItem osd in OSDItems)
+			if (show_osd)
 			{
-				if (d3ddevice != null && !timer_freeze && osd.timer != -1)
+				foreach (OSDItem osd in OSDItems.ToList())
 				{
-					osd.timer--;
-					if (osd.timer <= 0) OSDItems.Remove(osd);
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + 1, osd.pos_y + 1, Color.Black.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x, osd.pos_y, osd.color);
 				}
-				textSprite.Begin(SpriteFlags.AlphaBlend);
-				EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + 1, osd.pos_y + 1, Color.Black.ToRawColorBGRA());
-				EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x, osd.pos_y, osd.color);
-				textSprite.End();
 			}
-
-			//Draw stuff
+			//Process messages
 			if (MessageList.Count > 0 && d3ddevice != null)
 			{
-				textSprite.Begin(SpriteFlags.AlphaBlend);
 				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 9, 9, Color.Black.ToRawColorBGRA());
 				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 8, 8, Color.FromArgb(245, 220, 220, 240).ToRawColorBGRA());
-				textSprite.End();
 			}
-
+			textSprite.End();
 			//Refresh messages after drawing
 			MessageString.Clear();
 		}
@@ -150,28 +141,72 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		internal class OSDItem
 		{
 			public string text;
+			public string id;
 			public int timer;
 			public int pos_x;
 			public int pos_y;
 			public RawColorBGRA color;
 		}
 		/// <summary>
-		/// Adds a text item to the OSD.
+		/// Adds or updates an OSD item.
 		/// </summary>
 		/// <param name="text">Item text</param>
-		/// <param name="timer">Duration in frames, -1 for permanent</param>
 		/// <param name="pos_x">Item X position</param>
 		/// <param name="pos_y">Item Y position</param>
 		/// <param name="color">Text color</param>
-		public void AddOSDItem(string text, int timer, int pos_x, int pos_y, RawColorBGRA color)
+		/// <param name="identifier">Unique identifier, set to be able to update the item without recreating it</param>
+		/// <param name="timer">Duration in frames, -1 for permanent, don't set to keep the previous value when updating an existing item</param>
+		public void UpdateOSDItem(string text, int pos_x, int pos_y, RawColorBGRA color, string identifier = "", int timer = 0)
 		{
+			foreach (OSDItem osd in OSDItems)
+			{
+				if (osd.id != "" && osd.id == identifier)
+				{
+					osd.text = text;
+					if (timer != 0) osd.timer = timer;
+					osd.pos_x = pos_x;
+					osd.pos_y = pos_y;
+					osd.color = color;
+					return;
+				}
+			}
 			OSDItem newosd = new OSDItem();
 			newosd.text = text;
+			newosd.id = identifier;
 			newosd.timer = timer;
 			newosd.pos_x = pos_x;
 			newosd.pos_y = pos_y;
 			newosd.color = color;
 			OSDItems.Add(newosd);
+		}
+		/// <summary>
+		/// Updates OSD/message timers and deletes old messages. Returns true if 3D view needs to be redrawn.
+		/// </summary>
+		public bool UpdateTimer()
+		{
+			bool removeditems = false;
+			foreach (var key in MessageList.Keys.ToList())
+			{
+				if (!timer_freeze) MessageList[key]--;
+				if (MessageList[key] <= 0)
+				{
+					MessageList.Remove(key);
+					removeditems = true;
+				}
+			}
+			foreach (OSDItem osd in OSDItems.ToList())
+			{
+				if (osd.timer != -1)
+				{
+					osd.timer--;
+					if (osd.timer <= 0)
+					{
+						OSDItems.Remove(osd);
+						removeditems = true;
+					}
+				}
+			}
+			return removeditems;
 		}
 	}
 }
