@@ -80,6 +80,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		Point menuLocation;
 		bool isPointOperation;
 		bool displayDeathZonesManual;
+		bool unsaved;
 
 		// TODO: Make these both configurable.
 		bool mouseWrapScreen = false;
@@ -493,6 +494,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		/// <returns></returns>
 		private DialogResult SavePrompt(bool autoCloseDialog = false)
 		{
+			if (!unsaved) return DialogResult.No;
 			DialogResult result = MessageBox.Show(this, "Do you want to save?", "SADXLVL2",
 				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
@@ -535,6 +537,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
+			unsaved = false;
 #endif
 		}
 
@@ -1817,7 +1820,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			progress.StepProgress();
-
+			unsaved = false;
 			#endregion
 		}
 
@@ -2551,7 +2554,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 
 					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-
+					if (selectedItems.ItemCount > 0 && mouseDelta.X != 0 || mouseDelta.Y != 0) unsaved = true;
 					DrawLevel();
 					break;
 
@@ -2714,6 +2717,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.InvalidateRenderState();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData(DataFormats.Serializable, selitems);
+			unsaved = true;
 		}
 
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2757,6 +2761,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			selectedItems.Clear();
 			selectedItems.Add(new List<Item>(objs));
 			LevelData.InvalidateRenderState();
+			unsaved = true;
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2768,6 +2773,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			selectedItems.Clear();
 			LevelData.InvalidateRenderState();
+			unsaved = true;
 		}
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -2885,6 +2891,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			LevelData.InvalidateRenderState();
+			unsaved = true;
 		}
 
 		private void importToModelLibrary_Click(object sender, EventArgs e)
@@ -2980,6 +2987,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					selectedItems.Clear();
 					selectedItems.Add(item);
 					LevelData.InvalidateRenderState();
+					unsaved = true;
 				}
 		}
 
@@ -2991,6 +2999,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			selectedItems.Clear();
 			selectedItems.Add(item);
 			LevelData.InvalidateRenderState();
+			unsaved = true;
 			//LevelData_StateChanged();
 		}
 
@@ -3014,6 +3023,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					selectedItems.Clear();
 					selectedItems.Add(item);
 					LevelData.InvalidateRenderState();
+					unsaved = true;
 				}
 		}
 
@@ -3175,12 +3185,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			selectedItems.Clear();
 			selectedItems.Add(item);
 			LevelData.InvalidateRenderState();
+			unsaved = true;
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			LevelData.InvalidateRenderState();
 			propertyGrid1.Refresh();
+			unsaved = true;
 		}
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3192,7 +3204,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void LevelData_StateChanged()
 		{
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
-
+			unsaved = true;
 			DrawLevel();
 		}
 
@@ -3281,13 +3293,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (findReplaceResult == DialogResult.OK)
 			{
 				LevelData.InvalidateRenderState();
+				unsaved = true;
 			}
 		}
 
 		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
-
+			unsaved = true;
 			if (errorFlag) osd.AddMessage(errorMsg, 300);
 		}
 
@@ -3423,6 +3436,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			DuplicateTo duplicateToWindow = new DuplicateTo(selectedItems);
 			duplicateToWindow.ShowDialog();
+			unsaved = true;
 		}
 
 		private void deleteAllOfTypeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3432,6 +3446,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SETDeleteType typeDeleter = new SETDeleteType();
 
 			typeDeleter.ShowDialog();
+			if (typeDeleter.DialogResult == DialogResult.OK) unsaved = true;
 		}
 
 		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -3454,6 +3469,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			LevelData.ClearLevelGeometry();
+			unsaved = true;
 		}
 
 		private void toolClearAnimations_Click(object sender, EventArgs e)
@@ -3465,6 +3481,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			LevelData.ClearLevelGeoAnims();
+			unsaved = true;
 		}
 
 		private void toolClearSetItems_Click(object sender, EventArgs e)
@@ -3476,6 +3493,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			LevelData.ClearSETItems(LevelData.Character);
+			unsaved = true;
 		}
 
 		private void toolClearCamItems_Click(object sender, EventArgs e)
@@ -3487,6 +3505,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			LevelData.ClearCAMItems(LevelData.Character);
+			unsaved = true;
 		}
 
 		private void toolClearMissionSetItems_Click(object sender, EventArgs e)
@@ -3498,6 +3517,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				return;
 
 			LevelData.ClearMissionSETItems(LevelData.Character);
+			unsaved = true;
 		}
 
 		private void toolClearAll_Click(object sender, EventArgs e)
@@ -3528,6 +3548,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
+			unsaved = true;
 		}
 
 		private void pointToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3545,6 +3566,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				a.Rotation.ZDeg = (float)Math.Atan2(m.M21, m.M22) * MathHelper.Rad2Deg;
 
 				LevelData.InvalidateRenderState();
+				unsaved = true;
 			}
 		}
 
@@ -3554,6 +3576,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				item.CalculateBounds();
 			osd.UpdateOSDItem("Calculated all bounds", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			DrawLevel();
+			unsaved = true;
 		}
 
 		private void inputTestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3571,6 +3594,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			dragPlaceLevelModel.Attach = attach;
 			dragPlaceLevelMesh = dragPlaceLevelModel.Attach.CreateD3DMesh();
 			dragType = DragType.Model;
+			unsaved = true;
 		}
 
 		NJS_OBJECT dragPlaceLevelModel = null;
@@ -3596,6 +3620,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 				else e.Effect = DragDropEffects.None;
 			}
+			unsaved = true;
 		}
 
 		private void RenderPanel_DragDrop(object sender, DragEventArgs e)
@@ -3622,6 +3647,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				default:
 					break;
 			}
+			unsaved = true;
 		}
 
 		private void RenderPanel_DragLeave(object sender, EventArgs e)
@@ -3629,6 +3655,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			dragType = DragType.None;
 			dragPlaceLevelMesh = null;
 			dragPlaceLevelModel = null;
+			unsaved = true;
 		}
 
 		private void RenderPanel_DragOver(object sender, DragEventArgs e)
@@ -3709,6 +3736,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			DrawLevel();
+			unsaved = true;
 		}
 		#endregion
 
