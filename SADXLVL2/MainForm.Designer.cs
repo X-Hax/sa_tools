@@ -100,6 +100,13 @@
             this.boundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.upgradeObjDefsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_levelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_deathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer__SETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_CAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_missionSETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSelectedLevelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAllLevelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -128,8 +135,10 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.sceneGraphControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.SceneGraphControl();
             this.libraryTabControl = new System.Windows.Forms.TabControl();
             this.modelLibraryPage = new System.Windows.Forms.TabPage();
+            this.modelLibraryControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.ModelLibraryControl();
             this.setLibraryPage = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -154,16 +163,8 @@
             this.splinesButton = new System.Windows.Forms.ToolStripButton();
             this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
+            this.lightingButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer_deathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer__SETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer_CAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer_missionSETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer_splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layer_levelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sceneGraphControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.SceneGraphControl();
-            this.modelLibraryControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.ModelLibraryControl();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -375,7 +376,7 @@
             // 
             this.toolClearGeometry.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.levelitem;
             this.toolClearGeometry.Name = "toolClearGeometry";
-            this.toolClearGeometry.Size = new System.Drawing.Size(180, 22);
+            this.toolClearGeometry.Size = new System.Drawing.Size(169, 22);
             this.toolClearGeometry.Text = "Geometry";
             this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
             // 
@@ -383,7 +384,7 @@
             // 
             this.toolClearAnimations.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.geoanim;
             this.toolClearAnimations.Name = "toolClearAnimations";
-            this.toolClearAnimations.Size = new System.Drawing.Size(180, 22);
+            this.toolClearAnimations.Size = new System.Drawing.Size(169, 22);
             this.toolClearAnimations.Text = "Animations";
             this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
             // 
@@ -391,7 +392,7 @@
             // 
             this.toolClearSetItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.set;
             this.toolClearSetItems.Name = "toolClearSetItems";
-            this.toolClearSetItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearSetItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearSetItems.Text = "SET Items";
             this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
             // 
@@ -399,7 +400,7 @@
             // 
             this.toolClearCamItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cam;
             this.toolClearCamItems.Name = "toolClearCamItems";
-            this.toolClearCamItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearCamItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearCamItems.Text = "CAM Items";
             this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
             // 
@@ -407,14 +408,14 @@
             // 
             this.toolClearMissionSetItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.mis;
             this.toolClearMissionSetItems.Name = "toolClearMissionSetItems";
-            this.toolClearMissionSetItems.Size = new System.Drawing.Size(180, 22);
+            this.toolClearMissionSetItems.Size = new System.Drawing.Size(169, 22);
             this.toolClearMissionSetItems.Text = "Mission SET Items";
             this.toolClearMissionSetItems.Click += new System.EventHandler(this.toolClearMissionSetItems_Click);
             // 
             // toolClearAll
             // 
             this.toolClearAll.Name = "toolClearAll";
-            this.toolClearAll.Size = new System.Drawing.Size(180, 22);
+            this.toolClearAll.Size = new System.Drawing.Size(169, 22);
             this.toolClearAll.Text = "All";
             this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
             // 
@@ -596,42 +597,42 @@
             this.sonicToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.sonicToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_s;
             this.sonicToolStripMenuItem.Name = "sonicToolStripMenuItem";
-            this.sonicToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sonicToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.sonicToolStripMenuItem.Text = "&Sonic";
             // 
             // tailsToolStripMenuItem
             // 
             this.tailsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_t;
             this.tailsToolStripMenuItem.Name = "tailsToolStripMenuItem";
-            this.tailsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tailsToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.tailsToolStripMenuItem.Text = "&Tails";
             // 
             // knucklesToolStripMenuItem
             // 
             this.knucklesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_k;
             this.knucklesToolStripMenuItem.Name = "knucklesToolStripMenuItem";
-            this.knucklesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.knucklesToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.knucklesToolStripMenuItem.Text = "&Knuckles";
             // 
             // amyToolStripMenuItem
             // 
             this.amyToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_a;
             this.amyToolStripMenuItem.Name = "amyToolStripMenuItem";
-            this.amyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.amyToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.amyToolStripMenuItem.Text = "&Amy";
             // 
             // gammaToolStripMenuItem
             // 
             this.gammaToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zanki_e;
             this.gammaToolStripMenuItem.Name = "gammaToolStripMenuItem";
-            this.gammaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gammaToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.gammaToolStripMenuItem.Text = "&Gamma";
             // 
             // bigToolStripMenuItem
             // 
             this.bigToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.hyoji_zankib;
             this.bigToolStripMenuItem.Name = "bigToolStripMenuItem";
-            this.bigToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.bigToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.bigToolStripMenuItem.Text = "&Big";
             // 
             // levelToolStripMenuItem
@@ -650,19 +651,19 @@
             this.visibleToolStripMenuItem.Checked = true;
             this.visibleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.visibleToolStripMenuItem.Name = "visibleToolStripMenuItem";
-            this.visibleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.visibleToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.visibleToolStripMenuItem.Text = "&Visible";
             // 
             // invisibleToolStripMenuItem
             // 
             this.invisibleToolStripMenuItem.Name = "invisibleToolStripMenuItem";
-            this.invisibleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.invisibleToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.invisibleToolStripMenuItem.Text = "&Invisible";
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.allToolStripMenuItem.Text = "&All";
             // 
             // toolStripSeparator3
@@ -772,7 +773,7 @@
             // 
             this.statsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.stats;
             this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-            this.statsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.statsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.statsToolStripMenuItem.Text = "Stats";
             this.statsToolStripMenuItem.ToolTipText = "Show level/selection statistics";
             this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
@@ -782,14 +783,14 @@
             this.boundsToolStripMenuItem.CheckOnClick = true;
             this.boundsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.bounds;
             this.boundsToolStripMenuItem.Name = "boundsToolStripMenuItem";
-            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.boundsToolStripMenuItem.Text = "Bounds";
             this.boundsToolStripMenuItem.ToolTipText = "Show bound spheres for level items";
             // 
             // upgradeObjDefsToolStripMenuItem
             // 
             this.upgradeObjDefsToolStripMenuItem.Name = "upgradeObjDefsToolStripMenuItem";
-            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Obj Defs";
             this.upgradeObjDefsToolStripMenuItem.Click += new System.EventHandler(this.upgradeObjDefsToolStripMenuItem_Click);
             // 
@@ -803,6 +804,84 @@
             this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.showHintsToolStripMenuItem.Text = "Show Hints";
             this.showHintsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showHintsToolStripMenuItem_CheckedChanged);
+            // 
+            // layersToolStripMenuItem
+            // 
+            this.layersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.layer_levelItemsToolStripMenuItem,
+            this.layer_deathZonesToolStripMenuItem,
+            this.layer__SETItemsToolStripMenuItem,
+            this.layer_CAMItemsToolStripMenuItem,
+            this.layer_missionSETItemsToolStripMenuItem,
+            this.layer_splinesToolStripMenuItem});
+            this.layersToolStripMenuItem.Enabled = false;
+            this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
+            this.layersToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.layersToolStripMenuItem.Text = "Layers";
+            // 
+            // layer_levelItemsToolStripMenuItem
+            // 
+            this.layer_levelItemsToolStripMenuItem.Checked = true;
+            this.layer_levelItemsToolStripMenuItem.CheckOnClick = true;
+            this.layer_levelItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer_levelItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.levelitem;
+            this.layer_levelItemsToolStripMenuItem.Name = "layer_levelItemsToolStripMenuItem";
+            this.layer_levelItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_levelItemsToolStripMenuItem.Text = "Level Items";
+            this.layer_levelItemsToolStripMenuItem.ToolTipText = "Make level items selectable";
+            // 
+            // layer_deathZonesToolStripMenuItem
+            // 
+            this.layer_deathZonesToolStripMenuItem.CheckOnClick = true;
+            this.layer_deathZonesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.deathzone;
+            this.layer_deathZonesToolStripMenuItem.Name = "layer_deathZonesToolStripMenuItem";
+            this.layer_deathZonesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_deathZonesToolStripMenuItem.Text = "Death Zones";
+            this.layer_deathZonesToolStripMenuItem.ToolTipText = "Make death zones selectable";
+            // 
+            // layer__SETItemsToolStripMenuItem
+            // 
+            this.layer__SETItemsToolStripMenuItem.Checked = true;
+            this.layer__SETItemsToolStripMenuItem.CheckOnClick = true;
+            this.layer__SETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer__SETItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.set;
+            this.layer__SETItemsToolStripMenuItem.Name = "layer__SETItemsToolStripMenuItem";
+            this.layer__SETItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer__SETItemsToolStripMenuItem.Text = "SET Items";
+            this.layer__SETItemsToolStripMenuItem.ToolTipText = "Make SET items selectable";
+            // 
+            // layer_CAMItemsToolStripMenuItem
+            // 
+            this.layer_CAMItemsToolStripMenuItem.Checked = true;
+            this.layer_CAMItemsToolStripMenuItem.CheckOnClick = true;
+            this.layer_CAMItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer_CAMItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cam;
+            this.layer_CAMItemsToolStripMenuItem.Name = "layer_CAMItemsToolStripMenuItem";
+            this.layer_CAMItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_CAMItemsToolStripMenuItem.Text = "CAM Items";
+            this.layer_CAMItemsToolStripMenuItem.ToolTipText = "Make CAM items selectable";
+            // 
+            // layer_missionSETItemsToolStripMenuItem
+            // 
+            this.layer_missionSETItemsToolStripMenuItem.Checked = true;
+            this.layer_missionSETItemsToolStripMenuItem.CheckOnClick = true;
+            this.layer_missionSETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer_missionSETItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.mis;
+            this.layer_missionSETItemsToolStripMenuItem.Name = "layer_missionSETItemsToolStripMenuItem";
+            this.layer_missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
+            this.layer_missionSETItemsToolStripMenuItem.ToolTipText = "Make Mission SET items selectable";
+            // 
+            // layer_splinesToolStripMenuItem
+            // 
+            this.layer_splinesToolStripMenuItem.Checked = true;
+            this.layer_splinesToolStripMenuItem.CheckOnClick = true;
+            this.layer_splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer_splinesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.splines;
+            this.layer_splinesToolStripMenuItem.Name = "layer_splinesToolStripMenuItem";
+            this.layer_splinesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_splinesToolStripMenuItem.Text = "Splines";
+            this.layer_splinesToolStripMenuItem.ToolTipText = "Make splines selectable";
             // 
             // modelLibraryToolStripMenuItem
             // 
@@ -1082,6 +1161,14 @@
             this.splitContainer3.TabIndex = 0;
             this.splitContainer3.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer3_SplitterMoved);
             // 
+            // sceneGraphControl1
+            // 
+            this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
+            this.sceneGraphControl1.Name = "sceneGraphControl1";
+            this.sceneGraphControl1.Size = new System.Drawing.Size(188, 491);
+            this.sceneGraphControl1.TabIndex = 0;
+            // 
             // libraryTabControl
             // 
             this.libraryTabControl.Controls.Add(this.modelLibraryPage);
@@ -1103,6 +1190,15 @@
             this.modelLibraryPage.TabIndex = 1;
             this.modelLibraryPage.Text = "Model Library";
             this.modelLibraryPage.UseVisualStyleBackColor = true;
+            // 
+            // modelLibraryControl1
+            // 
+            this.modelLibraryControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modelLibraryControl1.Location = new System.Drawing.Point(3, 3);
+            this.modelLibraryControl1.Name = "modelLibraryControl1";
+            this.modelLibraryControl1.SelectedModel = null;
+            this.modelLibraryControl1.Size = new System.Drawing.Size(842, 243);
+            this.modelLibraryControl1.TabIndex = 0;
             // 
             // setLibraryPage
             // 
@@ -1158,9 +1254,10 @@
             this.camItemsButton,
             this.missionItemsButton,
             this.splinesButton,
+            this.lightingButton,
             this.moveToStartButton,
-            this.settingsButton,
-            this.showHintsButton});
+            this.showHintsButton,
+            this.settingsButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1203, 43);
@@ -1392,6 +1489,19 @@
             this.settingsButton.Text = "Preferences";
             this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
+            // lightingButton
+            // 
+            this.lightingButton.Checked = true;
+            this.lightingButton.CheckOnClick = true;
+            this.lightingButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.lightingButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.lightingButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.lighting;
+            this.lightingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.lightingButton.Name = "lightingButton";
+            this.lightingButton.Size = new System.Drawing.Size(40, 40);
+            this.lightingButton.Text = "Enable Lighting";
+            this.lightingButton.CheckedChanged += new System.EventHandler(this.lightingButton_CheckedChanged);
+            // 
             // BackgroundPanel
             // 
             this.BackgroundPanel.AutoSize = true;
@@ -1400,101 +1510,6 @@
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
             this.BackgroundPanel.TabIndex = 2;
-            // 
-            // layersToolStripMenuItem
-            // 
-            this.layersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.layer_levelItemsToolStripMenuItem,
-            this.layer_deathZonesToolStripMenuItem,
-            this.layer__SETItemsToolStripMenuItem,
-            this.layer_CAMItemsToolStripMenuItem,
-            this.layer_missionSETItemsToolStripMenuItem,
-            this.layer_splinesToolStripMenuItem});
-            this.layersToolStripMenuItem.Enabled = false;
-            this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.layersToolStripMenuItem.Text = "Layers";
-            // 
-            // layer_deathZonesToolStripMenuItem
-            // 
-            this.layer_deathZonesToolStripMenuItem.CheckOnClick = true;
-            this.layer_deathZonesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.deathzone;
-            this.layer_deathZonesToolStripMenuItem.Name = "layer_deathZonesToolStripMenuItem";
-            this.layer_deathZonesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer_deathZonesToolStripMenuItem.Text = "Death Zones";
-            this.layer_deathZonesToolStripMenuItem.ToolTipText = "Make death zones selectable";
-            // 
-            // layer__SETItemsToolStripMenuItem
-            // 
-            this.layer__SETItemsToolStripMenuItem.Checked = true;
-            this.layer__SETItemsToolStripMenuItem.CheckOnClick = true;
-            this.layer__SETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.layer__SETItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.set;
-            this.layer__SETItemsToolStripMenuItem.Name = "layer__SETItemsToolStripMenuItem";
-            this.layer__SETItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer__SETItemsToolStripMenuItem.Text = "SET Items";
-            this.layer__SETItemsToolStripMenuItem.ToolTipText = "Make SET items selectable";
-            // 
-            // layer_CAMItemsToolStripMenuItem
-            // 
-            this.layer_CAMItemsToolStripMenuItem.Checked = true;
-            this.layer_CAMItemsToolStripMenuItem.CheckOnClick = true;
-            this.layer_CAMItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.layer_CAMItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cam;
-            this.layer_CAMItemsToolStripMenuItem.Name = "layer_CAMItemsToolStripMenuItem";
-            this.layer_CAMItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer_CAMItemsToolStripMenuItem.Text = "CAM Items";
-            this.layer_CAMItemsToolStripMenuItem.ToolTipText = "Make CAM items selectable";
-            // 
-            // layer_missionSETItemsToolStripMenuItem
-            // 
-            this.layer_missionSETItemsToolStripMenuItem.Checked = true;
-            this.layer_missionSETItemsToolStripMenuItem.CheckOnClick = true;
-            this.layer_missionSETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.layer_missionSETItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.mis;
-            this.layer_missionSETItemsToolStripMenuItem.Name = "layer_missionSETItemsToolStripMenuItem";
-            this.layer_missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer_missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
-            this.layer_missionSETItemsToolStripMenuItem.ToolTipText = "Make Mission SET items selectable";
-            // 
-            // layer_splinesToolStripMenuItem
-            // 
-            this.layer_splinesToolStripMenuItem.Checked = true;
-            this.layer_splinesToolStripMenuItem.CheckOnClick = true;
-            this.layer_splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.layer_splinesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.splines;
-            this.layer_splinesToolStripMenuItem.Name = "layer_splinesToolStripMenuItem";
-            this.layer_splinesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer_splinesToolStripMenuItem.Text = "Splines";
-            this.layer_splinesToolStripMenuItem.ToolTipText = "Make splines selectable";
-            // 
-            // layer_levelItemsToolStripMenuItem
-            // 
-            this.layer_levelItemsToolStripMenuItem.Checked = true;
-            this.layer_levelItemsToolStripMenuItem.CheckOnClick = true;
-            this.layer_levelItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.layer_levelItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.levelitem;
-            this.layer_levelItemsToolStripMenuItem.Name = "layer_levelItemsToolStripMenuItem";
-            this.layer_levelItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.layer_levelItemsToolStripMenuItem.Text = "Level Items";
-            this.layer_levelItemsToolStripMenuItem.ToolTipText = "Make level items selectable";
-            // 
-            // sceneGraphControl1
-            // 
-            this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
-            this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(188, 491);
-            this.sceneGraphControl1.TabIndex = 0;
-            // 
-            // modelLibraryControl1
-            // 
-            this.modelLibraryControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modelLibraryControl1.Location = new System.Drawing.Point(3, 3);
-            this.modelLibraryControl1.Name = "modelLibraryControl1";
-            this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(842, 243);
-            this.modelLibraryControl1.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -1673,6 +1688,7 @@
 		private System.Windows.Forms.ToolStripMenuItem layer_missionSETItemsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem layer_splinesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem layer_levelItemsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton lightingButton;
 	}
 }
 

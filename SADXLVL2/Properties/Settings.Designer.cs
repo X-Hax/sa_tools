@@ -93,5 +93,41 @@ namespace SonicRetro.SAModel.SADXLVL2.Properties {
                 this["PropertiesSplitterPosition"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public float DrawDistance_General {
+            get {
+                return ((float)(this["DrawDistance_General"]));
+            }
+            set {
+                this["DrawDistance_General"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
+        public float DrawDistance_SET {
+            get {
+                return ((float)(this["DrawDistance_SET"]));
+            }
+            set {
+                this["DrawDistance_SET"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6000")]
+        public float DrawDistance_Geometry {
+            get {
+                return ((float)(this["DrawDistance_Geometry"]));
+            }
+            set {
+                this["DrawDistance_Geometry"] = value;
+            }
+        }
     }
 }

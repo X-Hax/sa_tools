@@ -109,7 +109,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			Settings.Reload();
-
+			EditorOptions.RenderDrawDistance = Settings.DrawDistance_General;
+			EditorOptions.LevelDrawDistance = Settings.DrawDistance_Geometry;
+			EditorOptions.SetItemDrawDistance = Settings.DrawDistance_SET;
 			if(Settings.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
@@ -3298,6 +3300,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void optionsEditor_FormUpdated()
 		{
+			Settings.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			Settings.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
+			Settings.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
 			DrawLevel();
 		}
 
@@ -3917,5 +3922,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			showHintsButton.Checked = showHintsToolStripMenuItem.Checked;
 		}
 
+		private void lightingButton_CheckedChanged(object sender, EventArgs e)
+		{
+			EditorOptions.OverrideLighting = !lightingButton.Checked;
+			DrawLevel();
+		}
 	}
 }

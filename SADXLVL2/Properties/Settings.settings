@@ -20,5 +20,14 @@
     <Setting Name="PropertiesSplitterPosition" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="DrawDistance_General" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">10000</Value>
+    </Setting>
+    <Setting Name="DrawDistance_SET" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">3000</Value>
+    </Setting>
+    <Setting Name="DrawDistance_Geometry" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">6000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
