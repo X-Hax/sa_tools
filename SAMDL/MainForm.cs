@@ -1150,6 +1150,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 				case ("Reset camera move speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
 					Settings.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
