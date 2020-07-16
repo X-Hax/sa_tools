@@ -216,6 +216,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			// The whole view menu!
 			viewToolStripMenuItem.Enabled = false;
+			layersToolStripMenuItem.Enabled = false;
 			statsToolStripMenuItem.Enabled = false;
 			deathZonesToolStripMenuItem.Checked = false;
 
@@ -1586,6 +1587,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			// The whole view menu!
 			viewToolStripMenuItem.Enabled = true;
+			layersToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
 			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 			else deathZonesToolStripMenuItem.Enabled = deathZonesButton.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
@@ -2369,7 +2371,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 					else if (allToolStripMenuItem.Checked)
 						display = true;
-					if (display)
+					if (display && layer_levelItemsToolStripMenuItem.Checked)
 					{
 						hit = LevelData.GetLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
 						if (hit < closesthit)
@@ -2392,7 +2394,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Picking SET Items
-			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
+			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked && layer__SETItemsToolStripMenuItem.Checked)
 				foreach (SETItem setitem in LevelData.SETItems(LevelData.Character))
 				{
 					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
@@ -2405,7 +2407,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Picking CAM Items
-			if ((LevelData.CAMItems != null) && (cAMItemsToolStripMenuItem.Checked))
+			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked && layer_CAMItemsToolStripMenuItem.Checked)
 			{
 				foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
 				{
@@ -2421,7 +2423,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			#region Picking Death Zones
 
-			if (LevelData.DeathZones != null)
+			if (LevelData.DeathZones != null && layer_deathZonesToolStripMenuItem.Checked)
 			{
 				foreach (DeathZoneItem dzitem in LevelData.DeathZones)
 				{
@@ -2440,7 +2442,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Picking Mission SET Items
-			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
+			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked && layer_missionSETItemsToolStripMenuItem.Checked)
 				foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
 				{
 					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
@@ -2453,7 +2455,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Picking Splines
-			if ((LevelData.LevelSplines != null) && (splinesToolStripMenuItem.Checked))
+			if (LevelData.LevelSplines != null && splinesToolStripMenuItem.Checked && layer_splinesToolStripMenuItem.Checked)
 			{
 				foreach (SplineData spline in LevelData.LevelSplines)
 				{
