@@ -21,6 +21,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			InitializeComponent();
 			this.camera = camera;
 			drawDistSlider.Value = (int)EditorOptions.RenderDrawDistance;
+			levelDrawDistSlider.Value = (int)EditorOptions.LevelDrawDistance;
+			setDrawDistSlider.Value = (int)EditorOptions.SetItemDrawDistance;
 			fillModeDropDown.SelectedIndex = (int)EditorOptions.RenderFillMode - 1;
 			cullModeDropdown.SelectedIndex = (int)EditorOptions.RenderCullMode - 1;
 			if (setdist_enabled_a)
