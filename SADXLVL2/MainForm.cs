@@ -2554,7 +2554,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 
 					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && mouseDelta.X != 0 || mouseDelta.Y != 0) unsaved = true;
+					if (selectedItems.ItemCount > 0 && (mouseDelta.X != 0 || mouseDelta.Y != 0)) unsaved = true;
 					DrawLevel();
 					break;
 

@@ -11,6 +11,7 @@ using SonicRetro.SAModel.Direct3D.TextureSystem;
 
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.DLLModGenerator;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
@@ -49,6 +50,7 @@ namespace SonicRetro.SAModel.SALVL
 		internal Device d3ddevice;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		bool loaded;
+		bool unsaved;
 		int interval = 20;
 		EditorItemSelection selectedItems = new EditorItemSelection();
 
@@ -135,7 +137,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (loaded)
+			if (loaded && unsaved)
 				switch (MessageBox.Show(this, "Do you want to save?", "SALVL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
@@ -213,6 +215,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 			loaded = true;
+			unsaved = false;
 			toolStrip1.Enabled = loadTexturesToolStripMenuItem.Enabled = true;
 			 
 			transformGizmo = new TransformGizmo();
@@ -233,7 +236,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (loaded)
+			if (loaded && unsaved)
 			{
 				switch (MessageBox.Show(this, "Do you want to save?", "SALVL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
@@ -260,7 +263,10 @@ namespace SonicRetro.SAModel.SALVL
 				Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
+				{
 					LevelData.geo.SaveToFile(a.FileName, outfmt);
+					unsaved = false;
+				}
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -710,7 +716,7 @@ namespace SonicRetro.SAModel.SALVL
 			if (e.Button == MouseButtons.Left && transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE)
 			{
 				transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-
+				if (selectedItems.ItemCount > 0 && (mouseDelta.X != 0 || mouseDelta.Y != 0)) unsaved = true;
 				DrawLevel();
 
 				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
@@ -815,6 +821,7 @@ namespace SonicRetro.SAModel.SALVL
 			DrawLevel();
 			if (selitems.Count == 0) return;
 			Clipboard.SetData("SADXLVLObjectList", selitems);
+			unsaved = true;
 		}
 
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -825,6 +832,7 @@ namespace SonicRetro.SAModel.SALVL
 					selitems.Add(item);
 			if (selitems.Count == 0) return;
 			Clipboard.SetData("SADXLVLObjectList", selitems);
+			unsaved = true;
 		}
 
 		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -846,7 +854,8 @@ namespace SonicRetro.SAModel.SALVL
 				item.Position = new Vertex(item.Position.X - center.X + cam.Position.X, item.Position.Y - center.Y + cam.Position.Y, item.Position.Z - center.Z + cam.Position.Z);
 				item.Paste();
 			}
-			selectedItems.Add(new List<Item>(objs));
+			selectedItems.Add(new List<Item>(objs)); 
+			unsaved = true;
 			DrawLevel();
 		}
 
@@ -856,6 +865,7 @@ namespace SonicRetro.SAModel.SALVL
 				if (item.CanCopy)
 					item.Delete(selectedItems);
 			selectedItems.Clear();
+			unsaved = true;
 			DrawLevel();
 		}
 
@@ -880,6 +890,7 @@ namespace SonicRetro.SAModel.SALVL
 				{
 					osd.AddMessage(errorMsg, 300);
 				}
+				unsaved = true;
 			}
 		}
 
@@ -910,6 +921,7 @@ namespace SonicRetro.SAModel.SALVL
 				{
 					osd.AddMessage(errorMsg, 300);
 				}
+				unsaved = true;
 			}
 		}
 
@@ -1074,12 +1086,16 @@ namespace SonicRetro.SAModel.SALVL
 		private void editInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (AdvancedInfoDialog dlg = new AdvancedInfoDialog())
+			{
 				dlg.ShowDialog(this);
+				if (dlg.DialogResult == DialogResult.OK) unsaved = true;
+			}
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			DrawLevel();
+			unsaved = true;
 		}
 
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1156,6 +1172,7 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			if (transformGizmo != null) transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			DrawLevel();
+			unsaved = true;
 		}
 
 		private void clearLevelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1170,6 +1187,7 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				LevelData.ClearLevelGeoAnims();
 			}
+			unsaved = true;
 		}
 
 		private void statsToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -1235,6 +1253,7 @@ namespace SonicRetro.SAModel.SALVL
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 
 			if (errorFlag) osd.AddMessage(errorMsg, 180);
+			unsaved = true;
 		}
 
 		private void debugLightingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1366,6 +1385,7 @@ namespace SonicRetro.SAModel.SALVL
 				item.CalculateBounds();
 			osd.UpdateOSDItem("Calculated all bounds", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			DrawLevel();
+			unsaved = true;
 		}
 
 		private void ASSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
