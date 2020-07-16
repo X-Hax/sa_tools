@@ -19,6 +19,8 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
+		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
+
 		Properties.Settings Settings = Properties.Settings.Default;
 
 		public MainForm()
@@ -30,14 +32,16 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			File.WriteAllText("SAMDL.log", e.Exception.ToString());
+			log.Add(e.Exception.ToString());
+			log.WriteLog();
 			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SAMDL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
 		void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			File.WriteAllText("SAMDL.log", e.ExceptionObject.ToString());
+			log.Add(e.ExceptionObject.ToString());
+			log.WriteLog();
 			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SAMDL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
@@ -65,6 +69,7 @@ namespace SonicRetro.SAModel.SAMDL
 		ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
+		OnScreenDisplay osd;
 		Mesh sphereMesh, selectedSphereMesh, modelSphereMesh, selectedModelSphereMesh;
 
 		#region UI
@@ -82,17 +87,19 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			log.DeleteLogFile();
+			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
-				new PresentParameters
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
+			new PresentParameters
 				{
 					Windowed = true,
 					SwapEffect = SwapEffect.Discard,
 					EnableAutoDepthStencil = true,
 					AutoDepthStencilFormat = Format.D24X8
 				});
-
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			Settings.Reload();
 
 			if (Settings.ShowWelcomeScreen)
@@ -102,6 +109,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam, false, false);
+			cam.MoveSpeed = Settings.CamMoveSpeed;
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
@@ -322,6 +330,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelFile = null;
 			animation = null;
 			animations = null;
+			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			animnum = -1;
 			animframe = 0;
 			if (ModelFile.CheckModelFile(filename))
@@ -330,6 +339,7 @@ namespace SonicRetro.SAModel.SAMDL
 				outfmt = modelFile.Format;
 				model = modelFile.Model;
 				animations = new List<NJS_MOTION>(modelFile.Animations);
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else
 			{
@@ -448,6 +458,7 @@ namespace SonicRetro.SAModel.SAMDL
 											i = ByteConverter.ToInt32(file, address);
 										}
 										animations = new List<NJS_MOTION>(anis.Values);
+										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 									}
 								}
 							}
@@ -474,9 +485,9 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
-			showWeightsToolStripMenuItem.Enabled = hasWeight;
+			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			selectedObject = model;
 			SelectedItemChanged();
 			AddModelToLibrary(model, false);
@@ -500,12 +511,14 @@ namespace SonicRetro.SAModel.SAMDL
 				else model = tempmodel;
 				if (modelinfo.CheckBox_LoadMotion.Checked)
 					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else if (modelinfo.RadioButton_Action.Checked)
 			{
 				action = new NJS_ACTION(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
 				model = action.Model;
 				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else
 			{
@@ -685,8 +698,8 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			selectedObject = model;
-
-			loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
+			loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
@@ -772,7 +785,7 @@ namespace SonicRetro.SAModel.SAMDL
 		internal void DrawEntireModel()
 		{
 			if (!loaded) return;
-			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), RenderPanel.Width / (float)RenderPanel.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -829,7 +842,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			if (showNodeConnectionsToolStripMenuItem.Checked)
 				DrawNodeConnections(model, transform);
-
+			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -987,6 +1000,74 @@ namespace SonicRetro.SAModel.SAMDL
 			//this.panel1.Focus();
 		}
 
+		private void PreviousAnimation()
+		{
+			if (animations == null) return;
+			{
+				animnum--;
+				animframe = 0;
+				if (animnum == -2) animnum = animations.Count - 1;
+				if (animnum > -1)
+					animation = animations[animnum];
+				else
+					animation = null;
+				if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				DrawEntireModel();
+			}
+		}
+
+		private void NextAnimation()
+		{
+			if (animations == null) return;
+			animnum++;
+			animframe = 0;
+			if (animnum == animations.Count) animnum = -1;
+			if (animnum > -1)
+				animation = animations[animnum];
+			else
+				animation = null;
+			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void NextFrame()
+		{
+			if (animations == null || animation == null) return;
+			animframe++;
+			if (animframe == animation.Frames) animframe = 0;
+			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void PrevFrame()
+		{
+			if (animations == null || animation == null) return;
+			if (animframe < 0) animframe = animation.Frames - 1;
+			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModel();
+			DrawEntireModel();
+		}
+
+		private void PlayPause()
+		{
+			if (animations == null || animation == null) return;
+			timer1.Enabled = !timer1.Enabled;
+			if (timer1.Enabled)
+			{
+				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Checked = true;
+			}
+			else
+			{
+				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Checked = false;
+			}
+			UpdateWeightedModel();
+			DrawEntireModel();
+		}
+
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
 		{
 			if (!loaded)
@@ -998,9 +1079,10 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				case ("Camera Mode"):
 					cam.mode = (cam.mode + 1) % 2;
-
+					string cammode = "Normal";
 					if (cam.mode == 1)
 					{
+						cammode = "Orbit";
 						if (selectedObject != null)
 						{
 							cam.FocalPoint = selectedObject.Position.ToVector3();
@@ -1010,7 +1092,7 @@ namespace SonicRetro.SAModel.SAMDL
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
 						}
 					}
-
+					osd.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -1023,43 +1105,61 @@ namespace SonicRetro.SAModel.SAMDL
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
-
+					osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Change Render Mode"):
+					string rendermode = "Solid";
 					if (EditorOptions.RenderFillMode == FillMode.Solid)
+					{
 						EditorOptions.RenderFillMode = FillMode.Point;
+						rendermode = "Point";
+					}
 					else
+					{
 						EditorOptions.RenderFillMode += 1;
-
+						if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
+						else rendermode = "Wireframe";
+					}
+					osd.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Delete"):
 					DeleteSelectedModel();
+					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Increase camera move speed"):
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					Settings.CamMoveSpeed = cam.MoveSpeed;
+					draw = true;
 					break;
 
 				case ("Decrease camera move speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
+					Settings.CamMoveSpeed = cam.MoveSpeed;
+					draw = true;
 					break;
 
 				case ("Reset camera move speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					UpdateStatusString();
+					Settings.CamMoveSpeed = cam.MoveSpeed;
+					draw = true;
 					break;
 
 				case ("Reset Camera Position"):
 					if (cam.mode == 0)
 					{
 						cam.Position = new Vector3();
+						osd.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -1069,6 +1169,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
+						osd.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -1086,59 +1187,23 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 
 				case ("Next Animation"):
-					if (animations != null)
-					{
-						animnum++;
-						animframe = 0;
-						if (animnum == animations.Count) animnum = -1;
-						if (animnum > -1)
-							animation = animations[animnum];
-						else
-							animation = null;
-
-						draw = true;
-					}
+					NextAnimation();
 					break;
 
 				case ("Previous Animation"):
-					if (animations != null)
-					{
-						animnum--;
-						animframe = 0;
-						if (animnum == -2) animnum = animations.Count - 1;
-						if (animnum > -1)
-							animation = animations[animnum];
-						else
-							animation = null;
-
-						draw = true;
-					}
+					PreviousAnimation();
 					break;
 
 				case ("Previous Frame"):
-					if (animation != null)
-					{
-						animframe--;
-						if (animframe < 0) animframe = animation.Frames - 1;
-						draw = true;
-					}
+					PrevFrame();
 					break;
 
 				case ("Next Frame"):
-					if (animation != null)
-					{
-						animframe++;
-						if (animframe == animation.Frames) animframe = 0;
-						draw = true;
-					}
+					NextFrame();
 					break;
 
 				case ("Play/Pause Animation"):
-					if (animation != null)
-					{
-						timer1.Enabled = !timer1.Enabled;
-						draw = true;
-					}
+					PlayPause();
 					break;
 
 				default:
@@ -1158,13 +1223,16 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				case ("Camera Move"):
 					cameraKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Zoom"):
+					osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					zoomKeyDown = true;
 					break;
 
 				case ("Camera Look"):
+					osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					lookKeyDown = true;
 					break;
 
@@ -1218,7 +1286,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			if (e.Button != MouseButtons.None)
 			{
-				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 
 				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
 				{
@@ -1426,8 +1494,8 @@ namespace SonicRetro.SAModel.SAMDL
 				HitResult dist;
 				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
-				viewport.Width = panel1.Width;
-				viewport.Height = panel1.Height;
+				viewport.Width = RenderPanel.Width;
+				viewport.Height = RenderPanel.Height;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Vector3 Near, Far;
@@ -1452,7 +1520,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 
 			if (e.Button == MouseButtons.Right)
-				contextMenuStrip1.Show(panel1, e.Location);
+				contextMenuStrip1.Show(RenderPanel, e.Location);
 		}
 
 		internal Type GetAttachType()
@@ -1569,7 +1637,7 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 						#endregion
 
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
 					}
 				}
 		}
@@ -1596,7 +1664,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
 
-							if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+							if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
 
 							using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
 							{
@@ -1801,7 +1869,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 						Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
 
-						if (errorFlag) MessageBox.Show("Error(s) encountered during export. Inspect the output file for more details.");
+						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
 
 						string mypath = Path.GetDirectoryName(objFileName);
 						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
@@ -1932,11 +2000,18 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void showModelToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			string showmodel = "Off";
+			if (showModelToolStripMenuItem.Checked) showmodel = "On";
+			osd.UpdateOSDItem("Show model: " + showmodel, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			DrawEntireModel();
 		}
 
 		private void showNodesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			string shownodes = "Off";
+			if (showNodesToolStripMenuItem.Checked) shownodes = "On";
+			osd.UpdateOSDItem("Show nodes: " + shownodes, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			buttonShowNodes.Checked = showNodesToolStripMenuItem.Checked;
 			DrawEntireModel();
 		}
 
@@ -2131,10 +2206,11 @@ namespace SonicRetro.SAModel.SAMDL
 								catch { }
 					}
 
-					showWeightsToolStripMenuItem.Enabled = hasWeight;
+					showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 
 					AddTreeNode(model, treeView1.Nodes);
-					loaded = saveMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+					loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
@@ -2153,6 +2229,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			else
 				model.UpdateWeightedModelSelection(null, meshes);
+			buttonShowWeights.Checked = showWeightsToolStripMenuItem.Checked;
 			DrawEntireModel();
 		}
 
@@ -2381,8 +2458,152 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 		}
 
+		private void MessageTimer_Tick(object sender, EventArgs e)
+		{
+			if (osd.UpdateTimer() == true) DrawEntireModel();
+		}
+
+		private void buttonNew_Click(object sender, EventArgs e)
+		{
+			contextMenuStripNew.Show(Cursor.Position);
+		}
+
+		private void basicModelToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.Basic);
+		}
+
+		private void chunkModelToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.Chunk);
+		}
+
+		private void gamecubeModelToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			NewFileOperation(ModelFormat.GC);
+		}
+
+		private void buttonOpen_Click(object sender, EventArgs e)
+		{
+			openToolStripMenuItem_Click(sender, e);
+		}
+
+		private void buttonSave_Click(object sender, EventArgs e)
+		{
+			saveMenuItem_Click(sender, e);
+		}
+
+		private void buttonSaveAs_Click(object sender, EventArgs e)
+		{
+			saveAsToolStripMenuItem_Click(sender, e);
+		}
+
+		private void buttonShowNodes_Click(object sender, EventArgs e)
+		{
+			showNodesToolStripMenuItem.Checked = !showNodesToolStripMenuItem.Checked;
+		}
+
+		private void buttonShowNodeConnections_Click(object sender, EventArgs e)
+		{
+			showNodeConnectionsToolStripMenuItem.Checked = !showNodeConnectionsToolStripMenuItem.Checked;
+		}
+
+		private void buttonShowWeights_Click(object sender, EventArgs e)
+		{
+			showWeightsToolStripMenuItem.Checked = !showWeightsToolStripMenuItem.Checked;
+		}
+
+		private void buttonShowHints_Click(object sender, EventArgs e)
+		{
+			showHintsToolStripMenuItem.Checked = !showHintsToolStripMenuItem.Checked;
+		}
+
+		private void buttonPreferences_Click(object sender, EventArgs e)
+		{
+			optionsEditor.Show();
+			optionsEditor.BringToFront();
+			optionsEditor.Focus();
+		}
+
+		private void buttonSolid_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Solid;
+			buttonSolid.Checked = true;
+			buttonVertices.Checked = false;
+			buttonWireframe.Checked = false;
+			osd.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonVertices_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Point;
+			buttonSolid.Checked = false;
+			buttonVertices.Checked = true;
+			buttonWireframe.Checked = false;
+			osd.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonWireframe_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Wireframe;
+			buttonSolid.Checked = false;
+			buttonVertices.Checked = false;
+			buttonWireframe.Checked = true;
+			osd.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonPrevAnimation_Click(object sender, EventArgs e)
+		{
+			PreviousAnimation();
+		}
+
+		private void buttonNextAnimation_Click(object sender, EventArgs e)
+		{
+			NextAnimation();
+		}
+
+		private void buttonPrevFrame_Click(object sender, EventArgs e)
+		{
+			PrevFrame();
+		}
+
+		private void buttonPlayAnimation_Click(object sender, EventArgs e)
+		{
+			PlayPause();
+		}
+
+		private void buttonNextFrame_Click(object sender, EventArgs e)
+		{
+			NextFrame();
+		}
+
+		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			osd.show_osd = !osd.show_osd;
+			buttonShowHints.Checked = showHintsToolStripMenuItem.Checked;
+			DrawEntireModel();
+		}
+
+		private void buttonLighting_Click(object sender, EventArgs e)
+		{
+			string lighting = "On";
+			EditorOptions.OverrideLighting = !EditorOptions.OverrideLighting;
+			buttonLighting.Checked = !EditorOptions.OverrideLighting;
+			if (EditorOptions.OverrideLighting) lighting = "Off";
+			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModel();
+			DrawEntireModel();
+		}
+
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
+			string shownodecons = "Off";
+			if (showNodeConnectionsToolStripMenuItem.Checked) shownodecons = "On";
+			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
 			DrawEntireModel();
 		}
 

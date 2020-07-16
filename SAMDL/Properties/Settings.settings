@@ -5,5 +5,8 @@
     <Setting Name="ShowWelcomeScreen" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="CamMoveSpeed" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.0625</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
