@@ -495,14 +495,14 @@ namespace SonicRetro.SAModel.SAMDL
 		}
 		private void LoadBinFile(byte[] file)
 		{
-			int objectaddress = (int)modelinfo.NumericUpDown_ObjectAddress.Value;
-			int motionaddress = (int)modelinfo.NumericUpDown_MotionAddress.Value;
-			if (modelinfo.CheckBox_Memory_Object.Checked) objectaddress -= (int)modelinfo.NumericUpDown_Key.Value;
-			if (modelinfo.CheckBox_Memory_Motion.Checked) motionaddress -= (int)modelinfo.NumericUpDown_Key.Value;
+			uint objectaddress = (uint)modelinfo.NumericUpDown_ObjectAddress.Value;
+			uint motionaddress = (uint)modelinfo.NumericUpDown_MotionAddress.Value;
+			if (modelinfo.CheckBox_Memory_Object.Checked) objectaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
+			if (modelinfo.CheckBox_Memory_Motion.Checked) motionaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
 			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
 			if (modelinfo.RadioButton_Object.Checked)
 			{
-				tempmodel = new NJS_OBJECT(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
 				if (tempmodel.Sibling != null)
 				{
 					model = new NJS_OBJECT { Name = "Root" };
@@ -510,14 +510,14 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				else model = tempmodel;
 				if (modelinfo.CheckBox_LoadMotion.Checked)
-					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
-					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else if (modelinfo.RadioButton_Action.Checked)
 			{
-				action = new NJS_ACTION(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
 				model = action.Model;
-				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else
@@ -526,16 +526,16 @@ namespace SonicRetro.SAModel.SAMDL
 				switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
 				{
 					case ModelFormat.Basic:
-						model.Attach = new BasicAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, false);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, false);
 						break;
 					case ModelFormat.BasicDX:
-						model.Attach = new BasicAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, true);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, true);
 						break;
 					case ModelFormat.Chunk:
-						model.Attach = new ChunkAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value);
+						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value);
 						break;
 					case ModelFormat.GC:
-						model.Attach = new GC.GCAttach(file, objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, null);
+						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, null);
 						break;
 				}
 			}
