@@ -60,8 +60,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(1126, 35);
+            this.menuStrip1.Size = new System.Drawing.Size(751, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -77,41 +76,45 @@
             this.toolStripSeparator1,
             this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // openToolStripMenuItem
             // 
+            this.openToolStripMenuItem.Image = global::SADXFontEdit.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // importToolStripMenuItem
             // 
+            this.importToolStripMenuItem.Image = global::SADXFontEdit.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.importToolStripMenuItem.Text = "&Import...";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(170, 6);
             // 
             // extractAllToolStripMenuItem
             // 
             this.extractAllToolStripMenuItem.Enabled = false;
+            this.extractAllToolStripMenuItem.Image = global::SADXFontEdit.Properties.Resources.export;
             this.extractAllToolStripMenuItem.Name = "extractAllToolStripMenuItem";
-            this.extractAllToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.extractAllToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.extractAllToolStripMenuItem.Text = "&Export...";
             this.extractAllToolStripMenuItem.Click += new System.EventHandler(this.extractAllToolStripMenuItem_Click);
             // 
             // exportIndividualCharactersToolStripMenuItem
             // 
             this.exportIndividualCharactersToolStripMenuItem.Enabled = false;
+            this.exportIndividualCharactersToolStripMenuItem.Image = global::SADXFontEdit.Properties.Resources.character;
             this.exportIndividualCharactersToolStripMenuItem.Name = "exportIndividualCharactersToolStripMenuItem";
-            this.exportIndividualCharactersToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exportIndividualCharactersToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.exportIndividualCharactersToolStripMenuItem.Text = "Export &characters...";
             this.exportIndividualCharactersToolStripMenuItem.Click += new System.EventHandler(this.exportIndividualCharactersToolStripMenuItem_Click);
             // 
@@ -121,33 +124,34 @@
             this.fONTDATAFileToolStripMenuItem,
             this.simpleFormatFileToolStripMenuItem});
             this.saveAsToolStripMenuItem.Enabled = false;
+            this.saveAsToolStripMenuItem.Image = global::SADXFontEdit.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             // 
             // fONTDATAFileToolStripMenuItem
             // 
             this.fONTDATAFileToolStripMenuItem.Name = "fONTDATAFileToolStripMenuItem";
-            this.fONTDATAFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.fONTDATAFileToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.fONTDATAFileToolStripMenuItem.Text = "FONTDATA file...";
             this.fONTDATAFileToolStripMenuItem.Click += new System.EventHandler(this.fONTDATAFileToolStripMenuItem_Click);
             // 
             // simpleFormatFileToolStripMenuItem
             // 
             this.simpleFormatFileToolStripMenuItem.Name = "simpleFormatFileToolStripMenuItem";
-            this.simpleFormatFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.simpleFormatFileToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.simpleFormatFileToolStripMenuItem.Text = "Simple format file...";
             this.simpleFormatFileToolStripMenuItem.Click += new System.EventHandler(this.simpleFormatFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(170, 6);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.quitToolStripMenuItem.Text = "&Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -157,11 +161,10 @@
             this.listBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.IntegralHeight = false;
-            this.listBox1.ItemHeight = 32;
-            this.listBox1.Location = new System.Drawing.Point(0, 35);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.listBox1.ItemHeight = 24;
+            this.listBox1.Location = new System.Drawing.Point(0, 24);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(175, 677);
+            this.listBox1.Size = new System.Drawing.Size(118, 439);
             this.listBox1.TabIndex = 1;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -172,18 +175,16 @@
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel3.Controls.Add(this.TilePicture);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(175, 85);
-            this.panel3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panel3.Location = new System.Drawing.Point(118, 57);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(951, 627);
+            this.panel3.Size = new System.Drawing.Size(633, 406);
             this.panel3.TabIndex = 12;
             // 
             // TilePicture
             // 
-            this.TilePicture.Location = new System.Drawing.Point(4, 5);
-            this.TilePicture.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.TilePicture.Location = new System.Drawing.Point(3, 3);
             this.TilePicture.Name = "TilePicture";
-            this.TilePicture.Size = new System.Drawing.Size(36, 37);
+            this.TilePicture.Size = new System.Drawing.Size(24, 24);
             this.TilePicture.TabIndex = 2;
             this.TilePicture.Paint += new System.Windows.Forms.PaintEventHandler(this.TilePicture_Paint);
             this.TilePicture.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TilePicture_MouseDown);
@@ -197,20 +198,20 @@
             this.panel2.Controls.Add(this.trackBar1);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(175, 35);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panel2.Location = new System.Drawing.Point(118, 24);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(951, 50);
+            this.panel2.Size = new System.Drawing.Size(633, 33);
             this.panel2.TabIndex = 11;
             // 
             // trackBar1
             // 
             this.trackBar1.AutoSize = false;
-            this.trackBar1.Location = new System.Drawing.Point(69, 9);
+            this.trackBar1.Location = new System.Drawing.Point(46, 6);
+            this.trackBar1.Margin = new System.Windows.Forms.Padding(2);
             this.trackBar1.Maximum = 32;
             this.trackBar1.Minimum = 1;
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(645, 38);
+            this.trackBar1.Size = new System.Drawing.Size(430, 25);
             this.trackBar1.TabIndex = 6;
             this.trackBar1.Value = 4;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
@@ -218,25 +219,23 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 15);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(5, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 20);
+            this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Zoom:";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1126, 712);
+            this.ClientSize = new System.Drawing.Size(751, 463);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
             this.Text = "SADXFontEdit";
             this.Load += new System.EventHandler(this.Form1_Load);
