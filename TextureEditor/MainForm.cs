@@ -722,7 +722,7 @@ namespace TextureEditor
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
-				textureSizeLabel.Text = $"Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
+				textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
 				switch (textures[listBox1.SelectedIndex])
 				{
 					case PvrTextureInfo pvr:
@@ -730,25 +730,40 @@ namespace TextureEditor
 						pixelFormatLabel.Text = $"Pixel Format: {pvr.PixelFormat}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+						numericUpDownOrigSizeX.Value = pvr.Image.Width;
+						numericUpDownOrigSizeY.Value = pvr.Image.Height;
 						break;
 					case GvrTextureInfo gvr:
 						dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
 						pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+						numericUpDownOrigSizeX.Value = gvr.Image.Width;
+						numericUpDownOrigSizeY.Value = gvr.Image.Height;
 						break;
 					case PvmxTextureInfo pvmx:
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = true;
 						if (pvmx.Dimensions.HasValue)
 						{
-							dataFormatLabel.Text = $"Original size: {pvmx.Dimensions.Value.Width}x{pvmx.Dimensions.Value.Height}";
-							dataFormatLabel.Show();
+							numericUpDownOrigSizeX.Value = pvmx.Dimensions.Value.Width;
+							numericUpDownOrigSizeY.Value = pvmx.Dimensions.Value.Height;
 						}
-						else dataFormatLabel.Hide();
+						else 
+						{
+							numericUpDownOrigSizeX.Value = pvmx.Image.Width;
+							numericUpDownOrigSizeY.Value = pvmx.Image.Height;
+						}
+						dataFormatLabel.Hide();
 						pixelFormatLabel.Hide();
 						break;
 					default:
 						dataFormatLabel.Hide();
 						pixelFormatLabel.Hide();
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+						numericUpDownOrigSizeX.Value = textures[listBox1.SelectedIndex].Image.Width;
+						numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
 						break;
 				}
 			}
@@ -1053,6 +1068,24 @@ namespace TextureEditor
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			Settings.Save();
+		}
+
+		private void numericUpDownOrigSizeX_ValueChanged(object sender, EventArgs e)
+		{
+			if (textures[listBox1.SelectedIndex] is PvmxTextureInfo)
+			{
+				PvmxTextureInfo tex = (PvmxTextureInfo)textures[listBox1.SelectedIndex];
+				tex.Dimensions = new Size((int)numericUpDownOrigSizeX.Value, (int)numericUpDownOrigSizeY.Value);
+			}
+		}
+
+		private void numericUpDownOrigSizeY_ValueChanged(object sender, EventArgs e)
+		{
+			if (textures[listBox1.SelectedIndex] is PvmxTextureInfo)
+			{
+				PvmxTextureInfo tex = (PvmxTextureInfo)textures[listBox1.SelectedIndex];
+				tex.Dimensions = new Size((int)numericUpDownOrigSizeX.Value, (int)numericUpDownOrigSizeY.Value);
+			}
 		}
 	}
 
