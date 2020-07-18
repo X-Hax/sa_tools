@@ -140,7 +140,6 @@
             this.adventure_unk2 = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.adventure_unk1 = new System.Windows.Forms.NumericUpDown();
-            this.lifeIcon = new System.Windows.Forms.PictureBox();
             this.adventure_levelact = new SASave.LevelActControl();
             this.adventure_emblem = new SASave.EmblemControl();
             this.adventure_tod = new SASave.TimeOfDayControl();
@@ -308,6 +307,7 @@
             this.boss_metal_sonic_time_1 = new SASave.TimeControl();
             this.boss_metal_sonic_time_2 = new SASave.TimeControl();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.lifeIcon = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -322,7 +322,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.adventure_entrance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.level_score)).BeginInit();
@@ -395,6 +394,7 @@
             this.groupBox5.SuspendLayout();
             this.tabPage56.SuspendLayout();
             this.tableLayoutPanel15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -429,35 +429,36 @@
             this.newSlot1ToolStripMenuItem,
             this.newSlot2ToolStripMenuItem,
             this.newSlot3ToolStripMenuItem});
+            this.newToolStripMenuItem.Image = global::SASave.Properties.Resources._new;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem.Text = "&New";
             // 
             // newAllSlotsToolStripMenuItem
             // 
             this.newAllSlotsToolStripMenuItem.Name = "newAllSlotsToolStripMenuItem";
-            this.newAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newAllSlotsToolStripMenuItem.Text = "&All Slots";
             this.newAllSlotsToolStripMenuItem.Click += new System.EventHandler(this.newAllSlotsToolStripMenuItem_Click);
             // 
             // newSlot1ToolStripMenuItem
             // 
             this.newSlot1ToolStripMenuItem.Name = "newSlot1ToolStripMenuItem";
-            this.newSlot1ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot1ToolStripMenuItem.Text = "Slot &1";
             this.newSlot1ToolStripMenuItem.Click += new System.EventHandler(this.newSlot1ToolStripMenuItem_Click);
             // 
             // newSlot2ToolStripMenuItem
             // 
             this.newSlot2ToolStripMenuItem.Name = "newSlot2ToolStripMenuItem";
-            this.newSlot2ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot2ToolStripMenuItem.Text = "Slot &2";
             this.newSlot2ToolStripMenuItem.Click += new System.EventHandler(this.newSlot2ToolStripMenuItem_Click);
             // 
             // newSlot3ToolStripMenuItem
             // 
             this.newSlot3ToolStripMenuItem.Name = "newSlot3ToolStripMenuItem";
-            this.newSlot3ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot3ToolStripMenuItem.Text = "Slot &3";
             this.newSlot3ToolStripMenuItem.Click += new System.EventHandler(this.newSlot3ToolStripMenuItem_Click);
             // 
@@ -468,35 +469,36 @@
             this.openSlot1ToolStripMenuItem,
             this.openSlot2ToolStripMenuItem,
             this.openSlot3ToolStripMenuItem});
+            this.openToolStripMenuItem.Image = global::SASave.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "&Open";
             // 
             // openAllSlotsToolStripMenuItem
             // 
             this.openAllSlotsToolStripMenuItem.Name = "openAllSlotsToolStripMenuItem";
-            this.openAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openAllSlotsToolStripMenuItem.Text = "&All Slots...";
             this.openAllSlotsToolStripMenuItem.Click += new System.EventHandler(this.openAllSlotsToolStripMenuItem_Click);
             // 
             // openSlot1ToolStripMenuItem
             // 
             this.openSlot1ToolStripMenuItem.Name = "openSlot1ToolStripMenuItem";
-            this.openSlot1ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot1ToolStripMenuItem.Text = "Slot &1...";
             this.openSlot1ToolStripMenuItem.Click += new System.EventHandler(this.openSlot1ToolStripMenuItem_Click);
             // 
             // openSlot2ToolStripMenuItem
             // 
             this.openSlot2ToolStripMenuItem.Name = "openSlot2ToolStripMenuItem";
-            this.openSlot2ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot2ToolStripMenuItem.Text = "Slot &2...";
             this.openSlot2ToolStripMenuItem.Click += new System.EventHandler(this.openSlot2ToolStripMenuItem_Click);
             // 
             // openSlot3ToolStripMenuItem
             // 
             this.openSlot3ToolStripMenuItem.Name = "openSlot3ToolStripMenuItem";
-            this.openSlot3ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot3ToolStripMenuItem.Text = "Slot &3...";
             this.openSlot3ToolStripMenuItem.Click += new System.EventHandler(this.openSlot3ToolStripMenuItem_Click);
             // 
@@ -507,7 +509,7 @@
             this.slot2ToolStripMenuItem,
             this.slot3ToolStripMenuItem});
             this.slotToolStripMenuItem.Name = "slotToolStripMenuItem";
-            this.slotToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.slotToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slotToolStripMenuItem.Text = "S&lot";
             this.slotToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.slotToolStripMenuItem_DropDownItemClicked);
             // 
@@ -534,27 +536,29 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Enabled = false;
+            this.saveToolStripMenuItem.Image = global::SASave.Properties.Resources.save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
+            this.saveAsToolStripMenuItem.Image = global::SASave.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(120, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -575,6 +579,7 @@
             this.emblemsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.giveAllToolStripMenuItem,
             this.takeAllToolStripMenuItem});
+            this.emblemsToolStripMenuItem.Image = global::SASave.Properties.Resources.emblem;
             this.emblemsToolStripMenuItem.Name = "emblemsToolStripMenuItem";
             this.emblemsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.emblemsToolStripMenuItem.Text = "&Emblems";
@@ -582,14 +587,14 @@
             // giveAllToolStripMenuItem
             // 
             this.giveAllToolStripMenuItem.Name = "giveAllToolStripMenuItem";
-            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.giveAllToolStripMenuItem.Text = "&Give All";
             this.giveAllToolStripMenuItem.Click += new System.EventHandler(this.giveAllToolStripMenuItem_Click);
             // 
             // takeAllToolStripMenuItem
             // 
             this.takeAllToolStripMenuItem.Name = "takeAllToolStripMenuItem";
-            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.takeAllToolStripMenuItem.Text = "&Take All";
             this.takeAllToolStripMenuItem.Click += new System.EventHandler(this.takeAllToolStripMenuItem_Click);
             // 
@@ -605,14 +610,14 @@
             // checkAllToolStripMenuItem
             // 
             this.checkAllToolStripMenuItem.Name = "checkAllToolStripMenuItem";
-            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.checkAllToolStripMenuItem.Text = "&Check All";
             this.checkAllToolStripMenuItem.Click += new System.EventHandler(this.checkAllToolStripMenuItem_Click);
             // 
             // uncheckAllToolStripMenuItem
             // 
             this.uncheckAllToolStripMenuItem.Name = "uncheckAllToolStripMenuItem";
-            this.uncheckAllToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.uncheckAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uncheckAllToolStripMenuItem.Text = "&Uncheck All";
             this.uncheckAllToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllToolStripMenuItem_Click);
             // 
@@ -628,14 +633,14 @@
             // checkAllToolStripMenuItem1
             // 
             this.checkAllToolStripMenuItem1.Name = "checkAllToolStripMenuItem1";
-            this.checkAllToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
+            this.checkAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.checkAllToolStripMenuItem1.Text = "&Check All";
             this.checkAllToolStripMenuItem1.Click += new System.EventHandler(this.checkAllToolStripMenuItem1_Click);
             // 
             // uncheckAllToolStripMenuItem1
             // 
             this.uncheckAllToolStripMenuItem1.Name = "uncheckAllToolStripMenuItem1";
-            this.uncheckAllToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
+            this.uncheckAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.uncheckAllToolStripMenuItem1.Text = "&Uncheck All";
             this.uncheckAllToolStripMenuItem1.Click += new System.EventHandler(this.uncheckAllToolStripMenuItem1_Click);
             // 
@@ -683,6 +688,7 @@
             this.metalSonicEmblemsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.giveAllToolStripMenuItem1,
             this.takeAllToolStripMenuItem1});
+            this.metalSonicEmblemsToolStripMenuItem.Image = global::SASave.Properties.Resources.metal_emblem;
             this.metalSonicEmblemsToolStripMenuItem.Name = "metalSonicEmblemsToolStripMenuItem";
             this.metalSonicEmblemsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.metalSonicEmblemsToolStripMenuItem.Text = "Metal Sonic Em&blems";
@@ -690,14 +696,14 @@
             // giveAllToolStripMenuItem1
             // 
             this.giveAllToolStripMenuItem1.Name = "giveAllToolStripMenuItem1";
-            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.giveAllToolStripMenuItem1.Text = "&Give All";
             this.giveAllToolStripMenuItem1.Click += new System.EventHandler(this.giveAllToolStripMenuItem1_Click);
             // 
             // takeAllToolStripMenuItem1
             // 
             this.takeAllToolStripMenuItem1.Name = "takeAllToolStripMenuItem1";
-            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.takeAllToolStripMenuItem1.Text = "&Take All";
             this.takeAllToolStripMenuItem1.Click += new System.EventHandler(this.takeAllToolStripMenuItem1_Click);
             // 
@@ -1088,10 +1094,10 @@
             this.tabPage4.Controls.Add(this.adventure_unk2);
             this.tabPage4.Controls.Add(this.label6);
             this.tabPage4.Controls.Add(this.adventure_unk1);
-            this.tabPage4.Controls.Add(this.lifeIcon);
             this.tabPage4.Controls.Add(this.adventure_levelact);
             this.tabPage4.Controls.Add(this.adventure_emblem);
             this.tabPage4.Controls.Add(this.adventure_tod);
+            this.tabPage4.Controls.Add(this.lifeIcon);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -1263,16 +1269,6 @@
             this.adventure_unk1.Size = new System.Drawing.Size(60, 20);
             this.adventure_unk1.TabIndex = 6;
             this.adventure_unk1.ValueChanged += new System.EventHandler(this.adventure_unk1_ValueChanged);
-            // 
-            // lifeIcon
-            // 
-            this.lifeIcon.Image = global::SASave.Properties.Resources.Sonic;
-            this.lifeIcon.Location = new System.Drawing.Point(6, 45);
-            this.lifeIcon.Name = "lifeIcon";
-            this.lifeIcon.Size = new System.Drawing.Size(32, 32);
-            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.lifeIcon.TabIndex = 0;
-            this.lifeIcon.TabStop = false;
             // 
             // adventure_levelact
             // 
@@ -3805,6 +3801,16 @@
             this.tableLayoutPanel9.Size = new System.Drawing.Size(9, 9);
             this.tableLayoutPanel9.TabIndex = 0;
             // 
+            // lifeIcon
+            // 
+            this.lifeIcon.Image = global::SASave.Properties.Resources.Sonic;
+            this.lifeIcon.Location = new System.Drawing.Point(6, 45);
+            this.lifeIcon.Name = "lifeIcon";
+            this.lifeIcon.Size = new System.Drawing.Size(32, 32);
+            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.lifeIcon.TabIndex = 0;
+            this.lifeIcon.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3837,7 +3843,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.adventure_entrance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -3936,6 +3941,7 @@
             this.tabPage56.PerformLayout();
             this.tableLayoutPanel15.ResumeLayout(false);
             this.tableLayoutPanel15.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
