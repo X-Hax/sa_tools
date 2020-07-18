@@ -125,7 +125,6 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.messagesVoiceOnly = new System.Windows.Forms.RadioButton();
             this.messagesVoiceAndText = new System.Windows.Forms.RadioButton();
-            this.playTime = new SASave.HourControl();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.adventure_character = new System.Windows.Forms.ComboBox();
@@ -141,19 +140,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.adventure_unk1 = new System.Windows.Forms.NumericUpDown();
             this.lifeIcon = new System.Windows.Forms.PictureBox();
-            this.adventure_levelact = new SASave.LevelActControl();
-            this.adventure_emblem = new SASave.EmblemControl();
-            this.adventure_tod = new SASave.TimeOfDayControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.level_emblem_c = new SASave.EmblemControl();
-            this.level_emblem_b = new SASave.EmblemControl();
-            this.level_emblem_a = new SASave.EmblemControl();
             this.action_stage = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.level_timeweight = new SASave.WeightControl();
             this.level_score = new System.Windows.Forms.NumericUpDown();
             this.level_rings = new System.Windows.Forms.NumericUpDown();
             this.action_stage_character = new System.Windows.Forms.ComboBox();
@@ -161,9 +153,7 @@
             this.tabControl5 = new System.Windows.Forms.TabControl();
             this.tabPage24 = new System.Windows.Forms.TabPage();
             this.skychase1_character = new System.Windows.Forms.ComboBox();
-            this.emblem_97 = new SASave.EmblemControl();
             this.skychase1_score_3 = new System.Windows.Forms.NumericUpDown();
-            this.emblem_102 = new SASave.EmblemControl();
             this.skychase1_score_2 = new System.Windows.Forms.NumericUpDown();
             this.skychase1_score_1 = new System.Windows.Forms.NumericUpDown();
             this.tabPage25 = new System.Windows.Forms.TabPage();
@@ -171,8 +161,6 @@
             this.skychase2_score_3 = new System.Windows.Forms.NumericUpDown();
             this.skychase2_score_2 = new System.Windows.Forms.NumericUpDown();
             this.skychase2_score_1 = new System.Windows.Forms.NumericUpDown();
-            this.emblem_98 = new SASave.EmblemControl();
-            this.emblem_103 = new SASave.EmblemControl();
             this.tabPage26 = new System.Windows.Forms.TabPage();
             this.icecap_character = new System.Windows.Forms.ComboBox();
             this.icecap_score_3 = new System.Windows.Forms.NumericUpDown();
@@ -183,53 +171,22 @@
             this.sandhill_score_3 = new System.Windows.Forms.NumericUpDown();
             this.sandhill_score_2 = new System.Windows.Forms.NumericUpDown();
             this.sandhill_score_1 = new System.Windows.Forms.NumericUpDown();
-            this.emblem_99 = new SASave.EmblemControl();
-            this.emblem_104 = new SASave.EmblemControl();
             this.tabPage28 = new System.Windows.Forms.TabPage();
             this.hedgehoghammer_score_3 = new System.Windows.Forms.NumericUpDown();
             this.hedgehoghammer_score_2 = new System.Windows.Forms.NumericUpDown();
             this.hedgehoghammer_score_1 = new System.Windows.Forms.NumericUpDown();
-            this.emblem_100 = new SASave.EmblemControl();
-            this.emblem_105 = new SASave.EmblemControl();
             this.tabPage29 = new System.Windows.Forms.TabPage();
             this.circuit_character = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.circuit_time_1 = new SASave.TimeControl();
-            this.circuit_time_3 = new SASave.TimeControl();
-            this.circuit_time_2 = new SASave.TimeControl();
-            this.circuit_lap_2 = new SASave.TimeControl();
-            this.circuit_lap_1 = new SASave.TimeControl();
-            this.emblem_96 = new SASave.EmblemControl();
-            this.emblem_101 = new SASave.EmblemControl();
             this.tabPage30 = new System.Windows.Forms.TabPage();
             this.boss_character = new System.Windows.Forms.ComboBox();
-            this.boss_time_1 = new SASave.TimeControl();
-            this.boss_time_2 = new SASave.TimeControl();
-            this.boss_time_3 = new SASave.TimeControl();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.emblem_129 = new SASave.EmblemControl();
-            this.emblem_128 = new SASave.EmblemControl();
-            this.emblem_127 = new SASave.EmblemControl();
-            this.emblem_126 = new SASave.EmblemControl();
-            this.emblem_125 = new SASave.EmblemControl();
-            this.emblem_124 = new SASave.EmblemControl();
-            this.emblem_123 = new SASave.EmblemControl();
-            this.emblem_122 = new SASave.EmblemControl();
-            this.emblem_121 = new SASave.EmblemControl();
-            this.emblem_120 = new SASave.EmblemControl();
-            this.emblem_119 = new SASave.EmblemControl();
             this.label98 = new System.Windows.Forms.Label();
-            this.emblem_118 = new SASave.EmblemControl();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.emblem_110 = new SASave.EmblemControl();
-            this.emblem_109 = new SASave.EmblemControl();
-            this.emblem_108 = new SASave.EmblemControl();
-            this.emblem_107 = new SASave.EmblemControl();
             this.label97 = new System.Windows.Forms.Label();
-            this.emblem_106 = new SASave.EmblemControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.tabControl6 = new System.Windows.Forms.TabControl();
             this.tabPage31 = new System.Windows.Forms.TabPage();
@@ -267,15 +224,11 @@
             this.tabPage47 = new System.Windows.Forms.TabPage();
             this.tabControl9 = new System.Windows.Forms.TabControl();
             this.tabPage48 = new System.Windows.Forms.TabPage();
-            this.metal_stage_emblem_c = new SASave.MetalEmblemControl();
-            this.metal_stage_emblem_b = new SASave.MetalEmblemControl();
-            this.metal_stage_emblem_a = new SASave.MetalEmblemControl();
             this.metal_level_select = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.metal_level_time = new SASave.TimeControl();
             this.metal_level_score = new System.Windows.Forms.NumericUpDown();
             this.metal_level_rings = new System.Windows.Forms.NumericUpDown();
             this.tabPage49 = new System.Windows.Forms.TabPage();
@@ -296,18 +249,65 @@
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.tabPage56 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
+            this.label127 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.playTime = new SASave.HourControl();
+            this.adventure_levelact = new SASave.LevelActControl();
+            this.adventure_emblem = new SASave.EmblemControl();
+            this.adventure_tod = new SASave.TimeOfDayControl();
+            this.level_emblem_c = new SASave.EmblemControl();
+            this.level_emblem_b = new SASave.EmblemControl();
+            this.level_emblem_a = new SASave.EmblemControl();
+            this.level_timeweight = new SASave.WeightControl();
+            this.emblem_97 = new SASave.EmblemControl();
+            this.emblem_102 = new SASave.EmblemControl();
+            this.emblem_98 = new SASave.EmblemControl();
+            this.emblem_103 = new SASave.EmblemControl();
+            this.emblem_99 = new SASave.EmblemControl();
+            this.emblem_104 = new SASave.EmblemControl();
+            this.emblem_100 = new SASave.EmblemControl();
+            this.emblem_105 = new SASave.EmblemControl();
+            this.circuit_time_1 = new SASave.TimeControl();
+            this.circuit_time_3 = new SASave.TimeControl();
+            this.circuit_time_2 = new SASave.TimeControl();
+            this.circuit_lap_2 = new SASave.TimeControl();
+            this.circuit_lap_1 = new SASave.TimeControl();
+            this.emblem_96 = new SASave.EmblemControl();
+            this.emblem_101 = new SASave.EmblemControl();
+            this.boss_time_1 = new SASave.TimeControl();
+            this.boss_time_2 = new SASave.TimeControl();
+            this.boss_time_3 = new SASave.TimeControl();
+            this.emblem_129 = new SASave.EmblemControl();
+            this.emblem_128 = new SASave.EmblemControl();
+            this.emblem_127 = new SASave.EmblemControl();
+            this.emblem_126 = new SASave.EmblemControl();
+            this.emblem_125 = new SASave.EmblemControl();
+            this.emblem_124 = new SASave.EmblemControl();
+            this.emblem_123 = new SASave.EmblemControl();
+            this.emblem_122 = new SASave.EmblemControl();
+            this.emblem_121 = new SASave.EmblemControl();
+            this.emblem_120 = new SASave.EmblemControl();
+            this.emblem_119 = new SASave.EmblemControl();
+            this.emblem_118 = new SASave.EmblemControl();
+            this.emblem_110 = new SASave.EmblemControl();
+            this.emblem_109 = new SASave.EmblemControl();
+            this.emblem_108 = new SASave.EmblemControl();
+            this.emblem_107 = new SASave.EmblemControl();
+            this.emblem_106 = new SASave.EmblemControl();
+            this.metal_stage_emblem_c = new SASave.MetalEmblemControl();
+            this.metal_stage_emblem_b = new SASave.MetalEmblemControl();
+            this.metal_stage_emblem_a = new SASave.MetalEmblemControl();
+            this.metal_level_time = new SASave.TimeControl();
             this.circuit_metal_time_1 = new SASave.TimeControl();
             this.circuit_metal_time_3 = new SASave.TimeControl();
             this.circuit_metal_time_2 = new SASave.TimeControl();
             this.circuit_metal_lap_2 = new SASave.TimeControl();
             this.circuit_metal_lap_1 = new SASave.TimeControl();
-            this.tabPage56 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
-            this.label127 = new System.Windows.Forms.Label();
             this.boss_metal_sonic_time_3 = new SASave.TimeControl();
             this.boss_metal_sonic_time_1 = new SASave.TimeControl();
             this.boss_metal_sonic_time_2 = new SASave.TimeControl();
-            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -582,14 +582,14 @@
             // giveAllToolStripMenuItem
             // 
             this.giveAllToolStripMenuItem.Name = "giveAllToolStripMenuItem";
-            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.giveAllToolStripMenuItem.Text = "&Give All";
             this.giveAllToolStripMenuItem.Click += new System.EventHandler(this.giveAllToolStripMenuItem_Click);
             // 
             // takeAllToolStripMenuItem
             // 
             this.takeAllToolStripMenuItem.Name = "takeAllToolStripMenuItem";
-            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.takeAllToolStripMenuItem.Text = "&Take All";
             this.takeAllToolStripMenuItem.Click += new System.EventHandler(this.takeAllToolStripMenuItem_Click);
             // 
@@ -690,14 +690,14 @@
             // giveAllToolStripMenuItem1
             // 
             this.giveAllToolStripMenuItem1.Name = "giveAllToolStripMenuItem1";
-            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
+            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
             this.giveAllToolStripMenuItem1.Text = "&Give All";
             this.giveAllToolStripMenuItem1.Click += new System.EventHandler(this.giveAllToolStripMenuItem1_Click);
             // 
             // takeAllToolStripMenuItem1
             // 
             this.takeAllToolStripMenuItem1.Name = "takeAllToolStripMenuItem1";
-            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
+            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
             this.takeAllToolStripMenuItem1.Text = "&Take All";
             this.takeAllToolStripMenuItem1.Click += new System.EventHandler(this.takeAllToolStripMenuItem1_Click);
             // 
@@ -1047,23 +1047,6 @@
             this.messagesVoiceAndText.UseVisualStyleBackColor = true;
             this.messagesVoiceAndText.CheckedChanged += new System.EventHandler(this.messages_CheckedChanged);
             // 
-            // playTime
-            // 
-            this.playTime.AutoSize = true;
-            this.playTime.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.playTime.Centiseconds = 0;
-            this.playTime.Frames = ((uint)(0u));
-            this.playTime.Hours = 0;
-            this.playTime.Location = new System.Drawing.Point(68, 14);
-            this.playTime.Minutes = 0;
-            this.playTime.Name = "playTime";
-            this.playTime.Seconds = 0;
-            this.playTime.Size = new System.Drawing.Size(205, 26);
-            this.playTime.TabIndex = 1;
-            this.playTime.TimeSpan = System.TimeSpan.Parse("00:00:00");
-            this.playTime.TotalCentiseconds = ((uint)(0u));
-            this.playTime.ValueChanged += new System.EventHandler(this.playTime_ValueChanged);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -1270,42 +1253,9 @@
             this.lifeIcon.Location = new System.Drawing.Point(6, 45);
             this.lifeIcon.Name = "lifeIcon";
             this.lifeIcon.Size = new System.Drawing.Size(32, 32);
-            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.lifeIcon.TabIndex = 0;
             this.lifeIcon.TabStop = false;
-            // 
-            // adventure_levelact
-            // 
-            this.adventure_levelact.Act = ((byte)(0));
-            this.adventure_levelact.AutoSize = true;
-            this.adventure_levelact.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.adventure_levelact.Level = ((byte)(26));
-            this.adventure_levelact.LevelAct = ((ushort)(6656));
-            this.adventure_levelact.Location = new System.Drawing.Point(68, 236);
-            this.adventure_levelact.Name = "adventure_levelact";
-            this.adventure_levelact.Size = new System.Drawing.Size(193, 21);
-            this.adventure_levelact.TabIndex = 11;
-            this.adventure_levelact.ValueChanged += new System.EventHandler(this.adventure_levelact_ValueChanged);
-            // 
-            // adventure_emblem
-            // 
-            this.adventure_emblem.AutoSize = true;
-            this.adventure_emblem.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.adventure_emblem.Location = new System.Drawing.Point(107, 33);
-            this.adventure_emblem.Name = "adventure_emblem";
-            this.adventure_emblem.Size = new System.Drawing.Size(64, 64);
-            this.adventure_emblem.TabIndex = 3;
-            this.adventure_emblem.CheckedChanged += new System.EventHandler(this.adventure_emblem_CheckedChanged);
-            // 
-            // adventure_tod
-            // 
-            this.adventure_tod.AutoSize = true;
-            this.adventure_tod.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.adventure_tod.Location = new System.Drawing.Point(6, 103);
-            this.adventure_tod.Name = "adventure_tod";
-            this.adventure_tod.Size = new System.Drawing.Size(182, 49);
-            this.adventure_tod.TabIndex = 5;
-            this.adventure_tod.ValueChanged += new System.EventHandler(this.adventure_tod_ValueChanged);
             // 
             // tabPage5
             // 
@@ -1323,36 +1273,6 @@
             this.tabPage5.TabIndex = 2;
             this.tabPage5.Text = "Action Stages";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // level_emblem_c
-            // 
-            this.level_emblem_c.AutoSize = true;
-            this.level_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_c.Location = new System.Drawing.Point(146, 60);
-            this.level_emblem_c.Name = "level_emblem_c";
-            this.level_emblem_c.Size = new System.Drawing.Size(64, 64);
-            this.level_emblem_c.TabIndex = 5;
-            this.level_emblem_c.CheckedChanged += new System.EventHandler(this.level_emblem_c_CheckedChanged);
-            // 
-            // level_emblem_b
-            // 
-            this.level_emblem_b.AutoSize = true;
-            this.level_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_b.Location = new System.Drawing.Point(76, 60);
-            this.level_emblem_b.Name = "level_emblem_b";
-            this.level_emblem_b.Size = new System.Drawing.Size(64, 64);
-            this.level_emblem_b.TabIndex = 4;
-            this.level_emblem_b.CheckedChanged += new System.EventHandler(this.level_emblem_b_CheckedChanged);
-            // 
-            // level_emblem_a
-            // 
-            this.level_emblem_a.AutoSize = true;
-            this.level_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_a.Location = new System.Drawing.Point(6, 60);
-            this.level_emblem_a.Name = "level_emblem_a";
-            this.level_emblem_a.Size = new System.Drawing.Size(64, 64);
-            this.level_emblem_a.TabIndex = 3;
-            this.level_emblem_a.CheckedChanged += new System.EventHandler(this.level_emblem_a_CheckedChanged);
             // 
             // action_stage
             // 
@@ -1385,14 +1305,15 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(218, 84);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 66);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // label12
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 6);
+            this.label12.Location = new System.Drawing.Point(0, 3);
+            this.label12.Margin = new System.Windows.Forms.Padding(0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(63, 13);
             this.label12.TabIndex = 0;
@@ -1403,7 +1324,8 @@
             // 
             this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 64);
+            this.label13.Location = new System.Drawing.Point(0, 49);
+            this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(63, 13);
             this.label13.TabIndex = 1;
@@ -1414,39 +1336,18 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 35);
+            this.label14.Location = new System.Drawing.Point(0, 26);
+            this.label14.Margin = new System.Windows.Forms.Padding(0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(57, 13);
             this.label14.TabIndex = 2;
             this.label14.Text = "Best Time:";
             this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // level_timeweight
-            // 
-            this.level_timeweight.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.level_timeweight.AutoSize = true;
-            this.level_timeweight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_timeweight.Location = new System.Drawing.Point(72, 29);
-            this.level_timeweight.Mode = SASave.WeightControlModes.Time;
-            this.level_timeweight.Name = "level_timeweight";
-            this.level_timeweight.Size = new System.Drawing.Size(143, 26);
-            this.level_timeweight.TabIndex = 3;
-            levelTime1.Frames = ((byte)(0));
-            levelTime1.Minutes = ((byte)(0));
-            levelTime1.Seconds = ((byte)(0));
-            this.level_timeweight.Time = levelTime1;
-            this.level_timeweight.Weight1 = ((ushort)(0));
-            this.level_timeweight.Weight2 = ((ushort)(0));
-            this.level_timeweight.Weight3 = ((ushort)(0));
-            this.level_timeweight.Weights = new ushort[] {
-        ((ushort)(0)),
-        ((ushort)(0)),
-        ((ushort)(0))};
-            this.level_timeweight.ValueChanged += new System.EventHandler(this.level_timeweight_ValueChanged);
-            // 
             // level_score
             // 
-            this.level_score.Location = new System.Drawing.Point(72, 3);
+            this.level_score.Location = new System.Drawing.Point(63, 0);
+            this.level_score.Margin = new System.Windows.Forms.Padding(0);
             this.level_score.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -1459,7 +1360,8 @@
             // 
             // level_rings
             // 
-            this.level_rings.Location = new System.Drawing.Point(72, 61);
+            this.level_rings.Location = new System.Drawing.Point(63, 46);
+            this.level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.level_rings.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -1545,16 +1447,6 @@
             this.skychase1_character.TabIndex = 4;
             this.skychase1_character.SelectedIndexChanged += new System.EventHandler(this.skychase1_character_SelectedIndexChanged);
             // 
-            // emblem_97
-            // 
-            this.emblem_97.AutoSize = true;
-            this.emblem_97.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_97.Location = new System.Drawing.Point(203, 6);
-            this.emblem_97.Name = "emblem_97";
-            this.emblem_97.Size = new System.Drawing.Size(64, 64);
-            this.emblem_97.TabIndex = 2;
-            this.emblem_97.CheckedChanged += new System.EventHandler(this.emblem_97_CheckedChanged);
-            // 
             // skychase1_score_3
             // 
             this.skychase1_score_3.Location = new System.Drawing.Point(6, 85);
@@ -1572,16 +1464,6 @@
             0,
             0});
             this.skychase1_score_3.ValueChanged += new System.EventHandler(this.skychase1_score_3_ValueChanged);
-            // 
-            // emblem_102
-            // 
-            this.emblem_102.AutoSize = true;
-            this.emblem_102.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_102.Location = new System.Drawing.Point(133, 6);
-            this.emblem_102.Name = "emblem_102";
-            this.emblem_102.Size = new System.Drawing.Size(64, 64);
-            this.emblem_102.TabIndex = 1;
-            this.emblem_102.CheckedChanged += new System.EventHandler(this.emblem_102_CheckedChanged);
             // 
             // skychase1_score_2
             // 
@@ -1702,26 +1584,6 @@
             0,
             0});
             this.skychase2_score_1.ValueChanged += new System.EventHandler(this.skychase2_score_1_ValueChanged);
-            // 
-            // emblem_98
-            // 
-            this.emblem_98.AutoSize = true;
-            this.emblem_98.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_98.Location = new System.Drawing.Point(203, 6);
-            this.emblem_98.Name = "emblem_98";
-            this.emblem_98.Size = new System.Drawing.Size(64, 64);
-            this.emblem_98.TabIndex = 2;
-            this.emblem_98.CheckedChanged += new System.EventHandler(this.emblem_98_CheckedChanged);
-            // 
-            // emblem_103
-            // 
-            this.emblem_103.AutoSize = true;
-            this.emblem_103.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_103.Location = new System.Drawing.Point(133, 6);
-            this.emblem_103.Name = "emblem_103";
-            this.emblem_103.Size = new System.Drawing.Size(64, 64);
-            this.emblem_103.TabIndex = 1;
-            this.emblem_103.CheckedChanged += new System.EventHandler(this.emblem_103_CheckedChanged);
             // 
             // tabPage26
             // 
@@ -1889,26 +1751,6 @@
             0});
             this.sandhill_score_1.ValueChanged += new System.EventHandler(this.sandhill_score_1_ValueChanged);
             // 
-            // emblem_99
-            // 
-            this.emblem_99.AutoSize = true;
-            this.emblem_99.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_99.Location = new System.Drawing.Point(203, 6);
-            this.emblem_99.Name = "emblem_99";
-            this.emblem_99.Size = new System.Drawing.Size(64, 64);
-            this.emblem_99.TabIndex = 2;
-            this.emblem_99.CheckedChanged += new System.EventHandler(this.emblem_99_CheckedChanged);
-            // 
-            // emblem_104
-            // 
-            this.emblem_104.AutoSize = true;
-            this.emblem_104.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_104.Location = new System.Drawing.Point(133, 6);
-            this.emblem_104.Name = "emblem_104";
-            this.emblem_104.Size = new System.Drawing.Size(64, 64);
-            this.emblem_104.TabIndex = 1;
-            this.emblem_104.CheckedChanged += new System.EventHandler(this.emblem_104_CheckedChanged);
-            // 
             // tabPage28
             // 
             this.tabPage28.AutoScroll = true;
@@ -1978,26 +1820,6 @@
             0,
             0});
             this.hedgehoghammer_score_1.ValueChanged += new System.EventHandler(this.hedgehoghammer_score_1_ValueChanged);
-            // 
-            // emblem_100
-            // 
-            this.emblem_100.AutoSize = true;
-            this.emblem_100.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_100.Location = new System.Drawing.Point(167, 6);
-            this.emblem_100.Name = "emblem_100";
-            this.emblem_100.Size = new System.Drawing.Size(64, 64);
-            this.emblem_100.TabIndex = 2;
-            this.emblem_100.CheckedChanged += new System.EventHandler(this.emblem_100_CheckedChanged);
-            // 
-            // emblem_105
-            // 
-            this.emblem_105.AutoSize = true;
-            this.emblem_105.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_105.Location = new System.Drawing.Point(97, 6);
-            this.emblem_105.Name = "emblem_105";
-            this.emblem_105.Size = new System.Drawing.Size(64, 64);
-            this.emblem_105.TabIndex = 1;
-            this.emblem_105.CheckedChanged += new System.EventHandler(this.emblem_105_CheckedChanged);
             // 
             // tabPage29
             // 
@@ -2069,152 +1891,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Best Times";
             // 
-            // circuit_time_1
-            // 
-            this.circuit_time_1.AutoSize = true;
-            this.circuit_time_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.circuit_time_1.Centiseconds = 0;
-            circuitTime1.Centiseconds = ((byte)(0));
-            circuitTime1.Minutes = ((byte)(10));
-            circuitTime1.Seconds = ((byte)(0));
-            this.circuit_time_1.CircuitTime = circuitTime1;
-            this.circuit_time_1.Frames = ((uint)(0u));
-            levelTime2.Frames = ((byte)(0));
-            levelTime2.Minutes = ((byte)(10));
-            levelTime2.Seconds = ((byte)(0));
-            this.circuit_time_1.LevelTime = levelTime2;
-            this.circuit_time_1.Location = new System.Drawing.Point(6, 19);
-            this.circuit_time_1.Minutes = 10;
-            this.circuit_time_1.Name = "circuit_time_1";
-            this.circuit_time_1.Seconds = 0;
-            this.circuit_time_1.Size = new System.Drawing.Size(143, 26);
-            this.circuit_time_1.TabIndex = 2;
-            this.circuit_time_1.TimeSpan = System.TimeSpan.Parse("00:10:00");
-            this.circuit_time_1.TotalCentiseconds = ((uint)(60000u));
-            this.circuit_time_1.TotalFrames = ((uint)(36000u));
-            this.circuit_time_1.ValueChanged += new System.EventHandler(this.circuit_time_1_ValueChanged);
-            // 
-            // circuit_time_3
-            // 
-            this.circuit_time_3.AutoSize = true;
-            this.circuit_time_3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.circuit_time_3.Centiseconds = 0;
-            circuitTime2.Centiseconds = ((byte)(0));
-            circuitTime2.Minutes = ((byte)(20));
-            circuitTime2.Seconds = ((byte)(0));
-            this.circuit_time_3.CircuitTime = circuitTime2;
-            this.circuit_time_3.Frames = ((uint)(0u));
-            levelTime3.Frames = ((byte)(0));
-            levelTime3.Minutes = ((byte)(20));
-            levelTime3.Seconds = ((byte)(0));
-            this.circuit_time_3.LevelTime = levelTime3;
-            this.circuit_time_3.Location = new System.Drawing.Point(6, 83);
-            this.circuit_time_3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.circuit_time_3.Minutes = 20;
-            this.circuit_time_3.Name = "circuit_time_3";
-            this.circuit_time_3.Seconds = 0;
-            this.circuit_time_3.Size = new System.Drawing.Size(143, 26);
-            this.circuit_time_3.TabIndex = 4;
-            this.circuit_time_3.TimeSpan = System.TimeSpan.Parse("00:20:00");
-            this.circuit_time_3.TotalCentiseconds = ((uint)(120000u));
-            this.circuit_time_3.TotalFrames = ((uint)(72000u));
-            this.circuit_time_3.ValueChanged += new System.EventHandler(this.circuit_time_3_ValueChanged);
-            // 
-            // circuit_time_2
-            // 
-            this.circuit_time_2.AutoSize = true;
-            this.circuit_time_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.circuit_time_2.Centiseconds = 0;
-            circuitTime3.Centiseconds = ((byte)(0));
-            circuitTime3.Minutes = ((byte)(15));
-            circuitTime3.Seconds = ((byte)(0));
-            this.circuit_time_2.CircuitTime = circuitTime3;
-            this.circuit_time_2.Frames = ((uint)(0u));
-            levelTime4.Frames = ((byte)(0));
-            levelTime4.Minutes = ((byte)(15));
-            levelTime4.Seconds = ((byte)(0));
-            this.circuit_time_2.LevelTime = levelTime4;
-            this.circuit_time_2.Location = new System.Drawing.Point(6, 51);
-            this.circuit_time_2.Minutes = 15;
-            this.circuit_time_2.Name = "circuit_time_2";
-            this.circuit_time_2.Seconds = 0;
-            this.circuit_time_2.Size = new System.Drawing.Size(143, 26);
-            this.circuit_time_2.TabIndex = 3;
-            this.circuit_time_2.TimeSpan = System.TimeSpan.Parse("00:15:00");
-            this.circuit_time_2.TotalCentiseconds = ((uint)(90000u));
-            this.circuit_time_2.TotalFrames = ((uint)(54000u));
-            this.circuit_time_2.ValueChanged += new System.EventHandler(this.circuit_time_2_ValueChanged);
-            // 
-            // circuit_lap_2
-            // 
-            this.circuit_lap_2.AutoSize = true;
-            this.circuit_lap_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.circuit_lap_2.Centiseconds = 0;
-            circuitTime4.Centiseconds = ((byte)(0));
-            circuitTime4.Minutes = ((byte)(7));
-            circuitTime4.Seconds = ((byte)(0));
-            this.circuit_lap_2.CircuitTime = circuitTime4;
-            this.circuit_lap_2.Frames = ((uint)(0u));
-            levelTime5.Frames = ((byte)(0));
-            levelTime5.Minutes = ((byte)(7));
-            levelTime5.Seconds = ((byte)(0));
-            this.circuit_lap_2.LevelTime = levelTime5;
-            this.circuit_lap_2.Location = new System.Drawing.Point(210, 84);
-            this.circuit_lap_2.Minutes = 7;
-            this.circuit_lap_2.Name = "circuit_lap_2";
-            this.circuit_lap_2.Seconds = 0;
-            this.circuit_lap_2.Size = new System.Drawing.Size(143, 26);
-            this.circuit_lap_2.TabIndex = 13;
-            this.circuit_lap_2.TimeSpan = System.TimeSpan.Parse("00:07:00");
-            this.circuit_lap_2.TotalCentiseconds = ((uint)(42000u));
-            this.circuit_lap_2.TotalFrames = ((uint)(25200u));
-            this.circuit_lap_2.ValueChanged += new System.EventHandler(this.circuit_lap_2_ValueChanged);
-            // 
-            // circuit_lap_1
-            // 
-            this.circuit_lap_1.AutoSize = true;
-            this.circuit_lap_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.circuit_lap_1.Centiseconds = 0;
-            circuitTime5.Centiseconds = ((byte)(0));
-            circuitTime5.Minutes = ((byte)(4));
-            circuitTime5.Seconds = ((byte)(0));
-            this.circuit_lap_1.CircuitTime = circuitTime5;
-            this.circuit_lap_1.Frames = ((uint)(0u));
-            levelTime6.Frames = ((byte)(0));
-            levelTime6.Minutes = ((byte)(4));
-            levelTime6.Seconds = ((byte)(0));
-            this.circuit_lap_1.LevelTime = levelTime6;
-            this.circuit_lap_1.Location = new System.Drawing.Point(210, 52);
-            this.circuit_lap_1.Minutes = 4;
-            this.circuit_lap_1.Name = "circuit_lap_1";
-            this.circuit_lap_1.Seconds = 0;
-            this.circuit_lap_1.Size = new System.Drawing.Size(143, 26);
-            this.circuit_lap_1.TabIndex = 12;
-            this.circuit_lap_1.TimeSpan = System.TimeSpan.Parse("00:04:00");
-            this.circuit_lap_1.TotalCentiseconds = ((uint)(24000u));
-            this.circuit_lap_1.TotalFrames = ((uint)(14400u));
-            this.circuit_lap_1.ValueChanged += new System.EventHandler(this.circuit_lap_1_ValueChanged);
-            // 
-            // emblem_96
-            // 
-            this.emblem_96.AutoSize = true;
-            this.emblem_96.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_96.Location = new System.Drawing.Point(429, 6);
-            this.emblem_96.Name = "emblem_96";
-            this.emblem_96.Size = new System.Drawing.Size(64, 64);
-            this.emblem_96.TabIndex = 2;
-            this.emblem_96.CheckedChanged += new System.EventHandler(this.emblem_96_CheckedChanged);
-            // 
-            // emblem_101
-            // 
-            this.emblem_101.AutoSize = true;
-            this.emblem_101.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_101.Location = new System.Drawing.Point(359, 6);
-            this.emblem_101.Name = "emblem_101";
-            this.emblem_101.Size = new System.Drawing.Size(64, 64);
-            this.emblem_101.TabIndex = 1;
-            this.emblem_101.CheckedChanged += new System.EventHandler(this.emblem_101_CheckedChanged);
-            // 
             // tabPage30
             // 
             this.tabPage30.AutoScroll = true;
@@ -2246,81 +1922,6 @@
             this.boss_character.Size = new System.Drawing.Size(121, 21);
             this.boss_character.TabIndex = 16;
             this.boss_character.SelectedIndexChanged += new System.EventHandler(this.boss_character_SelectedIndexChanged);
-            // 
-            // boss_time_1
-            // 
-            this.boss_time_1.AutoSize = true;
-            this.boss_time_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.boss_time_1.Centiseconds = 0;
-            circuitTime6.Centiseconds = ((byte)(0));
-            circuitTime6.Minutes = ((byte)(12));
-            circuitTime6.Seconds = ((byte)(0));
-            this.boss_time_1.CircuitTime = circuitTime6;
-            this.boss_time_1.Frames = ((uint)(0u));
-            levelTime7.Frames = ((byte)(0));
-            levelTime7.Minutes = ((byte)(12));
-            levelTime7.Seconds = ((byte)(0));
-            this.boss_time_1.LevelTime = levelTime7;
-            this.boss_time_1.Location = new System.Drawing.Point(6, 33);
-            this.boss_time_1.Minutes = 12;
-            this.boss_time_1.Name = "boss_time_1";
-            this.boss_time_1.Seconds = 0;
-            this.boss_time_1.Size = new System.Drawing.Size(143, 26);
-            this.boss_time_1.TabIndex = 6;
-            this.boss_time_1.TimeSpan = System.TimeSpan.Parse("00:12:00");
-            this.boss_time_1.TotalCentiseconds = ((uint)(72000u));
-            this.boss_time_1.TotalFrames = ((uint)(43200u));
-            this.boss_time_1.ValueChanged += new System.EventHandler(this.boss_time_1_ValueChanged);
-            // 
-            // boss_time_2
-            // 
-            this.boss_time_2.AutoSize = true;
-            this.boss_time_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.boss_time_2.Centiseconds = 0;
-            circuitTime7.Centiseconds = ((byte)(0));
-            circuitTime7.Minutes = ((byte)(13));
-            circuitTime7.Seconds = ((byte)(30));
-            this.boss_time_2.CircuitTime = circuitTime7;
-            this.boss_time_2.Frames = ((uint)(0u));
-            levelTime8.Frames = ((byte)(0));
-            levelTime8.Minutes = ((byte)(13));
-            levelTime8.Seconds = ((byte)(30));
-            this.boss_time_2.LevelTime = levelTime8;
-            this.boss_time_2.Location = new System.Drawing.Point(6, 65);
-            this.boss_time_2.Minutes = 13;
-            this.boss_time_2.Name = "boss_time_2";
-            this.boss_time_2.Seconds = 30;
-            this.boss_time_2.Size = new System.Drawing.Size(143, 26);
-            this.boss_time_2.TabIndex = 7;
-            this.boss_time_2.TimeSpan = System.TimeSpan.Parse("00:13:30");
-            this.boss_time_2.TotalCentiseconds = ((uint)(81000u));
-            this.boss_time_2.TotalFrames = ((uint)(48600u));
-            this.boss_time_2.ValueChanged += new System.EventHandler(this.boss_time_2_ValueChanged);
-            // 
-            // boss_time_3
-            // 
-            this.boss_time_3.AutoSize = true;
-            this.boss_time_3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.boss_time_3.Centiseconds = 0;
-            circuitTime8.Centiseconds = ((byte)(0));
-            circuitTime8.Minutes = ((byte)(15));
-            circuitTime8.Seconds = ((byte)(0));
-            this.boss_time_3.CircuitTime = circuitTime8;
-            this.boss_time_3.Frames = ((uint)(0u));
-            levelTime9.Frames = ((byte)(0));
-            levelTime9.Minutes = ((byte)(15));
-            levelTime9.Seconds = ((byte)(0));
-            this.boss_time_3.LevelTime = levelTime9;
-            this.boss_time_3.Location = new System.Drawing.Point(6, 97);
-            this.boss_time_3.Minutes = 15;
-            this.boss_time_3.Name = "boss_time_3";
-            this.boss_time_3.Seconds = 0;
-            this.boss_time_3.Size = new System.Drawing.Size(143, 26);
-            this.boss_time_3.TabIndex = 5;
-            this.boss_time_3.TimeSpan = System.TimeSpan.Parse("00:15:00");
-            this.boss_time_3.TotalCentiseconds = ((uint)(90000u));
-            this.boss_time_3.TotalFrames = ((uint)(54000u));
-            this.boss_time_3.ValueChanged += new System.EventHandler(this.boss_time_3_ValueChanged);
             // 
             // tabPage7
             // 
@@ -2368,127 +1969,6 @@
             this.tableLayoutPanel8.Size = new System.Drawing.Size(285, 228);
             this.tableLayoutPanel8.TabIndex = 1;
             // 
-            // emblem_129
-            // 
-            this.emblem_129.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_129.AutoSize = true;
-            this.emblem_129.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_129.Location = new System.Drawing.Point(217, 160);
-            this.emblem_129.Name = "emblem_129";
-            this.emblem_129.Size = new System.Drawing.Size(64, 64);
-            this.emblem_129.TabIndex = 2;
-            this.emblem_129.CheckedChanged += new System.EventHandler(this.emblem_129_CheckedChanged);
-            // 
-            // emblem_128
-            // 
-            this.emblem_128.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_128.AutoSize = true;
-            this.emblem_128.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_128.Location = new System.Drawing.Point(146, 160);
-            this.emblem_128.Name = "emblem_128";
-            this.emblem_128.Size = new System.Drawing.Size(64, 64);
-            this.emblem_128.TabIndex = 2;
-            this.emblem_128.CheckedChanged += new System.EventHandler(this.emblem_128_CheckedChanged);
-            // 
-            // emblem_127
-            // 
-            this.emblem_127.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_127.AutoSize = true;
-            this.emblem_127.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_127.Location = new System.Drawing.Point(75, 160);
-            this.emblem_127.Name = "emblem_127";
-            this.emblem_127.Size = new System.Drawing.Size(64, 64);
-            this.emblem_127.TabIndex = 2;
-            this.emblem_127.CheckedChanged += new System.EventHandler(this.emblem_127_CheckedChanged);
-            // 
-            // emblem_126
-            // 
-            this.emblem_126.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_126.AutoSize = true;
-            this.emblem_126.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_126.Location = new System.Drawing.Point(4, 160);
-            this.emblem_126.Name = "emblem_126";
-            this.emblem_126.Size = new System.Drawing.Size(64, 64);
-            this.emblem_126.TabIndex = 2;
-            this.emblem_126.CheckedChanged += new System.EventHandler(this.emblem_126_CheckedChanged);
-            // 
-            // emblem_125
-            // 
-            this.emblem_125.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_125.AutoSize = true;
-            this.emblem_125.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_125.Location = new System.Drawing.Point(217, 89);
-            this.emblem_125.Name = "emblem_125";
-            this.emblem_125.Size = new System.Drawing.Size(64, 64);
-            this.emblem_125.TabIndex = 2;
-            this.emblem_125.CheckedChanged += new System.EventHandler(this.emblem_125_CheckedChanged);
-            // 
-            // emblem_124
-            // 
-            this.emblem_124.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_124.AutoSize = true;
-            this.emblem_124.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_124.Location = new System.Drawing.Point(146, 89);
-            this.emblem_124.Name = "emblem_124";
-            this.emblem_124.Size = new System.Drawing.Size(64, 64);
-            this.emblem_124.TabIndex = 2;
-            this.emblem_124.CheckedChanged += new System.EventHandler(this.emblem_124_CheckedChanged);
-            // 
-            // emblem_123
-            // 
-            this.emblem_123.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_123.AutoSize = true;
-            this.emblem_123.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_123.Location = new System.Drawing.Point(75, 89);
-            this.emblem_123.Name = "emblem_123";
-            this.emblem_123.Size = new System.Drawing.Size(64, 64);
-            this.emblem_123.TabIndex = 2;
-            this.emblem_123.CheckedChanged += new System.EventHandler(this.emblem_123_CheckedChanged);
-            // 
-            // emblem_122
-            // 
-            this.emblem_122.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_122.AutoSize = true;
-            this.emblem_122.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_122.Location = new System.Drawing.Point(4, 89);
-            this.emblem_122.Name = "emblem_122";
-            this.emblem_122.Size = new System.Drawing.Size(64, 64);
-            this.emblem_122.TabIndex = 2;
-            this.emblem_122.CheckedChanged += new System.EventHandler(this.emblem_122_CheckedChanged);
-            // 
-            // emblem_121
-            // 
-            this.emblem_121.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_121.AutoSize = true;
-            this.emblem_121.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_121.Location = new System.Drawing.Point(217, 18);
-            this.emblem_121.Name = "emblem_121";
-            this.emblem_121.Size = new System.Drawing.Size(64, 64);
-            this.emblem_121.TabIndex = 2;
-            this.emblem_121.CheckedChanged += new System.EventHandler(this.emblem_121_CheckedChanged);
-            // 
-            // emblem_120
-            // 
-            this.emblem_120.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_120.AutoSize = true;
-            this.emblem_120.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_120.Location = new System.Drawing.Point(146, 18);
-            this.emblem_120.Name = "emblem_120";
-            this.emblem_120.Size = new System.Drawing.Size(64, 64);
-            this.emblem_120.TabIndex = 2;
-            this.emblem_120.CheckedChanged += new System.EventHandler(this.emblem_120_CheckedChanged);
-            // 
-            // emblem_119
-            // 
-            this.emblem_119.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_119.AutoSize = true;
-            this.emblem_119.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_119.Location = new System.Drawing.Point(75, 18);
-            this.emblem_119.Name = "emblem_119";
-            this.emblem_119.Size = new System.Drawing.Size(64, 64);
-            this.emblem_119.TabIndex = 2;
-            this.emblem_119.CheckedChanged += new System.EventHandler(this.emblem_119_CheckedChanged);
-            // 
             // label98
             // 
             this.label98.AutoSize = true;
@@ -2501,17 +1981,6 @@
             this.label98.TabIndex = 0;
             this.label98.Text = "Adventure Fields";
             this.label98.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // emblem_118
-            // 
-            this.emblem_118.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_118.AutoSize = true;
-            this.emblem_118.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_118.Location = new System.Drawing.Point(4, 18);
-            this.emblem_118.Name = "emblem_118";
-            this.emblem_118.Size = new System.Drawing.Size(64, 64);
-            this.emblem_118.TabIndex = 1;
-            this.emblem_118.CheckedChanged += new System.EventHandler(this.emblem_118_CheckedChanged);
             // 
             // tableLayoutPanel7
             // 
@@ -2538,50 +2007,6 @@
             this.tableLayoutPanel7.Size = new System.Drawing.Size(356, 86);
             this.tableLayoutPanel7.TabIndex = 0;
             // 
-            // emblem_110
-            // 
-            this.emblem_110.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_110.AutoSize = true;
-            this.emblem_110.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_110.Location = new System.Drawing.Point(288, 18);
-            this.emblem_110.Name = "emblem_110";
-            this.emblem_110.Size = new System.Drawing.Size(64, 64);
-            this.emblem_110.TabIndex = 2;
-            this.emblem_110.CheckedChanged += new System.EventHandler(this.emblem_110_CheckedChanged);
-            // 
-            // emblem_109
-            // 
-            this.emblem_109.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_109.AutoSize = true;
-            this.emblem_109.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_109.Location = new System.Drawing.Point(217, 18);
-            this.emblem_109.Name = "emblem_109";
-            this.emblem_109.Size = new System.Drawing.Size(64, 64);
-            this.emblem_109.TabIndex = 2;
-            this.emblem_109.CheckedChanged += new System.EventHandler(this.emblem_109_CheckedChanged);
-            // 
-            // emblem_108
-            // 
-            this.emblem_108.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_108.AutoSize = true;
-            this.emblem_108.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_108.Location = new System.Drawing.Point(146, 18);
-            this.emblem_108.Name = "emblem_108";
-            this.emblem_108.Size = new System.Drawing.Size(64, 64);
-            this.emblem_108.TabIndex = 2;
-            this.emblem_108.CheckedChanged += new System.EventHandler(this.emblem_108_CheckedChanged);
-            // 
-            // emblem_107
-            // 
-            this.emblem_107.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_107.AutoSize = true;
-            this.emblem_107.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_107.Location = new System.Drawing.Point(75, 18);
-            this.emblem_107.Name = "emblem_107";
-            this.emblem_107.Size = new System.Drawing.Size(64, 64);
-            this.emblem_107.TabIndex = 2;
-            this.emblem_107.CheckedChanged += new System.EventHandler(this.emblem_107_CheckedChanged);
-            // 
             // label97
             // 
             this.label97.AutoSize = true;
@@ -2594,17 +2019,6 @@
             this.label97.TabIndex = 0;
             this.label97.Text = "Chao Race";
             this.label97.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // emblem_106
-            // 
-            this.emblem_106.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.emblem_106.AutoSize = true;
-            this.emblem_106.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_106.Location = new System.Drawing.Point(4, 18);
-            this.emblem_106.Name = "emblem_106";
-            this.emblem_106.Size = new System.Drawing.Size(64, 64);
-            this.emblem_106.TabIndex = 1;
-            this.emblem_106.CheckedChanged += new System.EventHandler(this.emblem_106_CheckedChanged);
             // 
             // tabPage8
             // 
@@ -2654,7 +2068,7 @@
             this.events_unused.FormattingEnabled = true;
             this.events_unused.Location = new System.Drawing.Point(3, 3);
             this.events_unused.Name = "events_unused";
-            this.events_unused.Size = new System.Drawing.Size(548, 439);
+            this.events_unused.Size = new System.Drawing.Size(548, 450);
             this.events_unused.TabIndex = 0;
             this.events_unused.ThreeDCheckBoxes = true;
             this.events_unused.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_unused_ItemCheck);
@@ -2678,7 +2092,7 @@
             this.events_general.FormattingEnabled = true;
             this.events_general.Location = new System.Drawing.Point(3, 3);
             this.events_general.Name = "events_general";
-            this.events_general.Size = new System.Drawing.Size(548, 439);
+            this.events_general.Size = new System.Drawing.Size(548, 450);
             this.events_general.TabIndex = 1;
             this.events_general.ThreeDCheckBoxes = true;
             this.events_general.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_general_ItemCheck);
@@ -2702,7 +2116,7 @@
             this.events_sonic.FormattingEnabled = true;
             this.events_sonic.Location = new System.Drawing.Point(3, 3);
             this.events_sonic.Name = "events_sonic";
-            this.events_sonic.Size = new System.Drawing.Size(548, 439);
+            this.events_sonic.Size = new System.Drawing.Size(548, 450);
             this.events_sonic.TabIndex = 1;
             this.events_sonic.ThreeDCheckBoxes = true;
             this.events_sonic.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_sonic_ItemCheck);
@@ -2726,7 +2140,7 @@
             this.events_tails.FormattingEnabled = true;
             this.events_tails.Location = new System.Drawing.Point(3, 3);
             this.events_tails.Name = "events_tails";
-            this.events_tails.Size = new System.Drawing.Size(548, 439);
+            this.events_tails.Size = new System.Drawing.Size(548, 450);
             this.events_tails.TabIndex = 1;
             this.events_tails.ThreeDCheckBoxes = true;
             this.events_tails.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_tails_ItemCheck);
@@ -2750,7 +2164,7 @@
             this.events_knuckles.FormattingEnabled = true;
             this.events_knuckles.Location = new System.Drawing.Point(3, 3);
             this.events_knuckles.Name = "events_knuckles";
-            this.events_knuckles.Size = new System.Drawing.Size(548, 439);
+            this.events_knuckles.Size = new System.Drawing.Size(548, 450);
             this.events_knuckles.TabIndex = 1;
             this.events_knuckles.ThreeDCheckBoxes = true;
             this.events_knuckles.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_knuckles_ItemCheck);
@@ -2774,7 +2188,7 @@
             this.events_amy.FormattingEnabled = true;
             this.events_amy.Location = new System.Drawing.Point(3, 3);
             this.events_amy.Name = "events_amy";
-            this.events_amy.Size = new System.Drawing.Size(548, 439);
+            this.events_amy.Size = new System.Drawing.Size(548, 450);
             this.events_amy.TabIndex = 1;
             this.events_amy.ThreeDCheckBoxes = true;
             this.events_amy.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_amy_ItemCheck);
@@ -2798,7 +2212,7 @@
             this.events_gamma.FormattingEnabled = true;
             this.events_gamma.Location = new System.Drawing.Point(3, 3);
             this.events_gamma.Name = "events_gamma";
-            this.events_gamma.Size = new System.Drawing.Size(548, 439);
+            this.events_gamma.Size = new System.Drawing.Size(548, 450);
             this.events_gamma.TabIndex = 1;
             this.events_gamma.ThreeDCheckBoxes = true;
             this.events_gamma.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_gamma_ItemCheck);
@@ -2822,7 +2236,7 @@
             this.events_big.FormattingEnabled = true;
             this.events_big.Location = new System.Drawing.Point(3, 3);
             this.events_big.Name = "events_big";
-            this.events_big.Size = new System.Drawing.Size(548, 439);
+            this.events_big.Size = new System.Drawing.Size(548, 450);
             this.events_big.TabIndex = 1;
             this.events_big.ThreeDCheckBoxes = true;
             this.events_big.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_big_ItemCheck);
@@ -2846,7 +2260,7 @@
             this.npcs.FormattingEnabled = true;
             this.npcs.Location = new System.Drawing.Point(3, 3);
             this.npcs.Name = "npcs";
-            this.npcs.Size = new System.Drawing.Size(562, 469);
+            this.npcs.Size = new System.Drawing.Size(562, 482);
             this.npcs.TabIndex = 1;
             this.npcs.ThreeDCheckBoxes = true;
             this.npcs.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.npcs_ItemCheck);
@@ -3060,6 +2474,7 @@
             // tabPage48
             // 
             this.tabPage48.AutoScroll = true;
+            this.tabPage48.BackColor = System.Drawing.Color.Transparent;
             this.tabPage48.Controls.Add(this.metal_stage_emblem_c);
             this.tabPage48.Controls.Add(this.metal_stage_emblem_b);
             this.tabPage48.Controls.Add(this.metal_stage_emblem_a);
@@ -3072,36 +2487,6 @@
             this.tabPage48.TabIndex = 0;
             this.tabPage48.Text = "Action Stages";
             this.tabPage48.UseVisualStyleBackColor = true;
-            // 
-            // metal_stage_emblem_c
-            // 
-            this.metal_stage_emblem_c.AutoSize = true;
-            this.metal_stage_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_c.Location = new System.Drawing.Point(146, 33);
-            this.metal_stage_emblem_c.Name = "metal_stage_emblem_c";
-            this.metal_stage_emblem_c.Size = new System.Drawing.Size(64, 64);
-            this.metal_stage_emblem_c.TabIndex = 7;
-            this.metal_stage_emblem_c.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_c_CheckedChanged);
-            // 
-            // metal_stage_emblem_b
-            // 
-            this.metal_stage_emblem_b.AutoSize = true;
-            this.metal_stage_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_b.Location = new System.Drawing.Point(76, 33);
-            this.metal_stage_emblem_b.Name = "metal_stage_emblem_b";
-            this.metal_stage_emblem_b.Size = new System.Drawing.Size(64, 64);
-            this.metal_stage_emblem_b.TabIndex = 6;
-            this.metal_stage_emblem_b.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_b_CheckedChanged);
-            // 
-            // metal_stage_emblem_a
-            // 
-            this.metal_stage_emblem_a.AutoSize = true;
-            this.metal_stage_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_a.Location = new System.Drawing.Point(6, 33);
-            this.metal_stage_emblem_a.Name = "metal_stage_emblem_a";
-            this.metal_stage_emblem_a.Size = new System.Drawing.Size(64, 64);
-            this.metal_stage_emblem_a.TabIndex = 5;
-            this.metal_stage_emblem_a.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_a_CheckedChanged);
             // 
             // metal_level_select
             // 
@@ -3117,6 +2502,9 @@
             // 
             // tableLayoutPanel2
             // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel2.ColumnCount = 2;
@@ -3129,19 +2517,21 @@
             this.tableLayoutPanel2.Controls.Add(this.metal_level_score, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.metal_level_rings, 1, 2);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 103);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(218, 84);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(206, 66);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
             // label15
             // 
             this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(3, 6);
+            this.label15.Location = new System.Drawing.Point(0, 3);
+            this.label15.Margin = new System.Windows.Forms.Padding(0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(63, 13);
             this.label15.TabIndex = 0;
@@ -3152,7 +2542,8 @@
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 64);
+            this.label16.Location = new System.Drawing.Point(0, 49);
+            this.label16.Margin = new System.Windows.Forms.Padding(0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(63, 13);
             this.label16.TabIndex = 1;
@@ -3163,41 +2554,18 @@
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 35);
+            this.label17.Location = new System.Drawing.Point(3, 26);
+            this.label17.Margin = new System.Windows.Forms.Padding(0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(57, 13);
             this.label17.TabIndex = 2;
             this.label17.Text = "Best Time:";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // metal_level_time
-            // 
-            this.metal_level_time.AutoSize = true;
-            this.metal_level_time.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_level_time.Centiseconds = 0;
-            circuitTime9.Centiseconds = ((byte)(0));
-            circuitTime9.Minutes = ((byte)(0));
-            circuitTime9.Seconds = ((byte)(0));
-            this.metal_level_time.CircuitTime = circuitTime9;
-            this.metal_level_time.Frames = ((uint)(0u));
-            levelTime10.Frames = ((byte)(0));
-            levelTime10.Minutes = ((byte)(0));
-            levelTime10.Seconds = ((byte)(0));
-            this.metal_level_time.LevelTime = levelTime10;
-            this.metal_level_time.Location = new System.Drawing.Point(72, 29);
-            this.metal_level_time.Minutes = 0;
-            this.metal_level_time.Name = "metal_level_time";
-            this.metal_level_time.Seconds = 0;
-            this.metal_level_time.Size = new System.Drawing.Size(143, 26);
-            this.metal_level_time.TabIndex = 3;
-            this.metal_level_time.TimeSpan = System.TimeSpan.Parse("00:00:00");
-            this.metal_level_time.TotalCentiseconds = ((uint)(0u));
-            this.metal_level_time.TotalFrames = ((uint)(0u));
-            this.metal_level_time.ValueChanged += new System.EventHandler(this.metal_level_time_ValueChanged);
-            // 
             // metal_level_score
             // 
-            this.metal_level_score.Location = new System.Drawing.Point(72, 3);
+            this.metal_level_score.Location = new System.Drawing.Point(63, 0);
+            this.metal_level_score.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_score.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3210,7 +2578,8 @@
             // 
             // metal_level_rings
             // 
-            this.metal_level_rings.Location = new System.Drawing.Point(72, 61);
+            this.metal_level_rings.Location = new System.Drawing.Point(63, 46);
+            this.metal_level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_rings.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -3260,6 +2629,9 @@
             // 
             // tableLayoutPanel12
             // 
+            this.tableLayoutPanel12.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel12.AutoSize = true;
             this.tableLayoutPanel12.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel12.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
@@ -3276,13 +2648,14 @@
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(93, 96);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(87, 78);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // icecap_metal_sonic_score_3
             // 
             this.icecap_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(4, 72);
+            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.icecap_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3301,7 +2674,8 @@
             // icecap_metal_sonic_score_2
             // 
             this.icecap_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(4, 45);
+            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.icecap_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3320,7 +2694,8 @@
             // icecap_metal_sonic_score_1
             // 
             this.icecap_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(4, 18);
+            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.icecap_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3341,7 +2716,8 @@
             this.label117.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label117.AutoSize = true;
             this.label117.BackColor = System.Drawing.SystemColors.Window;
-            this.label117.Location = new System.Drawing.Point(14, 1);
+            this.label117.Location = new System.Drawing.Point(11, 1);
+            this.label117.Margin = new System.Windows.Forms.Padding(0);
             this.label117.Name = "label117";
             this.label117.Size = new System.Drawing.Size(65, 13);
             this.label117.TabIndex = 4;
@@ -3378,13 +2754,14 @@
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(93, 96);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(87, 78);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // sandhill_metal_sonic_score_3
             // 
             this.sandhill_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(4, 72);
+            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.sandhill_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3403,7 +2780,8 @@
             // sandhill_metal_sonic_score_2
             // 
             this.sandhill_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(4, 45);
+            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.sandhill_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3422,7 +2800,8 @@
             // sandhill_metal_sonic_score_1
             // 
             this.sandhill_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(4, 18);
+            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.sandhill_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3443,7 +2822,8 @@
             this.label120.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label120.AutoSize = true;
             this.label120.BackColor = System.Drawing.SystemColors.Window;
-            this.label120.Location = new System.Drawing.Point(14, 1);
+            this.label120.Location = new System.Drawing.Point(11, 1);
+            this.label120.Margin = new System.Windows.Forms.Padding(0);
             this.label120.Name = "label120";
             this.label120.Size = new System.Drawing.Size(65, 13);
             this.label120.TabIndex = 4;
@@ -3499,6 +2879,727 @@
             this.groupBox5.TabIndex = 10;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Best Times";
+            // 
+            // tabPage56
+            // 
+            this.tabPage56.AutoScroll = true;
+            this.tabPage56.Controls.Add(this.tableLayoutPanel15);
+            this.tabPage56.Location = new System.Drawing.Point(4, 22);
+            this.tabPage56.Name = "tabPage56";
+            this.tabPage56.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage56.Size = new System.Drawing.Size(534, 418);
+            this.tabPage56.TabIndex = 6;
+            this.tabPage56.Text = "Boss";
+            this.tabPage56.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel15
+            // 
+            this.tableLayoutPanel15.AutoSize = true;
+            this.tableLayoutPanel15.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel15.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.tableLayoutPanel15.ColumnCount = 1;
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel15.Controls.Add(this.label127, 0, 0);
+            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_3, 0, 3);
+            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_1, 0, 1);
+            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_2, 0, 2);
+            this.tableLayoutPanel15.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel15.Name = "tableLayoutPanel15";
+            this.tableLayoutPanel15.RowCount = 4;
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel15.Size = new System.Drawing.Size(151, 114);
+            this.tableLayoutPanel15.TabIndex = 0;
+            // 
+            // label127
+            // 
+            this.label127.AutoSize = true;
+            this.label127.BackColor = System.Drawing.SystemColors.Window;
+            this.label127.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label127.Location = new System.Drawing.Point(4, 1);
+            this.label127.Name = "label127";
+            this.label127.Size = new System.Drawing.Size(143, 13);
+            this.label127.TabIndex = 4;
+            this.label127.Text = "Best Times";
+            this.label127.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // tableLayoutPanel9
+            // 
+            this.tableLayoutPanel9.AutoSize = true;
+            this.tableLayoutPanel9.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel9.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.tableLayoutPanel9.ColumnCount = 8;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel9.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.RowCount = 8;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(9, 9);
+            this.tableLayoutPanel9.TabIndex = 0;
+            // 
+            // playTime
+            // 
+            this.playTime.AutoSize = true;
+            this.playTime.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.playTime.Centiseconds = 0;
+            this.playTime.Frames = ((uint)(0u));
+            this.playTime.Hours = 0;
+            this.playTime.Location = new System.Drawing.Point(68, 14);
+            this.playTime.Minutes = 0;
+            this.playTime.Name = "playTime";
+            this.playTime.Seconds = 0;
+            this.playTime.Size = new System.Drawing.Size(205, 26);
+            this.playTime.TabIndex = 1;
+            this.playTime.TimeSpan = System.TimeSpan.Parse("00:00:00");
+            this.playTime.TotalCentiseconds = ((uint)(0u));
+            this.playTime.ValueChanged += new System.EventHandler(this.playTime_ValueChanged);
+            // 
+            // adventure_levelact
+            // 
+            this.adventure_levelact.Act = ((byte)(0));
+            this.adventure_levelact.AutoSize = true;
+            this.adventure_levelact.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.adventure_levelact.Level = ((byte)(26));
+            this.adventure_levelact.LevelAct = ((ushort)(6656));
+            this.adventure_levelact.Location = new System.Drawing.Point(68, 236);
+            this.adventure_levelact.Name = "adventure_levelact";
+            this.adventure_levelact.Size = new System.Drawing.Size(193, 21);
+            this.adventure_levelact.TabIndex = 11;
+            this.adventure_levelact.ValueChanged += new System.EventHandler(this.adventure_levelact_ValueChanged);
+            // 
+            // adventure_emblem
+            // 
+            this.adventure_emblem.AutoSize = true;
+            this.adventure_emblem.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.adventure_emblem.Location = new System.Drawing.Point(107, 33);
+            this.adventure_emblem.Name = "adventure_emblem";
+            this.adventure_emblem.Size = new System.Drawing.Size(64, 64);
+            this.adventure_emblem.TabIndex = 3;
+            this.adventure_emblem.CheckedChanged += new System.EventHandler(this.adventure_emblem_CheckedChanged);
+            // 
+            // adventure_tod
+            // 
+            this.adventure_tod.AutoSize = true;
+            this.adventure_tod.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.adventure_tod.Location = new System.Drawing.Point(6, 103);
+            this.adventure_tod.Name = "adventure_tod";
+            this.adventure_tod.Size = new System.Drawing.Size(182, 49);
+            this.adventure_tod.TabIndex = 5;
+            this.adventure_tod.ValueChanged += new System.EventHandler(this.adventure_tod_ValueChanged);
+            // 
+            // level_emblem_c
+            // 
+            this.level_emblem_c.AutoSize = true;
+            this.level_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.level_emblem_c.Location = new System.Drawing.Point(146, 60);
+            this.level_emblem_c.Name = "level_emblem_c";
+            this.level_emblem_c.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_c.TabIndex = 5;
+            this.level_emblem_c.CheckedChanged += new System.EventHandler(this.level_emblem_c_CheckedChanged);
+            // 
+            // level_emblem_b
+            // 
+            this.level_emblem_b.AutoSize = true;
+            this.level_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.level_emblem_b.Location = new System.Drawing.Point(76, 60);
+            this.level_emblem_b.Name = "level_emblem_b";
+            this.level_emblem_b.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_b.TabIndex = 4;
+            this.level_emblem_b.CheckedChanged += new System.EventHandler(this.level_emblem_b_CheckedChanged);
+            // 
+            // level_emblem_a
+            // 
+            this.level_emblem_a.AutoSize = true;
+            this.level_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.level_emblem_a.Location = new System.Drawing.Point(6, 60);
+            this.level_emblem_a.Name = "level_emblem_a";
+            this.level_emblem_a.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_a.TabIndex = 3;
+            this.level_emblem_a.CheckedChanged += new System.EventHandler(this.level_emblem_a_CheckedChanged);
+            // 
+            // level_timeweight
+            // 
+            this.level_timeweight.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.level_timeweight.AutoSize = true;
+            this.level_timeweight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.level_timeweight.Location = new System.Drawing.Point(63, 20);
+            this.level_timeweight.Margin = new System.Windows.Forms.Padding(0);
+            this.level_timeweight.Mode = SASave.WeightControlModes.Time;
+            this.level_timeweight.Name = "level_timeweight";
+            this.level_timeweight.Size = new System.Drawing.Size(143, 26);
+            this.level_timeweight.TabIndex = 3;
+            levelTime1.Frames = ((byte)(0));
+            levelTime1.Minutes = ((byte)(0));
+            levelTime1.Seconds = ((byte)(0));
+            this.level_timeweight.Time = levelTime1;
+            this.level_timeweight.Weight1 = ((ushort)(0));
+            this.level_timeweight.Weight2 = ((ushort)(0));
+            this.level_timeweight.Weight3 = ((ushort)(0));
+            this.level_timeweight.Weights = new ushort[] {
+        ((ushort)(0)),
+        ((ushort)(0)),
+        ((ushort)(0))};
+            this.level_timeweight.ValueChanged += new System.EventHandler(this.level_timeweight_ValueChanged);
+            // 
+            // emblem_97
+            // 
+            this.emblem_97.AutoSize = true;
+            this.emblem_97.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_97.Location = new System.Drawing.Point(203, 6);
+            this.emblem_97.Name = "emblem_97";
+            this.emblem_97.Size = new System.Drawing.Size(64, 64);
+            this.emblem_97.TabIndex = 2;
+            this.emblem_97.CheckedChanged += new System.EventHandler(this.emblem_97_CheckedChanged);
+            // 
+            // emblem_102
+            // 
+            this.emblem_102.AutoSize = true;
+            this.emblem_102.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_102.Location = new System.Drawing.Point(133, 6);
+            this.emblem_102.Name = "emblem_102";
+            this.emblem_102.Size = new System.Drawing.Size(64, 64);
+            this.emblem_102.TabIndex = 1;
+            this.emblem_102.CheckedChanged += new System.EventHandler(this.emblem_102_CheckedChanged);
+            // 
+            // emblem_98
+            // 
+            this.emblem_98.AutoSize = true;
+            this.emblem_98.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_98.Location = new System.Drawing.Point(203, 6);
+            this.emblem_98.Name = "emblem_98";
+            this.emblem_98.Size = new System.Drawing.Size(64, 64);
+            this.emblem_98.TabIndex = 2;
+            this.emblem_98.CheckedChanged += new System.EventHandler(this.emblem_98_CheckedChanged);
+            // 
+            // emblem_103
+            // 
+            this.emblem_103.AutoSize = true;
+            this.emblem_103.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_103.Location = new System.Drawing.Point(133, 6);
+            this.emblem_103.Name = "emblem_103";
+            this.emblem_103.Size = new System.Drawing.Size(64, 64);
+            this.emblem_103.TabIndex = 1;
+            this.emblem_103.CheckedChanged += new System.EventHandler(this.emblem_103_CheckedChanged);
+            // 
+            // emblem_99
+            // 
+            this.emblem_99.AutoSize = true;
+            this.emblem_99.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_99.Location = new System.Drawing.Point(203, 6);
+            this.emblem_99.Name = "emblem_99";
+            this.emblem_99.Size = new System.Drawing.Size(64, 64);
+            this.emblem_99.TabIndex = 2;
+            this.emblem_99.CheckedChanged += new System.EventHandler(this.emblem_99_CheckedChanged);
+            // 
+            // emblem_104
+            // 
+            this.emblem_104.AutoSize = true;
+            this.emblem_104.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_104.Location = new System.Drawing.Point(133, 6);
+            this.emblem_104.Name = "emblem_104";
+            this.emblem_104.Size = new System.Drawing.Size(64, 64);
+            this.emblem_104.TabIndex = 1;
+            this.emblem_104.CheckedChanged += new System.EventHandler(this.emblem_104_CheckedChanged);
+            // 
+            // emblem_100
+            // 
+            this.emblem_100.AutoSize = true;
+            this.emblem_100.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_100.Location = new System.Drawing.Point(167, 6);
+            this.emblem_100.Name = "emblem_100";
+            this.emblem_100.Size = new System.Drawing.Size(64, 64);
+            this.emblem_100.TabIndex = 2;
+            this.emblem_100.CheckedChanged += new System.EventHandler(this.emblem_100_CheckedChanged);
+            // 
+            // emblem_105
+            // 
+            this.emblem_105.AutoSize = true;
+            this.emblem_105.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_105.Location = new System.Drawing.Point(97, 6);
+            this.emblem_105.Name = "emblem_105";
+            this.emblem_105.Size = new System.Drawing.Size(64, 64);
+            this.emblem_105.TabIndex = 1;
+            this.emblem_105.CheckedChanged += new System.EventHandler(this.emblem_105_CheckedChanged);
+            // 
+            // circuit_time_1
+            // 
+            this.circuit_time_1.AutoSize = true;
+            this.circuit_time_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.circuit_time_1.Centiseconds = 0;
+            circuitTime1.Centiseconds = ((byte)(0));
+            circuitTime1.Minutes = ((byte)(10));
+            circuitTime1.Seconds = ((byte)(0));
+            this.circuit_time_1.CircuitTime = circuitTime1;
+            this.circuit_time_1.Frames = ((uint)(0u));
+            levelTime2.Frames = ((byte)(0));
+            levelTime2.Minutes = ((byte)(10));
+            levelTime2.Seconds = ((byte)(0));
+            this.circuit_time_1.LevelTime = levelTime2;
+            this.circuit_time_1.Location = new System.Drawing.Point(6, 19);
+            this.circuit_time_1.Minutes = 10;
+            this.circuit_time_1.Name = "circuit_time_1";
+            this.circuit_time_1.Seconds = 0;
+            this.circuit_time_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_1.TabIndex = 2;
+            this.circuit_time_1.TimeSpan = System.TimeSpan.Parse("00:10:00");
+            this.circuit_time_1.TotalCentiseconds = ((uint)(60000u));
+            this.circuit_time_1.TotalFrames = ((uint)(36000u));
+            this.circuit_time_1.ValueChanged += new System.EventHandler(this.circuit_time_1_ValueChanged);
+            // 
+            // circuit_time_3
+            // 
+            this.circuit_time_3.AutoSize = true;
+            this.circuit_time_3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.circuit_time_3.Centiseconds = 0;
+            circuitTime2.Centiseconds = ((byte)(0));
+            circuitTime2.Minutes = ((byte)(20));
+            circuitTime2.Seconds = ((byte)(0));
+            this.circuit_time_3.CircuitTime = circuitTime2;
+            this.circuit_time_3.Frames = ((uint)(0u));
+            levelTime3.Frames = ((byte)(0));
+            levelTime3.Minutes = ((byte)(20));
+            levelTime3.Seconds = ((byte)(0));
+            this.circuit_time_3.LevelTime = levelTime3;
+            this.circuit_time_3.Location = new System.Drawing.Point(6, 83);
+            this.circuit_time_3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.circuit_time_3.Minutes = 20;
+            this.circuit_time_3.Name = "circuit_time_3";
+            this.circuit_time_3.Seconds = 0;
+            this.circuit_time_3.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_3.TabIndex = 4;
+            this.circuit_time_3.TimeSpan = System.TimeSpan.Parse("00:20:00");
+            this.circuit_time_3.TotalCentiseconds = ((uint)(120000u));
+            this.circuit_time_3.TotalFrames = ((uint)(72000u));
+            this.circuit_time_3.ValueChanged += new System.EventHandler(this.circuit_time_3_ValueChanged);
+            // 
+            // circuit_time_2
+            // 
+            this.circuit_time_2.AutoSize = true;
+            this.circuit_time_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.circuit_time_2.Centiseconds = 0;
+            circuitTime3.Centiseconds = ((byte)(0));
+            circuitTime3.Minutes = ((byte)(15));
+            circuitTime3.Seconds = ((byte)(0));
+            this.circuit_time_2.CircuitTime = circuitTime3;
+            this.circuit_time_2.Frames = ((uint)(0u));
+            levelTime4.Frames = ((byte)(0));
+            levelTime4.Minutes = ((byte)(15));
+            levelTime4.Seconds = ((byte)(0));
+            this.circuit_time_2.LevelTime = levelTime4;
+            this.circuit_time_2.Location = new System.Drawing.Point(6, 51);
+            this.circuit_time_2.Minutes = 15;
+            this.circuit_time_2.Name = "circuit_time_2";
+            this.circuit_time_2.Seconds = 0;
+            this.circuit_time_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_2.TabIndex = 3;
+            this.circuit_time_2.TimeSpan = System.TimeSpan.Parse("00:15:00");
+            this.circuit_time_2.TotalCentiseconds = ((uint)(90000u));
+            this.circuit_time_2.TotalFrames = ((uint)(54000u));
+            this.circuit_time_2.ValueChanged += new System.EventHandler(this.circuit_time_2_ValueChanged);
+            // 
+            // circuit_lap_2
+            // 
+            this.circuit_lap_2.AutoSize = true;
+            this.circuit_lap_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.circuit_lap_2.Centiseconds = 0;
+            circuitTime4.Centiseconds = ((byte)(0));
+            circuitTime4.Minutes = ((byte)(7));
+            circuitTime4.Seconds = ((byte)(0));
+            this.circuit_lap_2.CircuitTime = circuitTime4;
+            this.circuit_lap_2.Frames = ((uint)(0u));
+            levelTime5.Frames = ((byte)(0));
+            levelTime5.Minutes = ((byte)(7));
+            levelTime5.Seconds = ((byte)(0));
+            this.circuit_lap_2.LevelTime = levelTime5;
+            this.circuit_lap_2.Location = new System.Drawing.Point(210, 84);
+            this.circuit_lap_2.Minutes = 7;
+            this.circuit_lap_2.Name = "circuit_lap_2";
+            this.circuit_lap_2.Seconds = 0;
+            this.circuit_lap_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_lap_2.TabIndex = 13;
+            this.circuit_lap_2.TimeSpan = System.TimeSpan.Parse("00:07:00");
+            this.circuit_lap_2.TotalCentiseconds = ((uint)(42000u));
+            this.circuit_lap_2.TotalFrames = ((uint)(25200u));
+            this.circuit_lap_2.ValueChanged += new System.EventHandler(this.circuit_lap_2_ValueChanged);
+            // 
+            // circuit_lap_1
+            // 
+            this.circuit_lap_1.AutoSize = true;
+            this.circuit_lap_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.circuit_lap_1.Centiseconds = 0;
+            circuitTime5.Centiseconds = ((byte)(0));
+            circuitTime5.Minutes = ((byte)(4));
+            circuitTime5.Seconds = ((byte)(0));
+            this.circuit_lap_1.CircuitTime = circuitTime5;
+            this.circuit_lap_1.Frames = ((uint)(0u));
+            levelTime6.Frames = ((byte)(0));
+            levelTime6.Minutes = ((byte)(4));
+            levelTime6.Seconds = ((byte)(0));
+            this.circuit_lap_1.LevelTime = levelTime6;
+            this.circuit_lap_1.Location = new System.Drawing.Point(210, 52);
+            this.circuit_lap_1.Minutes = 4;
+            this.circuit_lap_1.Name = "circuit_lap_1";
+            this.circuit_lap_1.Seconds = 0;
+            this.circuit_lap_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_lap_1.TabIndex = 12;
+            this.circuit_lap_1.TimeSpan = System.TimeSpan.Parse("00:04:00");
+            this.circuit_lap_1.TotalCentiseconds = ((uint)(24000u));
+            this.circuit_lap_1.TotalFrames = ((uint)(14400u));
+            this.circuit_lap_1.ValueChanged += new System.EventHandler(this.circuit_lap_1_ValueChanged);
+            // 
+            // emblem_96
+            // 
+            this.emblem_96.AutoSize = true;
+            this.emblem_96.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_96.Location = new System.Drawing.Point(429, 6);
+            this.emblem_96.Name = "emblem_96";
+            this.emblem_96.Size = new System.Drawing.Size(64, 64);
+            this.emblem_96.TabIndex = 2;
+            this.emblem_96.CheckedChanged += new System.EventHandler(this.emblem_96_CheckedChanged);
+            // 
+            // emblem_101
+            // 
+            this.emblem_101.AutoSize = true;
+            this.emblem_101.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_101.Location = new System.Drawing.Point(359, 6);
+            this.emblem_101.Name = "emblem_101";
+            this.emblem_101.Size = new System.Drawing.Size(64, 64);
+            this.emblem_101.TabIndex = 1;
+            this.emblem_101.CheckedChanged += new System.EventHandler(this.emblem_101_CheckedChanged);
+            // 
+            // boss_time_1
+            // 
+            this.boss_time_1.AutoSize = true;
+            this.boss_time_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.boss_time_1.Centiseconds = 0;
+            circuitTime6.Centiseconds = ((byte)(0));
+            circuitTime6.Minutes = ((byte)(12));
+            circuitTime6.Seconds = ((byte)(0));
+            this.boss_time_1.CircuitTime = circuitTime6;
+            this.boss_time_1.Frames = ((uint)(0u));
+            levelTime7.Frames = ((byte)(0));
+            levelTime7.Minutes = ((byte)(12));
+            levelTime7.Seconds = ((byte)(0));
+            this.boss_time_1.LevelTime = levelTime7;
+            this.boss_time_1.Location = new System.Drawing.Point(6, 33);
+            this.boss_time_1.Minutes = 12;
+            this.boss_time_1.Name = "boss_time_1";
+            this.boss_time_1.Seconds = 0;
+            this.boss_time_1.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_1.TabIndex = 6;
+            this.boss_time_1.TimeSpan = System.TimeSpan.Parse("00:12:00");
+            this.boss_time_1.TotalCentiseconds = ((uint)(72000u));
+            this.boss_time_1.TotalFrames = ((uint)(43200u));
+            this.boss_time_1.ValueChanged += new System.EventHandler(this.boss_time_1_ValueChanged);
+            // 
+            // boss_time_2
+            // 
+            this.boss_time_2.AutoSize = true;
+            this.boss_time_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.boss_time_2.Centiseconds = 0;
+            circuitTime7.Centiseconds = ((byte)(0));
+            circuitTime7.Minutes = ((byte)(13));
+            circuitTime7.Seconds = ((byte)(30));
+            this.boss_time_2.CircuitTime = circuitTime7;
+            this.boss_time_2.Frames = ((uint)(0u));
+            levelTime8.Frames = ((byte)(0));
+            levelTime8.Minutes = ((byte)(13));
+            levelTime8.Seconds = ((byte)(30));
+            this.boss_time_2.LevelTime = levelTime8;
+            this.boss_time_2.Location = new System.Drawing.Point(6, 65);
+            this.boss_time_2.Minutes = 13;
+            this.boss_time_2.Name = "boss_time_2";
+            this.boss_time_2.Seconds = 30;
+            this.boss_time_2.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_2.TabIndex = 7;
+            this.boss_time_2.TimeSpan = System.TimeSpan.Parse("00:13:30");
+            this.boss_time_2.TotalCentiseconds = ((uint)(81000u));
+            this.boss_time_2.TotalFrames = ((uint)(48600u));
+            this.boss_time_2.ValueChanged += new System.EventHandler(this.boss_time_2_ValueChanged);
+            // 
+            // boss_time_3
+            // 
+            this.boss_time_3.AutoSize = true;
+            this.boss_time_3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.boss_time_3.Centiseconds = 0;
+            circuitTime8.Centiseconds = ((byte)(0));
+            circuitTime8.Minutes = ((byte)(15));
+            circuitTime8.Seconds = ((byte)(0));
+            this.boss_time_3.CircuitTime = circuitTime8;
+            this.boss_time_3.Frames = ((uint)(0u));
+            levelTime9.Frames = ((byte)(0));
+            levelTime9.Minutes = ((byte)(15));
+            levelTime9.Seconds = ((byte)(0));
+            this.boss_time_3.LevelTime = levelTime9;
+            this.boss_time_3.Location = new System.Drawing.Point(6, 97);
+            this.boss_time_3.Minutes = 15;
+            this.boss_time_3.Name = "boss_time_3";
+            this.boss_time_3.Seconds = 0;
+            this.boss_time_3.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_3.TabIndex = 5;
+            this.boss_time_3.TimeSpan = System.TimeSpan.Parse("00:15:00");
+            this.boss_time_3.TotalCentiseconds = ((uint)(90000u));
+            this.boss_time_3.TotalFrames = ((uint)(54000u));
+            this.boss_time_3.ValueChanged += new System.EventHandler(this.boss_time_3_ValueChanged);
+            // 
+            // emblem_129
+            // 
+            this.emblem_129.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_129.AutoSize = true;
+            this.emblem_129.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_129.Location = new System.Drawing.Point(217, 160);
+            this.emblem_129.Name = "emblem_129";
+            this.emblem_129.Size = new System.Drawing.Size(64, 64);
+            this.emblem_129.TabIndex = 2;
+            this.emblem_129.CheckedChanged += new System.EventHandler(this.emblem_129_CheckedChanged);
+            // 
+            // emblem_128
+            // 
+            this.emblem_128.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_128.AutoSize = true;
+            this.emblem_128.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_128.Location = new System.Drawing.Point(146, 160);
+            this.emblem_128.Name = "emblem_128";
+            this.emblem_128.Size = new System.Drawing.Size(64, 64);
+            this.emblem_128.TabIndex = 2;
+            this.emblem_128.CheckedChanged += new System.EventHandler(this.emblem_128_CheckedChanged);
+            // 
+            // emblem_127
+            // 
+            this.emblem_127.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_127.AutoSize = true;
+            this.emblem_127.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_127.Location = new System.Drawing.Point(75, 160);
+            this.emblem_127.Name = "emblem_127";
+            this.emblem_127.Size = new System.Drawing.Size(64, 64);
+            this.emblem_127.TabIndex = 2;
+            this.emblem_127.CheckedChanged += new System.EventHandler(this.emblem_127_CheckedChanged);
+            // 
+            // emblem_126
+            // 
+            this.emblem_126.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_126.AutoSize = true;
+            this.emblem_126.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_126.Location = new System.Drawing.Point(4, 160);
+            this.emblem_126.Name = "emblem_126";
+            this.emblem_126.Size = new System.Drawing.Size(64, 64);
+            this.emblem_126.TabIndex = 2;
+            this.emblem_126.CheckedChanged += new System.EventHandler(this.emblem_126_CheckedChanged);
+            // 
+            // emblem_125
+            // 
+            this.emblem_125.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_125.AutoSize = true;
+            this.emblem_125.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_125.Location = new System.Drawing.Point(217, 89);
+            this.emblem_125.Name = "emblem_125";
+            this.emblem_125.Size = new System.Drawing.Size(64, 64);
+            this.emblem_125.TabIndex = 2;
+            this.emblem_125.CheckedChanged += new System.EventHandler(this.emblem_125_CheckedChanged);
+            // 
+            // emblem_124
+            // 
+            this.emblem_124.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_124.AutoSize = true;
+            this.emblem_124.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_124.Location = new System.Drawing.Point(146, 89);
+            this.emblem_124.Name = "emblem_124";
+            this.emblem_124.Size = new System.Drawing.Size(64, 64);
+            this.emblem_124.TabIndex = 2;
+            this.emblem_124.CheckedChanged += new System.EventHandler(this.emblem_124_CheckedChanged);
+            // 
+            // emblem_123
+            // 
+            this.emblem_123.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_123.AutoSize = true;
+            this.emblem_123.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_123.Location = new System.Drawing.Point(75, 89);
+            this.emblem_123.Name = "emblem_123";
+            this.emblem_123.Size = new System.Drawing.Size(64, 64);
+            this.emblem_123.TabIndex = 2;
+            this.emblem_123.CheckedChanged += new System.EventHandler(this.emblem_123_CheckedChanged);
+            // 
+            // emblem_122
+            // 
+            this.emblem_122.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_122.AutoSize = true;
+            this.emblem_122.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_122.Location = new System.Drawing.Point(4, 89);
+            this.emblem_122.Name = "emblem_122";
+            this.emblem_122.Size = new System.Drawing.Size(64, 64);
+            this.emblem_122.TabIndex = 2;
+            this.emblem_122.CheckedChanged += new System.EventHandler(this.emblem_122_CheckedChanged);
+            // 
+            // emblem_121
+            // 
+            this.emblem_121.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_121.AutoSize = true;
+            this.emblem_121.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_121.Location = new System.Drawing.Point(217, 18);
+            this.emblem_121.Name = "emblem_121";
+            this.emblem_121.Size = new System.Drawing.Size(64, 64);
+            this.emblem_121.TabIndex = 2;
+            this.emblem_121.CheckedChanged += new System.EventHandler(this.emblem_121_CheckedChanged);
+            // 
+            // emblem_120
+            // 
+            this.emblem_120.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_120.AutoSize = true;
+            this.emblem_120.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_120.Location = new System.Drawing.Point(146, 18);
+            this.emblem_120.Name = "emblem_120";
+            this.emblem_120.Size = new System.Drawing.Size(64, 64);
+            this.emblem_120.TabIndex = 2;
+            this.emblem_120.CheckedChanged += new System.EventHandler(this.emblem_120_CheckedChanged);
+            // 
+            // emblem_119
+            // 
+            this.emblem_119.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_119.AutoSize = true;
+            this.emblem_119.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_119.Location = new System.Drawing.Point(75, 18);
+            this.emblem_119.Name = "emblem_119";
+            this.emblem_119.Size = new System.Drawing.Size(64, 64);
+            this.emblem_119.TabIndex = 2;
+            this.emblem_119.CheckedChanged += new System.EventHandler(this.emblem_119_CheckedChanged);
+            // 
+            // emblem_118
+            // 
+            this.emblem_118.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_118.AutoSize = true;
+            this.emblem_118.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_118.Location = new System.Drawing.Point(4, 18);
+            this.emblem_118.Name = "emblem_118";
+            this.emblem_118.Size = new System.Drawing.Size(64, 64);
+            this.emblem_118.TabIndex = 1;
+            this.emblem_118.CheckedChanged += new System.EventHandler(this.emblem_118_CheckedChanged);
+            // 
+            // emblem_110
+            // 
+            this.emblem_110.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_110.AutoSize = true;
+            this.emblem_110.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_110.Location = new System.Drawing.Point(288, 18);
+            this.emblem_110.Name = "emblem_110";
+            this.emblem_110.Size = new System.Drawing.Size(64, 64);
+            this.emblem_110.TabIndex = 2;
+            this.emblem_110.CheckedChanged += new System.EventHandler(this.emblem_110_CheckedChanged);
+            // 
+            // emblem_109
+            // 
+            this.emblem_109.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_109.AutoSize = true;
+            this.emblem_109.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_109.Location = new System.Drawing.Point(217, 18);
+            this.emblem_109.Name = "emblem_109";
+            this.emblem_109.Size = new System.Drawing.Size(64, 64);
+            this.emblem_109.TabIndex = 2;
+            this.emblem_109.CheckedChanged += new System.EventHandler(this.emblem_109_CheckedChanged);
+            // 
+            // emblem_108
+            // 
+            this.emblem_108.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_108.AutoSize = true;
+            this.emblem_108.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_108.Location = new System.Drawing.Point(146, 18);
+            this.emblem_108.Name = "emblem_108";
+            this.emblem_108.Size = new System.Drawing.Size(64, 64);
+            this.emblem_108.TabIndex = 2;
+            this.emblem_108.CheckedChanged += new System.EventHandler(this.emblem_108_CheckedChanged);
+            // 
+            // emblem_107
+            // 
+            this.emblem_107.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_107.AutoSize = true;
+            this.emblem_107.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_107.Location = new System.Drawing.Point(75, 18);
+            this.emblem_107.Name = "emblem_107";
+            this.emblem_107.Size = new System.Drawing.Size(64, 64);
+            this.emblem_107.TabIndex = 2;
+            this.emblem_107.CheckedChanged += new System.EventHandler(this.emblem_107_CheckedChanged);
+            // 
+            // emblem_106
+            // 
+            this.emblem_106.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.emblem_106.AutoSize = true;
+            this.emblem_106.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.emblem_106.Location = new System.Drawing.Point(4, 18);
+            this.emblem_106.Name = "emblem_106";
+            this.emblem_106.Size = new System.Drawing.Size(64, 64);
+            this.emblem_106.TabIndex = 1;
+            this.emblem_106.CheckedChanged += new System.EventHandler(this.emblem_106_CheckedChanged);
+            // 
+            // metal_stage_emblem_c
+            // 
+            this.metal_stage_emblem_c.AutoSize = true;
+            this.metal_stage_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.metal_stage_emblem_c.Location = new System.Drawing.Point(146, 33);
+            this.metal_stage_emblem_c.Name = "metal_stage_emblem_c";
+            this.metal_stage_emblem_c.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_c.TabIndex = 7;
+            this.metal_stage_emblem_c.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_c_CheckedChanged);
+            // 
+            // metal_stage_emblem_b
+            // 
+            this.metal_stage_emblem_b.AutoSize = true;
+            this.metal_stage_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.metal_stage_emblem_b.Location = new System.Drawing.Point(76, 33);
+            this.metal_stage_emblem_b.Name = "metal_stage_emblem_b";
+            this.metal_stage_emblem_b.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_b.TabIndex = 6;
+            this.metal_stage_emblem_b.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_b_CheckedChanged);
+            // 
+            // metal_stage_emblem_a
+            // 
+            this.metal_stage_emblem_a.AutoSize = true;
+            this.metal_stage_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.metal_stage_emblem_a.Location = new System.Drawing.Point(6, 33);
+            this.metal_stage_emblem_a.Name = "metal_stage_emblem_a";
+            this.metal_stage_emblem_a.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_a.TabIndex = 5;
+            this.metal_stage_emblem_a.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_a_CheckedChanged);
+            // 
+            // metal_level_time
+            // 
+            this.metal_level_time.AutoSize = true;
+            this.metal_level_time.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.metal_level_time.Centiseconds = 0;
+            circuitTime9.Centiseconds = ((byte)(0));
+            circuitTime9.Minutes = ((byte)(0));
+            circuitTime9.Seconds = ((byte)(0));
+            this.metal_level_time.CircuitTime = circuitTime9;
+            this.metal_level_time.Frames = ((uint)(0u));
+            levelTime10.Frames = ((byte)(0));
+            levelTime10.Minutes = ((byte)(0));
+            levelTime10.Seconds = ((byte)(0));
+            this.metal_level_time.LevelTime = levelTime10;
+            this.metal_level_time.Location = new System.Drawing.Point(63, 20);
+            this.metal_level_time.Margin = new System.Windows.Forms.Padding(0);
+            this.metal_level_time.Minutes = 0;
+            this.metal_level_time.Name = "metal_level_time";
+            this.metal_level_time.Seconds = 0;
+            this.metal_level_time.Size = new System.Drawing.Size(143, 26);
+            this.metal_level_time.TabIndex = 3;
+            this.metal_level_time.TimeSpan = System.TimeSpan.Parse("00:00:00");
+            this.metal_level_time.TotalCentiseconds = ((uint)(0u));
+            this.metal_level_time.TotalFrames = ((uint)(0u));
+            this.metal_level_time.ValueChanged += new System.EventHandler(this.metal_level_time_ValueChanged);
             // 
             // circuit_metal_time_1
             // 
@@ -3626,51 +3727,6 @@
             this.circuit_metal_lap_1.TotalFrames = ((uint)(14400u));
             this.circuit_metal_lap_1.ValueChanged += new System.EventHandler(this.circuit_metal_lap_1_ValueChanged);
             // 
-            // tabPage56
-            // 
-            this.tabPage56.AutoScroll = true;
-            this.tabPage56.Controls.Add(this.tableLayoutPanel15);
-            this.tabPage56.Location = new System.Drawing.Point(4, 22);
-            this.tabPage56.Name = "tabPage56";
-            this.tabPage56.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage56.Size = new System.Drawing.Size(534, 418);
-            this.tabPage56.TabIndex = 6;
-            this.tabPage56.Text = "Boss";
-            this.tabPage56.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel15
-            // 
-            this.tableLayoutPanel15.AutoSize = true;
-            this.tableLayoutPanel15.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel15.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.tableLayoutPanel15.ColumnCount = 1;
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel15.Controls.Add(this.label127, 0, 0);
-            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_3, 0, 3);
-            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_1, 0, 1);
-            this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_2, 0, 2);
-            this.tableLayoutPanel15.Location = new System.Drawing.Point(6, 6);
-            this.tableLayoutPanel15.Name = "tableLayoutPanel15";
-            this.tableLayoutPanel15.RowCount = 4;
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.Size = new System.Drawing.Size(151, 114);
-            this.tableLayoutPanel15.TabIndex = 0;
-            // 
-            // label127
-            // 
-            this.label127.AutoSize = true;
-            this.label127.BackColor = System.Drawing.SystemColors.Window;
-            this.label127.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label127.Location = new System.Drawing.Point(4, 1);
-            this.label127.Name = "label127";
-            this.label127.Size = new System.Drawing.Size(143, 13);
-            this.label127.TabIndex = 4;
-            this.label127.Text = "Best Times";
-            this.label127.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // boss_metal_sonic_time_3
             // 
             this.boss_metal_sonic_time_3.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -3749,35 +3805,7 @@
             this.boss_metal_sonic_time_2.TotalFrames = ((uint)(48600u));
             this.boss_metal_sonic_time_2.ValueChanged += new System.EventHandler(this.boss_metal_sonic_time_2_ValueChanged);
             // 
-            // tableLayoutPanel9
-            // 
-            this.tableLayoutPanel9.AutoSize = true;
-            this.tableLayoutPanel9.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel9.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.tableLayoutPanel9.ColumnCount = 8;
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel9.Location = new System.Drawing.Point(7, 7);
-            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.RowCount = 8;
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(9, 9);
-            this.tableLayoutPanel9.TabIndex = 0;
-            // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -3786,7 +3814,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Sonic Adventure Save File Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
