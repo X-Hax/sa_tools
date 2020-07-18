@@ -321,6 +321,7 @@ namespace SonicRetro.SAModel.DataExtractor
 						if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
 						new LandTable(file, (int)NumericUpDownAddress.Value, (uint)numericUpDownKey.Value, format) { Author = textBoxAuthor.Text, Description = textBoxDescription.Text }.SaveToFile(sd.FileName, outfmt);
+						if (comboBoxExportAs.SelectedIndex == 1) ConvertToStruct(sd.FileName);
 					}
 					break;
 				//Model
@@ -330,12 +331,9 @@ namespace SonicRetro.SAModel.DataExtractor
 					{
 						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownKey.Value, (ModelFormat)comboBoxFormat.SelectedIndex, null);
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxAuthor.Text, textBoxDescription.Text, null, (ModelFormat)comboBoxFormat.SelectedIndex);
+						if (comboBoxExportAs.SelectedIndex == 1) ConvertToStruct(sd.FileName);
 					}
 					break;
-			}
-			if (comboBoxExportAs.SelectedIndex == 1)
-			{
-				ConvertToStruct(sd.FileName);
 			}
 		}
 
