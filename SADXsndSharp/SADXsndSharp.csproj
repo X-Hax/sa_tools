@@ -103,6 +103,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MetalDX.ico" />
+    <None Include="Resources\tiles.png" />
+    <None Include="Resources\small.png" />
+    <None Include="Resources\saveas.png" />
+    <None Include="Resources\save.png" />
+    <None Include="Resources\open.png" />
+    <None Include="Resources\new.png" />
+    <None Include="Resources\large.png" />
+    <None Include="Resources\export.png" />
+    <None Include="Resources\details.png" />
+    <None Include="Resources\descending.png" />
+    <None Include="Resources\ascending.png" />
+    <None Include="Resources\add.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

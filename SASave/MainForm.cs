@@ -256,56 +256,56 @@ namespace SASave
 			events_unused.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_unused.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_unused.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_unused.EndUpdate();
 			events_general.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_general.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown", i == 65);
+				events_general.Items.Add(events.ContainsKey(i) ? events[i] : "Unused", i == 65);
 				i++;
 			}
 			events_general.EndUpdate();
 			events_sonic.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_sonic.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_sonic.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_sonic.EndUpdate();
 			events_tails.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_tails.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_tails.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_tails.EndUpdate();
 			events_knuckles.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_knuckles.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_knuckles.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_knuckles.EndUpdate();
 			events_amy.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_amy.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_amy.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_amy.EndUpdate();
 			events_gamma.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_gamma.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_gamma.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_gamma.EndUpdate();
 			events_big.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_big.Items.Add(events.ContainsKey(i) ? events[i] : "Unknown");
+				events_big.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
 				i++;
 			}
 			events_big.EndUpdate();

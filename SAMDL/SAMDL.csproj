@@ -183,7 +183,6 @@
     <None Include="Resources\nodecon.png" />
     <None Include="Resources\deletechild.png" />
     <None Include="Resources\addchild.png" />
-    <None Include="Resources\ico_samdl.ico" />
     <None Include="Resources\open.png" />
     <None Include="Resources\new.png" />
     <None Include="Resources\saveas.png" />
@@ -197,7 +196,6 @@
     <None Include="Resources\help.png" />
     <None Include="Resources\find.png" />
     <None Include="Resources\messages.png" />
-    <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

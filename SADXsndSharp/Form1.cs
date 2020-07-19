@@ -107,22 +107,25 @@ namespace SADXsndSharp
 				}
 
 				if (a.ShowDialog(this) == DialogResult.OK)
-					Directory.CreateDirectory(a.FileName);
-				string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
-				using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 				{
-					List<FENTRY> list = new List<FENTRY>(files);
-					list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
-					foreach (FENTRY item in list)
+					Directory.CreateDirectory(a.FileName);
+					string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
+					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
-						Text = $"SADXsndSharp - Saving item " + list.IndexOf(item) + " of " + files.Count.ToString() + ", please wait...";
-						sw.WriteLine(item.name);
-						File.WriteAllBytes(Path.Combine(dir, item.name), Compress.ProcessBuffer(item.file));
+						List<FENTRY> list = new List<FENTRY>(files);
+						list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
+						foreach (FENTRY item in list)
+						{
+							Text = $"SADXsndSharp - Saving item " + list.IndexOf(item) + " of " + files.Count.ToString() + ", please wait...";
+							sw.WriteLine(item.name);
+							File.WriteAllBytes(Path.Combine(dir, item.name), Compress.ProcessBuffer(item.file));
+						}
+						sw.Flush();
+						sw.Close();
 					}
-					sw.Flush();
-					sw.Close();
+					Text = "SADXsndSharp - " + Path.GetFileName(filename);
 				}
-				Text = "SADXsndSharp - " + Path.GetFileName(filename);
+				else return;
 			}
 		}
 

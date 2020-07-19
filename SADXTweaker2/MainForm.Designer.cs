@@ -58,8 +58,8 @@
             this.tileVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bugReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.chaoMessageFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuStrip1.SuspendLayout();
+			this.chaoMessageFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -87,28 +87,29 @@
             // 
             // openToolStripMenuItem
             // 
+            this.openToolStripMenuItem.Image = global::SADXTweaker2.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.openToolStripMenuItem.Text = "&Open...";
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // recentProjectsToolStripMenuItem
             // 
             this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
-            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.recentProjectsToolStripMenuItem.Text = "&Recent Projects";
+			this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.recentProjectsToolStripMenuItem.Text = "&Recent Projects";
             this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProjectsToolStripMenuItem_DropDownItemClicked);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // windowToolStripMenuItem
@@ -286,21 +287,22 @@
             // 
             // bugReportToolStripMenuItem
             // 
+            this.bugReportToolStripMenuItem.Image = global::SADXTweaker2.Properties.Resources.bug;
             this.bugReportToolStripMenuItem.Name = "bugReportToolStripMenuItem";
-            this.bugReportToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
-            this.bugReportToolStripMenuItem.Text = "&Bug Report...";
+			this.bugReportToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+			this.bugReportToolStripMenuItem.Text = "&Bug Report...";
             this.bugReportToolStripMenuItem.Click += new System.EventHandler(this.bugReportToolStripMenuItem_Click);
-            // 
-            // chaoMessageFileEditorToolStripMenuItem
-            // 
-            this.chaoMessageFileEditorToolStripMenuItem.Name = "chaoMessageFileEditorToolStripMenuItem";
-            this.chaoMessageFileEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.chaoMessageFileEditorToolStripMenuItem.Text = "Chao Message File Editor";
-            this.chaoMessageFileEditorToolStripMenuItem.Click += new System.EventHandler(this.chaoMessageFileEditorToolStripMenuItem_Click);
-            // 
-            // MainForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			// 
+			// chaoMessageFileEditorToolStripMenuItem
+			// 
+			this.chaoMessageFileEditorToolStripMenuItem.Name = "chaoMessageFileEditorToolStripMenuItem";
+			this.chaoMessageFileEditorToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+			this.chaoMessageFileEditorToolStripMenuItem.Text = "Chao Message File Editor";
+			this.chaoMessageFileEditorToolStripMenuItem.Click += new System.EventHandler(this.chaoMessageFileEditorToolStripMenuItem_Click);
+			// 
+			// MainForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 564);
             this.Controls.Add(this.menuStrip1);

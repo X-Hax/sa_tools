@@ -140,7 +140,6 @@
             this.adventure_unk2 = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.adventure_unk1 = new System.Windows.Forms.NumericUpDown();
-            this.lifeIcon = new System.Windows.Forms.PictureBox();
             this.adventure_levelact = new SASave.LevelActControl();
             this.adventure_emblem = new SASave.EmblemControl();
             this.adventure_tod = new SASave.TimeOfDayControl();
@@ -308,6 +307,7 @@
             this.boss_metal_sonic_time_1 = new SASave.TimeControl();
             this.boss_metal_sonic_time_2 = new SASave.TimeControl();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.lifeIcon = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -322,7 +322,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.adventure_entrance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).BeginInit();
             this.tabPage5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.level_score)).BeginInit();
@@ -395,6 +394,7 @@
             this.groupBox5.SuspendLayout();
             this.tabPage56.SuspendLayout();
             this.tableLayoutPanel15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -429,35 +429,36 @@
             this.newSlot1ToolStripMenuItem,
             this.newSlot2ToolStripMenuItem,
             this.newSlot3ToolStripMenuItem});
+            this.newToolStripMenuItem.Image = global::SASave.Properties.Resources._new;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem.Text = "&New";
             // 
             // newAllSlotsToolStripMenuItem
             // 
             this.newAllSlotsToolStripMenuItem.Name = "newAllSlotsToolStripMenuItem";
-            this.newAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newAllSlotsToolStripMenuItem.Text = "&All Slots";
             this.newAllSlotsToolStripMenuItem.Click += new System.EventHandler(this.newAllSlotsToolStripMenuItem_Click);
             // 
             // newSlot1ToolStripMenuItem
             // 
             this.newSlot1ToolStripMenuItem.Name = "newSlot1ToolStripMenuItem";
-            this.newSlot1ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot1ToolStripMenuItem.Text = "Slot &1";
             this.newSlot1ToolStripMenuItem.Click += new System.EventHandler(this.newSlot1ToolStripMenuItem_Click);
             // 
             // newSlot2ToolStripMenuItem
             // 
             this.newSlot2ToolStripMenuItem.Name = "newSlot2ToolStripMenuItem";
-            this.newSlot2ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot2ToolStripMenuItem.Text = "Slot &2";
             this.newSlot2ToolStripMenuItem.Click += new System.EventHandler(this.newSlot2ToolStripMenuItem_Click);
             // 
             // newSlot3ToolStripMenuItem
             // 
             this.newSlot3ToolStripMenuItem.Name = "newSlot3ToolStripMenuItem";
-            this.newSlot3ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.newSlot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newSlot3ToolStripMenuItem.Text = "Slot &3";
             this.newSlot3ToolStripMenuItem.Click += new System.EventHandler(this.newSlot3ToolStripMenuItem_Click);
             // 
@@ -468,35 +469,36 @@
             this.openSlot1ToolStripMenuItem,
             this.openSlot2ToolStripMenuItem,
             this.openSlot3ToolStripMenuItem});
+            this.openToolStripMenuItem.Image = global::SASave.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "&Open";
             // 
             // openAllSlotsToolStripMenuItem
             // 
             this.openAllSlotsToolStripMenuItem.Name = "openAllSlotsToolStripMenuItem";
-            this.openAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openAllSlotsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openAllSlotsToolStripMenuItem.Text = "&All Slots...";
             this.openAllSlotsToolStripMenuItem.Click += new System.EventHandler(this.openAllSlotsToolStripMenuItem_Click);
             // 
             // openSlot1ToolStripMenuItem
             // 
             this.openSlot1ToolStripMenuItem.Name = "openSlot1ToolStripMenuItem";
-            this.openSlot1ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot1ToolStripMenuItem.Text = "Slot &1...";
             this.openSlot1ToolStripMenuItem.Click += new System.EventHandler(this.openSlot1ToolStripMenuItem_Click);
             // 
             // openSlot2ToolStripMenuItem
             // 
             this.openSlot2ToolStripMenuItem.Name = "openSlot2ToolStripMenuItem";
-            this.openSlot2ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot2ToolStripMenuItem.Text = "Slot &2...";
             this.openSlot2ToolStripMenuItem.Click += new System.EventHandler(this.openSlot2ToolStripMenuItem_Click);
             // 
             // openSlot3ToolStripMenuItem
             // 
             this.openSlot3ToolStripMenuItem.Name = "openSlot3ToolStripMenuItem";
-            this.openSlot3ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.openSlot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openSlot3ToolStripMenuItem.Text = "Slot &3...";
             this.openSlot3ToolStripMenuItem.Click += new System.EventHandler(this.openSlot3ToolStripMenuItem_Click);
             // 
@@ -507,7 +509,7 @@
             this.slot2ToolStripMenuItem,
             this.slot3ToolStripMenuItem});
             this.slotToolStripMenuItem.Name = "slotToolStripMenuItem";
-            this.slotToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.slotToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slotToolStripMenuItem.Text = "S&lot";
             this.slotToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.slotToolStripMenuItem_DropDownItemClicked);
             // 
@@ -534,27 +536,29 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Enabled = false;
+            this.saveToolStripMenuItem.Image = global::SASave.Properties.Resources.save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
+            this.saveAsToolStripMenuItem.Image = global::SASave.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(120, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -575,6 +579,7 @@
             this.emblemsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.giveAllToolStripMenuItem,
             this.takeAllToolStripMenuItem});
+            this.emblemsToolStripMenuItem.Image = global::SASave.Properties.Resources.emblem;
             this.emblemsToolStripMenuItem.Name = "emblemsToolStripMenuItem";
             this.emblemsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.emblemsToolStripMenuItem.Text = "&Emblems";
@@ -582,14 +587,14 @@
             // giveAllToolStripMenuItem
             // 
             this.giveAllToolStripMenuItem.Name = "giveAllToolStripMenuItem";
-            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.giveAllToolStripMenuItem.Text = "&Give All";
             this.giveAllToolStripMenuItem.Click += new System.EventHandler(this.giveAllToolStripMenuItem_Click);
             // 
             // takeAllToolStripMenuItem
             // 
             this.takeAllToolStripMenuItem.Name = "takeAllToolStripMenuItem";
-            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.takeAllToolStripMenuItem.Text = "&Take All";
             this.takeAllToolStripMenuItem.Click += new System.EventHandler(this.takeAllToolStripMenuItem_Click);
             // 
@@ -605,14 +610,14 @@
             // checkAllToolStripMenuItem
             // 
             this.checkAllToolStripMenuItem.Name = "checkAllToolStripMenuItem";
-            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.checkAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.checkAllToolStripMenuItem.Text = "&Check All";
             this.checkAllToolStripMenuItem.Click += new System.EventHandler(this.checkAllToolStripMenuItem_Click);
             // 
             // uncheckAllToolStripMenuItem
             // 
             this.uncheckAllToolStripMenuItem.Name = "uncheckAllToolStripMenuItem";
-            this.uncheckAllToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.uncheckAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uncheckAllToolStripMenuItem.Text = "&Uncheck All";
             this.uncheckAllToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllToolStripMenuItem_Click);
             // 
@@ -628,14 +633,14 @@
             // checkAllToolStripMenuItem1
             // 
             this.checkAllToolStripMenuItem1.Name = "checkAllToolStripMenuItem1";
-            this.checkAllToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
+            this.checkAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.checkAllToolStripMenuItem1.Text = "&Check All";
             this.checkAllToolStripMenuItem1.Click += new System.EventHandler(this.checkAllToolStripMenuItem1_Click);
             // 
             // uncheckAllToolStripMenuItem1
             // 
             this.uncheckAllToolStripMenuItem1.Name = "uncheckAllToolStripMenuItem1";
-            this.uncheckAllToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
+            this.uncheckAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.uncheckAllToolStripMenuItem1.Text = "&Uncheck All";
             this.uncheckAllToolStripMenuItem1.Click += new System.EventHandler(this.uncheckAllToolStripMenuItem1_Click);
             // 
@@ -683,6 +688,7 @@
             this.metalSonicEmblemsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.giveAllToolStripMenuItem1,
             this.takeAllToolStripMenuItem1});
+            this.metalSonicEmblemsToolStripMenuItem.Image = global::SASave.Properties.Resources.metal_emblem;
             this.metalSonicEmblemsToolStripMenuItem.Name = "metalSonicEmblemsToolStripMenuItem";
             this.metalSonicEmblemsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.metalSonicEmblemsToolStripMenuItem.Text = "Metal Sonic Em&blems";
@@ -690,14 +696,14 @@
             // giveAllToolStripMenuItem1
             // 
             this.giveAllToolStripMenuItem1.Name = "giveAllToolStripMenuItem1";
-            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
+            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.giveAllToolStripMenuItem1.Text = "&Give All";
             this.giveAllToolStripMenuItem1.Click += new System.EventHandler(this.giveAllToolStripMenuItem1_Click);
             // 
             // takeAllToolStripMenuItem1
             // 
             this.takeAllToolStripMenuItem1.Name = "takeAllToolStripMenuItem1";
-            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
+            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.takeAllToolStripMenuItem1.Text = "&Take All";
             this.takeAllToolStripMenuItem1.Click += new System.EventHandler(this.takeAllToolStripMenuItem1_Click);
             // 
@@ -1088,10 +1094,10 @@
             this.tabPage4.Controls.Add(this.adventure_unk2);
             this.tabPage4.Controls.Add(this.label6);
             this.tabPage4.Controls.Add(this.adventure_unk1);
-            this.tabPage4.Controls.Add(this.lifeIcon);
             this.tabPage4.Controls.Add(this.adventure_levelact);
             this.tabPage4.Controls.Add(this.adventure_emblem);
             this.tabPage4.Controls.Add(this.adventure_tod);
+            this.tabPage4.Controls.Add(this.lifeIcon);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -1264,16 +1270,6 @@
             this.adventure_unk1.TabIndex = 6;
             this.adventure_unk1.ValueChanged += new System.EventHandler(this.adventure_unk1_ValueChanged);
             // 
-            // lifeIcon
-            // 
-            this.lifeIcon.Image = global::SASave.Properties.Resources.Sonic;
-            this.lifeIcon.Location = new System.Drawing.Point(6, 45);
-            this.lifeIcon.Name = "lifeIcon";
-            this.lifeIcon.Size = new System.Drawing.Size(32, 32);
-            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.lifeIcon.TabIndex = 0;
-            this.lifeIcon.TabStop = false;
-            // 
             // adventure_levelact
             // 
             this.adventure_levelact.Act = ((byte)(0));
@@ -1385,14 +1381,15 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(218, 84);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 66);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // label12
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 6);
+            this.label12.Location = new System.Drawing.Point(0, 3);
+            this.label12.Margin = new System.Windows.Forms.Padding(0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(63, 13);
             this.label12.TabIndex = 0;
@@ -1403,7 +1400,8 @@
             // 
             this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 64);
+            this.label13.Location = new System.Drawing.Point(0, 49);
+            this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(63, 13);
             this.label13.TabIndex = 1;
@@ -1414,7 +1412,8 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 35);
+            this.label14.Location = new System.Drawing.Point(0, 26);
+            this.label14.Margin = new System.Windows.Forms.Padding(0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(57, 13);
             this.label14.TabIndex = 2;
@@ -1426,7 +1425,8 @@
             this.level_timeweight.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.level_timeweight.AutoSize = true;
             this.level_timeweight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_timeweight.Location = new System.Drawing.Point(72, 29);
+            this.level_timeweight.Location = new System.Drawing.Point(63, 20);
+            this.level_timeweight.Margin = new System.Windows.Forms.Padding(0);
             this.level_timeweight.Mode = SASave.WeightControlModes.Time;
             this.level_timeweight.Name = "level_timeweight";
             this.level_timeweight.Size = new System.Drawing.Size(143, 26);
@@ -1446,7 +1446,8 @@
             // 
             // level_score
             // 
-            this.level_score.Location = new System.Drawing.Point(72, 3);
+            this.level_score.Location = new System.Drawing.Point(63, 0);
+            this.level_score.Margin = new System.Windows.Forms.Padding(0);
             this.level_score.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -1459,7 +1460,8 @@
             // 
             // level_rings
             // 
-            this.level_rings.Location = new System.Drawing.Point(72, 61);
+            this.level_rings.Location = new System.Drawing.Point(63, 46);
+            this.level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.level_rings.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -2644,7 +2646,7 @@
             this.tabPage31.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage31.Size = new System.Drawing.Size(554, 456);
             this.tabPage31.TabIndex = 0;
-            this.tabPage31.Text = "Unused?";
+            this.tabPage31.Text = "Unused";
             this.tabPage31.UseVisualStyleBackColor = true;
             // 
             // events_unused
@@ -2654,7 +2656,7 @@
             this.events_unused.FormattingEnabled = true;
             this.events_unused.Location = new System.Drawing.Point(3, 3);
             this.events_unused.Name = "events_unused";
-            this.events_unused.Size = new System.Drawing.Size(548, 439);
+            this.events_unused.Size = new System.Drawing.Size(548, 450);
             this.events_unused.TabIndex = 0;
             this.events_unused.ThreeDCheckBoxes = true;
             this.events_unused.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_unused_ItemCheck);
@@ -2678,7 +2680,7 @@
             this.events_general.FormattingEnabled = true;
             this.events_general.Location = new System.Drawing.Point(3, 3);
             this.events_general.Name = "events_general";
-            this.events_general.Size = new System.Drawing.Size(548, 439);
+            this.events_general.Size = new System.Drawing.Size(548, 450);
             this.events_general.TabIndex = 1;
             this.events_general.ThreeDCheckBoxes = true;
             this.events_general.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_general_ItemCheck);
@@ -2702,7 +2704,7 @@
             this.events_sonic.FormattingEnabled = true;
             this.events_sonic.Location = new System.Drawing.Point(3, 3);
             this.events_sonic.Name = "events_sonic";
-            this.events_sonic.Size = new System.Drawing.Size(548, 439);
+            this.events_sonic.Size = new System.Drawing.Size(548, 450);
             this.events_sonic.TabIndex = 1;
             this.events_sonic.ThreeDCheckBoxes = true;
             this.events_sonic.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_sonic_ItemCheck);
@@ -2726,7 +2728,7 @@
             this.events_tails.FormattingEnabled = true;
             this.events_tails.Location = new System.Drawing.Point(3, 3);
             this.events_tails.Name = "events_tails";
-            this.events_tails.Size = new System.Drawing.Size(548, 439);
+            this.events_tails.Size = new System.Drawing.Size(548, 450);
             this.events_tails.TabIndex = 1;
             this.events_tails.ThreeDCheckBoxes = true;
             this.events_tails.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_tails_ItemCheck);
@@ -2750,7 +2752,7 @@
             this.events_knuckles.FormattingEnabled = true;
             this.events_knuckles.Location = new System.Drawing.Point(3, 3);
             this.events_knuckles.Name = "events_knuckles";
-            this.events_knuckles.Size = new System.Drawing.Size(548, 439);
+            this.events_knuckles.Size = new System.Drawing.Size(548, 450);
             this.events_knuckles.TabIndex = 1;
             this.events_knuckles.ThreeDCheckBoxes = true;
             this.events_knuckles.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_knuckles_ItemCheck);
@@ -2774,7 +2776,7 @@
             this.events_amy.FormattingEnabled = true;
             this.events_amy.Location = new System.Drawing.Point(3, 3);
             this.events_amy.Name = "events_amy";
-            this.events_amy.Size = new System.Drawing.Size(548, 439);
+            this.events_amy.Size = new System.Drawing.Size(548, 450);
             this.events_amy.TabIndex = 1;
             this.events_amy.ThreeDCheckBoxes = true;
             this.events_amy.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_amy_ItemCheck);
@@ -2798,7 +2800,7 @@
             this.events_gamma.FormattingEnabled = true;
             this.events_gamma.Location = new System.Drawing.Point(3, 3);
             this.events_gamma.Name = "events_gamma";
-            this.events_gamma.Size = new System.Drawing.Size(548, 439);
+            this.events_gamma.Size = new System.Drawing.Size(548, 450);
             this.events_gamma.TabIndex = 1;
             this.events_gamma.ThreeDCheckBoxes = true;
             this.events_gamma.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_gamma_ItemCheck);
@@ -2822,7 +2824,7 @@
             this.events_big.FormattingEnabled = true;
             this.events_big.Location = new System.Drawing.Point(3, 3);
             this.events_big.Name = "events_big";
-            this.events_big.Size = new System.Drawing.Size(548, 439);
+            this.events_big.Size = new System.Drawing.Size(548, 450);
             this.events_big.TabIndex = 1;
             this.events_big.ThreeDCheckBoxes = true;
             this.events_big.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_big_ItemCheck);
@@ -2846,7 +2848,7 @@
             this.npcs.FormattingEnabled = true;
             this.npcs.Location = new System.Drawing.Point(3, 3);
             this.npcs.Name = "npcs";
-            this.npcs.Size = new System.Drawing.Size(562, 469);
+            this.npcs.Size = new System.Drawing.Size(562, 482);
             this.npcs.TabIndex = 1;
             this.npcs.ThreeDCheckBoxes = true;
             this.npcs.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.npcs_ItemCheck);
@@ -3060,6 +3062,7 @@
             // tabPage48
             // 
             this.tabPage48.AutoScroll = true;
+            this.tabPage48.BackColor = System.Drawing.Color.Transparent;
             this.tabPage48.Controls.Add(this.metal_stage_emblem_c);
             this.tabPage48.Controls.Add(this.metal_stage_emblem_b);
             this.tabPage48.Controls.Add(this.metal_stage_emblem_a);
@@ -3117,6 +3120,9 @@
             // 
             // tableLayoutPanel2
             // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel2.ColumnCount = 2;
@@ -3129,19 +3135,21 @@
             this.tableLayoutPanel2.Controls.Add(this.metal_level_score, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.metal_level_rings, 1, 2);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 103);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(218, 84);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(206, 66);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
             // label15
             // 
             this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(3, 6);
+            this.label15.Location = new System.Drawing.Point(0, 3);
+            this.label15.Margin = new System.Windows.Forms.Padding(0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(63, 13);
             this.label15.TabIndex = 0;
@@ -3152,7 +3160,8 @@
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 64);
+            this.label16.Location = new System.Drawing.Point(0, 49);
+            this.label16.Margin = new System.Windows.Forms.Padding(0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(63, 13);
             this.label16.TabIndex = 1;
@@ -3163,7 +3172,8 @@
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 35);
+            this.label17.Location = new System.Drawing.Point(3, 26);
+            this.label17.Margin = new System.Windows.Forms.Padding(0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(57, 13);
             this.label17.TabIndex = 2;
@@ -3184,7 +3194,8 @@
             levelTime10.Minutes = ((byte)(0));
             levelTime10.Seconds = ((byte)(0));
             this.metal_level_time.LevelTime = levelTime10;
-            this.metal_level_time.Location = new System.Drawing.Point(72, 29);
+            this.metal_level_time.Location = new System.Drawing.Point(63, 20);
+            this.metal_level_time.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_time.Minutes = 0;
             this.metal_level_time.Name = "metal_level_time";
             this.metal_level_time.Seconds = 0;
@@ -3197,7 +3208,8 @@
             // 
             // metal_level_score
             // 
-            this.metal_level_score.Location = new System.Drawing.Point(72, 3);
+            this.metal_level_score.Location = new System.Drawing.Point(63, 0);
+            this.metal_level_score.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_score.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3210,7 +3222,8 @@
             // 
             // metal_level_rings
             // 
-            this.metal_level_rings.Location = new System.Drawing.Point(72, 61);
+            this.metal_level_rings.Location = new System.Drawing.Point(63, 46);
+            this.metal_level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_rings.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -3260,6 +3273,9 @@
             // 
             // tableLayoutPanel12
             // 
+            this.tableLayoutPanel12.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel12.AutoSize = true;
             this.tableLayoutPanel12.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel12.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
@@ -3276,13 +3292,14 @@
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(93, 96);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(87, 78);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // icecap_metal_sonic_score_3
             // 
             this.icecap_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(4, 72);
+            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.icecap_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3301,7 +3318,8 @@
             // icecap_metal_sonic_score_2
             // 
             this.icecap_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(4, 45);
+            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.icecap_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3320,7 +3338,8 @@
             // icecap_metal_sonic_score_1
             // 
             this.icecap_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(4, 18);
+            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.icecap_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3341,7 +3360,8 @@
             this.label117.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label117.AutoSize = true;
             this.label117.BackColor = System.Drawing.SystemColors.Window;
-            this.label117.Location = new System.Drawing.Point(14, 1);
+            this.label117.Location = new System.Drawing.Point(11, 1);
+            this.label117.Margin = new System.Windows.Forms.Padding(0);
             this.label117.Name = "label117";
             this.label117.Size = new System.Drawing.Size(65, 13);
             this.label117.TabIndex = 4;
@@ -3378,13 +3398,14 @@
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(93, 96);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(87, 78);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // sandhill_metal_sonic_score_3
             // 
             this.sandhill_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(4, 72);
+            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.sandhill_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3403,7 +3424,8 @@
             // sandhill_metal_sonic_score_2
             // 
             this.sandhill_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(4, 45);
+            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.sandhill_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3422,7 +3444,8 @@
             // sandhill_metal_sonic_score_1
             // 
             this.sandhill_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(4, 18);
+            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.sandhill_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -3443,7 +3466,8 @@
             this.label120.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label120.AutoSize = true;
             this.label120.BackColor = System.Drawing.SystemColors.Window;
-            this.label120.Location = new System.Drawing.Point(14, 1);
+            this.label120.Location = new System.Drawing.Point(11, 1);
+            this.label120.Margin = new System.Windows.Forms.Padding(0);
             this.label120.Name = "label120";
             this.label120.Size = new System.Drawing.Size(65, 13);
             this.label120.TabIndex = 4;
@@ -3777,7 +3801,17 @@
             this.tableLayoutPanel9.Size = new System.Drawing.Size(9, 9);
             this.tableLayoutPanel9.TabIndex = 0;
             // 
-            // Form1
+            // lifeIcon
+            // 
+            this.lifeIcon.Image = global::SASave.Properties.Resources.Sonic;
+            this.lifeIcon.Location = new System.Drawing.Point(6, 45);
+            this.lifeIcon.Name = "lifeIcon";
+            this.lifeIcon.Size = new System.Drawing.Size(32, 32);
+            this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.lifeIcon.TabIndex = 0;
+            this.lifeIcon.TabStop = false;
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -3786,7 +3820,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Sonic Adventure Save File Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -3809,7 +3843,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.adventure_entrance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.adventure_unk1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -3908,6 +3941,7 @@
             this.tabPage56.PerformLayout();
             this.tableLayoutPanel15.ResumeLayout(false);
             this.tableLayoutPanel15.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lifeIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
