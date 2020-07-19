@@ -182,13 +182,28 @@ namespace SonicRetro.SAModel.SAMDL
 					case DialogResult.Cancel:
 						return;
 				}
-			using (OpenFileDialog a = new OpenFileDialog()
+			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
 				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
-			})
-				if (a.ShowDialog(this) == DialogResult.OK)
+			};
+			goto loadfiledlg;
+		loadfiledlg:
+			DialogResult result = a.ShowDialog(this);
+			if (result == DialogResult.OK)
+			{
+				try
+				{
 					LoadFile(a.FileName);
+				}
+				catch (Exception ex)
+				{
+					log.Add(ex.ToString() + "\n");
+					log.WriteLog();
+					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", ex.ToString());
+					if (report.ShowDialog() == DialogResult.Cancel)	goto loadfiledlg;
+				}
+			}
 		}
 
 		public static readonly string[] SA2BMDLFiles =

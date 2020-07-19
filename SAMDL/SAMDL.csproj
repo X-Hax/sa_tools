@@ -84,6 +84,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModelLoadError.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelLoadError.designer.cs">
+      <DependentUpon>ModelLoadError.cs</DependentUpon>
+    </Compile>
     <Compile Include="DefaultActionList.cs" />
     <Compile Include="FindDialog.cs">
       <SubType>Form</SubType>
@@ -148,6 +154,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ModelLoadError.resx">
+      <DependentUpon>ModelLoadError.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FindDialog.resx">
       <DependentUpon>FindDialog.cs</DependentUpon>
     </EmbeddedResource>
