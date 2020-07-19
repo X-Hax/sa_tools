@@ -198,9 +198,9 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				catch (Exception ex)
 				{
-					log.Add(ex.ToString() + "\n");
+					log.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
 					log.WriteLog();
-					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", ex.ToString());
 					if (report.ShowDialog() == DialogResult.Cancel)	goto loadfiledlg;
 				}
 			}
@@ -420,6 +420,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					if (modelinfo.RadioButton_Binary.Checked)
 					{
+						log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
 						LoadBinFile(file);
 					}
 					else
