@@ -9,8 +9,8 @@ namespace ProjectManager
 {
 	static class Program
 	{
-		private static ProjectManagerSettings settings;
-		public static ProjectManagerSettings Settings { get { return settings; } } 
+		private static ProjectManagement.ProjectSettings settings;
+		public static ProjectManagement.ProjectSettings Settings { get { return settings; } } 
 
 		private static void PrintHelp()
 		{
@@ -68,7 +68,7 @@ namespace ProjectManager
 			ProjectManager projectSelect;
 
 			//Properties.Settings.Default.Upgrade();
-			settings = ProjectManagerSettings.Load();
+			settings = ProjectManagement.ProjectSettings.Load();
 
 			StartupArgs startupArgs = new StartupArgs();
 			startupArgs.mode = CLIMode.None;

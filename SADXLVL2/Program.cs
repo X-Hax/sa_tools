@@ -38,7 +38,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			projectManagerPath = Path.GetFullPath(projectManagerPath); // cleaning up path.
 
-			ProjectManager.ProjectManagerSettings settings = ProjectManager.ProjectManagerSettings.Load(projectManagerPath);
+			ProjectManagement.ProjectSettings settings = ProjectManagement.ProjectSettings.Load(projectManagerPath);
 
 			string sadxGamePathInvalidReason = "";
 

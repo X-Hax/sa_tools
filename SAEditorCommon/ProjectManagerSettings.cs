@@ -3,12 +3,12 @@ using System.Windows.Forms;
 
 using SA_Tools;
 
-namespace ProjectManager
+namespace ProjectManagement
 {
 	/// <summary>
 	/// Holds settings necessary for the project manager.
 	/// </summary>
-	public class ProjectManagerSettings
+	public class ProjectSettings
 	{
 		public string SADXPCPath { get; set; }
 		public string SA2PCPath { get; set; }
@@ -18,15 +18,15 @@ namespace ProjectManager
 			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
 		}
 
-		public static ProjectManagerSettings Load(string iniPath)
+		public static ProjectSettings Load(string iniPath)
 		{
 			if (File.Exists(iniPath))
 			{
-				return (ProjectManagerSettings)IniSerializer.Deserialize(typeof(ProjectManagerSettings), iniPath);
+				return (ProjectSettings)IniSerializer.Deserialize(typeof(ProjectSettings), iniPath);
 			}
 			else
 			{
-				ProjectManagerSettings result = new ProjectManagerSettings()
+				ProjectSettings result = new ProjectSettings()
 				{
 					SA2PCPath = "",
 					SADXPCPath = ""
@@ -93,7 +93,7 @@ namespace ProjectManager
 			}
 		}
 
-		public static ProjectManagerSettings Load()
+		public static ProjectSettings Load()
 		{
 			return Load(GetSettingsPath());
 		}
