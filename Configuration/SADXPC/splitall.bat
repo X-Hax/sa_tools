@@ -1,4 +1,4 @@
-call splitSADX.bat
+call splitsonic.bat
 call splitadv00models.bat
 call splitadv01cmodels.bat
 call splitadv01models.bat

@@ -35,7 +35,7 @@ namespace ProjectManager
 
 		SplitData[] sadxpcsplits = new SplitData[]
 		{
-			new SplitData() { dataFile="sonic.exe", iniFile = "splitSADX.ini" },
+			new SplitData() { dataFile="sonic.exe", iniFile = "sonic.ini" },
 			new SplitData() { dataFile="system/ADV00MODELS.DLL", iniFile = "adv00models.ini" },
 			new SplitData() { dataFile="system/ADV01CMODELS.DLL", iniFile = "adv01cmodels.ini" },
 			new SplitData() { dataFile="system/ADV01MODELS.DLL", iniFile = "adv01models.ini" },
