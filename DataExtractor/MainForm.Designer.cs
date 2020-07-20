@@ -53,11 +53,22 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.buttonConvert = new System.Windows.Forms.Button();
-            this.checkBoxSameOutputFolder = new System.Windows.Forms.CheckBox();
+            this.buttonRemoveAllBatch = new System.Windows.Forms.Button();
+            this.buttonRemoveSelBatch = new System.Windows.Forms.Button();
+            this.buttonConvertBatch = new System.Windows.Forms.Button();
+            this.checkBoxSameOutputFolderBatch = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.buttonAdd = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.buttonAddBatch = new System.Windows.Forms.Button();
+            this.listBoxStructConverter = new System.Windows.Forms.ListBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.buttonClearAllSplit = new System.Windows.Forms.Button();
+            this.buttonRemoveSplit = new System.Windows.Forms.Button();
+            this.comboBoxGameSelect = new System.Windows.Forms.ComboBox();
+            this.buttonSplit = new System.Windows.Forms.Button();
+            this.checkBoxSameFolderSplit = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button_AddFilesSplit = new System.Windows.Forms.Button();
+            this.listBox_SplitFiles = new System.Windows.Forms.ListBox();
             this.fileSelector1 = new SonicRetro.SAModel.DataExtractor.FileSelector();
             this.groupBoxBinary.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).BeginInit();
@@ -65,16 +76,18 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonExtract
             // 
-            this.buttonExtract.Location = new System.Drawing.Point(262, 359);
+            this.buttonExtract.Enabled = false;
+            this.buttonExtract.Location = new System.Drawing.Point(354, 360);
             this.buttonExtract.Name = "buttonExtract";
             this.buttonExtract.Size = new System.Drawing.Size(67, 23);
             this.buttonExtract.TabIndex = 18;
-            this.buttonExtract.Text = "Extract";
+            this.buttonExtract.Text = "&Extract";
             this.buttonExtract.Click += new System.EventHandler(this.button1_Click);
             // 
             // comboBoxFormat
@@ -164,7 +177,7 @@
             // 
             this.textBoxAuthor.Location = new System.Drawing.Point(74, 233);
             this.textBoxAuthor.Name = "textBoxAuthor";
-            this.textBoxAuthor.Size = new System.Drawing.Size(255, 20);
+            this.textBoxAuthor.Size = new System.Drawing.Size(346, 20);
             this.textBoxAuthor.TabIndex = 29;
             // 
             // label5
@@ -183,7 +196,7 @@
             this.textBoxDescription.Location = new System.Drawing.Point(75, 263);
             this.textBoxDescription.Multiline = true;
             this.textBoxDescription.Name = "textBoxDescription";
-            this.textBoxDescription.Size = new System.Drawing.Size(254, 85);
+            this.textBoxDescription.Size = new System.Drawing.Size(345, 85);
             this.textBoxDescription.TabIndex = 31;
             // 
             // checkBoxBigEndian
@@ -222,9 +235,9 @@
             this.checkBoxMemory.AutoSize = true;
             this.checkBoxMemory.Location = new System.Drawing.Point(228, 48);
             this.checkBoxMemory.Name = "checkBoxMemory";
-            this.checkBoxMemory.Size = new System.Drawing.Size(63, 17);
+            this.checkBoxMemory.Size = new System.Drawing.Size(103, 17);
             this.checkBoxMemory.TabIndex = 35;
-            this.checkBoxMemory.Text = "Memory";
+            this.checkBoxMemory.Text = "Memory address";
             this.checkBoxMemory.UseVisualStyleBackColor = true;
             // 
             // labelFile
@@ -254,7 +267,7 @@
             "SA Tools file + C structs"});
             this.comboBoxExportAs.Location = new System.Drawing.Point(74, 361);
             this.comboBoxExportAs.Name = "comboBoxExportAs";
-            this.comboBoxExportAs.Size = new System.Drawing.Size(158, 21);
+            this.comboBoxExportAs.Size = new System.Drawing.Size(264, 21);
             this.comboBoxExportAs.TabIndex = 38;
             // 
             // groupBoxBinary
@@ -273,7 +286,7 @@
             this.groupBoxBinary.Controls.Add(this.labelFormat);
             this.groupBoxBinary.Location = new System.Drawing.Point(11, 73);
             this.groupBoxBinary.Name = "groupBoxBinary";
-            this.groupBoxBinary.Size = new System.Drawing.Size(318, 147);
+            this.groupBoxBinary.Size = new System.Drawing.Size(409, 147);
             this.groupBoxBinary.TabIndex = 39;
             this.groupBoxBinary.TabStop = false;
             this.groupBoxBinary.Text = "Binary Data";
@@ -298,12 +311,13 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(349, 414);
+            this.tabControl1.Size = new System.Drawing.Size(437, 423);
             this.tabControl1.TabIndex = 40;
             // 
             // tabPage1
@@ -323,7 +337,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(341, 388);
+            this.tabPage1.Size = new System.Drawing.Size(429, 397);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Data Extractor";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -340,41 +354,65 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.buttonConvert);
-            this.tabPage2.Controls.Add(this.checkBoxSameOutputFolder);
+            this.tabPage2.Controls.Add(this.buttonRemoveAllBatch);
+            this.tabPage2.Controls.Add(this.buttonRemoveSelBatch);
+            this.tabPage2.Controls.Add(this.buttonConvertBatch);
+            this.tabPage2.Controls.Add(this.checkBoxSameOutputFolderBatch);
             this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.buttonAdd);
-            this.tabPage2.Controls.Add(this.listBox1);
+            this.tabPage2.Controls.Add(this.buttonAddBatch);
+            this.tabPage2.Controls.Add(this.listBoxStructConverter);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(341, 388);
+            this.tabPage2.Size = new System.Drawing.Size(429, 397);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Batch Converter";
+            this.tabPage2.Text = "Struct Converter";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // buttonConvert
+            // buttonRemoveAllBatch
             // 
-            this.buttonConvert.Location = new System.Drawing.Point(269, 360);
-            this.buttonConvert.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonConvert.Name = "buttonConvert";
-            this.buttonConvert.Size = new System.Drawing.Size(69, 25);
-            this.buttonConvert.TabIndex = 43;
-            this.buttonConvert.Text = "Convert";
-            this.buttonConvert.UseVisualStyleBackColor = true;
-            this.buttonConvert.Click += new System.EventHandler(this.buttonConvert_Click);
+            this.buttonRemoveAllBatch.Location = new System.Drawing.Point(342, 95);
+            this.buttonRemoveAllBatch.Name = "buttonRemoveAllBatch";
+            this.buttonRemoveAllBatch.Size = new System.Drawing.Size(80, 23);
+            this.buttonRemoveAllBatch.TabIndex = 45;
+            this.buttonRemoveAllBatch.Text = "Clear all";
+            this.buttonRemoveAllBatch.UseVisualStyleBackColor = true;
+            this.buttonRemoveAllBatch.Click += new System.EventHandler(this.buttonRemoveAllBatch_Click);
             // 
-            // checkBoxSameOutputFolder
+            // buttonRemoveSelBatch
             // 
-            this.checkBoxSameOutputFolder.AutoSize = true;
-            this.checkBoxSameOutputFolder.Location = new System.Drawing.Point(11, 332);
-            this.checkBoxSameOutputFolder.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBoxSameOutputFolder.Name = "checkBoxSameOutputFolder";
-            this.checkBoxSameOutputFolder.Size = new System.Drawing.Size(191, 17);
-            this.checkBoxSameOutputFolder.TabIndex = 42;
-            this.checkBoxSameOutputFolder.Text = "Same output folder as source file(s)";
-            this.checkBoxSameOutputFolder.UseVisualStyleBackColor = true;
+            this.buttonRemoveSelBatch.Enabled = false;
+            this.buttonRemoveSelBatch.Location = new System.Drawing.Point(342, 66);
+            this.buttonRemoveSelBatch.Name = "buttonRemoveSelBatch";
+            this.buttonRemoveSelBatch.Size = new System.Drawing.Size(80, 23);
+            this.buttonRemoveSelBatch.TabIndex = 44;
+            this.buttonRemoveSelBatch.Text = "&Remove";
+            this.buttonRemoveSelBatch.UseVisualStyleBackColor = true;
+            this.buttonRemoveSelBatch.Click += new System.EventHandler(this.buttonRemoveSelBatch_Click);
+            // 
+            // buttonConvertBatch
+            // 
+            this.buttonConvertBatch.Enabled = false;
+            this.buttonConvertBatch.Location = new System.Drawing.Point(342, 301);
+            this.buttonConvertBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonConvertBatch.Name = "buttonConvertBatch";
+            this.buttonConvertBatch.Size = new System.Drawing.Size(80, 25);
+            this.buttonConvertBatch.TabIndex = 43;
+            this.buttonConvertBatch.Text = "&Convert";
+            this.buttonConvertBatch.UseVisualStyleBackColor = true;
+            this.buttonConvertBatch.Click += new System.EventHandler(this.buttonConvert_Click);
+            // 
+            // checkBoxSameOutputFolderBatch
+            // 
+            this.checkBoxSameOutputFolderBatch.AutoSize = true;
+            this.checkBoxSameOutputFolderBatch.Location = new System.Drawing.Point(11, 332);
+            this.checkBoxSameOutputFolderBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxSameOutputFolderBatch.Name = "checkBoxSameOutputFolderBatch";
+            this.checkBoxSameOutputFolderBatch.Size = new System.Drawing.Size(191, 17);
+            this.checkBoxSameOutputFolderBatch.TabIndex = 42;
+            this.checkBoxSameOutputFolderBatch.Text = "Same output folder as source file(s)";
+            this.checkBoxSameOutputFolderBatch.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
@@ -386,25 +424,146 @@
             this.label2.TabIndex = 41;
             this.label2.Text = "Batch export level, model and animation files to C structs.";
             // 
-            // buttonAdd
+            // buttonAddBatch
             // 
-            this.buttonAdd.Location = new System.Drawing.Point(269, 331);
-            this.buttonAdd.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonAdd.Name = "buttonAdd";
-            this.buttonAdd.Size = new System.Drawing.Size(69, 25);
-            this.buttonAdd.TabIndex = 1;
-            this.buttonAdd.Text = "Add files...";
-            this.buttonAdd.UseVisualStyleBackColor = true;
-            this.buttonAdd.Click += new System.EventHandler(this.button1_Click_1);
+            this.buttonAddBatch.Location = new System.Drawing.Point(342, 36);
+            this.buttonAddBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAddBatch.Name = "buttonAddBatch";
+            this.buttonAddBatch.Size = new System.Drawing.Size(80, 25);
+            this.buttonAddBatch.TabIndex = 1;
+            this.buttonAddBatch.Text = "&Add...";
+            this.buttonAddBatch.UseVisualStyleBackColor = true;
+            this.buttonAddBatch.Click += new System.EventHandler(this.button1_Click_1);
             // 
-            // listBox1
+            // listBoxStructConverter
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(8, 36);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(329, 290);
-            this.listBox1.TabIndex = 0;
+            this.listBoxStructConverter.AllowDrop = true;
+            this.listBoxStructConverter.FormattingEnabled = true;
+            this.listBoxStructConverter.HorizontalScrollbar = true;
+            this.listBoxStructConverter.Location = new System.Drawing.Point(8, 36);
+            this.listBoxStructConverter.Margin = new System.Windows.Forms.Padding(2);
+            this.listBoxStructConverter.Name = "listBoxStructConverter";
+            this.listBoxStructConverter.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBoxStructConverter.Size = new System.Drawing.Size(330, 290);
+            this.listBoxStructConverter.TabIndex = 0;
+            this.listBoxStructConverter.SelectedIndexChanged += new System.EventHandler(this.listBoxStructConverter_SelectedIndexChanged);
+            this.listBoxStructConverter.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxStructConverter_DragDrop);
+            this.listBoxStructConverter.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBoxStructConverter_DragEnter);
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.buttonClearAllSplit);
+            this.tabPage3.Controls.Add(this.buttonRemoveSplit);
+            this.tabPage3.Controls.Add(this.comboBoxGameSelect);
+            this.tabPage3.Controls.Add(this.buttonSplit);
+            this.tabPage3.Controls.Add(this.checkBoxSameFolderSplit);
+            this.tabPage3.Controls.Add(this.label3);
+            this.tabPage3.Controls.Add(this.button_AddFilesSplit);
+            this.tabPage3.Controls.Add(this.listBox_SplitFiles);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(429, 397);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Split";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // buttonClearAllSplit
+            // 
+            this.buttonClearAllSplit.Location = new System.Drawing.Point(342, 120);
+            this.buttonClearAllSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonClearAllSplit.Name = "buttonClearAllSplit";
+            this.buttonClearAllSplit.Size = new System.Drawing.Size(80, 25);
+            this.buttonClearAllSplit.TabIndex = 51;
+            this.buttonClearAllSplit.Text = "Clear &all";
+            this.buttonClearAllSplit.UseVisualStyleBackColor = true;
+            this.buttonClearAllSplit.Click += new System.EventHandler(this.buttonClearAllSplit_Click);
+            // 
+            // buttonRemoveSplit
+            // 
+            this.buttonRemoveSplit.Enabled = false;
+            this.buttonRemoveSplit.Location = new System.Drawing.Point(342, 91);
+            this.buttonRemoveSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonRemoveSplit.Name = "buttonRemoveSplit";
+            this.buttonRemoveSplit.Size = new System.Drawing.Size(80, 25);
+            this.buttonRemoveSplit.TabIndex = 50;
+            this.buttonRemoveSplit.Text = "&Remove";
+            this.buttonRemoveSplit.UseVisualStyleBackColor = true;
+            this.buttonRemoveSplit.Click += new System.EventHandler(this.buttonRemoveSplit_Click);
+            // 
+            // comboBoxGameSelect
+            // 
+            this.comboBoxGameSelect.FormattingEnabled = true;
+            this.comboBoxGameSelect.Items.AddRange(new object[] {
+            "SA1 (Dreamcast)",
+            "SA1 Autodemo",
+            "SADX (PC)",
+            "SA2 (Dreamcast)",
+            "SA2: The Trial (Dreamcast)",
+            "SA2 (PC)"});
+            this.comboBoxGameSelect.Location = new System.Drawing.Point(7, 32);
+            this.comboBoxGameSelect.Name = "comboBoxGameSelect";
+            this.comboBoxGameSelect.Size = new System.Drawing.Size(183, 21);
+            this.comboBoxGameSelect.TabIndex = 49;
+            this.comboBoxGameSelect.SelectedIndexChanged += new System.EventHandler(this.comboBoxGameSelect_SelectedIndexChanged);
+            // 
+            // buttonSplit
+            // 
+            this.buttonSplit.Enabled = false;
+            this.buttonSplit.Location = new System.Drawing.Point(342, 301);
+            this.buttonSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSplit.Name = "buttonSplit";
+            this.buttonSplit.Size = new System.Drawing.Size(80, 25);
+            this.buttonSplit.TabIndex = 48;
+            this.buttonSplit.Text = "&Split";
+            this.buttonSplit.UseVisualStyleBackColor = true;
+            this.buttonSplit.Click += new System.EventHandler(this.buttonSplit_Click);
+            // 
+            // checkBoxSameFolderSplit
+            // 
+            this.checkBoxSameFolderSplit.AutoSize = true;
+            this.checkBoxSameFolderSplit.Location = new System.Drawing.Point(11, 332);
+            this.checkBoxSameFolderSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxSameFolderSplit.Name = "checkBoxSameFolderSplit";
+            this.checkBoxSameFolderSplit.Size = new System.Drawing.Size(191, 17);
+            this.checkBoxSameFolderSplit.TabIndex = 47;
+            this.checkBoxSameFolderSplit.Text = "Same output folder as source file(s)";
+            this.checkBoxSameFolderSplit.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(5, 12);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(280, 13);
+            this.label3.TabIndex = 46;
+            this.label3.Text = "Split binary files using data mapping for a supported game.";
+            // 
+            // button_AddFilesSplit
+            // 
+            this.button_AddFilesSplit.Location = new System.Drawing.Point(342, 62);
+            this.button_AddFilesSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.button_AddFilesSplit.Name = "button_AddFilesSplit";
+            this.button_AddFilesSplit.Size = new System.Drawing.Size(80, 25);
+            this.button_AddFilesSplit.TabIndex = 45;
+            this.button_AddFilesSplit.Text = "&Add...";
+            this.button_AddFilesSplit.UseVisualStyleBackColor = true;
+            this.button_AddFilesSplit.Click += new System.EventHandler(this.button_AddFilesSplit_Click);
+            // 
+            // listBox_SplitFiles
+            // 
+            this.listBox_SplitFiles.AllowDrop = true;
+            this.listBox_SplitFiles.FormattingEnabled = true;
+            this.listBox_SplitFiles.HorizontalScrollbar = true;
+            this.listBox_SplitFiles.Location = new System.Drawing.Point(8, 62);
+            this.listBox_SplitFiles.Margin = new System.Windows.Forms.Padding(2);
+            this.listBox_SplitFiles.Name = "listBox_SplitFiles";
+            this.listBox_SplitFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBox_SplitFiles.Size = new System.Drawing.Size(330, 264);
+            this.listBox_SplitFiles.TabIndex = 44;
+            this.listBox_SplitFiles.SelectedIndexChanged += new System.EventHandler(this.listBox_SplitFiles_SelectedIndexChanged);
+            this.listBox_SplitFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragDrop);
+            this.listBox_SplitFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragEnter);
             // 
             // fileSelector1
             // 
@@ -412,10 +571,10 @@
             this.fileSelector1.DefaultExt = "";
             this.fileSelector1.FileName = "";
             this.fileSelector1.Filter = "Binary Files|*.exe;*.dll;*.bin;*.prs|All Files|*.*";
-            this.fileSelector1.Location = new System.Drawing.Point(45, 38);
+            this.fileSelector1.Location = new System.Drawing.Point(42, 38);
             this.fileSelector1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.fileSelector1.Name = "fileSelector1";
-            this.fileSelector1.Size = new System.Drawing.Size(284, 24);
+            this.fileSelector1.Size = new System.Drawing.Size(378, 24);
             this.fileSelector1.TabIndex = 27;
             this.fileSelector1.FileNameChanged += new System.EventHandler(this.fileSelector1_FileNameChanged);
             // 
@@ -423,12 +582,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(349, 414);
+            this.ClientSize = new System.Drawing.Size(437, 423);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Data Extractor";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBoxBinary.ResumeLayout(false);
@@ -440,6 +600,8 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).EndInit();
             this.ResumeLayout(false);
 
@@ -473,11 +635,22 @@
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TabPage tabPage2;
-		private System.Windows.Forms.Button buttonConvert;
-		private System.Windows.Forms.CheckBox checkBoxSameOutputFolder;
+		private System.Windows.Forms.Button buttonConvertBatch;
+		private System.Windows.Forms.CheckBox checkBoxSameOutputFolderBatch;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Button buttonAdd;
-		private System.Windows.Forms.ListBox listBox1;
+		private System.Windows.Forms.Button buttonAddBatch;
+		private System.Windows.Forms.ListBox listBoxStructConverter;
+		private System.Windows.Forms.TabPage tabPage3;
+		private System.Windows.Forms.ComboBox comboBoxGameSelect;
+		private System.Windows.Forms.Button buttonSplit;
+		private System.Windows.Forms.CheckBox checkBoxSameFolderSplit;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Button button_AddFilesSplit;
+		private System.Windows.Forms.ListBox listBox_SplitFiles;
+		private System.Windows.Forms.Button buttonRemoveAllBatch;
+		private System.Windows.Forms.Button buttonRemoveSelBatch;
+		private System.Windows.Forms.Button buttonClearAllSplit;
+		private System.Windows.Forms.Button buttonRemoveSplit;
 	}
 }
 
