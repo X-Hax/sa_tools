@@ -1041,6 +1041,7 @@ namespace TextureEditor
 
 		private void textureImage_DragDrop(object sender, DragEventArgs e)
 		{
+			if (listBox1.SelectedIndex == -1) return;
 			Bitmap tex = null;
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -1051,6 +1052,35 @@ namespace TextureEditor
 				tex = new Bitmap((Image)e.Data.GetData(DataFormats.Bitmap));
 			else
 				return;
+			textures[listBox1.SelectedIndex].Image = tex;
+			UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+			textureSizeLabel.Text = $"Size: {tex.Width}x{tex.Height}";
+			if (textures[listBox1.SelectedIndex].CheckMipmap())
+			{
+				mipmapCheckBox.Enabled = true;
+				mipmapCheckBox.Checked = textures[listBox1.SelectedIndex].Mipmap;
+			}
+			else
+				mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+		}
+
+		private void textureImage_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Right)
+			{
+				pasteToolStripMenuItem.Enabled = Clipboard.ContainsImage();
+				contextMenuStrip1.Show(textureImage, e.Location);
+			}
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetImage(textures[listBox1.SelectedIndex].Image);
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Bitmap tex = new Bitmap(Clipboard.GetImage());
 			textures[listBox1.SelectedIndex].Image = tex;
 			UpdateTextureView(textures[listBox1.SelectedIndex].Image);
 			textureSizeLabel.Text = $"Size: {tex.Width}x{tex.Height}";
