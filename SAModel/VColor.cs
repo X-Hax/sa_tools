@@ -15,7 +15,7 @@ namespace SonicRetro.SAModel
 			switch (type)
 			{
 				case ColorType.ARGB8888_32:
-					return Color.FromArgb(ByteConverter.ToInt32(file, address));
+					return Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
 				case ColorType.XRGB8888_32:
 					return Color.FromArgb(unchecked((int)(ByteConverter.ToUInt32(file, address) | 0xFF000000u)));
 				case ColorType.ARGB8888_16:
