@@ -173,7 +173,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (loaded)
+			if (loaded && unsaved)
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
