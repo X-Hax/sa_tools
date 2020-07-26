@@ -125,283 +125,290 @@ namespace USplit
 				fileOutputPath = dir + "\\" + args[args.Length - 1];
 				Console.WriteLine("Name: {0}", args[args.Length - 1]);
 			}
-			switch (type.ToLowerInvariant())
+			try
 			{
-				case "landtable":
-					new LandTable(datafile, address, imageBase, landfmt).SaveToFile(fileOutputPath + landtable_extension, landfmt);
-					break;
-				case "model":
-					{
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
-					}
-					break;
-				case "basicmodel":
-					{
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
-					}
-					break;
-				case "basicdxmodel":
-					{
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
-					}
-					break;
-				case "chunkmodel":
-					{
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.Chunk);
-					}
-					break;
-				case "gcmodel":
-					{
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
-					}
-					break;
-				case "action":
-					{
-						NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-						ani.Animation.Save(fileOutputPath + ".saanim");
-						string[] mdlanis = new string[0];
-						NJS_OBJECT mdl = ani.Model;
-						mdlanis = (fileOutputPath + ".saanim").Split(',');
-						ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
-					}
-					break;
-				case "animation":
-					{
-						bool shortrot_enabled = false;
-						if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(args[5], NumberStyles.AllowHexSpecifier), imageBase, modelfmt, new Dictionary<int, Attach>());
-						new NJS_MOTION(datafile, address, imageBase, mdl.CountAnimated(), shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
-						string[] mdlanis = new string[0];
-						mdlanis = (fileOutputPath + ".saanim").Split(',');
-						ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
-					}
-					break;
-				case "objlist":
-					{
-						ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
-						foreach (ObjectListEntry obj in objs)
+				switch (type.ToLowerInvariant())
+				{
+					case "landtable":
+						new LandTable(datafile, address, imageBase, landfmt).SaveToFile(fileOutputPath + landtable_extension, landfmt);
+						break;
+					case "model":
 						{
-							if (!masterobjlist.ContainsKey(obj.CodeString))
-								masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
-							if (!objnamecounts.ContainsKey(obj.CodeString))
-								objnamecounts.Add(obj.CodeString, new Dictionary<string, int>() { { obj.Name, 1 } });
-							else if (!objnamecounts[obj.CodeString].ContainsKey(obj.Name))
-								objnamecounts[obj.CodeString].Add(obj.Name, 1);
-							else
-								objnamecounts[obj.CodeString][obj.Name]++;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+							ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
 						}
-						objs.Save(fileOutputPath+".ini");
-					}
-					break;
-				case "startpos":
-					if (SA2)
-						SA2StartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					else
-						SA1StartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "texlist":
-					TextureList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
-					break;
-				case "leveltexlist":
-					new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath + ".ini");
-					break;
-				case "triallevellist":
-					TrialLevelList.Save(TrialLevelList.Load(datafile, address, imageBase), fileOutputPath + ".ini");
-					break;
-				case "bosslevellist":
-					BossLevelList.Save(BossLevelList.Load(datafile, address), fileOutputPath + ".ini");
-					break;
-				case "fieldstartpos":
-					FieldStartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "soundtestlist":
-					SoundTestList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
-					break;
-				case "musiclist":
-					{
-						int muscnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						MusicList.Load(datafile, address, imageBase, muscnt).Save(fileOutputPath + ".ini");
-					}
-					break;
-				case "soundlist":
-					SoundList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
-					break;
-				case "stringarray":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						Languages lang = Languages.Japanese;
-						if (args.Length > 6) 
-							lang = (Languages)Enum.Parse(typeof(Languages), args[6], true);
-						StringArray.Load(datafile, address, imageBase, cnt, lang).Save(fileOutputPath + ".txt");
-					}
-					break;
-				case "nextlevellist":
-					NextLevelList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "cutscenetext":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						new CutsceneText(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[] hashes);
-					}
-					break;
-				case "recapscreen":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						RecapScreenList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[][] hashes);
-					}
-					break;
-				case "npctext":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						NPCTextList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[][] hashes);
-					}
-					break;
-				case "levelclearflags":
-					LevelClearFlagList.Save(LevelClearFlagList.Load(datafile, address), fileOutputPath + ".ini");
-					break;
-				case "deathzone":
-					{
-						List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
-						string path = Path.GetDirectoryName(fileOutputPath);
-						List<string> hashes = new List<string>();
-						int num = 0;
-						while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+						break;
+					case "basicmodel":
 						{
-							flags.Add(new DeathZoneFlags(datafile, address));
-							string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-							ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt);
-							address += 8;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+							ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
 						}
-						flags.ToArray().Save(fileOutputPath + ".ini");
-					}
-					break;
-				case "skyboxscale":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						SkyboxScaleList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".ini");
-					}
-					break;
-				case "stageselectlist":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						StageSelectLevelList.Load(datafile, address, cnt).Save(fileOutputPath + ".ini");
-					}
-					break;
-				case "levelrankscores":
-					LevelRankScoresList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "levelranktimes":
-					LevelRankTimesList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "endpos":
-					SA2EndPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
-					break;
-				case "animationlist":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath + ".ini");
-					}
-					break;
-				case "levelpathlist":
-					{
-						ushort lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
-						while (lvlnum != 0xFFFF)
+						break;
+					case "basicdxmodel":
 						{
-							int ptr = ByteConverter.ToInt32(datafile, address + 4);
-							if (ptr != 0)
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
+							ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
+						}
+						break;
+					case "chunkmodel":
+						{
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+							ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.Chunk);
+						}
+						break;
+					case "gcmodel":
+						{
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+							ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
+						}
+						break;
+					case "action":
+						{
+							NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+							ani.Animation.Save(fileOutputPath + ".saanim");
+							string[] mdlanis = new string[0];
+							NJS_OBJECT mdl = ani.Model;
+							mdlanis = (fileOutputPath + ".saanim").Split(',');
+							ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
+						}
+						break;
+					case "animation":
+						{
+							bool shortrot_enabled = false;
+							if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
+							NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(args[5], NumberStyles.AllowHexSpecifier), imageBase, modelfmt, new Dictionary<int, Attach>());
+							new NJS_MOTION(datafile, address, imageBase, mdl.CountAnimated(), shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
+							string[] mdlanis = new string[0];
+							mdlanis = (fileOutputPath + ".saanim").Split(',');
+							ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
+						}
+						break;
+					case "objlist":
+						{
+							ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
+							foreach (ObjectListEntry obj in objs)
 							{
-								ptr = (int)((uint)ptr - imageBase);
-								SA1LevelAct level = new SA1LevelAct(lvlnum);
-								string lvldir = Path.Combine(fileOutputPath, level.ToString());
-								PathList.Load(datafile, ptr, imageBase).Save(lvldir, out string[] lvlhashes);
+								if (!masterobjlist.ContainsKey(obj.CodeString))
+									masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
+								if (!objnamecounts.ContainsKey(obj.CodeString))
+									objnamecounts.Add(obj.CodeString, new Dictionary<string, int>() { { obj.Name, 1 } });
+								else if (!objnamecounts[obj.CodeString].ContainsKey(obj.Name))
+									objnamecounts[obj.CodeString].Add(obj.Name, 1);
+								else
+									objnamecounts[obj.CodeString][obj.Name]++;
 							}
-							address += 8;
-							lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
+							objs.Save(fileOutputPath + ".ini");
 						}
-					}
-					break;
-				case "pathlist":
-					{
-						PathList.Load(datafile, address, imageBase).Save(fileOutputPath, out string[] hashes);
-					}
-					break;
-				case "stagelightdatalist":
-					SA1StageLightDataList.Load(datafile, address).Save(fileOutputPath);
-					break;
-				case "weldlist":
-					WeldList.Load(datafile, address, imageBase).Save(fileOutputPath);
-					break;
-				case "bmitemattrlist":
-					BlackMarketItemAttributesList.Load(datafile, address, imageBase).Save(fileOutputPath);
-					break;
-				case "creditstextlist":
-					CreditsTextList.Load(datafile, address, imageBase).Save(fileOutputPath);
-					break;
-				case "animindexlist":
-					{
-						Directory.CreateDirectory(fileOutputPath);
-						List<string> hashes = new List<string>();
-						int i = ByteConverter.ToInt16(datafile, address);
-						while (i != -1)
+						break;
+					case "startpos":
+						if (SA2)
+							SA2StartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						else
+							SA1StartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "texlist":
+						TextureList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
+						break;
+					case "leveltexlist":
+						new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath + ".ini");
+						break;
+					case "triallevellist":
+						TrialLevelList.Save(TrialLevelList.Load(datafile, address, imageBase), fileOutputPath + ".ini");
+						break;
+					case "bosslevellist":
+						BossLevelList.Save(BossLevelList.Load(datafile, address), fileOutputPath + ".ini");
+						break;
+					case "fieldstartpos":
+						FieldStartPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "soundtestlist":
+						SoundTestList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
+						break;
+					case "musiclist":
 						{
-							new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
-								.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
-							address += 8;
-							i = ByteConverter.ToInt16(datafile, address);
+							int muscnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							MusicList.Load(datafile, address, imageBase, muscnt).Save(fileOutputPath + ".ini");
 						}
-					}
-					break;
-				case "storysequence":
-					SA2StoryList.Load(datafile, address).Save(fileOutputPath);
-					break;
-				case "masterstringlist":
-					{
-						int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-						for (int l = 0; l < 5; l++)
+						break;
+					case "soundlist":
+						SoundList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
+						break;
+					case "stringarray":
 						{
-							Languages lng = (Languages)l;
-							System.Text.Encoding enc = HelperFunctions.GetEncoding(game, lng);
-							string ld = Path.Combine(fileOutputPath, lng.ToString());
-							Directory.CreateDirectory(ld);
-							int ptr = datafile.GetPointer(address, imageBase);
-							for (int i = 0; i < cnt; i++)
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							Languages lang = Languages.Japanese;
+							if (args.Length > 6)
+								lang = (Languages)Enum.Parse(typeof(Languages), args[6], true);
+							StringArray.Load(datafile, address, imageBase, cnt, lang).Save(fileOutputPath + ".txt");
+						}
+						break;
+					case "nextlevellist":
+						NextLevelList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "cutscenetext":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							new CutsceneText(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[] hashes);
+						}
+						break;
+					case "recapscreen":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							RecapScreenList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[][] hashes);
+						}
+						break;
+					case "npctext":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							NPCTextList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".txt", out string[][] hashes);
+						}
+						break;
+					case "levelclearflags":
+						LevelClearFlagList.Save(LevelClearFlagList.Load(datafile, address), fileOutputPath + ".ini");
+						break;
+					case "deathzone":
+						{
+							List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
+							string path = Path.GetDirectoryName(fileOutputPath);
+							List<string> hashes = new List<string>();
+							int num = 0;
+							while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
 							{
-								int ptr2 = datafile.GetPointer(ptr, imageBase);
-								if (ptr2 != 0)
+								flags.Add(new DeathZoneFlags(datafile, address));
+								string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
+								ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt);
+								address += 8;
+							}
+							flags.ToArray().Save(fileOutputPath + ".ini");
+						}
+						break;
+					case "skyboxscale":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							SkyboxScaleList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath + ".ini");
+						}
+						break;
+					case "stageselectlist":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							StageSelectLevelList.Load(datafile, address, cnt).Save(fileOutputPath + ".ini");
+						}
+						break;
+					case "levelrankscores":
+						LevelRankScoresList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "levelranktimes":
+						LevelRankTimesList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "endpos":
+						SA2EndPosList.Load(datafile, address).Save(fileOutputPath + ".ini");
+						break;
+					case "animationlist":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath + ".ini");
+						}
+						break;
+					case "levelpathlist":
+						{
+							ushort lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
+							while (lvlnum != 0xFFFF)
+							{
+								int ptr = ByteConverter.ToInt32(datafile, address + 4);
+								if (ptr != 0)
 								{
-									string fn = Path.Combine(ld, $"{i}.txt");
-									File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
+									ptr = (int)((uint)ptr - imageBase);
+									SA1LevelAct level = new SA1LevelAct(lvlnum);
+									string lvldir = Path.Combine(fileOutputPath, level.ToString());
+									PathList.Load(datafile, ptr, imageBase).Save(lvldir, out string[] lvlhashes);
 								}
-								ptr += 4;
+								address += 8;
+								lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
 							}
-							address += 4;
 						}
-					}
-					break;
-				case "binary":
-					{
-						int length;
-						if (args.Length > 6 && args[6] == "hex") length = int.Parse(args[5], NumberStyles.AllowHexSpecifier);
-						else length = int.Parse(args[5]);
-						byte[] bin = new byte[length];
-						Array.Copy(datafile, address, bin, 0, bin.Length);
-						File.WriteAllBytes(fileOutputPath + ".bin", bin);
-						Console.WriteLine("Length: {0} (0x{1}) bytes", length.ToString(), length.ToString("X"));
-					}
-					break;
-				default:
-					{
-						Console.WriteLine("Error parsing data type. Run the program without arguments for a list of usable data types.");
-						Console.WriteLine("Press ENTER to exit.");
-						Console.ReadLine();
-						return;
-					}
+						break;
+					case "pathlist":
+						{
+							PathList.Load(datafile, address, imageBase).Save(fileOutputPath, out string[] hashes);
+						}
+						break;
+					case "stagelightdatalist":
+						SA1StageLightDataList.Load(datafile, address).Save(fileOutputPath);
+						break;
+					case "weldlist":
+						WeldList.Load(datafile, address, imageBase).Save(fileOutputPath);
+						break;
+					case "bmitemattrlist":
+						BlackMarketItemAttributesList.Load(datafile, address, imageBase).Save(fileOutputPath);
+						break;
+					case "creditstextlist":
+						CreditsTextList.Load(datafile, address, imageBase).Save(fileOutputPath);
+						break;
+					case "animindexlist":
+						{
+							Directory.CreateDirectory(fileOutputPath);
+							List<string> hashes = new List<string>();
+							int i = ByteConverter.ToInt16(datafile, address);
+							while (i != -1)
+							{
+								new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
+									.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+								hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
+								address += 8;
+								i = ByteConverter.ToInt16(datafile, address);
+							}
+						}
+						break;
+					case "storysequence":
+						SA2StoryList.Load(datafile, address).Save(fileOutputPath);
+						break;
+					case "masterstringlist":
+						{
+							int cnt = int.Parse(args[5], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							for (int l = 0; l < 5; l++)
+							{
+								Languages lng = (Languages)l;
+								System.Text.Encoding enc = HelperFunctions.GetEncoding(game, lng);
+								string ld = Path.Combine(fileOutputPath, lng.ToString());
+								Directory.CreateDirectory(ld);
+								int ptr = datafile.GetPointer(address, imageBase);
+								for (int i = 0; i < cnt; i++)
+								{
+									int ptr2 = datafile.GetPointer(ptr, imageBase);
+									if (ptr2 != 0)
+									{
+										string fn = Path.Combine(ld, $"{i}.txt");
+										File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
+									}
+									ptr += 4;
+								}
+								address += 4;
+							}
+						}
+						break;
+					case "binary":
+						{
+							int length;
+							if (args.Length > 6 && args[6] == "hex") length = int.Parse(args[5], NumberStyles.AllowHexSpecifier);
+							else length = int.Parse(args[5]);
+							byte[] bin = new byte[length];
+							Array.Copy(datafile, address, bin, 0, bin.Length);
+							File.WriteAllBytes(fileOutputPath + ".bin", bin);
+							Console.WriteLine("Length: {0} (0x{1}) bytes", length.ToString(), length.ToString("X"));
+						}
+						break;
+					default:
+						{
+							Console.WriteLine("Error parsing data type. Run the program without arguments for a list of usable data types.");
+							Console.WriteLine("Press ENTER to exit.");
+							Console.ReadLine();
+							return;
+						}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Split operation failed: " + ex.ToString());
 			}
 		}
 	}

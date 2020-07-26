@@ -195,8 +195,16 @@ namespace SonicRetro.SAModel
 		/// <param name="labels"></param>
 		public NJS_MATERIAL(byte[] file, int address, Dictionary<int, string> labels)
 		{
-			DiffuseColor = Color.FromArgb(ByteConverter.ToInt32(file, address));
-			SpecularColor = Color.FromArgb(ByteConverter.ToInt32(file, address + 4));
+			if (ByteConverter.BigEndian)
+			{
+				DiffuseColor = Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
+				SpecularColor = Color.FromArgb(file[address + 7], file[address + 4], file[address + 5], file[address + 6]);
+			}
+			else
+			{
+				DiffuseColor = Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
+				SpecularColor = Color.FromArgb(file[address + 7], file[address + 6], file[address + 5], file[address + 4]);
+			}
 			Exponent = ByteConverter.ToSingle(file, address + 8);
 			TextureID = ByteConverter.ToInt32(file, address + 0xC);
 			Flags = ByteConverter.ToUInt32(file, address + 0x10);

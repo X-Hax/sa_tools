@@ -1019,6 +1019,80 @@ namespace TextureEditor
 			textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
 		}
 
+		private void textureImage_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Left)
+			{
+				Bitmap bmp = new Bitmap(textures[listBox1.SelectedIndex].Image);
+				DataObject dobj = new DataObject();
+				dobj.SetImage(bmp);
+				string fn = Path.Combine(Path.GetTempPath(), textures[listBox1.SelectedIndex].Name + ".png");
+				bmp.Save(fn);
+				dobj.SetFileDropList(new System.Collections.Specialized.StringCollection() { fn });
+				DoDragDrop(dobj, DragDropEffects.Copy);
+			}
+		}
+
+		private void textureImage_DragEnter(object sender, DragEventArgs e)
+		{
+			if (listBox1.SelectedIndex != -1 && (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Bitmap)))
+				e.Effect = DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link;
+		}
+
+		private void textureImage_DragDrop(object sender, DragEventArgs e)
+		{
+			if (listBox1.SelectedIndex == -1) return;
+			Bitmap tex = null;
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				using (Bitmap bmp = new Bitmap(((string[])e.Data.GetData(DataFormats.FileDrop, true))[0]))
+					tex = new Bitmap(bmp);
+			}
+			else if (e.Data.GetDataPresent(DataFormats.Bitmap))
+				tex = new Bitmap((Image)e.Data.GetData(DataFormats.Bitmap));
+			else
+				return;
+			textures[listBox1.SelectedIndex].Image = tex;
+			UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+			textureSizeLabel.Text = $"Size: {tex.Width}x{tex.Height}";
+			if (textures[listBox1.SelectedIndex].CheckMipmap())
+			{
+				mipmapCheckBox.Enabled = true;
+				mipmapCheckBox.Checked = textures[listBox1.SelectedIndex].Mipmap;
+			}
+			else
+				mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+		}
+
+		private void textureImage_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Right)
+			{
+				pasteToolStripMenuItem.Enabled = Clipboard.ContainsImage();
+				contextMenuStrip1.Show(textureImage, e.Location);
+			}
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetImage(textures[listBox1.SelectedIndex].Image);
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Bitmap tex = new Bitmap(Clipboard.GetImage());
+			textures[listBox1.SelectedIndex].Image = tex;
+			UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+			textureSizeLabel.Text = $"Size: {tex.Width}x{tex.Height}";
+			if (textures[listBox1.SelectedIndex].CheckMipmap())
+			{
+				mipmapCheckBox.Enabled = true;
+				mipmapCheckBox.Checked = textures[listBox1.SelectedIndex].Mipmap;
+			}
+			else
+				mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+		}
+
 		private void importButton_Click(object sender, EventArgs e)
 		{
 			KeyValuePair<string, Bitmap>? tex = BrowseForTexture(listBox1.GetItemText(listBox1.SelectedItem));
@@ -1044,7 +1118,7 @@ namespace TextureEditor
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(textures[listBox1.SelectedIndex].Image);
+					Bitmap bmp = new Bitmap(textures[listBox1.SelectedIndex].Image);
 					bmp.Save(dlg.FileName);
 				}
 

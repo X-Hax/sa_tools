@@ -173,7 +173,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (loaded)
+			if (loaded && unsaved)
 				switch (MessageBox.Show(this, "Do you want to save?", "SAMDL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
 				{
 					case DialogResult.Yes:
@@ -182,13 +182,28 @@ namespace SonicRetro.SAModel.SAMDL
 					case DialogResult.Cancel:
 						return;
 				}
-			using (OpenFileDialog a = new OpenFileDialog()
+			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
 				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
-			})
-				if (a.ShowDialog(this) == DialogResult.OK)
+			};
+			goto loadfiledlg;
+		loadfiledlg:
+			DialogResult result = a.ShowDialog(this);
+			if (result == DialogResult.OK)
+			{
+				try
+				{
 					LoadFile(a.FileName);
+				}
+				catch (Exception ex)
+				{
+					log.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
+					log.WriteLog();
+					if (report.ShowDialog() == DialogResult.Cancel)	goto loadfiledlg;
+				}
+			}
 		}
 
 		public static readonly string[] SA2BMDLFiles =
@@ -405,6 +420,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					if (modelinfo.RadioButton_Binary.Checked)
 					{
+						log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
 						LoadBinFile(file);
 					}
 					else

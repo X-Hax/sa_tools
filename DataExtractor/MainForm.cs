@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace SonicRetro.SAModel.DataExtractor
 {
@@ -19,6 +20,8 @@ namespace SonicRetro.SAModel.DataExtractor
 			public string name_or_type;
 			public UInt32 key;
 		};
+
+		public static string DataMappingFolder;
 
 		public static readonly ModelFileType[] ModelFileTypes = new[] {
 		new ModelFileType { name_or_type = "EXE", key = 0x00400000u },
@@ -101,6 +104,8 @@ namespace SonicRetro.SAModel.DataExtractor
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			DataMappingFolder = "SADXPC";
+			comboBoxGameSelect.SelectedIndex = 2;
 			comboBoxFormat.SelectedIndex = 1;
 			textBoxAuthor.Text = Settings.Author;
 			ComboBoxBinaryType.Items.Clear();
@@ -263,31 +268,36 @@ namespace SonicRetro.SAModel.DataExtractor
 
 		private void fileSelector1_FileNameChanged(object sender, EventArgs e)
 		{
-			file = File.ReadAllBytes(fileSelector1.FileName);
-			if (Path.GetExtension(fileSelector1.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
-			buttonExtract.Enabled = true;
-			uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
-			if (!baseaddr.HasValue)
+			if (File.Exists(fileSelector1.FileName))
 			{
-				int u = CheckKnownFile(fileSelector1.FileName);
-				if (u == -5)
+				file = File.ReadAllBytes(fileSelector1.FileName);
+				if (Path.GetExtension(fileSelector1.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
+				buttonExtract.Enabled = true;
+				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
+				if (!baseaddr.HasValue)
 				{
-					numericUpDownKey.Value = 0xC600000u;
-					comboBoxFormat.SelectedIndex = 2;
+					int u = CheckKnownFile(fileSelector1.FileName);
+					if (u == -5)
+					{
+						numericUpDownKey.Value = 0xC600000u;
+						comboBoxFormat.SelectedIndex = 2;
+					}
+					else if (u == -4)
+					{
+						numericUpDownKey.Value = 0xCB80000u;
+						comboBoxFormat.SelectedIndex = 0;
+					}
+					else if (u != -1)
+					{
+						numericUpDownKey.Value = KnownBinaryFiles[u].key;
+						comboBoxFormat.SelectedIndex = KnownBinaryFiles[u].data_type;
+					}
+					else comboBoxFormat.SelectedIndex = 1;
 				}
-				else if (u == -4)
-				{
-					numericUpDownKey.Value = 0xCB80000u;
-					comboBoxFormat.SelectedIndex = 0;
-				}
-				else if (u != -1)
-				{
-					numericUpDownKey.Value = KnownBinaryFiles[u].key;
-					comboBoxFormat.SelectedIndex = KnownBinaryFiles[u].data_type;
-				}
-				else comboBoxFormat.SelectedIndex = 1;
+				else numericUpDownKey.Value = (int)baseaddr;
+				buttonExtract.Enabled = true;
 			}
-			else numericUpDownKey.Value = (int)baseaddr;
+			else buttonExtract.Enabled = false;
 		}
 
 		enum SectOffs
@@ -318,7 +328,7 @@ namespace SonicRetro.SAModel.DataExtractor
 				//Level
 				case 0:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
-						if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
 						new LandTable(file, (int)NumericUpDownAddress.Value, (uint)numericUpDownKey.Value, format) { Author = textBoxAuthor.Text, Description = textBoxDescription.Text }.SaveToFile(sd.FileName, outfmt);
 						if (comboBoxExportAs.SelectedIndex == 1) ConvertToStruct(sd.FileName);
@@ -327,7 +337,7 @@ namespace SonicRetro.SAModel.DataExtractor
 				//Model
 				case 1:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
-						if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
 						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownKey.Value, (ModelFormat)comboBoxFormat.SelectedIndex, null);
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxAuthor.Text, textBoxDescription.Text, null, (ModelFormat)comboBoxFormat.SelectedIndex);
@@ -342,22 +352,149 @@ namespace SonicRetro.SAModel.DataExtractor
 			OpenFileDialog op = new OpenFileDialog() { Filter = "Levels, models and animations|*.sa?lvl;*.sa?mdl;*.saanim|All files|*.*", Multiselect = true };
 			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
-				listBox1.Items.AddRange(op.FileNames);
+				listBoxStructConverter.Items.AddRange(op.FileNames);
+				buttonConvertBatch.Enabled = true;
 			}
 		}
 
 		private void buttonConvert_Click(object sender, EventArgs e)
 		{
 			string outdir = "";
-			if (!checkBoxSameOutputFolder.Checked)
+			if (!checkBoxSameOutputFolderBatch.Checked)
 			{
-				SaveFileDialog sav = new SaveFileDialog() { Filter = "Folder|*.*" };
+				SaveFileDialog sav = new SaveFileDialog() { Filter = "Folder|*.*", Title = "Select output folder" };
 				if (sav.ShowDialog() == System.Windows.Forms.DialogResult.OK) outdir = sav.FileName;
 			}
-			foreach (string item in listBox1.Items)
+			foreach (string item in listBoxStructConverter.Items)
 			{
 				ConvertToStruct(item, outdir);
 			}
+		}
+
+		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (comboBoxGameSelect.SelectedIndex)
+			{
+				case 0:
+					DataMappingFolder = "SA1";
+					break;
+				case 1:
+					DataMappingFolder = "AutoDemo";
+					break;
+				case 2:
+					DataMappingFolder = "SADXPC";
+					break;
+				case 3:
+					DataMappingFolder = "SA2";
+					break;
+				case 4:
+					DataMappingFolder = "SA2TheTrial";
+					break;
+				case 5:
+					DataMappingFolder = "SA2PC";
+					break;
+			}
+		}
+
+		private void button_AddFilesSplit_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog op = new OpenFileDialog() { Filter = "Binary files|*.exe;*.dll;*.bin;*.mdl|All files|*.*", Multiselect = true };
+			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				listBox_SplitFiles.Items.AddRange(op.FileNames);
+				buttonSplit.Enabled = true;
+			}
+		}
+
+		private void buttonSplit_Click(object sender, EventArgs e)
+		{
+			string outdir = "";
+			if (!checkBoxSameFolderSplit.Checked)
+			{
+				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName="output", DefaultExt = "" };
+				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					outdir = sd.FileName;
+				}
+			}
+				SplitProgress spl = new SplitProgress(null, listBox_SplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir);
+			spl.ShowDialog();
+		}
+
+		private void listBox_SplitFiles_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if(!listBox_SplitFiles.Items.Contains(fileList[u])) listBox_SplitFiles.Items.Add(fileList[u]);
+			}
+			buttonSplit.Enabled = true;
+		}
+
+		private void listBox_SplitFiles_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void listBoxStructConverter_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listBoxStructConverter.SelectedIndices.Count > 0) buttonRemoveSelBatch.Enabled = true;
+			else buttonRemoveSelBatch.Enabled = false;
+		}
+
+		private void buttonRemoveSplit_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBox_SplitFiles.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBox_SplitFiles.Items.Remove(item);
+			if (listBox_SplitFiles.Items.Count == 0) buttonSplit.Enabled = false;
+		}
+
+		private void buttonRemoveSelBatch_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBoxStructConverter.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBoxStructConverter.Items.Remove(item);
+			if (listBoxStructConverter.Items.Count == 0) buttonConvertBatch.Enabled = false;
+		}
+
+		private void buttonRemoveAllBatch_Click(object sender, EventArgs e)
+		{
+			listBoxStructConverter.Items.Clear();
+			buttonConvertBatch.Enabled = false;
+		}
+
+		private void buttonClearAllSplit_Click(object sender, EventArgs e)
+		{
+			listBox_SplitFiles.Items.Clear();
+			buttonSplit.Enabled = false;
+		}
+
+		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
+			}
+			buttonConvertBatch.Enabled = true;
+		}
+
+		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void listBox_SplitFiles_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listBox_SplitFiles.SelectedIndices.Count > 0) buttonRemoveSplit.Enabled = true;
+			else buttonRemoveSplit.Enabled = false;
 		}
 	}
 }

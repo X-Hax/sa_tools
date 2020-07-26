@@ -67,6 +67,13 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			File.Delete(file);
 		}
+		/// <summary>
+		/// Returns the log queue as a string.
+		/// </summary>
+		public string GetLogString()
+		{
+			return string.Join(System.Environment.NewLine, LogQueue);
+		}
 	}
 
 	public class OnScreenDisplay
