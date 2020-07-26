@@ -14,32 +14,32 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				bool sadxPCPathStringExists = sadxPCPath != null && sadxPCPath.Length > 0;
 				bool sadxPCPathExists = Directory.Exists(sadxPCPath);
 				bool sonicExeExists = File.Exists(string.Concat(sadxPCPath + "\\", "sonic.exe")); // todo: maybe md5 check this so that we can tell it's the right version?
-				bool modLoaderPresent = File.Exists(string.Concat(sadxPCPath + "\\", "SADXModManager.exe"));
+				bool modLoaderPresent = File.Exists(string.Concat(sadxPCPath + "\\", "system\\chrmodels_orig.dll"));
 
 				if (!sadxPCPathStringExists)
 				{
-					failReason = "SADX PC path string did not exist in settings";
+					failReason = "No SADX:PC game path was supplied.";
 					return false;
 				}
 				else if (!sadxPCPathExists)
 				{
-					failReason = string.Format("SADX PC path {0} did not exist or was invalid.", sadxPCPath);
+					failReason = string.Format("SADX:PC path {0} did not exist or was invalid.", sadxPCPath);
 					return false;
 				}
 				else if (!sonicExeExists)
 				{
-					failReason = "SADX PC path did not contain sonic.exe";
+					failReason = "SADX:PC Game path does not contain sonic.exe.";
 					return false;
 				}
 				else if (!modLoaderPresent)
 				{
-					failReason = "SADX PC path did not contain mod loader";
+					failReason = "SADX Mod Loader is not installed.";
 					return false;
 				}
 			}
 			catch (InvalidCastException)
 			{
-				failReason = "sadxpc path settings variable was not string type";
+				failReason = "sadxpc path settings variable was not string type.";
 				sadxPCIsValid = false;
 			}
 
@@ -56,26 +56,26 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				bool sa2PCPathStringExists = sa2PCPath != null && sa2PCPath.Length > 0;
 				bool sa2PCPathExists = Directory.Exists(sa2PCPath);
 				bool sonic2ExeExists = File.Exists(string.Concat(sa2PCPath + "\\", "sonic2app.exe"));
-				bool modLoaderPresent = File.Exists(string.Concat(sa2PCPath + "\\", "SA2ModManager.exe"));
+				bool modLoaderPresent = File.Exists(string.Concat(sa2PCPath + "\\", "resource\\gd_PC\\DLL\\Win32\\Data_DLL_orig.dll"));
 
 				if (!sa2PCPathStringExists)
 				{
-					failReason = "SA2 PC path string did not exist in settings";
+					failReason = "No SA2:PC game path was supplied.";
 					return false;
 				}
 				else if (!sa2PCPathExists)
 				{
-					failReason = string.Format("SA2 PC path {0} did not exist or was invalid.", sa2PCPath);
+					failReason = string.Format("SA2:PC path {0} did not exist or was invalid.", sa2PCPath);
 					return false;
 				}
 				else if (!sonic2ExeExists)
 				{
-					failReason = "SA2 PC path did not contain sonic2app.exe";
+					failReason = "SA2:PC game path does not contain sonic2app.exe";
 					return false;
 				}
 				else if (!modLoaderPresent)
 				{
-					failReason = "SA2 PC path did not contain mod loader";
+					failReason = "SA2:PC Mod Manager is not installed.";
 					return false;
 				}
 			}

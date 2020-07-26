@@ -63,6 +63,16 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap newProj {
+            get {
+                object obj = ResourceManager.GetObject("newProj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap sa2_ico {
             get {
                 object obj = ResourceManager.GetObject("sa2_ico", resourceCulture);
@@ -85,7 +95,7 @@ namespace SAToolsHub.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap sadx_ljstar {
             get {
-                object obj = ResourceManager.GetObject("sadx_ico", resourceCulture);
+                object obj = ResourceManager.GetObject("sadx_ljstar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -96,6 +106,116 @@ namespace SAToolsHub.Properties {
         internal static System.Drawing.Bitmap SADXBANNER {
             get {
                 object obj = ResourceManager.GetObject("SADXBANNER", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsBuildAuto {
+            get {
+                object obj = ResourceManager.GetObject("tsBuildAuto", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsBuildManual {
+            get {
+                object obj = ResourceManager.GetObject("tsBuildManual", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsBuildRun {
+            get {
+                object obj = ResourceManager.GetObject("tsBuildRun", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsEditProj {
+            get {
+                object obj = ResourceManager.GetObject("tsEditProj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsNewProj {
+            get {
+                object obj = ResourceManager.GetObject("tsNewProj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsOpenProj {
+            get {
+                object obj = ResourceManager.GetObject("tsOpenProj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsPaths {
+            get {
+                object obj = ResourceManager.GetObject("tsPaths", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsSALVL {
+            get {
+                object obj = ResourceManager.GetObject("tsSALVL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsSAMDL {
+            get {
+                object obj = ResourceManager.GetObject("tsSAMDL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsTexEdit {
+            get {
+                object obj = ResourceManager.GetObject("tsTexEdit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsUpdate {
+            get {
+                object obj = ResourceManager.GetObject("tsUpdate", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

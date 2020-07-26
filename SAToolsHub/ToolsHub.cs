@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SonicRetro.SAModel.SAEditorCommon;
 
 namespace SAToolsHub
 {
@@ -15,12 +16,19 @@ namespace SAToolsHub
 	{
 		//Additional Windows
 		private GamePaths gamePathsDiag;
+		private projSelect projectSelectDiag;
+		private editProj projectEditorDiag;
+
+		int mode;
 
 		public SAToolsHub()
 		{
 			InitializeComponent();
 
 			gamePathsDiag = new GamePaths();
+			projectSelectDiag = new projSelect();
+
+			projectEditorDiag = new editProj(mode);
 		}
 
 		//Tool Strip Functions
@@ -41,19 +49,21 @@ namespace SAToolsHub
 		}
 
 		//Projects
-		private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+		
+		private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			mode = 0;
+			projectEditorDiag.ShowDialog();
 		}
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-
+			projectSelectDiag.ShowDialog();
 		}
 
 		private void editProjectInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			projectEditorDiag.ShowDialog();
 		}
 
 		private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -296,6 +306,57 @@ namespace SAToolsHub
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
+		}
+
+		//Toolstrip Buttons
+		private void tsNewProj_Click(object sender, EventArgs e)
+		{
+			newProjectToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsOpenProj_Click(object sender, EventArgs e)
+		{
+			openProjectToolStripMenuItem1_Click(sender, e);
+		}
+
+		private void tsEditProj_Click(object sender, EventArgs e)
+		{
+			editProjectInfoToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsBuildAuto_Click(object sender, EventArgs e)
+		{
+			autoBuildToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsBuildManual_Click(object sender, EventArgs e)
+		{
+			manualBuildToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsBuildRun_Click(object sender, EventArgs e)
+		{
+			buildRunGameToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsUpdate_Click(object sender, EventArgs e)
+		{
+			checkForUpdatesToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSAMDL_Click(object sender, EventArgs e)
+		{
+			sAMDLToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSALVL_Click(object sender, EventArgs e)
+		{
+			sALVLToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsTexEdit_Click(object sender, EventArgs e)
+		{
+			textureEditorToolStripMenuItem_Click(sender, e);
 		}
 	}
 }

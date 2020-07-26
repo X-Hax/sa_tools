@@ -41,15 +41,15 @@
 			// 
 			// SADXPath
 			// 
-			this.SADXPath.Font = new System.Drawing.Font("Lucida Sans", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.SADXPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.SADXPath.Location = new System.Drawing.Point(12, 90);
 			this.SADXPath.Name = "SADXPath";
-			this.SADXPath.Size = new System.Drawing.Size(279, 23);
+			this.SADXPath.Size = new System.Drawing.Size(279, 22);
 			this.SADXPath.TabIndex = 0;
 			// 
 			// btnSADXPath
 			// 
-			this.btnSADXPath.Font = new System.Drawing.Font("Lucida Sans", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnSADXPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnSADXPath.Location = new System.Drawing.Point(297, 90);
 			this.btnSADXPath.Name = "btnSADXPath";
 			this.btnSADXPath.Size = new System.Drawing.Size(75, 23);
@@ -60,7 +60,7 @@
 			// 
 			// btnSA2Path
 			// 
-			this.btnSA2Path.Font = new System.Drawing.Font("Lucida Sans", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnSA2Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnSA2Path.Location = new System.Drawing.Point(297, 204);
 			this.btnSA2Path.Name = "btnSA2Path";
 			this.btnSA2Path.Size = new System.Drawing.Size(75, 23);
@@ -71,16 +71,16 @@
 			// 
 			// SA2Path
 			// 
-			this.SA2Path.Font = new System.Drawing.Font("Lucida Sans", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.SA2Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.SA2Path.Location = new System.Drawing.Point(12, 204);
 			this.SA2Path.Name = "SA2Path";
-			this.SA2Path.Size = new System.Drawing.Size(279, 23);
+			this.SA2Path.Size = new System.Drawing.Size(279, 22);
 			this.SA2Path.TabIndex = 3;
 			// 
 			// btnSavePaths
 			// 
 			this.btnSavePaths.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.btnSavePaths.Font = new System.Drawing.Font("Lucida Sans", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnSavePaths.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnSavePaths.Location = new System.Drawing.Point(128, 236);
 			this.btnSavePaths.Name = "btnSavePaths";
 			this.btnSavePaths.Size = new System.Drawing.Size(128, 23);
@@ -119,6 +119,7 @@
 			this.Controls.Add(this.SA2Path);
 			this.Controls.Add(this.btnSADXPath);
 			this.Controls.Add(this.SADXPath);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "GamePaths";
 			this.Text = "Game Installation Paths";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

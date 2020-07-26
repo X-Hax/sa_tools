@@ -31,9 +31,19 @@ namespace SAToolsHub
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
+			SAToolsHub toolsHub;
+
 			settings = ProjectManagement.ProjectSettings.Load();
 
-			Application.Run(new SAToolsHub());
+			if (!AnyGamesConfigured())
+			{
+				GamePaths gamePaths = new GamePaths();
+				DialogResult startConfig = gamePaths.ShowDialog();
+			}
+
+			toolsHub = new SAToolsHub();
+			//Application.ThreadException += Application_ThreadException;
+			Application.Run(toolsHub);
 		}
 	}
 }
