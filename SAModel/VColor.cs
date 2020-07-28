@@ -15,6 +15,7 @@ namespace SonicRetro.SAModel
 			switch (type)
 			{
 				case ColorType.ARGB8888_32:
+					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
 					if (ByteConverter.BigEndian)
 					{
 						if (!ByteConverter.Reverse) 

@@ -100,6 +100,7 @@ namespace SonicRetro.SAModel
 				AnimModelData data = new AnimModelData();
 				bool hasdata = false;
 				uint posoff = 0;
+				if (address > file.Length - 4) continue;
 				if (animtype.HasFlag(AnimFlags.Position))
 				{
 					posoff = ByteConverter.ToUInt32(file, address);
