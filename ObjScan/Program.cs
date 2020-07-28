@@ -79,12 +79,13 @@ namespace ObjScan
 			string dir;
 			int address;
 			bool bigendian = false;
+			bool reverse = false;
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts models from it.\nOnly SA1/SADX models are supported at the moment.");
 				Console.WriteLine("Usage: objscan <GAME> <FILENAME> <KEY> <TYPE>\n");
 				Console.WriteLine("Argument description:");
-				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian.");
+				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.");
 				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel\n");
@@ -107,6 +108,11 @@ namespace ObjScan
 				case "sadx_b":
 					game = Game.SADX;
 					bigendian = true;
+					break;
+				case "sadx_x":
+					game = Game.SADX;
+					bigendian = true;
+					reverse = true;
 					break;
 				/*case "sa2":
 					game = Game.SA2;
@@ -132,6 +138,7 @@ namespace ObjScan
 			string model_extension = ".sa1mdl";
 			//string landtable_extension = ".sa1lvl";
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 			filename = args[1];
 			byte[] datafile = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);

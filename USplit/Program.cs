@@ -16,12 +16,13 @@ namespace USplit
 			string filename;
 			string dir = Environment.CurrentDirectory;
 			bool bigendian = false;
+			bool reverse = false;
 			if (args.Length == 0)
 			{
 				Console.WriteLine("USplit is a tool that lets you extract any data supported by SA Tools from any binary file.");
 				Console.WriteLine("Usage: usplit <GAME> <FILENAME> <KEY> <TYPE> <ADDRESS> <PARAMETER1> <PARAMETER2> [-name <NAME>]\n");
 				Console.WriteLine("Argument description:");
-				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian.\n");
+				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian. Use SADX_X for SADX X360.\n");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.\n");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
@@ -56,6 +57,11 @@ namespace USplit
 					game = Game.SADX;
 					bigendian = true;
 					break;
+				case "sadx_x":
+					game = Game.SADX;
+					bigendian = true;
+					reverse = true;
+					break;
 				case "sa2":
 					game = Game.SA2;
 					break;
@@ -79,6 +85,7 @@ namespace USplit
 			string model_extension = ".sa1mdl";
 			string landtable_extension = ".sa1lvl";
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 			filename = args[1];
 			byte[] datafile = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
