@@ -7,8 +7,38 @@ using SA_Tools;
 
 namespace USplit
 {
+	public struct ItemDescriptor
+	{
+		public string ObjectType;
+		public string ObjectName;
+	}
 	class Program
 	{
+		static void ParseDictionary(Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> labellist, string listpath, int offset)
+		{
+			using (var fileStream = File.OpenRead(listpath))
+			using (var streamReader = new StreamReader(fileStream, System.Text.Encoding.UTF8, true, 512))
+			{
+				String line;
+				while ((line = streamReader.ReadLine()) != null)
+				{
+					String[] arr = new string[3];
+					arr = line.Split(',');
+					int value = int.Parse(arr[0], NumberStyles.AllowHexSpecifier) + offset;
+					if (arr.Length > 2)
+					{
+						string type = arr[1];
+						string name = arr[2];
+						if (!addresslist.ContainsKey(value) && name != "")
+						{
+							addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
+							labellist.Add(value, name);
+							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
+						}
+					}
+				}
+			}
+		}
 		static void Main(string[] args)
 		{
 			string[] arguments = Environment.GetCommandLineArgs();
@@ -26,7 +56,7 @@ namespace USplit
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.\n");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
-					"binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
+					"list <offset> <filename>, binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
 					"objlist, startpos, texlist, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist, soundtestlist,\nnextlevellist, "+
 					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist, pathlist,\nstagelightdatalist, weldlist" +
 					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
@@ -136,6 +166,105 @@ namespace USplit
 			{
 				switch (type.ToLowerInvariant())
 				{
+					case "list":
+						Dictionary<int, ItemDescriptor> addresslist = new Dictionary<int, ItemDescriptor>();
+						Dictionary<int, string> labellist = new Dictionary<int, string>();
+						List<LandTable> landlist = new List<LandTable>();
+						ParseDictionary(addresslist, labellist, args[5], address);
+						foreach (var entry in addresslist)
+						{
+							ItemDescriptor v = entry.Value;
+							switch (v.ObjectType)
+							{
+								case "NJS_CNK_OBJECT":
+								case "cnkobj":
+									model_extension = ".sa2mdl";
+									fileOutputPath = dir + "\\" + v.ObjectName;
+									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+									try
+									{
+										NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, ModelFormat.Chunk, labellist, new Dictionary<int, Attach>());
+										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, ModelFormat.Chunk);
+										if (mdl.Children.Count > 0)
+										{
+											foreach (NJS_OBJECT child in mdl.Children)
+											{
+												File.Delete(dir + "\\" + child.Name + model_extension);
+											}
+										}
+										if (mdl.Sibling != null)
+										{
+											File.Delete(dir + "\\" + mdl.Sibling.Name + model_extension);
+										}
+									}
+									catch (Exception ex)
+									{
+										Console.WriteLine("Split failed: {0}", ex.ToString());
+									}
+									break;
+								case "NJS_OBJECT":
+								case "obj":
+									model_extension = ".sa1mdl";
+									fileOutputPath = dir + "\\" + v.ObjectName;
+									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+									try
+									{
+										NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, modelfmt, labellist, new Dictionary<int, Attach>());
+										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+										if (mdl.Children.Count > 0)
+										{
+											foreach (NJS_OBJECT child in mdl.Children)
+											{
+												File.Delete(dir + "\\" + child.Name + model_extension);
+											}
+										}
+										if (mdl.Sibling != null)
+										{
+											File.Delete(dir + "\\" + mdl.Sibling.Name + model_extension);
+										}
+									}
+									catch (Exception ex)
+									{
+										Console.WriteLine("Split failed: {0}", ex.ToString());
+									}
+									break;
+								case "LandTable":
+								case "_OBJ_LANDTABLE":
+									fileOutputPath = dir + "\\" + v.ObjectName;
+									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+									try
+									{
+										LandTable land = new LandTable(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, landfmt, labellist);
+										land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+										landlist.Add(land);
+									}
+									catch (Exception ex)
+									{
+										Console.WriteLine("Split failed: {0}", ex.ToString());
+									}
+									break;
+							}
+						}
+						foreach (LandTable land in landlist)
+						{
+							if (land.COL.Count > 0)
+							{
+								foreach (COL col in land.COL)
+								{
+									File.Delete(dir + "\\" + col.Model.Name + model_extension);
+									//Console.WriteLine("Deleting file {0}", dir + "\\" + col.Model.Name + model_extension);
+								}
+							}
+							if (land.Anim.Count > 0)
+							{
+								foreach (GeoAnimData anim in land.Anim)
+								{
+									File.Delete(dir + "\\" + anim.Model.Name + model_extension);
+									//Console.WriteLine("Deleting file {0}", dir + "\\" + anim.Model.Name + model_extension);
+								}
+							}
+						}
+						break;
 					case "landtable":
 						new LandTable(datafile, address, imageBase, landfmt).SaveToFile(fileOutputPath + landtable_extension, landfmt);
 						break;
