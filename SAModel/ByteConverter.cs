@@ -7,6 +7,7 @@ namespace SonicRetro.SAModel
 	public static class ByteConverter
 	{
 		public static bool BigEndian { get; set; }
+		public static bool Reverse { get; set; }
 
 		public static byte[] GetBytes(ushort value)
 		{

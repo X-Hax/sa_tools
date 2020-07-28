@@ -28,8 +28,16 @@ namespace SonicRetro.SAModel
 
 		public UV(byte[] file, int address, bool UVH)
 		{
-			U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
-			V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
+			if (!ByteConverter.Reverse)
+			{
+				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
+				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
+			}
+			else
+			{
+				V = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
+				U = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
+			}
 		}
 
 		public UV(string data)
