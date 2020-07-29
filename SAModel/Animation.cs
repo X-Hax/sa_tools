@@ -77,6 +77,7 @@ namespace SonicRetro.SAModel
 				Name = labels[address];
 			else
 				Name = "animation_" + address.ToString("X8");
+			if (address > file.Length - 12) return;
 			Frames = ByteConverter.ToInt32(file, address + 4);
 			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
 			ushort tmp = ByteConverter.ToUInt16(file, address + 10);
@@ -231,12 +232,12 @@ namespace SonicRetro.SAModel
 						{
 							if (shortrot)
 							{
-								data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr))) data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
 								tmpaddr += 8;
 							}
 							else
 							{
-								data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
 								tmpaddr += 16;
 							}
 						}
@@ -304,7 +305,7 @@ namespace SonicRetro.SAModel
 								verts[k] = new Vertex(file, newaddr);
 								newaddr += Vertex.Size;
 							}
-							data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
+							if (!data.Vertex.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
 							tmpaddr += 8;
 						}
 					}
@@ -343,7 +344,7 @@ namespace SonicRetro.SAModel
 								verts[k] = new Vertex(file, newaddr);
 								newaddr += Vertex.Size;
 							}
-							data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
+							if (!data.Normal.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
 							tmpaddr += 8;
 						}
 					}

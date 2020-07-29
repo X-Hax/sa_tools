@@ -110,6 +110,15 @@ namespace SonicRetro.SAModel
 				Name = labels[address];
 			else
 				Name = "object_" + address.ToString("X8");
+			if (address > file.Length - 52)
+			{
+				Position = new Vertex();
+				Rotation = new Rotation();
+				Scale = new Vertex(1, 1, 1);
+				children = new List<NJS_OBJECT>();
+				Children = new ReadOnlyCollection<NJS_OBJECT>(children);
+				return;
+			}
 			ObjectFlags flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
 			RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
 			SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
