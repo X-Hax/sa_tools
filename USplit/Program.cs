@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using SonicRetro.SAModel;
 using SA_Tools;
+using System.Linq;
 
 namespace USplit
 {
@@ -14,6 +15,11 @@ namespace USplit
 	}
 	class Program
 	{
+		static int FindNextItemAddress(Dictionary<int, ItemDescriptor> addresslist, int address)
+		{
+			int entry = addresslist.Keys.ToList().IndexOf(address);
+			return addresslist.Keys.ToList()[entry+1];
+		}
 		static void ParseDictionary(Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> labellist, string listpath, int offset)
 		{
 			using (var fileStream = File.OpenRead(listpath))
@@ -29,10 +35,18 @@ namespace USplit
 					{
 						string type = arr[1];
 						string name = arr[2];
-						if (!addresslist.ContainsKey(value) && name != "")
+						if (!addresslist.ContainsKey(value))
 						{
 							addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
 							labellist.Add(value, name);
+							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
+						}
+					}
+					else
+					{
+						if (!addresslist.ContainsKey(value))
+						{
+							addresslist.Add(value, new ItemDescriptor { ObjectType = "NULL", ObjectName = "NULL" });
 							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
 						}
 					}
@@ -167,10 +181,103 @@ namespace USplit
 				switch (type.ToLowerInvariant())
 				{
 					case "list":
+						Dictionary<string, List<string>> actionlist = new Dictionary<string, List<string>>();
 						Dictionary<int, ItemDescriptor> addresslist = new Dictionary<int, ItemDescriptor>();
 						Dictionary<int, string> labellist = new Dictionary<int, string>();
 						List<LandTable> landlist = new List<LandTable>();
 						ParseDictionary(addresslist, labellist, args[5], address);
+						Directory.CreateDirectory(dir + "\\chunkmodels");
+						Directory.CreateDirectory(dir + "\\basicmodels");
+						Directory.CreateDirectory(dir + "\\levels");
+						Directory.CreateDirectory(dir + "\\motions");
+						//Scan for motions first
+						foreach (var entry in addresslist)
+						{
+							ItemDescriptor v = entry.Value;
+							if (v.ObjectType == "NJS_MOTION")
+							{
+								fileOutputPath = dir + "\\motions\\" + v.ObjectName + ".saanim";
+								Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+								try
+								{
+									int mdataarraypointer = ByteConverter.ToInt32(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier)) - (int)imageBase - address;
+									if (addresslist.ContainsKey(mdataarraypointer + address))
+									{
+										ItemDescriptor v2 = new ItemDescriptor();
+										addresslist.TryGetValue(mdataarraypointer + address, out v2);
+										int nextitem = FindNextItemAddress(addresslist, mdataarraypointer + address);
+										int size = nextitem - (mdataarraypointer + address);
+										int divide = 16;
+										if (v2.ObjectType == "NJS_MDATA2") divide = 16;
+										else if (v2.ObjectType == "NJS_MDATA3") divide = 24;
+										else if (v2.ObjectType == "NJS_MDATA4") divide = 32;
+										if (size % divide != 0)
+										{
+											Console.WriteLine("Error calculating array size for {0} at {1}, size {2} divided by {3}, assuming {4}", v2.ObjectType, (mdataarraypointer + address).ToString("X"), size, divide, size / divide);
+										}
+										int count = size / divide;
+										//Console.WriteLine("{0} at {1}, next item: {2}, size {3}, count {4}", v2.ObjectType, mdataarraypointer.ToString("X"), (nextitem - address).ToString("X"), size.ToString(), count.ToString());
+										NJS_MOTION motion;
+										if (v2.ObjectName.Substring(0, 8) == "mdata_al")
+										{
+											//Console.WriteLine("ROT");
+											motion = new NJS_MOTION(datafile, entry.Key, imageBase, count, labellist, true);
+										}
+										else
+										{
+											motion = new NJS_MOTION(datafile, entry.Key, imageBase, count, labellist, false);
+										}
+										motion.Save(fileOutputPath);
+										//Console.WriteLine("Added motion {0}", motion.Name);
+									}
+								}
+								catch (Exception ex)
+								{
+									Console.WriteLine("Split failed: {0}", ex.ToString());
+								}
+							}
+						}
+						//Scan for actions
+						foreach (var entry in addresslist)
+						{
+							ItemDescriptor v = entry.Value;
+							if (v.ObjectType == "NJS_ACTION")
+							{
+								Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+								try
+								{
+									NJS_ACTION ani = new NJS_ACTION(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, modelfmt, labellist, new Dictionary<int, Attach>());
+									if (!actionlist.ContainsKey(ani.Model.Name))
+									{
+										List<string> motionlist = new List<string>();
+										motionlist.Add(ani.Animation.Name);
+										actionlist.Add(ani.Model.Name, motionlist);
+										Console.WriteLine("New animation list for model {0} starting with {1}", ani.Model.Name, ani.Animation.Name);
+									}
+									else
+									{
+										foreach (KeyValuePair<string, List<string>> item in actionlist)
+										{
+											if (item.Key == ani.Model.Name)
+											{
+												if (!item.Value.Contains(ani.Animation.Name))
+												{
+													item.Value.Add(ani.Animation.Name);
+													Console.WriteLine("Added animation for model {0}:{1}", ani.Model.Name, ani.Animation.Name);
+												}
+											}
+										}
+									}
+									
+									
+								}
+								catch (Exception ex)
+								{
+									Console.WriteLine("Split failed: {0}", ex.ToString());
+								}
+							}
+						}
+						//Scan for models and levels
 						foreach (var entry in addresslist)
 						{
 							ItemDescriptor v = entry.Value;
@@ -179,22 +286,37 @@ namespace USplit
 								case "NJS_CNK_OBJECT":
 								case "cnkobj":
 									model_extension = ".sa2mdl";
-									fileOutputPath = dir + "\\" + v.ObjectName;
+									fileOutputPath = dir + "\\chunkmodels\\" + v.ObjectName;
 									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
 									try
 									{
 										NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, ModelFormat.Chunk, labellist, new Dictionary<int, Attach>());
-										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, ModelFormat.Chunk);
+										List<string> mdlanis = new List<string>();
+										if (actionlist.ContainsKey(mdl.Name))
+										{
+											foreach (KeyValuePair<string, List<string>> item in actionlist)
+											{
+												if (item.Key == mdl.Name)
+												{
+													foreach (string animname in item.Value)
+													{
+														mdlanis.Add("..\\motions\\" + animname + ".saanim");
+														Console.WriteLine("Adding animation {0} for model {1}", animname, mdl.Name); 
+													}
+												}
+											}
+										}
+										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, mdlanis.ToArray(), null, null, null, ModelFormat.Chunk);
 										if (mdl.Children.Count > 0)
 										{
 											foreach (NJS_OBJECT child in mdl.Children)
 											{
-												File.Delete(dir + "\\" + child.Name + model_extension);
+												File.Delete(dir + "\\chunkmodels\\" + child.Name + model_extension);
 											}
 										}
 										if (mdl.Sibling != null)
 										{
-											File.Delete(dir + "\\" + mdl.Sibling.Name + model_extension);
+											File.Delete(dir + "\\chunkmodels\\" + mdl.Sibling.Name + model_extension);
 										}
 									}
 									catch (Exception ex)
@@ -205,22 +327,37 @@ namespace USplit
 								case "NJS_OBJECT":
 								case "obj":
 									model_extension = ".sa1mdl";
-									fileOutputPath = dir + "\\" + v.ObjectName;
+									fileOutputPath = dir + "\\basicmodels\\" + v.ObjectName;
 									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
 									try
 									{
 										NJS_OBJECT mdl = new NJS_OBJECT(datafile, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, modelfmt, labellist, new Dictionary<int, Attach>());
-										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+										List<string> mdlanis = new List<string>();
+										if (actionlist.ContainsKey(mdl.Name))
+										{
+											foreach (KeyValuePair<string, List<string>> item in actionlist)
+											{
+												if (item.Key == mdl.Name)
+												{
+													foreach (string animname in item.Value)
+													{
+														mdlanis.Add("..\\motions\\" + animname + ".saanim");
+														Console.WriteLine("Adding animation {0} for model {1}", animname, mdl.Name);
+													}
+												}
+											}
+										}
+										ModelFile.CreateFile(fileOutputPath + model_extension, mdl, mdlanis.ToArray(), null, null, null, modelfmt);
 										if (mdl.Children.Count > 0)
 										{
 											foreach (NJS_OBJECT child in mdl.Children)
 											{
-												File.Delete(dir + "\\" + child.Name + model_extension);
+												File.Delete(dir + "\\basicmodels\\" + child.Name + model_extension);
 											}
 										}
 										if (mdl.Sibling != null)
 										{
-											File.Delete(dir + "\\" + mdl.Sibling.Name + model_extension);
+											File.Delete(dir + "\\basicmodels\\" + mdl.Sibling.Name + model_extension);
 										}
 									}
 									catch (Exception ex)
@@ -230,7 +367,7 @@ namespace USplit
 									break;
 								case "LandTable":
 								case "_OBJ_LANDTABLE":
-									fileOutputPath = dir + "\\" + v.ObjectName;
+									fileOutputPath = dir + "\\levels\\" + v.ObjectName;
 									Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
 									try
 									{
@@ -245,13 +382,14 @@ namespace USplit
 									break;
 							}
 						}
+						//Clean up stuff that is included in landtables
 						foreach (LandTable land in landlist)
 						{
 							if (land.COL.Count > 0)
 							{
 								foreach (COL col in land.COL)
 								{
-									File.Delete(dir + "\\" + col.Model.Name + model_extension);
+									File.Delete(dir + "\\basicmodels\\" + col.Model.Name + model_extension);
 									//Console.WriteLine("Deleting file {0}", dir + "\\" + col.Model.Name + model_extension);
 								}
 							}
@@ -259,7 +397,7 @@ namespace USplit
 							{
 								foreach (GeoAnimData anim in land.Anim)
 								{
-									File.Delete(dir + "\\" + anim.Model.Name + model_extension);
+									File.Delete(dir + "\\basicmodels\\" + anim.Model.Name + model_extension);
 									//Console.WriteLine("Deleting file {0}", dir + "\\" + anim.Model.Name + model_extension);
 								}
 							}
