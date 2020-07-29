@@ -18,7 +18,11 @@ namespace SonicRetro.SAModel
 
 		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
+			if (address > file.Length - 4) Model = new NJS_OBJECT();
+			else
+			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, labels, attaches);
+			if (address > file.Length - 8) Animation = new NJS_MOTION();
+			else
 			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
 		}
