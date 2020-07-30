@@ -71,6 +71,68 @@ namespace ObjScan
 			return true;
 		}
 
+		static int[] LandtableAddr = {
+			0x23C7BCC,
+			0xA99CB8,
+			0xC39E9C,
+			0xC386B4,
+			0x8051E0,
+			0x8046C0,
+			0x80433C,
+			0x22B975C,
+			0x22B867C,
+			0x22B6B34,
+			0x22B1E98,
+			0x22ADBC8,
+			0x22ACF40,
+			0x1E405E0,
+			0x20C8B58,
+			0x20C6F14,
+			0x1E39ADC,
+			0x1E369A0,
+			0x1E34800,
+			0x1C38B60,
+			0x1C37C9C,
+			0x1C34D14,
+			0xA41D2C,
+			0xA414BC,
+			0xA409C4,
+			0xA3E024,
+			0x198A9D0,
+			0x19887EC,
+			0x1986A1C,
+			0x1985C08,
+			0x16600D0,
+			0x15C8ED0,
+			0x165CFA8,
+			0x13D09C0,
+			0x13CF288,
+			0x13C9B48,
+			0xD2136C,
+			0xD90930,
+			0xDEDE38,
+			0xDED6F0,
+			0x102478C,
+			0x1170B1C,
+			0x11EC454,
+			0x125E990,
+			0x12B4D38,
+			0x10FCEE8,
+			0x1122578,
+			0x5C99A4,
+			0x5C8170,
+			0x5C6C30,
+			0x5C585C,
+			0x5C453C,
+			0x5C3534,
+			0x133EB64,
+			0x300E738,
+			0x3005E54,
+			0x3023700,
+			0x3024C58,
+			0x2FCAC58,
+		};
+
 		static void Main(string[] args)
 		{
 			string[] arguments = Environment.GetCommandLineArgs();
@@ -184,7 +246,7 @@ namespace ObjScan
 				address = u;
 				//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
 				//Console.WriteLine("Address: {0}", address.ToString("X"));
-				fileOutputPath = dir + "\\" + address.ToString("X");
+				fileOutputPath = dir + "\\" + address.ToString("X8");
 				if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
 				try
 				{
@@ -210,6 +272,17 @@ namespace ObjScan
 							{
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
+								if (mdl.Children.Count > 0)
+								{
+									foreach (NJS_OBJECT child in mdl.Children)
+									{
+										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+									}
+								}
+								if (mdl.Sibling != null)
+								{
+									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+								}
 							}
 							break;
 						/*case "chunkmodel":
@@ -228,7 +301,32 @@ namespace ObjScan
 				}
 				catch (Exception)
 				{
-					Console.WriteLine("{0} at {1} extraction failed", type, address.ToString("X"));//, ex.ToString());
+					Console.WriteLine("{0} at {1} extraction failed", type, address.ToString("X8"));//, ex.ToString());
+				}
+			}
+			//Filter out landtable stuff
+			if (Path.GetFileName(filename) == "sonic.exe")
+			{
+				Console.WriteLine("Removing landtable items...");
+				for (int i = 0; i < LandtableAddr.Length; i++)
+				{
+					LandTable land = new LandTable(datafile, LandtableAddr[i], imageBase, LandTableFormat.SADX);
+					if (land.COL.Count > 0)
+					{
+						foreach (COL col in land.COL)
+						{
+							File.Delete(dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length-7) + model_extension);
+							Console.WriteLine("Deleting file {0}", dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+						}
+					}
+					if (land.Anim.Count > 0)
+					{
+						foreach (GeoAnimData anim in land.Anim)
+						{
+							File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length-7) + model_extension);
+							Console.WriteLine("Deleting file {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+						}
+					}
 				}
 			}
 		}
