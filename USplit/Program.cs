@@ -18,9 +18,9 @@ namespace USplit
 		static int FindNextItemAddress(Dictionary<int, ItemDescriptor> addresslist, int address)
 		{
 			int entry = addresslist.Keys.ToList().IndexOf(address);
-			return addresslist.Keys.ToList()[entry+1];
+			return addresslist.Keys.ToList()[entry + 1];
 		}
-		static void ParseDictionary(Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> labellist, string listpath, int offset)
+		static void ParseDictionary(Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> labellist, string listpath, int offset, bool skip)
 		{
 			using (var fileStream = File.OpenRead(listpath))
 			using (var streamReader = new StreamReader(fileStream, System.Text.Encoding.UTF8, true, 512))
@@ -37,8 +37,12 @@ namespace USplit
 						string name = arr[2];
 						if (!addresslist.ContainsKey(value))
 						{
-							addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
-							labellist.Add(value, name);
+							if (!skip)
+							{
+								addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
+								labellist.Add(value, name);
+							}
+							else addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = value.ToString("X8") });
 							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
 						}
 					}
@@ -46,7 +50,7 @@ namespace USplit
 					{
 						if (!addresslist.ContainsKey(value))
 						{
-							addresslist.Add(value, new ItemDescriptor { ObjectType = "NULL", ObjectName = "NULL" });
+							if (!skip) addresslist.Add(value, new ItemDescriptor { ObjectType = "NULL", ObjectName = "NULL" });
 							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
 						}
 					}
@@ -70,8 +74,8 @@ namespace USplit
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.\n");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
-					"list <offset> <filename>, binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
-					"objlist, startpos, texlist, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist, soundtestlist,\nnextlevellist, "+
+					"list <offset> <filename> [-skiplabels] [-noanims], binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
+					"objlist, startpos, texlist, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist, soundtestlist,\nnextlevellist, " +
 					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist, pathlist,\nstagelightdatalist, weldlist" +
 					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
 					"stringarray <count> [language], skyboxscale <count>, stageselectlist <count>, animationlist <count>,\n" +
@@ -181,11 +185,18 @@ namespace USplit
 				switch (type.ToLowerInvariant())
 				{
 					case "list":
+						bool skiplabels = false;
+						bool noanims = false;
+						if (args.Length > 6)
+						{
+							if (args[args.Length - 1] == "-skiplabels" || args[args.Length - 2] == "-skiplabels") skiplabels = true;
+							if (args[args.Length - 1] == "-noanims") noanims = true;
+						}
 						Dictionary<string, List<string>> actionlist = new Dictionary<string, List<string>>();
 						Dictionary<int, ItemDescriptor> addresslist = new Dictionary<int, ItemDescriptor>();
 						Dictionary<int, string> labellist = new Dictionary<int, string>();
 						List<LandTable> landlist = new List<LandTable>();
-						ParseDictionary(addresslist, labellist, args[5], address);
+						ParseDictionary(addresslist, labellist, args[5], address, skiplabels);
 						Directory.CreateDirectory(dir + "\\chunkmodels");
 						Directory.CreateDirectory(dir + "\\basicmodels");
 						Directory.CreateDirectory(dir + "\\levels");
@@ -196,6 +207,7 @@ namespace USplit
 							ItemDescriptor v = entry.Value;
 							if (v.ObjectType == "NJS_MOTION")
 							{
+								if (noanims) continue;
 								fileOutputPath = dir + "\\motions\\" + v.ObjectName + ".saanim";
 								Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
 								try
@@ -243,6 +255,7 @@ namespace USplit
 							ItemDescriptor v = entry.Value;
 							if (v.ObjectType == "NJS_ACTION")
 							{
+								if (noanims) continue;
 								Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
 								try
 								{
@@ -250,7 +263,8 @@ namespace USplit
 									if (!actionlist.ContainsKey(ani.Model.Name))
 									{
 										List<string> motionlist = new List<string>();
-										motionlist.Add(ani.Animation.Name);
+										if (!skiplabels) motionlist.Add(ani.Animation.Name);
+										else motionlist.Add(ani.Animation.Name.Substring(10, ani.Animation.Name.Length - 10));
 										actionlist.Add(ani.Model.Name, motionlist);
 										Console.WriteLine("New animation list for model {0} starting with {1}", ani.Model.Name, ani.Animation.Name);
 									}
@@ -262,14 +276,15 @@ namespace USplit
 											{
 												if (!item.Value.Contains(ani.Animation.Name))
 												{
-													item.Value.Add(ani.Animation.Name);
+													if (!skiplabels) item.Value.Add(ani.Animation.Name);
+													else item.Value.Add(ani.Animation.Name.Substring(10, ani.Animation.Name.Length - 10));
 													Console.WriteLine("Added animation for model {0}:{1}", ani.Model.Name, ani.Animation.Name);
 												}
 											}
 										}
 									}
-									
-									
+
+
 								}
 								catch (Exception ex)
 								{
@@ -301,7 +316,7 @@ namespace USplit
 													foreach (string animname in item.Value)
 													{
 														mdlanis.Add("..\\motions\\" + animname + ".saanim");
-														Console.WriteLine("Adding animation {0} for model {1}", animname, mdl.Name); 
+														Console.WriteLine("Adding animation {0} for model {1}", animname, mdl.Name);
 													}
 												}
 											}
@@ -352,12 +367,50 @@ namespace USplit
 										{
 											foreach (NJS_OBJECT child in mdl.Children)
 											{
-												File.Delete(dir + "\\basicmodels\\" + child.Name + model_extension);
+												if (!skiplabels)
+													File.Delete(dir + "\\basicmodels\\" + child.Name + model_extension);
+												else
+												{
+													if (File.Exists((dir + "\\basicmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension)))
+														File.Delete(dir + "\\basicmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+													else
+													{
+														int childaddr = int.Parse(child.Name.Substring(7, child.Name.Length - 7), NumberStyles.AllowHexSpecifier);
+														//Console.WriteLine("Deleting at address :{0}", childaddr.ToString("X8"));
+														foreach (var item in addresslist)
+														{
+															if (item.Key == childaddr)
+															{
+																ItemDescriptor v2 = item.Value;
+																//Console.WriteLine("Deleting file: {0}", dir + "\\basicmodels\\" + v2.ObjectName + model_extension);
+																File.Delete(dir + "\\basicmodels\\" + v2.ObjectName + model_extension);
+															}
+														}
+													}
+												}
 											}
 										}
 										if (mdl.Sibling != null)
 										{
-											File.Delete(dir + "\\basicmodels\\" + mdl.Sibling.Name + model_extension);
+											if (!skiplabels)
+												File.Delete(dir + "\\basicmodels\\" + mdl.Sibling.Name + model_extension);
+											else
+											{
+												if (File.Exists(dir + "\\basicmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension))
+													File.Delete(dir + "\\basicmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+												else
+												{
+													foreach (var item in addresslist)
+													{
+														if (item.Key == int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier))
+														{
+															ItemDescriptor v2 = item.Value;
+															//Console.WriteLine("Deleting file: {0}", dir + "\\basicmodels\\" + v2.ObjectName + model_extension);
+															File.Delete(dir + "\\basicmodels\\" + v2.ObjectName + model_extension);
+														}
+													}
+												}
+											}
 										}
 									}
 									catch (Exception ex)
@@ -389,7 +442,8 @@ namespace USplit
 							{
 								foreach (COL col in land.COL)
 								{
-									File.Delete(dir + "\\basicmodels\\" + col.Model.Name + model_extension);
+									if (!skiplabels) File.Delete(dir + "\\basicmodels\\" + col.Model.Name + model_extension);
+									else File.Delete(dir + "\\basicmodels\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
 									//Console.WriteLine("Deleting file {0}", dir + "\\" + col.Model.Name + model_extension);
 								}
 							}
@@ -397,7 +451,16 @@ namespace USplit
 							{
 								foreach (GeoAnimData anim in land.Anim)
 								{
-									File.Delete(dir + "\\basicmodels\\" + anim.Model.Name + model_extension);
+									if (!skiplabels)
+									{
+										File.Delete(dir + "\\basicmodels\\" + anim.Model.Name + model_extension);
+										File.Delete(dir + "\\motions\\" + anim.Animation.Name + ".saanim");
+									}
+									else
+									{
+										File.Delete(dir + "\\basicmodels\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\motions\\" + anim.Animation.Name.Substring(10, anim.Animation.Name.Length - 10) + ".saanim");
+									}
 									//Console.WriteLine("Deleting file {0}", dir + "\\" + anim.Model.Name + model_extension);
 								}
 							}
