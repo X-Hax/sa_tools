@@ -1,4 +1,6 @@
-﻿namespace SonicRetro.SAModel.SAMDL
+﻿using System.Windows.Forms.VisualStyles;
+
+namespace SonicRetro.SAModel.SAMDL
 {
 	partial class MainForm
 	{
@@ -200,6 +202,7 @@
             this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.loadAnimationToolStripMenuItem.Text = "Load Animation...";
             this.loadAnimationToolStripMenuItem.Click += new System.EventHandler(this.loadAnimationToolStripMenuItem_Click);
+			this.loadAnimationToolStripMenuItem.Enabled = false;
             // 
             // toolStripSeparator2
             // 
