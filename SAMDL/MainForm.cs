@@ -1019,25 +1019,22 @@ namespace SonicRetro.SAModel.SAMDL
 		private void PreviousAnimation()
 		{
 			if (animations == null) return;
-			{
-				animnum--;
-				animframe = 0;
-				if (animnum == -2) animnum = animations.Count - 1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-				if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawEntireModel();
-			}
+			animnum--;
+			if (animnum == -2) animnum = animations.Count - 1;
+			if (animnum > -1)
+				animation = animations[animnum];
+			else
+				animation = null;
+			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			animframe = 0;
+			DrawEntireModel();
 		}
 
 		private void NextAnimation()
 		{
 			if (animations == null) return;
 			animnum++;
-			animframe = 0;
 			if (animnum == animations.Count) animnum = -1;
 			if (animnum > -1)
 				animation = animations[animnum];
@@ -1045,6 +1042,7 @@ namespace SonicRetro.SAModel.SAMDL
 				animation = null;
 			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			animframe = 0;
 			DrawEntireModel();
 		}
 
@@ -1054,12 +1052,14 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe++;
 			if (animframe == animation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModel();
 			DrawEntireModel();
 		}
 
 		private void PrevFrame()
 		{
 			if (animations == null || animation == null) return;
+			animframe--;
 			if (animframe < 0) animframe = animation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
@@ -2347,6 +2347,7 @@ namespace SonicRetro.SAModel.SAMDL
 						else
 							animations.Add(anim);
 					}
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 				}
 		}
 
