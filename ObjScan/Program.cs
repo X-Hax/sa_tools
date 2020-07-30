@@ -24,7 +24,7 @@ namespace ObjScan
 			Vertex pos;
 			Vertex scl;
 			flags = ByteConverter.ToInt32(datafile, address);
-			if (flags > 0x3FFF || flags <= 0) return false;
+			if (flags > 0x3FFF || flags < 0) return false;
 			attach = ByteConverter.ToUInt32(datafile, address + 4);
 			if (attach != 0)
 			{
@@ -32,7 +32,7 @@ namespace ObjScan
 				if (attach > (uint)datafile.Length + imageBase - 52) return false;
 				vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
 				if (vertices > (uint)datafile.Length + imageBase - 52) return false;
-				if (vertices != 0 && vertices < imageBase) return false;
+				if (vertices < imageBase) return false;
 				normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
 				if (normals != 0 && normals < imageBase) return false;
 				if (normals > (uint)datafile.Length + imageBase - 52) return false;
@@ -42,18 +42,18 @@ namespace ObjScan
 				if (meshlists != 0 && meshlists < imageBase) return false;
 				if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
 				mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
-				if (mesh_count > 128 || mesh_count < 0) return false;
+				if (mesh_count > 2048 || mesh_count < 0) return false;
 				mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
-				if (mat_count > 128 || mat_count < 0) return false;
+				if (mat_count > 2048 || mat_count < 0) return false;
 			}
 			pos = new Vertex(datafile, address + 8);
 			if (pos.X < -100000 || pos.X > 100000) return false;
 			if (pos.Y < -100000 || pos.Y > 100000) return false;
 			if (pos.Z < -100000 || pos.Z > 100000) return false;
 			scl = new Vertex(datafile, address + 0x20);
-			if (scl.X < 0 || scl.X > 10000) return false;
-			if (scl.Y < 0 || scl.Y > 10000) return false;
-			if (scl.Z < 0 || scl.Z > 10000) return false;
+			if (scl.X <= 0 || scl.X > 10000) return false;
+			if (scl.Y <= 0 || scl.Y > 10000) return false;
+			if (scl.Z <= 0 || scl.Z > 10000) return false;
 			child = ByteConverter.ToUInt32(datafile, address + 0x2C);
 			sibling = ByteConverter.ToUInt32(datafile, address + 0x30);
 			if (child > (uint)address + imageBase) return false;
@@ -62,9 +62,9 @@ namespace ObjScan
 			if (sibling > (uint)datafile.Length + imageBase - 52) return false;
 			if (child != 0 && child < imageBase) return false;
 			if (sibling != 0 && sibling < imageBase) return false;
-			if (attach == 0 && child == 0 && sibling == 0) return false;
 			if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, dir, model_extension, false)) return false;
 			if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, dir, model_extension, false)) return false;
+			if (attach == 0 && flags == 0) return false;
 			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
 			if (child != 0) File.Delete(dir + "\\" + (child - imageBase).ToString("X") + model_extension);
 			if (sibling != 0) File.Delete(dir + "\\" + (sibling - imageBase).ToString("X") + model_extension);
@@ -243,8 +243,8 @@ namespace ObjScan
 			Directory.CreateDirectory(dir);
 			for (int u = 0; u < datafile.Length - 52; u += 4)
 			{
-				address = u;
 				//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
+				address = u;
 				//Console.WriteLine("Address: {0}", address.ToString("X"));
 				fileOutputPath = dir + "\\" + address.ToString("X8");
 				if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
@@ -276,11 +276,13 @@ namespace ObjScan
 								{
 									foreach (NJS_OBJECT child in mdl.Children)
 									{
+										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 									}
 								}
 								if (mdl.Sibling != null)
 								{
+									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 								}
 							}
@@ -299,9 +301,9 @@ namespace ObjScan
 							break;*/
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					Console.WriteLine("{0} at {1} extraction failed", type, address.ToString("X8"));//, ex.ToString());
+					Console.WriteLine("{0} at {1} extraction failed: {2}", type, address.ToString("X8"), ex.ToString());
 				}
 			}
 			//Filter out landtable stuff
