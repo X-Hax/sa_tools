@@ -18,6 +18,11 @@ namespace SA_Tools
 		public bool Compressed { get; set; }
 		[IniName("bigendian")]
 		public bool BigEndian { get; set; }
+		[IniName("reverse")]
+		public bool Reverse { get; set; }
+		[IniName("offset")]
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint StartOffset { get; set; }
 		[IniName("game")]
 		[DefaultValue(Game.SADX)]
 		public Game Game { get; set; }
