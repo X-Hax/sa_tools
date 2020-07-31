@@ -17,8 +17,16 @@ namespace SA_Tools.Split
 			try
 #endif
 			{
-				byte[] datafile = File.ReadAllBytes(datafilename);
+				byte[] datafile;
+				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				if (inifile.StartOffset != 0)
+				{
+					byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
+					datafile_temp.CopyTo(datafile_new, inifile.StartOffset);
+					datafile = datafile_new;
+				}
+				else datafile = datafile_temp;
 				if (inifile.MD5 != null && inifile.MD5.Count > 0)
 				{
 					string datahash = HelperFunctions.FileHash(datafile);
@@ -29,6 +37,7 @@ namespace SA_Tools.Split
 					}
 				}
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
+				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
