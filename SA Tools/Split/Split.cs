@@ -152,8 +152,16 @@ namespace SA_Tools.Split
 							}
 							break;
 						case "animation":
-							new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
-								.Save(fileOutputPath);
+							if (customProperties.ContainsKey("shortrot"))
+							{
+								new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc, ShortRot = bool.Parse(customProperties["shortrot"]) }
+									.Save(fileOutputPath);
+							}
+							else
+							{
+								new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
+									.Save(fileOutputPath);
+							}
 							break;
 						case "objlist":
 							{
