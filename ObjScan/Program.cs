@@ -260,12 +260,38 @@ namespace ObjScan
 							{
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+								if (mdl.Children.Count > 0)
+								{
+									foreach (NJS_OBJECT child in mdl.Children)
+									{
+										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+									}
+								}
+								if (mdl.Sibling != null)
+								{
+									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+								}
 							}
 							break;
 						case "basicmodel":
 							{
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
+								if (mdl.Children.Count > 0)
+								{
+									foreach (NJS_OBJECT child in mdl.Children)
+									{
+										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+									}
+								}
+								if (mdl.Sibling != null)
+								{
+									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+								}
 							}
 							break;
 						case "basicdxmodel":
