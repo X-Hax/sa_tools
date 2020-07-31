@@ -8,6 +8,7 @@ namespace SonicRetro.SAModel
 {
 	public class NJS_ACTION
 	{
+		public string Name { get; set; }
 		public NJS_OBJECT Model { get; private set; }
 		public NJS_MOTION Animation { get; private set; }
 
@@ -25,9 +26,13 @@ namespace SonicRetro.SAModel
 			else
 			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 				Model.CountAnimated(), labels);
+			if (labels.ContainsKey(address))
+				Name = labels[address];
+			else Name = "action_" + address.ToString("X8");
 		}
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
 		{
+			Name = "action_" + animation.Name;
 			Model = model;
 			Animation = animation;
 		}
