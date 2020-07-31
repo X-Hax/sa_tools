@@ -369,6 +369,9 @@ namespace SonicRetro.SAModel.DataExtractor
 			{
 				ConvertToStruct(item, outdir);
 			}
+			string finished = "Struct conversion finished!";
+			if (outdir != "") finished += "\nConverted files are saved to " + outdir + ".";
+			MessageBox.Show(finished, "Struct Converter", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
