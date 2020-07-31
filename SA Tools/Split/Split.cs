@@ -20,6 +20,10 @@ namespace SA_Tools.Split
 				byte[] datafile;
 				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(inifilename) + "_labels.txt");
+				Dictionary<int, string> labels = new Dictionary<int, string>();
+				if (File.Exists(listfile))
+					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
 				if (inifile.StartOffset != 0)
 				{
 					byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
@@ -82,11 +86,11 @@ namespace SA_Tools.Split
 					switch (type)
 					{
 						case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
+							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
 							break;
 						case "model":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -98,7 +102,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -110,7 +114,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicdxmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -122,7 +126,7 @@ namespace SA_Tools.Split
 							break;
 						case "chunkmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -134,7 +138,7 @@ namespace SA_Tools.Split
 							break;
 						case "gcmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -146,21 +150,23 @@ namespace SA_Tools.Split
 							break;
 						case "action":
 							{
-								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-								ani.Animation.Name = filedesc;
+								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
+								if (!labels.ContainsValue(ani.Animation.Name)) ani.Animation.Name = filedesc;
 								ani.Animation.Save(fileOutputPath);
 							}
 							break;
 						case "animation":
 							if (customProperties.ContainsKey("shortrot"))
 							{
-								new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc, ShortRot = bool.Parse(customProperties["shortrot"]) }
-									.Save(fileOutputPath);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
+								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								mot.Save(fileOutputPath);
 							}
 							else
 							{
-								new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
-									.Save(fileOutputPath);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels);
+								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								mot.Save(fileOutputPath);
 							}
 							break;
 						case "objlist":
