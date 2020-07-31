@@ -497,7 +497,8 @@
             "SA1 (Dreamcast)",
             "SA1 Autodemo",
             "SADX (PC)",
-            "SA2 (Dreamcast)",
+			"SADX (X360 prototype)",
+			"SA2 (Dreamcast)",
             "SA2: The Trial (Dreamcast)",
             "SA2 (PC)"});
             this.comboBoxGameSelect.Location = new System.Drawing.Point(7, 32);

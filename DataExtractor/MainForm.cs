@@ -385,12 +385,15 @@ namespace SonicRetro.SAModel.DataExtractor
 					DataMappingFolder = "SADXPC";
 					break;
 				case 3:
-					DataMappingFolder = "SA2";
+					DataMappingFolder = "SADXX360";
 					break;
 				case 4:
-					DataMappingFolder = "SA2TheTrial";
+					DataMappingFolder = "SA2";
 					break;
 				case 5:
+					DataMappingFolder = "SA2TheTrial";
+					break;
+				case 6:
 					DataMappingFolder = "SA2PC";
 					break;
 			}
