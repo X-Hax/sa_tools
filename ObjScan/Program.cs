@@ -73,18 +73,17 @@ namespace ObjScan
 
 		static void Main(string[] args)
 		{
-			string[] arguments = Environment.GetCommandLineArgs();
 			List<int> landtablelist = new List<int>();
-			Game game = Game.SADX;
-			string filename = "";
+			Game game;
+			string filename;
 			string dir;
 			int address;
 			bool bigendian = false;
 			bool reverse = false;
 			uint startoffset = 0;
 			byte[] datafile;
-			string type = "";
-			uint imageBase = 0;
+			string type;
+			uint imageBase;
 			string model_extension = ".sa1mdl";
 			if (args.Length == 0)
 			{
@@ -115,7 +114,8 @@ namespace ObjScan
 					bigendian = inifile.BigEndian;
 					reverse = inifile.Reverse;
 					startoffset = inifile.StartOffset;
-					imageBase = inifile.ImageBase.Value;
+					if (inifile.ImageBase.HasValue) imageBase = inifile.ImageBase.Value;
+					else imageBase = 0;
 					foreach (KeyValuePair<string, SA_Tools.FileInfo> item in new List<KeyValuePair<string, SA_Tools.FileInfo>>(inifile.Files))
 					{
 						if (string.IsNullOrEmpty(item.Key)) continue;
@@ -186,15 +186,7 @@ namespace ObjScan
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
-			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
-			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
-			if (startoffset != 0)
-				Console.Write(", Offset: {0}", startoffset);
-			if (bigendian)
-				Console.Write(", Big Endian");
-			if (reverse)
-				Console.Write(", Reversed");
-			Console.Write(System.Environment.NewLine);
+			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;			
 			//bool SA2 = game == Game.SA2 | game == Game.SA2B;
 			ModelFormat modelfmt = ModelFormat.BasicDX;
 			LandTableFormat landfmt = LandTableFormat.SADX;
@@ -236,9 +228,18 @@ namespace ObjScan
 				datafile = datafile_new;
 			}
 			else datafile = datafile_temp;
+			if (imageBase == 0) imageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
 			string fileOutputPath;
 			dir = Environment.CurrentDirectory + "\\" + Path.GetFileNameWithoutExtension(filename);
 			Directory.CreateDirectory(dir);
+			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
+			if (startoffset != 0)
+				Console.Write(", Offset: {0}", startoffset);
+			if (bigendian)
+				Console.Write(", Big Endian");
+			if (reverse)
+				Console.Write(", Reversed");
+			Console.Write(System.Environment.NewLine);
 			for (int u = 0; u < datafile.Length - 52; u += 4)
 			{
 				//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
@@ -262,13 +263,13 @@ namespace ObjScan
 								{
 									foreach (NJS_OBJECT child in mdl.Children)
 									{
-										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 									}
 								}
 								if (mdl.Sibling != null)
 								{
-									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 								}
 							}
@@ -281,13 +282,13 @@ namespace ObjScan
 								{
 									foreach (NJS_OBJECT child in mdl.Children)
 									{
-										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 									}
 								}
 								if (mdl.Sibling != null)
 								{
-									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 								}
 							}
@@ -300,13 +301,13 @@ namespace ObjScan
 								{
 									foreach (NJS_OBJECT child in mdl.Children)
 									{
-										Console.WriteLine("Deleting file {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 									}
 								}
 								if (mdl.Sibling != null)
 								{
-									Console.WriteLine("Deleting file {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 								}
 							}
@@ -333,7 +334,7 @@ namespace ObjScan
 			//Filter out landtable stuff
 			foreach (int landaddr in landtablelist)
 			{
-				Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
+				//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
 				LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
 				if (land.COL.Count > 0)
 				{
@@ -348,7 +349,7 @@ namespace ObjScan
 					foreach (GeoAnimData anim in land.Anim)
 					{
 						File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-						Console.WriteLine("Deleting landtable object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+						Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
 					}
 				}
 			}
