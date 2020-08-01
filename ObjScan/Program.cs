@@ -89,16 +89,16 @@ namespace ObjScan
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts models from it.\nOnly SA1/SADX models are supported at the moment.");
-				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE>\n");
+				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE>");
 				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [offset]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.");
-				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel\n");
-				Console.WriteLine("[offset]: Start offset (hexadecimal)\n");
+				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel");
+				Console.WriteLine("[offset]: Start offset (hexadecimal).\n");
 				Console.WriteLine("Cleaning up landtable objects:");
-				Console.WriteLine("If a split INI file is present in the folder with the binary file, the scanner will clean up landtable models.\n");
+				Console.WriteLine("If a split INI file is used, the scanner will clean up landtable models for all levels defined in the INI file.\n");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
 				return;
