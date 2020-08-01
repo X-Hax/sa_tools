@@ -54,120 +54,6 @@ namespace USplit
 			int entry = addresslist.Keys.ToList().IndexOf(address);
 			return addresslist.Keys.ToList()[entry + 1];
 		}
-		static void TransferLabels(LandTable landtable, Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> destinationlist, int NewLandAddress)
-		{
-			int OldLandAddress = int.Parse(landtable.Name.Substring(9, 8), NumberStyles.AllowHexSpecifier);
-			if (landtable.COL != null && landtable.COL.Count > 0)
-			{
-				int OldColAddress = int.Parse(landtable.COLName.Substring(8, 8), NumberStyles.AllowHexSpecifier);
-				int NewColAddress = NewLandAddress - (OldLandAddress - OldColAddress);
-				AddTransferredLabel(destinationlist, NewColAddress, addresslist[OldColAddress].ObjectName);
-			}
-			if (landtable.Anim != null && landtable.Anim.Count > 0)
-			{
-				int OldAnimAddress = int.Parse(landtable.AnimName.Substring(9, 8), NumberStyles.AllowHexSpecifier);
-				int NewAnimAddress = NewLandAddress - (OldLandAddress - OldAnimAddress);
-				AddTransferredLabel(destinationlist, NewAnimAddress, addresslist[OldAnimAddress].ObjectName);
-			}
-			
-		}
-		static void TransferLabels(NJS_OBJECT mdl, Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> destinationlist, int NewObjAddress)
-		{
-			int OldObjAddress = int.Parse(mdl.Name.Substring(6, 8), NumberStyles.AllowHexSpecifier);
-			if (mdl.Attach != null)
-			{
-				int OldAttAddress = int.Parse(mdl.Attach.Name.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-				int NewAttAddress = NewObjAddress - (OldObjAddress - OldAttAddress);
-				AddTransferredLabel(destinationlist, NewAttAddress, addresslist[OldAttAddress].ObjectName);
-				if (mdl.Attach is BasicAttach)
-				{
-					BasicAttach attach = (BasicAttach)mdl.Attach;
-					if (attach.Vertex != null)
-					{
-						int OldVertAddress = int.Parse(attach.VertexName.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-						int NewVertAddress = NewObjAddress - (OldObjAddress - OldVertAddress);
-						AddTransferredLabel(destinationlist, NewVertAddress, addresslist[OldVertAddress].ObjectName);
-					}
-					if (attach.Normal != null)
-					{
-						int OldNormAddress = int.Parse(attach.NormalName.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-						int NewNormAddress = NewObjAddress - (OldObjAddress - OldNormAddress);
-						AddTransferredLabel(destinationlist, NewNormAddress, addresslist[OldNormAddress].ObjectName);
-					}
-					if (attach.Material != null)
-					{
-						int OldMatAddress = int.Parse(attach.MaterialName.Substring(9, 8), NumberStyles.AllowHexSpecifier);
-						int NewMatAddress = NewObjAddress - (OldObjAddress - OldMatAddress);
-						AddTransferredLabel(destinationlist, NewMatAddress, addresslist[OldMatAddress].ObjectName);
-					}
-					if (attach.Mesh != null)
-					{
-						int OldMeshAddress = int.Parse(attach.MeshName.Substring(9, 8), NumberStyles.AllowHexSpecifier);
-						int NewMeshAddress = NewObjAddress - (OldObjAddress - OldMeshAddress);
-						AddTransferredLabel(destinationlist, NewMeshAddress, addresslist[OldMeshAddress].ObjectName);
-						if (attach.Mesh.Count > 0)
-						{
-							foreach (NJS_MESHSET mesh in attach.Mesh)
-							{
-								if (mesh.Poly != null)
-								{
-									int OldPolyAddress = int.Parse(mesh.PolyName.Substring(5, 8), NumberStyles.AllowHexSpecifier);
-									int NewPolyAddress = NewObjAddress - (OldObjAddress - OldPolyAddress);
-									AddTransferredLabel(destinationlist, NewPolyAddress, addresslist[OldPolyAddress].ObjectName);
-								}
-								if (mesh.PolyNormal != null)
-								{
-									int OldVertNormalAddress = int.Parse(mesh.PolyNormalName.Substring(11, 8), NumberStyles.AllowHexSpecifier);
-									int NewVertNormalAddress = NewObjAddress - (OldObjAddress - OldVertNormalAddress);
-									AddTransferredLabel(destinationlist, NewVertNormalAddress, addresslist[OldVertNormalAddress].ObjectName);
-								}
-								if (mesh.VColor != null)
-								{
-									int OldVColorAddress = int.Parse(mesh.VColorName.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-									int NewVColorAddress = NewObjAddress - (OldObjAddress - OldVColorAddress);
-									AddTransferredLabel(destinationlist, NewVColorAddress, addresslist[OldVColorAddress].ObjectName);
-								}
-								if (mesh.UV != null)
-								{
-									int OldUVsAddress = int.Parse(mesh.UVName.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-									int NewUVsAddress = NewObjAddress - (OldObjAddress - OldUVsAddress);
-									AddTransferredLabel(destinationlist, NewUVsAddress, addresslist[OldUVsAddress].ObjectName);
-								}
-							}
-						}
-					}
-				}
-				if (mdl.Attach is ChunkAttach)
-				{
-					ChunkAttach attach = (ChunkAttach)mdl.Attach;
-					if (attach.Vertex != null)
-					{
-						int OldVertAddress = int.Parse(attach.VertexName.Substring(7, 8), NumberStyles.AllowHexSpecifier);
-						int NewVertAddress = NewObjAddress - (OldObjAddress - OldVertAddress);
-						AddTransferredLabel(destinationlist, NewVertAddress, addresslist[OldVertAddress].ObjectName);
-					}
-					if (attach.Poly != null)
-					{
-						int OldPolyAddress = int.Parse(attach.PolyName.Substring(5, 8), NumberStyles.AllowHexSpecifier);
-						int NewPolyAddress = NewObjAddress - (OldObjAddress - OldPolyAddress);
-						AddTransferredLabel(destinationlist, NewPolyAddress, addresslist[OldPolyAddress].ObjectName);
-					}
-				}
-			}
-		}
-		static void TransferLabels(NJS_MOTION mot, Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> destinationlist, int NewMotAddress)
-		{
-			//Not implemented in SAModel
-			return;
-			int OldMotAddress = int.Parse(mot.Name.Substring(10, 8), NumberStyles.AllowHexSpecifier);
-		}
-		static void TransferLabels(NJS_ACTION action, Dictionary<int, ItemDescriptor> addresslist, Dictionary<int, string> destinationlist, int NewActAddress)
-		{
-			int OldActAddress = int.Parse(action.Name.Substring(6, 8), NumberStyles.AllowHexSpecifier);
-			int OldMotAddress = int.Parse(action.Animation.Name.Substring(10, 8), NumberStyles.AllowHexSpecifier);
-			int NewMotAddress = NewActAddress - (OldActAddress - OldMotAddress);
-			AddTransferredLabel(destinationlist, NewMotAddress, addresslist[OldMotAddress].ObjectName);
-		}
 		static void SplitListToINI(Dictionary<int, ItemDescriptor> addresslist, string filename, Game game, uint imageBase, bool bigendian, bool reverse, int address, List<string> deleteditems, Dictionary<string, ItemParams>itemparamslist)
 		{
 			Console.WriteLine("Creating split INI file: {0}", filename);
@@ -196,6 +82,7 @@ namespace USplit
 						sw.WriteLine("filename=motions/" + v.ObjectName + ".saanim");
 						break;
 					case "NJS_ACTION":
+						if (!itemparamslist.ContainsKey(v.ObjectName)) continue;
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=action");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
@@ -255,7 +142,7 @@ namespace USplit
 								addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
 								labellist.Add(value, name);
 							}
-							else addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = value.ToString("X8") });
+							else addresslist.Add(value, new ItemDescriptor { ObjectType = type, ObjectName = name });
 							//Console.WriteLine("Added key {0} value {1}", value.ToString("X"), arr[arr.Length - 1]);
 						}
 					}
@@ -415,7 +302,7 @@ namespace USplit
 						{
 							if (args[args.Length - 1] == "-skiplabels" || args[args.Length - 2] == "-skiplabels") skiplabels = true;
 							if (args[args.Length - 1] == "-noanims") noanims = true;
-						}						
+						}
 						Dictionary<int, ItemDescriptor> addresslist = new Dictionary<int, ItemDescriptor>(); //Main list of addresses, types and labels
 						Dictionary<int, string> labellist = new Dictionary<int, string>(); //List of labels for creating objects in SA Tools
 						Dictionary<string, List<string>> actionlist = new Dictionary<string, List<string>>(); //List of actions to tell which motions to assign/delete later
