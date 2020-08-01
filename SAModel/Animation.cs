@@ -69,6 +69,7 @@ namespace SonicRetro.SAModel
 
 		public int Frames { get; set; }
 		public string Name { get; set; }
+		public string MdataName { get; set; }
 		public int ModelParts { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
 		public bool ShortRot { get; set; }
@@ -78,6 +79,7 @@ namespace SonicRetro.SAModel
 		public NJS_MOTION()
 		{
 			Name = "animation_" + Extensions.GenerateIdentifier();
+			MdataName = Name + "_mdat";
 		}
 
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false)
@@ -105,8 +107,13 @@ namespace SonicRetro.SAModel
 			ShortRot = shortrot;
 			int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+			if (labels != null && labels.ContainsKey(address))
+				MdataName = labels[address];
+			else
+				MdataName = Name + "_mdat";
 			for (int i = 0; i < nummodels; i++)
 			{
+				int address_orig = address;
 				AnimModelData data = new AnimModelData();
 				bool hasdata = false;
 				uint posoff = 0;
@@ -222,6 +229,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)posoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -237,6 +245,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)rotoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							if (shortrot)
@@ -260,6 +269,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)scloff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -275,6 +285,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)vecoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Vector.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -291,6 +302,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)vertoff;
+						address_orig = tmpaddr;
 						List<int> ptrs = new List<int>();
 						for (int j = 0; j < frames; j++)
 						{
@@ -344,6 +356,7 @@ namespace SonicRetro.SAModel
 								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
 						}
 						tmpaddr = (int)normoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							Vertex[] verts = new Vertex[vtxcount];
@@ -366,6 +379,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)targoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Target.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -381,6 +395,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)rolloff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Roll.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -396,6 +411,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)angoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Angle.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -411,6 +427,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)coloff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Color.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToUInt32(file, tmpaddr + 4));
@@ -426,6 +443,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)intoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Intensity.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToSingle(file, tmpaddr + 4));
@@ -441,6 +459,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)spotoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Spot.Add(ByteConverter.ToInt32(file, tmpaddr), new Spotlight(file, tmpaddr + 4));
@@ -456,6 +475,7 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)pntoff;
+						address_orig = tmpaddr;
 						for (int j = 0; j < frames; j++)
 						{
 							data.Point.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8) });
@@ -465,7 +485,25 @@ namespace SonicRetro.SAModel
 					address += 4;
 				}
 				if (hasdata)
+				{
+					if (labels.ContainsKey(address_orig)) data.MkeyName = labels[address_orig];
+					else 
+					{
+						if (data.Position.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_pos";
+						if (data.Rotation.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_rot";
+						if (data.Scale.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_scl";
+						if (data.Vector.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_vec";
+						if (data.Normal.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_norm";
+						if (data.Target.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_targ";
+						if (data.Roll.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_roll";
+						if (data.Angle.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_ang";
+						if (data.Color.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_col";
+						if (data.Intensity.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_int";
+						if (data.Spot.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_spot";
+						if (data.Point.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_pnt";
+					}
 					Models.Add(i, data);
+				}
 			}
 			ModelParts = nummodels;
 		}
@@ -1561,6 +1599,7 @@ namespace SonicRetro.SAModel
 
 	public class AnimModelData
 	{
+		public string MkeyName;
 		public Dictionary<int, Vertex> Position = new Dictionary<int, Vertex>();
 		public Dictionary<int, Rotation> Rotation = new Dictionary<int, Rotation>();
 		public Dictionary<int, Vertex> Scale = new Dictionary<int, Vertex>();
