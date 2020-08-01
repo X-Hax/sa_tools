@@ -117,7 +117,7 @@ namespace SonicRetro.SAModel.DataExtractor
 			}
 		}
 
-		void ConvertToStruct(string FileName, string outdir = "")
+		void ConvertToStruct(string FileName, bool NJA = false, string outdir = "")
 		{
 			string outpath;
 			if (outdir != "")
@@ -125,7 +125,7 @@ namespace SonicRetro.SAModel.DataExtractor
 				Directory.CreateDirectory(outdir);
 				outpath = Path.Combine(outdir, Path.GetFileNameWithoutExtension(FileName) + ".c");
 			}
-			else outpath = FileName + ".c";
+			else outpath = Path.Combine(Path.GetDirectoryName(FileName), Path.GetFileNameWithoutExtension(FileName) + ".c");
 			string extension = Path.GetExtension(FileName);
 			bool dx = false;
 			if (comboBoxFormat.SelectedIndex == 1) dx = true;
@@ -239,8 +239,15 @@ namespace SonicRetro.SAModel.DataExtractor
 						{
 							anim.ToStructVariables(sw);
 						}
+						if (NJA)
+						{
+							using (StreamWriter sw2 = File.CreateText(Path.Combine(Path.GetDirectoryName(outpath), Path.GetFileNameWithoutExtension(outpath) + ".nja")))
+							{
+								model.ToNJA(sw2, dx, labels_m, null);
+							}
+						}
 					}
-					break;
+						break;
 				case ".saanim":
 					NJS_MOTION animation = NJS_MOTION.Load(FileName);
 					using (StreamWriter sw = File.CreateText(outpath))
@@ -342,6 +349,7 @@ namespace SonicRetro.SAModel.DataExtractor
 						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownKey.Value, (ModelFormat)comboBoxFormat.SelectedIndex, null);
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxAuthor.Text, textBoxDescription.Text, null, (ModelFormat)comboBoxFormat.SelectedIndex);
 						if (comboBoxExportAs.SelectedIndex == 1) ConvertToStruct(sd.FileName);
+						else if (comboBoxExportAs.SelectedIndex == 2) ConvertToStruct(sd.FileName, true);
 					}
 					break;
 			}
@@ -367,7 +375,7 @@ namespace SonicRetro.SAModel.DataExtractor
 			}
 			foreach (string item in listBoxStructConverter.Items)
 			{
-				ConvertToStruct(item, outdir);
+				ConvertToStruct(item, checkBoxNJA.Checked, outdir);
 			}
 			string finished = "Struct conversion finished!";
 			if (outdir != "") finished += "\nConverted files are saved to " + outdir + ".";

@@ -47,12 +47,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.comboBoxExportAs = new System.Windows.Forms.ComboBox();
             this.groupBoxBinary = new System.Windows.Forms.GroupBox();
-            this.numericUpDownKey = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.NumericUpDownAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBoxNJA = new System.Windows.Forms.CheckBox();
             this.buttonRemoveAllBatch = new System.Windows.Forms.Button();
             this.buttonRemoveSelBatch = new System.Windows.Forms.Button();
             this.buttonConvertBatch = new System.Windows.Forms.Button();
@@ -69,14 +68,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button_AddFilesSplit = new System.Windows.Forms.Button();
             this.listBox_SplitFiles = new System.Windows.Forms.ListBox();
+            this.numericUpDownKey = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.NumericUpDownAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.fileSelector1 = new SonicRetro.SAModel.DataExtractor.FileSelector();
             this.groupBoxBinary.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDownAddress)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDownAddress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -264,7 +265,8 @@
             this.comboBoxExportAs.FormattingEnabled = true;
             this.comboBoxExportAs.Items.AddRange(new object[] {
             "SA Tools file",
-            "SA Tools file + C structs"});
+            "SA Tools file + C structs",
+            "SA Tools file + C structs + NJA"});
             this.comboBoxExportAs.Location = new System.Drawing.Point(74, 361);
             this.comboBoxExportAs.Name = "comboBoxExportAs";
             this.comboBoxExportAs.Size = new System.Drawing.Size(264, 21);
@@ -290,22 +292,6 @@
             this.groupBoxBinary.TabIndex = 39;
             this.groupBoxBinary.TabStop = false;
             this.groupBoxBinary.Text = "Binary Data";
-            // 
-            // numericUpDownKey
-            // 
-            this.numericUpDownKey.Hexadecimal = true;
-            this.numericUpDownKey.Location = new System.Drawing.Point(64, 20);
-            this.numericUpDownKey.Name = "numericUpDownKey";
-            this.numericUpDownKey.Size = new System.Drawing.Size(98, 20);
-            this.numericUpDownKey.TabIndex = 24;
-            // 
-            // NumericUpDownAddress
-            // 
-            this.NumericUpDownAddress.Hexadecimal = true;
-            this.NumericUpDownAddress.Location = new System.Drawing.Point(64, 46);
-            this.NumericUpDownAddress.Name = "NumericUpDownAddress";
-            this.NumericUpDownAddress.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDownAddress.TabIndex = 21;
             // 
             // tabControl1
             // 
@@ -354,6 +340,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.checkBoxNJA);
             this.tabPage2.Controls.Add(this.buttonRemoveAllBatch);
             this.tabPage2.Controls.Add(this.buttonRemoveSelBatch);
             this.tabPage2.Controls.Add(this.buttonConvertBatch);
@@ -369,6 +356,17 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Struct Converter";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxNJA
+            // 
+            this.checkBoxNJA.AutoSize = true;
+            this.checkBoxNJA.Location = new System.Drawing.Point(11, 353);
+            this.checkBoxNJA.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxNJA.Name = "checkBoxNJA";
+            this.checkBoxNJA.Size = new System.Drawing.Size(156, 17);
+            this.checkBoxNJA.TabIndex = 46;
+            this.checkBoxNJA.Text = "Also convert models to NJA";
+            this.checkBoxNJA.UseVisualStyleBackColor = true;
             // 
             // buttonRemoveAllBatch
             // 
@@ -420,9 +418,9 @@
             this.label2.Location = new System.Drawing.Point(5, 12);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(275, 13);
+            this.label2.Size = new System.Drawing.Size(353, 13);
             this.label2.TabIndex = 41;
-            this.label2.Text = "Batch export level, model and animation files to C structs.";
+            this.label2.Text = "Batch export level, model and animation files to C structs and Ninja ASCII.";
             // 
             // buttonAddBatch
             // 
@@ -497,8 +495,8 @@
             "SA1 (Dreamcast)",
             "SA1 Autodemo",
             "SADX (PC)",
-			"SADX (X360 prototype)",
-			"SA2 (Dreamcast)",
+            "SADX (X360 prototype)",
+            "SA2 (Dreamcast)",
             "SA2: The Trial (Dreamcast)",
             "SA2 (PC)"});
             this.comboBoxGameSelect.Location = new System.Drawing.Point(7, 32);
@@ -566,6 +564,22 @@
             this.listBox_SplitFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragDrop);
             this.listBox_SplitFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragEnter);
             // 
+            // numericUpDownKey
+            // 
+            this.numericUpDownKey.Hexadecimal = true;
+            this.numericUpDownKey.Location = new System.Drawing.Point(64, 20);
+            this.numericUpDownKey.Name = "numericUpDownKey";
+            this.numericUpDownKey.Size = new System.Drawing.Size(98, 20);
+            this.numericUpDownKey.TabIndex = 24;
+            // 
+            // NumericUpDownAddress
+            // 
+            this.NumericUpDownAddress.Hexadecimal = true;
+            this.NumericUpDownAddress.Location = new System.Drawing.Point(64, 46);
+            this.NumericUpDownAddress.Name = "NumericUpDownAddress";
+            this.NumericUpDownAddress.Size = new System.Drawing.Size(98, 20);
+            this.NumericUpDownAddress.TabIndex = 21;
+            // 
             // fileSelector1
             // 
             this.fileSelector1.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -594,8 +608,6 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBoxBinary.ResumeLayout(false);
             this.groupBoxBinary.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDownAddress)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -603,6 +615,8 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDownAddress)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).EndInit();
             this.ResumeLayout(false);
 
@@ -652,6 +666,7 @@
 		private System.Windows.Forms.Button buttonRemoveSelBatch;
 		private System.Windows.Forms.Button buttonClearAllSplit;
 		private System.Windows.Forms.Button buttonRemoveSplit;
+		private System.Windows.Forms.CheckBox checkBoxNJA;
 	}
 }
 
