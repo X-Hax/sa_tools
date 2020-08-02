@@ -64,7 +64,7 @@ namespace SonicRetro.SAModel
 	{
 		public const ulong SAANIM = 0x4D494E414153u;
 		public const ulong FormatMask = 0xFFFFFFFFFFFFu;
-		public const ulong CurrentVersion = 1;
+		public const ulong CurrentVersion = 2;
 		public const ulong SAANIMVer = SAANIM | (CurrentVersion << 56);
 
 		public int Frames { get; set; }
@@ -113,7 +113,6 @@ namespace SonicRetro.SAModel
 				MdataName = Name + "_mdat";
 			for (int i = 0; i < nummodels; i++)
 			{
-				int address_orig = address;
 				AnimModelData data = new AnimModelData();
 				bool hasdata = false;
 				uint posoff = 0;
@@ -229,7 +228,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)posoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.PositionName = labels[tmpaddr];
+						else data.PositionName = Name + "_mkey_" + i.ToString() + "_pos";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -245,7 +246,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)rotoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.RotationName = labels[tmpaddr];
+						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot";
 						for (int j = 0; j < frames; j++)
 						{
 							if (shortrot)
@@ -269,7 +272,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)scloff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.ScaleName = labels[tmpaddr];
+						else data.ScaleName = Name + "_mkey_" + i.ToString() + "_scl";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -285,7 +290,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)vecoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.VectorName = labels[tmpaddr];
+						else data.VectorName = Name + "_mkey_" + i.ToString() + "_vec";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Vector.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -302,11 +309,17 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)vertoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.VertexName = labels[tmpaddr];
+						else data.VertexName = Name + "_mkey_" + i.ToString() + "_vert";
 						List<int> ptrs = new List<int>();
+						data.VertexItemName = new string[frames];
 						for (int j = 0; j < frames; j++)
 						{
 							ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+							if (labels != null && labels.ContainsKey((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase)))
+								data.VertexItemName[j] = labels[(int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase)];
+							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString();
 							tmpaddr += 8;
 						}
 						if (ptrs.Count > 1)
@@ -338,6 +351,7 @@ namespace SonicRetro.SAModel
 					if (normoff != 0 && frames > 0)
 					{
 						hasdata = true;
+						data.NormalItemName = new string[frames];
 						if (vtxcount < 0)
 						{
 							tmpaddr = (int)normoff;
@@ -356,11 +370,16 @@ namespace SonicRetro.SAModel
 								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
 						}
 						tmpaddr = (int)normoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.NormalName = labels[tmpaddr];
+						else data.NormalName = Name + "_mkey_" + i.ToString() + "_norm";
 						for (int j = 0; j < frames; j++)
 						{
 							Vertex[] verts = new Vertex[vtxcount];
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
+							if (labels != null && labels.ContainsKey(newaddr))
+								data.NormalItemName[j] = labels[newaddr];
+							else data.NormalItemName[j] = Name + "_" + i.ToString() + "_nrm_" + j.ToString();
 							for (int k = 0; k < verts.Length; k++)
 							{
 								verts[k] = new Vertex(file, newaddr);
@@ -379,7 +398,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)targoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.TargetName = labels[tmpaddr];
+						else data.TargetName = Name + "_mkey_" + i.ToString() + "_target";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Target.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -395,7 +416,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)rolloff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.RollName = labels[tmpaddr];
+						else data.RollName = Name + "_mkey_" + i.ToString() + "_roll";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Roll.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -411,7 +434,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)angoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.AngleName = labels[tmpaddr];
+						else data.AngleName = Name + "_mkey_" + i.ToString() + "_ang";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Angle.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -427,7 +452,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)coloff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.ColorName = labels[tmpaddr];
+						else data.ColorName = Name + "_mkey_" + i.ToString() + "_col";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Color.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToUInt32(file, tmpaddr + 4));
@@ -443,7 +470,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)intoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.IntensityName = labels[tmpaddr];
+						else data.IntensityName = Name + "_mkey_" + i.ToString() + "_int";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Intensity.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToSingle(file, tmpaddr + 4));
@@ -459,7 +488,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)spotoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.SpotName = labels[tmpaddr];
+						else data.SpotName = Name + "_mkey_" + i.ToString() + "_spot";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Spot.Add(ByteConverter.ToInt32(file, tmpaddr), new Spotlight(file, tmpaddr + 4));
@@ -475,7 +506,9 @@ namespace SonicRetro.SAModel
 					{
 						hasdata = true;
 						tmpaddr = (int)pntoff;
-						address_orig = tmpaddr;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.PointName = labels[tmpaddr];
+						else data.PointName = Name + "_mkey_" + i.ToString() + "_point";
 						for (int j = 0; j < frames; j++)
 						{
 							data.Point.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8) });
@@ -486,22 +519,6 @@ namespace SonicRetro.SAModel
 				}
 				if (hasdata)
 				{
-					if (labels.ContainsKey(address_orig)) data.MkeyName = labels[address_orig];
-					else 
-					{
-						if (data.Position.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_pos";
-						if (data.Rotation.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_rot";
-						if (data.Scale.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_scl";
-						if (data.Vector.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_vec";
-						if (data.Normal.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_norm";
-						if (data.Target.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_targ";
-						if (data.Roll.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_roll";
-						if (data.Angle.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_ang";
-						if (data.Color.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_col";
-						if (data.Intensity.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_int";
-						if (data.Spot.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_spot";
-						if (data.Point.Count > 0) data.MkeyName = Name + "_" + i.ToString() + "_pnt";
-					}
 					Models.Add(i, data);
 				}
 			}
@@ -550,8 +567,43 @@ namespace SonicRetro.SAModel
 				int aniaddr = ByteConverter.ToInt32(file, 8);
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				int tmpaddr = BitConverter.ToInt32(file, 0xC);
-				if (tmpaddr != 0)
-					labels.Add(aniaddr, file.GetCString(tmpaddr));
+				if (version >= 2)
+				{
+					if (tmpaddr != 0)
+					{
+						bool finished = false;
+						while (!finished)
+						{
+							ChunkTypes type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
+							int chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
+							int nextchunk = tmpaddr + 8 + chunksz;
+							tmpaddr += 8;
+							byte[] chunk = new byte[chunksz];
+							Array.Copy(file, tmpaddr, chunk, 0, chunksz);
+							int chunkaddr = 0;
+							switch (type)
+							{
+								case ChunkTypes.Label:
+									while (ByteConverter.ToInt64(chunk, chunkaddr) != -1)
+									{
+										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr),
+											chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
+										chunkaddr += 8;
+									}
+									break;
+								case ChunkTypes.End:
+									finished = true;
+									break;
+							}
+							tmpaddr = nextchunk;
+						}
+					}
+				}
+				else
+				{
+					if (tmpaddr != 0)
+						labels.Add(aniaddr, file.GetCString(tmpaddr));
+				}
 				if (version > 0)
 					nummodels = BitConverter.ToInt32(file, 0x10);
 				else if (nummodels == -1)
@@ -628,6 +680,10 @@ namespace SonicRetro.SAModel
 					hasPos = true;
 					result.Align(4);
 					posoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.PositionName))
+						labels.Add(model.Value.PositionName, posoffs[model.Key]);
+					else
+						labels.Add(model.Value.PositionName + "_dup", posoffs[model.Key]);
 					posframes[model.Key] = model.Value.Position.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 					{
@@ -640,6 +696,10 @@ namespace SonicRetro.SAModel
 					hasRot = true;
 					result.Align(4);
 					rotoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.RotationName))
+						labels.Add(model.Value.RotationName, rotoffs[model.Key]);
+					else
+						labels.Add(model.Value.RotationName +"_dup", rotoffs[model.Key]);
 					rotframes[model.Key] = model.Value.Rotation.Count;
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 					{
@@ -662,6 +722,10 @@ namespace SonicRetro.SAModel
 					hasScl = true;
 					result.Align(4);
 					scloffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.ScaleName))
+						labels.Add(model.Value.ScaleName, scloffs[model.Key]);
+					else
+						labels.Add(model.Value.ScaleName + "_dup", scloffs[model.Key]);
 					sclframes[model.Key] = model.Value.Scale.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 					{
@@ -674,6 +738,10 @@ namespace SonicRetro.SAModel
 					hasVec = true;
 					result.Align(4);
 					vecoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.VectorName))
+						labels.Add(model.Value.VectorName, vecoffs[model.Key]);
+					else
+						labels.Add(model.Value.VectorName + "_dup", vecoffs[model.Key]);
 					vecframes[model.Key] = model.Value.Vector.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 					{
@@ -694,12 +762,23 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					vertoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.VertexName))
+						labels.Add(model.Value.VertexName, vertoffs[model.Key]);
+					else
+						labels.Add(model.Value.VertexName + "_dup", vertoffs[model.Key]);
 					vertframes[model.Key] = model.Value.Vertex.Count;
 					int i = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(offs[i++]));
+					}
+					for (int u = 0; u < model.Value.Vertex.Count; u++)
+					{
+						if (labels.ContainsKey(model.Value.VertexItemName[u]))
+							labels.Add(model.Value.VertexItemName[u] + "_dup", offs[u]);
+						else
+							labels.Add(model.Value.VertexItemName[u], offs[u]);
 					}
 				}
 				if (model.Value.Normal.Count > 0)
@@ -715,6 +794,10 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					normoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.NormalName))
+						labels.Add(model.Value.NormalName, normoffs[model.Key]);
+					else
+						labels.Add(model.Value.NormalName + "_dup", normoffs[model.Key]);
 					normframes[model.Key] = model.Value.Normal.Count;
 					int i = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
@@ -722,12 +805,22 @@ namespace SonicRetro.SAModel
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(offs[i++]));
 					}
+					for (int u = 0; u < model.Value.Normal.Count; u++)
+					{
+						if (labels.ContainsKey(model.Value.NormalItemName[u]))
+							labels.Add(model.Value.NormalItemName[u] + "_dup", offs[u]);
+						else labels.Add(model.Value.NormalItemName[u], offs[u]);
+					}
 				}
 				if (model.Value.Target.Count > 0)
 				{
 					hasTarg = true;
 					result.Align(4);
 					targoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.TargetName))
+						labels.Add(model.Value.TargetName, targoffs[model.Key]);
+					else
+						labels.Add(model.Value.TargetName + "_dup", targoffs[model.Key]);
 					targframes[model.Key] = model.Value.Target.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
 					{
@@ -740,6 +833,10 @@ namespace SonicRetro.SAModel
 					hasRoll = true;
 					result.Align(4);
 					rolloffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.RollName))
+						labels.Add(model.Value.RollName, rolloffs[model.Key]);
+					else
+						labels.Add(model.Value.RollName + "_dup", rolloffs[model.Key]);
 					rollframes[model.Key] = model.Value.Roll.Count;
 					foreach (KeyValuePair<int, int> item in model.Value.Roll)
 					{
@@ -752,6 +849,10 @@ namespace SonicRetro.SAModel
 					hasAng = true;
 					result.Align(4);
 					angoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.AngleName))
+						labels.Add(model.Value.AngleName, angoffs[model.Key]);
+					else
+						labels.Add(model.Value.AngleName + "_dup", angoffs[model.Key]);
 					angframes[model.Key] = model.Value.Angle.Count;
 					foreach (KeyValuePair<int, int> item in model.Value.Angle)
 					{
@@ -764,6 +865,10 @@ namespace SonicRetro.SAModel
 					hasCol = true;
 					result.Align(4);
 					coloffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.ColorName))
+						labels.Add(model.Value.ColorName, coloffs[model.Key]);
+					else
+						labels.Add(model.Value.ColorName + "_dup", coloffs[model.Key]);
 					colframes[model.Key] = model.Value.Color.Count;
 					foreach (KeyValuePair<int, uint> item in model.Value.Color)
 					{
@@ -776,6 +881,10 @@ namespace SonicRetro.SAModel
 					hasInt = true;
 					result.Align(4);
 					intoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.IntensityName))
+						labels.Add(model.Value.IntensityName, intoffs[model.Key]);
+					else
+						labels.Add(model.Value.IntensityName + "_dup", intoffs[model.Key]);
 					intframes[model.Key] = model.Value.Intensity.Count;
 					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
 					{
@@ -788,6 +897,10 @@ namespace SonicRetro.SAModel
 					hasSpot = true;
 					result.Align(4);
 					spotoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.SpotName))
+						labels.Add(model.Value.SpotName, spotoffs[model.Key]);
+					else
+						labels.Add(model.Value.SpotName + "_dup", spotoffs[model.Key]);
 					spotframes[model.Key] = model.Value.Spot.Count;
 					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
 					{
@@ -800,6 +913,10 @@ namespace SonicRetro.SAModel
 					hasPnt = true;
 					result.Align(4);
 					pntoffs[model.Key] = imageBase + (uint)result.Count;
+					if (!labels.ContainsKey(model.Value.PointName))
+						labels.Add(model.Value.PointName, pntoffs[model.Key]);
+					else
+						labels.Add(model.Value.PointName + "_dup", pntoffs[model.Key]);
 					pntframes[model.Key] = model.Value.Point.Count;
 					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
 					{
@@ -900,6 +1017,7 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			uint modeldata = imageBase + (uint)result.Count;
+			if (MdataName != null) labels.Add(MdataName, modeldata);
 			for (int i = 0; i < ModelParts; i++)
 			{
 				if (hasPos)
@@ -1009,10 +1127,8 @@ namespace SonicRetro.SAModel
 				{
 					hasPos = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_pos[] = {");
+					writer.Write(model.Value.PositionName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Position.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
@@ -1027,10 +1143,8 @@ namespace SonicRetro.SAModel
 						writer.Write("NJS_MKEY_SA ");
 					else
 						writer.Write("NJS_MKEY_A ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_rot[] = {");
+					writer.Write(model.Value.RotationName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Rotation.Count);
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
@@ -1042,10 +1156,8 @@ namespace SonicRetro.SAModel
 				{
 					hasScl = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_scl[] = {");
+					writer.Write(model.Value.ScaleName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Scale.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
@@ -1057,10 +1169,8 @@ namespace SonicRetro.SAModel
 				{
 					hasVec = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_vec[] = {");
+					writer.Write(model.Value.VectorName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vector.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
@@ -1071,14 +1181,11 @@ namespace SonicRetro.SAModel
 				if (model.Value.Vertex.Count > 0)
 				{
 					hasVert = true;
+					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 					{
 						writer.Write("NJS_VECTOR ");
-						writer.Write(id);
-						writer.Write("_");
-						writer.Write(model.Key);
-						writer.Write("_vert_");
-						writer.Write(item.Key);
+						writer.Write(model.Value.VertexItemName[z++]);
 						writer.WriteLine("[] = {");
 						List<string> l2 = new List<string>(item.Value.Length);
 						foreach (Vertex v in item.Value)
@@ -1088,13 +1195,12 @@ namespace SonicRetro.SAModel
 						writer.WriteLine();
 					}
 					writer.Write("NJS_MKEY_P ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_vert[] = {");
+					writer.Write(model.Value.VertexName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vertex.Count);
+					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + id + "_" + model.Key + "_vert_" + item.Key + " }");
+						lines.Add("\t{ " + item.Key + ", " + model.Value.VertexItemName[v_c++] + " }");
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
@@ -1102,14 +1208,11 @@ namespace SonicRetro.SAModel
 				if (model.Value.Normal.Count > 0)
 				{
 					hasNorm = true;
+					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
 					{
 						writer.Write("NJS_VECTOR ");
-						writer.Write(id);
-						writer.Write("_");
-						writer.Write(model.Key);
-						writer.Write("_norm_");
-						writer.Write(item.Key);
+						writer.Write(model.Value.NormalItemName[z++]);
 						writer.WriteLine("[] = {");
 						List<string> l2 = new List<string>(item.Value.Length);
 						foreach (Vertex v in item.Value)
@@ -1119,13 +1222,12 @@ namespace SonicRetro.SAModel
 						writer.WriteLine();
 					}
 					writer.Write("NJS_MKEY_P ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_norm[] = {");
+					writer.Write(model.Value.NormalName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vertex.Count);
+					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + id + "_" + model.Key + "_norm_" + item.Key + " }");
+						lines.Add("\t{ " + item.Key + ", " + model.Value.NormalItemName[v_c++] + " }");
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
@@ -1134,10 +1236,8 @@ namespace SonicRetro.SAModel
 				{
 					hasTarg = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_targ[] = {");
+					writer.Write(model.Value.TargetName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Target.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
@@ -1149,10 +1249,8 @@ namespace SonicRetro.SAModel
 				{
 					hasRoll = true;
 					writer.Write("NJS_MKEY_A1 ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_roll[] = {");
+					writer.Write(model.Value.RollName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Roll.Count);
 					foreach (KeyValuePair<int, int> item in model.Value.Roll)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
@@ -1164,10 +1262,8 @@ namespace SonicRetro.SAModel
 				{
 					hasAng = true;
 					writer.Write("NJS_MKEY_A1 ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_ang[] = {");
+					writer.Write(model.Value.AngleName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Angle.Count);
 					foreach (KeyValuePair<int, int> item in model.Value.Angle)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
@@ -1179,10 +1275,8 @@ namespace SonicRetro.SAModel
 				{
 					hasCol = true;
 					writer.Write("NJS_MKEY_UI32 ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_col[] = {");
+					writer.Write(model.Value.ColorName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Color.Count);
 					foreach (KeyValuePair<int, uint> item in model.Value.Color)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
@@ -1194,10 +1288,8 @@ namespace SonicRetro.SAModel
 				{
 					hasInt = true;
 					writer.Write("NJS_MKEY_F1 ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_int[] = {");
+					writer.Write(model.Value.IntensityName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Intensity.Count);
 					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.ToC() + " }");
@@ -1209,10 +1301,8 @@ namespace SonicRetro.SAModel
 				{
 					hasSpot = true;
 					writer.Write("NJS_MKEY_SPOT ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_spot[] = {");
+					writer.Write(model.Value.SpotName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Spot.Count);
 					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
 						lines.Add("\t{ " + item.Key + ", " + item.Value.Near.ToC() + ", " + item.Value.Far.ToC() + ", " + item.Value.InsideAngle.ToCHex() + ", " + item.Value.OutsideAngle.ToCHex() + " }");
@@ -1224,10 +1314,8 @@ namespace SonicRetro.SAModel
 				{
 					hasPnt = true;
 					writer.Write("NJS_MKEY_F2 ");
-					writer.Write(id);
-					writer.Write("_");
-					writer.Write(model.Key);
-					writer.WriteLine("_pnt[] = {");
+					writer.Write(model.Value.PointName);
+					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Point.Count);
 					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
 						lines.Add("\t{ " + item.Key + ", " + item.Value[0].ToC() + ", " + item.Value[1].ToC() + " }");
@@ -1328,8 +1416,8 @@ namespace SonicRetro.SAModel
 			writer.Write("NJS_MDATA");
 			writer.Write(numpairs);
 			writer.Write(" ");
-			writer.Write(id);
-			writer.WriteLine("_mdat[] = {");
+			writer.Write(MdataName);
+			writer.WriteLine("[] = {");
 			List<string> mdats = new List<string>(ModelParts);
 			for (int i = 0; i < ModelParts; i++)
 			{
@@ -1337,182 +1425,182 @@ namespace SonicRetro.SAModel
 				if (hasPos)
 				{
 					if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-						elems.Add(string.Format("{0}_{1}_pos", id, i));
+						elems.Add(Models[i].PositionName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasRot)
 				{
 					if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-						elems.Add(string.Format("{0}_{1}_rot", id, i));
+						elems.Add(Models[i].RotationName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasScl)
 				{
 					if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-						elems.Add(string.Format("{0}_{1}_scl", id, i));
+						elems.Add(Models[i].ScaleName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasVec)
 				{
 					if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-						elems.Add(string.Format("{0}_{1}_vec", id, i));
+						elems.Add(Models[i].VectorName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasVert)
 				{
 					if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-						elems.Add(string.Format("{0}_{1}_vert", id, i));
+						elems.Add(Models[i].VertexName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasNorm)
 				{
 					if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-						elems.Add(string.Format("{0}_{1}_norm", id, i));
+						elems.Add(Models[i].NormalName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasTarg)
 				{
 					if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-						elems.Add(string.Format("{0}_{1}_targ", id, i));
+						elems.Add(Models[i].TargetName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasRoll)
 				{
 					if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-						elems.Add(string.Format("{0}_{1}_roll", id, i));
+						elems.Add(Models[i].PointName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasAng)
 				{
 					if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-						elems.Add(string.Format("{0}_{1}_ang", id, i));
+						elems.Add(Models[i].AngleName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasCol)
 				{
 					if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-						elems.Add(string.Format("{0}_{1}_col", id, i));
+						elems.Add(Models[i].ColorName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasInt)
 				{
 					if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-						elems.Add(string.Format("{0}_{1}_int", id, i));
+						elems.Add(Models[i].IntensityName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasSpot)
 				{
 					if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-						elems.Add(string.Format("{0}_{1}_spot", id, i));
+						elems.Add(Models[i].SpotName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasPnt)
 				{
 					if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-						elems.Add(string.Format("{0}_{1}_pnt", id, i));
+						elems.Add(Models[i].PointName);
 					else
 						elems.Add("NULL");
 				}
 				if (hasPos)
 				{
 					if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_pos)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName));
 					else
 						elems.Add("0");
 				}
 				if (hasRot)
 				{
 					if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_rot)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName));
 					else
 						elems.Add("0");
 				}
 				if (hasScl)
 				{
 					if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_scl)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName));
 					else
 						elems.Add("0");
 				}
 				if (hasVec)
 				{
 					if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_vec)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName));
 					else
 						elems.Add("0");
 				}
 				if (hasVert)
 				{
 					if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_vert)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName));
 					else
 						elems.Add("0");
 				}
 				if (hasNorm)
 				{
 					if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_norm)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName));
 					else
 						elems.Add("0");
 				}
 				if (hasTarg)
 				{
 					if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_targ)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName));
 					else
 						elems.Add("0");
 				}
 				if (hasRoll)
 				{
 					if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_roll)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName));
 					else
 						elems.Add("0");
 				}
 				if (hasAng)
 				{
 					if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_ang)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName));
 					else
 						elems.Add("0");
 				}
 				if (hasCol)
 				{
 					if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_col)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName));
 					else
 						elems.Add("0");
 				}
 				if (hasInt)
 				{
 					if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_int)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName));
 					else
 						elems.Add("0");
 				}
 				if (hasSpot)
 				{
 					if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_spot)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName));
 					else
 						elems.Add("0");
 				}
 				if (hasPnt)
 				{
 					if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0}_{1}_pnt)", id, i));
+						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName));
 					else
 						elems.Add("0");
 				}
@@ -1522,9 +1610,9 @@ namespace SonicRetro.SAModel
 			writer.WriteLine("};");
 			writer.WriteLine();
 			writer.Write("NJS_MOTION ");
-			writer.Write(id);
+			writer.Write(Name);
 			writer.Write(" = { ");
-			writer.Write("{0}_mdat, ", id);
+			writer.Write("{0}, ", MdataName);
 			writer.Write(Frames);
 			writer.Write(", ");
 			writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
@@ -1580,7 +1668,8 @@ namespace SonicRetro.SAModel
 			ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
 			file.AddRange(ByteConverter.GetBytes(SAANIMVer));
-			byte[] anim = GetBytes(0x14, out uint addr);
+			Dictionary<string, uint> labels = new Dictionary<string, uint>();
+			byte[] anim = GetBytes(0x14, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x14));
 			file.Align(0x10);
 			file.AddRange(ByteConverter.GetBytes(ModelParts | (ShortRot ? int.MinValue : 0)));
@@ -1589,9 +1678,27 @@ namespace SonicRetro.SAModel
 			file.Align(4);
 			file.RemoveRange(0xC, 4);
 			file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
-			file.AddRange(Encoding.UTF8.GetBytes(Name));
-			file.Add(0);
-			file.Align(4);
+			if (labels.Count > 0)
+			{
+				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
+				int straddr = (labels.Count * 8) + 8;
+				List<byte> strbytes = new List<byte>();
+				foreach (KeyValuePair<string, uint> label in labels)
+				{
+					chunk.AddRange(ByteConverter.GetBytes(label.Value));
+					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
+					strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
+					strbytes.Add(0);
+					strbytes.Align(4);
+				}
+				chunk.AddRange(ByteConverter.GetBytes(-1L));
+				chunk.AddRange(strbytes);
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
+				file.AddRange(ByteConverter.GetBytes(chunk.Count));
+				file.AddRange(chunk);
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
+				file.AddRange(new byte[4]);
+			}
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
 		}
@@ -1599,7 +1706,6 @@ namespace SonicRetro.SAModel
 
 	public class AnimModelData
 	{
-		public string MkeyName;
 		public Dictionary<int, Vertex> Position = new Dictionary<int, Vertex>();
 		public Dictionary<int, Rotation> Rotation = new Dictionary<int, Rotation>();
 		public Dictionary<int, Vertex> Scale = new Dictionary<int, Vertex>();
@@ -1613,7 +1719,21 @@ namespace SonicRetro.SAModel
 		public Dictionary<int, float> Intensity = new Dictionary<int, float>();
 		public Dictionary<int, Spotlight> Spot = new Dictionary<int, Spotlight>();
 		public Dictionary<int, float[]> Point = new Dictionary<int, float[]>();
-
+		public string PositionName;
+		public string RotationName;
+		public string ScaleName;
+		public string VectorName;
+		public string VertexName;
+		public string[] VertexItemName;
+		public string[] NormalItemName;
+		public string NormalName;
+		public string TargetName;
+		public string RollName;
+		public string AngleName;
+		public string ColorName;
+		public string IntensityName;
+		public string SpotName;
+		public string PointName;
 		public AnimModelData()
 		{
 		}
@@ -1907,5 +2027,11 @@ namespace SonicRetro.SAModel
 			result.AddRange(ByteConverter.GetBytes(OutsideAngle));
 			return result.ToArray();
 		}
+	}
+
+	public enum ChunkTypes : uint
+	{
+		Label = 0x4C42414C,
+		End = 0x444E45
 	}
 }
