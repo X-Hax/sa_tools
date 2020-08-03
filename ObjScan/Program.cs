@@ -105,6 +105,13 @@ namespace ObjScan
 			if (args.Length == 2)
 			{
 				filename = args[0];
+				if ((Path.GetExtension(filename).ToLowerInvariant()) == ".ini")
+				{
+					Console.WriteLine("Error: input file must be binary, not INI.");
+					Console.WriteLine("Press ENTER to exit");
+					Console.ReadLine();
+					return;
+				}
 				type = args[1];
 				string inifilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".ini");
 				if (File.Exists(inifilename))
@@ -132,6 +139,8 @@ namespace ObjScan
 				else
 				{
 					Console.Write("Could not find the split INI file. Use more arguments to scan without a split file.");
+					Console.WriteLine("Press ENTER to exit");
+					Console.ReadLine();
 					return;
 				}
 			}
