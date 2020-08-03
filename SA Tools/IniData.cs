@@ -2866,6 +2866,105 @@ namespace SA_Tools
 		Credits
 	}
 
+	public struct Label_MESHSET
+	{
+		[IniName("pl")]
+		public string PolyName;
+		[IniName("uv")]
+		public string UVName;
+		[IniName("nm")]
+		public string PolyNormalName;
+		[IniName("vc")]
+		public string VColorName;
+	}
+	public struct Label_OBJECT
+	{
+		[IniName("obj")]
+		public string ObjectName;
+		[IniName("att")]
+		public string AtachName;
+		[IniName("msh")]
+		public string MeshsetOrPolyName; //Also polys for chunk
+		[IniName("m")]
+		public Label_MESHSET[] MeshsetItemNames;
+		[IniName("vtx")]
+		public string VertexName;
+		[IniName("nml")]
+		public string NormalName;
+		[IniName("mat")]
+		public string MaterialName;
+		[IniName("ch")]
+		public string[] ChildNames;
+		[IniName("sb")]
+		public string SiblingName;
+	}
+	public struct Label_MKEY
+	{
+		[IniName("pos")]
+		public string PositionName;
+		[IniName("rot")]
+		public string RotationName;
+		[IniName("scl")]
+		public string ScaleName;
+		[IniName("vrt")]
+		public string VertexName;
+		[IniName("vct")]
+		public string VectorName;
+		[IniName("nrm")]
+		public string NormalName;
+		[IniName("tgt")]
+		public string TargetName;
+		[IniName("rll")]
+		public string RollName;
+		[IniName("ang")]
+		public string AngleName;
+		[IniName("col")]
+		public string ColorName;
+		[IniName("int")]
+		public string IntensityName;
+		[IniName("spt")]
+		public string SpotName;
+		[IniName("pnt")]
+		public string PointName;
+		[IniName("vt")]
+		public string[] VertexItemNames;
+		[IniName("nm")]
+		public string[] NormalItemNames;
+	}
+	public struct Label_MOTION
+	{
+		[IniName("mot")]
+		public string MotionName;
+		[IniName("mdt")]
+		public string MdataName;
+		[IniName("mk")]
+		public Dictionary<int, Label_MKEY> MkeyNames;
+	}
+	public struct Label_ACTION
+	{
+		[IniName("act")]
+		public string ActionName;
+		[IniName("mot")]
+		public string MotionName;
+		[IniName("obj")]
+		public string ObjectName;
+	}
+	public struct Label_LANDTABLE
+	{
+		[IniName("lnd")]
+		public string LandtableName;
+		[IniName("col")]
+		public string COLListName;
+		[IniName("anm")]
+		public string GeoAnimListName;
+		[IniName("cols")]
+		public string[] ColItemNames;
+		[IniName("ga")]
+		public string[] GeoAnimActionNames;
+		[IniName("go")]
+		public string[] GeoAnimObjectNames;
+	}
+
 	public class CharaObjectData
 	{
 		public string MainModel { get; set; }
@@ -3134,5 +3233,6 @@ namespace SA_Tools
 				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out ushort i);
 			return base.IsValid(context, value);
 		}
+
 	}
 }
