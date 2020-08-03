@@ -34,12 +34,14 @@ namespace SonicRetro.SAModel.DataExtractor
             this.txtConsole = new System.Windows.Forms.TextBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.checkboxPause = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonCloseSplitProgress
             // 
             this.buttonCloseSplitProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCloseSplitProgress.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonCloseSplitProgress.Enabled = true;
             this.buttonCloseSplitProgress.Location = new System.Drawing.Point(697, 406);
             this.buttonCloseSplitProgress.Name = "buttonCloseSplitProgress";
             this.buttonCloseSplitProgress.Size = new System.Drawing.Size(75, 23);
@@ -69,6 +71,7 @@ namespace SonicRetro.SAModel.DataExtractor
             // 
             // backgroundWorker1
             // 
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // timer1
@@ -77,11 +80,23 @@ namespace SonicRetro.SAModel.DataExtractor
             this.timer1.Interval = 60;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // checkboxPause
+            // 
+            this.checkboxPause.AutoSize = true;
+            this.checkboxPause.Location = new System.Drawing.Point(611, 410);
+            this.checkboxPause.Name = "checkboxPause";
+            this.checkboxPause.Size = new System.Drawing.Size(73, 17);
+            this.checkboxPause.TabIndex = 4;
+            this.checkboxPause.Text = "Pause log";
+            this.checkboxPause.UseVisualStyleBackColor = true;
+            this.checkboxPause.CheckedChanged += new System.EventHandler(this.checkboxPause_CheckedChanged);
+            // 
             // SplitProgress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 441);
+            this.Controls.Add(this.checkboxPause);
             this.Controls.Add(this.txtConsole);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonCloseSplitProgress);
@@ -105,6 +120,7 @@ namespace SonicRetro.SAModel.DataExtractor
 		private System.Windows.Forms.TextBox txtConsole;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.Timer timer1;
+		private System.Windows.Forms.CheckBox checkboxPause;
 	}
 }
 
