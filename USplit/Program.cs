@@ -342,8 +342,8 @@ namespace USplit
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
 					"list <offset> <filename> [-skiplabels] [-noanims], binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
-					"objlist, startpos, texlist, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist, soundtestlist,\nnextlevellist, " +
-					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist, pathlist,\nstagelightdatalist, weldlist" +
+					"objlist, startpos, texlist, texnamearray, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist,\nsoundtestlist, nextlevellist, " +
+					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist,\npathlist,stagelightdatalist, weldlist" +
 					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
 					"stringarray <count> [language], skyboxscale <count>, stageselectlist <count>, animationlist <count>,\n" +
 					"masterstringlist <count>, cutscenetext <count>, recapscreen <count>, npctext <count>\n");
@@ -965,6 +965,16 @@ namespace USplit
 						break;
 					case "texlist":
 						TextureList.Load(datafile, address, imageBase).Save(fileOutputPath + ".ini");
+						break;
+					case "texnamearray":
+						TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
+						StreamWriter sw = File.CreateText(fileOutputPath + "_texnames.txt");
+						for (int u = 0; u < texnames.NumTextures; u++)
+						{
+							sw.WriteLine(texnames.TextureNames[u] + ".pvr");
+						}
+						sw.Flush();
+						sw.Close();
 						break;
 					case "leveltexlist":
 						new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath + ".ini");
