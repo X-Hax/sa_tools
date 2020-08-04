@@ -43,7 +43,7 @@ namespace SA_Tools.Split
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
 				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
-				if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);
+				if (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin") datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
 				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile);
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
@@ -195,6 +195,16 @@ namespace SA_Tools.Split
 							break;
 						case "texlist":
 							TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							break;
+						case "texnamearray":
+							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
+							StreamWriter sw = File.CreateText(fileOutputPath);
+							for (int u = 0; u < texnames.NumTextures; u++)
+							{
+								sw.WriteLine(texnames.TextureNames[u] + ".pvr");
+							}
+							sw.Flush();
+							sw.Close();
 							break;
 						case "leveltexlist":
 							new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
