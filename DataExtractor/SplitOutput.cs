@@ -141,5 +141,10 @@ namespace SonicRetro.SAModel.DataExtractor
 			pauseLog = checkboxPause.Checked;
 			buttonCloseSplitProgress.Text = "Close";
 		}
+
+		private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+		{
+			buttonCloseSplitProgress.Text = "Close";
+		}
 	}
 }
