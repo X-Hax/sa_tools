@@ -601,6 +601,30 @@ namespace SA_Tools
 		}
 	}
 
+	public class TexnameArray
+	{		
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint TexnameArrayAddr { get; set; }
+		public uint NumTextures { get; set; }
+		public string[] TextureNames { get; set; }
+		public TexnameArray(byte[] file, int address, uint imageBase)
+		{
+			uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
+			if (TexnameArrayAddr == 0)
+				return;
+			else
+				NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			if (NumTextures <= 300 && NumTextures > 0)
+			{
+				TextureNames = new string[NumTextures];
+				for (int u = 0; u < NumTextures; u++)
+				{
+					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
+					TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
+				}
+			}
+		}
+	}
 	public static class TextureList
 	{
 		public static TextureListEntry[] Load(string filename)
