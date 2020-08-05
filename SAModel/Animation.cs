@@ -19,16 +19,34 @@ namespace SonicRetro.SAModel
 
 		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			if (address > file.Length - 4) Model = new NJS_OBJECT();
-			else
-			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, labels, attaches);
-			if (address > file.Length - 8) Animation = new NJS_MOTION();
-			else
-			Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
-				Model.CountAnimated(), labels);
-			if (labels.ContainsKey(address))
+			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
 			else Name = "action_" + address.ToString("X8");
+			if (address > file.Length - 4)
+			{
+				Model = new NJS_OBJECT();
+				Animation = new NJS_MOTION();
+				return;
+			}
+			else
+			{
+				int objaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+				if (objaddr > file.Length - 4)
+				{
+					Model = new NJS_OBJECT();
+					Animation = new NJS_MOTION();
+					return;
+				}
+				else Model = new NJS_OBJECT(file, objaddr, imageBase, format, labels, attaches);
+			}
+			if (address > file.Length - 8)
+			{
+				Animation = new NJS_MOTION();
+				return;
+			}
+			else
+				Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
+					Model.CountAnimated(), labels);
 		}
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
 		{
@@ -602,7 +620,7 @@ namespace SonicRetro.SAModel
 				else
 				{
 					if (tmpaddr != 0)
-						labels.Add(aniaddr, file.GetCString(tmpaddr));
+							labels.Add(aniaddr, file.GetCString(tmpaddr));
 				}
 				if (version > 0)
 					nummodels = BitConverter.ToInt32(file, 0x10);
@@ -680,10 +698,20 @@ namespace SonicRetro.SAModel
 					hasPos = true;
 					result.Align(4);
 					posoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.PositionName))
-						labels.Add(model.Value.PositionName, posoffs[model.Key]);
-					else
-						labels.Add(model.Value.PositionName + "_dup", posoffs[model.Key]);
+					if (!labels.ContainsValue(posoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.PositionName))
+							labels.Add(model.Value.PositionName, posoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.PositionName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, posoffs[model.Key]);
+						}
+					}
 					posframes[model.Key] = model.Value.Position.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 					{
@@ -696,10 +724,20 @@ namespace SonicRetro.SAModel
 					hasRot = true;
 					result.Align(4);
 					rotoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.RotationName))
-						labels.Add(model.Value.RotationName, rotoffs[model.Key]);
-					else
-						labels.Add(model.Value.RotationName +"_dup", rotoffs[model.Key]);
+					if (!labels.ContainsValue(rotoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.RotationName))
+							labels.Add(model.Value.RotationName, rotoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.RotationName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, rotoffs[model.Key]);
+						}
+					}
 					rotframes[model.Key] = model.Value.Rotation.Count;
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 					{
@@ -722,10 +760,20 @@ namespace SonicRetro.SAModel
 					hasScl = true;
 					result.Align(4);
 					scloffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.ScaleName))
-						labels.Add(model.Value.ScaleName, scloffs[model.Key]);
-					else
-						labels.Add(model.Value.ScaleName + "_dup", scloffs[model.Key]);
+					if (!labels.ContainsValue(scloffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.ScaleName))
+							labels.Add(model.Value.ScaleName, scloffs[model.Key]);
+						else
+						{
+							string newname = model.Value.ScaleName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, scloffs[model.Key]);
+						}
+					}
 					sclframes[model.Key] = model.Value.Scale.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 					{
@@ -738,10 +786,20 @@ namespace SonicRetro.SAModel
 					hasVec = true;
 					result.Align(4);
 					vecoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.VectorName))
-						labels.Add(model.Value.VectorName, vecoffs[model.Key]);
-					else
-						labels.Add(model.Value.VectorName + "_dup", vecoffs[model.Key]);
+					if (!labels.ContainsValue(vecoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.VectorName))
+							labels.Add(model.Value.VectorName, vecoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.VectorName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, vecoffs[model.Key]);
+						}
+					}
 					vecframes[model.Key] = model.Value.Vector.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 					{
@@ -762,10 +820,20 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					vertoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.VertexName))
-						labels.Add(model.Value.VertexName, vertoffs[model.Key]);
-					else
-						labels.Add(model.Value.VertexName + "_dup", vertoffs[model.Key]);
+					if (!labels.ContainsValue(vertoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.VertexName))
+							labels.Add(model.Value.VertexName, vertoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.VertexName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, vertoffs[model.Key]);
+						}
+					}
 					vertframes[model.Key] = model.Value.Vertex.Count;
 					int i = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
@@ -775,10 +843,20 @@ namespace SonicRetro.SAModel
 					}
 					for (int u = 0; u < model.Value.Vertex.Count; u++)
 					{
-						if (labels.ContainsKey(model.Value.VertexItemName[u]))
-							labels.Add(model.Value.VertexItemName[u] + "_dup", offs[u]);
-						else
-							labels.Add(model.Value.VertexItemName[u], offs[u]);
+						if (!labels.ContainsValue(offs[u]))
+						{
+							if (!labels.ContainsKey(model.Value.VertexItemName[u]))
+								labels.Add(model.Value.VertexItemName[u], offs[u]);
+							else
+							{
+								string newname = model.Value.VertexItemName[u];
+								do
+								{
+									newname += "_dup";
+								} while (labels.ContainsKey(newname));
+								labels.Add(newname, offs[u]);
+							}
+						}
 					}
 				}
 				if (model.Value.Normal.Count > 0)
@@ -794,10 +872,20 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					normoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.NormalName))
-						labels.Add(model.Value.NormalName, normoffs[model.Key]);
-					else
-						labels.Add(model.Value.NormalName + "_dup", normoffs[model.Key]);
+					if (!labels.ContainsValue(normoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.NormalName))
+							labels.Add(model.Value.NormalName, normoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.NormalName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, normoffs[model.Key]);
+						}
+					}
 					normframes[model.Key] = model.Value.Normal.Count;
 					int i = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
@@ -807,9 +895,20 @@ namespace SonicRetro.SAModel
 					}
 					for (int u = 0; u < model.Value.Normal.Count; u++)
 					{
-						if (labels.ContainsKey(model.Value.NormalItemName[u]))
-							labels.Add(model.Value.NormalItemName[u] + "_dup", offs[u]);
-						else labels.Add(model.Value.NormalItemName[u], offs[u]);
+						if (!labels.ContainsValue(offs[u]))
+						{
+							if (!labels.ContainsKey(model.Value.NormalItemName[u]))
+								labels.Add(model.Value.NormalItemName[u], offs[u]);
+							else
+							{
+								string newname = model.Value.NormalItemName[u];
+								do
+								{
+									newname += "_dup";
+								} while (labels.ContainsKey(newname));
+								labels.Add(newname, offs[u]);
+							}
+						}
 					}
 				}
 				if (model.Value.Target.Count > 0)
@@ -817,10 +916,20 @@ namespace SonicRetro.SAModel
 					hasTarg = true;
 					result.Align(4);
 					targoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.TargetName))
-						labels.Add(model.Value.TargetName, targoffs[model.Key]);
-					else
-						labels.Add(model.Value.TargetName + "_dup", targoffs[model.Key]);
+					if (!labels.ContainsValue(targoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.TargetName))
+							labels.Add(model.Value.TargetName, targoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.TargetName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, targoffs[model.Key]);
+						}
+					}
 					targframes[model.Key] = model.Value.Target.Count;
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
 					{
@@ -833,10 +942,20 @@ namespace SonicRetro.SAModel
 					hasRoll = true;
 					result.Align(4);
 					rolloffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.RollName))
-						labels.Add(model.Value.RollName, rolloffs[model.Key]);
-					else
-						labels.Add(model.Value.RollName + "_dup", rolloffs[model.Key]);
+					if (!labels.ContainsValue(rolloffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.RollName))
+							labels.Add(model.Value.RollName, rolloffs[model.Key]);
+						else
+						{
+							string newname = model.Value.RollName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, rolloffs[model.Key]);
+						}
+					}
 					rollframes[model.Key] = model.Value.Roll.Count;
 					foreach (KeyValuePair<int, int> item in model.Value.Roll)
 					{
@@ -849,10 +968,20 @@ namespace SonicRetro.SAModel
 					hasAng = true;
 					result.Align(4);
 					angoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.AngleName))
-						labels.Add(model.Value.AngleName, angoffs[model.Key]);
-					else
-						labels.Add(model.Value.AngleName + "_dup", angoffs[model.Key]);
+					if (!labels.ContainsValue(angoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.AngleName))
+							labels.Add(model.Value.AngleName, angoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.AngleName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, angoffs[model.Key]);
+						}
+					}
 					angframes[model.Key] = model.Value.Angle.Count;
 					foreach (KeyValuePair<int, int> item in model.Value.Angle)
 					{
@@ -865,10 +994,20 @@ namespace SonicRetro.SAModel
 					hasCol = true;
 					result.Align(4);
 					coloffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.ColorName))
-						labels.Add(model.Value.ColorName, coloffs[model.Key]);
-					else
-						labels.Add(model.Value.ColorName + "_dup", coloffs[model.Key]);
+					if (!labels.ContainsValue(coloffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.ColorName))
+							labels.Add(model.Value.ColorName, coloffs[model.Key]);
+						else
+						{
+							string newname = model.Value.ColorName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, coloffs[model.Key]);
+						}
+					}
 					colframes[model.Key] = model.Value.Color.Count;
 					foreach (KeyValuePair<int, uint> item in model.Value.Color)
 					{
@@ -881,10 +1020,20 @@ namespace SonicRetro.SAModel
 					hasInt = true;
 					result.Align(4);
 					intoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.IntensityName))
-						labels.Add(model.Value.IntensityName, intoffs[model.Key]);
-					else
-						labels.Add(model.Value.IntensityName + "_dup", intoffs[model.Key]);
+					if (!labels.ContainsValue(intoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.IntensityName))
+							labels.Add(model.Value.IntensityName, intoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.IntensityName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, intoffs[model.Key]);
+						}
+					}
 					intframes[model.Key] = model.Value.Intensity.Count;
 					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
 					{
@@ -897,10 +1046,20 @@ namespace SonicRetro.SAModel
 					hasSpot = true;
 					result.Align(4);
 					spotoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.SpotName))
-						labels.Add(model.Value.SpotName, spotoffs[model.Key]);
-					else
-						labels.Add(model.Value.SpotName + "_dup", spotoffs[model.Key]);
+					if (!labels.ContainsValue(spotoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.SpotName))
+							labels.Add(model.Value.SpotName, spotoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.SpotName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, spotoffs[model.Key]);
+						}
+					}
 					spotframes[model.Key] = model.Value.Spot.Count;
 					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
 					{
@@ -913,10 +1072,20 @@ namespace SonicRetro.SAModel
 					hasPnt = true;
 					result.Align(4);
 					pntoffs[model.Key] = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(model.Value.PointName))
-						labels.Add(model.Value.PointName, pntoffs[model.Key]);
-					else
-						labels.Add(model.Value.PointName + "_dup", pntoffs[model.Key]);
+					if (!labels.ContainsValue(pntoffs[model.Key]))
+					{
+						if (!labels.ContainsKey(model.Value.PointName))
+							labels.Add(model.Value.PointName, pntoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.PointName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, pntoffs[model.Key]);
+						}
+					}
 					pntframes[model.Key] = model.Value.Point.Count;
 					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
 					{
@@ -1017,7 +1186,31 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			uint modeldata = imageBase + (uint)result.Count;
-			if (MdataName != null) labels.Add(MdataName, modeldata);
+			//Dealing with uninitialized data. 
+			//This is to avoid MDATA and MOTIONS sharing the same address, which interferes with labels.
+			if (result.Count == 0 && numpairs == 0 && Models.Count == 0 && flags == 0)
+			{
+				hasPos = true;
+				result.Align(4);
+				posoffs[0] = imageBase + (uint)result.Count;
+				posframes[0] = 1;
+				result.AddRange(ByteConverter.GetBytes(0));
+				Vertex temp = new Vertex(0.0f, 0.0f, 0.0f);
+				result.AddRange(temp.GetBytes());
+			}
+			if (!labels.ContainsValue(modeldata))
+			{
+				if (!labels.ContainsKey(MdataName)) labels.Add(MdataName, modeldata);
+				else
+				{
+					string newname = MdataName;
+					do
+					{
+						newname += "_dup";
+					} while (labels.ContainsKey(newname));
+					labels.Add(newname, modeldata);
+				}
+			}
 			for (int i = 0; i < ModelParts; i++)
 			{
 				if (hasPos)
@@ -1091,7 +1284,19 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			result.AddRange(ByteConverter.GetBytes(numpairs));
-			labels.Add(Name, address + imageBase);
+			if (!labels.ContainsValue(address + imageBase))
+			{
+				if (!labels.ContainsKey(Name)) labels.Add(Name, address + imageBase);
+				else
+				{
+					string newname = Name;
+					do
+					{
+						newname += "_dup";
+					} while (labels.ContainsKey(newname));
+					labels.Add(newname, address + imageBase);
+				}
+			}
 			return result.ToArray();
 		}
 
@@ -1105,7 +1310,7 @@ namespace SonicRetro.SAModel
 			return GetBytes(imageBase, out _);
 		}
 
-		public void ToStructVariables(TextWriter writer)
+		public void ToStructVariables(TextWriter writer, List<string> labels = null)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -1121,9 +1326,10 @@ namespace SonicRetro.SAModel
 			bool hasSpot = false;
 			bool hasPnt = false;
 			string id = Name.MakeIdentifier();
+			if (labels == null) labels = new List<string>();
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
 			{
-				if (model.Value.Position.Count > 0)
+				if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 				{
 					hasPos = true;
 					writer.Write("NJS_MKEY_F ");
@@ -1135,8 +1341,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.PositionName);
 				}
-				if (model.Value.Rotation.Count > 0)
+				if (model.Value.Rotation.Count > 0 && !labels.Contains(model.Value.RotationName))
 				{
 					hasRot = true;
 					if (ShortRot)
@@ -1151,8 +1358,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.RotationName);
 				}
-				if (model.Value.Scale.Count > 0)
+				if (model.Value.Scale.Count > 0 && !labels.Contains(model.Value.ScaleName))
 				{
 					hasScl = true;
 					writer.Write("NJS_MKEY_F ");
@@ -1164,8 +1372,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.ScaleName);
 				}
-				if (model.Value.Vector.Count > 0)
+				if (model.Value.Vector.Count > 0 && !labels.Contains(model.Value.VectorName))
 				{
 					hasVec = true;
 					writer.Write("NJS_MKEY_F ");
@@ -1177,8 +1386,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.VectorName);
 				}
-				if (model.Value.Vertex.Count > 0)
+				if (model.Value.Vertex.Count > 0 && !labels.Contains(model.Value.VertexName))
 				{
 					hasVert = true;
 					int z = 0;
@@ -1204,8 +1414,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.VertexName);
 				}
-				if (model.Value.Normal.Count > 0)
+				if (model.Value.Normal.Count > 0 && !labels.Contains(model.Value.NormalName))
 				{
 					hasNorm = true;
 					int z = 0;
@@ -1231,8 +1442,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.NormalName);
 				}
-				if (model.Value.Target.Count > 0)
+				if (model.Value.Target.Count > 0 && !labels.Contains(model.Value.TargetName))
 				{
 					hasTarg = true;
 					writer.Write("NJS_MKEY_F ");
@@ -1244,8 +1456,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.TargetName);
 				}
-				if (model.Value.Roll.Count > 0)
+				if (model.Value.Roll.Count > 0 && !labels.Contains(model.Value.RollName))
 				{
 					hasRoll = true;
 					writer.Write("NJS_MKEY_A1 ");
@@ -1257,8 +1470,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.RollName);
 				}
-				if (model.Value.Angle.Count > 0)
+				if (model.Value.Angle.Count > 0 && !labels.Contains(model.Value.AngleName))
 				{
 					hasAng = true;
 					writer.Write("NJS_MKEY_A1 ");
@@ -1270,8 +1484,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.AngleName);
 				}
-				if (model.Value.Color.Count > 0)
+				if (model.Value.Color.Count > 0 && !labels.Contains(model.Value.ColorName))
 				{
 					hasCol = true;
 					writer.Write("NJS_MKEY_UI32 ");
@@ -1283,8 +1498,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.ColorName);
 				}
-				if (model.Value.Intensity.Count > 0)
+				if (model.Value.Intensity.Count > 0 && !labels.Contains(model.Value.IntensityName))
 				{
 					hasInt = true;
 					writer.Write("NJS_MKEY_F1 ");
@@ -1296,8 +1512,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.IntensityName);
 				}
-				if (model.Value.Spot.Count > 0)
+				if (model.Value.Spot.Count > 0 && !labels.Contains(model.Value.SpotName))
 				{
 					hasSpot = true;
 					writer.Write("NJS_MKEY_SPOT ");
@@ -1309,8 +1526,9 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.SpotName);
 				}
-				if (model.Value.Point.Count > 0)
+				if (model.Value.Point.Count > 0 && !labels.Contains(model.Value.PointName))
 				{
 					hasPnt = true;
 					writer.Write("NJS_MKEY_F2 ");
@@ -1322,6 +1540,7 @@ namespace SonicRetro.SAModel
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
+					labels.Add(model.Value.PointName);
 				}
 			}
 			AnimFlags flags = 0;
@@ -1413,231 +1632,240 @@ namespace SonicRetro.SAModel
 					numpairs = 2;
 					break;
 			}
-			writer.Write("NJS_MDATA");
-			writer.Write(numpairs);
-			writer.Write(" ");
-			writer.Write(MdataName);
-			writer.WriteLine("[] = {");
-			List<string> mdats = new List<string>(ModelParts);
-			for (int i = 0; i < ModelParts; i++)
+			if (!labels.Contains(MdataName))
 			{
-				List<string> elems = new List<string>(numpairs * 2);
-				if (hasPos)
+				writer.Write("NJS_MDATA");
+				if (numpairs == 0) writer.Write(2);
+				else writer.Write(numpairs);
+				writer.Write(" ");
+				writer.Write(MdataName);
+				writer.WriteLine("[] = {");
+				List<string> mdats = new List<string>(ModelParts);
+				for (int i = 0; i < ModelParts; i++)
 				{
-					if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-						elems.Add(Models[i].PositionName);
-					else
-						elems.Add("NULL");
+					List<string> elems = new List<string>(numpairs * 2);
+					if (hasPos)
+					{
+						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+							elems.Add(Models[i].PositionName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasRot)
+					{
+						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+							elems.Add(Models[i].RotationName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasScl)
+					{
+						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+							elems.Add(Models[i].ScaleName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasVec)
+					{
+						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
+							elems.Add(Models[i].VectorName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasVert)
+					{
+						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
+							elems.Add(Models[i].VertexName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasNorm)
+					{
+						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
+							elems.Add(Models[i].NormalName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasTarg)
+					{
+						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
+							elems.Add(Models[i].TargetName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasRoll)
+					{
+						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
+							elems.Add(Models[i].PointName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasAng)
+					{
+						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
+							elems.Add(Models[i].AngleName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasCol)
+					{
+						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
+							elems.Add(Models[i].ColorName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasInt)
+					{
+						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
+							elems.Add(Models[i].IntensityName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasSpot)
+					{
+						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
+							elems.Add(Models[i].SpotName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasPnt)
+					{
+						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
+							elems.Add(Models[i].PointName);
+						else
+							elems.Add("NULL");
+					}
+					if (hasPos)
+					{
+						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName));
+						else
+							elems.Add("0");
+					}
+					if (hasRot)
+					{
+						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName));
+						else
+							elems.Add("0");
+					}
+					if (hasScl)
+					{
+						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName));
+						else
+							elems.Add("0");
+					}
+					if (hasVec)
+					{
+						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName));
+						else
+							elems.Add("0");
+					}
+					if (hasVert)
+					{
+						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName));
+						else
+							elems.Add("0");
+					}
+					if (hasNorm)
+					{
+						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName));
+						else
+							elems.Add("0");
+					}
+					if (hasTarg)
+					{
+						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName));
+						else
+							elems.Add("0");
+					}
+					if (hasRoll)
+					{
+						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName));
+						else
+							elems.Add("0");
+					}
+					if (hasAng)
+					{
+						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName));
+						else
+							elems.Add("0");
+					}
+					if (hasCol)
+					{
+						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName));
+						else
+							elems.Add("0");
+					}
+					if (hasInt)
+					{
+						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName));
+						else
+							elems.Add("0");
+					}
+					if (hasSpot)
+					{
+						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName));
+						else
+							elems.Add("0");
+					}
+					if (hasPnt)
+					{
+						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName));
+						else
+							elems.Add("0");
+					}
+					mdats.Add("\t{ " + string.Join(", ", elems.ToArray()) + " }");
 				}
-				if (hasRot)
-				{
-					if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-						elems.Add(Models[i].RotationName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasScl)
-				{
-					if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-						elems.Add(Models[i].ScaleName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasVec)
-				{
-					if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-						elems.Add(Models[i].VectorName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasVert)
-				{
-					if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-						elems.Add(Models[i].VertexName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasNorm)
-				{
-					if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-						elems.Add(Models[i].NormalName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasTarg)
-				{
-					if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-						elems.Add(Models[i].TargetName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasRoll)
-				{
-					if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-						elems.Add(Models[i].PointName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasAng)
-				{
-					if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-						elems.Add(Models[i].AngleName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasCol)
-				{
-					if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-						elems.Add(Models[i].ColorName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasInt)
-				{
-					if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-						elems.Add(Models[i].IntensityName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasSpot)
-				{
-					if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-						elems.Add(Models[i].SpotName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasPnt)
-				{
-					if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-						elems.Add(Models[i].PointName);
-					else
-						elems.Add("NULL");
-				}
-				if (hasPos)
-				{
-					if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName));
-					else
-						elems.Add("0");
-				}
-				if (hasRot)
-				{
-					if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName));
-					else
-						elems.Add("0");
-				}
-				if (hasScl)
-				{
-					if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName));
-					else
-						elems.Add("0");
-				}
-				if (hasVec)
-				{
-					if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName));
-					else
-						elems.Add("0");
-				}
-				if (hasVert)
-				{
-					if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName));
-					else
-						elems.Add("0");
-				}
-				if (hasNorm)
-				{
-					if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName));
-					else
-						elems.Add("0");
-				}
-				if (hasTarg)
-				{
-					if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName));
-					else
-						elems.Add("0");
-				}
-				if (hasRoll)
-				{
-					if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName));
-					else
-						elems.Add("0");
-				}
-				if (hasAng)
-				{
-					if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName));
-					else
-						elems.Add("0");
-				}
-				if (hasCol)
-				{
-					if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName));
-					else
-						elems.Add("0");
-				}
-				if (hasInt)
-				{
-					if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName));
-					else
-						elems.Add("0");
-				}
-				if (hasSpot)
-				{
-					if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName));
-					else
-						elems.Add("0");
-				}
-				if (hasPnt)
-				{
-					if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-						elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName));
-					else
-						elems.Add("0");
-				}
-				mdats.Add("\t{ " + string.Join(", ", elems.ToArray()) + " }");
+				writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
+				writer.WriteLine("};");
+				writer.WriteLine();
+				labels.Add(MdataName);
 			}
-			writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
-			writer.WriteLine("};");
-			writer.WriteLine();
-			writer.Write("NJS_MOTION ");
-			writer.Write(Name);
-			writer.Write(" = { ");
-			writer.Write("{0}, ", MdataName);
-			writer.Write(Frames);
-			writer.Write(", ");
-			writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
-			writer.Write(", ");
-			switch (InterpolationMode)
+			if (!labels.Contains(Name))
 			{
-				case InterpolationMode.Linear:
-					writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
-					break;
-				case InterpolationMode.Spline:
-					writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE);
-					break;
-				case InterpolationMode.User:
-					writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
-					break;
+				writer.Write("NJS_MOTION ");
+				writer.Write(Name);
+				writer.Write(" = { ");
+				writer.Write("{0}, ", MdataName);
+				writer.Write(Frames);
+				writer.Write(", ");
+				writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
+				writer.Write(", ");
+				switch (InterpolationMode)
+				{
+					case InterpolationMode.Linear:
+						writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
+						break;
+					case InterpolationMode.Spline:
+						writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE);
+						break;
+					case InterpolationMode.User:
+						writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
+						break;
+				}
+				writer.Write(numpairs);
+				writer.WriteLine(" };");
+				labels.Add(Name);
 			}
-			writer.Write(numpairs);
-			writer.WriteLine(" };");
 		}
 
-		public string ToStructVariables()
+		public string ToStructVariables(List<string> labels = null)
 		{
 			using (StringWriter sw = new StringWriter())
 			{
-				ToStructVariables(sw);
+				ToStructVariables(sw, labels);
 				return sw.ToString();
 			}
 		}
@@ -2034,4 +2262,4 @@ namespace SonicRetro.SAModel
 		Label = 0x4C42414C,
 		End = 0x444E45
 	}
-}
+} 
