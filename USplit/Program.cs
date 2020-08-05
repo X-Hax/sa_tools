@@ -501,6 +501,7 @@ namespace USplit
 						Dictionary<string, List<string>> actionlist = new Dictionary<string, List<string>>(); //List of actions to tell which motions to assign/delete later
 						List<LandTable> landlist = new List<LandTable>(); //List of landtables to tell which objects/animations to delete later
 						List<string> deleteditems = new List<string>(); //List of items not to put in the split INI
+						List<NJS_MOTION> motionslist = new List<NJS_MOTION>(); //List of motions for action assignment
 						Dictionary<string, ItemParams> itemparamlist = new Dictionary<string, ItemParams>(); //List of object parameters such as node count for motions
 						ParseDictionary(addresslist, labellist, args[5], skiplabels);
 						Directory.CreateDirectory(dir + "\\chunkmodels");
@@ -548,6 +549,7 @@ namespace USplit
 											motion = new NJS_MOTION(data, entry.Key, imageBase, count, labellist, false);
 										}
 										motion.Save(fileOutputPath);
+										motionslist.Add(motion);
 										ExportLabels(motion, dir + "\\labels", labelindex);
 										itemparamlist.Add(motion.Name, new ItemParams { BoolParam = motion.ShortRot, IntParam = motion.ModelParts });
 										//Console.WriteLine("Added motion {0}", motion.Name);
@@ -571,35 +573,52 @@ namespace USplit
 								try
 								{
 									NJS_ACTION ani = new NJS_ACTION(data, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, modelfmt, labellist, new Dictionary<int, Attach>());
-									if (!actionlist.ContainsKey(ani.Model.Name))
+									foreach (NJS_MOTION item in motionslist)
 									{
-										List<string> actions = new List<string>();
-										if (!skiplabels) actions.Add(ani.Name);
-										else actions.Add(ani.Name.Substring(7, ani.Name.Length - 7));
-										actionlist.Add(ani.Model.Name, actions);
-										Console.WriteLine("New animation list for model {0} starting with {1}", ani.Model.Name, ani.Name);
+										if (ani.Animation.Name == item.Name)
+										{
+											string aniName = ani.Name;
+											ani = new NJS_ACTION(ani.Model, item);
+											ani.Name = aniName;
+											Console.WriteLine("Reusing motion {0} for action {1}", item.Name, ani.Name);
+											deleteditems.Add(ani.Animation.Name);
+											File.Delete(dir + "\\motions\\" + ani.Animation.Name + ".saanim");
+										}
+									}
+									if (ani.Animation.ModelParts == 0)
+									{
+										Console.WriteLine("Animation of action {0} has no model parts, skipping", ani.Name);
+										continue;
 									}
 									else
 									{
-										foreach (KeyValuePair<string, List<string>> item in actionlist)
+										if (!actionlist.ContainsKey(ani.Model.Name))
 										{
-											if (item.Key == ani.Model.Name)
+											List<string> actions = new List<string>();
+											if (!skiplabels) actions.Add(ani.Name);
+											else actions.Add(ani.Name.Substring(7, ani.Name.Length - 7));
+											actionlist.Add(ani.Model.Name, actions);
+											Console.WriteLine("New animation list for model {0} starting with {1}", ani.Model.Name, ani.Name);
+										}
+										else
+										{
+											foreach (KeyValuePair<string, List<string>> item in actionlist)
 											{
-												if (!item.Value.Contains(ani.Animation.Name))
+												if (item.Key == ani.Model.Name)
 												{
-													if (!skiplabels) item.Value.Add(ani.Name);
-													else item.Value.Add(ani.Name.Substring(10, ani.Name.Length - 10));
-													Console.WriteLine("Added animation for model {0}:{1}", ani.Model.Name, ani.Name);
+													if (!item.Value.Contains(ani.Animation.Name))
+													{
+														if (!skiplabels) item.Value.Add(ani.Name);
+														else item.Value.Add(ani.Name.Substring(10, ani.Name.Length - 10));
+														Console.WriteLine("Added animation for model {0}:{1}", ani.Model.Name, ani.Name);
+													}
 												}
 											}
 										}
+										ani.Animation.Save(fileOutputPath + ".saanim");
+										ExportLabels(ani, dir + "\\labels", labelindex);
+										itemparamlist.Add(ani.Name, new ItemParams { StringParam = ani.Model.Name });
 									}
-									ani.Animation.Save(fileOutputPath + ".saanim");
-									ExportLabels(ani, dir + "\\labels", labelindex);
-									Console.WriteLine("Deleting motion: {0}", dir + "\\motions\\" + ani.Animation.Name + ".saanim");
-									deleteditems.Add(ani.Animation.Name);
-									File.Delete(dir + "\\motions\\" + ani.Animation.Name + ".saanim");
-									itemparamlist.Add(ani.Name, new ItemParams { StringParam = ani.Model.Name });
 								}
 								catch (Exception ex)
 								{
