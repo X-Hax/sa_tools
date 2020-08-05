@@ -283,6 +283,16 @@ namespace SonicRetro.SAModel.SADXLVL2.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap jumpzero {
+            get {
+                object obj = ResourceManager.GetObject("jumpzero", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap levelitem {
             get {
                 object obj = ResourceManager.GetObject("levelitem", resourceCulture);
