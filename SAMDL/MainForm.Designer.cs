@@ -857,7 +857,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.importToolStripMenuItem.Text = "&Import";
+            this.importToolStripMenuItem.Text = "&Import...";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPImportToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
@@ -876,21 +876,21 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.cStructsToolStripMenuItem.Name = "cStructsToolStripMenuItem";
             this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.cStructsToolStripMenuItem.Text = "C &Structs";
+            this.cStructsToolStripMenuItem.Text = "C &Structs...";
             this.cStructsToolStripMenuItem.Click += new System.EventHandler(this.cStructsToolStripMenuItem_Click);
             // 
             // nJAToolStripMenuItem
             // 
             this.nJAToolStripMenuItem.Name = "nJAToolStripMenuItem";
             this.nJAToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.nJAToolStripMenuItem.Text = "NJA";
+            this.nJAToolStripMenuItem.Text = "NJA...";
             this.nJAToolStripMenuItem.Click += new System.EventHandler(this.nJAToolStripMenuItem_Click);
             // 
             // aSSIMPExportToolStripMenuItem
             // 
             this.aSSIMPExportToolStripMenuItem.Name = "aSSIMPExportToolStripMenuItem";
             this.aSSIMPExportToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.aSSIMPExportToolStripMenuItem.Text = "ASSIMP Export";
+            this.aSSIMPExportToolStripMenuItem.Text = "ASSIMP Export (FBX/DAE)...";
             this.aSSIMPExportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPExportToolStripMenuItem_Click);
             // 
             // preferencesToolStripMenuItem
