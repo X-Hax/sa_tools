@@ -151,7 +151,14 @@ namespace SA_Tools.Split
 						case "action":
 							{
 								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
-								if (!labels.ContainsValue(ani.Animation.Name)) ani.Animation.Name = filedesc;
+								if (!labels.ContainsValue(ani.Name)) ani.Name = filedesc;
+								if (customProperties.ContainsKey("numparts"))
+									ani.Animation.ModelParts = int.Parse(customProperties["numparts"]);
+								if (ani.Animation.ModelParts == 0)
+								{
+									Console.WriteLine("Action {0} has no model data!", ani.Name);
+									continue;
+								}
 								ani.Animation.Save(fileOutputPath);
 							}
 							break;
