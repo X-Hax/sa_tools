@@ -76,11 +76,11 @@
     <Compile Include="editProj.Designer.cs">
       <DependentUpon>editProj.cs</DependentUpon>
     </Compile>
-    <Compile Include="projSelect.cs">
+    <Compile Include="newProj.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="projSelect.Designer.cs">
-      <DependentUpon>projSelect.cs</DependentUpon>
+    <Compile Include="newProj.Designer.cs">
+      <DependentUpon>newProj.cs</DependentUpon>
     </Compile>
     <Compile Include="GamePaths.cs">
       <SubType>Form</SubType>
@@ -107,8 +107,8 @@
     <EmbeddedResource Include="GamePaths.resx">
       <DependentUpon>GamePaths.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="projSelect.resx">
-      <DependentUpon>projSelect.cs</DependentUpon>
+    <EmbeddedResource Include="newProj.resx">
+      <DependentUpon>newProj.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolsHub.resx">
       <DependentUpon>ToolsHub.cs</DependentUpon>

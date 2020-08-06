@@ -12,17 +12,9 @@ namespace SAToolsHub
 {
 	public partial class editProj : Form
 	{
-		public editProj(int mode)
+		public editProj()
 		{
 			InitializeComponent();
-
-			if (mode == 1)
-			{
-				btnCreateSave.Text = ("Save Project");
-				groupBox1.SuspendLayout();
-			}
-
-
 		}
 	}
 }

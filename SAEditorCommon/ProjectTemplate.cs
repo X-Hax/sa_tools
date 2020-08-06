@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace ProjectManager
+namespace ProjectManagement
 {
 	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class ProjectTemplate
@@ -16,10 +16,6 @@ namespace ProjectManager
 		public string ModSystemFolder { get; set; }
 		[XmlAttribute("canBuild")]
 		public bool CanBuild { get; set; }
-		[XmlAttribute("canUseSADXLVL2")]
-		public bool CanUseSADXLVL2 { get; set; }
-		[XmlAttribute("canUseSADXTweaker2")]
-		public bool CanUseSADXTweaker2 { get; set; }
 		[XmlElement("SplitEntryGeneral", typeof(SplitEntryGeneral))]
 		[XmlElement("SplitEntryMDL", typeof(SplitEntryMDL))]
 		public List<SplitEntry> SplitEntries { get; set; }

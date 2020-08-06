@@ -12,6 +12,7 @@ namespace ProjectManagement
 	{
 		public string SADXPCPath { get; set; }
 		public string SA2PCPath { get; set; }
+		public string projectPath { get; set; }
 
 		private static string GetSettingsPath()
 		{
