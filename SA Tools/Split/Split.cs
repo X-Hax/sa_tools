@@ -17,8 +17,20 @@ namespace SA_Tools.Split
 			try
 #endif
 			{
-				byte[] datafile = File.ReadAllBytes(datafilename);
+				byte[] datafile;
+				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(inifilename) + "_labels.txt");
+				Dictionary<int, string> labels = new Dictionary<int, string>();
+				if (File.Exists(listfile))
+					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
+				if (inifile.StartOffset != 0)
+				{
+					byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
+					datafile_temp.CopyTo(datafile_new, inifile.StartOffset);
+					datafile = datafile_new;
+				}
+				else datafile = datafile_temp;
 				if (inifile.MD5 != null && inifile.MD5.Count > 0)
 				{
 					string datahash = HelperFunctions.FileHash(datafile);
@@ -29,8 +41,9 @@ namespace SA_Tools.Split
 					}
 				}
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
+				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
-				if (inifile.Compressed) datafile = FraGag.Compression.Prs.Decompress(datafile);
+				if (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin") datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
 				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile);
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
@@ -73,11 +86,11 @@ namespace SA_Tools.Split
 					switch (type)
 					{
 						case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
+							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
 							break;
 						case "model":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -89,7 +102,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -101,7 +114,7 @@ namespace SA_Tools.Split
 							break;
 						case "basicdxmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -113,7 +126,7 @@ namespace SA_Tools.Split
 							break;
 						case "chunkmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -125,7 +138,7 @@ namespace SA_Tools.Split
 							break;
 						case "gcmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
@@ -137,14 +150,24 @@ namespace SA_Tools.Split
 							break;
 						case "action":
 							{
-								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-								ani.Animation.Name = filedesc;
+								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
+								if (!labels.ContainsValue(ani.Animation.Name)) ani.Animation.Name = filedesc;
 								ani.Animation.Save(fileOutputPath);
 							}
 							break;
 						case "animation":
-							new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo)) { Name = filedesc }
-								.Save(fileOutputPath);
+							if (customProperties.ContainsKey("shortrot"))
+							{
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
+								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								mot.Save(fileOutputPath);
+							}
+							else
+							{
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels);
+								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								mot.Save(fileOutputPath);
+							}
 							break;
 						case "objlist":
 							{
@@ -172,6 +195,16 @@ namespace SA_Tools.Split
 							break;
 						case "texlist":
 							TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							break;
+						case "texnamearray":
+							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
+							StreamWriter sw = File.CreateText(fileOutputPath);
+							for (int u = 0; u < texnames.NumTextures; u++)
+							{
+								sw.WriteLine(texnames.TextureNames[u] + ".pvr");
+							}
+							sw.Flush();
+							sw.Close();
 							break;
 						case "leveltexlist":
 							new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);

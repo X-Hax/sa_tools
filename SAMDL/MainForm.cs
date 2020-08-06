@@ -51,6 +51,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		bool unsaved = false;
 		bool loaded;
+		bool rootSiblingMode = false;
 		string currentFileName = "";
 		NJS_OBJECT model;
 		NJS_OBJECT tempmodel;
@@ -352,7 +353,17 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				modelFile = new ModelFile(filename);
 				outfmt = modelFile.Format;
-				model = modelFile.Model;
+				if (modelFile.Model.Sibling != null)
+				{
+					model = new NJS_OBJECT { Name = "Root" };
+					model.AddChild(modelFile.Model);
+					rootSiblingMode = true;
+				}
+				else
+				{
+					model = modelFile.Model;
+					rootSiblingMode = false;
+				}
 				animations = new List<NJS_MOTION>(modelFile.Animations);
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
@@ -501,7 +512,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			selectedObject = model;
@@ -523,8 +534,13 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					model = new NJS_OBJECT { Name = "Root" };
 					model.AddChild(tempmodel);
+					rootSiblingMode = true;
 				}
-				else model = tempmodel;
+				else
+				{
+					model = tempmodel;
+					rootSiblingMode = false;
+				}
 				if (modelinfo.CheckBox_LoadMotion.Checked)
 					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
 					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
@@ -658,7 +674,10 @@ namespace SonicRetro.SAModel.SAMDL
 				modelFile.SaveToFile(fileName);
 			else
 			{
-				ModelFile.CreateFile(fileName, model, animfiles, null, null, null, outfmt);
+				if (rootSiblingMode) 
+					ModelFile.CreateFile(fileName, model.Children[0], animfiles, null, null, null, outfmt);
+				else
+					ModelFile.CreateFile(fileName, model, animfiles, null, null, null, outfmt);
 				modelFile = new ModelFile(fileName);
 			}
 			
@@ -693,6 +712,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void NewFile(ModelFormat modelFormat)
 		{
+			rootSiblingMode = false;
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
@@ -715,7 +735,7 @@ namespace SonicRetro.SAModel.SAMDL
 			AddTreeNode(model, treeView1.Nodes);
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
-			loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
@@ -1019,25 +1039,22 @@ namespace SonicRetro.SAModel.SAMDL
 		private void PreviousAnimation()
 		{
 			if (animations == null) return;
-			{
-				animnum--;
-				animframe = 0;
-				if (animnum == -2) animnum = animations.Count - 1;
-				if (animnum > -1)
-					animation = animations[animnum];
-				else
-					animation = null;
-				if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawEntireModel();
-			}
+			animnum--;
+			if (animnum == -2) animnum = animations.Count - 1;
+			if (animnum > -1)
+				animation = animations[animnum];
+			else
+				animation = null;
+			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			animframe = 0;
+			DrawEntireModel();
 		}
 
 		private void NextAnimation()
 		{
 			if (animations == null) return;
 			animnum++;
-			animframe = 0;
 			if (animnum == animations.Count) animnum = -1;
 			if (animnum > -1)
 				animation = animations[animnum];
@@ -1045,6 +1062,7 @@ namespace SonicRetro.SAModel.SAMDL
 				animation = null;
 			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			animframe = 0;
 			DrawEntireModel();
 		}
 
@@ -1054,12 +1072,14 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe++;
 			if (animframe == animation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModel();
 			DrawEntireModel();
 		}
 
 		private void PrevFrame()
 		{
 			if (animations == null || animation == null) return;
+			animframe--;
 			if (animframe < 0) animframe = animation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
@@ -1488,7 +1508,10 @@ namespace SonicRetro.SAModel.SAMDL
 							sw.WriteLine("};");
 							sw.WriteLine();
 						}
-						model.ToStructVariables(sw, dx, labels, texnames);
+						if (rootSiblingMode) 
+							model.Children[0].ToStructVariables(sw, dx, labels, texnames);
+						else
+							model.ToStructVariables(sw, dx, labels, texnames);
 						if (saveAnimationsToolStripMenuItem.Checked && animations != null)
 						{
 							foreach (NJS_MOTION anim in animations)
@@ -2091,7 +2114,10 @@ namespace SonicRetro.SAModel.SAMDL
 							sw.WriteLine("};");
 							sw.WriteLine();
 						}
-						model.ToNJA(sw, dx, labels, texnames);
+						if (rootSiblingMode)
+							model.Children[0].ToNJA(sw, dx, labels, texnames);
+						else
+							model.ToNJA(sw, dx, labels, texnames);
 					}
 				}
 		}
@@ -2227,7 +2253,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 					AddTreeNode(model, treeView1.Nodes);
 					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
-					loaded = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+					loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 					selectedObject = model;
 					SelectedItemChanged();
@@ -2252,11 +2278,14 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void aSSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			string expname = model.Name;
+			if (rootSiblingMode)
+				expname = model.Children[0].Name;
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
 				Filter = "Model Files|*.fbx;*.dae",
-				FileName = model.Name
+				FileName = expname
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
@@ -2277,7 +2306,10 @@ namespace SonicRetro.SAModel.SAMDL
 							bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
 						}
 					}
-					SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					if (rootSiblingMode)
+						SAEditorCommon.Import.AssimpStuff.AssimpExport(model.Children[0], scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					else
+						SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 					/*
 					if (animation != null)
 					{
@@ -2347,6 +2379,7 @@ namespace SonicRetro.SAModel.SAMDL
 						else
 							animations.Add(anim);
 					}
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 				}
 		}
 

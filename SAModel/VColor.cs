@@ -15,9 +15,15 @@ namespace SonicRetro.SAModel
 			switch (type)
 			{
 				case ColorType.ARGB8888_32:
+					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
 					if (ByteConverter.BigEndian)
-						return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
+					{
+						if (!ByteConverter.Reverse) 
+							return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 						else
+							return Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);
+					}
+					else
 						return Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
 				case ColorType.XRGB8888_32:
 					return Color.FromArgb(unchecked((int)(ByteConverter.ToUInt32(file, address) | 0xFF000000u)));

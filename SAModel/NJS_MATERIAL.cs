@@ -197,8 +197,16 @@ namespace SonicRetro.SAModel
 		{
 			if (ByteConverter.BigEndian)
 			{
-				DiffuseColor = Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
-				SpecularColor = Color.FromArgb(file[address + 7], file[address + 4], file[address + 5], file[address + 6]);
+				if (!ByteConverter.Reverse)
+				{
+					DiffuseColor = Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
+					SpecularColor = Color.FromArgb(file[address + 7], file[address + 4], file[address + 5], file[address + 6]);
+				}
+				else
+				{
+					DiffuseColor = Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);
+					SpecularColor = Color.FromArgb(file[address + 4], file[address + 5], file[address + 6], file[address + 7]);
+				}
 			}
 			else
 			{

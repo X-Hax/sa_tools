@@ -396,9 +396,10 @@ namespace SonicRetro.SAModel
 				else
 				{
 					animaddr = imageBase + (uint)result.Count;
-					labels.Add(AnimName, animaddr);
+					if (!labels.ContainsKey(AnimName)) labels.Add(AnimName, animaddr);
 					for (int i = 0; i < Anim.Count; i++)
 					{
+						if (!labels.ContainsValue(animaniaddrs[i])) labels.Add(Anim[i].ActionName, animaniaddrs[i]);
 						result.Align(4);
 						result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
 					}
@@ -480,22 +481,21 @@ namespace SonicRetro.SAModel
 			}
 			for (int i = 0; i < Anim.Count; i++)
 			{
-				string aniid = Anim[i].Animation.Name.MakeIdentifier();
 				if (!labels.Contains(Anim[i].Model.Name))
 				{
 					labels.Add(Anim[i].Model.Name);
 					Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
 				}
-				if (!labels.Contains(aniid))
+				if (!labels.Contains(Anim[i].ActionName))
 				{
-					labels.Add(aniid);
-					Anim[i].Animation.ToStructVariables(writer);
-					writer.Write("NJS_ACTION action_");
-					writer.Write(aniid);
+					labels.Add(Anim[i].ActionName);
+					if (!labels.Contains(Anim[i].Animation.Name)) Anim[i].Animation.ToStructVariables(writer, labels);
+					writer.Write("NJS_ACTION ");
+					writer.Write(Anim[i].ActionName);
 					writer.Write(" = { &");
 					writer.Write(Anim[i].Model.Name);
 					writer.Write(", &");
-					writer.Write(aniid);
+					writer.Write(Anim[i].Animation.Name);
 					writer.WriteLine(" };");
 					writer.WriteLine();
 				}

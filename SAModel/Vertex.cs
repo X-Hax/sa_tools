@@ -24,9 +24,18 @@ namespace SonicRetro.SAModel
 
 		public Vertex(byte[] file, int address)
 		{
-			X = ByteConverter.ToSingle(file, address);
-			Y = ByteConverter.ToSingle(file, address + 4);
-			Z = ByteConverter.ToSingle(file, address + 8);
+			if (address > file.Length - 12)
+			{
+				X = 0;
+				Y = 0;
+				Z = 0;
+			}
+			else
+			{
+				X = ByteConverter.ToSingle(file, address);
+				Y = ByteConverter.ToSingle(file, address + 4);
+				Z = ByteConverter.ToSingle(file, address + 8);
+			}
 		}
 
 		public Vertex(string data)

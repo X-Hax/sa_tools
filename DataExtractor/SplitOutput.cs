@@ -7,6 +7,7 @@ namespace SonicRetro.SAModel.DataExtractor
 {
 	public partial class SplitProgress : Form
 	{
+		bool pauseLog = false;
 		public TextBoxWriter writer;
 		public List<SplitData> SplitDataList;
 		public struct SplitData
@@ -31,12 +32,13 @@ namespace SonicRetro.SAModel.DataExtractor
 
 		private void buttonCloseSplitProgress_Click(object sender, EventArgs e)
 		{
+			if (backgroundWorker1.IsBusy) backgroundWorker1.CancelAsync();
 			Close();
 		}
 
 		private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
-			string datafilename; 
+			string datafilename;
 			string inifilename;
 			string projectFolderName;
 			Console.WriteLine("Starting batch split for " + files.Count.ToString() + " file(s)" + System.Environment.NewLine);
@@ -46,18 +48,16 @@ namespace SonicRetro.SAModel.DataExtractor
 				inifilename = CurrentSplitData.iniFile;
 
 				Console.WriteLine("Splitting file: " + datafilename);
-				Console.WriteLine("Using split data: " + inifilename);
 				if (out_path == "") projectFolderName = Path.GetDirectoryName(datafilename);
 				else projectFolderName = out_path;
 
 				if (projectFolderName[projectFolderName.Length - 1] != '/') projectFolderName = string.Concat(projectFolderName, '/');
 				Console.WriteLine("Output folder: " + projectFolderName);
 
-				#region Validating Inputs
 				if (!File.Exists(datafilename))
 				{
 					Console.WriteLine(datafilename + " not found. Aborting.");
-					return;
+					continue;
 				}
 
 				if (!Directory.Exists(projectFolderName))
@@ -79,17 +79,25 @@ namespace SonicRetro.SAModel.DataExtractor
 					{
 						// couldn't create directory.
 						Console.WriteLine("Output folder did not exist and couldn't be created.");
-						return;
+						continue;
 					}
 				}
 
 				if (!File.Exists(inifilename))
 				{
-					Console.WriteLine(inifilename + " not found. Aborting.");
-					return;
+
+					if (inifilename.Length > 9 && File.Exists(inifilename.Substring(0, inifilename.Length - 9) + ".ini"))
+					{
+						inifilename = inifilename.Substring(0, inifilename.Length - 9) + ".ini";
+					}
+					else
+					{
+						Console.WriteLine(inifilename + " not found. Aborting.");
+						continue;
+					}
 				}
 
-				#endregion
+				Console.WriteLine("Using split data: " + inifilename);
 
 				// switch on file extension - if dll, use dll splitter
 				System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
@@ -118,13 +126,25 @@ namespace SonicRetro.SAModel.DataExtractor
 				splitdata.iniFile = Path.Combine(folder_parent, game_path, Path.GetFileNameWithoutExtension(file) + ".ini");
 				SplitDataList.Add(splitdata);
 			}
+			buttonCloseSplitProgress.Text = "Cancel";
 			backgroundWorker1.RunWorkerAsync();
 
 		}
 
 		private void timer1_Tick(object sender, EventArgs e)
 		{
-			if (writer != null) writer.WriteOut();
+			if (writer != null && !pauseLog) writer.WriteOut();
+		}
+
+		private void checkboxPause_CheckedChanged(object sender, EventArgs e)
+		{
+			pauseLog = checkboxPause.Checked;
+			buttonCloseSplitProgress.Text = "Close";
+		}
+
+		private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+		{
+			buttonCloseSplitProgress.Text = "Close";
 		}
 	}
 }

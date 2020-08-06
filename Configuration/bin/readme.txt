@@ -6,6 +6,7 @@ FunctionListGenerator: Creates assembly code to call __usercall functions
 LevelConverter: Converts .sa1lvl files to .sa2lvl and vice versa
 ModelRelabeler: Copies labels from one model file to another
 ModelConverter: Converts .sa1mdl files to .sa2mdl and vice versa
+ObjScan: Scans a binary or a memory dump for models and extracts them
 PAKTool: Extracts and builds .PAK archives
 SETCodeGenerator: Creates object loading code from a SET file and an object list
 SplitNB: Extracts models from .NB files
