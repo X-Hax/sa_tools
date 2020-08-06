@@ -80,7 +80,7 @@ namespace USplit
 				for (int u = 0; u < geoanimarray.Length; u++)
 				{
 					desc.GeoAnimObjectNames[u] = geoanimarray[u].Model.Name;
-					desc.GeoAnimActionNames[u] = geoanimarray[u].Animation.Name;
+					desc.GeoAnimActionNames[u] = geoanimarray[u].ActionName;
 				}
 				foreach (GeoAnimData geo in land.Anim)
 				{
