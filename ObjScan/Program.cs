@@ -78,7 +78,11 @@ namespace ObjScan
 			if (AnimCount < 0) return false;
 			int COLPointer = ByteConverter.ToInt32(datafile, address + 0xC);
 			if (COLPointer < imageBase) return false;
-			if ((COLPointer - imageBase) > datafile.Length - 32) return false;
+			if (COLPointer - imageBase > datafile.Length - 32) return false;
+			int AnimPointer = ByteConverter.ToInt32(datafile, address + 0x10);
+			if (AnimPointer != 0 && AnimPointer < imageBase) return false;
+			if (AnimPointer - imageBase > datafile.Length - 32) return false;
+			Console.WriteLine("Landtable at {0}", address.ToString("X8"));
 			return true;
 		}
 		static void Main(string[] args)
@@ -104,7 +108,7 @@ namespace ObjScan
 				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
-				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable");
+				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable, all");
 				Console.WriteLine("[offset]: Start offset (hexadecimal).\n");
 				Console.WriteLine("Cleaning up landtable objects:");
 				Console.WriteLine("If a split INI file is used, the scanner will clean up landtable models for all levels defined in the INI file.\n");
@@ -261,111 +265,184 @@ namespace ObjScan
 			if (reverse)
 				Console.Write(", Reversed");
 			Console.Write(System.Environment.NewLine);
-			for (int u = 0; u < datafile.Length - 52; u += 4)
+			if (type.ToLowerInvariant() == "all")
 			{
-				//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
-				address = u;
-				//Console.WriteLine("Address: {0}", address.ToString("X"));
-				fileOutputPath = dir + "\\" + address.ToString("X8");
-				try
+				for (int u = 0; u < datafile.Length - 52; u += 4)
 				{
-					switch (type.ToLowerInvariant())
+					address = u;
+					fileOutputPath = dir + "\\" + address.ToString("X8");
+					if (!CheckLandTable(datafile, address, imageBase)) continue;
+					try
 					{
-						case "landtable":
-							if (!CheckLandTable(datafile, address, imageBase)) continue;
-							try
-							{
-								LandTable land = new LandTable(datafile, address, imageBase, landfmt);
-								if (land.COL.Count > 3)
-								{
-									land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
-									Console.WriteLine("Landtable at {0}", address.ToString("X8"));
-								}
-							}
-							catch (Exception)
-							{
-								continue;
-							}
-							break;
-						case "model":
-							{
-								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-								ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
-								if (mdl.Children.Count > 0)
-								{
-									foreach (NJS_OBJECT child in mdl.Children)
-									{
-										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-									}
-								}
-								if (mdl.Sibling != null)
-								{
-									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-								}
-							}
-							break;
-						case "basicmodel":
-							{
-								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
-								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
-								if (mdl.Children.Count > 0)
-								{
-									foreach (NJS_OBJECT child in mdl.Children)
-									{
-										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-									}
-								}
-								if (mdl.Sibling != null)
-								{
-									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-								}
-							}
-							break;
-						case "basicdxmodel":
-							{
-								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
-								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
-								if (mdl.Children.Count > 0)
-								{
-									foreach (NJS_OBJECT child in mdl.Children)
-									{
-										Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-									}
-								}
-								if (mdl.Sibling != null)
-								{
-									Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-								}
-							}
-							break;
-							/*case "chunkmodel":
-								{
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-									ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.Chunk);
-								}
-								break;
-							case "gcmodel":
-								{
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-									ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
-								}
-								break;*/
+						LandTable land = new LandTable(datafile, address, imageBase, landfmt);
+						if (land.COL.Count > 3)
+						{
+							land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+							landtablelist.Add(address);
+						}
+					}
+					catch (Exception)
+					{
+						continue;
 					}
 				}
-				catch (Exception ex)
+				for (int u = 0; u < datafile.Length - 52; u += 4)
 				{
-					Console.WriteLine("{0} at {1} extraction failed: {2}", type, address.ToString("X8"), ex.ToString());
+					address = u;
+					fileOutputPath = dir + "\\" + address.ToString("X8");
+					try
+					{
+						if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
+						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+						if (mdl.Children.Count > 0)
+						{
+							foreach (NJS_OBJECT child in mdl.Children)
+							{
+								Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+								File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+							}
+						}
+						if (mdl.Sibling != null)
+						{
+							Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+							File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+						}
+					}
+					catch (Exception)
+					{
+						continue;
+					}
+				}
+				//Filter out landtable stuff
+				foreach (int landaddr in landtablelist)
+				{
+					//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
+					LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
+					if (land.COL.Count > 0)
+					{
+						foreach (COL col in land.COL)
+						{
+							File.Delete(dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+							Console.WriteLine("Deleting landtable object {0}", dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+						}
+					}
+					if (land.Anim.Count > 0)
+					{
+						foreach (GeoAnimData anim in land.Anim)
+						{
+							File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+							Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+						}
+					}
 				}
 			}
+			else
+				for (int u = 0; u < datafile.Length - 52; u += 4)
+				{
+					//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
+					address = u;
+					//Console.WriteLine("Address: {0}", address.ToString("X"));
+					fileOutputPath = dir + "\\" + address.ToString("X8");
+					try
+					{
+						switch (type.ToLowerInvariant())
+						{
+							case "landtable":
+								if (!CheckLandTable(datafile, address, imageBase)) continue;
+								try
+								{
+									LandTable land = new LandTable(datafile, address, imageBase, landfmt);
+									if (land.COL.Count > 3)
+									{
+										land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+										Console.WriteLine("Landtable at {0}", address.ToString("X8"));
+									}
+								}
+								catch (Exception)
+								{
+									continue;
+								}
+								break;
+							case "model":
+								{
+									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+									ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+									if (mdl.Children.Count > 0)
+									{
+										foreach (NJS_OBJECT child in mdl.Children)
+										{
+											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										}
+									}
+									if (mdl.Sibling != null)
+									{
+										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									}
+								}
+								break;
+							case "basicmodel":
+								{
+									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+									ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
+									if (mdl.Children.Count > 0)
+									{
+										foreach (NJS_OBJECT child in mdl.Children)
+										{
+											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										}
+									}
+									if (mdl.Sibling != null)
+									{
+										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									}
+								}
+								break;
+							case "basicdxmodel":
+								{
+									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
+									ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
+									if (mdl.Children.Count > 0)
+									{
+										foreach (NJS_OBJECT child in mdl.Children)
+										{
+											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+										}
+									}
+									if (mdl.Sibling != null)
+									{
+										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+									}
+								}
+								break;
+								/*case "chunkmodel":
+									{
+										NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.Chunk);
+									}
+									break;
+								case "gcmodel":
+									{
+										NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+										ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
+									}
+									break;*/
+						}
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("{0} at {1} extraction failed: {2}", type, address.ToString("X8"), ex.ToString());
+					}
+				}
 			//Filter out landtable stuff
 			foreach (int landaddr in landtablelist)
 			{
