@@ -7,83 +7,166 @@ using SA_Tools;
 
 namespace ObjScan
 {
-    class Program
-    {
-        static bool CheckNJSObject(byte[] datafile, int address, uint imageBase, string dir, string model_extension, bool recursive)
-        {
-            int flags = 0;
-            uint attach = 0;
-            uint child = 0;
-            uint sibling = 0;
-            uint vertices = 0;
-            uint normals = 0;
-            uint vert_count = 0;
-            uint meshlists = 0;
-            short mesh_count = 0;
-            short mat_count = 0;
-            Vertex pos;
-            Vertex scl;
-            flags = ByteConverter.ToInt32(datafile, address);
-            if (flags > 0x3FFF || flags < 0) return false;
-            attach = ByteConverter.ToUInt32(datafile, address + 4);
-            if (attach != 0)
-            {
-                if (attach < imageBase) return false;
-                if (attach > (uint)datafile.Length + imageBase - 52) return false;
-                vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
-                if (vertices > (uint)datafile.Length + imageBase - 52) return false;
-                if (vertices < imageBase) return false;
-                normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
-                if (normals != 0 && normals < imageBase) return false;
-                if (normals > (uint)datafile.Length + imageBase - 52) return false;
-                vert_count = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 8);
-                if (vert_count > 2048 || vert_count == 0) return false;
-                meshlists = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
-                if (meshlists != 0 && meshlists < imageBase) return false;
-                if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
-                mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
-                if (mesh_count > 2048 || mesh_count < 0) return false;
-                mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
-                if (mat_count > 2048 || mat_count < 0) return false;
-            }
-            pos = new Vertex(datafile, address + 8);
-            if (pos.X < -100000 || pos.X > 100000) return false;
-            if (pos.Y < -100000 || pos.Y > 100000) return false;
-            if (pos.Z < -100000 || pos.Z > 100000) return false;
-            scl = new Vertex(datafile, address + 0x20);
-            if (scl.X <= 0 || scl.X > 10000) return false;
-            if (scl.Y <= 0 || scl.Y > 10000) return false;
-            if (scl.Z <= 0 || scl.Z > 10000) return false;
-            child = ByteConverter.ToUInt32(datafile, address + 0x2C);
-            sibling = ByteConverter.ToUInt32(datafile, address + 0x30);
-            if (child > (uint)address + imageBase) return false;
-            if (sibling > (uint)address + imageBase) return false;
-            if (child > (uint)datafile.Length + imageBase - 52) return false;
-            if (sibling > (uint)datafile.Length + imageBase - 52) return false;
-            if (child != 0 && child < imageBase) return false;
-            if (sibling != 0 && sibling < imageBase) return false;
-            if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, dir, model_extension, false)) return false;
-            if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, dir, model_extension, false)) return false;
-            if (attach == 0 && flags == 0) return false;
-            if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
-            if (child != 0) File.Delete(dir + "\\" + (child - imageBase).ToString("X") + model_extension);
-            if (sibling != 0) File.Delete(dir + "\\" + (sibling - imageBase).ToString("X") + model_extension);
-            return true;
-        }
+	class Program
+	{
+		static bool CheckNJSObject(byte[] datafile, int address, uint imageBase, bool recursive)
+		{
+			int flags = 0;
+			uint attach = 0;
+			uint child = 0;
+			uint sibling = 0;
+			uint vertices = 0;
+			uint normals = 0;
+			uint vert_count = 0;
+			uint meshlists = 0;
+			short mesh_count = 0;
+			short mat_count = 0;
+			Vertex pos;
+			Vertex scl;
+			if (address <= 0 || address > datafile.Length - 20) return false;
+			flags = ByteConverter.ToInt32(datafile, address);
+			if (flags > 0x3FFF || flags < 0) return false;
+			attach = ByteConverter.ToUInt32(datafile, address + 4);
+			if (attach != 0)
+			{
+				if (attach < imageBase) return false;
+				if (attach > (uint)datafile.Length + imageBase - 52) return false;
+				vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
+				if (vertices > (uint)datafile.Length + imageBase - 52) return false;
+				if (vertices < imageBase) return false;
+				normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
+				if (normals != 0 && normals < imageBase) return false;
+				if (normals > (uint)datafile.Length + imageBase - 52) return false;
+				vert_count = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 8);
+				if (vert_count > 2048 || vert_count == 0) return false;
+				meshlists = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
+				if (meshlists != 0 && meshlists < imageBase) return false;
+				if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
+				mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
+				if (mesh_count > 2048 || mesh_count < 0) return false;
+				mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
+				if (mat_count > 2048 || mat_count < 0) return false;
+			}
+			pos = new Vertex(datafile, address + 8);
+			if (pos.X < -100000 || pos.X > 100000) return false;
+			if (pos.Y < -100000 || pos.Y > 100000) return false;
+			if (pos.Z < -100000 || pos.Z > 100000) return false;
+			scl = new Vertex(datafile, address + 0x20);
+			if (scl.X <= 0 || scl.X > 10000) return false;
+			if (scl.Y <= 0 || scl.Y > 10000) return false;
+			if (scl.Z <= 0 || scl.Z > 10000) return false;
+			child = ByteConverter.ToUInt32(datafile, address + 0x2C);
+			sibling = ByteConverter.ToUInt32(datafile, address + 0x30);
+			if (child > (uint)address + imageBase) return false;
+			if (sibling > (uint)address + imageBase) return false;
+			if (child > (uint)datafile.Length + imageBase - 52) return false;
+			if (sibling > (uint)datafile.Length + imageBase - 52) return false;
+			if (child != 0 && child < imageBase) return false;
+			if (sibling != 0 && sibling < imageBase) return false;
+			if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, false)) return false;
+			if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, false)) return false;
+			if (attach == 0 && flags == 0) return false;
+			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
+			return true;
+		}
 		static bool CheckLandTable(byte[] datafile, int address, uint imageBase)
 		{
 			short COLCount = ByteConverter.ToInt16(datafile, address);
 			if (COLCount < 0) return false;
 			short AnimCount = ByteConverter.ToInt16(datafile, address + 2);
 			if (AnimCount < 0) return false;
-			int COLPointer = ByteConverter.ToInt32(datafile, address + 0xC);
-			if (COLPointer < imageBase) return false;
-			if (COLPointer - imageBase > datafile.Length - 32) return false;
+			int COLAddress = ByteConverter.ToInt32(datafile, address + 0xC);
+			if (COLAddress < imageBase || COLAddress == 0) return false;
+			if (COLAddress - imageBase > datafile.Length - 32) return false;
 			int AnimPointer = ByteConverter.ToInt32(datafile, address + 0x10);
 			if (AnimPointer != 0 && AnimPointer < imageBase) return false;
 			if (AnimPointer - imageBase > datafile.Length - 32) return false;
-			Console.WriteLine("Landtable at {0}", address.ToString("X8"));
+			int ObjAddrPointer = COLAddress - (int)imageBase + 0x18;
+			int ObjAddr = ByteConverter.ToInt32(datafile, ObjAddrPointer);
+			if (ObjAddr < imageBase) return false;
+			if (!CheckNJSObject(datafile, ObjAddr - (int)imageBase, imageBase, false)) return false;
 			return true;
+		}
+		static void ScanLandtable(byte[] datafile, uint imageBase, string dir, LandTableFormat landfmt, List<int> landtablelist)
+		{
+			string landtable_extension = ".sa1lvl";
+			for (int u = 0; u < datafile.Length - 52; u += 4)
+			{
+				int address = u;
+				string fileOutputPath = dir + "\\" + address.ToString("X8");
+				if (!CheckLandTable(datafile, address, imageBase)) continue;
+				try
+				{
+					LandTable land = new LandTable(datafile, address, imageBase, landfmt);
+					if (land.COL.Count > 3)
+					{
+						land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+						landtablelist.Add(address);
+						Console.WriteLine("Landtable at {0}", address.ToString("X8"));
+					}
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+			}
+		}
+		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
+		{
+			string model_extension = ".sa1mdl";
+			for (int u = 0; u < datafile.Length - 52; u += 4)
+			{
+				int address = u;
+				string fileOutputPath = dir + "\\" + address.ToString("X8");
+				try
+				{
+					if (!CheckNJSObject(datafile, address, imageBase, true)) continue;
+					NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+					ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+					if (mdl.Children.Count > 0)
+					{
+						foreach (NJS_OBJECT child in mdl.Children)
+						{
+							Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+							File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+						}
+					}
+					if (mdl.Sibling != null)
+					{
+						Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+						File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+					}
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+			}
+		}
+		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, LandTableFormat landfmt, string dir)
+		{
+			string model_extension = ".sa1mdl";
+			foreach (int landaddr in landtablelist)
+			{
+				//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
+				LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
+				if (land.COL.Count > 0)
+				{
+					foreach (COL col in land.COL)
+					{
+						File.Delete(dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+						Console.WriteLine("Deleting landtable object {0}", dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+					}
+				}
+				if (land.Anim.Count > 0)
+				{
+					foreach (GeoAnimData anim in land.Anim)
+					{
+						File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+						Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+					}
+				}
+			}
 		}
 		static void Main(string[] args)
 		{
@@ -209,24 +292,19 @@ namespace ObjScan
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
-			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;			
+			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 			//bool SA2 = game == Game.SA2 | game == Game.SA2B;
 			ModelFormat modelfmt = ModelFormat.BasicDX;
-			string landtable_extension = ".sa1lvl";
 			LandTableFormat landfmt = LandTableFormat.SADX;
 			switch (game)
 			{
 				case Game.SA1:
 					modelfmt = ModelFormat.Basic;
 					landfmt = LandTableFormat.SA1;
-					model_extension = ".sa1mdl";
-					landtable_extension = ".sa1lvl";
 					break;
 				case Game.SADX:
 					modelfmt = ModelFormat.BasicDX;
 					landfmt = LandTableFormat.SADX;
-					model_extension = ".sa1mdl";
-					landtable_extension = ".sa1lvl";
 					break;
 					/*
 					case Game.SA2:
@@ -254,7 +332,6 @@ namespace ObjScan
 			}
 			else datafile = datafile_temp;
 			if (imageBase == 0) imageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
-			string fileOutputPath;
 			dir = Environment.CurrentDirectory + "\\" + Path.GetFileNameWithoutExtension(filename);
 			Directory.CreateDirectory(dir);
 			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
@@ -267,204 +344,23 @@ namespace ObjScan
 			Console.Write(System.Environment.NewLine);
 			if (type.ToLowerInvariant() == "all")
 			{
-				for (int u = 0; u < datafile.Length - 52; u += 4)
-				{
-					address = u;
-					fileOutputPath = dir + "\\" + address.ToString("X8");
-					if (!CheckLandTable(datafile, address, imageBase)) continue;
-					try
-					{
-						LandTable land = new LandTable(datafile, address, imageBase, landfmt);
-						if (land.COL.Count > 3)
-						{
-							land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
-							landtablelist.Add(address);
-						}
-					}
-					catch (Exception)
-					{
-						continue;
-					}
-				}
-				for (int u = 0; u < datafile.Length - 52; u += 4)
-				{
-					address = u;
-					fileOutputPath = dir + "\\" + address.ToString("X8");
-					try
-					{
-						if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
-						if (mdl.Children.Count > 0)
-						{
-							foreach (NJS_OBJECT child in mdl.Children)
-							{
-								Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-								File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-							}
-						}
-						if (mdl.Sibling != null)
-						{
-							Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-							File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-						}
-					}
-					catch (Exception)
-					{
-						continue;
-					}
-				}
-				//Filter out landtable stuff
-				foreach (int landaddr in landtablelist)
-				{
-					//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
-					LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
-					if (land.COL.Count > 0)
-					{
-						foreach (COL col in land.COL)
-						{
-							File.Delete(dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-							Console.WriteLine("Deleting landtable object {0}", dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-						}
-					}
-					if (land.Anim.Count > 0)
-					{
-						foreach (GeoAnimData anim in land.Anim)
-						{
-							File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-							Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-						}
-					}
-				}
+				ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
+				ScanModel(datafile, imageBase, dir, modelfmt);
+				CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
 			}
 			else
-				for (int u = 0; u < datafile.Length - 52; u += 4)
+				switch (type.ToLowerInvariant())
 				{
-					//address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
-					address = u;
-					//Console.WriteLine("Address: {0}", address.ToString("X"));
-					fileOutputPath = dir + "\\" + address.ToString("X8");
-					try
-					{
-						switch (type.ToLowerInvariant())
-						{
-							case "landtable":
-								if (!CheckLandTable(datafile, address, imageBase)) continue;
-								try
-								{
-									LandTable land = new LandTable(datafile, address, imageBase, landfmt);
-									if (land.COL.Count > 3)
-									{
-										land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
-										Console.WriteLine("Landtable at {0}", address.ToString("X8"));
-									}
-								}
-								catch (Exception)
-								{
-									continue;
-								}
-								break;
-							case "model":
-								{
-									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
-									ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
-									if (mdl.Children.Count > 0)
-									{
-										foreach (NJS_OBJECT child in mdl.Children)
-										{
-											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										}
-									}
-									if (mdl.Sibling != null)
-									{
-										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									}
-								}
-								break;
-							case "basicmodel":
-								{
-									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
-									ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
-									if (mdl.Children.Count > 0)
-									{
-										foreach (NJS_OBJECT child in mdl.Children)
-										{
-											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										}
-									}
-									if (mdl.Sibling != null)
-									{
-										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									}
-								}
-								break;
-							case "basicdxmodel":
-								{
-									if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
-									ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
-									if (mdl.Children.Count > 0)
-									{
-										foreach (NJS_OBJECT child in mdl.Children)
-										{
-											Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-											File.Delete(dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-										}
-									}
-									if (mdl.Sibling != null)
-									{
-										Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-										File.Delete(dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-									}
-								}
-								break;
-								/*case "chunkmodel":
-									{
-										NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-										ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.Chunk);
-									}
-									break;
-								case "gcmodel":
-									{
-										NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-										ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
-									}
-									break;*/
-						}
-					}
-					catch (Exception ex)
-					{
-						Console.WriteLine("{0} at {1} extraction failed: {2}", type, address.ToString("X8"), ex.ToString());
-					}
+					case "landtable":
+						ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
+						break;
+					case "model":
+					case "basicmodel":
+					case "basicdxmodel":
+						ScanModel(datafile, imageBase, dir, modelfmt);
+						CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
+						break;
 				}
-			//Filter out landtable stuff
-			foreach (int landaddr in landtablelist)
-			{
-				//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
-				LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
-				if (land.COL.Count > 0)
-				{
-					foreach (COL col in land.COL)
-					{
-						File.Delete(dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-						Console.WriteLine("Deleting landtable object {0}", dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-					}
-				}
-				if (land.Anim.Count > 0)
-				{
-					foreach (GeoAnimData anim in land.Anim)
-					{
-						File.Delete(dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-						Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-					}
-				}
-			}
 		}
 	}
 }
