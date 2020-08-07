@@ -7,70 +7,80 @@ using SA_Tools;
 
 namespace ObjScan
 {
-	class Program
-	{
-		static bool CheckNJSObject(byte[] datafile, int address, uint imageBase, string dir, string model_extension, bool recursive)
+    class Program
+    {
+        static bool CheckNJSObject(byte[] datafile, int address, uint imageBase, string dir, string model_extension, bool recursive)
+        {
+            int flags = 0;
+            uint attach = 0;
+            uint child = 0;
+            uint sibling = 0;
+            uint vertices = 0;
+            uint normals = 0;
+            uint vert_count = 0;
+            uint meshlists = 0;
+            short mesh_count = 0;
+            short mat_count = 0;
+            Vertex pos;
+            Vertex scl;
+            flags = ByteConverter.ToInt32(datafile, address);
+            if (flags > 0x3FFF || flags < 0) return false;
+            attach = ByteConverter.ToUInt32(datafile, address + 4);
+            if (attach != 0)
+            {
+                if (attach < imageBase) return false;
+                if (attach > (uint)datafile.Length + imageBase - 52) return false;
+                vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
+                if (vertices > (uint)datafile.Length + imageBase - 52) return false;
+                if (vertices < imageBase) return false;
+                normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
+                if (normals != 0 && normals < imageBase) return false;
+                if (normals > (uint)datafile.Length + imageBase - 52) return false;
+                vert_count = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 8);
+                if (vert_count > 2048 || vert_count == 0) return false;
+                meshlists = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
+                if (meshlists != 0 && meshlists < imageBase) return false;
+                if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
+                mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
+                if (mesh_count > 2048 || mesh_count < 0) return false;
+                mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
+                if (mat_count > 2048 || mat_count < 0) return false;
+            }
+            pos = new Vertex(datafile, address + 8);
+            if (pos.X < -100000 || pos.X > 100000) return false;
+            if (pos.Y < -100000 || pos.Y > 100000) return false;
+            if (pos.Z < -100000 || pos.Z > 100000) return false;
+            scl = new Vertex(datafile, address + 0x20);
+            if (scl.X <= 0 || scl.X > 10000) return false;
+            if (scl.Y <= 0 || scl.Y > 10000) return false;
+            if (scl.Z <= 0 || scl.Z > 10000) return false;
+            child = ByteConverter.ToUInt32(datafile, address + 0x2C);
+            sibling = ByteConverter.ToUInt32(datafile, address + 0x30);
+            if (child > (uint)address + imageBase) return false;
+            if (sibling > (uint)address + imageBase) return false;
+            if (child > (uint)datafile.Length + imageBase - 52) return false;
+            if (sibling > (uint)datafile.Length + imageBase - 52) return false;
+            if (child != 0 && child < imageBase) return false;
+            if (sibling != 0 && sibling < imageBase) return false;
+            if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, dir, model_extension, false)) return false;
+            if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, dir, model_extension, false)) return false;
+            if (attach == 0 && flags == 0) return false;
+            if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
+            if (child != 0) File.Delete(dir + "\\" + (child - imageBase).ToString("X") + model_extension);
+            if (sibling != 0) File.Delete(dir + "\\" + (sibling - imageBase).ToString("X") + model_extension);
+            return true;
+        }
+		static bool CheckLandTable(byte[] datafile, int address, uint imageBase)
 		{
-			int flags = 0;
-			uint attach = 0;
-			uint child = 0;
-			uint sibling = 0;
-			uint vertices = 0;
-			uint normals = 0;
-			uint vert_count = 0;
-			uint meshlists = 0;
-			short mesh_count = 0;
-			short mat_count = 0;
-			Vertex pos;
-			Vertex scl;
-			flags = ByteConverter.ToInt32(datafile, address);
-			if (flags > 0x3FFF || flags < 0) return false;
-			attach = ByteConverter.ToUInt32(datafile, address + 4);
-			if (attach != 0)
-			{
-				if (attach < imageBase) return false;
-				if (attach > (uint)datafile.Length + imageBase - 52) return false;
-				vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
-				if (vertices > (uint)datafile.Length + imageBase - 52) return false;
-				if (vertices < imageBase) return false;
-				normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
-				if (normals != 0 && normals < imageBase) return false;
-				if (normals > (uint)datafile.Length + imageBase - 52) return false;
-				vert_count = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 8);
-				if (vert_count > 2048 || vert_count == 0) return false;
-				meshlists = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
-				if (meshlists != 0 && meshlists < imageBase) return false;
-				if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
-				mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
-				if (mesh_count > 2048 || mesh_count < 0) return false;
-				mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
-				if (mat_count > 2048 || mat_count < 0) return false;
-			}
-			pos = new Vertex(datafile, address + 8);
-			if (pos.X < -100000 || pos.X > 100000) return false;
-			if (pos.Y < -100000 || pos.Y > 100000) return false;
-			if (pos.Z < -100000 || pos.Z > 100000) return false;
-			scl = new Vertex(datafile, address + 0x20);
-			if (scl.X <= 0 || scl.X > 10000) return false;
-			if (scl.Y <= 0 || scl.Y > 10000) return false;
-			if (scl.Z <= 0 || scl.Z > 10000) return false;
-			child = ByteConverter.ToUInt32(datafile, address + 0x2C);
-			sibling = ByteConverter.ToUInt32(datafile, address + 0x30);
-			if (child > (uint)address + imageBase) return false;
-			if (sibling > (uint)address + imageBase) return false;
-			if (child > (uint)datafile.Length + imageBase - 52) return false;
-			if (sibling > (uint)datafile.Length + imageBase - 52) return false;
-			if (child != 0 && child < imageBase) return false;
-			if (sibling != 0 && sibling < imageBase) return false;
-			if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, dir, model_extension, false)) return false;
-			if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, dir, model_extension, false)) return false;
-			if (attach == 0 && flags == 0) return false;
-			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
-			if (child != 0) File.Delete(dir + "\\" + (child - imageBase).ToString("X") + model_extension);
-			if (sibling != 0) File.Delete(dir + "\\" + (sibling - imageBase).ToString("X") + model_extension);
+			short COLCount = ByteConverter.ToInt16(datafile, address);
+			if (COLCount < 0) return false;
+			short AnimCount = ByteConverter.ToInt16(datafile, address + 2);
+			if (AnimCount < 0) return false;
+			int COLPointer = ByteConverter.ToInt32(datafile, address + 0xC);
+			if (COLPointer < imageBase) return false;
+			if ((COLPointer - imageBase) > datafile.Length - 32) return false;
 			return true;
 		}
-
 		static void Main(string[] args)
 		{
 			List<int> landtablelist = new List<int>();
@@ -87,14 +97,14 @@ namespace ObjScan
 			string model_extension = ".sa1mdl";
 			if (args.Length == 0)
 			{
-				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts models from it.\nOnly SA1/SADX models are supported at the moment.");
+				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts levels or models from it.\nOnly SA1 and SADX levels/models are supported at the moment.");
 				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE>");
 				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [offset]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
-				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.");
-				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel");
+				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
+				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable");
 				Console.WriteLine("[offset]: Start offset (hexadecimal).\n");
 				Console.WriteLine("Cleaning up landtable objects:");
 				Console.WriteLine("If a split INI file is used, the scanner will clean up landtable models for all levels defined in the INI file.\n");
@@ -198,6 +208,7 @@ namespace ObjScan
 			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;			
 			//bool SA2 = game == Game.SA2 | game == Game.SA2B;
 			ModelFormat modelfmt = ModelFormat.BasicDX;
+			string landtable_extension = ".sa1lvl";
 			LandTableFormat landfmt = LandTableFormat.SADX;
 			switch (game)
 			{
@@ -205,13 +216,13 @@ namespace ObjScan
 					modelfmt = ModelFormat.Basic;
 					landfmt = LandTableFormat.SA1;
 					model_extension = ".sa1mdl";
-					//landtable_extension = ".sa1lvl";
+					landtable_extension = ".sa1lvl";
 					break;
 				case Game.SADX:
 					modelfmt = ModelFormat.BasicDX;
 					landfmt = LandTableFormat.SADX;
 					model_extension = ".sa1mdl";
-					//landtable_extension = ".sa1lvl";
+					landtable_extension = ".sa1lvl";
 					break;
 					/*
 					case Game.SA2:
@@ -230,6 +241,7 @@ namespace ObjScan
 			}
 			byte[] datafile_temp = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
 			if (startoffset != 0)
 			{
 				byte[] datafile_new = new byte[startoffset + datafile_temp.Length];
@@ -255,17 +267,29 @@ namespace ObjScan
 				address = u;
 				//Console.WriteLine("Address: {0}", address.ToString("X"));
 				fileOutputPath = dir + "\\" + address.ToString("X8");
-				if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
 				try
 				{
 					switch (type.ToLowerInvariant())
 					{
-						/*case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt).SaveToFile(fileOutputPath + landtable_extension, landfmt);
+						case "landtable":
+							if (!CheckLandTable(datafile, address, imageBase)) continue;
+							try
+							{
+								LandTable land = new LandTable(datafile, address, imageBase, landfmt);
+								if (land.COL.Count > 3)
+								{
+									land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+									Console.WriteLine("Landtable at {0}", address.ToString("X8"));
+								}
+							}
+							catch (Exception)
+							{
+								continue;
+							}
 							break;
-						*/
 						case "model":
 							{
+								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
 								if (mdl.Children.Count > 0)
@@ -285,6 +309,7 @@ namespace ObjScan
 							break;
 						case "basicmodel":
 							{
+								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.Basic);
 								if (mdl.Children.Count > 0)
@@ -304,6 +329,7 @@ namespace ObjScan
 							break;
 						case "basicdxmodel":
 							{
+								if (!CheckNJSObject(datafile, address, imageBase, dir, model_extension, true)) continue;
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
 								ModelFile.CreateFile(fileOutputPath + ".sa1mdl", mdl, null, null, null, null, ModelFormat.BasicDX);
 								if (mdl.Children.Count > 0)
