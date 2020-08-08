@@ -45,7 +45,7 @@ namespace SA_Tools.Split
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin") datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
-				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile);
+				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile, imageBase);
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
 				ModelFormat modelfmt = 0;
 				LandTableFormat landfmt = 0;
