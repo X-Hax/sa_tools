@@ -13,6 +13,7 @@ namespace ObjScan
 		static public Dictionary<int, string> addresslist;
 		static void CreateSplitIni(string filename, Game game, uint imageBase, bool bigendian, bool reverse, uint startoffset)
 		{
+			if (addresslist.Count == 0) return;
 			if (File.Exists(filename)) filename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + "_new.ini");
 			Console.WriteLine("Creating split INI file: {0}", filename);
 			StreamWriter sw = File.CreateText(filename);
@@ -420,6 +421,18 @@ namespace ObjScan
 						CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 						break;
 				}
+			//Clean up empty folders
+			bool land = false;
+			bool model = false;
+			foreach (var item in addresslist)
+			{
+				if (item.Value == "landtable") land = true;
+				if (item.Value == "NJS_OBJECT") model = true;
+				if (item.Value == "NJS_CNK_OBJECT") model = true;
+			}
+			if (!land) Directory.Delete(Path.Combine(dir, "levels"));
+			if (!model) Directory.Delete(Path.Combine(dir, "models"));
+			if (!land && !model) Directory.Delete(dir);
 		}
 	}
 }
