@@ -18,15 +18,132 @@ namespace ArchiveTool
 			{
 				Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM and PRS archives.\n");
 				Console.WriteLine("Usage:\n");
-				Console.WriteLine("Extracting a PVM/GVM/PRS archive:\nArchiveTool file.pvm\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures, the program will produce a folder with all PVR/GVR textures and a texture list.\n");
-				Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png file.pvm\n");
-				Console.WriteLine("Creating a PVM/GVM from a list of PVR/GVR textures:\nArchiveTool texturelist.txt\nThe program will create a PVM/GVM archive from a texture list. Textures must be in the same folder as the texture list.\n");
-				Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm texturelist.txt\nThe texture list must contain global indices listed before each texture filename for this option to work.\n");
-				Console.WriteLine("Creating a PRS compressed PVM/GVM:\nArchiveTool texturelist.txt -prs\nSame as the previous two options but the PVM/GVM file will be PRS compressed.\n");
-				Console.WriteLine("Creating a PRS compressed binary:\nArchiveTool file.bin\nA PRS archive will be created from the file.\nFile extension must be .BIN for this option to work.\n");
+				Console.WriteLine("Extracting a PVM/GVM/PRS archive:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures, the program will produce a folder with all PVR/GVR textures and a texture list.\n");
+				Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
+				Console.WriteLine("Creating a PVM/GVM from a list of PVR/GVR textures: ArchiveTool <texturelist.txt> [-prs]\nThe program will create a PVM/GVM archive from a texture list. Textures must be in the same folder as the texture list.\nThe -prs option will make the program output a PRS compressed PVM/GVM.\n");
+				Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <texturelist.txt> [-prs]\nThe texture list must contain global indices listed before each texture filename for this option to work.\n");
+				Console.WriteLine("Creating a PRS compressed binary: ArchiveTool <file.bin>\nA PRS archive will be created from the file.\nFile extension must be .BIN for this option to work.\n");
+				Console.WriteLine("Converting GVM to PVM: ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
 				Console.WriteLine("Press ENTER to exit.");
 				Console.ReadLine();
 				return;
+			}
+			//GVM2PVM mode
+			else if (args[0] == "-gvm2pvm")
+			{
+				string filePath = args[1];
+				bool isPRS = false;
+				if (args.Length > 2 && args[2] == "-prs") isPRS = true;
+				string directoryName = Path.GetDirectoryName(filePath);
+				string extension = Path.GetExtension(filePath).ToLowerInvariant();
+				if (!File.Exists(filePath))
+				{
+					Console.WriteLine("Supplied GVM archive does not exist!");
+					Console.WriteLine("Press ENTER to exit.");
+					Console.ReadLine();
+					return;
+				}
+				if (extension != ".gvm")
+				{
+					Console.WriteLine("GVM2PVM mode can only be used with GVM files.");
+					Console.WriteLine("Press ENTER to exit.");
+					Console.ReadLine();
+					return;
+				}
+				string path = Path.Combine(directoryName, Path.GetFileNameWithoutExtension(filePath));
+				Directory.CreateDirectory(path);
+				byte[] filedata = File.ReadAllBytes(filePath);
+				using (TextWriter texList = File.CreateText(Path.Combine(path, Path.GetFileName(path)+".txt")))
+				{
+					try
+					{
+						ArchiveBase gvmfile = null;
+						byte[] gvmdata = File.ReadAllBytes(filePath);
+						gvmfile = new GvmArchive();
+						ArchiveReader gvmReader = gvmfile.Open(gvmdata);
+						Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ".pvm"), FileMode.Create);
+						ArchiveBase pvmArchive = new PvmArchive();
+						ArchiveWriter pvmWriter = pvmArchive.Create(pvmStream);
+						foreach (ArchiveEntry file in gvmReader.Entries)
+						{
+							gvmReader.ExtractToFile(file, Path.Combine(path, file.Name));
+							Stream data = File.Open(Path.Combine(path, file.Name), FileMode.Open);
+							VrTexture vrfile = new GvrTexture(data);
+							Bitmap tempTexture = vrfile.ToBitmap();
+							System.Drawing.Imaging.BitmapData bmpd = tempTexture.LockBits(new Rectangle(Point.Empty, tempTexture.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+							int stride = bmpd.Stride;
+							byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
+							System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
+							tempTexture.UnlockBits(bmpd);
+							int tlevels = 0;
+							string archiveName = Path.GetFileNameWithoutExtension(filePath);
+							for (int y = 0; y < tempTexture.Height; y++)
+							{
+								int srcaddr = y * Math.Abs(stride);
+								for (int x = 0; x < tempTexture.Width; x++)
+								{
+									Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
+									if (c.A == 0)
+										tlevels = 1;
+									else if (c.A < 255)
+									{
+										tlevels = 2;
+										break;
+									}
+								}
+								if (tlevels == 2)
+									break;
+							}
+							PvrPixelFormat ppf = PvrPixelFormat.Rgb565;
+							if (tlevels == 1)
+								ppf = PvrPixelFormat.Argb1555;
+							else if (tlevels == 2)
+								ppf = PvrPixelFormat.Argb4444;
+							PvrDataFormat pdf;
+							if (!vrfile.HasMipmaps)
+							{
+								if (tempTexture.Width == tempTexture.Height)
+									pdf = PvrDataFormat.SquareTwiddled;
+								else
+									pdf = PvrDataFormat.Rectangle;
+							}
+							else
+							{
+								if (tempTexture.Width == tempTexture.Height)
+									pdf = PvrDataFormat.SquareTwiddledMipmaps;
+								else
+									pdf = PvrDataFormat.RectangleTwiddled;
+							}
+							PvrTextureEncoder encoder = new PvrTextureEncoder(tempTexture, ppf, pdf);
+							encoder.GlobalIndex = vrfile.GlobalIndex;
+							string pvrPath = Path.ChangeExtension(Path.Combine(path, file.Name), ".pvr");
+							encoder.Save(pvrPath);
+							data.Close();
+							File.Delete(Path.Combine(path, file.Name));
+							Stream datapvr = File.Open(pvrPath, FileMode.Open);
+							pvmWriter.CreateEntry(datapvr, Path.GetFileNameWithoutExtension(pvrPath));
+							pvmWriter.Flush();
+							texList.WriteLine(Path.GetFileName(pvrPath));
+						}
+						pvmStream.Flush();
+						pvmStream.Close();
+						if (isPRS)
+						{
+							byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
+							pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+							File.WriteAllBytes(Path.ChangeExtension(filePath, ".PVM.PRS"), pvmdata);
+							File.Delete(Path.ChangeExtension(filePath, ".PVM"));
+						}
+						Console.WriteLine("Archive converted!");
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Exception thrown: {0}", ex.ToString());
+						Console.WriteLine("Press ENTER to exit.");
+						Console.ReadLine();
+						return;
+					}
+				}
 			}
 			//CompilePVM mode
 			else if (args[0] == "-pvm")
