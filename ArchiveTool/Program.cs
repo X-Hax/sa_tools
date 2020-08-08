@@ -66,7 +66,8 @@ namespace ArchiveTool
 						ArchiveWriter pvmWriter = pvmArchive.Create(pvmStream);
 						foreach (ArchiveEntry file in gvmReader.Entries)
 						{
-							gvmReader.ExtractToFile(file, Path.Combine(path, file.Name));
+							if (!File.Exists(Path.Combine(path, file.Name)))
+								gvmReader.ExtractToFile(file, Path.Combine(path, file.Name));
 							Stream data = File.Open(Path.Combine(path, file.Name), FileMode.Open);
 							VrTexture vrfile = new GvrTexture(data);
 							Bitmap tempTexture = vrfile.ToBitmap();
@@ -117,14 +118,14 @@ namespace ArchiveTool
 							PvrTextureEncoder encoder = new PvrTextureEncoder(tempTexture, ppf, pdf);
 							encoder.GlobalIndex = vrfile.GlobalIndex;
 							string pvrPath = Path.ChangeExtension(Path.Combine(path, file.Name), ".pvr");
-							encoder.Save(pvrPath);
+							if (!File.Exists(pvrPath)) 
+								encoder.Save(pvrPath);
 							data.Close();
 							File.Delete(Path.Combine(path, file.Name));
-							Stream datapvr = File.Open(pvrPath, FileMode.Open);
-							pvmWriter.CreateEntry(datapvr, Path.GetFileNameWithoutExtension(pvrPath));
-							pvmWriter.Flush();
+							pvmWriter.CreateEntryFromFile(pvrPath);
 							texList.WriteLine(Path.GetFileName(pvrPath));
 						}
+						pvmWriter.Flush();
 						pvmStream.Flush();
 						pvmStream.Close();
 						if (isPRS)
