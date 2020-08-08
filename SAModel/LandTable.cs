@@ -20,12 +20,13 @@ namespace SonicRetro.SAModel
 		public string COLName { get; set; }
 		public List<GeoAnimData> Anim { get; set; }
 		public string AnimName { get; set; }
-		public int Flags { get; set; }
-		public float Unknown1 { get; set; }
+		public short Attributes { get; set; }
+		public short Flags { get; set; }
+		public float FarClipping { get; set; }
 		public string TextureFileName { get; set; }
 		public uint TextureList { get; set; }
-		public int Unknown2 { get; set; }
-		public int Unknown3 { get; set; }
+		public int BinaryFilename { get; set; }
+		public int BinaryLoadFunction { get; set; }
 		public string Name { get; set; }
 		public LandTableFormat Format { get; private set; }
 		public string Author { get; set; }
@@ -75,8 +76,9 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
 					short anicnt = ByteConverter.ToInt16(file, address + 2);
-					Flags = ByteConverter.ToInt32(file, address + 4);
-					Unknown1 = ByteConverter.ToSingle(file, address + 8);
+					Attributes = ByteConverter.ToInt16(file, address + 4);
+					Flags = ByteConverter.ToInt16(file, address + 6);
+					FarClipping = ByteConverter.ToSingle(file, address + 8);
 					COL = new List<COL>();
 					int tmpaddr = ByteConverter.ToInt32(file, address + 0xC);
 					if (tmpaddr != 0)
@@ -118,13 +120,13 @@ namespace SonicRetro.SAModel
 						TextureFileName = file.GetCString(tmpaddr, Encoding.ASCII);
 					}
 					TextureList = ByteConverter.ToUInt32(file, address + 0x18);
-					Unknown2 = ByteConverter.ToInt32(file, address + 0x1C);
-					Unknown3 = ByteConverter.ToInt32(file, address + 0x20);
+					BinaryFilename = ByteConverter.ToInt32(file, address + 0x1C);
+					BinaryLoadFunction = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
 				case LandTableFormat.SA2B:
 					short cnkcnt = ByteConverter.ToInt16(file, address + 2);
-					Unknown1 = ByteConverter.ToSingle(file, address + 0xC);
+					FarClipping = ByteConverter.ToSingle(file, address + 0xC);
 					COL = new List<COL>();
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
 					if (tmpaddr != 0)
@@ -423,20 +425,21 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
 					result.AddRange(ByteConverter.GetBytes((ushort)Anim.Count));
+					result.AddRange(ByteConverter.GetBytes(Attributes));
 					result.AddRange(ByteConverter.GetBytes(Flags));
-					result.AddRange(ByteConverter.GetBytes(Unknown1));
+					result.AddRange(ByteConverter.GetBytes(FarClipping));
 					result.AddRange(ByteConverter.GetBytes(coladdr));
 					result.AddRange(ByteConverter.GetBytes(animaddr));
 					result.AddRange(ByteConverter.GetBytes(texnameaddr));
 					result.AddRange(ByteConverter.GetBytes(TextureList));
-					result.AddRange(ByteConverter.GetBytes(Unknown2));
-					result.AddRange(ByteConverter.GetBytes(Unknown3));
+					result.AddRange(ByteConverter.GetBytes(BinaryFilename));
+					result.AddRange(ByteConverter.GetBytes(BinaryLoadFunction));
 					break;
 				case LandTableFormat.SA2:
 				case LandTableFormat.SA2B:
 					result.AddRange(ByteConverter.GetBytes((ushort)cnk.Count));
 					result.AddRange(new byte[8]); // TODO: figure out what these do
-					result.AddRange(ByteConverter.GetBytes(Unknown1));
+					result.AddRange(ByteConverter.GetBytes(FarClipping));
 					result.AddRange(ByteConverter.GetBytes(coladdr));
 					result.AddRange(ByteConverter.GetBytes(animaddr));
 					result.AddRange(ByteConverter.GetBytes(texnameaddr));
@@ -537,9 +540,11 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SADX:
 					writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
 					writer.Write(", ");
-					writer.Write(Flags.ToCHex());
+					writer.Write(Attributes.ToString("X4"));
 					writer.Write(", ");
-					writer.Write(Unknown1.ToC());
+					writer.Write(Flags.ToString("X4"));
+					writer.Write(", ");
+					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
 					writer.Write(COLName);
 					writer.Write(", ");
@@ -549,14 +554,14 @@ namespace SonicRetro.SAModel
 					writer.Write(", (NJS_TEXLIST *)");
 					writer.Write(TextureList.ToCHex());
 					writer.Write(", ");
-					writer.Write(Unknown2.ToCHex());
+					writer.Write(BinaryFilename.ToCHex());
 					writer.Write(", ");
-					writer.Write(Unknown3.ToCHex());
+					writer.Write(BinaryLoadFunction.ToCHex());
 					break;
 				case LandTableFormat.SA2:
 					writer.Write(cnk.Count);
 					writer.Write(", 0, 0, 0, 0, ");
-					writer.Write(Unknown1.ToC());
+					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
 					writer.Write(COLName);
 					writer.Write(", ");
