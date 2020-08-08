@@ -540,9 +540,9 @@ namespace SonicRetro.SAModel
 				case LandTableFormat.SADX:
 					writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
 					writer.Write(", ");
-					writer.Write(Attributes.ToString("X4"));
+					writer.Write("0x" + Attributes.ToString("X"));
 					writer.Write(", ");
-					writer.Write(Flags.ToString("X4"));
+					writer.Write("0x" + Flags.ToString("X"));
 					writer.Write(", ");
 					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
