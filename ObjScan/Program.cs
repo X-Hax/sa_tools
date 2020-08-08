@@ -66,6 +66,7 @@ namespace ObjScan
 			if (recursive && child != 0 && !CheckNJSObject(datafile, (int)(child - imageBase), imageBase, false)) return false;
 			if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, false)) return false;
 			if (attach == 0 && flags == 0) return false;
+			if (attach == 0 && child == 0 && sibling == 0) return false;
 			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
 			return true;
 		}
