@@ -342,7 +342,7 @@ namespace USplit
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
 					"list <offset> <filename> [-skiplabels] [-noanims], binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
-					"objlist, startpos, texlist, texnamearray, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist,\nsoundtestlist, nextlevellist, " +
+					"motion <nodecount> [-shortrot], objlist, startpos, texlist, texnamearray, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist,\nsoundtestlist, nextlevellist, " +
 					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist,\npathlist,stagelightdatalist, weldlist" +
 					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
 					"stringarray <count> [language], skyboxscale <count>, stageselectlist <count>, animationlist <count>,\n" +
@@ -957,6 +957,13 @@ namespace USplit
 							string[] mdlanis = new string[0];
 							mdlanis = (fileOutputPath + ".saanim").Split(',');
 							ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
+						}
+						break;
+					case "motion":
+						{
+							bool shortrot_enabled = false;
+							if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
+							new NJS_MOTION(datafile, address, imageBase, int.Parse(args[5]), shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
 						}
 						break;
 					case "objlist":
