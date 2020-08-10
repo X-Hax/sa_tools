@@ -4,21 +4,32 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using PuyoTools.Modules.Archive;
+using SonicRetro.SAModel;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 
 namespace ArchiveTool
 {
+	public struct PBTextureData
+	{
+		public uint offset;
+		public byte pixelformat;
+		public byte dataformat;
+		public short nothing;
+		public uint gbix;
+		public ushort width;
+		public ushort height;
+	}
 	static class Program
 	{
 		static void Main(string[] args)
 		{
 			if (args.Length == 0)
 			{
-				Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM and PRS archives.\n");
+				Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM and PRS archives, and extract textures from PB files.\n");
 				Console.WriteLine("Usage:\n");
-				Console.WriteLine("Extracting a PVM/GVM/PRS archive:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures, the program will produce a folder with all PVR/GVR textures and a texture list.\n");
+				Console.WriteLine("Extracting a PVM/GVM/PRS/PB archive:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures, the program will produce a folder with all PVR/GVR textures and a texture list.\n");
 				Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
 				Console.WriteLine("Creating a PVM/GVM from a list of PVR/GVR textures: ArchiveTool <texturelist.txt> [-prs]\nThe program will create a PVM/GVM archive from a texture list. Textures must be in the same folder as the texture list.\nThe -prs option will make the program output a PRS compressed PVM/GVM.\n");
 				Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <texturelist.txt> [-prs]\nThe texture list must contain global indices listed before each texture filename for this option to work.\n");
@@ -342,6 +353,71 @@ namespace ArchiveTool
 				}
 				switch (extension)
 				{
+					case ".pb":
+						byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
+						byte[] pvrtheader = { 0x50, 0x56, 0x52, 0x54 };
+						byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
+						byte[] pbdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pb"));
+						byte numtextures = pbdata[4];
+						PBTextureData[] headers = new PBTextureData[numtextures];
+						string dir = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
+						Directory.CreateDirectory(dir);
+						for (int u = 0; u < numtextures; u++)
+						{
+							int tempaddr = 8 + 16 * u;
+							headers[u].offset = ByteConverter.ToUInt32(pbdata, tempaddr);
+							headers[u].pixelformat = pbdata[tempaddr + 4];
+							headers[u].dataformat = pbdata[tempaddr + 5];
+							headers[u].gbix = ByteConverter.ToUInt32(pbdata, tempaddr + 8);
+							headers[u].width = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
+							headers[u].height = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
+						}
+						for (int u = 0; u < numtextures; u++)
+						{
+							int tempaddr = 8 + 16 * u;
+							Console.WriteLine("Texture {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, headers[u].offset, headers[u].pixelformat, headers[u].dataformat, headers[u].gbix, headers[u].width, headers[u].height);
+							string outpath = Path.Combine(dir, u.ToString("D3") + ".pvr");
+							using (Stream pvrStream = File.Open(outpath, FileMode.Create))
+							{
+								uint chunksize = 0;
+								if (u == numtextures - 1) chunksize = (uint)pbdata.Length - headers[u].offset;
+								else chunksize = headers[u + 1].offset - headers[u].offset;
+								uint chunksize_file = chunksize;
+								if (chunksize_file % 8 != 0)
+								{
+									do
+									{
+										chunksize_file++;
+									}
+									while (chunksize_file % 8 != 0);
+								}
+								Console.WriteLine("chunksize: {0}", chunksize.ToString());
+								pvrStream.Write(gbixheader, 0, 4);
+								pvrStream.Write(ByteConverter.GetBytes(8), 0, 4);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].gbix), 0, 4);
+								pvrStream.Write(padding, 0, 4);
+								pvrStream.Write(pvrtheader, 0, 4);
+								pvrStream.Write(ByteConverter.GetBytes(chunksize_file + 8), 0, 4);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].pixelformat), 0, 1);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].dataformat), 0, 1);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].nothing), 0, 2);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].width), 0, 2);
+								pvrStream.Write(ByteConverter.GetBytes(headers[u].height), 0, 2);
+								pvrStream.Write(pbdata, (int)headers[u].offset, (int)chunksize);
+								if (pvrStream.Position % 8 != 0)
+								{
+									do
+									{
+										pvrStream.Write(ByteConverter.GetBytes(0), 0, 1);
+									}
+									while (pvrStream.Position % 8 != 0);
+								}
+								pvrStream.Flush();
+								pvrStream.Close();
+							}
+						}
+						Console.WriteLine("Archive extracted!");
+						break;
 					case ".bin":
 						byte[] bindata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".bin"));
 						bindata = FraGag.Compression.Prs.Compress(bindata);
