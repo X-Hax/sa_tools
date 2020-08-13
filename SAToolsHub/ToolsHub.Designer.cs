@@ -61,6 +61,9 @@
 			this.sASaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sA2ToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sA2EventViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sA2CutsceneTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sA2MessageEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sA2StageSelectEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.splitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,7 +78,14 @@
 			this.tsSALVL = new System.Windows.Forms.ToolStripButton();
 			this.tsTexEdit = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsSADXLVL2 = new System.Windows.Forms.ToolStripButton();
+			this.tsSADXTweaker = new System.Windows.Forms.ToolStripButton();
+			this.tsSADXsndSharp = new System.Windows.Forms.ToolStripButton();
+			this.tsSADXFontEdit = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsNewProj = new System.Windows.Forms.ToolStripButton();
 			this.tsOpenProj = new System.Windows.Forms.ToolStripButton();
 			this.tsEditProj = new System.Windows.Forms.ToolStripButton();
@@ -88,26 +98,16 @@
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.convertFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.tsSADXLVL2 = new System.Windows.Forms.ToolStripButton();
-			this.tsSADXTweaker = new System.Windows.Forms.ToolStripButton();
-			this.tsSADXsndSharp = new System.Windows.Forms.ToolStripButton();
-			this.tsSADXFontEdit = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.sA2CutsceneTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.sA2MessageEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.sA2StageSelectEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
@@ -304,7 +304,7 @@
 			// 
 			this.sAMDLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSAMDL;
 			this.sAMDLToolStripMenuItem.Name = "sAMDLToolStripMenuItem";
-			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.sAMDLToolStripMenuItem.Text = "SAMDL";
 			this.sAMDLToolStripMenuItem.Click += new System.EventHandler(this.sAMDLToolStripMenuItem_Click);
 			// 
@@ -312,7 +312,7 @@
 			// 
 			this.sALVLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSALVL;
 			this.sALVLToolStripMenuItem.Name = "sALVLToolStripMenuItem";
-			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.sALVLToolStripMenuItem.Text = "SALVL";
 			this.sALVLToolStripMenuItem.Click += new System.EventHandler(this.sALVLToolStripMenuItem_Click);
 			// 
@@ -320,7 +320,7 @@
 			// 
 			this.textureEditorToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsTexEdit;
 			this.textureEditorToolStripMenuItem.Name = "textureEditorToolStripMenuItem";
-			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.textureEditorToolStripMenuItem.Text = "Texture Editor";
 			this.textureEditorToolStripMenuItem.Click += new System.EventHandler(this.textureEditorToolStripMenuItem_Click);
 			// 
@@ -339,35 +339,35 @@
 			// sADXLVL2ToolStripMenuItem
 			// 
 			this.sADXLVL2ToolStripMenuItem.Name = "sADXLVL2ToolStripMenuItem";
-			this.sADXLVL2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXLVL2ToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.sADXLVL2ToolStripMenuItem.Text = "SADXLVL2";
 			this.sADXLVL2ToolStripMenuItem.Click += new System.EventHandler(this.sADXLVL2ToolStripMenuItem_Click);
 			// 
 			// sADXTweakerToolStripMenuItem
 			// 
 			this.sADXTweakerToolStripMenuItem.Name = "sADXTweakerToolStripMenuItem";
-			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.sADXTweakerToolStripMenuItem.Text = "SADX Tweaker";
 			this.sADXTweakerToolStripMenuItem.Click += new System.EventHandler(this.sADXTweakerToolStripMenuItem_Click);
 			// 
 			// sADXsndSharpToolStripMenuItem
 			// 
 			this.sADXsndSharpToolStripMenuItem.Name = "sADXsndSharpToolStripMenuItem";
-			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.sADXsndSharpToolStripMenuItem.Text = "SADXsndSharp";
 			this.sADXsndSharpToolStripMenuItem.Click += new System.EventHandler(this.sADXsndSharpToolStripMenuItem_Click);
 			// 
 			// sAFontEditorToolStripMenuItem
 			// 
 			this.sAFontEditorToolStripMenuItem.Name = "sAFontEditorToolStripMenuItem";
-			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.sAFontEditorToolStripMenuItem.Text = "SADX Font Editor";
 			this.sAFontEditorToolStripMenuItem.Click += new System.EventHandler(this.sAFontEditorToolStripMenuItem_Click);
 			// 
 			// sASaveToolStripMenuItem
 			// 
 			this.sASaveToolStripMenuItem.Name = "sASaveToolStripMenuItem";
-			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.sASaveToolStripMenuItem.Text = "SASave";
 			this.sASaveToolStripMenuItem.Click += new System.EventHandler(this.sASaveToolStripMenuItem_Click);
 			// 
@@ -385,9 +385,30 @@
 			// sA2EventViewerToolStripMenuItem
 			// 
 			this.sA2EventViewerToolStripMenuItem.Name = "sA2EventViewerToolStripMenuItem";
-			this.sA2EventViewerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sA2EventViewerToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
 			this.sA2EventViewerToolStripMenuItem.Text = "SA2 Event Viewer";
 			this.sA2EventViewerToolStripMenuItem.Click += new System.EventHandler(this.sA2EventViewerToolStripMenuItem_Click);
+			// 
+			// sA2CutsceneTextEditorToolStripMenuItem
+			// 
+			this.sA2CutsceneTextEditorToolStripMenuItem.Name = "sA2CutsceneTextEditorToolStripMenuItem";
+			this.sA2CutsceneTextEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.sA2CutsceneTextEditorToolStripMenuItem.Text = "SA2 Cutscene Text Editor";
+			this.sA2CutsceneTextEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2CutsceneTextEditorToolStripMenuItem_Click);
+			// 
+			// sA2MessageEditorToolStripMenuItem
+			// 
+			this.sA2MessageEditorToolStripMenuItem.Name = "sA2MessageEditorToolStripMenuItem";
+			this.sA2MessageEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.sA2MessageEditorToolStripMenuItem.Text = "SA2 Message Editor";
+			this.sA2MessageEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2MessageEditorToolStripMenuItem_Click);
+			// 
+			// sA2StageSelectEditorToolStripMenuItem
+			// 
+			this.sA2StageSelectEditorToolStripMenuItem.Name = "sA2StageSelectEditorToolStripMenuItem";
+			this.sA2StageSelectEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.sA2StageSelectEditorToolStripMenuItem.Text = "SA2 Stage Select Editor";
+			this.sA2StageSelectEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2StageSelectEditorToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
@@ -520,6 +541,57 @@
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
 			this.toolStripSeparator5.Size = new System.Drawing.Size(50, 6);
 			// 
+			// tsSADXLVL2
+			// 
+			this.tsSADXLVL2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSADXLVL2.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXLVL2.Image")));
+			this.tsSADXLVL2.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSADXLVL2.Name = "tsSADXLVL2";
+			this.tsSADXLVL2.Size = new System.Drawing.Size(50, 20);
+			this.tsSADXLVL2.Text = "Open SADXLVL2";
+			this.tsSADXLVL2.Visible = false;
+			// 
+			// tsSADXTweaker
+			// 
+			this.tsSADXTweaker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSADXTweaker.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXTweaker.Image")));
+			this.tsSADXTweaker.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSADXTweaker.Name = "tsSADXTweaker";
+			this.tsSADXTweaker.Size = new System.Drawing.Size(50, 20);
+			this.tsSADXTweaker.Text = "toolStripButton1";
+			this.tsSADXTweaker.ToolTipText = "Open SADXTweaker";
+			this.tsSADXTweaker.Visible = false;
+			// 
+			// tsSADXsndSharp
+			// 
+			this.tsSADXsndSharp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSADXsndSharp.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXsndSharp.Image")));
+			this.tsSADXsndSharp.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSADXsndSharp.Name = "tsSADXsndSharp";
+			this.tsSADXsndSharp.Size = new System.Drawing.Size(50, 20);
+			this.tsSADXsndSharp.Text = "Open SADXsndSharp";
+			this.tsSADXsndSharp.Visible = false;
+			// 
+			// tsSADXFontEdit
+			// 
+			this.tsSADXFontEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSADXFontEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXFontEdit.Image")));
+			this.tsSADXFontEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSADXFontEdit.Name = "tsSADXFontEdit";
+			this.tsSADXFontEdit.Size = new System.Drawing.Size(50, 20);
+			this.tsSADXFontEdit.Text = "Open SADX Font Editor";
+			this.tsSADXFontEdit.Visible = false;
+			// 
+			// toolStripButton1
+			// 
+			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton1.Name = "toolStripButton1";
+			this.toolStripButton1.Size = new System.Drawing.Size(50, 20);
+			this.toolStripButton1.Text = "Open SA2 Event Viewer";
+			this.toolStripButton1.Visible = false;
+			// 
 			// toolStrip2
 			// 
 			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -537,6 +609,22 @@
 			this.toolStrip2.Size = new System.Drawing.Size(747, 55);
 			this.toolStrip2.TabIndex = 2;
 			this.toolStrip2.Text = "toolStrip2";
+			// 
+			// tsUpdate
+			// 
+			this.tsUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsUpdate.Image = global::SAToolsHub.Properties.Resources.tsUpdate;
+			this.tsUpdate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsUpdate.Name = "tsUpdate";
+			this.tsUpdate.Size = new System.Drawing.Size(52, 52);
+			this.tsUpdate.Text = "Update Tools";
+			this.tsUpdate.ToolTipText = "Check for Updates to the SA Tools";
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(6, 55);
 			// 
 			// tsNewProj
 			// 
@@ -660,28 +748,18 @@
 			this.columnHeader2.Text = "File Type";
 			this.columnHeader2.Width = 66;
 			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "Last Modified";
+			this.columnHeader3.Width = 97;
+			// 
 			// imageList1
 			// 
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList1.Images.SetKeyName(0, "ico_pm.ico");
 			this.imageList1.Images.SetKeyName(1, "ico_samdl.ico");
-			// 
-			// tsUpdate
-			// 
-			this.tsUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsUpdate.Image = global::SAToolsHub.Properties.Resources.tsUpdate;
-			this.tsUpdate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsUpdate.Name = "tsUpdate";
-			this.tsUpdate.Size = new System.Drawing.Size(52, 52);
-			this.tsUpdate.Text = "Update Tools";
-			this.tsUpdate.ToolTipText = "Check for Updates to the SA Tools";
-			// 
-			// toolStripSeparator8
-			// 
-			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(6, 55);
+			this.imageList1.Images.SetKeyName(2, "file_mdl");
 			// 
 			// contextMenuStrip1
 			// 
@@ -693,27 +771,6 @@
             this.pasteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
 			this.contextMenuStrip1.Size = new System.Drawing.Size(151, 98);
-			// 
-			// copyToolStripMenuItem
-			// 
-			this.copyToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.copyToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.copyToolStripMenuItem.Text = "Copy";
-			// 
-			// pasteToolStripMenuItem
-			// 
-			this.pasteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.pasteToolStripMenuItem.Text = "Paste";
-			// 
-			// toolStripSeparator7
-			// 
-			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(147, 6);
 			// 
 			// openFileToolStripMenuItem
 			// 
@@ -735,92 +792,36 @@
 			// toDataToolStripMenuItem
 			// 
 			this.toDataToolStripMenuItem.Name = "toDataToolStripMenuItem";
-			this.toDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.toDataToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.toDataToolStripMenuItem.Text = "To Data";
 			// 
 			// toJSONToolStripMenuItem
 			// 
 			this.toJSONToolStripMenuItem.Name = "toJSONToolStripMenuItem";
-			this.toJSONToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.toJSONToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.toJSONToolStripMenuItem.Text = "To JSON";
 			this.toJSONToolStripMenuItem.Visible = false;
 			// 
-			// columnHeader3
+			// toolStripSeparator7
 			// 
-			this.columnHeader3.Text = "Last Modified";
-			this.columnHeader3.Width = 97;
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(147, 6);
 			// 
-			// tsSADXLVL2
+			// copyToolStripMenuItem
 			// 
-			this.tsSADXLVL2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSADXLVL2.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXLVL2.Image")));
-			this.tsSADXLVL2.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSADXLVL2.Name = "tsSADXLVL2";
-			this.tsSADXLVL2.Size = new System.Drawing.Size(50, 20);
-			this.tsSADXLVL2.Text = "Open SADXLVL2";
-			this.tsSADXLVL2.Visible = false;
+			this.copyToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.copyToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.copyToolStripMenuItem.Text = "Copy";
 			// 
-			// tsSADXTweaker
+			// pasteToolStripMenuItem
 			// 
-			this.tsSADXTweaker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSADXTweaker.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXTweaker.Image")));
-			this.tsSADXTweaker.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSADXTweaker.Name = "tsSADXTweaker";
-			this.tsSADXTweaker.Size = new System.Drawing.Size(50, 20);
-			this.tsSADXTweaker.Text = "toolStripButton1";
-			this.tsSADXTweaker.ToolTipText = "Open SADXTweaker";
-			this.tsSADXTweaker.Visible = false;
-			// 
-			// tsSADXsndSharp
-			// 
-			this.tsSADXsndSharp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSADXsndSharp.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXsndSharp.Image")));
-			this.tsSADXsndSharp.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSADXsndSharp.Name = "tsSADXsndSharp";
-			this.tsSADXsndSharp.Size = new System.Drawing.Size(50, 20);
-			this.tsSADXsndSharp.Text = "Open SADXsndSharp";
-			this.tsSADXsndSharp.Visible = false;
-			// 
-			// tsSADXFontEdit
-			// 
-			this.tsSADXFontEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSADXFontEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsSADXFontEdit.Image")));
-			this.tsSADXFontEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSADXFontEdit.Name = "tsSADXFontEdit";
-			this.tsSADXFontEdit.Size = new System.Drawing.Size(50, 20);
-			this.tsSADXFontEdit.Text = "Open SADX Font Editor";
-			this.tsSADXFontEdit.Visible = false;
-			// 
-			// toolStripButton1
-			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(50, 20);
-			this.toolStripButton1.Text = "Open SA2 Event Viewer";
-			this.toolStripButton1.Visible = false;
-			// 
-			// sA2CutsceneTextEditorToolStripMenuItem
-			// 
-			this.sA2CutsceneTextEditorToolStripMenuItem.Name = "sA2CutsceneTextEditorToolStripMenuItem";
-			this.sA2CutsceneTextEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.sA2CutsceneTextEditorToolStripMenuItem.Text = "SA2 Cutscene Text Editor";
-			this.sA2CutsceneTextEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2CutsceneTextEditorToolStripMenuItem_Click);
-			// 
-			// sA2MessageEditorToolStripMenuItem
-			// 
-			this.sA2MessageEditorToolStripMenuItem.Name = "sA2MessageEditorToolStripMenuItem";
-			this.sA2MessageEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.sA2MessageEditorToolStripMenuItem.Text = "SA2 Message Editor";
-			this.sA2MessageEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2MessageEditorToolStripMenuItem_Click);
-			// 
-			// sA2StageSelectEditorToolStripMenuItem
-			// 
-			this.sA2StageSelectEditorToolStripMenuItem.Name = "sA2StageSelectEditorToolStripMenuItem";
-			this.sA2StageSelectEditorToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.sA2StageSelectEditorToolStripMenuItem.Text = "SA2 Stage Select Editor";
-			this.sA2StageSelectEditorToolStripMenuItem.Click += new System.EventHandler(this.sA2StageSelectEditorToolStripMenuItem_Click);
+			this.pasteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.pasteToolStripMenuItem.Text = "Paste";
 			// 
 			// SAToolsHub
 			// 

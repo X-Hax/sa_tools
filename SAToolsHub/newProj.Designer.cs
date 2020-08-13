@@ -39,8 +39,8 @@
 			this.btnBrowse = new System.Windows.Forms.Button();
 			this.btnCreate = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.radSADX = new System.Windows.Forms.RadioButton();
 			this.radSA2PC = new System.Windows.Forms.RadioButton();
+			this.radSADX = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -140,12 +140,13 @@
 			// btnCreate
 			// 
 			this.btnCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnCreate.Location = new System.Drawing.Point(85, 331);
+			this.btnCreate.Location = new System.Drawing.Point(15, 331);
 			this.btnCreate.Name = "btnCreate";
-			this.btnCreate.Size = new System.Drawing.Size(111, 23);
+			this.btnCreate.Size = new System.Drawing.Size(253, 23);
 			this.btnCreate.TabIndex = 13;
-			this.btnCreate.Text = "Create Project";
+			this.btnCreate.Text = "Save Project File and Create Project";
 			this.btnCreate.UseVisualStyleBackColor = true;
+			this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
 			// 
 			// groupBox1
 			// 
@@ -159,17 +160,6 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Game Selection";
 			// 
-			// radSADX
-			// 
-			this.radSADX.AutoSize = true;
-			this.radSADX.Location = new System.Drawing.Point(45, 21);
-			this.radSADX.Name = "radSADX";
-			this.radSADX.Size = new System.Drawing.Size(62, 20);
-			this.radSADX.TabIndex = 0;
-			this.radSADX.TabStop = true;
-			this.radSADX.Text = "SADX";
-			this.radSADX.UseVisualStyleBackColor = true;
-			// 
 			// radSA2PC
 			// 
 			this.radSA2PC.AutoSize = true;
@@ -180,6 +170,17 @@
 			this.radSA2PC.TabStop = true;
 			this.radSA2PC.Text = "SA2PC";
 			this.radSA2PC.UseVisualStyleBackColor = true;
+			// 
+			// radSADX
+			// 
+			this.radSADX.AutoSize = true;
+			this.radSADX.Location = new System.Drawing.Point(45, 21);
+			this.radSADX.Name = "radSADX";
+			this.radSADX.Size = new System.Drawing.Size(62, 20);
+			this.radSADX.TabIndex = 0;
+			this.radSADX.TabStop = true;
+			this.radSADX.Text = "SADX";
+			this.radSADX.UseVisualStyleBackColor = true;
 			// 
 			// newProj
 			// 
@@ -201,9 +202,10 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "newProj";
 			this.Text = "Create New Project";
+			this.Load += new System.EventHandler(this.newProj_Load);
+			this.Shown += new System.EventHandler(this.newProj_Shown);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			this.Shown += new System.EventHandler(this.newProj_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

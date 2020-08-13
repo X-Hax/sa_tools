@@ -94,6 +94,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Model File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = 2;
 							break;
 						}
 					case ".sa1lvl":

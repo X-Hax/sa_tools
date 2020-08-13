@@ -15,18 +15,18 @@ namespace SAToolsHub
 {
 	public partial class newProj : Form
 	{
+		private SA_Tools.Game game;
+
 		public newProj()
 		{
 			InitializeComponent();
-
-			setProjFolder();
 		}
 
-		void setProjFolder()
+		private SA_Tools.Game GetGameForRadioButtons()
 		{
-			string projFolder = Program.Settings.projectPath;
-
-			txtProjFolder.Text = projFolder;
+			if (radSADX.Checked) return SA_Tools.Game.SADX;
+			else if (radSA2PC.Checked) return SA_Tools.Game.SA2B;
+			else return SA_Tools.Game.SA1;
 		}
 
 		private void newProj_Shown(object sender, EventArgs e)
@@ -46,6 +46,16 @@ namespace SAToolsHub
 			{
 				txtProjFolder.Text = folderDialog.SelectedPath;
 			}
+		}
+
+		private void btnCreate_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void newProj_Load(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
