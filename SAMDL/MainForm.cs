@@ -186,7 +186,7 @@ namespace SonicRetro.SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			};
 			goto loadfiledlg;
 		loadfiledlg:
@@ -337,10 +337,12 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void LoadFile(string filename)
 		{
+			string extension = Path.GetExtension(filename);
+
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-			if (Path.GetExtension(filename) == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
+			if (extension == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
 			else swapUVToolStripMenuItem.Enabled = false;
 			timer1.Stop();
 			modelFile = null;
@@ -366,11 +368,96 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				animations = new List<NJS_MOTION>(modelFile.Animations);
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+			} 
+			else if (extension.Equals(".nj") || extension.Equals(".gj"))
+			{
+				byte[] file = File.ReadAllBytes(filename);
+				int ninjaDataOffset = 0;
+				bool basicModel = false;
+
+				string magic = System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
+				
+				switch(magic)
+				{
+					case "GJTL":
+					case "NJTL":
+						ByteConverter.BigEndian = (BitConverter.ToInt32(file, 0x8) > 0x8);
+						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
+						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
+						int texListOffset = POF0Offset + POF0Size + 0x8;
+						ninjaDataOffset = texListOffset + 0x8;
+						//Get Texture Listings for if SA Tools gets that implemented
+						int texCount = ByteConverter.ToInt32(file, 0xC);
+						int texOffset = 0;
+						List<string> texNames = new List<string>();
+
+						for(int i = 0; i < texCount; i++)
+						{
+							int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
+
+							//Read null terminated U8String
+							List<byte> u8String = new List<byte>();
+							byte u8Char = (file[textAddress]);
+							int j = 0;
+							while(u8Char != 0)
+							{
+								u8String.Add(u8Char);
+								j++;
+								u8Char = (file[textAddress + j]);
+							}
+							texNames.Add(System.Text.Encoding.UTF8.GetString(u8String.ToArray()));
+							
+							texOffset += 0xC;
+						}
+						break;
+					case "GJCM":
+					case "NJCM":
+						ByteConverter.BigEndian = BitConverter.ToInt32(file, 0x8) > 0xFFFF;
+						ninjaDataOffset = 0x8;
+						break;
+					case "NJBM":
+						ByteConverter.BigEndian = BitConverter.ToInt32(file, 0x8) > 0xFFFF;
+						ninjaDataOffset = 0x8;
+						basicModel = true;
+						break;
+					default:
+						MessageBox.Show("Incorrect format!");
+						return;
+				}
+
+				//Set modelinfo parameters
+				modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
+				modelinfo.RadioButton_Object.Checked = true;
+				modelinfo.NumericUpDown_ObjectAddress.Value = 0;
+				if (basicModel)
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 0;
+				} else if (extension.Equals(".nj"))
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 2;
+				} else if (extension.Equals(".gj"))
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 3;
+				}
+
+				modelinfo.NumericUpDown_MotionAddress.Value = 0;
+				modelinfo.CheckBox_Memory_Object.Checked = false;
+				modelinfo.CheckBox_Memory_Motion.Checked = false;
+
+				modelinfo.NumericUpDown_Key.Value = 0;
+				modelinfo.NumericUpDown_Key.Value = 0;
+
+				//Get rid of the junk so that we can treat it like what SAMDL expects
+
+				byte[] newFile = new byte[file.Length - ninjaDataOffset];
+				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
+
+				LoadBinFile(newFile);
 			}
 			else
 			{
 				byte[] file = File.ReadAllBytes(filename);
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
 				ByteConverter.BigEndian = false;
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
@@ -382,7 +469,7 @@ namespace SonicRetro.SAModel.SAMDL
 					modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
 					modelinfo.ComboBox_Format.SelectedIndex = 1;
 				}
-				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
+				else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
 					ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
