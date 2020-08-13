@@ -196,6 +196,7 @@
     <None Include="Resources\find.png" />
     <None Include="Resources\messages.png" />
     <None Include="Resources\lighting.png" />
+    <None Include="Resources\jumpzero.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

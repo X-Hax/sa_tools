@@ -128,7 +128,7 @@ namespace SonicRetro.SAModel
 			if (labels != null && labels.ContainsKey(address))
 				MdataName = labels[address];
 			else
-				MdataName = Name + "_mdat";
+				MdataName = Name + "_mdat_" + address.ToString("X8");
 			for (int i = 0; i < nummodels; i++)
 			{
 				AnimModelData data = new AnimModelData();
@@ -248,7 +248,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)posoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.PositionName = labels[tmpaddr];
-						else data.PositionName = Name + "_mkey_" + i.ToString() + "_pos";
+						else data.PositionName = Name + "_mkey_" + i.ToString() + "_pos_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -266,7 +266,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)rotoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.RotationName = labels[tmpaddr];
-						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot";
+						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							if (shortrot)
@@ -292,7 +292,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)scloff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.ScaleName = labels[tmpaddr];
-						else data.ScaleName = Name + "_mkey_" + i.ToString() + "_scl";
+						else data.ScaleName = Name + "_mkey_" + i.ToString() + "_scl_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -310,7 +310,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)vecoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.VectorName = labels[tmpaddr];
-						else data.VectorName = Name + "_mkey_" + i.ToString() + "_vec";
+						else data.VectorName = Name + "_mkey_" + i.ToString() + "_vec_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Vector.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -329,15 +329,16 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)vertoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.VertexName = labels[tmpaddr];
-						else data.VertexName = Name + "_mkey_" + i.ToString() + "_vert";
+						else data.VertexName = Name + "_mkey_" + i.ToString() + "_vert_" + tmpaddr.ToString("X8");
 						List<int> ptrs = new List<int>();
 						data.VertexItemName = new string[frames];
 						for (int j = 0; j < frames; j++)
 						{
 							ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-							if (labels != null && labels.ContainsKey((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase)))
-								data.VertexItemName[j] = labels[(int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase)];
-							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString();
+							int itemaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
+							if (labels != null && labels.ContainsKey(itemaddr))
+								data.VertexItemName[j] = labels[itemaddr];
+							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString() + "_" + itemaddr.ToString("X8");
 							tmpaddr += 8;
 						}
 						if (ptrs.Count > 1)
@@ -390,14 +391,14 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)normoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.NormalName = labels[tmpaddr];
-						else data.NormalName = Name + "_mkey_" + i.ToString() + "_norm";
+						else data.NormalName = Name + "_mkey_" + i.ToString() + "_norm_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							Vertex[] verts = new Vertex[vtxcount];
 							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
 							if (labels != null && labels.ContainsKey(newaddr))
 								data.NormalItemName[j] = labels[newaddr];
-							else data.NormalItemName[j] = Name + "_" + i.ToString() + "_nrm_" + j.ToString();
+							else data.NormalItemName[j] = Name + "_" + i.ToString() + "_nrm_" + j.ToString() + "_" + newaddr.ToString("X8");
 							for (int k = 0; k < verts.Length; k++)
 							{
 								verts[k] = new Vertex(file, newaddr);
@@ -418,7 +419,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)targoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.TargetName = labels[tmpaddr];
-						else data.TargetName = Name + "_mkey_" + i.ToString() + "_target";
+						else data.TargetName = Name + "_mkey_" + i.ToString() + "_target_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Target.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
@@ -436,7 +437,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)rolloff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.RollName = labels[tmpaddr];
-						else data.RollName = Name + "_mkey_" + i.ToString() + "_roll";
+						else data.RollName = Name + "_mkey_" + i.ToString() + "_roll_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Roll.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -454,7 +455,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)angoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.AngleName = labels[tmpaddr];
-						else data.AngleName = Name + "_mkey_" + i.ToString() + "_ang";
+						else data.AngleName = Name + "_mkey_" + i.ToString() + "_ang_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Angle.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
@@ -472,7 +473,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)coloff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.ColorName = labels[tmpaddr];
-						else data.ColorName = Name + "_mkey_" + i.ToString() + "_col";
+						else data.ColorName = Name + "_mkey_" + i.ToString() + "_col_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Color.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToUInt32(file, tmpaddr + 4));
@@ -490,7 +491,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)intoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.IntensityName = labels[tmpaddr];
-						else data.IntensityName = Name + "_mkey_" + i.ToString() + "_int";
+						else data.IntensityName = Name + "_mkey_" + i.ToString() + "_int_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Intensity.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToSingle(file, tmpaddr + 4));
@@ -508,7 +509,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)spotoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.SpotName = labels[tmpaddr];
-						else data.SpotName = Name + "_mkey_" + i.ToString() + "_spot";
+						else data.SpotName = Name + "_mkey_" + i.ToString() + "_spot_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Spot.Add(ByteConverter.ToInt32(file, tmpaddr), new Spotlight(file, tmpaddr + 4));
@@ -526,7 +527,7 @@ namespace SonicRetro.SAModel
 						tmpaddr = (int)pntoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.PointName = labels[tmpaddr];
-						else data.PointName = Name + "_mkey_" + i.ToString() + "_point";
+						else data.PointName = Name + "_mkey_" + i.ToString() + "_point_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							data.Point.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8) });

@@ -372,6 +372,7 @@ namespace SonicRetro.SAModel.DataExtractor
 			{
 				SaveFileDialog sav = new SaveFileDialog() { Filter = "Folder|*.*", Title = "Select output folder" };
 				if (sav.ShowDialog() == System.Windows.Forms.DialogResult.OK) outdir = sav.FileName;
+					else return;
 			}
 			foreach (string item in listBoxStructConverter.Items)
 			{
@@ -430,6 +431,7 @@ namespace SonicRetro.SAModel.DataExtractor
 				{
 					outdir = sd.FileName;
 				}
+				else return;
 			}
 				SplitProgress spl = new SplitProgress(null, listBox_SplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir);
 			spl.ShowDialog();

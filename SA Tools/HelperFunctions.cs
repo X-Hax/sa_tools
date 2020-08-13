@@ -98,9 +98,9 @@ namespace SA_Tools
 			exefile = result;
 		}
 
-		public static void FixRELPointers(byte[] file)
+		public static void FixRELPointers(byte[] file, uint imageBase = 0)
 		{
-						OSModuleHeader header = new OSModuleHeader(file, 0);
+			OSModuleHeader header = new OSModuleHeader(file, 0);
 			OSSectionInfo[] sections = new OSSectionInfo[header.info.numSections];
 			for (int i = 0; i < header.info.numSections; i++)
 				sections[i] = new OSSectionInfo(file, (int)header.info.sectionInfoOffset + (i * 8));
@@ -125,23 +125,23 @@ namespace SA_Tools
 						switch (rel.type)
 						{
 							case 0x01:
-								ByteConverter.GetBytes(rel.addend + sectionbase).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes(rel.addend + sectionbase + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x02:
-								ByteConverter.GetBytes((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | ((rel.addend + sectionbase) & 0x3FFFFFC)).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | ((rel.addend + sectionbase) & 0x3FFFFFC) + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x03:
 							case 0x04:
-								ByteConverter.GetBytes((ushort)(rel.addend + sectionbase)).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes((ushort)(rel.addend + sectionbase) + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x05:
-								ByteConverter.GetBytes((ushort)((rel.addend + sectionbase) >> 16)).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes((ushort)((rel.addend + sectionbase) >> 16) + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x06:
-								ByteConverter.GetBytes((ushort)(((rel.addend + sectionbase) >> 16) + (((rel.addend + sectionbase) & 0x8000) == 0x8000 ? 1 : 0))).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes((ushort)(((rel.addend + sectionbase) >> 16) + (((rel.addend + sectionbase) & 0x8000) == 0x8000 ? 1 : 0)) + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x0A:
-								ByteConverter.GetBytes((uint)((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | (((rel.addend + sectionbase) - dataaddr) & 0x3FFFFFC))).CopyTo(file, dataaddr);
+								ByteConverter.GetBytes((uint)((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | (((rel.addend + sectionbase) - dataaddr) & 0x3FFFFFC)) + imageBase).CopyTo(file, dataaddr);
 								break;
 							case 0x00:
 							case (byte)RelocTypes.R_DOLPHIN_NOP:
