@@ -53,14 +53,14 @@ namespace splitMTN
 						break;
 					case null:
 						int addr = 0;
-						short ile = ByteConverter.ToInt16(file, 0);
+						ushort ile = ByteConverter.ToUInt16(file, 0);
 						if (ile == 0)
 						{
-							ile = ByteConverter.ToInt16(file, 8);
+							ile = ByteConverter.ToUInt16(file, 8);
 							addr = 8;
 						}
 						ByteConverter.BigEndian = true;
-						if (ile < ByteConverter.ToInt16(file, addr))
+						if (ile < ByteConverter.ToUInt16(file, addr))
 							ByteConverter.BigEndian = false;
 						break;
 				}

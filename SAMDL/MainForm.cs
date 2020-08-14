@@ -335,6 +335,29 @@ namespace SonicRetro.SAModel.SAMDL
 			return -1;
 		}
 
+		private bool CheckBigEndianInt16(byte[] file, int address)
+		{
+			bool bigEndState = ByteConverter.BigEndian;
+
+			ByteConverter.BigEndian = true;
+			bool isBigEndian = BitConverter.ToUInt16(file, address) > ByteConverter.ToUInt16(file, address);
+
+			ByteConverter.BigEndian = bigEndState;
+
+			return isBigEndian;
+		}
+		private bool CheckBigEndianInt32(byte[] file, int address)
+		{
+			bool bigEndState = ByteConverter.BigEndian;
+
+			ByteConverter.BigEndian	= true;
+			bool isBigEndian = BitConverter.ToUInt32(file, address) > ByteConverter.ToUInt32(file, address);
+
+			ByteConverter.BigEndian = bigEndState;
+
+			return isBigEndian;
+		}
+
 		private void LoadFile(string filename)
 		{
 			string extension = Path.GetExtension(filename);
@@ -381,7 +404,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					case "GJTL":
 					case "NJTL":
-						ByteConverter.BigEndian = (BitConverter.ToInt32(file, 0x8) > 0x8);
+						ByteConverter.BigEndian = CheckBigEndianInt32(file, 0x8);
 						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
 						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
 						int texListOffset = POF0Offset + POF0Size + 0x8;
@@ -412,11 +435,11 @@ namespace SonicRetro.SAModel.SAMDL
 						break;
 					case "GJCM":
 					case "NJCM":
-						ByteConverter.BigEndian = BitConverter.ToInt32(file, 0x8) > 0xFFFF;
+						ByteConverter.BigEndian = CheckBigEndianInt32(file, 0x8);
 						ninjaDataOffset = 0x8;
 						break;
 					case "NJBM":
-						ByteConverter.BigEndian = BitConverter.ToInt32(file, 0x8) > 0xFFFF;
+						ByteConverter.BigEndian = CheckBigEndianInt32(file, 0x8);
 						ninjaDataOffset = 0x8;
 						basicModel = true;
 						break;
@@ -453,6 +476,7 @@ namespace SonicRetro.SAModel.SAMDL
 				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 
 				LoadBinFile(newFile);
+				animations = new List<NJS_MOTION>();
 			}
 			else
 			{
@@ -2441,32 +2465,126 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = "saanim", Filter = "Animation Files|*.saanim", Multiselect = true })
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.saanim;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim|" +
+																		"Ninja Motion Files|*.njm|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
 					bool first = true;
 					foreach (string fn in ofd.FileNames)
 					{
-						if (!NJS_MOTION.CheckAnimationFile(fn))
+						string extension = Path.GetExtension(fn).ToLower();
+						switch(extension)
 						{
-							MessageBox.Show(this, $"\"{fn}\" is not a valid animation file.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-							return;
+							case ".saanim":
+								if (!NJS_MOTION.CheckAnimationFile(fn))
+								{
+									MessageBox.Show(this, $"\"{fn}\" is not a valid animation file.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+									return;
+								}
+								NJS_MOTION anim = NJS_MOTION.Load(fn);
+								if (first)
+								{
+									first = false;
+									animframe = 0;
+									animnum = animations.Count;
+									animations.Add(anim);
+									animation = anim;
+									UpdateWeightedModel();
+									DrawEntireModel();
+								}
+								else
+									animations.Add(anim);
+								break;
+							case ".njm":
+								byte[] njmFile = File.ReadAllBytes(fn);
+								ByteConverter.BigEndian = CheckBigEndianInt32(njmFile, 0xC);
+								bool useShortRot = ByteConverter.ToInt32(njmFile, 0x8) == 0xC;
+
+								byte[] newFile = new byte[njmFile.Length - 0x8];
+								Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
+
+								string njmName = Path.GetFileNameWithoutExtension(fn);
+								Dictionary<int, string> label = new Dictionary<int, string>();
+								label.Add(0, njmName);
+								NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, useShortRot);
+								if (first)
+								{
+									first = false;
+									animframe = 0;
+									animnum = animations.Count;
+									animations.Add(njm);
+									animation = njm;
+									UpdateWeightedModel();
+									DrawEntireModel();
+								}
+								else
+									animations.Add(njm);
+								break;
+							case ".bin":
+							case ".prs":
+								byte[] anifile = File.ReadAllBytes(fn);
+								Dictionary<int, int> processedanims = new Dictionary<int, int>();
+
+								if(extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+									anifile = FraGag.Compression.Prs.Decompress(anifile);
+								
+								if(BitConverter.ToInt16(anifile, 0) == 0)
+								{
+									ByteConverter.BigEndian = CheckBigEndianInt16(anifile, 0);
+								} else
+								{
+									ByteConverter.BigEndian = CheckBigEndianInt16(anifile, 8);
+								}
+
+								int address = 0;
+								int i = ByteConverter.ToInt16(anifile, address);
+								while (i != -1)
+								{
+									int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
+									if (!processedanims.ContainsKey(aniaddr))
+									{
+										NJS_MOTION mtn = new NJS_MOTION(anifile, aniaddr, 0, ByteConverter.ToInt16(anifile, address + 2));
+										processedanims[aniaddr] = i;
+
+										if (first)
+										{
+											first = false;
+											animframe = 0;
+											animations = new List<NJS_MOTION>();
+											animations.Add(mtn);
+
+											animnum = animations.Count;
+											animation = animations[0];
+											UpdateWeightedModel();
+											DrawEntireModel();
+										}
+										else
+										{
+											animations.Add(mtn);
+										}
+									}
+
+									address += 8;
+									i = ByteConverter.ToInt16(anifile, address);
+								}
+								
+								break;
 						}
-						NJS_MOTION anim = NJS_MOTION.Load(fn);
-						if (first)
-						{
-							first = false;
-							animframe = 0;
-							animnum = animations.Count;
-							animations.Add(anim);
-							animation = anim;
-							UpdateWeightedModel();
-							DrawEntireModel();
-						}
-						else
-							animations.Add(anim);
+
 					}
 					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+
+					//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
+					if (animations == null || animation == null) return;
+					timer1.Enabled = false;
+					osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					buttonPlayAnimation.Checked = false;
+					timer1.Enabled = true;
+					osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					buttonPlayAnimation.Checked = true;
+
+					UpdateWeightedModel();
+					DrawEntireModel();
 				}
 		}
 
