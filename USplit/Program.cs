@@ -343,7 +343,7 @@ namespace USplit
 				Console.WriteLine("<TYPE>: One of the following:\n" +
 					"| action | basicdxmodel | basicmodel | chunkmodel | deathzone | gcmodel | landtable | model |\n" +
 					"| endpos | fieldstartpos | levelclearflags | levelrankscores | levelranktimes | startpos | storysequence |\n" +
-					"| texnamearray | animindexlist | bmitemattrlist | creditstextlist | leveltexlist | objlist | pathlist |\n" +
+					"|  texnamearray | animindexlist | bmitemattrlist | creditstextlist | leveltexlist | objlist | pathlist |\n" +
 					"| soundlist | soundtestlist | stagelightdatalist | texlist | weldlist | bosslevellist | levelpathlist |\n" +
 					"| nextlevellist | triallevellist |\n" +
 					"| animationlist <count> | cutscenetext <count> | masterstringlist <count> | musiclist <count> | npctext <count> |\n" +
@@ -968,8 +968,14 @@ namespace USplit
 							if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
 
 							ModelFile mdlFile = new ModelFile(args[5]);
+							int nodeCount = mdlFile.Model.CountAnimated();
 
-							new NJS_MOTION(datafile, address, imageBase, mdlFile.Model.CountAnimated(), shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
+							if (bigendian == true)
+							{
+								ByteConverter.BigEndian = true;
+							}
+
+							new NJS_MOTION(datafile, address, imageBase, nodeCount, shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
 							string[] mdlanis = new string[0];
 							mdlanis = (fileOutputPath + ".saanim").Split(',');
 						}
