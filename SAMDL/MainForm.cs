@@ -871,7 +871,7 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						for (int u = 0; u < animations.Count; u++)
 						{
-							string filePath = Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
 							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
 
 							File.WriteAllBytes(filePath, rawAnim);
@@ -927,7 +927,7 @@ namespace SonicRetro.SAModel.SAMDL
 						animfiles = new string[animations.Count()];
 						for (int u = 0; u < animations.Count; u++)
 						{
-							string filePath = Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".saanim";
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".saanim";
 							animations[u].Save(filePath);
 							animfiles[u] = filePath;
 						}
