@@ -341,12 +341,15 @@ namespace USplit
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.\n");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.\n");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
-					"list <offset> <filename> [-skiplabels] [-noanims], binary <length> [hex],\nlandtable, model, basicmodel, basicdxmodel, chunkmodel, gcmodel, action, animation <NJS_OBJECT address> [shortrot],\n" +
-					"motion <nodecount> [-shortrot], objlist, startpos, texlist, texnamearray, leveltexlist, triallevellist, bosslevellist, fieldstartpos, soundlist,\nsoundtestlist, nextlevellist, " +
-					"levelclearflags, deathzone, levelrankscores, levelranktimes, endpos, levelpathlist,\npathlist,stagelightdatalist, weldlist" +
-					"bmitemattrlist, creditstextlist, animindexlist, storysequence, musiclist <count>,\n" +
-					"stringarray <count> [language], skyboxscale <count>, stageselectlist <count>, animationlist <count>,\n" +
-					"masterstringlist <count>, cutscenetext <count>, recapscreen <count>, npctext <count>\n");
+					"| action | basicdxmodel | basicmodel | chunkmodel | deathzone | gcmodel | landtable | model |\n" +
+					"| endpos | fieldstartpos | levelclearflags | levelrankscores | levelranktimes | startpos | storysequence |\n" +
+					"|  texnamearray | animindexlist | bmitemattrlist | creditstextlist | leveltexlist | objlist | pathlist |\n" +
+					"| soundlist | soundtestlist | stagelightdatalist | texlist | weldlist | bosslevellist | levelpathlist |\n" +
+					"| nextlevellist | triallevellist |\n" +
+					"| animationlist <count> | cutscenetext <count> | masterstringlist <count> | musiclist <count> | npctext <count> |\n" +
+					"| recapscreen <count> | skyboxscale <count> | stageselectlist <count> |\n" +
+					"| stringarray <count> [language] | list <offset> <filename> [-skiplabels] [-noanims] | binary <length> [hex] |\n" +
+					"| animation <NJS_OBJECT address> [shortrot] | animmdl <*mdl file> [-shortrot] | motion <nodecount> [-shortrot] |\n");
 				Console.WriteLine("<ADDRESS>: The location of data in the file.\n");
 				Console.WriteLine("<PARAMETER1>: length, count, secondary address etc. depending on data type\n");
 				Console.WriteLine("<PARAMETER2>: 'hex' for binary to read length as hexadecimal, 'shortrot' for animation to read rotation as short\n");
@@ -957,6 +960,24 @@ namespace USplit
 							string[] mdlanis = new string[0];
 							mdlanis = (fileOutputPath + ".saanim").Split(',');
 							ModelFile.CreateFile(fileOutputPath + "_model" + model_extension, mdl, mdlanis, null, null, null, modelfmt);
+						}
+						break;
+					case "animmdl":
+						{
+							bool shortrot_enabled = false;
+							if (args.Length > 6 && args[6] == "shortrot") shortrot_enabled = true;
+
+							ModelFile mdlFile = new ModelFile(args[5]);
+							int nodeCount = mdlFile.Model.CountAnimated();
+
+							if (bigendian == true)
+							{
+								ByteConverter.BigEndian = true;
+							}
+
+							new NJS_MOTION(datafile, address, imageBase, nodeCount, shortrot: shortrot_enabled).Save(fileOutputPath + ".saanim");
+							string[] mdlanis = new string[0];
+							mdlanis = (fileOutputPath + ".saanim").Split(',');
 						}
 						break;
 					case "motion":
