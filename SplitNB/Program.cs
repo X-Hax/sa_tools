@@ -42,10 +42,16 @@ namespace SplitNB
 					switch (type)
 					{
 						case 1:
-							ProcessModel(chunk);
+							File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+							ModelFile.CreateFile(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".sa1mdl", ProcessModel(chunk), null, null, null, null, ModelFormat.Basic);
+							break;
+						case 3:
+							File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+							//NJS_MOTION motion = NJS_MOTION.ReadDirect(file, 10, file.Length - 12, 8, ModelFormat.Basic, null);
+							//motion.Save(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".saanim");
 							break;
 						default:
-							File.WriteAllBytes(i.ToString(NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+							File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
 							break;
 					}
 					curaddr += chunk.Length + 8;
@@ -59,7 +65,7 @@ namespace SplitNB
 
 		static NJS_OBJECT ProcessModel(byte[] file)
 		{
-			return null;
+			return new NJS_OBJECT(file, file.Length - 52, 0, ModelFormat.Basic, null);
 		}
 	}
 }
