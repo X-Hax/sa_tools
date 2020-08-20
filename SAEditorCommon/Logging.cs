@@ -143,7 +143,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		/// Adds a message to display on the screen.
 		/// </summary>
 		/// <param name="message">Message text</param>
-		/// /// <param name="timer">Duration of message in frames</param>
+		/// <param name="timer">Duration of message in frames</param>
 		public void AddMessage(string message, int timer)
 		{
 			if (!MessageList.ContainsKey(message)) MessageList.Add(message, timer);
