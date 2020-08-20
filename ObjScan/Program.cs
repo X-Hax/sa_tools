@@ -430,9 +430,9 @@ namespace ObjScan
 				if (item.Value == "NJS_OBJECT") model = true;
 				if (item.Value == "NJS_CNK_OBJECT") model = true;
 			}
-			if (!land) Directory.Delete(Path.Combine(dir, "levels"));
-			if (!model) Directory.Delete(Path.Combine(dir, "models"));
-			if (!land && !model) Directory.Delete(dir);
+			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"));
+			if (!model && Directory.Exists(Path.Combine(dir, "models"))) Directory.Delete(Path.Combine(dir, "models"));
+			if (!land && !model && Directory.Exists(dir)) Directory.Delete(dir);
 		}
 	}
 }
