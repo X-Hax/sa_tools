@@ -650,9 +650,14 @@ namespace SonicRetro.SAModel
 			return false;
 		}
 
-		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address)
+		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address, bool useNMDM = false, bool useShortRot = false)
 		{
 			List<byte> result = new List<byte>();
+			List<byte> pof0 = new List<byte>();
+			List<int> pof0Real = new List<int>();
+			List<byte> parameterData = new List<byte>();
+			ShortRot = useShortRot;
+
 			uint[] posoffs = new uint[ModelParts];
 			int[] posframes = new int[ModelParts];
 			bool hasPos = false;
@@ -692,6 +697,10 @@ namespace SonicRetro.SAModel
 			uint[] pntoffs = new uint[ModelParts];
 			int[] pntframes = new int[ModelParts];
 			bool hasPnt = false;
+
+			pof0.Add(0x40); //NJ Motions all start with 0x40, ie address 0 after unmasking
+			pof0Real.Add(0);
+
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
 			{
 				if (model.Value.Position.Count > 0)
@@ -699,6 +708,7 @@ namespace SonicRetro.SAModel
 					hasPos = true;
 					result.Align(4);
 					posoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(posoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.PositionName))
@@ -725,6 +735,7 @@ namespace SonicRetro.SAModel
 					hasRot = true;
 					result.Align(4);
 					rotoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(rotoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.RotationName))
@@ -761,6 +772,7 @@ namespace SonicRetro.SAModel
 					hasScl = true;
 					result.Align(4);
 					scloffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(scloffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.ScaleName))
@@ -787,6 +799,7 @@ namespace SonicRetro.SAModel
 					hasVec = true;
 					result.Align(4);
 					vecoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(vecoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.VectorName))
@@ -821,6 +834,7 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					vertoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(vertoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.VertexName))
@@ -873,6 +887,7 @@ namespace SonicRetro.SAModel
 							result.AddRange(v.GetBytes());
 					}
 					normoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(normoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.NormalName))
@@ -917,6 +932,7 @@ namespace SonicRetro.SAModel
 					hasTarg = true;
 					result.Align(4);
 					targoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(targoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.TargetName))
@@ -943,6 +959,7 @@ namespace SonicRetro.SAModel
 					hasRoll = true;
 					result.Align(4);
 					rolloffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(rolloffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.RollName))
@@ -969,6 +986,7 @@ namespace SonicRetro.SAModel
 					hasAng = true;
 					result.Align(4);
 					angoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(angoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.AngleName))
@@ -995,6 +1013,7 @@ namespace SonicRetro.SAModel
 					hasCol = true;
 					result.Align(4);
 					coloffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(coloffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.ColorName))
@@ -1021,6 +1040,7 @@ namespace SonicRetro.SAModel
 					hasInt = true;
 					result.Align(4);
 					intoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(intoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.IntensityName))
@@ -1047,6 +1067,7 @@ namespace SonicRetro.SAModel
 					hasSpot = true;
 					result.Align(4);
 					spotoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(spotoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.SpotName))
@@ -1073,6 +1094,7 @@ namespace SonicRetro.SAModel
 					hasPnt = true;
 					result.Align(4);
 					pntoffs[model.Key] = imageBase + (uint)result.Count;
+
 					if (!labels.ContainsValue(pntoffs[model.Key]))
 					{
 						if (!labels.ContainsKey(model.Value.PointName))
@@ -1214,32 +1236,126 @@ namespace SonicRetro.SAModel
 			}
 			for (int i = 0; i < ModelParts; i++)
 			{
+				//Offsets
 				if (hasPos)
+				{
 					result.AddRange(ByteConverter.GetBytes(posoffs[i]));
+					if(posoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasRot)
+				{
 					result.AddRange(ByteConverter.GetBytes(rotoffs[i]));
+					if (rotoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasScl)
+				{
 					result.AddRange(ByteConverter.GetBytes(scloffs[i]));
+					if (scloffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasVec)
+				{
 					result.AddRange(ByteConverter.GetBytes(vecoffs[i]));
+					if (vecoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasVert)
+				{
 					result.AddRange(ByteConverter.GetBytes(vertoffs[i]));
+					if (vertoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasNorm)
+				{
 					result.AddRange(ByteConverter.GetBytes(normoffs[i]));
+					if (normoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasTarg)
+				{
 					result.AddRange(ByteConverter.GetBytes(targoffs[i]));
+					if (targoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasRoll)
+				{
 					result.AddRange(ByteConverter.GetBytes(rolloffs[i]));
+					if (rolloffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasAng)
+				{
 					result.AddRange(ByteConverter.GetBytes(angoffs[i]));
+					if (angoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasCol)
+				{
 					result.AddRange(ByteConverter.GetBytes(coloffs[i]));
+					if (coloffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasInt)
+				{
 					result.AddRange(ByteConverter.GetBytes(intoffs[i]));
+					if (intoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasSpot)
+				{
 					result.AddRange(ByteConverter.GetBytes(spotoffs[i]));
+					if (spotoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 				if (hasPnt)
+				{
 					result.AddRange(ByteConverter.GetBytes(pntoffs[i]));
+					if (pntoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
+
+				//Frame count
 				if (hasPos)
 					result.AddRange(ByteConverter.GetBytes(posframes[i]));
 				if (hasRot)
@@ -1269,9 +1385,10 @@ namespace SonicRetro.SAModel
 			}
 			result.Align(4);
 			address = (uint)result.Count;
-			result.AddRange(ByteConverter.GetBytes(modeldata));
-			result.AddRange(ByteConverter.GetBytes(Frames));
-			result.AddRange(ByteConverter.GetBytes((ushort)flags));
+
+			parameterData.AddRange(ByteConverter.GetBytes(modeldata));
+			parameterData.AddRange(ByteConverter.GetBytes(Frames));
+			parameterData.AddRange(ByteConverter.GetBytes((ushort)flags));
 			switch (InterpolationMode)
 			{
 				case InterpolationMode.Linear:
@@ -1284,7 +1401,7 @@ namespace SonicRetro.SAModel
 					numpairs |= (ushort)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER;
 					break;
 			}
-			result.AddRange(ByteConverter.GetBytes(numpairs));
+			parameterData.AddRange(ByteConverter.GetBytes(numpairs));
 			if (!labels.ContainsValue(address + imageBase))
 			{
 				if (!labels.ContainsKey(Name)) labels.Add(Name, address + imageBase);
@@ -1298,6 +1415,19 @@ namespace SonicRetro.SAModel
 					labels.Add(newname, address + imageBase);
 				}
 			}
+			POF0Helper.finalizePOF0(pof0);
+
+			if (useNMDM)
+			{
+				result.InsertRange(0, parameterData.ToArray());
+				result.InsertRange(0, BitConverter.GetBytes(result.Count())); //This int is always little endian!
+				result.InsertRange(0, new byte[] { 0x4E, 0x4D, 0x44, 0x4D }); //NMDM Magic
+				result.AddRange(pof0);
+			} else
+			{
+				result.AddRange(parameterData.ToArray());
+			}
+
 			return result.ToArray();
 		}
 

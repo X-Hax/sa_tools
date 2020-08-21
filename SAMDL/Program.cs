@@ -15,10 +15,14 @@ namespace SonicRetro.SAModel.SAMDL
 		[STAThread]
 		static void Main(string[] args)
 		{
+			MainForm samdl;
+
 			Arguments = args;
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			Application.Run(samdl = new MainForm());
+
+			samdl.LoadAlternate(args, true);
 		}
 	}
 }

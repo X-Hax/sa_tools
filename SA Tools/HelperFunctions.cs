@@ -399,7 +399,31 @@ namespace SA_Tools
 				return "0";
 			}
 		}
+
+		public static bool CheckBigEndianInt16(byte[] file, int address)
+		{
+			bool bigEndState = ByteConverter.BigEndian;
+
+			ByteConverter.BigEndian = true;
+			bool isBigEndian = BitConverter.ToUInt16(file, address) > ByteConverter.ToUInt16(file, address);
+
+			ByteConverter.BigEndian = bigEndState;
+
+			return isBigEndian;
+		}
+		public static bool CheckBigEndianInt32(byte[] file, int address)
+		{
+			bool bigEndState = ByteConverter.BigEndian;
+
+			ByteConverter.BigEndian = true;
+			bool isBigEndian = BitConverter.ToUInt32(file, address) > ByteConverter.ToUInt32(file, address);
+
+			ByteConverter.BigEndian = bigEndState;
+
+			return isBigEndian;
+		}
 	}
+
 
 	enum SectOffs
 	{
@@ -721,4 +745,6 @@ namespace SA_Tools
 		R_DOLPHIN_SECTION = 202,	 //  CAh current section = OSRel.section
 		R_DOLPHIN_END = 203	 //  CBh
 	}
+
+
 }
