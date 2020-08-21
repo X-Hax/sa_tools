@@ -374,19 +374,20 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private int CheckKnownFile(string filename)
 		{
-			if (Path.GetFileNameWithoutExtension(filename).Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
+			string name = Path.GetFileNameWithoutExtension(filename);
+			if (name.Length > 3 && name.Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
 			{
 				return -4;
 			}
 
-			else if (Path.GetFileNameWithoutExtension(filename).Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
+			else if (name.Length > 2 && name.Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
 			{
 				return -5;
 			}
 
 			for (int i = 0; i < SA2BMDLFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
 				{
 					return -3;
 				}
@@ -394,7 +395,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			for (int i = 0; i < SA2MDLFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
 				{
 					return -2;
 				}
@@ -402,7 +403,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			for (int i = 0; i < KnownBinaryFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
 				{
 					return i;
 				}
