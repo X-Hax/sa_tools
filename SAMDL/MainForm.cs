@@ -1910,7 +1910,7 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = selectedObject;
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
+				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
 				addChildToolStripMenuItem.Enabled = true;
 				clearChildrenToolStripMenuItem.Enabled = selectedObject.Children.Count > 0;
 				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
@@ -1926,7 +1926,7 @@ namespace SonicRetro.SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
-				editMaterialsToolStripMenuItem.Enabled = false;
+				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				clearChildrenToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
@@ -2104,6 +2104,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			OpenMaterialEditor();
+		}
+
+		private void OpenMaterialEditor()
+		{
 			List<NJS_MATERIAL> mats;
 			switch (selectedObject.Attach)
 			{
@@ -2178,7 +2183,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
 
-					editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
+					editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 
 					modelLibrary.Add(newattach);
 
@@ -2561,7 +2566,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			*/
 
-			editMaterialsToolStripMenuItem.Enabled = true;
+			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
 
 			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
@@ -3071,6 +3076,11 @@ namespace SonicRetro.SAModel.SAMDL
 			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
 			DrawEntireModel();
+		}
+
+		private void materialEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenMaterialEditor();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
