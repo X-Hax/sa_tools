@@ -77,18 +77,18 @@ namespace ObjScan
 			if (attach != 0)
 			{
 				if (attach < imageBase) return false;
-				if (attach > (uint)datafile.Length + imageBase - 52) return false;
+				if (attach > (uint)datafile.Length + imageBase - 51) return false;
 				vertices = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
-				if (vertices > (uint)datafile.Length + imageBase - 52) return false;
+				if (vertices > (uint)datafile.Length + imageBase - 51) return false;
 				if (vertices < imageBase) return false;
 				normals = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
 				if (normals != 0 && normals < imageBase) return false;
-				if (normals > (uint)datafile.Length + imageBase - 52) return false;
+				if (normals > (uint)datafile.Length + imageBase - 51) return false;
 				vert_count = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 8);
 				if (vert_count > 2048 || vert_count == 0) return false;
 				meshlists = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
 				if (meshlists != 0 && meshlists < imageBase) return false;
-				if (meshlists > (uint)datafile.Length + imageBase - 52) return false;
+				if (meshlists > (uint)datafile.Length + imageBase - 51) return false;
 				mesh_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x14);
 				if (mesh_count > 2048 || mesh_count < 0) return false;
 				mat_count = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x16);
@@ -165,7 +165,7 @@ namespace ObjScan
 		{
 			string model_extension = ".sa1mdl";
 			Directory.CreateDirectory(Path.Combine(dir, "models"));
-			for (int u = 0; u < datafile.Length - 52; u += 4)
+			for (int u = 0; u < datafile.Length - 51; u += 4)
 			{
 				int address = u;
 				string fileOutputPath = Path.Combine(dir, "models", address.ToString("X8"));
@@ -430,9 +430,9 @@ namespace ObjScan
 				if (item.Value == "NJS_OBJECT") model = true;
 				if (item.Value == "NJS_CNK_OBJECT") model = true;
 			}
-			if (!land) Directory.Delete(Path.Combine(dir, "levels"));
-			if (!model) Directory.Delete(Path.Combine(dir, "models"));
-			if (!land && !model) Directory.Delete(dir);
+			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"));
+			if (!model && Directory.Exists(Path.Combine(dir, "models"))) Directory.Delete(Path.Combine(dir, "models"));
+			if (!land && !model && Directory.Exists(dir)) Directory.Delete(dir);
 		}
 	}
 }

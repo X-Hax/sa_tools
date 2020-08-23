@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
@@ -28,6 +30,80 @@ namespace SonicRetro.SAModel.SAMDL
 			InitializeComponent();
 			Application.ThreadException += Application_ThreadException;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+			this.AllowDrop = true;
+			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
+			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
+		}
+
+		private void SAMDL_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+		}
+
+		private void SAMDL_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+			LoadAlternate(files);
+		}
+
+		public void LoadAlternate(string[] files, bool cmdLoad = false)
+		{
+			bool modelLoaded = false; //We can only load one model at once for now. Set to true when user loads first file and ignore others.
+			bool modelLoadedWarning = false; //Flag so we can warn users that they should do one model at a time.
+			
+			List<string> modelFiles = new List<string>(); //For multi support, if that happens
+			List<string> modelImportFiles = new List<string>();
+			List<string> animFiles = new List<string>();
+
+			string modelWarning = "Only 1 model can be loaded at a time!";
+
+			foreach (string file in files)
+			{
+				string extension = Path.GetExtension(file);
+				switch (extension)
+				{
+					case ".nj":
+					case ".gj":
+					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+						if (!modelLoaded)
+						{
+							modelLoaded = true;
+							modelFiles.Add(file);
+						}
+						else if (!modelLoadedWarning)
+						{
+							modelLoadedWarning = true;
+							MessageBox.Show(modelWarning);
+						}
+						break;
+					case ".obj":
+					case ".fbx":
+					case ".dae":
+						if (!modelLoaded)
+						{
+							modelLoaded = true;
+							modelImportFiles.Add(file);
+						}
+						else if (!modelLoadedWarning)
+						{
+							modelLoadedWarning = true;
+							MessageBox.Show(modelWarning);
+						}
+						break;
+					case ".saanim":
+					case ".njm":
+						animFiles.Add(file);
+						break;
+					default:
+						break;
+				}
+			}
+			if (modelFiles.Count > 0) { LoadFile(modelFiles[0], cmdLoad); }
+			if (modelImportFiles.Count > 0) { ImportModel_Assimp(modelImportFiles[0]); }
+			if (animFiles.Count > 0) { LoadAnimation(animFiles.ToArray()); }
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -186,7 +262,7 @@ namespace SonicRetro.SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			};
 			goto loadfiledlg;
 		loadfiledlg:
@@ -298,19 +374,20 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private int CheckKnownFile(string filename)
 		{
-			if (Path.GetFileNameWithoutExtension(filename).Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
+			string name = Path.GetFileNameWithoutExtension(filename);
+			if (name.Length > 3 && name.Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
 			{
 				return -4;
 			}
 
-			else if (Path.GetFileNameWithoutExtension(filename).Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
+			else if (name.Length > 2 && name.Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
 			{
 				return -5;
 			}
 
 			for (int i = 0; i < SA2BMDLFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
 				{
 					return -3;
 				}
@@ -318,7 +395,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			for (int i = 0; i < SA2MDLFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
 				{
 					return -2;
 				}
@@ -326,7 +403,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			for (int i = 0; i < KnownBinaryFiles.Length; i++)
 			{
-				if (Path.GetFileNameWithoutExtension(filename).Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
+				if (name.Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
 				{
 					return i;
 				}
@@ -335,12 +412,14 @@ namespace SonicRetro.SAModel.SAMDL
 			return -1;
 		}
 
-		private void LoadFile(string filename)
+		private void LoadFile(string filename, bool cmdLoad = false)
 		{
+			string extension = Path.GetExtension(filename);
+
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-			if (Path.GetExtension(filename) == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
+			if (extension == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
 			else swapUVToolStripMenuItem.Enabled = false;
 			timer1.Stop();
 			modelFile = null;
@@ -367,10 +446,96 @@ namespace SonicRetro.SAModel.SAMDL
 				animations = new List<NJS_MOTION>(modelFile.Animations);
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			}
+			else if (extension.Equals(".nj") || extension.Equals(".gj"))
+			{
+				byte[] file = File.ReadAllBytes(filename);
+				int ninjaDataOffset = 0;
+				bool basicModel = false;
+
+				string magic = System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
+
+				switch (magic)
+				{
+					case "GJTL":
+					case "NJTL":
+						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
+						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
+						int texListOffset = POF0Offset + POF0Size + 0x8;
+						ninjaDataOffset = texListOffset + 0x8;
+						//Get Texture Listings for if SA Tools gets that implemented
+						int texCount = ByteConverter.ToInt32(file, 0xC);
+						int texOffset = 0;
+						List<string> texNames = new List<string>();
+
+						for (int i = 0; i < texCount; i++)
+						{
+							int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
+
+							//Read null terminated U8String
+							List<byte> u8String = new List<byte>();
+							byte u8Char = (file[textAddress]);
+							int j = 0;
+							while (u8Char != 0)
+							{
+								u8String.Add(u8Char);
+								j++;
+								u8Char = (file[textAddress + j]);
+							}
+							texNames.Add(System.Text.Encoding.UTF8.GetString(u8String.ToArray()));
+
+							texOffset += 0xC;
+						}
+						break;
+					case "GJCM":
+					case "NJCM":
+						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ninjaDataOffset = 0x8;
+						break;
+					case "NJBM":
+						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ninjaDataOffset = 0x8;
+						basicModel = true;
+						break;
+					default:
+						MessageBox.Show("Incorrect format!");
+						return;
+				}
+
+				//Set modelinfo parameters
+				modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
+				modelinfo.RadioButton_Object.Checked = true;
+				modelinfo.NumericUpDown_ObjectAddress.Value = 0;
+				if (basicModel)
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 0;
+				} else if (extension.Equals(".nj"))
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 2;
+				} else if (extension.Equals(".gj"))
+				{
+					modelinfo.ComboBox_Format.SelectedIndex = 3;
+				}
+
+				modelinfo.NumericUpDown_MotionAddress.Value = 0;
+				modelinfo.CheckBox_Memory_Object.Checked = false;
+				modelinfo.CheckBox_Memory_Motion.Checked = false;
+
+				modelinfo.NumericUpDown_Key.Value = 0;
+				modelinfo.NumericUpDown_Key.Value = 0;
+
+				//Get rid of the junk so that we can treat it like what SAMDL expects
+
+				byte[] newFile = new byte[file.Length - ninjaDataOffset];
+				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
+
+				LoadBinFile(newFile);
+				animations = new List<NJS_MOTION>();
+			}
 			else
 			{
 				byte[] file = File.ReadAllBytes(filename);
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
 				ByteConverter.BigEndian = false;
 				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
@@ -382,7 +547,7 @@ namespace SonicRetro.SAModel.SAMDL
 					modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
 					modelinfo.ComboBox_Format.SelectedIndex = 1;
 				}
-				else if (Path.GetExtension(filename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
+				else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
 					ByteConverter.BigEndian = true;
 					SA_Tools.HelperFunctions.FixRELPointers(file);
@@ -515,8 +680,11 @@ namespace SonicRetro.SAModel.SAMDL
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
-			selectedObject = model;
-			SelectedItemChanged();
+			if (cmdLoad == false)
+			{
+				selectedObject = model;
+				SelectedItemChanged();
+			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
 		}
@@ -642,16 +810,41 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void SaveAs()
 		{
+			string filterString;
+
+			switch(outfmt)
+			{
+				case ModelFormat.GC:
+					filterString = "SA2B MDL Files|*.sa2bmdl"; //|Sega GCNinja .gj|*.gj|Sega GCNinja Big Endian (Gamecube) .gj|*.gj";
+					break;
+				case ModelFormat.Chunk:
+					filterString = "SA2 MDL Files|*.sa2mdl"; //|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					break;
+				case ModelFormat.BasicDX:
+				case ModelFormat.Basic:
+				default:
+					filterString = "SA1 MDL Files|*.sa1mdl"; //|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					break;
+			}
+			filterString += "|All files *.*|*.*";
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
 				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl",
-				Filter = (outfmt == ModelFormat.GC ? "SA2B" : (outfmt == ModelFormat.Chunk ? "SA2" : "SA1")) + "MDL Files|*." + (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl|All Files|*.*"
+				Filter = filterString
 			})
 			{
 				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
 
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
+					switch(a.FilterIndex)
+					{
+						case 3:
+							a.FileName = a.FileName + "?BE?";
+							break;
+						default:
+							break;
+					}
 					Save(a.FileName);
 				}
 			}
@@ -659,28 +852,101 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void Save(string fileName)
 		{
-			string[] animfiles;
-			if (animations != null && saveAnimationsToolStripMenuItem.Checked)
+			bool bigEndian = false;
+			string extension = Path.GetExtension(fileName);
+
+			switch (extension)
 			{
-				animfiles = new string[animations.Count()];
-				for (int u = 0; u < animations.Count; u++)
-				{
-					animations[u].Save(Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + ".saanim");
-					animfiles[u] = Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + ".saanim";
-				}
+				case ".nj":
+				case ".gj":
+				case ".nj?BE?":
+				case ".gj?BE?":
+					if (extension.Contains("?BE?"))
+					{
+						bigEndian = true;
+					}
+					fileName = fileName.Replace("?BE?", "");
+					ByteConverter.BigEndian = bigEndian;
+
+					if (animations != null && saveAnimationsToolStripMenuItem.Checked)
+					{
+						for (int u = 0; u < animations.Count; u++)
+						{
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+
+							File.WriteAllBytes(filePath, rawAnim);
+						}
+					}
+					if (model != null)
+					{
+						byte[] rawModel;
+						bool isGC = extension.Contains("gj") ? true : false;
+						Dictionary<string, uint> labels = new Dictionary<string, uint>();
+
+						rawModel = model.GetBytes(0, false, labels, out uint testValue);
+
+						List<byte> njModel = new List<byte>();
+						List<string> texList = new List<string>();
+
+						if (TextureInfo != null)
+						{
+							foreach (BMPInfo tex in TextureInfo)
+							{
+								if (tex != null)
+								{
+									if (tex.Name != null)
+									{
+										MessageBox.Show("test");
+										texList.Add(tex.Name);
+									}
+								}
+							}
+						}
+						if(texList.Count != 0)
+						{
+							njModel.AddRange(GenerateNJTexList(texList.ToArray(), isGC));
+						}
+						
+						njModel.AddRange(rawModel);
+
+						using (StreamWriter file = new StreamWriter(fileName + "_labels.txt"))
+						{
+							foreach(var key in labels.Keys)
+							{
+								file.WriteLine($"{key} {labels[key].ToString("X")}");
+							}
+						}
+						File.WriteAllBytes(fileName, njModel.ToArray());
+					}
+
+					break;
+				default:
+					string[] animfiles;
+					if (animations != null && saveAnimationsToolStripMenuItem.Checked)
+					{
+						animfiles = new string[animations.Count()];
+						for (int u = 0; u < animations.Count; u++)
+						{
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".saanim";
+							animations[u].Save(filePath);
+							animfiles[u] = filePath;
+						}
+					}
+					else animfiles = null;
+					if (modelFile != null)
+						modelFile.SaveToFile(fileName);
+					else
+					{
+						if (rootSiblingMode)
+							ModelFile.CreateFile(fileName, model.Children[0], animfiles, null, null, null, outfmt);
+						else
+							ModelFile.CreateFile(fileName, model, animfiles, null, null, null, outfmt);
+						modelFile = new ModelFile(fileName);
+					}
+					break;
 			}
-			else animfiles = null;
-			if (modelFile != null)
-				modelFile.SaveToFile(fileName);
-			else
-			{
-				if (rootSiblingMode) 
-					ModelFile.CreateFile(fileName, model.Children[0], animfiles, null, null, null, outfmt);
-				else
-					ModelFile.CreateFile(fileName, model, animfiles, null, null, null, outfmt);
-				modelFile = new ModelFile(fileName);
-			}
-			
+
 			currentFileName = fileName;
 			UpdateStatusString();
 			unsaved = false;
@@ -708,6 +974,60 @@ namespace SonicRetro.SAModel.SAMDL
 				// ask us where to save
 				SaveAs();
 			}
+		}
+
+		private byte[] GenerateNJTexList(string[] texList, bool isGC)
+		{
+			List<byte> njTexList = new List<byte>();
+			List<byte> njTLHeader = new List<byte>();
+			List<byte> pof0List = new List<byte>();
+
+			if (isGC)
+			{
+				njTLHeader.AddRange(new byte[] {0x47, 0x4A, 0x54, 0x4C});
+			} else
+			{
+				njTLHeader.AddRange(new byte[] { 0x4E, 0x4A, 0x54, 0x4C});
+			}
+			njTexList.AddRange(ByteConverter.GetBytes(0x8));
+			njTexList.AddRange(ByteConverter.GetBytes(texList.Length));
+			
+			for(int i = 0; i < texList.Length; i++)
+			{
+				int offset = texList.Length * 0xC;
+				
+				if(i > 0)
+				{
+					offset += texList[i].Length;
+				}
+				njTexList.AddRange(ByteConverter.GetBytes(offset));
+				njTexList.AddRange(ByteConverter.GetBytes(0));
+				njTexList.AddRange(ByteConverter.GetBytes(0));
+			}
+			for(int i = 0; i < texList.Length; i++)
+			{
+				njTexList.AddRange(Encoding.ASCII.GetBytes(texList[i]));
+			}
+			njTLHeader.AddRange(BitConverter.GetBytes(njTexList.Count));
+
+			pof0List.Add(0x40);
+			pof0List.Add(0x42);
+			for(int i = 1; i < texList.Length; i++)
+			{
+				pof0List.Add(0x43);
+			}
+			pof0List.Align(4);
+
+			int pofLength = pof0List.Count + (njTexList.Count % 4);
+			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
+
+			pof0List.InsertRange(0, BitConverter.GetBytes(pofLength));
+			pof0List.InsertRange(0, magic);
+
+			njTexList.InsertRange(0, njTLHeader.ToArray());
+			njTexList.AddRange(pof0List.ToArray());
+
+			return njTexList.ToArray();
 		}
 
 		private void NewFile(ModelFormat modelFormat)
@@ -2125,8 +2445,6 @@ namespace SonicRetro.SAModel.SAMDL
 		private void aSSIMPImportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			NJS_OBJECT obj = selectedObject;
-			Assimp.AssimpContext context = new Assimp.AssimpContext();
-			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 
 			using (OpenFileDialog ofd = new OpenFileDialog
 			{
@@ -2136,131 +2454,138 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					string objFileName = ofd.FileName;
-					Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
-					loaded = false;
-					if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
-					//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
-					timer1.Stop();
-					modelFile = null;
-					animation = null;
-					animations = null;
-					animnum = -1;
-					animframe = 0;
-
-					//outfmt = ModelFormat.GC;
-					animations = new List<NJS_MOTION>();
-
-					treeView1.Nodes.Clear();
-					nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-					//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
-					model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
-
-					/*
-					if (scene.Animations.Count > 0)
-					{
-						animations = new NJS_MOTION[scene.Animations.Count];
-						using (FolderBrowserDialog dlg = new FolderBrowserDialog())
-						{
-							if (dlg.ShowDialog(this) == DialogResult.OK)
-							{
-								string animSavePath = dlg.SelectedPath;
-
-								for (int i = 0; i < scene.Animations.Count; i++)
-								{
-									NJS_MOTION motion = new NJS_MOTION();
-									Assimp.Animation anim = scene.Animations[i];
-
-									Dictionary<string, Assimp.NodeAnimationChannel> chans = new Dictionary<string, Assimp.NodeAnimationChannel>();
-									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels.Where(a => a.NodeName.Contains("_$AssimpFbx$_")))
-									{
-										string name = animChannel.NodeName.Remove(animChannel.NodeName.IndexOf("_$AssimpFbx$_"));
-										if (chans.ContainsKey(name))
-										{
-											if (animChannel.HasPositionKeys)
-												chans[name].PositionKeys.AddRange(animChannel.PositionKeys);
-											if (animChannel.HasRotationKeys)
-												chans[name].RotationKeys.AddRange(animChannel.RotationKeys);
-											if (animChannel.HasScalingKeys)
-												chans[name].ScalingKeys.AddRange(animChannel.ScalingKeys);
-										}
-										else
-										{
-											animChannel.NodeName = name;
-											chans[name] = animChannel;
-										}
-									}
-
-									Dictionary<string, int> getIndex = new Dictionary<string, int>();
-									NJS_OBJECT[] objectArray = model.GetObjects();
-									for(int j = 0; j < objectArray.Length; j++)
-									{
-										getIndex.Add(objectArray[j].Name, j);
-										
-									}
-
-									//did it like this instead of using nodeanimationchannelscount because for example, chao dont like if all the nodes arent present and im guessing the other animation functions dont either
-									motion.ModelParts = objectArray.Length;
-
-									foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels)
-									{
-										AnimModelData modelData = new AnimModelData();
-										if(animChannel.HasPositionKeys)
-											foreach(Assimp.VectorKey vecKey in animChannel.PositionKeys)
-											{
-												modelData.Position.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
-											}
-
-										if (animChannel.HasRotationKeys)
-											foreach (Assimp.QuaternionKey rotKey in animChannel.RotationKeys)
-											{
-												Assimp.Vector3D rotationConverted = rotKey.Value.ToEulerAngles();
-												modelData.Rotation.Add((int)rotKey.Time, new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z)));
-											}
-
-										if (animChannel.HasScalingKeys)
-											foreach (Assimp.VectorKey vecKey in animChannel.ScalingKeys)
-											{
-												modelData.Scale.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
-											}
-
-										motion.Models.Add(getIndex[animChannel.NodeName], modelData);
-									}
-									animations[i] = motion;
-								}
-
-							}
-						}
-					}
-					*/
-
-					editMaterialsToolStripMenuItem.Enabled = true;
-
-					if (hasWeight = model.HasWeight)
-						meshes = model.ProcessWeightedModel().ToArray();
-					else
-					{
-						model.ProcessVertexData();
-						NJS_OBJECT[] models = model.GetObjects();
-						meshes = new Mesh[models.Length];
-						for (int i = 0; i < models.Length; i++)
-							if (models[i].Attach != null)
-								try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-								catch { }
-					}
-
-					showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
-
-					AddTreeNode(model, treeView1.Nodes);
-					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
-					loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
-					selectedObject = model;
-					SelectedItemChanged();
-					unsaved = true;
-					AddModelToLibrary(model, false);
+					ImportModel_Assimp(ofd.FileName);
 				}
 			}
+		}
+
+		private void ImportModel_Assimp(string objFileName)
+		{
+			Assimp.AssimpContext context = new Assimp.AssimpContext();
+			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
+
+			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+			loaded = false;
+			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
+			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
+			timer1.Stop();
+			modelFile = null;
+			animation = null;
+			animations = null;
+			animnum = -1;
+			animframe = 0;
+
+			//outfmt = ModelFormat.GC;
+			animations = new List<NJS_MOTION>();
+
+			treeView1.Nodes.Clear();
+			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+			//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
+			model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
+
+			/*
+			if (scene.Animations.Count > 0)
+			{
+				animations = new NJS_MOTION[scene.Animations.Count];
+				using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+				{
+					if (dlg.ShowDialog(this) == DialogResult.OK)
+					{
+						string animSavePath = dlg.SelectedPath;
+
+						for (int i = 0; i < scene.Animations.Count; i++)
+						{
+							NJS_MOTION motion = new NJS_MOTION();
+							Assimp.Animation anim = scene.Animations[i];
+
+							Dictionary<string, Assimp.NodeAnimationChannel> chans = new Dictionary<string, Assimp.NodeAnimationChannel>();
+							foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels.Where(a => a.NodeName.Contains("_$AssimpFbx$_")))
+							{
+								string name = animChannel.NodeName.Remove(animChannel.NodeName.IndexOf("_$AssimpFbx$_"));
+								if (chans.ContainsKey(name))
+								{
+									if (animChannel.HasPositionKeys)
+										chans[name].PositionKeys.AddRange(animChannel.PositionKeys);
+									if (animChannel.HasRotationKeys)
+										chans[name].RotationKeys.AddRange(animChannel.RotationKeys);
+									if (animChannel.HasScalingKeys)
+										chans[name].ScalingKeys.AddRange(animChannel.ScalingKeys);
+								}
+								else
+								{
+									animChannel.NodeName = name;
+									chans[name] = animChannel;
+								}
+							}
+
+							Dictionary<string, int> getIndex = new Dictionary<string, int>();
+							NJS_OBJECT[] objectArray = model.GetObjects();
+							for(int j = 0; j < objectArray.Length; j++)
+							{
+								getIndex.Add(objectArray[j].Name, j);
+
+							}
+
+							//did it like this instead of using nodeanimationchannelscount because for example, chao dont like if all the nodes arent present and im guessing the other animation functions dont either
+							motion.ModelParts = objectArray.Length;
+
+							foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels)
+							{
+								AnimModelData modelData = new AnimModelData();
+								if(animChannel.HasPositionKeys)
+									foreach(Assimp.VectorKey vecKey in animChannel.PositionKeys)
+									{
+										modelData.Position.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+									}
+
+								if (animChannel.HasRotationKeys)
+									foreach (Assimp.QuaternionKey rotKey in animChannel.RotationKeys)
+									{
+										Assimp.Vector3D rotationConverted = rotKey.Value.ToEulerAngles();
+										modelData.Rotation.Add((int)rotKey.Time, new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z)));
+									}
+
+								if (animChannel.HasScalingKeys)
+									foreach (Assimp.VectorKey vecKey in animChannel.ScalingKeys)
+									{
+										modelData.Scale.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
+									}
+
+								motion.Models.Add(getIndex[animChannel.NodeName], modelData);
+							}
+							animations[i] = motion;
+						}
+
+					}
+				}
+			}
+			*/
+
+			editMaterialsToolStripMenuItem.Enabled = true;
+
+			if (hasWeight = model.HasWeight)
+				meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				model.ProcessVertexData();
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+						catch { }
+			}
+
+			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
+
+			AddTreeNode(model, treeView1.Nodes);
+			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			selectedObject = model;
+			SelectedItemChanged();
+			unsaved = true;
+			AddModelToLibrary(model, false);
 		}
 
 		private void ShowWeightsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -2354,12 +2679,23 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = "saanim", Filter = "Animation Files|*.saanim", Multiselect = true })
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.saanim;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim|" +
+																		"Ninja Motion Files|*.njm|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
-					bool first = true;
-					foreach (string fn in ofd.FileNames)
-					{
+					LoadAnimation(ofd.FileNames);
+				}
+		}
+
+		private void LoadAnimation(string[] filenames)
+		{
+			bool first = true;
+			foreach (string fn in filenames)
+			{
+				string extension = Path.GetExtension(fn).ToLower();
+				switch (extension)
+				{
+					case ".saanim":
 						if (!NJS_MOTION.CheckAnimationFile(fn))
 						{
 							MessageBox.Show(this, $"\"{fn}\" is not a valid animation file.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2378,9 +2714,98 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 						else
 							animations.Add(anim);
-					}
-					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+						break;
+					case ".njm":
+						byte[] njmFile = File.ReadAllBytes(fn);
+						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
+						bool useShortRot = ByteConverter.ToInt32(njmFile, 0x8) == 0xC;
+
+						byte[] newFile = new byte[njmFile.Length - 0x8];
+						Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
+
+						string njmName = Path.GetFileNameWithoutExtension(fn);
+						Dictionary<int, string> label = new Dictionary<int, string>();
+						label.Add(0, njmName);
+						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, useShortRot);
+						if (first)
+						{
+							first = false;
+							animframe = 0;
+							animnum = animations.Count;
+							animations.Add(njm);
+							animation = njm;
+							UpdateWeightedModel();
+							DrawEntireModel();
+						}
+						else
+							animations.Add(njm);
+						break;
+					case ".bin":
+					case ".prs":
+						byte[] anifile = File.ReadAllBytes(fn);
+						Dictionary<int, int> processedanims = new Dictionary<int, int>();
+
+						if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+							anifile = FraGag.Compression.Prs.Decompress(anifile);
+
+						if (BitConverter.ToInt16(anifile, 0) == 0)
+						{
+							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
+						}
+						else
+						{
+							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
+						}
+
+						int address = 0;
+						int i = ByteConverter.ToInt16(anifile, address);
+						while (i != -1)
+						{
+							int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
+							if (!processedanims.ContainsKey(aniaddr))
+							{
+								NJS_MOTION mtn = new NJS_MOTION(anifile, aniaddr, 0, ByteConverter.ToInt16(anifile, address + 2));
+								processedanims[aniaddr] = i;
+
+								if (first)
+								{
+									first = false;
+									animframe = 0;
+									animations = new List<NJS_MOTION>();
+									animations.Add(mtn);
+
+									animnum = animations.Count;
+									animation = animations[0];
+									UpdateWeightedModel();
+									DrawEntireModel();
+								}
+								else
+								{
+									animations.Add(mtn);
+								}
+							}
+
+							address += 8;
+							i = ByteConverter.ToInt16(anifile, address);
+						}
+
+						break;
 				}
+
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+
+				//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
+				if (animations == null || animation == null) return;
+				timer1.Enabled = false;
+				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Checked = false;
+				timer1.Enabled = true;
+				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Checked = true;
+
+				UpdateWeightedModel();
+				DrawEntireModel();
+			}
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
