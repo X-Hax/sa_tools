@@ -808,7 +808,7 @@ namespace SonicRetro.SAModel.SAMDL
 			SaveAs();
 		}
 
-		private void SaveAs()
+		private void SaveAs(bool saveAnims = false)
 		{
 			string filterString;
 
@@ -845,12 +845,12 @@ namespace SonicRetro.SAModel.SAMDL
 						default:
 							break;
 					}
-					Save(a.FileName);
+					Save(a.FileName, saveAnims);
 				}
 			}
 		}
 
-		private void Save(string fileName)
+		private void Save(string fileName, bool saveAnims = false)
 		{
 			bool bigEndian = false;
 			string extension = Path.GetExtension(fileName);
@@ -868,7 +868,7 @@ namespace SonicRetro.SAModel.SAMDL
 					fileName = fileName.Replace("?BE?", "");
 					ByteConverter.BigEndian = bigEndian;
 
-					if (animations != null && saveAnimationsToolStripMenuItem.Checked)
+					if (animations != null && saveAnims)
 					{
 						for (int u = 0; u < animations.Count; u++)
 						{
@@ -919,13 +919,13 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 						File.WriteAllBytes(fileName, njModel.ToArray());
 					}
-
 					break;
 				default:
 					string[] animfiles;
-					if (animations != null && saveAnimationsToolStripMenuItem.Checked)
+					if (animations != null && saveAnims)
 					{
 						animfiles = new string[animations.Count()];
+						
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".saanim";
@@ -935,7 +935,9 @@ namespace SonicRetro.SAModel.SAMDL
 					}
 					else animfiles = null;
 					if (modelFile != null)
+					{
 						modelFile.SaveToFile(fileName);
+					}
 					else
 					{
 						if (rootSiblingMode)
@@ -1910,7 +1912,7 @@ namespace SonicRetro.SAModel.SAMDL
 				propertyGrid1.SelectedObject = selectedObject;
 				copyModelToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
-				editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
+				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
 				addChildToolStripMenuItem.Enabled = true;
 				clearChildrenToolStripMenuItem.Enabled = selectedObject.Children.Count > 0;
 				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
@@ -1926,7 +1928,7 @@ namespace SonicRetro.SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
-				editMaterialsToolStripMenuItem.Enabled = false;
+				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				clearChildrenToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
@@ -2104,6 +2106,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			OpenMaterialEditor();
+		}
+
+		private void OpenMaterialEditor()
+		{
 			List<NJS_MATERIAL> mats;
 			switch (selectedObject.Attach)
 			{
@@ -2178,7 +2185,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
 
-					editMaterialsToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
+					editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
 
 					modelLibrary.Add(newattach);
 
@@ -2561,7 +2568,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			*/
 
-			editMaterialsToolStripMenuItem.Enabled = true;
+			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
 
 			if (hasWeight = model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
@@ -3071,6 +3078,90 @@ namespace SonicRetro.SAModel.SAMDL
 			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
 			DrawEntireModel();
+		}
+
+		private void materialEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenMaterialEditor();
+		}
+
+		private void saveAnimationsToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			string filterString = "Sonic Adventure Animation |*.saanim|Sega Ninja Motion .njm|*.njm|Sega Ninja Motion Big Endian (Gamecube) .njm|*.njm";
+
+			filterString += "|All files *.*|*.*";
+			using (SaveFileDialog a = new SaveFileDialog()
+			{
+				Title = "Select a base filename",
+				DefaultExt = "saanim",
+				Filter = filterString
+			})
+			{
+				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
+
+				if (a.ShowDialog(this) == DialogResult.OK)
+				{
+					switch(a.FilterIndex)
+					{
+						case 3:
+							a.FileName = a.FileName + "?BE?";
+							break;
+						default:
+							break;
+					}
+					SaveAnimations(a.FileName);
+				}
+			}
+		}
+
+		private void SaveAnimations(string fileName)
+		{
+			if (animations != null)
+			{
+				bool bigEndian = false;
+				string extension = Path.GetExtension(fileName);
+
+				switch (extension)
+				{
+					case ".njm":
+					case ".njm?BE?":
+						if (extension.Contains("?BE?"))
+						{
+							bigEndian = true;
+						}
+						fileName = fileName.Replace("?BE?", "");
+						ByteConverter.BigEndian = bigEndian;
+						for (int u = 0; u < animations.Count; u++)
+						{
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".njm";
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+
+							File.WriteAllBytes(filePath, rawAnim);
+						}
+						break;
+					default:
+						string[] animfiles;
+						animfiles = new string[animations.Count()];
+
+						for (int u = 0; u < animations.Count; u++)
+						{
+							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".saanim";
+							animations[u].Save(filePath);
+							animfiles[u] = filePath;
+						}
+						break;
+				}
+			}
+			else
+			{
+				MessageBox.Show("No animations loaded to save!");
+				return;
+			}
+		}
+
+		private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveAs(true);
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
