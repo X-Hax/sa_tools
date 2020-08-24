@@ -301,7 +301,7 @@ namespace SonicRetro.SAModel
 				List<byte> strbytes = new List<byte>();
 				for (int i = 0; i < Animations.Count; i++)
 				{
-					Animations[i].Save(Path.Combine(path, animationFiles[i]));
+					//Animations[i].Save(Path.Combine(path, animationFiles[i]));
 					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
 					strbytes.AddRange(Encoding.UTF8.GetBytes(animationFiles[i]));
 					strbytes.Add(0);
