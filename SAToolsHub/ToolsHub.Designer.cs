@@ -153,7 +153,7 @@
 			// 
 			// checkForUpdatesToolStripMenuItem
 			// 
-			this.checkForUpdatesToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsUpdate;
+			this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
 			this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
 			this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";

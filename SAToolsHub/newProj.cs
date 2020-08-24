@@ -15,11 +15,11 @@ namespace SAToolsHub
 {
 	public partial class newProj : Form
 	{
-		private SA_Tools.Game game;
 
 		public newProj()
 		{
 			InitializeComponent();
+
 		}
 
 		private SA_Tools.Game GetGameForRadioButtons()
@@ -31,6 +31,15 @@ namespace SAToolsHub
 
 		private void newProj_Shown(object sender, EventArgs e)
 		{
+			bool sadxpcIsValid = GamePathChecker.CheckSADXPCValid(
+				Program.Settings.SADXPCPath, out string sadxFailReason);
+
+			bool sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
+				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
+
+			radSADX.Enabled = sadxpcIsValid;
+			radSA2PC.Enabled = sa2pcIsValid;
+
 			txtAuthor.Text = String.Empty;
 			txtDesc.Text = String.Empty;
 			txtName.Text = String.Empty;

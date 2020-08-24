@@ -8,6 +8,11 @@ namespace SAToolsHub
 {
 	public partial class GamePaths : Form
 	{
+
+		private string errMessage = ("No games have been configured.\n\n" +
+			"You will not be able to create projects until your game paths have been configured.\n\n" +
+			"You can configure paths in the Settings drop down.");
+
 		public GamePaths()
 		{
 			InitializeComponent();
@@ -57,12 +62,11 @@ namespace SAToolsHub
 
 			if (!Program.AnyGamesConfigured())
 			{
-				DialogResult dialogResult = MessageBox.Show("No games configured", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+				DialogResult dialogResult = MessageBox.Show(errMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-				if (dialogResult == DialogResult.Cancel)
+				if (dialogResult == DialogResult.OK)
 				{
-					this.DialogResult = DialogResult.Abort;
-					Application.Exit();
+					this.Hide();
 					return;
 				}
 				else

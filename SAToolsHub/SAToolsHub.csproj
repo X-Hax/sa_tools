@@ -168,24 +168,6 @@
     <None Include="Resources\tsSAMDL.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\tsBuildAuto.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsBuildManual.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsBuildRun.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsEditProj.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsNewProj.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsOpenProj.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\tsSALVL.png" />
   </ItemGroup>
   <ItemGroup>
@@ -193,9 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\tsPaths.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tsUpdate.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -208,6 +187,27 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsUpdate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsBuildRun.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsEditProj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsBuildManual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsNewProj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsOpenProj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsBuildAuto.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
