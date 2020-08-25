@@ -6,13 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.Import;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
@@ -679,7 +677,7 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
+			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			if (cmdLoad == false)
@@ -1060,7 +1058,7 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
-			saveAnimationsToolStripMenuItem1.Enabled = false;
+			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
@@ -1837,7 +1835,7 @@ namespace SonicRetro.SAModel.SAMDL
 							model.Children[0].ToStructVariables(sw, dx, labels, texnames);
 						else
 							model.ToStructVariables(sw, dx, labels, texnames);
-						if (saveAnimationsToolStripMenuItem.Checked && animations != null)
+						if (exportAnimationsToolStripMenuItem.Checked && animations != null)
 						{
 							foreach (NJS_MOTION anim in animations)
 							{
@@ -2592,7 +2590,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
-			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
+			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			selectedObject = model;
 			SelectedItemChanged();
 			unsaved = true;
@@ -2691,7 +2689,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim;*.action|" +
-																		"Ninja Motion Files|*.njm|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
+																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
 					LoadAnimation(ofd.FileNames);
@@ -2889,7 +2887,7 @@ namespace SonicRetro.SAModel.SAMDL
 				UpdateWeightedModel();
 				DrawEntireModel();
 			}
-			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
+			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3164,7 +3162,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void saveAnimationsToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			string filterString = "SA Tools Animation |*.saanim|Sega Ninja Motion .njm|*.njm|Sega Ninja Motion Big Endian (Gamecube) .njm|*.njm|JSON |*.json";
+			string filterString = "SA Tools Animation |*.saanim|Sega Ninja Motion .njm|*.njm|Sega Ninja Motion Big Endian (Gamecube) .njm|*.njm|JSON Files|*.json";
 
 			filterString += "|All files *.*|*.*";
 			using (SaveFileDialog a = new SaveFileDialog()
