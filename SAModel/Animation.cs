@@ -709,7 +709,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					posoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(posoffs[model.Key]))
+					if (!labels.ContainsValue(posoffs[model.Key]) && model.Value.PositionName != null)
 					{
 						if (!labels.ContainsKey(model.Value.PositionName))
 							labels.Add(model.Value.PositionName, posoffs[model.Key]);
@@ -736,7 +736,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					rotoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(rotoffs[model.Key]))
+					if (!labels.ContainsValue(rotoffs[model.Key]) && model.Value.RotationName != null)
 					{
 						if (!labels.ContainsKey(model.Value.RotationName))
 							labels.Add(model.Value.RotationName, rotoffs[model.Key]);
@@ -773,7 +773,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					scloffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(scloffs[model.Key]))
+					if (!labels.ContainsValue(scloffs[model.Key]) && model.Value.ScaleName != null)
 					{
 						if (!labels.ContainsKey(model.Value.ScaleName))
 							labels.Add(model.Value.ScaleName, scloffs[model.Key]);
@@ -800,7 +800,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					vecoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(vecoffs[model.Key]))
+					if (!labels.ContainsValue(vecoffs[model.Key]) && model.Value.VectorName != null)
 					{
 						if (!labels.ContainsKey(model.Value.VectorName))
 							labels.Add(model.Value.VectorName, vecoffs[model.Key]);
@@ -835,7 +835,7 @@ namespace SonicRetro.SAModel
 					}
 					vertoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(vertoffs[model.Key]))
+					if (!labels.ContainsValue(vertoffs[model.Key]) && model.Value.VertexName != null)
 					{
 						if (!labels.ContainsKey(model.Value.VertexName))
 							labels.Add(model.Value.VertexName, vertoffs[model.Key]);
@@ -858,7 +858,7 @@ namespace SonicRetro.SAModel
 					}
 					for (int u = 0; u < model.Value.Vertex.Count; u++)
 					{
-						if (!labels.ContainsValue(offs[u]))
+						if (!labels.ContainsValue(offs[u]) && model.Value.VertexItemName[u] != null)
 						{
 							if (!labels.ContainsKey(model.Value.VertexItemName[u]))
 								labels.Add(model.Value.VertexItemName[u], offs[u]);
@@ -888,7 +888,7 @@ namespace SonicRetro.SAModel
 					}
 					normoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(normoffs[model.Key]))
+					if (!labels.ContainsValue(normoffs[model.Key]) && model.Value.NormalName != null)
 					{
 						if (!labels.ContainsKey(model.Value.NormalName))
 							labels.Add(model.Value.NormalName, normoffs[model.Key]);
@@ -911,7 +911,7 @@ namespace SonicRetro.SAModel
 					}
 					for (int u = 0; u < model.Value.Normal.Count; u++)
 					{
-						if (!labels.ContainsValue(offs[u]))
+						if (!labels.ContainsValue(offs[u]) && model.Value.NormalItemName[u] != null)
 						{
 							if (!labels.ContainsKey(model.Value.NormalItemName[u]))
 								labels.Add(model.Value.NormalItemName[u], offs[u]);
@@ -933,7 +933,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					targoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(targoffs[model.Key]))
+					if (!labels.ContainsValue(targoffs[model.Key]) && model.Value.TargetName != null)
 					{
 						if (!labels.ContainsKey(model.Value.TargetName))
 							labels.Add(model.Value.TargetName, targoffs[model.Key]);
@@ -960,7 +960,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					rolloffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(rolloffs[model.Key]))
+					if (!labels.ContainsValue(rolloffs[model.Key]) && model.Value.RollName != null)
 					{
 						if (!labels.ContainsKey(model.Value.RollName))
 							labels.Add(model.Value.RollName, rolloffs[model.Key]);
@@ -987,7 +987,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					angoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(angoffs[model.Key]))
+					if (!labels.ContainsValue(angoffs[model.Key]) && model.Value.AngleName != null)
 					{
 						if (!labels.ContainsKey(model.Value.AngleName))
 							labels.Add(model.Value.AngleName, angoffs[model.Key]);
@@ -1014,7 +1014,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					coloffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(coloffs[model.Key]))
+					if (!labels.ContainsValue(coloffs[model.Key]) && model.Value.ColorName != null)
 					{
 						if (!labels.ContainsKey(model.Value.ColorName))
 							labels.Add(model.Value.ColorName, coloffs[model.Key]);
@@ -1041,7 +1041,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					intoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(intoffs[model.Key]))
+					if (!labels.ContainsValue(intoffs[model.Key]) && model.Value.IntensityName != null)
 					{
 						if (!labels.ContainsKey(model.Value.IntensityName))
 							labels.Add(model.Value.IntensityName, intoffs[model.Key]);
@@ -1068,7 +1068,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					spotoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(spotoffs[model.Key]))
+					if (!labels.ContainsValue(spotoffs[model.Key]) && model.Value.SpotName != null)
 					{
 						if (!labels.ContainsKey(model.Value.SpotName))
 							labels.Add(model.Value.SpotName, spotoffs[model.Key]);
@@ -1095,7 +1095,7 @@ namespace SonicRetro.SAModel
 					result.Align(4);
 					pntoffs[model.Key] = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(pntoffs[model.Key]))
+					if (!labels.ContainsValue(pntoffs[model.Key]) && model.Value.PointName != null)
 					{
 						if (!labels.ContainsKey(model.Value.PointName))
 							labels.Add(model.Value.PointName, pntoffs[model.Key]);
@@ -1221,7 +1221,7 @@ namespace SonicRetro.SAModel
 				Vertex temp = new Vertex(0.0f, 0.0f, 0.0f);
 				result.AddRange(temp.GetBytes());
 			}
-			if (!labels.ContainsValue(modeldata))
+			if (!labels.ContainsValue(modeldata) && MdataName != null)
 			{
 				if (!labels.ContainsKey(MdataName)) labels.Add(MdataName, modeldata);
 				else
@@ -1402,7 +1402,7 @@ namespace SonicRetro.SAModel
 					break;
 			}
 			parameterData.AddRange(ByteConverter.GetBytes(numpairs));
-			if (!labels.ContainsValue(address + imageBase))
+			if (!labels.ContainsValue(address + imageBase) && Name != null)
 			{
 				if (!labels.ContainsKey(Name)) labels.Add(Name, address + imageBase);
 				else
