@@ -11,7 +11,7 @@ namespace AnimJSONConverter
 		{
 			Console.Write("File: ");
 			if (args.Length == 0)
-				args = Console.ReadLine().Trim('"').Split(' ');
+				args = Console.ReadLine().Trim('"');
 			foreach(string filename in args)
 			{
 				Console.WriteLine(filename);
