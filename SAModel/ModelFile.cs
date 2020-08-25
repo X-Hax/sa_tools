@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace SonicRetro.SAModel
 {
@@ -214,11 +216,35 @@ namespace SonicRetro.SAModel
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);
+					if (File.Exists(Path.GetFileNameWithoutExtension(filename) + ".action"))
+					{
+						using (TextReader tr = File.OpenText(Path.GetFileNameWithoutExtension(filename) + ".action"))
+						{
+							int count = File.ReadLines(Path.GetFileNameWithoutExtension(filename) + ".action").Count();
+							animationFiles = new string[count];
+							for (int i = 0; i < count; i++)
+							{
+								animationFiles[i] = tr.ReadLine();
+							}
+						}
+					}
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
 					try
 					{
 						foreach (string item in animationFiles)
-							anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+						{
+							if (Path.GetExtension(item).ToLowerInvariant() == ".json")
+							{
+								JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+								using (TextReader tr = File.OpenText(Path.Combine(path, item)))
+								{
+									using (JsonTextReader jtr = new JsonTextReader(tr))
+										anims.Add(js.Deserialize<NJS_MOTION>(jtr));
+								}
+							}
+							else
+								anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+						}
 					}
 					catch
 					{
@@ -296,6 +322,17 @@ namespace SonicRetro.SAModel
 			}
 			if (Animations.Count > 0)
 			{
+				using (TextWriter tw = File.CreateText(Path.ChangeExtension(filename, ".action")))
+				{
+					for (int a = 0; a < animationFiles.Count(); a++)
+					{
+						tw.WriteLine(animationFiles[a]);
+					}
+					tw.Flush();
+					tw.Close();
+				}
+				/*
+				//Old animation code
 				List<byte> chunk = new List<byte>((Animations.Count + 1) * 4);
 				int straddr = (Animations.Count + 1) * 4;
 				List<byte> strbytes = new List<byte>();
@@ -312,6 +349,7 @@ namespace SonicRetro.SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Animation));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
+				*/
 			}
 			if (!string.IsNullOrEmpty(Author))
 			{
@@ -397,6 +435,17 @@ namespace SonicRetro.SAModel
 			}
 			if (animationFiles != null && animationFiles.Length > 0)
 			{
+				using (TextWriter tw = File.CreateText(Path.ChangeExtension(filename, ".action")))
+				{
+					for (int a = 0; a < animationFiles.Count(); a++)
+					{
+						tw.WriteLine(animationFiles[a]);
+					}
+					tw.Flush();
+					tw.Close();
+				}
+				/*
+				//Old animation code
 				List<byte> chunk = new List<byte>((animationFiles.Length + 1) * 4);
 				int straddr = (animationFiles.Length + 1) * 4;
 				List<byte> strbytes = new List<byte>();
@@ -412,6 +461,7 @@ namespace SonicRetro.SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Animation));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
+				*/
 			}
 			if (!string.IsNullOrEmpty(author))
 			{
