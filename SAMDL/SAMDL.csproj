@@ -181,7 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ico_samdl.ico" />
-    <None Include="Resources\saveanim.png" />
     <None Include="Resources\lighting.png" />
     <None Include="Resources\nextanim.png" />
     <None Include="Resources\prevanim.png" />
