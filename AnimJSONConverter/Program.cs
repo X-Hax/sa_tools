@@ -2,6 +2,8 @@
 using SonicRetro.SAModel;
 using System;
 using System.IO;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace AnimJSONConverter
 {
@@ -9,10 +11,34 @@ namespace AnimJSONConverter
 	{
 		static void Main(string[] args)
 		{
-			Console.Write("File: ");
 			if (args.Length == 0)
-				args = Console.ReadLine().Trim('"');
-			foreach(string filename in args)
+			{
+				Thread t = new Thread((ThreadStart)(() =>
+				{
+					using (OpenFileDialog ofd = new OpenFileDialog()
+					{
+						Filter = "All Animation Files|*.saanim;*.json|Javascript Object Notation|*.json|Sonic Adventure Animation|*.saanim|All Files|*.*",
+						Multiselect = true
+					})
+					{
+						if (ofd.ShowDialog() == DialogResult.OK)
+						{
+							Convert(ofd.FileNames);
+						}
+					}
+				}));
+				t.SetApartmentState(ApartmentState.STA);
+				t.Start();
+			}
+			else
+			{
+				Convert(args);
+			}
+		}
+
+		private static void Convert(string[] args)
+		{
+			foreach (string filename in args)
 			{
 				Console.WriteLine(filename);
 				JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
