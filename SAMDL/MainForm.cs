@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -678,6 +679,7 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			if (cmdLoad == false)
@@ -1058,6 +1060,7 @@ namespace SonicRetro.SAModel.SAMDL
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			saveAnimationsToolStripMenuItem1.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
 
@@ -2589,6 +2592,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
 			selectedObject = model;
 			SelectedItemChanged();
 			unsaved = true;
@@ -2686,7 +2690,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.saanim;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim|" +
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim;*.action|" +
 																		"Ninja Motion Files|*.njm|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
@@ -2797,6 +2801,78 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 
 						break;
+					case ".action":
+						using (TextReader tr = File.OpenText(fn))
+						{
+							string path = Path.GetDirectoryName(fn);
+							int count = File.ReadLines(fn).Count();
+							string[] animationFiles = new string[count];
+							for (int u = 0; u < count; u++)
+							{
+								animationFiles[u] = tr.ReadLine();
+								if (File.Exists(Path.Combine(path, animationFiles[u])))
+								{
+									if (Path.GetExtension(animationFiles[u]).ToLowerInvariant() == ".json")
+									{
+										JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+										using (TextReader tr2 = File.OpenText(Path.Combine(path, animationFiles[u])))
+										{
+											JsonTextReader jtr = new JsonTextReader(tr2);
+											NJS_MOTION mot = js.Deserialize<NJS_MOTION>(jtr);
+											if (first)
+											{
+												first = false;
+												animframe = 0;
+												animnum = animations.Count;
+												animations.Add(mot);
+												animation = mot;
+												UpdateWeightedModel();
+												DrawEntireModel();
+											}
+											else
+												animations.Add(mot);
+										}
+									}
+									else
+									{
+										NJS_MOTION mot = NJS_MOTION.Load(Path.Combine(path, animationFiles[u]));
+										if (first)
+										{
+											first = false;
+											animframe = 0;
+											animnum = animations.Count;
+											animations.Add(mot);
+											animation = mot;
+											UpdateWeightedModel();
+											DrawEntireModel();
+										}
+										else
+											animations.Add(mot);
+									}
+								}
+							}
+						}
+						break;
+					case ".json":
+						JsonSerializer js2 = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+						using (TextReader tr2 = File.OpenText(fn))
+						{
+							JsonTextReader jtr = new JsonTextReader(tr2);
+							NJS_MOTION mot = js2.Deserialize<NJS_MOTION>(jtr);
+							if (first)
+							{
+								first = false;
+								animframe = 0;
+								animnum = animations.Count;
+								animations.Add(mot);
+								animation = mot;
+								UpdateWeightedModel();
+								DrawEntireModel();
+							}
+							else
+								animations.Add(mot);
+						}
+						break;
 				}
 
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
@@ -2813,6 +2889,7 @@ namespace SonicRetro.SAModel.SAMDL
 				UpdateWeightedModel();
 				DrawEntireModel();
 			}
+			saveAnimationsToolStripMenuItem1.Enabled = animations.Count > 0;
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3087,7 +3164,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void saveAnimationsToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			string filterString = "Sonic Adventure Animation |*.saanim|Sega Ninja Motion .njm|*.njm|Sega Ninja Motion Big Endian (Gamecube) .njm|*.njm";
+			string filterString = "SA Tools Animation |*.saanim|Sega Ninja Motion .njm|*.njm|Sega Ninja Motion Big Endian (Gamecube) .njm|*.njm|JSON |*.json";
 
 			filterString += "|All files *.*|*.*";
 			using (SaveFileDialog a = new SaveFileDialog()
@@ -3139,15 +3216,27 @@ namespace SonicRetro.SAModel.SAMDL
 							File.WriteAllBytes(filePath, rawAnim);
 						}
 						break;
-					default:
-						string[] animfiles;
-						animfiles = new string[animations.Count()];
-
-						for (int u = 0; u < animations.Count; u++)
+					case ".saanim":
+					case ".json":
+						using (TextWriter twmain = File.CreateText(Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + ".action")))
 						{
-							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".saanim";
-							animations[u].Save(filePath);
-							animfiles[u] = filePath;
+							string[] animfiles = new string[animations.Count()];
+							for (int u = 0; u < animations.Count; u++)
+							{
+								string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + extension;
+								if (extension == ".saanim")
+									animations[u].Save(filePath);
+								else
+								{
+									JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+									using (TextWriter tw = File.CreateText(filePath))
+									using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+										js.Serialize(jtw, animations[u]);
+								}
+								twmain.WriteLine(Path.GetFileName(filePath));
+							}
+							twmain.Flush();
+							twmain.Close();
 						}
 						break;
 				}
