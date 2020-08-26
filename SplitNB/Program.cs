@@ -181,6 +181,18 @@ namespace SplitNB
 		}
 		static NJS_OBJECT ProcessModel(byte[] file)
 		{
+			//Like animations, model sections also have subsections. 
+			//Each subsection begins with an 8-byte header that specifies subsection type and size, which is then followed by data.
+			//Subsection types are the following:
+			//0 Polys
+			//1 Vertices
+			//2 Normals
+			//3 UVs
+			//4 Materials
+			//5 Meshsets
+			//6 Models
+			//7 Objects
+			//The pointers are all valid and we can just get the root object from the end of the file, but subsections still need to be figured out to rebuild NB files.
 			return new NJS_OBJECT(file, file.Length - 52, 0, ModelFormat.Basic, null);
 		}
 	}
