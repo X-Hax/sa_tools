@@ -10,10 +10,21 @@ namespace SplitNB
 	{
 		private enum AnimSections
 		{
-			NJS_MKEY_F = 0,
-			NJS_MKEY_A = 1,
-			NJS_MDATA2_HEADER = 3,
-			NJS_MOTION = 4,
+			MKEY_F = 0,
+			MKEY_A = 1,
+			MDATA2_HEADER = 3,
+			MOTION = 4,
+		}
+		private enum ModelSections
+		{
+			POLY = 0,
+			VERTEX = 1,
+			NORMAL = 2,
+			UV = 3,
+			MATERIAL = 4,
+			MESHSET = 5,
+			MODEL = 6,
+			OBJECT = 7,
 		}
 		static void Main(string[] args)
 		{
@@ -58,23 +69,22 @@ namespace SplitNB
 				switch (type)
 				{
 					case 0:
-						Console.Write("\nSection {0} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo));
+						Console.Write("\nSection {0} at {1} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						break;
 					case 1:
-						Console.Write("\nSection {0} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo));
+						Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
 						NJS_OBJECT mdl = ProcessModel(chunk);
-						Console.Write(", node count: {0}\n", mdl.CountAnimated());
 						modellist.Add(i, mdl);
 						break;
 					case 3:
-						Console.WriteLine("\nSection {0} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo));
+						Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
 						NJS_MOTION mot = ProcessMotion(chunk);
 						animlist.Add(i, mot);
 						break;
 					default:
-						Console.WriteLine("\nSection {0} is an unknown chunk type", i.ToString("D2", NumberFormatInfo.InvariantInfo));
+						Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
 						break;
 				}
@@ -103,22 +113,22 @@ namespace SplitNB
 			int curaddr = 0;
 			do
 			{
-				AnimSections section_type = (AnimSections)BitConverter.ToInt32(file, curaddr);
+				AnimSections section_type = (AnimSections)BitConverter.ToInt16(file, curaddr);
 				int section_size = BitConverter.ToInt32(file, curaddr + 4);
 				int section_addr = curaddr + 8;
 				Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
 				switch (section_type)
 				{
-					case AnimSections.NJS_MKEY_A:
-						Console.Write(", item count: {0}\n", (float)section_size / 16.0f);
+					case AnimSections.MKEY_A:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
 						break;
-					case AnimSections.NJS_MKEY_F:
-						Console.Write(", item count: {0}\n", (float)section_size / 16.0f);
+					case AnimSections.MKEY_F:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
 						break;
-					case AnimSections.NJS_MDATA2_HEADER:
+					case AnimSections.MDATA2_HEADER:
 						Console.Write(", number of MDATA entries: {0}\n", BitConverter.ToInt32(file, section_addr) >> BitConverter.ToInt32(file, section_addr + 4));
 						break;
-					case AnimSections.NJS_MOTION:
+					case AnimSections.MOTION:
 						frames = BitConverter.ToInt32(file, section_addr + 4);
 						intmode = (InterpolationMode)BitConverter.ToInt16(file, section_addr + 10);
 						animtype = (AnimFlags)BitConverter.ToInt16(file, section_addr + 8);
@@ -183,16 +193,51 @@ namespace SplitNB
 		{
 			//Like animations, model sections also have subsections. 
 			//Each subsection begins with an 8-byte header that specifies subsection type and size, which is then followed by data.
-			//Subsection types are the following:
-			//0 Polys
-			//1 Vertices
-			//2 Normals
-			//3 UVs
-			//4 Materials
-			//5 Meshsets
-			//6 Models
-			//7 Objects
 			//The pointers are all valid and we can just get the root object from the end of the file, but subsections still need to be figured out to rebuild NB files.
+			int curaddr = 0;
+			do
+			{
+				int temp = BitConverter.ToInt16(file, curaddr);
+				if (temp < 0 || temp > 7)
+				{
+					Console.WriteLine("Skipping two padding bytes at {0}", curaddr.ToString("X"));
+					curaddr += 2;
+				}
+				ModelSections section_type = (ModelSections)BitConverter.ToInt16(file, curaddr);
+				int itemnum = BitConverter.ToInt16(file, curaddr + 2);
+				int section_size = BitConverter.ToInt32(file, curaddr + 4);
+				int section_addr = curaddr + 8;
+				Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
+				switch (section_type)
+				{
+					case ModelSections.POLY:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 2.0f);
+						break;
+					case ModelSections.VERTEX:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						break;
+					case ModelSections.NORMAL:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						break;
+					case ModelSections.UV:
+						Console.Write(", calculated item count: {0}\n", (float)section_size / 4.0f);
+						break;
+					case ModelSections.MATERIAL:
+						Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 20.0f);
+						break;
+					case ModelSections.MESHSET:
+						Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 24.0f);
+						break;
+					case ModelSections.MODEL:
+						Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 40.0f);
+						break;
+					case ModelSections.OBJECT:
+						Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 52.0f);
+						break;
+				}
+				curaddr += 8 + section_size;
+			}
+			while (curaddr < file.Length);
 			return new NJS_OBJECT(file, file.Length - 52, 0, ModelFormat.Basic, null);
 		}
 	}
