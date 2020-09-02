@@ -634,7 +634,7 @@ namespace SonicRetro.SAModel.Direct3D
 					mesh.UpdateSelection(selind);
 		}
 
-		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat, bool ignorematcolors = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -646,6 +646,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 			if (obj.Attach != null)
 			{
+				Color bkcolor = Color.White;
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					NJS_MATERIAL mat;
@@ -674,7 +675,14 @@ namespace SonicRetro.SAModel.Direct3D
 							obj.Attach.MeshInfo[j] = new MeshInfo(mat, old.Polys, old.Vertices, old.HasUV, old.HasVC);
 						}
 					}
+					if (ignorematcolors)
+					{
+						bkcolor = mat.DiffuseColor;
+						mat.DiffuseColor = Color.White;
+					}
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (ignorematcolors)
+						mat.DiffuseColor = bkcolor;
 				}
 			}
 
@@ -709,20 +717,21 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false)
 		{
 			int modelindex = -1;
 			List<RenderInfo> result = new List<RenderInfo>();
 			do
 			{
-				result.AddRange(obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex));
+				result.AddRange(obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex, ignorematcolor));
 				obj = obj.Sibling;
 			} while (obj != null);
 			return result;
 		}
 
-		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex, bool ignorematcolors = false)
 		{
+			Color bkcolor = Color.White;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
@@ -740,12 +749,19 @@ namespace SonicRetro.SAModel.Direct3D
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
+					if (ignorematcolors)
+					{
+						bkcolor = mat.DiffuseColor;
+						mat.DiffuseColor = Color.White;
+					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (ignorematcolors)
+						mat.DiffuseColor = bkcolor;
 				}
 			}
 
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex));
+				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex, ignorematcolors));
 			transform.Pop();
 			return result;
 		}
@@ -796,21 +812,22 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, bool ignorematcolor = false)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			List<RenderInfo> result = new List<RenderInfo>();
 			do
 			{
-				result.AddRange(obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
+				result.AddRange(obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolor));
 				obj = obj.Sibling;
 			} while (obj != null);
 			return result;
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex, bool ignorematcolors = false)
 		{
+			Color bkcolor = Color.White;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
@@ -828,10 +845,17 @@ namespace SonicRetro.SAModel.Direct3D
 					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
+					if (ignorematcolors)
+					{
+						bkcolor = mat.DiffuseColor;
+						mat.DiffuseColor = Color.White;
+					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (ignorematcolors)
+						mat.DiffuseColor = bkcolor;
 				}
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex));
+				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolors));
 			transform.Pop();
 			return result;
 		}
@@ -880,7 +904,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes)
+		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			NJS_OBJECT[] objs = obj.GetObjects();
@@ -889,13 +913,21 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
 					{
+						Color bkcolor = Color.White;
 						Texture texture = null;
 						NJS_MATERIAL mat = objs[i].Attach.MeshInfo[j].Material;
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
+						if (ignorematcolor)
+						{
+							bkcolor = mat.DiffuseColor;
+							mat.DiffuseColor = Color.White;
+						}
 						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
+						if (ignorematcolor)
+							mat.DiffuseColor = bkcolor;
+						}
 					}
-				}
 			return result;
 		}
 
