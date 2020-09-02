@@ -93,6 +93,8 @@ namespace SonicRetro.SAModel.SAMDL
 						}
 						break;
 					case ".saanim":
+					case ".action":
+					case ".json":
 					case ".njm":
 						animFiles.Add(file);
 						break;
@@ -443,7 +445,7 @@ namespace SonicRetro.SAModel.SAMDL
 					rootSiblingMode = false;
 				}
 				animations = new List<NJS_MOTION>(modelFile.Animations);
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else if (extension.Equals(".nj") || extension.Equals(".gj"))
 			{
@@ -649,7 +651,7 @@ namespace SonicRetro.SAModel.SAMDL
 											i = ByteConverter.ToInt32(file, address);
 										}
 										animations = new List<NJS_MOTION>(anis.Values);
-										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 									}
 								}
 							}
@@ -711,14 +713,14 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				if (modelinfo.CheckBox_LoadMotion.Checked)
 					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
-					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else if (modelinfo.RadioButton_Action.Checked)
 			{
 				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
 				model = action.Model;
 				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
 			{
@@ -1368,8 +1370,16 @@ namespace SonicRetro.SAModel.SAMDL
 				animation = animations[animnum];
 			else
 				animation = null;
-			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			if (animation != null)
+			{
+				osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Enabled = true;
+			}
+			else
+			{
+				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Enabled = false;
+			}
 			animframe = 0;
 			DrawEntireModel();
 		}
@@ -1383,8 +1393,16 @@ namespace SonicRetro.SAModel.SAMDL
 				animation = animations[animnum];
 			else
 				animation = null;
-			if (animation != null) osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			else osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			if (animation != null)
+			{
+				osd.UpdateOSDItem("Animation: " + animations[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Enabled = true;
+			}
+			else
+			{
+				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayAnimation.Enabled = false;
+			}
 			animframe = 0;
 			DrawEntireModel();
 		}
@@ -2587,7 +2605,7 @@ namespace SonicRetro.SAModel.SAMDL
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 
 			AddTreeNode(model, treeView1.Nodes);
-			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
@@ -2873,17 +2891,15 @@ namespace SonicRetro.SAModel.SAMDL
 						break;
 				}
 
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 
 				//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
 				if (animations == null || animation == null) return;
 				timer1.Enabled = false;
-				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayAnimation.Checked = false;
 				timer1.Enabled = true;
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Checked = true;
-
+				buttonPlayAnimation.Enabled = buttonPlayAnimation.Checked = true;
 				UpdateWeightedModel();
 				DrawEntireModel();
 			}
