@@ -220,12 +220,14 @@ namespace SonicRetro.SAModel
 					{
 						using (TextReader tr = File.OpenText(Path.GetFileNameWithoutExtension(filename) + ".action"))
 						{
+							List<string> animlist = new List<string>();
 							int count = File.ReadLines(Path.GetFileNameWithoutExtension(filename) + ".action").Count();
-							animationFiles = new string[count];
 							for (int i = 0; i < count; i++)
 							{
-								animationFiles[i] = tr.ReadLine();
+								string line = tr.ReadLine();
+								if (File.Exists(Path.Combine(path, line))) animlist.Add(line);
 							}
+							animationFiles = animlist.ToArray();
 						}
 					}
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
