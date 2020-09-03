@@ -44,7 +44,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		public abstract HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View);
-		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform);
+		public abstract List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false);
 
 		public Item(EditorItemSelection selectionManager)
 		{

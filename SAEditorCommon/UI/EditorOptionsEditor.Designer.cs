@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ignoreMaterialColorsCheck = new System.Windows.Forms.CheckBox();
             this.fullBrightCheck = new System.Windows.Forms.CheckBox();
             this.cullModeDropdown = new System.Windows.Forms.ComboBox();
             this.cullingLabel = new System.Windows.Forms.Label();
@@ -41,20 +42,21 @@
             this.ResetDefaultKeybindButton = new System.Windows.Forms.Button();
             this.KeyboardShortcutButton = new System.Windows.Forms.Button();
             this.drawDistGroupBox = new System.Windows.Forms.GroupBox();
-            this.levelDrawDistLabel = new System.Windows.Forms.Label();
-            this.levelDrawDistSlider = new System.Windows.Forms.TrackBar();
-            this.setDrawDistLabel = new System.Windows.Forms.Label();
             this.setDrawDistSlider = new System.Windows.Forms.TrackBar();
+            this.setDrawDistLabel = new System.Windows.Forms.Label();
+            this.levelDrawDistSlider = new System.Windows.Forms.TrackBar();
+            this.levelDrawDistLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawDistSlider)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.drawDistGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.setDrawDistSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.ignoreMaterialColorsCheck);
             this.groupBox1.Controls.Add(this.fullBrightCheck);
             this.groupBox1.Controls.Add(this.cullModeDropdown);
             this.groupBox1.Controls.Add(this.cullingLabel);
@@ -67,14 +69,25 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Render Options";
             // 
+            // ignoreMaterialColorsCheck
+            // 
+            this.ignoreMaterialColorsCheck.AutoSize = true;
+            this.ignoreMaterialColorsCheck.Location = new System.Drawing.Point(15, 143);
+            this.ignoreMaterialColorsCheck.Name = "ignoreMaterialColorsCheck";
+            this.ignoreMaterialColorsCheck.Size = new System.Drawing.Size(126, 17);
+            this.ignoreMaterialColorsCheck.TabIndex = 6;
+            this.ignoreMaterialColorsCheck.Text = "Ignore material colors";
+            this.ignoreMaterialColorsCheck.UseVisualStyleBackColor = true;
+            this.ignoreMaterialColorsCheck.Click += new System.EventHandler(this.ignoreMaterialColorsCheck_Click);
+            // 
             // fullBrightCheck
             // 
             this.fullBrightCheck.AutoSize = true;
-            this.fullBrightCheck.Location = new System.Drawing.Point(15, 136);
+            this.fullBrightCheck.Location = new System.Drawing.Point(15, 120);
             this.fullBrightCheck.Name = "fullBrightCheck";
-            this.fullBrightCheck.Size = new System.Drawing.Size(198, 17);
+            this.fullBrightCheck.Size = new System.Drawing.Size(97, 17);
             this.fullBrightCheck.TabIndex = 5;
-            this.fullBrightCheck.Text = "Use fullbright instead of natural lights";
+            this.fullBrightCheck.Text = "Disable lighting";
             this.fullBrightCheck.UseVisualStyleBackColor = true;
             this.fullBrightCheck.Click += new System.EventHandler(this.fullBrightCheck_Click);
             // 
@@ -86,7 +99,7 @@
             "None (Draws both sides)",
             "Clockwise",
             "Counter-Clockwise"});
-            this.cullModeDropdown.Location = new System.Drawing.Point(15, 98);
+            this.cullModeDropdown.Location = new System.Drawing.Point(15, 90);
             this.cullModeDropdown.Name = "cullModeDropdown";
             this.cullModeDropdown.Size = new System.Drawing.Size(196, 21);
             this.cullModeDropdown.TabIndex = 4;
@@ -95,7 +108,7 @@
             // cullingLabel
             // 
             this.cullingLabel.AutoSize = true;
-            this.cullingLabel.Location = new System.Drawing.Point(12, 82);
+            this.cullingLabel.Location = new System.Drawing.Point(12, 74);
             this.cullingLabel.Name = "cullingLabel";
             this.cullingLabel.Size = new System.Drawing.Size(90, 13);
             this.cullingLabel.TabIndex = 2;
@@ -203,15 +216,29 @@
             this.drawDistGroupBox.TabStop = false;
             this.drawDistGroupBox.Text = "Draw Distance";
             // 
-            // levelDrawDistLabel
+            // setDrawDistSlider
             // 
-            this.levelDrawDistLabel.AutoSize = true;
-            this.levelDrawDistLabel.Enabled = false;
-            this.levelDrawDistLabel.Location = new System.Drawing.Point(15, 89);
-            this.levelDrawDistLabel.Name = "levelDrawDistLabel";
-            this.levelDrawDistLabel.Size = new System.Drawing.Size(84, 13);
-            this.levelDrawDistLabel.TabIndex = 2;
-            this.levelDrawDistLabel.Text = "Level Geometry:";
+            this.setDrawDistSlider.Enabled = false;
+            this.setDrawDistSlider.Location = new System.Drawing.Point(6, 169);
+            this.setDrawDistSlider.Maximum = 30000;
+            this.setDrawDistSlider.Minimum = 1000;
+            this.setDrawDistSlider.Name = "setDrawDistSlider";
+            this.setDrawDistSlider.Size = new System.Drawing.Size(227, 45);
+            this.setDrawDistSlider.SmallChange = 100;
+            this.setDrawDistSlider.TabIndex = 5;
+            this.setDrawDistSlider.TickFrequency = 500;
+            this.setDrawDistSlider.Value = 3000;
+            this.setDrawDistSlider.Scroll += new System.EventHandler(this.setDrawDistSlider_Scroll);
+            // 
+            // setDrawDistLabel
+            // 
+            this.setDrawDistLabel.AutoSize = true;
+            this.setDrawDistLabel.Enabled = false;
+            this.setDrawDistLabel.Location = new System.Drawing.Point(15, 153);
+            this.setDrawDistLabel.Name = "setDrawDistLabel";
+            this.setDrawDistLabel.Size = new System.Drawing.Size(87, 13);
+            this.setDrawDistLabel.TabIndex = 4;
+            this.setDrawDistLabel.Text = "SET/CAM Items:";
             // 
             // levelDrawDistSlider
             // 
@@ -225,35 +252,21 @@
             this.levelDrawDistSlider.TabIndex = 3;
             this.levelDrawDistSlider.TickFrequency = 500;
             this.levelDrawDistSlider.Value = 6000;
-			this.levelDrawDistSlider.Scroll += new System.EventHandler(this.levelDrawDistSlider_Scroll);
-			// 
-			// setDrawDistLabel
-			// 
-			this.setDrawDistLabel.AutoSize = true;
-            this.setDrawDistLabel.Enabled = false;
-            this.setDrawDistLabel.Location = new System.Drawing.Point(15, 153);
-            this.setDrawDistLabel.Name = "setDrawDistLabel";
-            this.setDrawDistLabel.Size = new System.Drawing.Size(87, 13);
-            this.setDrawDistLabel.TabIndex = 4;
-            this.setDrawDistLabel.Text = "SET/CAM Items:";
-			// 
-			// setDrawDistSlider
-			// 
-			this.setDrawDistSlider.Enabled = false;
-            this.setDrawDistSlider.Location = new System.Drawing.Point(6, 169);
-            this.setDrawDistSlider.Maximum = 30000;
-            this.setDrawDistSlider.Minimum = 1000;
-            this.setDrawDistSlider.Name = "setDrawDistSlider";
-            this.setDrawDistSlider.Size = new System.Drawing.Size(227, 45);
-            this.setDrawDistSlider.SmallChange = 100;
-            this.setDrawDistSlider.TabIndex = 5;
-            this.setDrawDistSlider.TickFrequency = 500;
-            this.setDrawDistSlider.Value = 3000;
-			this.setDrawDistSlider.Scroll += new System.EventHandler(this.setDrawDistSlider_Scroll);
-			// 
-			// EditorOptionsEditor
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.levelDrawDistSlider.Scroll += new System.EventHandler(this.levelDrawDistSlider_Scroll);
+            // 
+            // levelDrawDistLabel
+            // 
+            this.levelDrawDistLabel.AutoSize = true;
+            this.levelDrawDistLabel.Enabled = false;
+            this.levelDrawDistLabel.Location = new System.Drawing.Point(15, 89);
+            this.levelDrawDistLabel.Name = "levelDrawDistLabel";
+            this.levelDrawDistLabel.Size = new System.Drawing.Size(84, 13);
+            this.levelDrawDistLabel.TabIndex = 2;
+            this.levelDrawDistLabel.Text = "Level Geometry:";
+            // 
+            // EditorOptionsEditor
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(530, 287);
             this.Controls.Add(this.drawDistGroupBox);
@@ -272,9 +285,9 @@
             this.groupBox2.ResumeLayout(false);
             this.drawDistGroupBox.ResumeLayout(false);
             this.drawDistGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.setDrawDistSlider)).EndInit();
-            this.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.levelDrawDistSlider)).EndInit();
+			this.ResumeLayout(false);
 
         }
 
@@ -297,5 +310,6 @@
 		private System.Windows.Forms.Label setDrawDistLabel;
 		private System.Windows.Forms.TrackBar levelDrawDistSlider;
 		private System.Windows.Forms.Label levelDrawDistLabel;
-	}
+        private System.Windows.Forms.CheckBox ignoreMaterialColorsCheck;
+    }
 }

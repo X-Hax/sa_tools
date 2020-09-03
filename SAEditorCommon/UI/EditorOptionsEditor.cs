@@ -37,7 +37,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				levelDrawDistSlider.Enabled = true;
 			}
 			toolTip.SetToolTip(fullBrightCheck, "If the scene's lighting is making it hard to work, use this to temporarily set the lighting to flat-white.");
+			toolTip.SetToolTip(ignoreMaterialColorsCheck, "Treat all material colors as white like Dreamcast and Gamecube versions of SA1/SADX/SA2 do.");
 			fullBrightCheck.Checked = EditorOptions.OverrideLighting;
+			ignoreMaterialColorsCheck.Checked = EditorOptions.IgnoreMaterialColors;
 			UpdateSliderValues();
 		}
 
@@ -113,5 +115,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			ResetDefaultKeybindsCommand.Invoke();
 		}
-	}
+
+        private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
+        {
+			EditorOptions.IgnoreMaterialColors = ignoreMaterialColorsCheck.Checked;
+			FormUpdated();
+		}
+    }
 }

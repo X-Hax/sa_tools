@@ -19,6 +19,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		private static float levelDrawDistance = 6000f;
 		private static float setDrawDistance = 3000f;
 		private static bool overrideLighting = false;
+		private static bool ignoreMaterialColors = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
 
@@ -28,6 +29,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public static float LevelDrawDistance { get { return levelDrawDistance; } set { levelDrawDistance = value; } }
 		public static float SetItemDrawDistance { get { return setDrawDistance; } set { setDrawDistance = value; } }
 		public static bool OverrideLighting { get { return overrideLighting; } set { overrideLighting = value; } }
+		public static bool IgnoreMaterialColors { get { return ignoreMaterialColors; } set { ignoreMaterialColors = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }
 		public static Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }
 		#endregion

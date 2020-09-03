@@ -129,7 +129,6 @@ namespace SonicRetro.SAModel.SAMDL
 		bool unsaved = false;
 		bool loaded;
 		bool rootSiblingMode = false;
-		bool ignoreMaterialColors = false;
 		string currentFileName = "";
 		NJS_OBJECT model;
 		NJS_OBJECT tempmodel;
@@ -1164,11 +1163,11 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showModelToolStripMenuItem.Checked)
 			{
 				if (hasWeight)
-					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, ignoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
 				else if (animation != null)
-					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, ignoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
 				else
-					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, ignoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
 
 				if (selectedObject != null)
 				{
@@ -3271,8 +3270,8 @@ namespace SonicRetro.SAModel.SAMDL
 		private void buttonMaterialColors_CheckedChanged(object sender, EventArgs e)
 		{
 			string showmatcolors = "On";
-			ignoreMaterialColors = !buttonMaterialColors.Checked;
-			if (ignoreMaterialColors) showmatcolors = "Off";
+			EditorOptions.IgnoreMaterialColors = !buttonMaterialColors.Checked;
+			if (EditorOptions.IgnoreMaterialColors) showmatcolors = "Off";
 			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
 			DrawEntireModel();

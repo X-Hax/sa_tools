@@ -678,7 +678,7 @@ namespace SonicRetro.SAModel.Direct3D
 					if (ignorematcolors)
 					{
 						bkcolor = mat.DiffuseColor;
-						mat.DiffuseColor = Color.White;
+						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 					if (ignorematcolors)
@@ -752,7 +752,7 @@ namespace SonicRetro.SAModel.Direct3D
 					if (ignorematcolors)
 					{
 						bkcolor = mat.DiffuseColor;
-						mat.DiffuseColor = Color.White;
+						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 					if (ignorematcolors)
@@ -848,7 +848,7 @@ namespace SonicRetro.SAModel.Direct3D
 					if (ignorematcolors)
 					{
 						bkcolor = mat.DiffuseColor;
-						mat.DiffuseColor = Color.White;
+						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 					if (ignorematcolors)
@@ -921,7 +921,7 @@ namespace SonicRetro.SAModel.Direct3D
 						if (ignorematcolor)
 						{
 							bkcolor = mat.DiffuseColor;
-							mat.DiffuseColor = Color.White;
+							mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 						}
 						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
 						if (ignorematcolor)

@@ -83,7 +83,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (LevelData.Textures.Count > 0)

@@ -67,7 +67,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
 		{
 			float dist = Direct3D.Extensions.Distance(camera.Position, Position.ToVector3());
 			if (dist > camera.DrawDistance) return EmptyRenderInfo;
