@@ -12,6 +12,7 @@ namespace ObjScan
 	{
 		static public List<int> deleteditems;
 		static public Dictionary<int, string> addresslist;
+		static public Dictionary<int, int[]> actionlist;
 		static void CreateSplitIni(string filename, Game game, uint imageBase, bool bigendian, bool reverse, uint startoffset)
 		{
 			if (addresslist.Count == 0) return;
@@ -36,13 +37,31 @@ namespace ObjScan
 						sw.WriteLine("type=chunkmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=chunkmodels/" + entry.Key.ToString("X8") + ".sa2mdl");
+						sw.WriteLine();
 						break;
 					case "NJS_OBJECT":
+					case "obj":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						if (game == Game.SADX) sw.WriteLine("type=basicdxmodel");
 						else sw.WriteLine("type=basicmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=basicmodels/" + entry.Key.ToString("X8") + ".sa1mdl");
+						bool first = true;
+						foreach (var item in actionlist)
+						{
+							if (item.Value[0] == entry.Key)
+							{
+								if (first)
+								{
+									sw.Write("animations=");
+									first = false;
+								}
+								else sw.Write(",");
+								sw.Write("../actions/" + item.Key.ToString("X8") + ".saanim");
+							}
+						}
+						if (!first) sw.WriteLine();
+						sw.WriteLine();
 						break;
 					case "landtable":
 					case "LandTable":
@@ -51,6 +70,15 @@ namespace ObjScan
 						sw.WriteLine("type=landtable");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						sw.WriteLine();
+						break;
+					case "NJS_MOTION":
+						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
+						sw.WriteLine("type=animation");
+						sw.WriteLine("address=" + entry.Key.ToString("X8"));
+						Console.WriteLine("Addr: {0}", entry.Key.ToString("X8"));
+						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
+						sw.WriteLine();
 						break;
 				}
 			}
@@ -220,6 +248,62 @@ namespace ObjScan
 				}
 			}
 		}
+		static void AddAction(int objectaddr, int motionaddr, string dir)
+		{
+			using (FileStream str = new FileStream(Path.Combine(dir, "models", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
+			using (StreamWriter tw = new StreamWriter(str))
+			{
+				tw.WriteLine("../actions/" + motionaddr.ToString("X8") + ".saanim");
+				tw.Flush();
+				tw.Close();
+			}
+		}
+		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt)
+		{
+			if (nummdl == 0) return;
+			for (int address = 0; address < datafile.Length - 8; address += 4)
+			{
+				if (ByteConverter.ToUInt32(datafile, address) != addr + imageBase) continue;
+				int motaddr = ByteConverter.ToInt32(datafile, address + 4);
+				if (motaddr < imageBase) continue;
+				try
+				{
+					NJS_MOTION mot = new NJS_MOTION(datafile, motaddr-(int)imageBase, imageBase, nummdl, null, false);
+					if (mot.Models.Count == 0) continue;
+					addresslist.Add(motaddr - (int)imageBase, "NJS_MOTION");
+					Console.WriteLine("Motion found for model {0} at address {1}", addr.ToString("X8"), (motaddr-(int)imageBase).ToString("X"));
+					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - (int)imageBase).ToString("X8"));
+					mot.Save(fileOutputPath + ".saanim");
+					int[] arr = new int[2];
+					arr[0] = addr;
+					arr[1] = nummdl;
+					actionlist.Add(motaddr - (int)imageBase, arr);
+					AddAction(addr, motaddr - (int)imageBase, dir); 
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+			}
+		}
+		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
+		{
+			actionlist = new Dictionary<int, int[]>();
+			List<int> modeladdr = new List<int>();
+			if (addresslist.Count == 0) return;
+			Directory.CreateDirectory(Path.Combine(dir, "actions"));
+			Console.WriteLine("Scanning for actions...");
+			foreach (var entry in addresslist)
+			{
+				if (deleteditems.Contains(entry.Key)) continue;
+				if (entry.Value == "NJS_OBJECT") modeladdr.Add(entry.Key);
+			}
+			foreach (int maddr in modeladdr)
+			{
+				ModelFile mdlfile = new ModelFile(Path.Combine(dir, "models", maddr.ToString("X8") + ".sa1mdl"));
+				ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
+			}
+		}
 		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
 			string model_extension = ".sa1mdl";
@@ -352,7 +436,7 @@ namespace ObjScan
 				}
 				else
 				{
-					Console.Write("Could not find the split INI file. Use more arguments to scan without a split file.");
+					Console.WriteLine("Could not find the split INI file. Use more arguments to scan without a split file.");
 					Console.WriteLine("Press ENTER to exit");
 					Console.ReadLine();
 					return;
@@ -453,6 +537,7 @@ namespace ObjScan
 			else datafile = datafile_temp;
 			if (imageBase == 0) imageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
 			dir = Environment.CurrentDirectory + "\\" + Path.GetFileNameWithoutExtension(filename);
+			if (Directory.Exists(dir)) Directory.Delete(dir, true);
 			Directory.CreateDirectory(dir);
 			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
 			if (startoffset != 0)
@@ -471,6 +556,7 @@ namespace ObjScan
 					ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
 					ScanModel(datafile, imageBase, dir, modelfmt);
 					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
+					ScanAnimations(datafile, imageBase, dir, modelfmt);
 					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 					break;
 				case "landtable":
@@ -482,18 +568,22 @@ namespace ObjScan
 				case "basicdxmodel":
 					ScanModel(datafile, imageBase, dir, modelfmt);
 					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
+					ScanAnimations(datafile, imageBase, dir, modelfmt);
 					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 					break;
 			}
 			//Clean up empty folders
 			bool land = false;
 			bool model = false;
+			bool motion = false;
 			foreach (var item in addresslist)
 			{
 				if (item.Value == "landtable") land = true;
 				if (item.Value == "NJS_OBJECT") model = true;
 				if (item.Value == "NJS_CNK_OBJECT") model = true;
+				if (item.Value == "NJS_MOTION") motion = true;
 			}
+			if (!motion && Directory.Exists(Path.Combine(dir, "actions"))) Directory.Delete(Path.Combine(dir, "actions"), true);
 			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"), true);
 			if (!model && Directory.Exists(Path.Combine(dir, "models"))) Directory.Delete(Path.Combine(dir, "models"), true);
 			if (!land && !model && Directory.Exists(dir)) Directory.Delete(dir, true);
