@@ -76,7 +76,6 @@ namespace ObjScan
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=animation");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
-						Console.WriteLine("Addr: {0}", entry.Key.ToString("X8"));
 						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
 						sw.WriteLine();
 						break;
@@ -288,7 +287,6 @@ namespace ObjScan
 		}
 		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
-			actionlist = new Dictionary<int, int[]>();
 			List<int> modeladdr = new List<int>();
 			if (addresslist.Count == 0) return;
 			Directory.CreateDirectory(Path.Combine(dir, "actions"));
@@ -372,11 +370,14 @@ namespace ObjScan
 			deleteditems = new List<int>();
 			addresslist = new Dictionary<int, string>();
 			List<int> landtablelist = new List<int>();
+			actionlist = new Dictionary<int, int[]>();
 			Game game;
 			string filename;
 			string dir;
 			bool bigendian = false;
 			bool reverse = false;
+			string matchfile = "";
+			bool skipactions = false;
 			uint startoffset = 0;
 			byte[] datafile;
 			string type;
@@ -385,22 +386,23 @@ namespace ObjScan
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts levels or models from it.\nOnly SA1 and SADX levels/models are supported at the moment.");
-				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE>");
-				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [offset] [modelfile]\n");
+				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE> [-noaction]");
+				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset offset] [-file modelfile] [-noaction]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
 				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable, all, match");
-				Console.WriteLine("[offset]: Start offset (hexadecimal).");
-				Console.WriteLine("[modelfile]: Path to .sa1mdl file to use in match mode.\n");
+				Console.WriteLine("offset: Start offset (hexadecimal).");
+				Console.WriteLine("modelfile: Path to .sa1mdl file to use in match mode.");
+				Console.WriteLine("-noaction: Don't scan for actions.\n");
 				Console.WriteLine("Cleaning up landtable objects:");
 				Console.WriteLine("If a split INI file is used, the scanner will clean up landtable models for all levels defined in the INI file.\n");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
 				return;
 			}
-			if (args.Length == 2)
+			if (args.Length == 2 || (args.Length == 3 && args[2] == "-noaction"))
 			{
 				filename = args[0];
 				if ((Path.GetExtension(filename).ToLowerInvariant()) == ".ini")
@@ -489,9 +491,20 @@ namespace ObjScan
 				filename = args[1];
 				imageBase = uint.Parse(args[2], NumberStyles.AllowHexSpecifier);
 				type = args[3];
-				if ((type.ToLowerInvariant() != "match" && args.Length > 4 ) || (type.ToLowerInvariant() == "match" && args.Length > 5))
+			}
+			for (int u = 2; u < args.Length; u++)
+			{
+				switch (args[u])
 				{
-					startoffset = uint.Parse(args[args.Length - 1], NumberStyles.AllowHexSpecifier);
+					case "-offset":
+						startoffset = uint.Parse(args[u + 1], NumberStyles.AllowHexSpecifier);
+						break;
+					case "-noaction":
+						skipactions = true;
+						break;
+					case "-file":
+						matchfile = args[u + 1];
+						break;
 				}
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
@@ -550,13 +563,13 @@ namespace ObjScan
 			switch (type.ToLowerInvariant())
 			{
 				case "match":
-					FindModel(datafile, dir, modelfmt, imageBase, args[4]);
+					FindModel(datafile, dir, modelfmt, imageBase, matchfile);
 					break;
 				case "all":
 					ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
 					ScanModel(datafile, imageBase, dir, modelfmt);
 					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
-					ScanAnimations(datafile, imageBase, dir, modelfmt);
+					if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
 					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 					break;
 				case "landtable":
@@ -568,7 +581,7 @@ namespace ObjScan
 				case "basicdxmodel":
 					ScanModel(datafile, imageBase, dir, modelfmt);
 					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
-					ScanAnimations(datafile, imageBase, dir, modelfmt);
+					if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
 					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 					break;
 			}
