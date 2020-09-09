@@ -306,7 +306,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		#endregion
 
 		#region Rendering / Picking
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;

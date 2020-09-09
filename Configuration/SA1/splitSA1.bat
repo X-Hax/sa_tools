@@ -26,6 +26,7 @@ projectmanager -m Split -f ../SA1/data/SONICADV/AL_GARDEN01.prs -d ../SA1/AL_GAR
 projectmanager -m Split -f ../SA1/data/SONICADV/AL_GARDEN02.prs -d ../SA1/AL_GARDEN02.ini -o ../../output/
 projectmanager -m Split -f ../SA1/data/SONICADV/AL_RACE.prs -d ../SA1/AL_RACE.ini -o ../../output/
 projectmanager -m Split -f ../SA1/data/SONICADV/AL_MAIN.prs -d ../SA1/AL_MAIN.ini -o ../../output/
+projectmanager -m Split -f ../SA1/data/SONICADV/ADVERTISE.prs -d ../SA1/ADVERTISE.ini -o ../../output/
 projectmanager -m Split -f ../SA1/data/SONICADV/B_CHAOS0.prs -d ../SA1/B_CHAOS0.ini -o ../../output/
 projectmanager -m Split -f ../SA1/data/SONICADV/B_CHAOS2.prs -d ../SA1/B_CHAOS2.ini -o ../../output/
 projectmanager -m Split -f ../SA1/data/SONICADV/B_CHAOS4.prs -d ../SA1/B_CHAOS4.ini -o ../../output/

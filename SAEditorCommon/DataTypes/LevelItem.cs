@@ -122,15 +122,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return COL.Model.CheckHit(Near, Far, Viewport, Projection, View, Mesh);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
 		{
 			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0)
-				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible));
+				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible, ignorematcolors));
 			else
-				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible));
+				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible, ignorematcolors));
 			if (Selected)
 				result.AddRange(COL.Model.DrawModelInvert(transform, Mesh, Visible));
 			return result;

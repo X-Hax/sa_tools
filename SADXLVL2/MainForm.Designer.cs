@@ -94,6 +94,7 @@
             this.splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.jumpToStartPositionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jumpToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alternativeCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -165,7 +166,7 @@
             this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.jumpToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialColorsButton = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -752,6 +753,14 @@
             this.jumpToStartPositionToolStripMenuItem.Text = "Jump to Start Position";
             this.jumpToStartPositionToolStripMenuItem.Click += new System.EventHandler(this.jumpToStartPositionToolStripMenuItem_Click);
             // 
+            // jumpToOriginToolStripMenuItem
+            // 
+            this.jumpToOriginToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.jumpzero;
+            this.jumpToOriginToolStripMenuItem.Name = "jumpToOriginToolStripMenuItem";
+            this.jumpToOriginToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.jumpToOriginToolStripMenuItem.Text = "Jump to origin (0, 0, 0)";
+            this.jumpToOriginToolStripMenuItem.Click += new System.EventHandler(this.jumpToOriginToolStripMenuItem_Click);
+            // 
             // alternativeCameraToolStripMenuItem
             // 
             this.alternativeCameraToolStripMenuItem.CheckOnClick = true;
@@ -775,7 +784,7 @@
             // 
             this.statsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.stats;
             this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-            this.statsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.statsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.statsToolStripMenuItem.Text = "Stats";
             this.statsToolStripMenuItem.ToolTipText = "Show level/selection statistics";
             this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
@@ -785,14 +794,14 @@
             this.boundsToolStripMenuItem.CheckOnClick = true;
             this.boundsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.bounds;
             this.boundsToolStripMenuItem.Name = "boundsToolStripMenuItem";
-            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.boundsToolStripMenuItem.Text = "Bounds";
             this.boundsToolStripMenuItem.ToolTipText = "Show bound spheres for level items";
             // 
             // upgradeObjDefsToolStripMenuItem
             // 
             this.upgradeObjDefsToolStripMenuItem.Name = "upgradeObjDefsToolStripMenuItem";
-            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Obj Defs";
             this.upgradeObjDefsToolStripMenuItem.Click += new System.EventHandler(this.upgradeObjDefsToolStripMenuItem_Click);
             // 
@@ -1257,6 +1266,7 @@
             this.missionItemsButton,
             this.splinesButton,
             this.lightingButton,
+            this.materialColorsButton,
             this.moveToStartButton,
             this.showHintsButton,
             this.settingsButton});
@@ -1513,13 +1523,18 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
             this.BackgroundPanel.TabIndex = 2;
             // 
-            // jumpToOriginToolStripMenuItem
+            // materialColorsButton
             // 
-            this.jumpToOriginToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.jumpzero;
-            this.jumpToOriginToolStripMenuItem.Name = "jumpToOriginToolStripMenuItem";
-            this.jumpToOriginToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.jumpToOriginToolStripMenuItem.Text = "Jump to origin (0, 0, 0)";
-            this.jumpToOriginToolStripMenuItem.Click += new System.EventHandler(this.jumpToOriginToolStripMenuItem_Click);
+            this.materialColorsButton.Checked = true;
+            this.materialColorsButton.CheckOnClick = true;
+            this.materialColorsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.materialColorsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.materialColorsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.material;
+            this.materialColorsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.materialColorsButton.Name = "materialColorsButton";
+            this.materialColorsButton.Size = new System.Drawing.Size(40, 40);
+            this.materialColorsButton.Text = "Enable Material Colors";
+            this.materialColorsButton.CheckedChanged += new System.EventHandler(this.materialColorsButton_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1700,6 +1715,7 @@
 		private System.Windows.Forms.ToolStripMenuItem layer_levelItemsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton lightingButton;
         private System.Windows.Forms.ToolStripMenuItem jumpToOriginToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton materialColorsButton;
     }
 }
 

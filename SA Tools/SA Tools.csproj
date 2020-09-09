@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EndianReader.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="SplitMDL\SplitMDL.cs" />
     <Compile Include="Split\Split.cs" />
     <Compile Include="Split\SplitErrorValue.cs" />
+    <Compile Include="Split\SplitNB.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SAModel\SAModel.csproj">

@@ -1878,7 +1878,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 
 					if (display)
-						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
+						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
 				}
 			}
 			#endregion
@@ -1900,7 +1900,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
 			{
 				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
-					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
 			}
 			#endregion
 
@@ -1917,7 +1917,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
 			{
 				foreach (MissionSETItem item in LevelData.MissionSETItems[LevelData.Character])
-					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
 			}
 			#endregion
 
@@ -3971,5 +3971,11 @@ namespace SonicRetro.SAModel.SADXLVL2
         {
 			JumpToOrigin();
         }
+
+        private void materialColorsButton_CheckedChanged(object sender, EventArgs e)
+        {
+			EditorOptions.IgnoreMaterialColors = !materialColorsButton.Checked;
+			DrawLevel();
+		}
     }
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using SonicRetro.SAModel;
 using SA_Tools;
+using System.Linq;
 
 namespace ObjScan
 {
@@ -11,6 +12,7 @@ namespace ObjScan
 	{
 		static public List<int> deleteditems;
 		static public Dictionary<int, string> addresslist;
+		static public Dictionary<int, int[]> actionlist;
 		static void CreateSplitIni(string filename, Game game, uint imageBase, bool bigendian, bool reverse, uint startoffset)
 		{
 			if (addresslist.Count == 0) return;
@@ -35,13 +37,31 @@ namespace ObjScan
 						sw.WriteLine("type=chunkmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=chunkmodels/" + entry.Key.ToString("X8") + ".sa2mdl");
+						sw.WriteLine();
 						break;
 					case "NJS_OBJECT":
+					case "obj":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						if (game == Game.SADX) sw.WriteLine("type=basicdxmodel");
 						else sw.WriteLine("type=basicmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=basicmodels/" + entry.Key.ToString("X8") + ".sa1mdl");
+						bool first = true;
+						foreach (var item in actionlist)
+						{
+							if (item.Value[0] == entry.Key)
+							{
+								if (first)
+								{
+									sw.Write("animations=");
+									first = false;
+								}
+								else sw.Write(",");
+								sw.Write("../actions/" + item.Key.ToString("X8") + ".saanim");
+							}
+						}
+						if (!first) sw.WriteLine();
+						sw.WriteLine();
 						break;
 					case "landtable":
 					case "LandTable":
@@ -50,11 +70,77 @@ namespace ObjScan
 						sw.WriteLine("type=landtable");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						sw.WriteLine();
+						break;
+					case "NJS_MOTION":
+						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
+						sw.WriteLine("type=animation");
+						sw.WriteLine("address=" + entry.Key.ToString("X8"));
+						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
+						sw.WriteLine();
 						break;
 				}
 			}
 			sw.Flush();
 			sw.Close();
+		}
+		static bool CompareModels(NJS_OBJECT model1, NJS_OBJECT model2)
+		{
+			if (model1.GetFlags() != model2.GetFlags()) return false;
+			if (model1.Position.X != model2.Position.X) return false;
+			if (model1.Position.Y != model2.Position.Y) return false;
+			if (model1.Position.Z != model2.Position.Z) return false;
+			if (model1.Rotation.X != model2.Rotation.X) return false;
+			if (model1.Rotation.Y != model2.Rotation.Y) return false;
+			if (model1.Rotation.Z != model2.Rotation.Z) return false;
+			if (model1.Scale.X != model2.Scale.X) return false;
+			if (model1.Scale.Y != model2.Scale.Y) return false;
+			if (model1.Scale.Z != model2.Scale.Z) return false;
+			if (model1.CountAnimated() != model2.CountAnimated()) return false;
+			if (model1.Attach != null && model2.Attach != null)
+			{
+				BasicAttach attach1 = (BasicAttach)model1.Attach;
+				BasicAttach attach2 = (BasicAttach)model2.Attach;
+				if (attach1.Material.Count != attach2.Material.Count) return false;
+				if (attach1.Vertex.Length != attach2.Vertex.Length) return false;
+				if (attach1.Normal.Length != attach2.Normal.Length) return false;
+				if (attach1.Mesh.Count != attach2.Mesh.Count) return false;
+			}
+			return true;
+		}
+		static uint FindModel(byte[] datafile, string dir, ModelFormat modelfmt, uint imageBase, string filename)
+		{
+			uint result = 0;
+			ModelFile modelFile = new ModelFile(filename);
+			NJS_OBJECT originalmodel = modelFile.Model;
+			string model_extension = ".sa1mdl";
+			Directory.CreateDirectory(Path.Combine(dir, "models"));
+			for (int u = 0; u < datafile.Length - 51; u += 4)
+			{
+				int address = u;
+				string fileOutputPath = Path.Combine(dir, "models", address.ToString("X8"));
+				try
+				{
+					if (!CheckNJSObject(datafile, address, imageBase, false)) continue;
+					NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+					if (!CompareModels(originalmodel, mdl)) continue;
+					NJS_OBJECT[] children1 = originalmodel.Children.ToArray();
+					NJS_OBJECT[] children2 = mdl.Children.ToArray();
+					if (children1.Length != children2.Length) continue;
+					for (int k = 0; k < children1.Length; k++)
+					{
+						if (!CompareModels(children1[k], children2[k])) continue;
+					}
+					ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt);
+					Console.WriteLine("Model at {0} seems to match!", address.ToString("X"));
+					addresslist.Add(address, "NJS_OBJECT");
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+			}
+			return result;
 		}
 		static bool CheckNJSObject(byte[] datafile, int address, uint imageBase, bool recursive)
 		{
@@ -161,6 +247,61 @@ namespace ObjScan
 				}
 			}
 		}
+		static void AddAction(int objectaddr, int motionaddr, string dir)
+		{
+			using (FileStream str = new FileStream(Path.Combine(dir, "models", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
+			using (StreamWriter tw = new StreamWriter(str))
+			{
+				tw.WriteLine("../actions/" + motionaddr.ToString("X8") + ".saanim");
+				tw.Flush();
+				tw.Close();
+			}
+		}
+		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt)
+		{
+			if (nummdl == 0) return;
+			for (int address = 0; address < datafile.Length - 8; address += 4)
+			{
+				if (ByteConverter.ToUInt32(datafile, address) != addr + imageBase) continue;
+				int motaddr = ByteConverter.ToInt32(datafile, address + 4);
+				if (motaddr < imageBase) continue;
+				try
+				{
+					NJS_MOTION mot = new NJS_MOTION(datafile, motaddr-(int)imageBase, imageBase, nummdl, null, false);
+					if (mot.Models.Count == 0) continue;
+					addresslist.Add(motaddr - (int)imageBase, "NJS_MOTION");
+					Console.WriteLine("Motion found for model {0} at address {1}", addr.ToString("X8"), (motaddr-(int)imageBase).ToString("X"));
+					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - (int)imageBase).ToString("X8"));
+					mot.Save(fileOutputPath + ".saanim");
+					int[] arr = new int[2];
+					arr[0] = addr;
+					arr[1] = nummdl;
+					actionlist.Add(motaddr - (int)imageBase, arr);
+					AddAction(addr, motaddr - (int)imageBase, dir); 
+				}
+				catch (Exception)
+				{
+					continue;
+				}
+			}
+		}
+		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
+		{
+			List<int> modeladdr = new List<int>();
+			if (addresslist.Count == 0) return;
+			Directory.CreateDirectory(Path.Combine(dir, "actions"));
+			Console.WriteLine("Scanning for actions...");
+			foreach (var entry in addresslist)
+			{
+				if (deleteditems.Contains(entry.Key)) continue;
+				if (entry.Value == "NJS_OBJECT") modeladdr.Add(entry.Key);
+			}
+			foreach (int maddr in modeladdr)
+			{
+				ModelFile mdlfile = new ModelFile(Path.Combine(dir, "models", maddr.ToString("X8") + ".sa1mdl"));
+				ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
+			}
+		}
 		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
 			string model_extension = ".sa1mdl";
@@ -229,11 +370,14 @@ namespace ObjScan
 			deleteditems = new List<int>();
 			addresslist = new Dictionary<int, string>();
 			List<int> landtablelist = new List<int>();
+			actionlist = new Dictionary<int, int[]>();
 			Game game;
 			string filename;
 			string dir;
 			bool bigendian = false;
 			bool reverse = false;
+			string matchfile = "";
+			bool skipactions = false;
 			uint startoffset = 0;
 			byte[] datafile;
 			string type;
@@ -242,21 +386,23 @@ namespace ObjScan
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts levels or models from it.\nOnly SA1 and SADX levels/models are supported at the moment.");
-				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE>");
-				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [offset]\n");
+				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE> [-noaction]");
+				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset offset] [-file modelfile] [-noaction]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
-				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable, all");
-				Console.WriteLine("[offset]: Start offset (hexadecimal).\n");
+				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, landtable, all, match");
+				Console.WriteLine("offset: Start offset (hexadecimal).");
+				Console.WriteLine("modelfile: Path to .sa1mdl file to use in match mode.");
+				Console.WriteLine("-noaction: Don't scan for actions.\n");
 				Console.WriteLine("Cleaning up landtable objects:");
 				Console.WriteLine("If a split INI file is used, the scanner will clean up landtable models for all levels defined in the INI file.\n");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
 				return;
 			}
-			if (args.Length == 2)
+			if (args.Length == 2 || (args.Length == 3 && args[2] == "-noaction"))
 			{
 				filename = args[0];
 				if ((Path.GetExtension(filename).ToLowerInvariant()) == ".ini")
@@ -292,7 +438,7 @@ namespace ObjScan
 				}
 				else
 				{
-					Console.Write("Could not find the split INI file. Use more arguments to scan without a split file.");
+					Console.WriteLine("Could not find the split INI file. Use more arguments to scan without a split file.");
 					Console.WriteLine("Press ENTER to exit");
 					Console.ReadLine();
 					return;
@@ -345,7 +491,21 @@ namespace ObjScan
 				filename = args[1];
 				imageBase = uint.Parse(args[2], NumberStyles.AllowHexSpecifier);
 				type = args[3];
-				if (args.Length > 4) startoffset = uint.Parse(args[4], NumberStyles.AllowHexSpecifier);
+			}
+			for (int u = 2; u < args.Length; u++)
+			{
+				switch (args[u])
+				{
+					case "-offset":
+						startoffset = uint.Parse(args[u + 1], NumberStyles.AllowHexSpecifier);
+						break;
+					case "-noaction":
+						skipactions = true;
+						break;
+					case "-file":
+						matchfile = args[u + 1];
+						break;
+				}
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
@@ -390,6 +550,7 @@ namespace ObjScan
 			else datafile = datafile_temp;
 			if (imageBase == 0) imageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
 			dir = Environment.CurrentDirectory + "\\" + Path.GetFileNameWithoutExtension(filename);
+			if (Directory.Exists(dir)) Directory.Delete(dir, true);
 			Directory.CreateDirectory(dir);
 			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
 			if (startoffset != 0)
@@ -399,40 +560,46 @@ namespace ObjScan
 			if (reverse)
 				Console.Write(", Reversed");
 			Console.Write(System.Environment.NewLine);
-			if (type.ToLowerInvariant() == "all")
+			switch (type.ToLowerInvariant())
 			{
-				ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
-				ScanModel(datafile, imageBase, dir, modelfmt);
-				CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
-				CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
+				case "match":
+					FindModel(datafile, dir, modelfmt, imageBase, matchfile);
+					break;
+				case "all":
+					ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
+					ScanModel(datafile, imageBase, dir, modelfmt);
+					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
+					if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
+					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
+					break;
+				case "landtable":
+					ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
+					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
+					break;
+				case "model":
+				case "basicmodel":
+				case "basicdxmodel":
+					ScanModel(datafile, imageBase, dir, modelfmt);
+					CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
+					if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
+					CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
+					break;
 			}
-			else
-				switch (type.ToLowerInvariant())
-				{
-					case "landtable":
-						ScanLandtable(datafile, imageBase, dir, landfmt, landtablelist);
-						CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
-						break;
-					case "model":
-					case "basicmodel":
-					case "basicdxmodel":
-						ScanModel(datafile, imageBase, dir, modelfmt);
-						CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
-						CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
-						break;
-				}
 			//Clean up empty folders
 			bool land = false;
 			bool model = false;
+			bool motion = false;
 			foreach (var item in addresslist)
 			{
 				if (item.Value == "landtable") land = true;
 				if (item.Value == "NJS_OBJECT") model = true;
 				if (item.Value == "NJS_CNK_OBJECT") model = true;
+				if (item.Value == "NJS_MOTION") motion = true;
 			}
-			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"));
-			if (!model && Directory.Exists(Path.Combine(dir, "models"))) Directory.Delete(Path.Combine(dir, "models"));
-			if (!land && !model && Directory.Exists(dir)) Directory.Delete(dir);
+			if (!motion && Directory.Exists(Path.Combine(dir, "actions"))) Directory.Delete(Path.Combine(dir, "actions"), true);
+			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"), true);
+			if (!model && Directory.Exists(Path.Combine(dir, "models"))) Directory.Delete(Path.Combine(dir, "models"), true);
+			if (!land && !model && Directory.Exists(dir)) Directory.Delete(dir, true);
 		}
 	}
 }

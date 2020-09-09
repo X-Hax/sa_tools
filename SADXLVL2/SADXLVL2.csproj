@@ -197,6 +197,7 @@
     <None Include="Resources\messages.png" />
     <None Include="Resources\lighting.png" />
     <None Include="Resources\jumpzero.png" />
+    <None Include="Resources\material.png" />
     <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
