@@ -82,7 +82,7 @@
 			this.tsSADXTweaker = new System.Windows.Forms.ToolStripButton();
 			this.tsSADXsndSharp = new System.Windows.Forms.ToolStripButton();
 			this.tsSADXFontEdit = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2EvView = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
@@ -108,6 +108,9 @@
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsSA2EvTxt = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2MsgEdit = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2StgSel = new System.Windows.Forms.ToolStripButton();
 			this.menuStrip1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
@@ -495,7 +498,10 @@
             this.tsSADXTweaker,
             this.tsSADXsndSharp,
             this.tsSADXFontEdit,
-            this.toolStripButton1});
+            this.tsSA2EvView,
+            this.tsSA2EvTxt,
+            this.tsSA2MsgEdit,
+            this.tsSA2StgSel});
 			this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
 			this.toolStrip1.Location = new System.Drawing.Point(747, 25);
 			this.toolStrip1.Name = "toolStrip1";
@@ -550,6 +556,7 @@
 			this.tsSADXLVL2.Size = new System.Drawing.Size(50, 20);
 			this.tsSADXLVL2.Text = "Open SADXLVL2";
 			this.tsSADXLVL2.Visible = false;
+			this.tsSADXLVL2.Click += new System.EventHandler(this.tsSADXLVL2_Click);
 			// 
 			// tsSADXTweaker
 			// 
@@ -561,6 +568,7 @@
 			this.tsSADXTweaker.Text = "toolStripButton1";
 			this.tsSADXTweaker.ToolTipText = "Open SADXTweaker";
 			this.tsSADXTweaker.Visible = false;
+			this.tsSADXTweaker.Click += new System.EventHandler(this.tsSADXTweaker_Click);
 			// 
 			// tsSADXsndSharp
 			// 
@@ -571,6 +579,7 @@
 			this.tsSADXsndSharp.Size = new System.Drawing.Size(50, 20);
 			this.tsSADXsndSharp.Text = "Open SADXsndSharp";
 			this.tsSADXsndSharp.Visible = false;
+			this.tsSADXsndSharp.Click += new System.EventHandler(this.tsSADXsndSharp_Click);
 			// 
 			// tsSADXFontEdit
 			// 
@@ -581,16 +590,18 @@
 			this.tsSADXFontEdit.Size = new System.Drawing.Size(50, 20);
 			this.tsSADXFontEdit.Text = "Open SADX Font Editor";
 			this.tsSADXFontEdit.Visible = false;
+			this.tsSADXFontEdit.Click += new System.EventHandler(this.tsSADXFontEdit_Click);
 			// 
-			// toolStripButton1
+			// tsSA2EvView
 			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(50, 20);
-			this.toolStripButton1.Text = "Open SA2 Event Viewer";
-			this.toolStripButton1.Visible = false;
+			this.tsSA2EvView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2EvView.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2EvView.Image")));
+			this.tsSA2EvView.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2EvView.Name = "tsSA2EvView";
+			this.tsSA2EvView.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2EvView.Text = "Open SA2 Event Viewer";
+			this.tsSA2EvView.Visible = false;
+			this.tsSA2EvView.Click += new System.EventHandler(this.tsSA2EvView_Click);
 			// 
 			// toolStrip2
 			// 
@@ -613,7 +624,7 @@
 			// tsUpdate
 			// 
 			this.tsUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsUpdate.Image = global::SAToolsHub.Properties.Resources.tsUpdate;
+			this.tsUpdate.Image = ((System.Drawing.Image)(resources.GetObject("tsUpdate.Image")));
 			this.tsUpdate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsUpdate.Name = "tsUpdate";
@@ -757,9 +768,18 @@
 			// 
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList1.Images.SetKeyName(0, "ico_pm.ico");
-			this.imageList1.Images.SetKeyName(1, "ico_samdl.ico");
-			this.imageList1.Images.SetKeyName(2, "file_mdl");
+			this.imageList1.Images.SetKeyName(0, "folder_ico.png");
+			this.imageList1.Images.SetKeyName(1, "file_ico.png");
+			this.imageList1.Images.SetKeyName(2, "model_ico.png");
+			this.imageList1.Images.SetKeyName(3, "level_ico.png");
+			this.imageList1.Images.SetKeyName(4, "document_ico.png");
+			this.imageList1.Images.SetKeyName(5, "texture_ico.png");
+			this.imageList1.Images.SetKeyName(6, "anim_ico.png");
+			this.imageList1.Images.SetKeyName(7, "audio_ico.png");
+			this.imageList1.Images.SetKeyName(8, "camera_ico.png");
+			this.imageList1.Images.SetKeyName(9, "compress_ico.png");
+			this.imageList1.Images.SetKeyName(10, "object_ico.png");
+			this.imageList1.Images.SetKeyName(11, "data_ico.png");
 			// 
 			// contextMenuStrip1
 			// 
@@ -823,6 +843,39 @@
 			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
 			// 
+			// tsSA2EvTxt
+			// 
+			this.tsSA2EvTxt.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2EvTxt.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2EvTxt.Image")));
+			this.tsSA2EvTxt.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2EvTxt.Name = "tsSA2EvTxt";
+			this.tsSA2EvTxt.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2EvTxt.Text = "Open SA2 Cutscene Text Editor";
+			this.tsSA2EvTxt.Visible = false;
+			this.tsSA2EvTxt.Click += new System.EventHandler(this.tsSA2EvTxt_Click);
+			// 
+			// tsSA2MsgEdit
+			// 
+			this.tsSA2MsgEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2MsgEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2MsgEdit.Image")));
+			this.tsSA2MsgEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2MsgEdit.Name = "tsSA2MsgEdit";
+			this.tsSA2MsgEdit.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2MsgEdit.Text = "Open SA2 Message Editor";
+			this.tsSA2MsgEdit.Visible = false;
+			this.tsSA2MsgEdit.Click += new System.EventHandler(this.tsSA2MsgEdit_Click);
+			// 
+			// tsSA2StgSel
+			// 
+			this.tsSA2StgSel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2StgSel.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2StgSel.Image")));
+			this.tsSA2StgSel.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2StgSel.Name = "tsSA2StgSel";
+			this.tsSA2StgSel.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2StgSel.Text = "Open SA2 Stage Select Editor";
+			this.tsSA2StgSel.Visible = false;
+			this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
+			// 
 			// SAToolsHub
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -836,6 +889,7 @@
 			this.Name = "SAToolsHub";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "SA Tools Hub";
+			this.Shown += new System.EventHandler(this.toolsHub_Shown);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.toolStrip1.ResumeLayout(false);
@@ -928,9 +982,12 @@
 		private System.Windows.Forms.ToolStripButton tsSADXTweaker;
 		private System.Windows.Forms.ToolStripButton tsSADXsndSharp;
 		private System.Windows.Forms.ToolStripButton tsSADXFontEdit;
-		private System.Windows.Forms.ToolStripButton toolStripButton1;
+		private System.Windows.Forms.ToolStripButton tsSA2EvView;
 		private System.Windows.Forms.ToolStripMenuItem sA2CutsceneTextEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sA2MessageEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sA2StageSelectEditorToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton tsSA2EvTxt;
+		private System.Windows.Forms.ToolStripButton tsSA2MsgEdit;
+		private System.Windows.Forms.ToolStripButton tsSA2StgSel;
 	}
 }

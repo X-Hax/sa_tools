@@ -37,6 +37,8 @@ namespace SAToolsHub
 			Program.Settings.Save();
 		}
 
+
+
 		private void btnSavePaths_Click(object sender, EventArgs e)
 		{
 			SaveSettings();
@@ -76,7 +78,7 @@ namespace SAToolsHub
 			}
 
 			// hide and save
-			this.Hide();
+			this.Close();
 		}
 
 		private void btnSADXPath_Click(object sender, EventArgs e)

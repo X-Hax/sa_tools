@@ -10,10 +10,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon;
 using Ookii.Dialogs;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace SAToolsHub
 {
-	public partial class SAToolsHub : Form
+	public enum item_icons {
+		folder,
+		file,
+		model,
+		level,
+		document,
+		texture,
+		anim,
+		audio,
+		camera,
+		compress,
+		setobj,
+		data
+	}
+public partial class SAToolsHub : Form
 	{
 		//Additional Windows
 		private GamePaths gamePathsDiag;
@@ -22,7 +38,7 @@ namespace SAToolsHub
 
 		//Variabels
 		DirectoryInfo projectDirectory;
-		
+		DirectoryInfo gameSystemDirectory;
 
 		//Additional Code/Functions
 		private void PopulateTreeView()
@@ -70,7 +86,7 @@ namespace SAToolsHub
 
 			foreach (DirectoryInfo dir in nodeDirInfo.GetDirectories())
 			{
-				item = new ListViewItem(dir.Name, 0);
+				item = new ListViewItem(dir.Name, (int)item_icons.folder);
 				subItems = new ListViewItem.ListViewSubItem[]
 					{new ListViewItem.ListViewSubItem(item, "Directory"),
 			 new ListViewItem.ListViewSubItem(item,
@@ -80,7 +96,7 @@ namespace SAToolsHub
 			}
 			foreach (FileInfo file in nodeDirInfo.GetFiles())
 			{
-				item = new ListViewItem(file.Name, 1);
+				item = new ListViewItem(file.Name, (int)item_icons.file);
 				string fileName = (file.Name.ToLower());
 				string fileType = (file.Extension.ToLower());
 
@@ -94,7 +110,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Model File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-							item.ImageIndex = 2;
+							item.ImageIndex = (int)item_icons.model;
 							break;
 						}
 					case ".sa1lvl":
@@ -105,6 +121,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Level File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.level;
 							break;
 						}
 					case ".ini":
@@ -113,6 +130,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Data File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.data;
 							break;
 						}
 					case ".txt":
@@ -121,6 +139,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Text File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.document;
 							break;
 						}
 					case ".bin":
@@ -131,6 +150,7 @@ namespace SAToolsHub
 									{ new ListViewItem.ListViewSubItem(item, "Camera Layout"),
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
+								item.ImageIndex = (int)item_icons.camera;
 							}
 							else if (fileName.Contains("set"))
 							{
@@ -138,6 +158,7 @@ namespace SAToolsHub
 									{ new ListViewItem.ListViewSubItem(item, "Object Layout"),
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
+								item.ImageIndex = (int)item_icons.setobj;
 							}
 							else
 							{
@@ -156,6 +177,7 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Texture Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.texture;
 							break;
 						}
 					case ".prs":
@@ -188,6 +210,7 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							}
+							item.ImageIndex = (int)item_icons.compress;
 							break;
 						}
 					case ".saanim":
@@ -196,8 +219,20 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Animation File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.anim;
 							break;
 						}
+					case ".adx":
+					case ".mlt":
+					case ".csb":
+					case ".wma":
+					case ".dat":
+						subItems = new ListViewItem.ListViewSubItem[]
+								{ new ListViewItem.ListViewSubItem(item, "Audio File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+						item.ImageIndex = (int)item_icons.audio;
+						break;
 					default:
 						{
 							subItems = new ListViewItem.ListViewSubItem[]
@@ -215,6 +250,62 @@ namespace SAToolsHub
 			listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 
+		void checkConfigGames()
+		{
+			bool sadxpcIsValid = GamePathChecker.CheckSADXPCValid(
+				Program.Settings.SADXPCPath, out string sadxFailReason);
+
+			bool sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
+				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
+
+			if (sadxpcIsValid || sa2pcIsValid)
+			{
+				newProjectToolStripMenuItem.Enabled = true;
+				tsNewProj.Enabled = true;
+			}
+			else
+			{
+				newProjectToolStripMenuItem.Enabled = false;
+				tsNewProj.Enabled = false;
+			}
+		}
+
+		void toggleButtons(string game)
+		{
+			if (game == "SADX")
+			{
+				tsSADXLVL2.Visible = true;
+				tsSADXTweaker.Visible = true;
+				tsSADXsndSharp.Visible = true;
+				tsSADXFontEdit.Visible = true;
+			}
+			if (game == "SA2PC")
+			{
+				tsSA2EvView.Visible = true;
+				tsSA2EvTxt.Visible = true;
+				tsSA2MsgEdit.Visible = true;
+				tsSA2StgSel.Visible = true;
+			}
+		}
+
+		void resetOpenProject()
+		{
+			treeView1.Nodes.Clear();
+			listView1.Items.Clear();
+
+			//reset DX game buttons
+			tsSADXLVL2.Visible = false;
+			tsSADXTweaker.Visible = false;
+			tsSADXsndSharp.Visible = false;
+			tsSADXFontEdit.Visible = false;
+
+			//reset SA2 game buttons
+			tsSA2EvView.Visible = false;
+			tsSA2EvTxt.Visible = false;
+			tsSA2MsgEdit.Visible = false;
+			tsSA2StgSel.Visible = false;
+		}
+
 		public SAToolsHub()
 		{
 			InitializeComponent();
@@ -222,6 +313,11 @@ namespace SAToolsHub
 			gamePathsDiag = new GamePaths();
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
+		}
+
+		private void toolsHub_Shown(object sender, EventArgs e)
+		{
+			checkConfigGames();
 		}
 
 		//Tool Strip Functions
@@ -250,17 +346,23 @@ namespace SAToolsHub
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			treeView1.Nodes.Clear();
-			listView1.Items.Clear();
-			//projectSelectDiag.ShowDialog();
-			var folderDialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-			var folderResult = folderDialog.ShowDialog();
-			if (folderResult.HasValue && folderResult.Value)
+			OpenFileDialog openFileDialog1 = new OpenFileDialog();
+			openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			openFileDialog1.RestoreDirectory = true;
+
+			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
-				projectDirectory = new DirectoryInfo(folderDialog.SelectedPath);
+				resetOpenProject();
+				var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate.ProjectTemplate));
+				var projFileStream = openFileDialog1.OpenFile();
+				var projFile = (ProjectTemplate.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
 				PopulateTreeView();
 				this.treeView1.NodeMouseClick +=
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+
+				toggleButtons(projFile.GameName);
 			}
 
 		}
@@ -272,7 +374,8 @@ namespace SAToolsHub
 
 		private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			projectDirectory = null;
+			resetOpenProject();
 		}
 
 		//Project Build
@@ -658,6 +761,44 @@ namespace SAToolsHub
 			textureEditorToolStripMenuItem_Click(sender, e);
 		}
 
+		private void tsSADXLVL2_Click(object sender, EventArgs e)
+		{
+			sADXLVL2ToolStripMenuItem_Click(sender, e);
+		}
 
+		private void tsSADXTweaker_Click(object sender, EventArgs e)
+		{
+			sADXTweakerToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSADXsndSharp_Click(object sender, EventArgs e)
+		{
+			sADXsndSharpToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSADXFontEdit_Click(object sender, EventArgs e)
+		{
+			sAFontEditorToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSA2EvView_Click(object sender, EventArgs e)
+		{
+			sA2EventViewerToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSA2EvTxt_Click(object sender, EventArgs e)
+		{
+			sA2CutsceneTextEditorToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSA2MsgEdit_Click(object sender, EventArgs e)
+		{
+			sA2MessageEditorToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsSA2StgSel_Click(object sender, EventArgs e)
+		{
+			sA2StageSelectEditorToolStripMenuItem_Click(sender, e);
+		}
 	}
 }

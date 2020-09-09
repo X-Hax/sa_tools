@@ -41,6 +41,7 @@
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.radSA2PC = new System.Windows.Forms.RadioButton();
 			this.radSADX = new System.Windows.Forms.RadioButton();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -50,9 +51,9 @@
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(12, 65);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(90, 16);
+			this.label1.Size = new System.Drawing.Size(93, 16);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Project Name";
+			this.label1.Text = "Project Name:";
 			// 
 			// label2
 			// 
@@ -60,9 +61,9 @@
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label2.Location = new System.Drawing.Point(12, 111);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(46, 16);
+			this.label2.Size = new System.Drawing.Size(49, 16);
 			this.label2.TabIndex = 1;
-			this.label2.Text = "Author";
+			this.label2.Text = "Author:";
 			// 
 			// label3
 			// 
@@ -70,19 +71,19 @@
 			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label3.Location = new System.Drawing.Point(12, 157);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(76, 16);
+			this.label3.Size = new System.Drawing.Size(79, 16);
 			this.label3.TabIndex = 2;
-			this.label3.Text = "Description";
+			this.label3.Text = "Description:";
 			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label4.Location = new System.Drawing.Point(12, 282);
+			this.label4.Location = new System.Drawing.Point(12, 304);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(92, 16);
+			this.label4.Size = new System.Drawing.Size(95, 16);
 			this.label4.TabIndex = 3;
-			this.label4.Text = "Project Folder";
+			this.label4.Text = "Project Folder:";
 			// 
 			// txtName
 			// 
@@ -120,16 +121,18 @@
 			// 
 			this.txtProjFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtProjFolder.Enabled = false;
 			this.txtProjFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.txtProjFolder.Location = new System.Drawing.Point(12, 301);
+			this.txtProjFolder.Location = new System.Drawing.Point(12, 323);
 			this.txtProjFolder.Name = "txtProjFolder";
 			this.txtProjFolder.Size = new System.Drawing.Size(163, 22);
 			this.txtProjFolder.TabIndex = 11;
 			// 
 			// btnBrowse
 			// 
+			this.btnBrowse.Enabled = false;
 			this.btnBrowse.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnBrowse.Location = new System.Drawing.Point(181, 300);
+			this.btnBrowse.Location = new System.Drawing.Point(181, 322);
 			this.btnBrowse.Name = "btnBrowse";
 			this.btnBrowse.Size = new System.Drawing.Size(87, 23);
 			this.btnBrowse.TabIndex = 12;
@@ -140,9 +143,9 @@
 			// btnCreate
 			// 
 			this.btnCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnCreate.Location = new System.Drawing.Point(15, 331);
+			this.btnCreate.Location = new System.Drawing.Point(12, 358);
 			this.btnCreate.Name = "btnCreate";
-			this.btnCreate.Size = new System.Drawing.Size(253, 23);
+			this.btnCreate.Size = new System.Drawing.Size(256, 23);
 			this.btnCreate.TabIndex = 13;
 			this.btnCreate.Text = "Save Project File and Create Project";
 			this.btnCreate.UseVisualStyleBackColor = true;
@@ -182,11 +185,24 @@
 			this.radSADX.Text = "SADX";
 			this.radSADX.UseVisualStyleBackColor = true;
 			// 
+			// checkBox1
+			// 
+			this.checkBox1.AutoSize = true;
+			this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.checkBox1.Location = new System.Drawing.Point(12, 281);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(255, 20);
+			this.checkBox1.TabIndex = 15;
+			this.checkBox1.Text = "Save Project Files to a Different Folder";
+			this.checkBox1.UseVisualStyleBackColor = true;
+			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			// 
 			// newProj
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(282, 364);
+			this.ClientSize = new System.Drawing.Size(282, 393);
+			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnCreate);
 			this.Controls.Add(this.btnBrowse);
@@ -226,5 +242,6 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radSA2PC;
 		private System.Windows.Forms.RadioButton radSADX;
+		private System.Windows.Forms.CheckBox checkBox1;
 	}
 }
