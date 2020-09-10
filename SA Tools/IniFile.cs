@@ -116,11 +116,20 @@ namespace SA_Tools
 
 		public static string[] Save(IniDictionary INI)
 		{
+			bool first = true;
 			List<string> result = new List<string>();
 			foreach (IniNameGroup group in INI)
 			{
+				string add = "";
+				if (!first) 
+					add += System.Environment.NewLine;
+				else 
+					first = false;
 				if (!string.IsNullOrEmpty(group.Key))
-					result.Add("[" + group.Key.Replace(@"\", @"\\").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;") + "]");
+				{
+					add += "[" + group.Key.Replace(@"\", @"\\").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;") + "]";
+					result.Add(add);
+				}
 				foreach (IniNameValue value in group.Value)
 				{
 					string escapedkey = value.Key.Replace(@"\", @"\\").Replace("=", @"\=").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;");
