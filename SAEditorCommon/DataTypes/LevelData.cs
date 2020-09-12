@@ -413,6 +413,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			switch (filePathInfo.Extension)
 			{
+				case ".sa1mdl":
+					ModelFile mf = new ModelFile(filePath);
+					NJS_OBJECT objm = mf.Model;
+					objm.Attach.ProcessVertexData();
+					LevelItem lvlitem = new LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
+					{
+						Visible = true
+					};
+					createdItems.Add(lvlitem);
+					break;
 				case ".obj":
 				case ".objf":
 					Vector3 pos = camera.Position + (-20 * camera.Look);
