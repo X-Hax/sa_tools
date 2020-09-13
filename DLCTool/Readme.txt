@@ -82,6 +82,10 @@ If the game doesn't pick up your DLC file, check the following:
 2) If you have used the -d switch, make sure you aren't uploading an unencrypted file to the VMU.
 3) If the VMS file size isn't divisible by 512, append extra zeroes at the end of the file (the tool tries to do this automatically).
 
+CREDITS
+Sappharad: providing C# code to decrypt VMS files and cracking the DLC checksum
+Darksecond: original Perl code to decrypt VMS files
+
 BONUS SECTION
 For nerds here's an overview of SA1 DLC structures:
 

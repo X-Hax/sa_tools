@@ -192,7 +192,8 @@ namespace DLCTool
 
 		static void DecryptData(ref byte[] input)
 		{
-			//Translated from some perl code someone posted by Darksecond on AssemblerGames
+			//C# code by Sappharad
+			//Original Perl code by Darksecond
 			//Original post here: http://assemblergames.com/l/threads/decoding-decrypting-sonic-adventure-ranking-data.60036/#post-863289
 			byte[] xor_code = new byte[] { 0x41, 0x54, 0x45, 0x5A };
 			byte[] plus_val = new byte[] { 0x41, 0x4E, 0x41, 0x4E };
@@ -494,6 +495,7 @@ namespace DLCTool
 
 		static uint CalculateChecksum(ref byte[] buf, int start, int end)
 		{
+			//Code by Sappharad
 			uint result = 0;
 			for (int i = start; i < end; i++)
 			{
