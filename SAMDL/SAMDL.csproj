@@ -125,6 +125,12 @@
     <Compile Include="SA2MDLDialog.Designer.cs">
       <DependentUpon>SA2MDLDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModelText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelText.designer.cs">
+      <DependentUpon>ModelText.cs</DependentUpon>
+    </Compile>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -177,6 +183,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SA2MDLDialog.resx">
       <DependentUpon>SA2MDLDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModelText.resx">
+      <DependentUpon>ModelText.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -3277,6 +3277,36 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 		}
 
+		private void modelCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ModelText text = new ModelText();
+			string[] texnames = null;
+			if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
+			{
+				texnames = new string[TextureInfo.Length];
+				for (int i = 0; i < TextureInfo.Length; i++)
+					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+				text.export += "enum " + TexturePackName + "TexName";
+				text.export += System.Environment.NewLine;
+				text.export += "{";
+				text.export += "\t"+ string.Join("," + Environment.NewLine + "\t", texnames);
+				text.export += System.Environment.NewLine;
+				text.export += "};";
+				text.export += System.Environment.NewLine;
+				text.export += System.Environment.NewLine;
+			}
+			List<string> labels = new List<string>() { model.Name };
+			text.export += model.ToStructVariables(false, labels, texnames);
+			if (exportAnimationsToolStripMenuItem.Checked && animations != null)
+			{
+				foreach (NJS_MOTION anim in animations)
+				{
+					text.export += anim.ToStructVariables(labels);
+				}
+			}
+			text.ShowDialog();
+		}
+
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			string shownodecons = "Off";
