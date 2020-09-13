@@ -40,7 +40,7 @@ ScaleZ=10
 ObjectType=TYPE_MODEL //Kind of object. Can be TYPE_MODEL (3D model), TYPE_SPRITE (flat model), TYPE_INVISIBLE (no geometry).
 Flags=FLAG_MESSAGE, FLAG_WARP //Object flags (see below).
 MessageID=3 //ID of text string to display when you touch the object.
-CollectableID=1 //IDs for collectible objects. Each collectible needs to have a different ID that ranges from 1 to the total number of objects.
+CollectibleID=1 //IDs for collectible objects. Each collectible needs to have a different ID that ranges from 1 to the total number of objects.
 TriggerRadius=20 //Distance required to trigger the object's action.
 TextureID=1 //Force the model's material to a specific texture ID, useful for billboards but can work with 3D models too.
 WarpLevelOrSoundbank=35 //Level ID to warp to or soundbank ID to play the sound when the object is triggered.
@@ -142,7 +142,7 @@ For nerds here's an overview of SA1 DLC structures:
  *  D		1		byte		Unknown
  *  E		1		uint8		Message ID to show when touching the object
  *  F		1		uint8		Trigger distance
- *  10		1		byte		Level ID to warp or soundbank ID (8 for MLT, 15 for ADX music)
+ *  10		1		uint8		Level ID to warp or soundbank ID (8 for MLT, 15 for ADX music)
  *  11		1		uint8		Act ID to warp to or sound/music ID to play when touching the object
  *  12		2		ushort		Rotation X
  *  14		2		ushort		Rotation Y
