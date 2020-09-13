@@ -1066,7 +1066,8 @@ namespace SonicRetro.SAModel.SAMDL
             this.modelCodeToolStripMenuItem.Name = "modelCodeToolStripMenuItem";
             this.modelCodeToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.modelCodeToolStripMenuItem.Text = "View Model Code";
-            this.modelCodeToolStripMenuItem.Click += new System.EventHandler(this.modelCodeToolStripMenuItem_Click);
+			this.modelCodeToolStripMenuItem.Enabled = false;
+			this.modelCodeToolStripMenuItem.Click += new System.EventHandler(this.modelCodeToolStripMenuItem_Click);
             // 
             // MainForm
             // 
