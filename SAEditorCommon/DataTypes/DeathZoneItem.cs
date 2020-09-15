@@ -114,11 +114,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Import Model")]
 		public void ImportModel()
 		{
-			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "obj", Filter = "OBJ Files|*.obj;*.objf", RestoreDirectory = true };
+			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "sa1mdl", Filter = "Model Files|*.sa1mdl;*.obj;*.objf", RestoreDirectory = true };
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{
-				Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
-				Mesh = Model.Attach.CreateD3DMesh();
+				switch (Path.GetExtension(dlg.FileName).ToLowerInvariant())
+				{
+					case ".obj":
+					case ".objf":
+						Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
+						Mesh = Model.Attach.CreateD3DMesh();
+						break;
+					case ".sa1mdl":
+						ModelFile mf = new ModelFile(dlg.FileName);
+						Model.Attach = mf.Model.Attach;
+						Model.ProcessVertexData();
+						Mesh = Model.Attach.CreateD3DMesh();
+						break;
+				}
 			}
 		}
 

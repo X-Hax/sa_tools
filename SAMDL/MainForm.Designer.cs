@@ -94,6 +94,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonShowNodeConnections = new System.Windows.Forms.ToolStripButton();
             this.buttonShowWeights = new System.Windows.Forms.ToolStripButton();
             this.buttonLighting = new System.Windows.Forms.ToolStripButton();
+            this.buttonMaterialColors = new System.Windows.Forms.ToolStripButton();
             this.buttonShowHints = new System.Windows.Forms.ToolStripButton();
             this.buttonPreferences = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -129,7 +130,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.buttonMaterialColors = new System.Windows.Forms.ToolStripButton();
+            this.modelCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -437,6 +438,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showWeightsToolStripMenuItem,
             this.showHintsToolStripMenuItem,
             this.showAdvancedCameraInfoToolStripMenuItem,
+            this.modelCodeToolStripMenuItem,
             this.modelLibraryToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -744,6 +746,19 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonLighting.Text = "Enable Lighting";
             this.buttonLighting.Click += new System.EventHandler(this.buttonLighting_Click);
             // 
+            // buttonMaterialColors
+            // 
+            this.buttonMaterialColors.Checked = true;
+            this.buttonMaterialColors.CheckOnClick = true;
+            this.buttonMaterialColors.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.buttonMaterialColors.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonMaterialColors.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.material;
+            this.buttonMaterialColors.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonMaterialColors.Name = "buttonMaterialColors";
+            this.buttonMaterialColors.Size = new System.Drawing.Size(40, 40);
+            this.buttonMaterialColors.Text = "Enable Material Colors";
+            this.buttonMaterialColors.CheckedChanged += new System.EventHandler(this.buttonMaterialColors_CheckedChanged);
+            // 
             // buttonShowHints
             // 
             this.buttonShowHints.Checked = true;
@@ -1046,18 +1061,13 @@ namespace SonicRetro.SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
             // 
-            // buttonMaterialColors
+            // modelCodeToolStripMenuItem
             // 
-            this.buttonMaterialColors.Checked = true;
-            this.buttonMaterialColors.CheckOnClick = true;
-            this.buttonMaterialColors.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.buttonMaterialColors.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonMaterialColors.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.material;
-            this.buttonMaterialColors.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonMaterialColors.Name = "buttonMaterialColors";
-            this.buttonMaterialColors.Size = new System.Drawing.Size(40, 40);
-            this.buttonMaterialColors.Text = "Enable Material Colors";
-            this.buttonMaterialColors.CheckedChanged += new System.EventHandler(this.buttonMaterialColors_CheckedChanged);
+            this.modelCodeToolStripMenuItem.Name = "modelCodeToolStripMenuItem";
+            this.modelCodeToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.modelCodeToolStripMenuItem.Text = "View Model Code";
+			this.modelCodeToolStripMenuItem.Enabled = false;
+			this.modelCodeToolStripMenuItem.Click += new System.EventHandler(this.modelCodeToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1198,5 +1208,6 @@ namespace SonicRetro.SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem materialEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAnimationsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton buttonMaterialColors;
+		private System.Windows.Forms.ToolStripMenuItem modelCodeToolStripMenuItem;
 	}
 }

@@ -1237,10 +1237,10 @@
             // 
             // importFileDialog
             // 
-            this.importFileDialog.Filter = "Model Files|*.obj;*.objf;*.txt;*.dae;*.fbx";
+            this.importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
             this.importFileDialog.Multiselect = true;
             this.importFileDialog.RestoreDirectory = true;
-            this.importFileDialog.Title = "Select a file to import.";
+            this.importFileDialog.Title = "Select a file to import";
             // 
             // toolStrip1
             // 

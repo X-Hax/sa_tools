@@ -678,7 +678,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -1059,7 +1059,7 @@ namespace SonicRetro.SAModel.SAMDL
 			AddTreeNode(model, treeView1.Nodes);
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
@@ -2606,7 +2606,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			AddTreeNode(model, treeView1.Nodes);
 			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			selectedObject = model;
@@ -3275,6 +3275,36 @@ namespace SonicRetro.SAModel.SAMDL
 			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
 			DrawEntireModel();
+		}
+
+		private void modelCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ModelText text = new ModelText();
+			string[] texnames = null;
+			if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
+			{
+				texnames = new string[TextureInfo.Length];
+				for (int i = 0; i < TextureInfo.Length; i++)
+					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+				text.export += "enum " + TexturePackName + "TexName";
+				text.export += System.Environment.NewLine;
+				text.export += "{";
+				text.export += "\t"+ string.Join("," + Environment.NewLine + "\t", texnames);
+				text.export += System.Environment.NewLine;
+				text.export += "};";
+				text.export += System.Environment.NewLine;
+				text.export += System.Environment.NewLine;
+			}
+			List<string> labels = new List<string>() { model.Name };
+			text.export += model.ToStructVariables(false, labels, texnames);
+			if (exportAnimationsToolStripMenuItem.Checked && animations != null)
+			{
+				foreach (NJS_MOTION anim in animations)
+				{
+					text.export += anim.ToStructVariables(labels);
+				}
+			}
+			text.ShowDialog();
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
