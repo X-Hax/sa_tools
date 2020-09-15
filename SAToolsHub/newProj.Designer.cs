@@ -42,6 +42,7 @@
 			this.radSA2PC = new System.Windows.Forms.RadioButton();
 			this.radSADX = new System.Windows.Forms.RadioButton();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -197,6 +198,10 @@
 			this.checkBox1.UseVisualStyleBackColor = true;
 			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
 			// 
+			// backgroundWorker1
+			// 
+			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+			// 
 			// newProj
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -243,5 +248,6 @@
 		private System.Windows.Forms.RadioButton radSA2PC;
 		private System.Windows.Forms.RadioButton radSADX;
 		private System.Windows.Forms.CheckBox checkBox1;
+		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 	}
 }

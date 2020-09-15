@@ -290,7 +290,7 @@ public partial class SAToolsHub : Form
 			}
 		}
 
-		void resetOpenProject()
+		public void resetOpenProject()
 		{
 			treeView1.Nodes.Clear();
 			listView1.Items.Clear();
@@ -351,7 +351,19 @@ public partial class SAToolsHub : Form
 		
 		private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			projectCreateDiag.ShowDialog();
+			if (treeView1.Nodes.Count > 0)
+			{
+				DialogResult newProjWarning = MessageBox.Show(("A project is currently open.\n\nAre you sure you wish to create a new project?"), "Project Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				if (newProjWarning == DialogResult.Yes)
+				{
+					resetOpenProject();
+					projectCreateDiag.ShowDialog();
+				}
+			}
+			else
+			{
+				projectCreateDiag.ShowDialog();
+			}
 		}
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)

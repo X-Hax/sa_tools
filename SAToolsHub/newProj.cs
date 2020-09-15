@@ -10,13 +10,22 @@ using SonicRetro.SAModel.SAEditorCommon.UI;
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using ProjectManagement;
+using Fclp.Internals.Extensions;
 
 namespace SAToolsHub
 {
 	public partial class newProj : Form
 	{
+		public delegate void ProjectCreationHandler(SA_Tools.Game game, string projectName, string fullProjectPath);
+		public event ProjectCreationHandler ProjectCreated;
+		public Action CreationCanceled;
+
 		string sadxPath = Program.Settings.SADXPCPath;
 		string sa2pcPath = Program.Settings.SA2PCPath;
+		SA_Tools.Game game;
+		string gamePath;
+		string iniFolder;
+		string projFolder;
 
 		SplitData[] sadxpc_exesplit = new SplitData[]
 		{
@@ -322,6 +331,33 @@ namespace SAToolsHub
 			}
 		};
 
+		public newProj()
+		{
+			InitializeComponent();
+			backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
+
+			if (sadxPath.Length > 0)
+			{
+				radSADX.Checked = true;
+			}
+			else if (sadxPath.Length <= 0 && sa2pcPath.Length > 0)
+			{
+				radSA2PC.Checked = true;
+			}
+		}
+		Exception createError = null;
+		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			if (createError != null)
+				throw createError;
+			if (ProjectCreated != null)
+			{
+				ProjectCreationHandler dispatch = ProjectCreated;
+
+				dispatch(GetGameForRadioButtons(), txtProjFolder.Text, projFolder);
+			}
+		}
+
 		private SA_Tools.Game GetGameForRadioButtons()
 		{
 			if (radSADX.Checked) return SA_Tools.Game.SADX;
@@ -451,10 +487,10 @@ namespace SAToolsHub
 		{
 			string datafilename = Path.Combine(gameFolder, splitData.dataFile);
 			string inifilename = Path.Combine(iniFolder, splitData.iniFile);
-			string projectFolderName = outputFolder;
+			string projectFolderName = (outputFolder + "\\");
 
 			progress.StepProgress();
-			progress.SetStep("Splitting: " + splitData.dataFile);
+			progress.SetStep("Splitting: " + splitData.iniFile + " from " + splitData.dataFile);
 
 			#region Validating Inputs
 			if (!File.Exists(datafilename))
@@ -484,7 +520,7 @@ namespace SAToolsHub
 		private void splitSADXPC(SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
 			progress.StepProgress();
-			progress.SetStep("Splitting EXE Content");
+			progress.SetTask("Splitting EXE Content");
 
 			//Split EXE Data
 			foreach (SplitData splitExeData in sadxpc_exesplit)
@@ -493,7 +529,7 @@ namespace SAToolsHub
 			}
 
 			progress.StepProgress();
-			progress.SetStep("Splitting DLL Content");
+			progress.SetTask("Splitting DLL Content");
 			//Split DLL Data
 			foreach (SplitData splitDllData in sadxpc_dllsplit)
 			{
@@ -606,11 +642,6 @@ namespace SAToolsHub
 
 		}
 
-		public newProj()
-		{
-			InitializeComponent();
-		}
-
 		private void newProj_Shown(object sender, EventArgs e)
 		{
 			bool sadxpcIsValid = GamePathChecker.CheckSADXPCValid(
@@ -642,26 +673,27 @@ namespace SAToolsHub
 		private void btnCreate_Click(object sender, EventArgs e)
 		{
 			Stream projFileStream;
-			SA_Tools.Game game;
-			string gamePath = "";
-			string iniFolder = "";
-
-
 			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
 			saveFileDialog1.RestoreDirectory = true;
-			string projFolder;
+
 			game = GetGameForRadioButtons();
-			if (radSADX.Checked)
+			if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
 			{
-				saveFileDialog1.InitialDirectory = sadxPath;
-				gamePath = sadxPath;
+				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
 			}
-			else if (radSA2PC.Checked)
+			else
 			{
-				saveFileDialog1.InitialDirectory = sa2pcPath;
-				gamePath = sa2pcPath;
+				if (radSADX.Checked)
+				{
+					saveFileDialog1.InitialDirectory = sadxPath;
+				}
+				else if (radSA2PC.Checked)
+				{
+					saveFileDialog1.InitialDirectory = sa2pcPath;
+				}
 			}
+
 
 
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -686,12 +718,14 @@ namespace SAToolsHub
 					ProjectManagement.ProjectTemplate templateFile = new ProjectManagement.ProjectTemplate();
 					if (radSADX.Checked)
 					{
+						gamePath = sadxPath;
 						templateFile.GameName = "SADX";
 						templateFile.CanBuild = true;
 						templateFile.GameSystemFolder = sadxPath;
 					}
 					else if (radSA2PC.Checked)
 					{
+						gamePath = sa2pcPath;
 						templateFile.GameName = "SA2PC";
 						templateFile.CanBuild = true;
 						templateFile.GameSystemFolder = sa2pcPath;
@@ -701,30 +735,15 @@ namespace SAToolsHub
 					serializer.Serialize(writer, templateFile);
 					projFileStream.Close();
 
-					using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
-					{
-						Invoke((Action)progress.Show);
-#if DEBUG
-						iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + GetIniFolderForGame(game);
-#endif
-
 #if !DEBUG
-						iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(game);
+					backgroundWorker1.RunWorkerAsync();
 #endif
-						
-						splitGame(game, progress, gamePath, iniFolder, projFolder);
-						progress.StepProgress();
-						progress.SetStep("Creating Folders");
-						makeProjectFolders(projFolder, game);
-						progress.StepProgress();
-						progress.SetStep("Generating Mod File");
-						GenerateModFile(game, projFolder);
-
-						Invoke((Action)progress.Close);
-					}
+#if DEBUG
+					backgroundWorker1_DoWork(null, null);
+					BackgroundWorker1_RunWorkerCompleted(null, null);
+#endif
 				}
 			}
-			this.Close();
 		}
 
 		private void newProj_Load(object sender, EventArgs e)
@@ -744,6 +763,31 @@ namespace SAToolsHub
 				txtProjFolder.Enabled = false;
 				btnBrowse.Enabled = false;
 			}
+		}
+
+		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+		{
+			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
+			{
+				Invoke((Action)progress.Show);
+#if DEBUG
+				iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + GetIniFolderForGame(game);
+#endif
+
+#if !DEBUG
+				iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(game);
+#endif
+				splitGame(game, progress, gamePath, iniFolder, projFolder);
+				progress.StepProgress();
+				progress.SetTask("Creating Folders");
+				makeProjectFolders(projFolder, game);
+				progress.StepProgress();
+				progress.SetTask("Generating Mod File");
+				GenerateModFile(game, projFolder);
+
+				Invoke((Action)progress.Close);
+			}
+			this.Close();
 		}
 	}
 }
