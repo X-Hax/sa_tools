@@ -82,6 +82,7 @@
 			resources.ApplyResources(this.btnSave, "btnSave");
 			this.btnSave.Name = "btnSave";
 			this.btnSave.UseVisualStyleBackColor = true;
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
 			// txtVerNum
 			// 
@@ -148,6 +149,7 @@
 			this.Controls.Add(this.groupBox2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "editProj";
+			this.Shown += new System.EventHandler(editProj_Shown);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.ResumeLayout(false);

@@ -83,6 +83,9 @@
 			this.tsSADXsndSharp = new System.Windows.Forms.ToolStripButton();
 			this.tsSADXFontEdit = new System.Windows.Forms.ToolStripButton();
 			this.tsSA2EvView = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2EvTxt = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2MsgEdit = new System.Windows.Forms.ToolStripButton();
+			this.tsSA2StgSel = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
@@ -108,9 +111,6 @@
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.tsSA2EvTxt = new System.Windows.Forms.ToolStripButton();
-			this.tsSA2MsgEdit = new System.Windows.Forms.ToolStripButton();
-			this.tsSA2StgSel = new System.Windows.Forms.ToolStripButton();
 			this.menuStrip1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
@@ -208,6 +208,7 @@
 			// 
 			// editProjectInfoToolStripMenuItem
 			// 
+			this.editProjectInfoToolStripMenuItem.Enabled = false;
 			this.editProjectInfoToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsEditProj;
 			this.editProjectInfoToolStripMenuItem.Name = "editProjectInfoToolStripMenuItem";
 			this.editProjectInfoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
@@ -223,6 +224,7 @@
 			// 
 			// closeProjectToolStripMenuItem
 			// 
+			this.closeProjectToolStripMenuItem.Enabled = false;
 			this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
 			this.closeProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
 			this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
@@ -238,6 +240,7 @@
             this.toolStripSeparator3,
             this.configureRunOptionsToolStripMenuItem,
             this.buildRunGameToolStripMenuItem});
+			this.buildToolStripMenuItem.Enabled = false;
 			this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
 			this.buildToolStripMenuItem.Size = new System.Drawing.Size(48, 21);
 			this.buildToolStripMenuItem.Text = "Build";
@@ -603,6 +606,39 @@
 			this.tsSA2EvView.Visible = false;
 			this.tsSA2EvView.Click += new System.EventHandler(this.tsSA2EvView_Click);
 			// 
+			// tsSA2EvTxt
+			// 
+			this.tsSA2EvTxt.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2EvTxt.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2EvTxt.Image")));
+			this.tsSA2EvTxt.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2EvTxt.Name = "tsSA2EvTxt";
+			this.tsSA2EvTxt.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2EvTxt.Text = "Open SA2 Cutscene Text Editor";
+			this.tsSA2EvTxt.Visible = false;
+			this.tsSA2EvTxt.Click += new System.EventHandler(this.tsSA2EvTxt_Click);
+			// 
+			// tsSA2MsgEdit
+			// 
+			this.tsSA2MsgEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2MsgEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2MsgEdit.Image")));
+			this.tsSA2MsgEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2MsgEdit.Name = "tsSA2MsgEdit";
+			this.tsSA2MsgEdit.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2MsgEdit.Text = "Open SA2 Message Editor";
+			this.tsSA2MsgEdit.Visible = false;
+			this.tsSA2MsgEdit.Click += new System.EventHandler(this.tsSA2MsgEdit_Click);
+			// 
+			// tsSA2StgSel
+			// 
+			this.tsSA2StgSel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsSA2StgSel.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2StgSel.Image")));
+			this.tsSA2StgSel.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsSA2StgSel.Name = "tsSA2StgSel";
+			this.tsSA2StgSel.Size = new System.Drawing.Size(50, 20);
+			this.tsSA2StgSel.Text = "Open SA2 Stage Select Editor";
+			this.tsSA2StgSel.Visible = false;
+			this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
+			// 
 			// toolStrip2
 			// 
 			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -662,6 +698,7 @@
 			// tsEditProj
 			// 
 			this.tsEditProj.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsEditProj.Enabled = false;
 			this.tsEditProj.Image = global::SAToolsHub.Properties.Resources.tsEditProj;
 			this.tsEditProj.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsEditProj.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -678,6 +715,7 @@
 			// tsBuildAuto
 			// 
 			this.tsBuildAuto.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsBuildAuto.Enabled = false;
 			this.tsBuildAuto.Image = global::SAToolsHub.Properties.Resources.tsBuildAuto;
 			this.tsBuildAuto.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsBuildAuto.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -689,6 +727,7 @@
 			// tsBuildManual
 			// 
 			this.tsBuildManual.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsBuildManual.Enabled = false;
 			this.tsBuildManual.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
 			this.tsBuildManual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsBuildManual.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -700,6 +739,7 @@
 			// tsBuildRun
 			// 
 			this.tsBuildRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsBuildRun.Enabled = false;
 			this.tsBuildRun.Image = global::SAToolsHub.Properties.Resources.tsBuildRun;
 			this.tsBuildRun.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsBuildRun.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -842,39 +882,6 @@
 			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
 			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
-			// 
-			// tsSA2EvTxt
-			// 
-			this.tsSA2EvTxt.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSA2EvTxt.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2EvTxt.Image")));
-			this.tsSA2EvTxt.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSA2EvTxt.Name = "tsSA2EvTxt";
-			this.tsSA2EvTxt.Size = new System.Drawing.Size(50, 20);
-			this.tsSA2EvTxt.Text = "Open SA2 Cutscene Text Editor";
-			this.tsSA2EvTxt.Visible = false;
-			this.tsSA2EvTxt.Click += new System.EventHandler(this.tsSA2EvTxt_Click);
-			// 
-			// tsSA2MsgEdit
-			// 
-			this.tsSA2MsgEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSA2MsgEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2MsgEdit.Image")));
-			this.tsSA2MsgEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSA2MsgEdit.Name = "tsSA2MsgEdit";
-			this.tsSA2MsgEdit.Size = new System.Drawing.Size(50, 20);
-			this.tsSA2MsgEdit.Text = "Open SA2 Message Editor";
-			this.tsSA2MsgEdit.Visible = false;
-			this.tsSA2MsgEdit.Click += new System.EventHandler(this.tsSA2MsgEdit_Click);
-			// 
-			// tsSA2StgSel
-			// 
-			this.tsSA2StgSel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSA2StgSel.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2StgSel.Image")));
-			this.tsSA2StgSel.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsSA2StgSel.Name = "tsSA2StgSel";
-			this.tsSA2StgSel.Size = new System.Drawing.Size(50, 20);
-			this.tsSA2StgSel.Text = "Open SA2 Stage Select Editor";
-			this.tsSA2StgSel.Visible = false;
-			this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
 			// 
 			// SAToolsHub
 			// 

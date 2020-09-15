@@ -12,6 +12,7 @@ using SonicRetro.SAModel.SAEditorCommon;
 using Ookii.Dialogs;
 using System.Xml;
 using System.Xml.Serialization;
+using SA_Tools;
 
 namespace SAToolsHub
 {
@@ -37,15 +38,16 @@ public partial class SAToolsHub : Form
 		private editProj projectEditorDiag;
 
 		//Variabels
-		DirectoryInfo projectDirectory;
-		DirectoryInfo gameSystemDirectory;
+		public static DirectoryInfo projectDirectory { get; set; }
+		public static string setGame { get; set; }
+		public static DirectoryInfo gameSystemDirectory { get; set; }
 
 		//Additional Code/Functions
-		private void PopulateTreeView()
+		private void PopulateTreeView(DirectoryInfo directory)
 		{
 			TreeNode rootNode;
 
-			DirectoryInfo info = projectDirectory;
+			DirectoryInfo info = directory;
 			if (info.Exists)
 			{
 				rootNode = new TreeNode(info.Name);
@@ -94,7 +96,7 @@ public partial class SAToolsHub : Form
 				item.SubItems.AddRange(subItems);
 				listView1.Items.Add(item);
 			}
-			foreach (FileInfo file in nodeDirInfo.GetFiles())
+			foreach (System.IO.FileInfo file in nodeDirInfo.GetFiles())
 			{
 				item = new ListViewItem(file.Name, (int)item_icons.file);
 				string fileName = (file.Name.ToLower());
@@ -293,6 +295,14 @@ public partial class SAToolsHub : Form
 			treeView1.Nodes.Clear();
 			listView1.Items.Clear();
 
+			//reset Tools Hub Buttons
+			tsBuildManual.Enabled = false;
+			tsBuildAuto.Enabled = false;
+			tsBuildRun.Enabled = false;
+			tsEditProj.Enabled = false;
+			closeProjectToolStripMenuItem.Enabled = false;
+			editProjectInfoToolStripMenuItem.Enabled = false;
+
 			//reset DX game buttons
 			tsSADXLVL2.Visible = false;
 			tsSADXTweaker.Visible = false;
@@ -353,16 +363,34 @@ public partial class SAToolsHub : Form
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
 				resetOpenProject();
-				var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate.ProjectTemplate));
+				var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
 				var projFileStream = openFileDialog1.OpenFile();
-				var projFile = (ProjectTemplate.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+				var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
 				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
-				PopulateTreeView();
+				PopulateTreeView(projectDirectory);
 				this.treeView1.NodeMouseClick +=
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+				
+				//gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
+				//PopulateTreeView(gameSystemDirectory);
+				//this.treeView1.NodeMouseClick +=
+					//new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
-				toggleButtons(projFile.GameName);
+				setGame = projFile.GameName;
+
+				toggleButtons(setGame);
+				closeProjectToolStripMenuItem.Enabled = true;
+				if (projFile.CanBuild)
+				{
+					buildToolStripMenuItem.Enabled = true;
+					editProjectInfoToolStripMenuItem.Enabled = true;
+					tsBuildAuto.Enabled = true;
+					tsBuildManual.Enabled = true;
+					tsBuildRun.Enabled = true;
+					tsEditProj.Enabled = true;
+				}
+
 			}
 
 		}

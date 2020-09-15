@@ -98,8 +98,7 @@
     <Compile Include="ModManagement\SADXLoaderInfo.cs" />
     <Compile Include="ModManagement\SADXModInfo.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="ProjectManagerSettings.cs" />
-    <Compile Include="ProjectTemplate.cs" />
+    <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

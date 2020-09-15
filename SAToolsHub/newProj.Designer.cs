@@ -191,9 +191,9 @@
 			this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.checkBox1.Location = new System.Drawing.Point(12, 281);
 			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(255, 20);
+			this.checkBox1.Size = new System.Drawing.Size(210, 20);
 			this.checkBox1.TabIndex = 15;
-			this.checkBox1.Text = "Save Project Files to a Different Folder";
+			this.checkBox1.Text = "Save Files to a Different Folder";
 			this.checkBox1.UseVisualStyleBackColor = true;
 			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
 			// 
