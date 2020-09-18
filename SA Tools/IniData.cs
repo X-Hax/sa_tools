@@ -48,13 +48,10 @@ namespace SA_Tools
 
 	public enum Game
 	{
-		AD,
 		SA1,
 		SADX,
-		SADX360,
 		SA2,
-		SA2B,
-		SA2PC
+		SA2B
 	}
 
 	public class FileInfo

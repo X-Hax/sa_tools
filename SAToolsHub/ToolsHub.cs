@@ -13,6 +13,7 @@ using Ookii.Dialogs;
 using System.Xml;
 using System.Xml.Serialization;
 using SA_Tools;
+using Fclp.Internals.Extensions;
 
 namespace SAToolsHub
 {
@@ -38,6 +39,7 @@ public partial class SAToolsHub : Form
 		private editProj projectEditorDiag;
 
 		//Variabels
+		public static string newProjFile { get; set; }
 		public static DirectoryInfo projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static DirectoryInfo gameSystemDirectory { get; set; }
@@ -302,6 +304,7 @@ public partial class SAToolsHub : Form
 			tsEditProj.Enabled = false;
 			closeProjectToolStripMenuItem.Enabled = false;
 			editProjectInfoToolStripMenuItem.Enabled = false;
+			buildToolStripMenuItem.Enabled = false;
 
 			//reset DX game buttons
 			tsSADXLVL2.Visible = false;
@@ -364,6 +367,32 @@ public partial class SAToolsHub : Form
 			{
 				projectCreateDiag.ShowDialog();
 			}
+
+			if (!newProjFile.IsNullOrWhiteSpace())
+			{
+				var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
+				var projFileStream = File.OpenRead(newProjFile);
+				var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
+				PopulateTreeView(projectDirectory);
+				this.treeView1.NodeMouseClick +=
+					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+
+				setGame = projFile.GameName;
+
+				toggleButtons(setGame);
+				closeProjectToolStripMenuItem.Enabled = true;
+				if (projFile.CanBuild)
+				{
+					buildToolStripMenuItem.Enabled = true;
+					editProjectInfoToolStripMenuItem.Enabled = true;
+					tsBuildAuto.Enabled = true;
+					tsBuildManual.Enabled = true;
+					tsBuildRun.Enabled = true;
+					tsEditProj.Enabled = true;
+				}
+			}
 		}
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -383,11 +412,6 @@ public partial class SAToolsHub : Form
 				PopulateTreeView(projectDirectory);
 				this.treeView1.NodeMouseClick +=
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-				
-				//gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
-				//PopulateTreeView(gameSystemDirectory);
-				//this.treeView1.NodeMouseClick +=
-					//new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
 				setGame = projFile.GameName;
 
@@ -402,9 +426,7 @@ public partial class SAToolsHub : Form
 					tsBuildRun.Enabled = true;
 					tsEditProj.Enabled = true;
 				}
-
 			}
-
 		}
 
 		private void editProjectInfoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -453,9 +475,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SAMDL/SAMDL.exe";
 #endif
-
-			Console.WriteLine(samdlPath);
-
 			System.Diagnostics.ProcessStartInfo samdlStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(samdlPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -475,9 +494,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			salvlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SALVL/SALVL.exe";
 #endif
-
-			Console.WriteLine(salvlPath);
-
 			System.Diagnostics.ProcessStartInfo salvlStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(salvlPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -496,9 +512,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			texEditPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../TextureEditor/TextureEditor.exe";
 #endif
-
-			Console.WriteLine(texEditPath);
-
 			System.Diagnostics.ProcessStartInfo texEditStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(texEditPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -509,7 +522,22 @@ public partial class SAToolsHub : Form
 		//SADX Tools Initializers
 		private void sADXLVL2ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			// launch sadxlvl2
+			string sadxlvl2Path = "";
 
+#if DEBUG
+			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXLVL2/bin/Debug/SADXLVL2.exe";
+#endif
+#if !DEBUG
+			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXLVL2/SADXLVL2.exe";
+#endif
+			string projDir = (projectDirectory.ToString());
+			string projectArgumentsPath = Path.Combine(projDir, "sadxlvl.ini");
+
+			System.Diagnostics.ProcessStartInfo sadxlvl2StartInfo = new System.Diagnostics.ProcessStartInfo(
+				Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);
+
+			System.Diagnostics.Process sadxlvl2Process = System.Diagnostics.Process.Start(sadxlvl2StartInfo);
 		}
 
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -528,9 +556,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			sndSharpPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXsndSharp/SADXsndSharp.exe";
 #endif
-
-			Console.WriteLine(sndSharpPath);
-
 			System.Diagnostics.ProcessStartInfo sndSharpStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sndSharpPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -549,9 +574,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			saFontPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXFontEdit/SADXFontEdit.exe";
 #endif
-
-			Console.WriteLine(saFontPath);
-
 			System.Diagnostics.ProcessStartInfo saFontStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(saFontPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -570,9 +592,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			saSavePath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SASave/SASave.exe";
 #endif
-
-			Console.WriteLine(saSavePath);
-
 			System.Diagnostics.ProcessStartInfo saSaveStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(saSavePath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -592,9 +611,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			sa2EventPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2EventViewer/SA2EventViewer.exe";
 #endif
-
-			Console.WriteLine(sa2EventPath);
-
 			System.Diagnostics.ProcessStartInfo sa2EventStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sa2EventPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -613,9 +629,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			sa2EvTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2CutsceneTextEditor/SA2CutsceneTextEditor.exe";
 #endif
-
-			Console.WriteLine(sa2EvTextPath);
-
 			System.Diagnostics.ProcessStartInfo sa2EvTextStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sa2EvTextPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -634,9 +647,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			sa2MsgTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2MessageFileEditor/SA2MessageFileEditor.exe";
 #endif
-
-			Console.WriteLine(sa2MsgTextPath);
-
 			System.Diagnostics.ProcessStartInfo sa2MsgTextStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sa2MsgTextPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -655,9 +665,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			sa2StgSelPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2StageSelEdit/SA2StageSelEdit.exe";
 #endif
-
-			Console.WriteLine(sa2StgSelPath);
-
 			System.Diagnostics.ProcessStartInfo sa2StgSelStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sa2StgSelPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
@@ -677,9 +684,6 @@ public partial class SAToolsHub : Form
 #if !DEBUG
 			dataToolPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../DataExtractor/DataExtractor.exe";
 #endif
-
-			Console.WriteLine(dataToolPath);
-
 			System.Diagnostics.ProcessStartInfo dataToolStartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(dataToolPath)//,
 				/*Path.GetFullPath(projectFolder)*/);

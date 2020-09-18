@@ -44,7 +44,18 @@
 			this.chkMainRedir = new System.Windows.Forms.CheckBox();
 			this.chkChaoRedir = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.lstGBItems = new System.Windows.Forms.ComboBox();
+			this.txtAsset = new System.Windows.Forms.TextBox();
+			this.lblLower = new System.Windows.Forms.Label();
+			this.txtUpdateURL = new System.Windows.Forms.TextBox();
+			this.lblUpperBox = new System.Windows.Forms.Label();
+			this.radGamebanana = new System.Windows.Forms.RadioButton();
+			this.radGitHub = new System.Windows.Forms.RadioButton();
+			this.radManual = new System.Windows.Forms.RadioButton();
+			this.chkUpdates = new System.Windows.Forms.CheckBox();
 			this.groupBox2.SuspendLayout();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label2
@@ -99,6 +110,7 @@
 			resources.ApplyResources(this.chkDLLFile, "chkDLLFile");
 			this.chkDLLFile.Name = "chkDLLFile";
 			this.chkDLLFile.UseVisualStyleBackColor = true;
+			this.chkDLLFile.CheckedChanged += new System.EventHandler(this.chkDLLFile_CheckedChanged);
 			// 
 			// txtDLLName
 			// 
@@ -135,10 +147,83 @@
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.TabStop = false;
 			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.lstGBItems);
+			this.groupBox1.Controls.Add(this.txtAsset);
+			this.groupBox1.Controls.Add(this.lblLower);
+			this.groupBox1.Controls.Add(this.txtUpdateURL);
+			this.groupBox1.Controls.Add(this.lblUpperBox);
+			this.groupBox1.Controls.Add(this.radGamebanana);
+			this.groupBox1.Controls.Add(this.radGitHub);
+			this.groupBox1.Controls.Add(this.radManual);
+			resources.ApplyResources(this.groupBox1, "groupBox1");
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.TabStop = false;
+			// 
+			// lstGBItems
+			// 
+			this.lstGBItems.FormattingEnabled = true;
+			resources.ApplyResources(this.lstGBItems, "lstGBItems");
+			this.lstGBItems.Name = "lstGBItems";
+			// 
+			// txtAsset
+			// 
+			resources.ApplyResources(this.txtAsset, "txtAsset");
+			this.txtAsset.Name = "txtAsset";
+			// 
+			// lblLower
+			// 
+			resources.ApplyResources(this.lblLower, "lblLower");
+			this.lblLower.Name = "lblLower";
+			// 
+			// txtUpdateURL
+			// 
+			resources.ApplyResources(this.txtUpdateURL, "txtUpdateURL");
+			this.txtUpdateURL.Name = "txtUpdateURL";
+			// 
+			// lblUpperBox
+			// 
+			resources.ApplyResources(this.lblUpperBox, "lblUpperBox");
+			this.lblUpperBox.Name = "lblUpperBox";
+			// 
+			// radGamebanana
+			// 
+			resources.ApplyResources(this.radGamebanana, "radGamebanana");
+			this.radGamebanana.Name = "radGamebanana";
+			this.radGamebanana.TabStop = true;
+			this.radGamebanana.UseVisualStyleBackColor = true;
+			this.radGamebanana.CheckedChanged += new System.EventHandler(this.radGamebanana_CheckedChanged);
+			// 
+			// radGitHub
+			// 
+			resources.ApplyResources(this.radGitHub, "radGitHub");
+			this.radGitHub.Name = "radGitHub";
+			this.radGitHub.TabStop = true;
+			this.radGitHub.UseVisualStyleBackColor = true;
+			this.radGitHub.CheckedChanged += new System.EventHandler(this.radGitHub_CheckedChanged);
+			// 
+			// radManual
+			// 
+			resources.ApplyResources(this.radManual, "radManual");
+			this.radManual.Name = "radManual";
+			this.radManual.TabStop = true;
+			this.radManual.UseVisualStyleBackColor = true;
+			this.radManual.CheckedChanged += new System.EventHandler(this.radManual_CheckedChanged);
+			// 
+			// chkUpdates
+			// 
+			resources.ApplyResources(this.chkUpdates, "chkUpdates");
+			this.chkUpdates.Name = "chkUpdates";
+			this.chkUpdates.UseVisualStyleBackColor = true;
+			this.chkUpdates.CheckedChanged += new System.EventHandler(this.chkUpdates_CheckedChanged);
+			// 
 			// editProj
 			// 
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.chkUpdates);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnSave);
 			this.Controls.Add(this.txtDesc);
 			this.Controls.Add(this.label4);
@@ -149,9 +234,11 @@
 			this.Controls.Add(this.groupBox2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "editProj";
-			this.Shown += new System.EventHandler(editProj_Shown);
+			this.Shown += new System.EventHandler(this.editProj_Shown);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -173,5 +260,15 @@
 		private System.Windows.Forms.CheckBox chkMainRedir;
 		private System.Windows.Forms.CheckBox chkChaoRedir;
 		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.RadioButton radGamebanana;
+		private System.Windows.Forms.RadioButton radGitHub;
+		private System.Windows.Forms.RadioButton radManual;
+		private System.Windows.Forms.CheckBox chkUpdates;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.TextBox txtAsset;
+		private System.Windows.Forms.Label lblLower;
+		private System.Windows.Forms.TextBox txtUpdateURL;
+		private System.Windows.Forms.Label lblUpperBox;
+		private System.Windows.Forms.ComboBox lstGBItems;
 	}
 }
