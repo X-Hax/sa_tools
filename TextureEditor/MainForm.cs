@@ -703,6 +703,7 @@ namespace TextureEditor
 				textureImage.Image = image;
 		}
 
+		bool suppress = false;
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
@@ -710,6 +711,7 @@ namespace TextureEditor
 			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = en;
 			if (en)
 			{
+				suppress = true;
 				textureUpButton.Enabled = listBox1.SelectedIndex > 0;
 				textureDownButton.Enabled = listBox1.SelectedIndex < textures.Count - 1;
 				textureName.Text = textures[listBox1.SelectedIndex].Name;
@@ -766,6 +768,7 @@ namespace TextureEditor
 						numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
 						break;
 				}
+				suppress = false;
 			}
 			else
 			{
@@ -1054,7 +1057,7 @@ namespace TextureEditor
 				return;
 			textures[listBox1.SelectedIndex].Image = tex;
 			UpdateTextureView(textures[listBox1.SelectedIndex].Image);
-			textureSizeLabel.Text = $"Size: {tex.Width}x{tex.Height}";
+			textureSizeLabel.Text = $"Actual Size: {tex.Width}x{tex.Height}";
 			if (textures[listBox1.SelectedIndex].CheckMipmap())
 			{
 				mipmapCheckBox.Enabled = true;
@@ -1146,20 +1149,14 @@ namespace TextureEditor
 
 		private void numericUpDownOrigSizeX_ValueChanged(object sender, EventArgs e)
 		{
-			if (textures[listBox1.SelectedIndex] is PvmxTextureInfo)
-			{
-				PvmxTextureInfo tex = (PvmxTextureInfo)textures[listBox1.SelectedIndex];
+			if (!suppress && textures[listBox1.SelectedIndex] is PvmxTextureInfo tex)
 				tex.Dimensions = new Size((int)numericUpDownOrigSizeX.Value, (int)numericUpDownOrigSizeY.Value);
-			}
 		}
 
 		private void numericUpDownOrigSizeY_ValueChanged(object sender, EventArgs e)
 		{
-			if (textures[listBox1.SelectedIndex] is PvmxTextureInfo)
-			{
-				PvmxTextureInfo tex = (PvmxTextureInfo)textures[listBox1.SelectedIndex];
+			if (!suppress && textures[listBox1.SelectedIndex] is PvmxTextureInfo tex)
 				tex.Dimensions = new Size((int)numericUpDownOrigSizeX.Value, (int)numericUpDownOrigSizeY.Value);
-			}
 		}
 	}
 
