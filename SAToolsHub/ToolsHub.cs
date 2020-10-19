@@ -14,6 +14,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using SA_Tools;
 using Fclp.Internals.Extensions;
+using ProjectManagement;
 
 namespace SAToolsHub
 {
@@ -37,12 +38,16 @@ public partial class SAToolsHub : Form
 		private GamePaths gamePathsDiag;
 		private newProj projectCreateDiag;
 		private editProj projectEditorDiag;
+		private buildWindow buildWindowDiag;
 
 		//Variabels
 		public static string newProjFile { get; set; }
+		public static string projName { get; set; }
 		public static DirectoryInfo projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static DirectoryInfo gameSystemDirectory { get; set; }
+		public static List<SplitEntry> projSplitEntries { get; set; }
+		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 
 		//Additional Code/Functions
 		private void PopulateTreeView(DirectoryInfo directory)
@@ -59,8 +64,7 @@ public partial class SAToolsHub : Form
 			}
 		}
 
-		private void GetDirectories(DirectoryInfo[] subDirs,
-			TreeNode nodeToAddTo)
+		private void GetDirectories(DirectoryInfo[] subDirs, TreeNode nodeToAddTo)
 		{
 			TreeNode aNode;
 			DirectoryInfo[] subSubDirs;
@@ -78,8 +82,7 @@ public partial class SAToolsHub : Form
 			}
 		}
 
-		void treeView1_NodeMouseClick(object sender,
-	TreeNodeMouseClickEventArgs e)
+		void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			listView1.ContextMenuStrip = contextMenuStrip1;
 			TreeNode newSelected = e.Node;
@@ -298,9 +301,8 @@ public partial class SAToolsHub : Form
 			listView1.Items.Clear();
 
 			//reset Tools Hub Buttons
-			tsBuildManual.Enabled = false;
-			tsBuildAuto.Enabled = false;
-			tsBuildRun.Enabled = false;
+			tsBuild.Enabled = false;
+			tsGameRun.Enabled = false;
 			tsEditProj.Enabled = false;
 			closeProjectToolStripMenuItem.Enabled = false;
 			editProjectInfoToolStripMenuItem.Enabled = false;
@@ -326,6 +328,7 @@ public partial class SAToolsHub : Form
 			gamePathsDiag = new GamePaths();
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
+			buildWindowDiag = new buildWindow();
 		}
 
 		private void toolsHub_Shown(object sender, EventArgs e)
@@ -387,9 +390,8 @@ public partial class SAToolsHub : Form
 				{
 					buildToolStripMenuItem.Enabled = true;
 					editProjectInfoToolStripMenuItem.Enabled = true;
-					tsBuildAuto.Enabled = true;
-					tsBuildManual.Enabled = true;
-					tsBuildRun.Enabled = true;
+					tsBuild.Enabled = true;
+					tsGameRun.Enabled = true;
 					tsEditProj.Enabled = true;
 				}
 			}
@@ -409,11 +411,17 @@ public partial class SAToolsHub : Form
 				var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
 				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
+				gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
 				PopulateTreeView(projectDirectory);
 				this.treeView1.NodeMouseClick +=
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
 				setGame = projFile.GameName;
+				projSplitEntries = projFile.SplitEntries;
+				if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2B")
+				{
+					projSplitMDLEntries = projFile.SplitMDLEntries;
+				}
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
@@ -421,9 +429,8 @@ public partial class SAToolsHub : Form
 				{
 					buildToolStripMenuItem.Enabled = true;
 					editProjectInfoToolStripMenuItem.Enabled = true;
-					tsBuildAuto.Enabled = true;
-					tsBuildManual.Enabled = true;
-					tsBuildRun.Enabled = true;
+					tsBuild.Enabled = true;
+					tsGameRun.Enabled = true;
 					tsEditProj.Enabled = true;
 				}
 			}
@@ -441,14 +448,9 @@ public partial class SAToolsHub : Form
 		}
 
 		//Project Build
-		private void autoBuildToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void manualBuildToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			buildWindowDiag.ShowDialog();
 		}
 
 		private void configureRunOptionsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -770,11 +772,6 @@ public partial class SAToolsHub : Form
 			editProjectInfoToolStripMenuItem_Click(sender, e);
 		}
 
-		private void tsBuildAuto_Click(object sender, EventArgs e)
-		{
-			autoBuildToolStripMenuItem_Click(sender, e);
-		}
-
 		private void tsBuildManual_Click(object sender, EventArgs e)
 		{
 			manualBuildToolStripMenuItem_Click(sender, e);
@@ -843,6 +840,12 @@ public partial class SAToolsHub : Form
 		private void tsSA2StgSel_Click(object sender, EventArgs e)
 		{
 			sA2StageSelectEditorToolStripMenuItem_Click(sender, e);
+		}
+
+		//Context Menu
+		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

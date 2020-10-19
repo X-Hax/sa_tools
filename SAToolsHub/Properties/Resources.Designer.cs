@@ -123,16 +123,6 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap tsBuildAuto {
-            get {
-                object obj = ResourceManager.GetObject("tsBuildAuto", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap tsBuildManual {
             get {
                 object obj = ResourceManager.GetObject("tsBuildManual", resourceCulture);

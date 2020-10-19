@@ -73,6 +73,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="buildWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="buildWindow.Designer.cs">
+      <DependentUpon>buildWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="editProj.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +110,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="buildWindow.resx">
+      <DependentUpon>buildWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
     </EmbeddedResource>

@@ -43,11 +43,10 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.autoBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.manualBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mainBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.configureRunOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.buildRunGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.RunGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sAMDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,9 +92,8 @@
 			this.tsOpenProj = new System.Windows.Forms.ToolStripButton();
 			this.tsEditProj = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-			this.tsBuildAuto = new System.Windows.Forms.ToolStripButton();
-			this.tsBuildManual = new System.Windows.Forms.ToolStripButton();
-			this.tsBuildRun = new System.Windows.Forms.ToolStripButton();
+			this.tsBuild = new System.Windows.Forms.ToolStripButton();
+			this.tsGameRun = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.listView1 = new System.Windows.Forms.ListView();
@@ -235,31 +233,22 @@
 			// buildToolStripMenuItem
 			// 
 			this.buildToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.autoBuildToolStripMenuItem,
-            this.manualBuildToolStripMenuItem,
+            this.mainBuildToolStripMenuItem,
             this.toolStripSeparator3,
             this.configureRunOptionsToolStripMenuItem,
-            this.buildRunGameToolStripMenuItem});
+            this.RunGameToolStripMenuItem});
 			this.buildToolStripMenuItem.Enabled = false;
 			this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
 			this.buildToolStripMenuItem.Size = new System.Drawing.Size(48, 21);
 			this.buildToolStripMenuItem.Text = "Build";
 			// 
-			// autoBuildToolStripMenuItem
+			// mainBuildToolStripMenuItem
 			// 
-			this.autoBuildToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildAuto;
-			this.autoBuildToolStripMenuItem.Name = "autoBuildToolStripMenuItem";
-			this.autoBuildToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-			this.autoBuildToolStripMenuItem.Text = "Automatic";
-			this.autoBuildToolStripMenuItem.Click += new System.EventHandler(this.autoBuildToolStripMenuItem_Click);
-			// 
-			// manualBuildToolStripMenuItem
-			// 
-			this.manualBuildToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
-			this.manualBuildToolStripMenuItem.Name = "manualBuildToolStripMenuItem";
-			this.manualBuildToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-			this.manualBuildToolStripMenuItem.Text = "Manual";
-			this.manualBuildToolStripMenuItem.Click += new System.EventHandler(this.manualBuildToolStripMenuItem_Click);
+			this.mainBuildToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
+			this.mainBuildToolStripMenuItem.Name = "mainBuildToolStripMenuItem";
+			this.mainBuildToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.mainBuildToolStripMenuItem.Text = "Build Mod";
+			this.mainBuildToolStripMenuItem.Click += new System.EventHandler(this.manualBuildToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -273,16 +262,16 @@
 			this.configureRunOptionsToolStripMenuItem.Text = "Configure Run Options";
 			this.configureRunOptionsToolStripMenuItem.Click += new System.EventHandler(this.configureRunOptionsToolStripMenuItem_Click);
 			// 
-			// buildRunGameToolStripMenuItem
+			// RunGameToolStripMenuItem
 			// 
-			this.buildRunGameToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildRun;
-			this.buildRunGameToolStripMenuItem.Name = "buildRunGameToolStripMenuItem";
-			this.buildRunGameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+			this.RunGameToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildRun;
+			this.RunGameToolStripMenuItem.Name = "RunGameToolStripMenuItem";
+			this.RunGameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-			this.buildRunGameToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-			this.buildRunGameToolStripMenuItem.Text = "Build + Run Game";
-			this.buildRunGameToolStripMenuItem.ToolTipText = "Automatically Builds the Mod and Runs the game.";
-			this.buildRunGameToolStripMenuItem.Click += new System.EventHandler(this.buildRunGameToolStripMenuItem_Click);
+			this.RunGameToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+			this.RunGameToolStripMenuItem.Text = "Run Game";
+			this.RunGameToolStripMenuItem.ToolTipText = "Runs the game with the opened mod and configured run options.";
+			this.RunGameToolStripMenuItem.Click += new System.EventHandler(this.buildRunGameToolStripMenuItem_Click);
 			// 
 			// toolsToolStripMenuItem
 			// 
@@ -648,9 +637,8 @@
             this.tsOpenProj,
             this.tsEditProj,
             this.toolStripSeparator6,
-            this.tsBuildAuto,
-            this.tsBuildManual,
-            this.tsBuildRun});
+            this.tsBuild,
+            this.tsGameRun});
 			this.toolStrip2.Location = new System.Drawing.Point(0, 25);
 			this.toolStrip2.Name = "toolStrip2";
 			this.toolStrip2.Size = new System.Drawing.Size(747, 55);
@@ -712,42 +700,31 @@
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
 			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 55);
 			// 
-			// tsBuildAuto
+			// tsBuild
 			// 
-			this.tsBuildAuto.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsBuildAuto.Enabled = false;
-			this.tsBuildAuto.Image = global::SAToolsHub.Properties.Resources.tsBuildAuto;
-			this.tsBuildAuto.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsBuildAuto.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsBuildAuto.Name = "tsBuildAuto";
-			this.tsBuildAuto.Size = new System.Drawing.Size(52, 52);
-			this.tsBuildAuto.Text = "Automatically Mod Build";
-			this.tsBuildAuto.Click += new System.EventHandler(this.tsBuildAuto_Click);
+			this.tsBuild.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsBuild.Enabled = false;
+			this.tsBuild.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
+			this.tsBuild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsBuild.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsBuild.Name = "tsBuild";
+			this.tsBuild.Size = new System.Drawing.Size(52, 52);
+			this.tsBuild.Text = "Build Mod";
+			this.tsBuild.ToolTipText = "Opens Mod Building Options";
+			this.tsBuild.Click += new System.EventHandler(this.tsBuildManual_Click);
 			// 
-			// tsBuildManual
+			// tsGameRun
 			// 
-			this.tsBuildManual.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsBuildManual.Enabled = false;
-			this.tsBuildManual.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
-			this.tsBuildManual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsBuildManual.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsBuildManual.Name = "tsBuildManual";
-			this.tsBuildManual.Size = new System.Drawing.Size(52, 52);
-			this.tsBuildManual.Text = "Manually Build Mod";
-			this.tsBuildManual.Click += new System.EventHandler(this.tsBuildManual_Click);
-			// 
-			// tsBuildRun
-			// 
-			this.tsBuildRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsBuildRun.Enabled = false;
-			this.tsBuildRun.Image = global::SAToolsHub.Properties.Resources.tsBuildRun;
-			this.tsBuildRun.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsBuildRun.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsBuildRun.Name = "tsBuildRun";
-			this.tsBuildRun.Size = new System.Drawing.Size(52, 52);
-			this.tsBuildRun.Text = "Build Mod & Run Game";
-			this.tsBuildRun.ToolTipText = "Automatically Builds the Mod and Runs the game.";
-			this.tsBuildRun.Click += new System.EventHandler(this.tsBuildRun_Click);
+			this.tsGameRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsGameRun.Enabled = false;
+			this.tsGameRun.Image = global::SAToolsHub.Properties.Resources.tsBuildRun;
+			this.tsGameRun.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsGameRun.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsGameRun.Name = "tsGameRun";
+			this.tsGameRun.Size = new System.Drawing.Size(52, 52);
+			this.tsGameRun.Text = "Build Mod & Run Game";
+			this.tsGameRun.ToolTipText = "Runs game with mods applied.";
+			this.tsGameRun.Click += new System.EventHandler(this.tsBuildRun_Click);
 			// 
 			// splitContainer1
 			// 
@@ -830,14 +807,15 @@
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(151, 98);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
 			// 
 			// openFileToolStripMenuItem
 			// 
 			this.openFileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.openFileToolStripMenuItem.Text = "Open File";
+			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
 			// 
 			// convertFileToolStripMenuItem
 			// 
@@ -929,11 +907,10 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem autoBuildToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem manualBuildToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mainBuildToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem configureRunOptionsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem buildRunGameToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem RunGameToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem generalToolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sAMDLToolStripMenuItem;
@@ -966,9 +943,8 @@
 		private System.Windows.Forms.ToolStripButton tsOpenProj;
 		private System.Windows.Forms.ToolStripButton tsEditProj;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-		private System.Windows.Forms.ToolStripButton tsBuildAuto;
-		private System.Windows.Forms.ToolStripButton tsBuildManual;
-		private System.Windows.Forms.ToolStripButton tsBuildRun;
+		private System.Windows.Forms.ToolStripButton tsBuild;
+		private System.Windows.Forms.ToolStripButton tsGameRun;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.ListView listView1;

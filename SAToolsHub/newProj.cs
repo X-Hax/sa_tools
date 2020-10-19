@@ -12,6 +12,7 @@ using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using ProjectManagement;
 using Fclp.Internals.Extensions;
 using System.Threading;
+using System.Linq;
 
 namespace SAToolsHub
 {
@@ -29,309 +30,308 @@ namespace SAToolsHub
 		string iniFolder;
 		string projFolder;
 
-		SplitData[] sadxpc_exesplit = new SplitData[]
+		List<SplitEntry> sadxpc_split = new List<SplitEntry>
 		{
 			//Stages
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG00.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG01.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG02.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG03.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG04.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG05.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG06.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG07.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG08.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG09.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG10.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "STG12.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV00.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV01.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV02.ini" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG01", CommonName="Emerald Coast Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG02", CommonName="Windy Valley Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG03", CommonName="Twinkle Park Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG04", CommonName="Speed Highway Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG05", CommonName="Red Mountain Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG06", CommonName="Sky Deck Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG07", CommonName="Lost World Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG08", CommonName="Ice Cap Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG09", CommonName="Casinopolis Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG10", CommonName="Final Egg Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG12", CommonName="Hot Shelter Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV00", CommonName="Station Square EXE Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV01", CommonName="Egg Carrier EXE Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "ADV02", CommonName="Mystic Ruins EXE Data" },
 
 			////Bosses
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS0.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS2.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS4.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS6.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS7.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM1.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM2.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM3.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_ROBO.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_E101.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "B_E101R.ini" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS0", CommonName="Boss Chaos 0 EXE Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS2", CommonName="Boss Chaos 2 Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS4", CommonName="Boss Chaos 4 Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS6", CommonName="Boss Chaos 6 Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_CHAOS7", CommonName="Boss Perfect Chaos Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM1", CommonName="Boss Egg Hornet Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM2", CommonName="Boss Egg Walker Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_EGM3", CommonName="Boss Egg Viper Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_ROBO", CommonName="Boss Zero Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_E101", CommonName="Boss E-101 Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "B_E101R", CommonName="Boss E-101R Data" },
 
 			////Minigames
-			//new SplitData() { dataFile="sonic.exe", iniFile = "SANDBOARD.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "MINICART.ini" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "STG00", CommonName="Hedgehog Hammer Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "SANDBOARD", CommonName="Sandboarding Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "MINICART", CommonName="Twinkle Circuit Data" },
 
 			////Chao
-			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_GARDEN00.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_GARDEN01.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "AL-GARDEN02.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_RACE.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_MAIN.ini" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_GARDEN00", CommonName="Station Square Chao Garden Models & Objects" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_GARDEN01", CommonName="Egg Carrier Chao Garden Models & Objects" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "AL-GARDEN02", CommonName="Mystic Ruins Chao Garden Models & Objects" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_RACE", CommonName="Chao Race Models & Objects" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "AL_MAIN", CommonName="Chao Data" },
 
 			////Common
-			//new SplitData() { dataFile="sonic.exe", iniFile = "Characters.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "Objects.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "Events.ini" },
-			//new SplitData() { dataFile="sonic.exe", iniFile = "Misc.ini" }
-			new SplitData() { dataFile="sonic.exe", iniFile = "sonic.ini" }
+			//new SplitData() { dataFile="sonic.exe", iniFile = "Characters", CommonName="Character EXE Data" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "Objects", CommonName="Common Objects & Enemies" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "Events", CommonName="Event Objects & Animations" },
+			//new SplitData() { dataFile="sonic.exe", iniFile = "Misc", CommonName="All other EXE Data" }
+			new SplitEntry() { SourceFile="sonic.exe", IniFile = "sonic", CommonName = "EXE Data" },
+
+			//DLL Entries
+			new SplitEntry() { SourceFile="system/CHRMODELS_orig.dll", IniFile = "chrmodels", CommonName="Character Models & Animations"},
+			new SplitEntry() { SourceFile="system/ADV00MODELS.DLL", IniFile = "adv00models", CommonName="Station Square DLL" },
+			new SplitEntry() { SourceFile="system/ADV01CMODELS.DLL", IniFile = "adv01cmodels", CommonName="Egg Carrier External DLL" },
+			new SplitEntry() { SourceFile="system/ADV01MODELS.DLL", IniFile = "adv01models", CommonName="Egg Carrier Interior DLL" },
+			new SplitEntry() { SourceFile="system/ADV02MODELS.DLL", IniFile = "adv02models", CommonName="Mystic Ruins DLL" },
+			new SplitEntry() { SourceFile="system/ADV03MODELS.DLL", IniFile = "adv03models", CommonName="The Past DLL" },
+			new SplitEntry() { SourceFile="system/BOSSCHAOS0MODELS.DLL", IniFile = "bosschaos0models", CommonName="Chaos 0 Boss DLL" },
+			new SplitEntry() { SourceFile="system/CHAOSTGGARDEN02MR_DAYTIME.DLL", IniFile = "chaostggarden02mr_daytime", CommonName="Mystic Ruins Chao Garden (Daytime) DLL" },
+			new SplitEntry() { SourceFile="system/CHAOSTGGARDEN02MR_EVENING.DLL", IniFile = "chaostggarden02mr_evening", CommonName="Mystic Ruins Chao Garden (Evening) DLL" },
+			new SplitEntry() { SourceFile="system/CHAOSTGGARDEN02MR_NIGHT.DLL", IniFile = "chaostggarden02mr_night", CommonName="Mystic Ruins Chao Garden (Nighttime) DLL" }
 		};
 
-		SplitData[] sadxpc_dllsplit = new SplitData[]
+		List<SplitEntry> sa2pc_split = new List<SplitEntry>
 		{
-			new SplitData() { dataFile="system/ADV00MODELS.DLL", iniFile = "adv00models.ini" },
-			new SplitData() { dataFile="system/ADV01CMODELS.DLL", iniFile = "adv01cmodels.ini" },
-			new SplitData() { dataFile="system/ADV01MODELS.DLL", iniFile = "adv01models.ini" },
-			new SplitData() { dataFile="system/ADV02MODELS.DLL", iniFile = "adv02models.ini" },
-			new SplitData() { dataFile="system/ADV03MODELS.DLL", iniFile = "adv03models.ini" },
-			new SplitData() { dataFile="system/BOSSCHAOS0MODELS.DLL", iniFile = "bosschaos0models.ini" },
-			new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_DAYTIME.DLL", iniFile = "chaostggarden02mr_daytime.ini" },
-			new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_EVENING.DLL", iniFile = "chaostggarden02mr_evening.ini" },
-			new SplitData() { dataFile="system/CHAOSTGGARDEN02MR_NIGHT.DLL", iniFile = "chaostggarden02mr_night.ini" }
-			// chrmodels and chrmodels_orig are special cases
+			new SplitEntry() { SourceFile = "sonic2app.exe", IniFile = "splitsonic2app", CommonName="EXE Data" },
+			new SplitEntry() { SourceFile = "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll", IniFile = "data_dll", CommonName="DLL Data"}
 		};
 
-		SplitData[] sa2pc_exesplit = new SplitData[]
-{
-			new SplitData() { dataFile = "sonic2app.exe", iniFile = "splitsonic2app.ini" }
-		};
-
-		SplitMDLData[] sa2pc_mdlsplit = new SplitMDLData[]
+		List<SplitEntryMDL> sa2pc_mdlsplit = new List<SplitEntryMDL>
 		{
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\amymdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\amymdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"amymtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\bknuckmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\bknuckmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"knuckmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\brougemdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\brougemdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"rougemtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\chaos0mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\chaos0mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"chaos0mtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\cwalkmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\cwalkmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"cwalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\dwalkmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\dwalkmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"dwalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\eggmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\eggmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"eggmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\ewalk1mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\ewalk1mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"ewalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\ewalk2mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\ewalk2mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"ewalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\ewalkmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\ewalkmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"ewalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\knuckmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\knuckmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"knuckmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\metalsonicmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\metalsonicmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"metalsonicmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\milesmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\milesmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"milesmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\rougemdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\rougemdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"rougemtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\shadow1mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\shadow1mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"teriosmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\sonic1mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\sonic1mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"sonicmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\sonicmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\sonicmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"sonicmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\sshadowmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\sshadowmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"sshadowmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\ssonicmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\ssonicmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"ssonicmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\teriosmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\teriosmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"teriosmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\ticalmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\ticalmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"ticalmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\twalk1mdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\twalk1mdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"twalkmtn.prs"
 				}
 			},
-			new SplitMDLData()
+			new SplitEntryMDL()
 			{
-				isBigEndian = true,
-				dataFile = "resource\\gd_PC\\twalkmdl.prs",
-				animationFiles = new string[]
+				BigEndian = true,
+				ModelFile = "resource\\gd_PC\\twalkmdl.prs",
+				MotionFiles = new List<string>
 				{
 					"plcommtn.prs",
 					"twalkmtn.prs"
 				}
 			}
-		};
+};
 
 		public newProj()
 		{
@@ -503,14 +503,14 @@ namespace SAToolsHub
 	
 		}
 
-		private void splitFiles(SplitData splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+		private void splitFiles(SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
-			string datafilename = Path.Combine(gameFolder, splitData.dataFile);
-			string inifilename = Path.Combine(iniFolder, splitData.iniFile);
+			string datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+			string inifilename = Path.Combine(iniFolder, (splitData.IniFile + ".ini"));
 			string projectFolderName = (outputFolder + "\\");
 
 			progress.StepProgress();
-			progress.SetStep("Splitting " + splitData.iniFile + " data from " + splitData.dataFile);
+			progress.SetStep("Splitting " + splitData.CommonName + " data from " + splitData.SourceFile);
 
 			#region Validating Inputs
 			if (!File.Exists(datafilename))
@@ -540,43 +540,13 @@ namespace SAToolsHub
 		private void splitSADXPC(SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
 			progress.StepProgress();
-			progress.SetTask("Splitting EXE Content");
+			progress.SetTask("Splitting Game Content");
 
 			//Split EXE Data
-			foreach (SplitData splitExeData in sadxpc_exesplit)
+			foreach (SplitEntry splitExeData in sadxpc_split)
 			{
 				splitFiles(splitExeData, progress, gameFolder, iniFolder, outputFolder);
 			}
-
-			progress.StepProgress();
-			progress.SetTask("Splitting DLL Content");
-			//Split DLL Data
-			foreach (SplitData splitDllData in sadxpc_dllsplit)
-			{
-				splitFiles(splitDllData, progress, gameFolder, iniFolder, outputFolder);
-			}
-
-			// do our last split, chrmodels
-			SplitData chrmodelsSplitData = new SplitData();
-
-			if (File.Exists(Path.Combine(gameFolder, "system/CHRMODELS_orig.dll")))
-			{
-				chrmodelsSplitData = new SplitData()
-				{
-					dataFile = "system/CHRMODELS_orig.dll",
-					iniFile = "chrmodels.ini"
-				};
-			}
-			else
-			{
-				chrmodelsSplitData = new SplitData()
-				{
-					dataFile = "system/CHRMODELS.dll",
-					iniFile = "chrmodels.ini"
-				};
-			}
-
-			splitFiles(chrmodelsSplitData, progress, gameFolder, iniFolder, outputFolder);
 
 			// copy sadxlvl.ini
 			string sadxlvlIniSourcePath = Path.GetFullPath(Path.Combine(iniFolder, "sadxlvl.ini"));
@@ -595,56 +565,27 @@ namespace SAToolsHub
 
 		private void splitSA2PC(SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
-			// split data dll
-			#region Split Data DLL
-
 			progress.StepProgress();
-			progress.SetTask("Splitting DLL Content");
-
-			SplitData dllSplitData = new SplitData();
-
-			if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
+			progress.SetTask("Splitting Game Content");
+			foreach (SplitEntry splitExeData in sa2pc_split)
 			{
-				dllSplitData = new SplitData()
-				{
-					dataFile = "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll",
-					iniFile = "data_dll.ini"
-				};
+				splitFiles(splitExeData, progress, gameFolder, iniFolder, outputFolder);
 			}
-			else
-			{
-				dllSplitData = new SplitData()
-				{
-					dataFile = "resource/gd_PC/DLL/Win32/Data_DLL.dll",
-					iniFile = "data_dll.ini"
-				};
-			}
-
-			splitFiles(dllSplitData, progress, gameFolder, iniFolder, outputFolder);
-			#endregion
 
 			// run split mdl commands
 			progress.StepProgress();
 			progress.SetTask("Splitting Character Files");
 
-			foreach (SplitMDLData splitMDL in sa2pc_mdlsplit)
+			foreach (SplitEntryMDL splitMDL in sa2pc_mdlsplit)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting " + splitMDL.dataFile);
-				string filePath = Path.Combine(gameFolder, splitMDL.dataFile);
-				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
+				progress.SetStep("Splitting " + splitMDL.ModelFile);
+				string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.ModelFile));
 				Directory.CreateDirectory(fileOutputFolder);
 
-				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
-					fileOutputFolder, splitMDL.animationFiles);
-			}
-
-			// split sonic2app
-			progress.StepProgress();
-			progress.SetTask("Splitting EXE Content");
-			foreach (SplitData splitExeData in sa2pc_exesplit)
-			{
-				splitFiles(splitExeData, progress, gameFolder, iniFolder, outputFolder);
+				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.BigEndian, filePath,
+					fileOutputFolder, splitMDL.MotionFiles.ToArray());
 			}
 		}
 
@@ -697,6 +638,7 @@ namespace SAToolsHub
 			saveFileDialog1 = new SaveFileDialog();
 			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
 			saveFileDialog1.RestoreDirectory = true;
+			saveFileDialog1.FileName = txtName.Text;
 
 			if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
 			{
@@ -744,6 +686,7 @@ namespace SAToolsHub
 						templateFile.CanBuild = true;
 						templateFile.GameSystemFolder = sadxPath;
 						templateFile.ModSystemFolder = projFolder;
+						templateFile.SplitEntries = sadxpc_split;
 					}
 					else if (radSA2PC.Checked)
 					{
@@ -752,6 +695,8 @@ namespace SAToolsHub
 						templateFile.CanBuild = true;
 						templateFile.GameSystemFolder = sa2pcPath;
 						templateFile.ModSystemFolder = projFolder;
+						templateFile.SplitEntries = sa2pc_split;
+						templateFile.SplitMDLEntries = sa2pc_mdlsplit;
 					}
 					
 
