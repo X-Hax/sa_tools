@@ -141,11 +141,11 @@ namespace DLCTool
 			[IniName("ScaleZ")]
 			public byte scale_z;
 			[IniName("RotSpeedX")]
-			public byte rotspeed_x;
+			public sbyte rotspeed_x;
 			[IniName("RotSpeedY")]
-			public byte rotspeed_y;
+			public sbyte rotspeed_y;
 			[IniName("RotSpeedZ")]
-			public byte rotspeed_z;
+			public sbyte rotspeed_z;
 			[IniAlwaysInclude]
 			[IniName("ObjectType")]
 			public DLCObjectTypes objecttype;
@@ -275,15 +275,18 @@ namespace DLCTool
 			result.AddRange(mdlarr);
 			byte[] res_arr = result.ToArray();
 			result = FraGag.Compression.Prs.Compress(res_arr).ToList();
-			do
+			if (result.Count % 16 != 0)
 			{
-				result.Add(0);
+				do
+				{
+					result.Add(0);
+				}
+				while (result.Count % 16 != 0);
 			}
-			while (result.Count % 16 != 0);
 			return result.ToArray();
 		}
 
-		static byte[] ProcessEuropeanStrings(string[] list)
+		static byte[] ProcessEuropeanStrings(string[] list, int codepage = 1252)
 		{
 			List<byte> result = new List<byte>();
 			foreach (string str in list)
@@ -300,7 +303,7 @@ namespace DLCTool
 					}
 					else
 					{
-						result.AddRange(System.Text.Encoding.GetEncoding(1252).GetBytes(str[s].ToString()));
+						result.AddRange(System.Text.Encoding.GetEncoding(codepage).GetBytes(str[s].ToString()));
 					}
 				}
 				do
@@ -361,9 +364,9 @@ namespace DLCTool
 				itemtable.Add(item.scale_x);
 				itemtable.Add(item.scale_y);
 				itemtable.Add(item.scale_z);
-				itemtable.Add(item.rotspeed_x);
-				itemtable.Add(item.rotspeed_y);
-				itemtable.Add(item.rotspeed_z);
+				itemtable.Add((byte)item.rotspeed_x);
+				itemtable.Add((byte)item.rotspeed_y);
+				itemtable.Add((byte)item.rotspeed_z);
 				itemtable.Add((byte)item.objecttype);
 				itemtable.Add(item.textureid);
 				itemtable.AddRange((BitConverter.GetBytes((ushort)item.flags)));
@@ -382,7 +385,7 @@ namespace DLCTool
 			}
 			do
 				itemtable.Add(0);
-			while (itemtable.Count % 512 != 0);
+			while (itemtable.Count % 16 != 0);
 			//Convert Japanese strings
 			List<byte> stringtable = new List<byte>();
 			foreach (string str in header.JapaneseStrings)
@@ -409,7 +412,7 @@ namespace DLCTool
 				while (stringtable.Count % 64 != 0);
 			}
 			//Convert European strings
-			stringtable.AddRange(ProcessEuropeanStrings(header.EnglishStrings));
+			stringtable.AddRange(ProcessEuropeanStrings(header.EnglishStrings, 932)); //English uses the same character set as Japanese
 			stringtable.AddRange(ProcessEuropeanStrings(header.FrenchStrings));
 			stringtable.AddRange(ProcessEuropeanStrings(header.SpanishStrings));
 			stringtable.AddRange(ProcessEuropeanStrings(header.GermanStrings));
@@ -469,18 +472,19 @@ namespace DLCTool
 			int prspointer = mltpointer + mlt.Length;
 			result.AddRange(BitConverter.GetBytes((uint)prspointer));
 			result.AddRange(BitConverter.GetBytes((uint)1)); //PRS count
-			byte[] final = new byte[fullsize - 64];
+			List<byte> final = new List<byte>();
 			Console.WriteLine("PRS at {0} (size {1})", prspointer.ToString("X"), prs.Length);
-			Array.Copy(itemtable.ToArray(), 0, final, 0, itemtable.Count);
-			Array.Copy(stringtable.ToArray(), 0, final, textpointer - 704, stringtable.Count);
-			Array.Copy(pvm, 0, final, pvmpointer - 704, pvm.Length);
-			if (header.has_mlt) Array.Copy(mlt, 0, final, mltpointer - 704, mlt.Length);
-			Array.Copy(prs, 0, final, prspointer - 704, prs.Length);
-			uint checksum = CalculateChecksum(ref final, 0, final.Length);
+			final.AddRange(itemtable.ToArray());
+			final.AddRange(stringtable.ToArray());
+			final.AddRange(pvm);
+			if (header.has_mlt) final.AddRange(mlt);
+			final.AddRange(prs);
+			byte[] finalarr = final.ToArray();
+			uint checksum = CalculateChecksum(ref finalarr, 0, finalarr.Length);
 			result.AddRange(BitConverter.GetBytes(checksum));
 			Console.WriteLine("Checksum: {0} ({1})", checksum.ToString("X8"), (int)checksum);
 			for (int u = 0; u < 16; u++)
-				result.Add(0);
+			result.Add(0);
 			result.AddRange(final);
 			if (result.Count % 512 != 0)
 			{
@@ -562,9 +566,9 @@ namespace DLCTool
 				dlcitem.scale_x = file[item_pointer + u * 30 + 2];
 				dlcitem.scale_y = file[item_pointer + u * 30 + 3];
 				dlcitem.scale_z = file[item_pointer + u * 30 + 4];
-				dlcitem.rotspeed_x = file[item_pointer + u * 30 + 5];
-				dlcitem.rotspeed_y = file[item_pointer + u * 30 + 6];
-				dlcitem.rotspeed_z = file[item_pointer + u * 30 + 7];
+				dlcitem.rotspeed_x = (sbyte)file[item_pointer + u * 30 + 5];
+				dlcitem.rotspeed_y = (sbyte)file[item_pointer + u * 30 + 6];
+				dlcitem.rotspeed_z = (sbyte)file[item_pointer + u * 30 + 7];
 				dlcitem.objecttype = (DLCObjectTypes)file[item_pointer + u * 30 + 8];
 				dlcitem.textureid = file[item_pointer + u * 30 + 9];
 				dlcitem.flags = (DLCObjectFlags)(BitConverter.ToUInt16(file, item_pointer + u * 30 + 10));
@@ -603,7 +607,7 @@ namespace DLCTool
 					charcount++;
 				}
 				System.Text.Encoding enc = System.Text.Encoding.GetEncoding(932);
-				if (arr[0] == 126) enc = System.Text.Encoding.GetEncoding(1252);
+				if (u >= 32) enc = System.Text.Encoding.GetEncoding(1252);
 				string str = enc.GetString(arr, 0, charcount);
 				strings.Add(str);
 			}

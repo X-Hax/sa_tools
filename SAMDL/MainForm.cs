@@ -679,7 +679,7 @@ namespace SonicRetro.SAModel.SAMDL
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
-			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
+			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			if (cmdLoad == false)
@@ -3296,7 +3296,7 @@ namespace SonicRetro.SAModel.SAMDL
 				text.export += System.Environment.NewLine;
 			}
 			List<string> labels = new List<string>() { model.Name };
-			text.export += model.ToStructVariables(false, labels, texnames);
+			text.export += model.ToStructVariables(true, labels, texnames); //Need to make the DX thing a toggle
 			if (exportAnimationsToolStripMenuItem.Checked && animations != null)
 			{
 				foreach (NJS_MOTION anim in animations)

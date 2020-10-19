@@ -4,6 +4,7 @@ AnimJSONConverter: Converts .saanim files to .json and vice versa
 ArchiveTool: Extracts and builds PVM/GVM/PRS/DAT archives, extracts PB archives
 FunctionListGenerator: Creates assembly code to call __usercall functions
 LevelConverter: Converts .sa1lvl files to .sa2lvl and vice versa
+MLTExtract: Extracts waveforms and metadata from Dreamcast MLT and MPB files
 ModelRelabeler: Copies labels from one model file to another
 ModelConverter: Converts .sa1mdl files to .sa2mdl and vice versa
 ObjScan: Scans a binary or a memory dump for levels or models and extracts them
