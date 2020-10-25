@@ -231,7 +231,7 @@ namespace ObjScan
 						if (vertlist > (uint)datafile.Length + imageBase - 51) return false;
 						if (vertlist != 0 && vertlist < imageBase) return false;
 						polylist = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
-						if (polylist < imageBase) return false;
+						if (polylist != 0 && polylist < imageBase) return false;
 						if (polylist > (uint)datafile.Length + imageBase - 51) return false;
 					}
 					pos = new Vertex(datafile, address + 8);
@@ -351,7 +351,7 @@ namespace ObjScan
 					COLCount = ByteConverter.ToInt16(datafile, address);
 					if (COLCount <= 0) return false;
 					ChunkCount = ByteConverter.ToInt16(datafile, address + 2);
-					if (ChunkCount <= 0) return false;
+					if (ChunkCount < -1) return false;
 					COLAddress = ByteConverter.ToInt32(datafile, address + 0x10);
 					if (COLAddress < (int)imageBase) return false;
 					if (COLAddress - (int)imageBase > datafile.Length - 32) return false;
@@ -492,7 +492,7 @@ namespace ObjScan
 					model_type = "NJS_CNK_OBJECT";
 					break;
 				case ModelFormat.GC:
-					model_extension = ".sa2mdl";
+					model_extension = ".sa2bmdl";
 					model_dir = "gcmodels";
 					model_type = "NJS_GC_OBJECT";
 					break;
@@ -548,7 +548,7 @@ namespace ObjScan
 					model_dir = "chunkmodels";
 					break;
 				case LandTableFormat.SA2B:
-					model_extension = ".sa2mdl";
+					model_extension = ".sa2bmdl";
 					model_dir = "gcmodels";
 					break;
 			}
@@ -716,6 +716,7 @@ namespace ObjScan
 					case "sa2b":
 						game = Game.SA2B;
 						scan_sa2_land = true;
+						scan_sa2b_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
 						scan_sa2b_model = true;
@@ -724,6 +725,7 @@ namespace ObjScan
 						game = Game.SA2B;
 						bigendian = true;
 						scan_sa2_land = true;
+						scan_sa2b_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
 						scan_sa2b_model = true;
