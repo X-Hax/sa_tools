@@ -208,7 +208,7 @@ namespace ObjScan
 			if (recursive && sibling != 0 && !CheckNJSObject(datafile, (int)(sibling - imageBase), imageBase, false)) return false;
 			if (attach == 0 && flags == 0) return false;
 			if (attach == 0 && child == 0 && sibling == 0) return false;
-			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
+			if (recursive) Console.WriteLine("Basic model at {0}", address.ToString("X"));
 			return true;
 		}
 		static bool CheckNJSCNKObject(byte[] datafile, int address, uint imageBase, bool recursive)
@@ -260,7 +260,7 @@ namespace ObjScan
 			if (recursive && sibling != 0 && !CheckNJSCNKObject(datafile, (int)(sibling - imageBase), imageBase, false)) return false;
 			if (attach == 0 && flags == 0) return false;
 			if (attach == 0 && child == 0 && sibling == 0) return false;
-			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
+			if (recursive) Console.WriteLine("Chunk model at {0}", address.ToString("X"));
 			return true;
 		}
 		static bool CheckGCObject(byte[] datafile, int address, uint imageBase, bool recursive)
@@ -312,7 +312,7 @@ namespace ObjScan
 			if (recursive && sibling != 0 && !CheckGCObject(datafile, (int)(sibling - imageBase), imageBase, false)) return false;
 			if (attach == 0 && flags == 0) return false;
 			if (attach == 0 && child == 0 && sibling == 0) return false;
-			if (recursive) Console.WriteLine("Model at {0}", address.ToString("X"));
+			if (recursive) Console.WriteLine("GC model at {0}", address.ToString("X"));
 			return true;
 		}
 
@@ -322,16 +322,16 @@ namespace ObjScan
 			if (COLCount < 0) return false;
 			short AnimCount = ByteConverter.ToInt16(datafile, address + 2);
 			if (AnimCount < 0) return false;
-			int COLAddress = ByteConverter.ToInt32(datafile, address + 0xC);
+			uint COLAddress = ByteConverter.ToUInt32(datafile, address + 0xC);
 			if (COLAddress < imageBase || COLAddress == 0) return false;
 			if (COLAddress - imageBase > datafile.Length - 32) return false;
 			int AnimPointer = ByteConverter.ToInt32(datafile, address + 0x10);
 			if (AnimPointer != 0 && AnimPointer < imageBase) return false;
 			if (AnimPointer - imageBase > datafile.Length - 32) return false;
-			int ObjAddrPointer = COLAddress - (int)imageBase + 0x18;
-			int ObjAddr = ByteConverter.ToInt32(datafile, ObjAddrPointer);
+			uint ObjAddrPointer = COLAddress - imageBase + 0x18;
+			uint ObjAddr = ByteConverter.ToUInt32(datafile, (int)ObjAddrPointer);
 			if (ObjAddr < imageBase) return false;
-			if (!CheckNJSObject(datafile, ObjAddr - (int)imageBase, imageBase, false)) return false;
+			if (!CheckNJSObject(datafile, (int)(ObjAddr - imageBase), imageBase, false)) return false;
 			return true;
 		}
 
@@ -377,7 +377,6 @@ namespace ObjScan
 
 		static void ScanSA1Landtable(byte[] datafile, uint imageBase, string dir, LandTableFormat landfmt, List<int> landtablelist)
 		{
-			landfmt = LandTableFormat.SA1;
 			string landtable_extension = ".sa1lvl";
 			Directory.CreateDirectory(Path.Combine(dir, "levels"));
 			for (int u = 0; u < datafile.Length - 52; u += 4)
@@ -460,7 +459,7 @@ namespace ObjScan
 		}
 		static void AddAction(int objectaddr, int motionaddr, string dir)
 		{
-			using (FileStream str = new FileStream(Path.Combine(dir, "models", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
+			using (FileStream str = new FileStream(Path.Combine(dir, "basicmodels", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
 			using (StreamWriter tw = new StreamWriter(str))
 			{
 				tw.WriteLine("../actions/" + motionaddr.ToString("X8") + ".saanim");
@@ -474,21 +473,21 @@ namespace ObjScan
 			for (int address = 0; address < datafile.Length - 8; address += 4)
 			{
 				if (ByteConverter.ToUInt32(datafile, address) != addr + imageBase) continue;
-				int motaddr = ByteConverter.ToInt32(datafile, address + 4);
+				uint motaddr = ByteConverter.ToUInt32(datafile, address + 4);
 				if (motaddr < imageBase) continue;
 				try
 				{
-					NJS_MOTION mot = new NJS_MOTION(datafile, motaddr-(int)imageBase, imageBase, nummdl, null, false);
+					NJS_MOTION mot = new NJS_MOTION(datafile, (int)(motaddr -imageBase), imageBase, nummdl, null, false);
 					if (mot.Models.Count == 0) continue;
-					addresslist.Add(motaddr - (int)imageBase, "NJS_MOTION");
-					Console.WriteLine("Motion found for model {0} at address {1}", addr.ToString("X8"), (motaddr-(int)imageBase).ToString("X"));
-					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - (int)imageBase).ToString("X8"));
+					addresslist.Add((int)(motaddr - imageBase), "NJS_MOTION");
+					Console.WriteLine("Motion found for model {0} at address {1}", addr.ToString("X8"), (motaddr-imageBase).ToString("X"));
+					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - imageBase).ToString("X8"));
 					mot.Save(fileOutputPath + ".saanim");
 					int[] arr = new int[2];
 					arr[0] = addr;
 					arr[1] = nummdl;
-					actionlist.Add(motaddr - (int)imageBase, arr);
-					AddAction(addr, motaddr - (int)imageBase, dir); 
+					actionlist.Add((int)(motaddr - imageBase), arr);
+					AddAction(addr, (int)(motaddr - imageBase), dir); 
 				}
 				catch (Exception)
 				{
@@ -509,13 +508,19 @@ namespace ObjScan
 			}
 			foreach (int maddr in modeladdr)
 			{
-				ModelFile mdlfile = new ModelFile(Path.Combine(dir, "basicmodels", maddr.ToString("X8") + ".sa1mdl"));
-				ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
+				try
+				{
+					ModelFile mdlfile = new ModelFile(Path.Combine(dir, "basicmodels", maddr.ToString("X8") + ".sa1mdl"));
+					ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
+				}
+				catch
+				{
+					Console.WriteLine("Error adding action for model at {0}", maddr.ToString("X"));
+				}
 			}
 		}
 		static void ScanBasicModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
-			modelfmt = ModelFormat.Basic;
 			string model_extension = ".sa1mdl";
 			Directory.CreateDirectory(Path.Combine(dir, "basicmodels"));
 			for (int u = 0; u < datafile.Length - 51; u += 4)
@@ -532,14 +537,14 @@ namespace ObjScan
 					{
 						foreach (NJS_OBJECT child in mdl.Children)
 						{
-							Console.WriteLine("Deleting child object {0}", dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+							Console.WriteLine("Deleting child object {0}", dir + "\\basicmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 							File.Delete(dir + "\\basicmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
 							deleteditems.Add(int.Parse(child.Name.Substring(7, child.Name.Length - 7), NumberStyles.AllowHexSpecifier));
 						}
 					}
 					if (mdl.Sibling != null)
 					{
-						Console.WriteLine("Deleting sibling object {0}", dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+						Console.WriteLine("Deleting sibling object {0}", dir + "\\basicmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 						File.Delete(dir + "\\basicmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
 						deleteditems.Add(int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier));
 					}
