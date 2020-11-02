@@ -156,6 +156,7 @@ namespace ObjScan
 			int flags = 0;
 			uint vertlist = 0;
 			uint polylist = 0;
+			int radius = 0;
 			uint attach = 0;
 			uint child = 0;
 			uint sibling = 0;
@@ -233,6 +234,8 @@ namespace ObjScan
 						polylist = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 4);
 						if (polylist != 0 && polylist < imageBase) return false;
 						if (polylist > (uint)datafile.Length + imageBase - 51) return false;
+						radius = ByteConverter.ToInt32(datafile, (int)(attach - imageBase) + 0x14);
+						if (radius < 0) return false;
 					}
 					pos = new Vertex(datafile, address + 8);
 					if (pos.X < -100000 || pos.X > 100000) return false;
@@ -305,9 +308,10 @@ namespace ObjScan
 			short COLCount;
 			short AnimCount;
 			short ChunkCount;
+			ushort Unknown1;
 			int COLAddress;
 			int AnimPointer;
-			uint Texlist;
+			int Texlist;
 			uint Buffer;
 			int ObjAddrPointer;
 			int ObjAddr;
@@ -349,9 +353,11 @@ namespace ObjScan
 				case LandTableFormat.SA2:
 				case LandTableFormat.SA2B:
 					COLCount = ByteConverter.ToInt16(datafile, address);
-					if (COLCount <= 0) return false;
+					if (COLCount < 0) return false;
 					ChunkCount = ByteConverter.ToInt16(datafile, address + 2);
 					if (ChunkCount < -1) return false;
+					Unknown1 = ByteConverter.ToUInt16(datafile, address + 4);
+					if (Unknown1 != 65535) return false;
 					COLAddress = ByteConverter.ToInt32(datafile, address + 0x10);
 					if (COLAddress < (int)imageBase) return false;
 					if (COLAddress - (int)imageBase > datafile.Length - 32) return false;
@@ -359,10 +365,10 @@ namespace ObjScan
 					if (Buffer != 0) return false;
 					AnimPointer = ByteConverter.ToInt32(datafile, address + 0x18);
 					if (AnimPointer != 0 && AnimPointer < (int)imageBase) return false;
-					if (AnimPointer - (int)imageBase > datafile.Length - 32) return false;
-					Texlist = ByteConverter.ToUInt32(datafile, address + 0x1C);
+					if (AnimPointer != 0 && AnimPointer - (int)imageBase > datafile.Length - 32) return false;
+					Texlist = ByteConverter.ToInt32(datafile, address + 0x1C);
 					if ((int)(Texlist - imageBase) > datafile.Length - 32) return false;
-					if (Texlist == 0 || Texlist < imageBase) return false;
+					if (Texlist == 0 || Texlist < (int)imageBase) return false;
 					break;
 			}
 			return true;
