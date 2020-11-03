@@ -35,7 +35,7 @@ namespace SAToolsHub
 public partial class SAToolsHub : Form
 	{
 		//Additional Windows
-		private GamePaths gamePathsDiag;
+		private toolSettings toolSettingsDiag;
 		private newProj projectCreateDiag;
 		private editProj projectEditorDiag;
 		private buildWindow buildWindowDiag;
@@ -50,6 +50,36 @@ public partial class SAToolsHub : Form
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 
 		//Additional Code/Functions
+		private void openProject(string projectFile)
+		{
+			var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
+			var projFileStream = File.OpenRead(projectFile);
+			var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+			projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
+			gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
+			PopulateTreeView(projectDirectory);
+			this.treeView1.NodeMouseClick +=
+				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+
+			setGame = projFile.GameName;
+			projSplitEntries = projFile.SplitEntries;
+			if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2TT" || setGame == "SA2P")
+			{
+				projSplitMDLEntries = projFile.SplitMDLEntries;
+			}
+
+			toggleButtons(setGame);
+			closeProjectToolStripMenuItem.Enabled = true;
+			if (projFile.CanBuild)
+			{
+				buildToolStripMenuItem.Enabled = true;
+				editProjectInfoToolStripMenuItem.Enabled = true;
+				tsBuild.Enabled = true;
+				tsGameRun.Enabled = true;
+				tsEditProj.Enabled = true;
+			}
+		}
 		private void PopulateTreeView(DirectoryInfo directory)
 		{
 			TreeNode rootNode;
@@ -325,7 +355,7 @@ public partial class SAToolsHub : Form
 		{
 			InitializeComponent();
 
-			gamePathsDiag = new GamePaths();
+			toolSettingsDiag = new toolSettings();
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
 			buildWindowDiag = new buildWindow();
@@ -340,7 +370,7 @@ public partial class SAToolsHub : Form
 		//Settings
 		private void setGamePathsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			gamePathsDiag.ShowDialog();
+			toolSettingsDiag.ShowDialog();
 		}
 
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -354,7 +384,6 @@ public partial class SAToolsHub : Form
 		}
 
 		//Projects
-		
 		private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (treeView1.Nodes.Count > 0)
@@ -373,27 +402,7 @@ public partial class SAToolsHub : Form
 
 			if (!newProjFile.IsNullOrWhiteSpace())
 			{
-				var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
-				var projFileStream = File.OpenRead(newProjFile);
-				var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
-
-				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
-				PopulateTreeView(projectDirectory);
-				this.treeView1.NodeMouseClick +=
-					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-
-				setGame = projFile.GameName;
-
-				toggleButtons(setGame);
-				closeProjectToolStripMenuItem.Enabled = true;
-				if (projFile.CanBuild)
-				{
-					buildToolStripMenuItem.Enabled = true;
-					editProjectInfoToolStripMenuItem.Enabled = true;
-					tsBuild.Enabled = true;
-					tsGameRun.Enabled = true;
-					tsEditProj.Enabled = true;
-				}
+				openProject(newProjFile);
 			}
 		}
 
@@ -406,33 +415,8 @@ public partial class SAToolsHub : Form
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
 				resetOpenProject();
-				var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
-				var projFileStream = openFileDialog1.OpenFile();
-				var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
-
-				projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
-				gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
-				PopulateTreeView(projectDirectory);
-				this.treeView1.NodeMouseClick +=
-					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-
-				setGame = projFile.GameName;
-				projSplitEntries = projFile.SplitEntries;
-				if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2B")
-				{
-					projSplitMDLEntries = projFile.SplitMDLEntries;
-				}
-
-				toggleButtons(setGame);
-				closeProjectToolStripMenuItem.Enabled = true;
-				if (projFile.CanBuild)
-				{
-					buildToolStripMenuItem.Enabled = true;
-					editProjectInfoToolStripMenuItem.Enabled = true;
-					tsBuild.Enabled = true;
-					tsGameRun.Enabled = true;
-					tsEditProj.Enabled = true;
-				}
+				string projectFile = openFileDialog1.FileName;
+				openProject(projectFile);
 			}
 		}
 

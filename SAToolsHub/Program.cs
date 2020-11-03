@@ -37,8 +37,8 @@ namespace SAToolsHub
 
 			if (!AnyGamesConfigured())
 			{
-				GamePaths gamePaths = new GamePaths();
-				DialogResult startConfig = gamePaths.ShowDialog();
+				toolSettings toolSettings = new toolSettings();
+				DialogResult startConfig = toolSettings.ShowDialog();
 			}
 
 			toolsHub = new SAToolsHub();

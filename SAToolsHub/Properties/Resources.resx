@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="sadx360_final" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sadx360_final.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsPaths" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsPaths.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -127,32 +130,56 @@
   <data name="tsBuildRun" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsBuildRun.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="sa2_final" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa2_final.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsSAMDL" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsSAMDL.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="sadx_ljstar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sadx_ico.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="sadxgc_final" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sadxgc_final.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sa2_preview" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa2_preview.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsBuildManual" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsBuildManual.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sadxgc_review" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sadxgc_review.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SADXBANNER" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SADXBANNER.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tsOpenProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsOpenProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsEditProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsEditProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tsSALVL" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tsSALVL.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="sa1_autodemo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa1_autodemo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sa2_trial" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa2_trial.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tsTexEdit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsTexEdit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tsOpenProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tsOpenProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="sa1_final" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa1_final.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SA2BANNER" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SA2BANNER.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ToolsHub_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ToolsHub_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tsSALVL" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsSALVL.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tsNewProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsNewProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -163,7 +190,10 @@
   <data name="tsUpdate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsUpdate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ToolsHub_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ToolsHub_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="sadxgc_preview" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sadxgc_preview.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sa1_final1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sa1_final1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(editProj));
 			this.label2 = new System.Windows.Forms.Label();
 			this.txtName = new System.Windows.Forms.TextBox();
@@ -54,6 +55,7 @@
 			this.radGitHub = new System.Windows.Forms.RadioButton();
 			this.radManual = new System.Windows.Forms.RadioButton();
 			this.chkUpdates = new System.Windows.Forms.CheckBox();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -92,6 +94,7 @@
 			// 
 			resources.ApplyResources(this.btnSave, "btnSave");
 			this.btnSave.Name = "btnSave";
+			this.toolTip1.SetToolTip(this.btnSave, resources.GetString("btnSave.ToolTip"));
 			this.btnSave.UseVisualStyleBackColor = true;
 			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
@@ -109,6 +112,7 @@
 			// 
 			resources.ApplyResources(this.chkDLLFile, "chkDLLFile");
 			this.chkDLLFile.Name = "chkDLLFile";
+			this.toolTip1.SetToolTip(this.chkDLLFile, resources.GetString("chkDLLFile.ToolTip"));
 			this.chkDLLFile.UseVisualStyleBackColor = true;
 			this.chkDLLFile.CheckedChanged += new System.EventHandler(this.chkDLLFile_CheckedChanged);
 			// 
@@ -126,12 +130,14 @@
 			// 
 			resources.ApplyResources(this.chkMainRedir, "chkMainRedir");
 			this.chkMainRedir.Name = "chkMainRedir";
+			this.toolTip1.SetToolTip(this.chkMainRedir, resources.GetString("chkMainRedir.ToolTip"));
 			this.chkMainRedir.UseVisualStyleBackColor = true;
 			// 
 			// chkChaoRedir
 			// 
 			resources.ApplyResources(this.chkChaoRedir, "chkChaoRedir");
 			this.chkChaoRedir.Name = "chkChaoRedir";
+			this.toolTip1.SetToolTip(this.chkChaoRedir, resources.GetString("chkChaoRedir.ToolTip"));
 			this.chkChaoRedir.UseVisualStyleBackColor = true;
 			// 
 			// groupBox2
@@ -149,14 +155,14 @@
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.lstGBItems);
-			this.groupBox1.Controls.Add(this.txtAsset);
 			this.groupBox1.Controls.Add(this.lblLower);
 			this.groupBox1.Controls.Add(this.txtUpdateURL);
 			this.groupBox1.Controls.Add(this.lblUpperBox);
 			this.groupBox1.Controls.Add(this.radGamebanana);
 			this.groupBox1.Controls.Add(this.radGitHub);
 			this.groupBox1.Controls.Add(this.radManual);
+			this.groupBox1.Controls.Add(this.lstGBItems);
+			this.groupBox1.Controls.Add(this.txtAsset);
 			resources.ApplyResources(this.groupBox1, "groupBox1");
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.TabStop = false;
@@ -192,6 +198,7 @@
 			resources.ApplyResources(this.radGamebanana, "radGamebanana");
 			this.radGamebanana.Name = "radGamebanana";
 			this.radGamebanana.TabStop = true;
+			this.toolTip1.SetToolTip(this.radGamebanana, resources.GetString("radGamebanana.ToolTip"));
 			this.radGamebanana.UseVisualStyleBackColor = true;
 			this.radGamebanana.CheckedChanged += new System.EventHandler(this.radGamebanana_CheckedChanged);
 			// 
@@ -200,6 +207,7 @@
 			resources.ApplyResources(this.radGitHub, "radGitHub");
 			this.radGitHub.Name = "radGitHub";
 			this.radGitHub.TabStop = true;
+			this.toolTip1.SetToolTip(this.radGitHub, resources.GetString("radGitHub.ToolTip"));
 			this.radGitHub.UseVisualStyleBackColor = true;
 			this.radGitHub.CheckedChanged += new System.EventHandler(this.radGitHub_CheckedChanged);
 			// 
@@ -208,6 +216,7 @@
 			resources.ApplyResources(this.radManual, "radManual");
 			this.radManual.Name = "radManual";
 			this.radManual.TabStop = true;
+			this.toolTip1.SetToolTip(this.radManual, resources.GetString("radManual.ToolTip"));
 			this.radManual.UseVisualStyleBackColor = true;
 			this.radManual.CheckedChanged += new System.EventHandler(this.radManual_CheckedChanged);
 			// 
@@ -215,6 +224,7 @@
 			// 
 			resources.ApplyResources(this.chkUpdates, "chkUpdates");
 			this.chkUpdates.Name = "chkUpdates";
+			this.toolTip1.SetToolTip(this.chkUpdates, resources.GetString("chkUpdates.ToolTip"));
 			this.chkUpdates.UseVisualStyleBackColor = true;
 			this.chkUpdates.CheckedChanged += new System.EventHandler(this.chkUpdates_CheckedChanged);
 			// 
@@ -270,5 +280,6 @@
 		private System.Windows.Forms.TextBox txtUpdateURL;
 		private System.Windows.Forms.Label lblUpperBox;
 		private System.Windows.Forms.ComboBox lstGBItems;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }

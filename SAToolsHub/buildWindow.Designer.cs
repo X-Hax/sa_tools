@@ -34,6 +34,7 @@
 			this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.chkAll = new System.Windows.Forms.CheckBox();
+			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.SuspendLayout();
 			// 
 			// btnManual
@@ -83,6 +84,10 @@
 			this.toolTip1.SetToolTip(this.chkAll, "Check all items (This may be slow)");
 			this.chkAll.UseVisualStyleBackColor = true;
 			this.chkAll.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			//
+			// backgroundworker1
+			//
+			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
 			// 
 			// buildWindow
 			// 
@@ -109,5 +114,6 @@
 		private System.Windows.Forms.CheckedListBox checkedListBox1;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.CheckBox chkAll;
+		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 	}
 }

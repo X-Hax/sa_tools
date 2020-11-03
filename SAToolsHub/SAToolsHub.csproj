@@ -91,16 +91,16 @@
     <Compile Include="newProj.Designer.cs">
       <DependentUpon>newProj.cs</DependentUpon>
     </Compile>
-    <Compile Include="GamePaths.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GamePaths.Designer.cs">
-      <DependentUpon>GamePaths.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="toolSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="toolSettings.Designer.cs">
+      <DependentUpon>toolSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="ToolsHub.cs">
       <SubType>Form</SubType>
@@ -116,11 +116,11 @@
     <EmbeddedResource Include="editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GamePaths.resx">
-      <DependentUpon>GamePaths.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="newProj.resx">
       <DependentUpon>newProj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="toolSettings.resx">
+      <DependentUpon>toolSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolsHub.resx">
       <DependentUpon>ToolsHub.cs</DependentUpon>
@@ -226,6 +226,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\tools_ico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa1_final.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa1_autodemo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa2_final.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa2_trial.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa2_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sadxgc_final.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sadxgc_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sadxgc_review.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sadx360_final.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sa1_final1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

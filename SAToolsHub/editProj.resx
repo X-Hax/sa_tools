@@ -288,6 +288,9 @@
   <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="btnSave.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 9.75pt</value>
   </data>
@@ -302,6 +305,9 @@
   </data>
   <data name="btnSave.Text" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="btnSave.ToolTip" xml:space="preserve">
+    <value>Saves changes to the mod ini file.</value>
   </data>
   <data name="&gt;&gt;btnSave.Name" xml:space="preserve">
     <value>btnSave</value>
@@ -390,6 +396,9 @@
   <data name="chkDLLFile.Text" xml:space="preserve">
     <value>Use DLL File</value>
   </data>
+  <data name="chkDLLFile.ToolTip" xml:space="preserve">
+    <value>Enables the DLL Field in the mod ini file. Type the DLL name below.</value>
+  </data>
   <data name="&gt;&gt;chkDLLFile.Name" xml:space="preserve">
     <value>chkDLLFile</value>
   </data>
@@ -471,6 +480,9 @@
   <data name="chkMainRedir.Text" xml:space="preserve">
     <value>Main Save</value>
   </data>
+  <data name="chkMainRedir.ToolTip" xml:space="preserve">
+    <value>Redirects the main game save file to use a save file provided by your mod.</value>
+  </data>
   <data name="&gt;&gt;chkMainRedir.Name" xml:space="preserve">
     <value>chkMainRedir</value>
   </data>
@@ -500,6 +512,9 @@
   </data>
   <data name="chkChaoRedir.Text" xml:space="preserve">
     <value>Chao Save</value>
+  </data>
+  <data name="chkChaoRedir.ToolTip" xml:space="preserve">
+    <value>Redirects the Chao save file to use a save file provided by your mod.</value>
   </data>
   <data name="&gt;&gt;chkChaoRedir.Name" xml:space="preserve">
     <value>chkChaoRedir</value>
@@ -540,48 +555,6 @@
   <data name="&gt;&gt;groupBox2.ZOrder" xml:space="preserve">
     <value>9</value>
   </data>
-  <data name="lstGBItems.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 109</value>
-  </data>
-  <data name="lstGBItems.Size" type="System.Drawing.Size, System.Drawing">
-    <value>385, 24</value>
-  </data>
-  <data name="lstGBItems.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;lstGBItems.Name" xml:space="preserve">
-    <value>lstGBItems</value>
-  </data>
-  <data name="&gt;&gt;lstGBItems.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lstGBItems.Parent" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;lstGBItems.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="txtAsset.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 109</value>
-  </data>
-  <data name="txtAsset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>385, 22</value>
-  </data>
-  <data name="txtAsset.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;txtAsset.Name" xml:space="preserve">
-    <value>txtAsset</value>
-  </data>
-  <data name="&gt;&gt;txtAsset.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;txtAsset.Parent" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;txtAsset.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <data name="lblLower.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -610,7 +583,7 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;lblLower.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>0</value>
   </data>
   <data name="txtUpdateURL.Location" type="System.Drawing.Point, System.Drawing">
     <value>6, 65</value>
@@ -631,7 +604,7 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;txtUpdateURL.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>1</value>
   </data>
   <data name="lblUpperBox.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -658,7 +631,7 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;lblUpperBox.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>2</value>
   </data>
   <data name="radGamebanana.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -678,6 +651,12 @@
   <data name="radGamebanana.Text" xml:space="preserve">
     <value>Gamebanana Item</value>
   </data>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="radGamebanana.ToolTip" xml:space="preserve">
+    <value>Updates using Gamebanana upload IDs and Mod Types,</value>
+  </data>
   <data name="&gt;&gt;radGamebanana.Name" xml:space="preserve">
     <value>radGamebanana</value>
   </data>
@@ -688,7 +667,7 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;radGamebanana.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>3</value>
   </data>
   <data name="radGitHub.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -708,6 +687,9 @@
   <data name="radGitHub.Text" xml:space="preserve">
     <value>Github Asset</value>
   </data>
+  <data name="radGitHub.ToolTip" xml:space="preserve">
+    <value>Updates using GitHub's Release feature.</value>
+  </data>
   <data name="&gt;&gt;radGitHub.Name" xml:space="preserve">
     <value>radGitHub</value>
   </data>
@@ -718,7 +700,7 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;radGitHub.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>4</value>
   </data>
   <data name="radManual.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -735,6 +717,9 @@
   <data name="radManual.Text" xml:space="preserve">
     <value>Custom URL</value>
   </data>
+  <data name="radManual.ToolTip" xml:space="preserve">
+    <value>Updates through your own website or hosting.</value>
+  </data>
   <data name="&gt;&gt;radManual.Name" xml:space="preserve">
     <value>radManual</value>
   </data>
@@ -745,6 +730,48 @@
     <value>groupBox1</value>
   </data>
   <data name="&gt;&gt;radManual.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="lstGBItems.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 109</value>
+  </data>
+  <data name="lstGBItems.Size" type="System.Drawing.Size, System.Drawing">
+    <value>385, 24</value>
+  </data>
+  <data name="lstGBItems.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;lstGBItems.Name" xml:space="preserve">
+    <value>lstGBItems</value>
+  </data>
+  <data name="&gt;&gt;lstGBItems.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lstGBItems.Parent" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="&gt;&gt;lstGBItems.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="txtAsset.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 109</value>
+  </data>
+  <data name="txtAsset.Size" type="System.Drawing.Size, System.Drawing">
+    <value>385, 22</value>
+  </data>
+  <data name="txtAsset.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;txtAsset.Name" xml:space="preserve">
+    <value>txtAsset</value>
+  </data>
+  <data name="&gt;&gt;txtAsset.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtAsset.Parent" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="&gt;&gt;txtAsset.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
   <data name="groupBox1.Enabled" type="System.Boolean, mscorlib">
@@ -795,6 +822,9 @@
   <data name="chkUpdates.Text" xml:space="preserve">
     <value>Enable Update Options</value>
   </data>
+  <data name="chkUpdates.ToolTip" xml:space="preserve">
+    <value>Enables the below options for adding auto-update features to your mod.</value>
+  </data>
   <data name="&gt;&gt;chkUpdates.Name" xml:space="preserve">
     <value>chkUpdates</value>
   </data>
@@ -818,6 +848,12 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Edit Project Info</value>
+  </data>
+  <data name="&gt;&gt;toolTip1.Name" xml:space="preserve">
+    <value>toolTip1</value>
+  </data>
+  <data name="&gt;&gt;toolTip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>editProj</value>

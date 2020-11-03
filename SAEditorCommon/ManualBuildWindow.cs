@@ -267,6 +267,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 
 				if (folderDialog.ShowDialog(this) == DialogResult.OK)
 				{
+					Dictionary<string, bool> compiledEXEItems = new Dictionary<string, bool>();
 					// use a folder dialog here instead of a file dialog
 					foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 					{

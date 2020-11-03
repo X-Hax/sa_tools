@@ -49,8 +49,15 @@ namespace SA_Tools
 	public enum Game
 	{
 		SA1,
+		SA1AD,
 		SADX,
+		SADXGC,
+		SADXGCP,
+		SADXGCR,
+		SADX360,
 		SA2,
+		SA2TT,
+		SA2P,
 		SA2B
 	}
 
