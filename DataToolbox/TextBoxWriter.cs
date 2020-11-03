@@ -3,7 +3,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace SonicRetro.SAModel.DataExtractor
+namespace SonicRetro.SAModel.DataToolbox
 {
 	public class TextBoxWriter : TextWriter
 	{

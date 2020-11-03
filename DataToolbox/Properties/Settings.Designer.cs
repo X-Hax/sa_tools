@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SonicRetro.SAModel.DataExtractor.Properties {
+namespace SonicRetro.SAModel.DataToolbox.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

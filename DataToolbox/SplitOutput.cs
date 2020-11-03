@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.DataExtractor
+namespace SonicRetro.SAModel.DataToolbox
 {
 	public partial class SplitProgress : Form
 	{
