@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.DataExtractor
+﻿namespace SonicRetro.SAModel.DataToolbox
 {
 	using System.Windows.Forms; // for XML docs
 

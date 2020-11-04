@@ -704,6 +704,13 @@ namespace DLCTool
 			{
 				if (args[a] == "-w") writeall = true;
 				if (args[a] == "-d") noencrypt = true;
+				if (args[a] == "-t")
+				{
+					byte[] zfile = File.ReadAllBytes(filename);
+					DecryptData(ref zfile);
+					File.WriteAllBytes(filename + "_dec.bin", zfile);
+					return;
+				}
 			}
 			if (Directory.Exists(filename))
 			{

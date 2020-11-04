@@ -12,6 +12,7 @@ A DLC with a "_new" suffix will be created.
 ADDITIONAL SWITCHES
 -w: Extract raw binary section in addition to the model contained in it.
 -d: Don't encrypt the DLC file. The game won't recognize it but the file itself will be easier to inspect in a HEX editor.
+-t: Decrypt a raw binary file with Darksecond/Sappharad's code.
 
 GETTING STARTED
 Extract any of the official DLCs, replace the converted resources, edit the metadata and rebuild the file.

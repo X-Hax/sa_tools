@@ -4,7 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-namespace SonicRetro.SAModel.DataExtractor
+namespace SonicRetro.SAModel.DataToolbox
 {
 	using System;
 	using System.ComponentModel;
