@@ -49,7 +49,6 @@ namespace SAToolsHub
 		bool ableBuild = new bool();
 		List<SplitEntry> splitEntries = new List<SplitEntry>();
 
-
 		public newProj()
 		{
 			InitializeComponent();
@@ -559,6 +558,7 @@ namespace SAToolsHub
 
 		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			//This is only here as a failsafe in case something goes catastrophically wrong with the RadioButtons check.
 			if (tabControl1.SelectedTab == tabMod)
 			{
 				radSA1.Checked = false;
