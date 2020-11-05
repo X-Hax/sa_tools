@@ -197,7 +197,8 @@ namespace SonicRetro.SAModel
 		{
 			if (ByteConverter.BigEndian)
 			{
-				if (!ByteConverter.Reverse)
+				//"Reverse" is for the order used in SADX Gamecube
+				if (ByteConverter.Reverse)
 				{
 					DiffuseColor = Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 					SpecularColor = Color.FromArgb(file[address + 7], file[address + 4], file[address + 5], file[address + 6]);

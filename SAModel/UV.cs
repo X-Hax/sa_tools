@@ -28,7 +28,8 @@ namespace SonicRetro.SAModel
 
 		public UV(byte[] file, int address, bool UVH)
 		{
-			if (!ByteConverter.Reverse)
+			//"Reverse" is for the order used in SADX Gamecube
+			if ((ByteConverter.Reverse && ByteConverter.BigEndian) || !ByteConverter.BigEndian)
 			{
 				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
 				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
