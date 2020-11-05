@@ -85,6 +85,7 @@ namespace ObjScan
 						sw.WriteLine("type=animation");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
+						sw.WriteLine("filename=actions/" + entry.Key.ToString("X8") + ".saanim");
 						sw.WriteLine();
 						break;
 				}
@@ -615,7 +616,7 @@ namespace ObjScan
 				Console.WriteLine("Usage with split INI: objscan <FILENAME> <TYPE> [-noaction]");
 				Console.WriteLine("Usage without split INI: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset offset] [-file modelfile] [-noaction]\n");
 				Console.WriteLine("Argument description:");
-				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_x to scan the X360 version of SADX.");
+				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_g to scan the Gamecube version of SADX.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
 				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, chunkmodel, gcmodel, landtable, all, match");
@@ -698,12 +699,12 @@ namespace ObjScan
 						scan_sadx_model = true;
 						scan_sa2_model = true;
 						break;
-					case "sadx_x":
-						game = Game.SADX;
+					case "sadx_g":
+						game = Game.SA1;
 						bigendian = true;
 						reverse = true;
-						scan_sadx_land = true;
-						scan_sadx_model = true;
+						scan_sa1_land = true;
+						scan_sa1_model = true;
 						scan_sa2_model = true;
 						break;
 					case "sa2":
