@@ -206,7 +206,10 @@ namespace MLTExtract
 				start = file[address + 0x24];// 0 to 127
 				end = file[address + 0x25];// 0 to 127
 				basenote = file[address + 0x26];// 0 to 127
-				finetune = (file[address + 0x27]) * 2;// -64 to 63 multiplied by 2
+				finetune = (sbyte)(file[address + 0x27]) / 2;// -64 to 63 multiplied by 2
+				double ass= ((100.0 * (basenote - 69)) + finetune) / 1200.0;
+				double frq = 440.0 * Math.Pow(2.0f, ass);
+				Console.WriteLine("Freq: {0}", frq);
 				unknown1 = file[address + 0x28];
 				unknown2 = file[address + 0x29];
 				velocitycurve = file[address + 0x2A];// 
@@ -360,6 +363,34 @@ namespace MLTExtract
 				}
 			}
 		}
+		public class BankSequence
+		{
+			string header; //SMSB
+			int version;
+			uint filesize;
+			uint sequencedata;
+			//List<BankSequenceData> sequences;
+			int sequence_count;
+			public BankSequence(byte[] file, int address, string dir)
+			{
+				header = System.Text.Encoding.ASCII.GetString(file, address, 4);
+				version = BitConverter.ToInt32(file, address + 4);
+				filesize = BitConverter.ToUInt32(file, address + 8);
+				sequence_count = BitConverter.ToInt32(file, address + 0xC);
+				Console.WriteLine("{0} v.{1}, size {2}, sequences: {3}", header, version, filesize, sequence_count);
+				for (int s = 0; s < sequence_count; s++)
+				{
+					sequencedata = BitConverter.ToUInt32(file, address + 0x10 + 4*s);
+					Console.WriteLine("Sequence at {0} ({1})", sequencedata.ToString("X"), s);
+				}
+			}
+		}
+
+		static void ProcessSequenceBank(string filename, string dir)
+		{
+			byte[] file = File.ReadAllBytes(filename);
+			BankSequence bnk = new BankSequence(file, 0, dir);
+		}
 
 		static void ProcessProgramBank(string filename, string dir)
 		{
@@ -403,6 +434,12 @@ namespace MLTExtract
 			{
 				Directory.CreateDirectory(dir);
 				ProcessProgramBank(filename, dir);
+				return;
+			}
+			else if (Path.GetExtension(filename).ToLowerInvariant() == ".msb")
+			{
+				//Directory.CreateDirectory(dir);
+				ProcessSequenceBank(filename, dir);
 				return;
 			}
 			if (!File.Exists(filename))
