@@ -1,1 +1,1 @@
-"../ProjectManager/projectmanager.exe" -m Split -f data/sonic2app.exe -d splitsonic2app.ini -o output/
+..\bin\split binary data\sonic2app.exe splitsonic2app.ini output/
