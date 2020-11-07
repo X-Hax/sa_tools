@@ -546,15 +546,17 @@ namespace ObjScan
 					{
 						foreach (NJS_OBJECT child in mdl.Children)
 						{
-							Console.WriteLine("Deleting child object {0}", dir + "\\" + model_dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
-							File.Delete(dir + "\\" + model_dir + "\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+							string cpath = Path.Combine(dir, model_dir, child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+							Console.WriteLine("Deleting child object {0}", cpath);
+							File.Delete(cpath);
 							deleteditems.Add(int.Parse(child.Name.Substring(7, child.Name.Length - 7), NumberStyles.AllowHexSpecifier));
 						}
 					}
 					if (mdl.Sibling != null)
 					{
-						Console.WriteLine("Deleting sibling object {0}", dir + "\\" + model_dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
-						File.Delete(dir + "\\" + model_dir + "\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+						string spath = Path.Combine(dir,  model_dir, mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+						Console.WriteLine("Deleting sibling object {0}", spath);
+						File.Delete(spath);
 						deleteditems.Add(int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier));
 					}
 				}
@@ -871,7 +873,7 @@ namespace ObjScan
 			}
 			else datafile = datafile_temp;
 			if (imageBase == 0) imageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
-			dir = Environment.CurrentDirectory + "\\" + Path.GetFileNameWithoutExtension(filename);
+			dir = Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename));
 			if (Directory.Exists(dir)) Directory.Delete(dir, true);
 			Directory.CreateDirectory(dir);
 			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
