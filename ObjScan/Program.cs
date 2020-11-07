@@ -428,8 +428,9 @@ namespace ObjScan
 				tw.Close();
 			}
 		}
-		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt)
+		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt, bool bigendian)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			if (nummdl == 0) return;
 			for (int address = 0; address < datafile.Length - 8; address += 4)
 			{
@@ -456,12 +457,31 @@ namespace ObjScan
 				}
 			}
 		}
-		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
+		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt, bool bigendian)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			string modelstring = "basicmodels";
+			string modelext = ".sa1mdl";
 			List<int> modeladdr = new List<int>();
 			if (addresslist.Count == 0) return;
 			Directory.CreateDirectory(Path.Combine(dir, "actions"));
 			Console.WriteLine("Scanning for actions...");
+			switch (modelfmt)
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					modelstring = "basicmodels";
+					modelext = ".sa1mdl";
+					break;
+				case ModelFormat.Chunk:
+					modelstring = "chunkmodels";
+					modelext = ".sa2mdl";
+					break;
+				case ModelFormat.GC:
+					modelstring = "gcmodels";
+					modelext = ".sa2bmdl";
+					break;
+			}
 			foreach (var entry in addresslist)
 			{
 				if (deleteditems.Contains(entry.Key)) continue;
@@ -469,19 +489,24 @@ namespace ObjScan
 			}
 			foreach (int maddr in modeladdr)
 			{
-				try
+				if (File.Exists(Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext)))
 				{
-					ModelFile mdlfile = new ModelFile(Path.Combine(dir, "basicmodels", maddr.ToString("X8") + ".sa1mdl"));
-					ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
-				}
-				catch
-				{
-					Console.WriteLine("Error adding action for model at {0}", maddr.ToString("X"));
+					try
+					{
+						ModelFile mdlfile = new ModelFile(Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext));
+						ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt, bigendian);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Error adding action for model at {0}: {1}", maddr.ToString("X"), ex.ToString());
+					}
 				}
 			}
 		}
-		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
+		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt, bool bigendian)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			Console.WriteLine("Model scan: {0}", modelfmt);
 			string model_extension = ".sa1mdl";
 			string model_dir = "basicmodels";
 			string model_type = "NJS_OBJECT";
@@ -504,6 +529,7 @@ namespace ObjScan
 					model_type = "NJS_GC_OBJECT";
 					break;
 			}
+			Console.WriteLine("Create folder: {0}", model_dir);
 			Directory.CreateDirectory(Path.Combine(dir, model_dir));
 			for (int u = 0; u < datafile.Length - 51; u += 4)
 			{
@@ -532,34 +558,39 @@ namespace ObjScan
 						deleteditems.Add(int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier));
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
+					Console.WriteLine("Error adding model at {0}: {1}", address.ToString("X"), ex.Message.ToString());
 					continue;
 				}
 			}
 		}
 
-		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, LandTableFormat landfmt, string dir)
+		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, LandTableFormat landfmt, string dir, bool bigendian)
 		{
+			bool delete_basic = false;
+			bool delete_chunk = false;
+			bool delete_gc = false;
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			string model_extension = ".sa1mdl";
 			string model_dir = "basicmodels";
 			switch (landfmt)
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					model_extension = ".sa1mdl";
-					model_dir = "basicmodels";
+					delete_basic = true;
 					break;
 				case LandTableFormat.SA2:
-					model_extension = ".sa2mdl";
-					model_dir = "chunkmodels";
+					delete_basic = true;
+					delete_chunk = true;
 					break;
 				case LandTableFormat.SA2B:
-					model_extension = ".sa2bmdl";
-					model_dir = "gcmodels";
+					delete_basic = true;
+					delete_gc = true;
+					delete_chunk = true;
 					break;
 			}
-			if (!(Directory.Exists(dir + "\\" + model_dir))) return;
+
 			foreach (int landaddr in landtablelist)
 			{
 				//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
@@ -568,18 +599,59 @@ namespace ObjScan
 				{
 					foreach (COL col in land.COL)
 					{
-						File.Delete(dir + "\\" + model_dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-						Console.WriteLine("Deleting landtable object {0}", dir + "\\" + model_dir + "\\" + col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
-						deleteditems.Add(int.Parse(col.Model.Name.Substring(7, col.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier));
+						for (int i = 0; i < 3; i++)
+						{
+							if (i == 0 && delete_basic)
+							{
+								model_dir = "basicmodels";
+								model_extension = ".sa1mdl";
+							}
+							else if (i == 1 && delete_chunk)
+							{
+								model_dir = "chunkmodels";
+								model_extension = ".sa2mdl";
+							}
+							else if (i == 2 && delete_gc)
+							{
+								model_dir = "gcmodels";
+								model_extension = ".sa2bmdl";
+							}
+							string col_filename = Path.Combine(dir, model_dir, col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+							if (File.Exists(col_filename))
+							{
+								File.Delete(col_filename);
+								Console.WriteLine("Deleting landtable object {0}", col_filename);
+								deleteditems.Add(int.Parse(col.Model.Name.Substring(7, col.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier));
+							}
+						}
 					}
-				}
-				if (land.Anim.Count > 0)
-				{
 					foreach (GeoAnimData anim in land.Anim)
 					{
-						File.Delete(dir + "\\" + model_dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-						Console.WriteLine("Deleting landtable GeoAnim object {0}", dir + "\\" + model_dir + "\\" + anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
-						deleteditems.Add(int.Parse(anim.Model.Name.Substring(7, anim.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier));
+						for (int i = 0; i < 3; i++)
+						{
+							if (i == 0 && delete_basic)
+							{
+								model_dir = "basicmodels";
+								model_extension = ".sa1mdl";
+							}
+							else if (i == 1 && delete_chunk)
+							{
+								model_dir = "chunkmodels";
+								model_extension = ".sa2mdl";
+							}
+							else if (i == 2 && delete_gc)
+							{
+								model_dir = "gcmodels";
+								model_extension = ".sa2bmdl";
+							}
+							string anim_filename = Path.Combine(dir, model_dir, anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+							if (File.Exists(anim_filename))
+							{
+								File.Delete(anim_filename);
+								Console.WriteLine("Deleting landtable GeoAnim object {0}", anim_filename);
+								deleteditems.Add(int.Parse(anim.Model.Name.Substring(7, anim.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier));
+							}
+						}
 					}
 				}
 			}
@@ -821,10 +893,10 @@ namespace ObjScan
 					if (scan_sadx_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SADX, landtablelist);
 					if (scan_sa2_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA2, landtablelist);
 					if (scan_sa2b_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA2B, landtablelist);
-					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
-					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
-					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
-					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC);
+					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
+					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
+					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
+					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
 					break;
 				case "landtable":
 					if (scan_sa1_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA1, landtablelist);
@@ -834,26 +906,26 @@ namespace ObjScan
 					skipactions = true;
 					break;
 				case "model":
-					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
-					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
-					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
-					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC);
+					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
+					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
+					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
+					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
 					break;
 				case "basicmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
+					ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
 					break;
 				case "basicdxmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
+					ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
 					break;
 				case "chunkmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
+					ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
 					break;
 				case "gcmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.GC);
+					ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
 					break;
 			}
-			CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir);
-			if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
+			CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir, bigendian);
+			if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt, bigendian);
 			CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 			//Clean up empty folders
 			bool land = false;
