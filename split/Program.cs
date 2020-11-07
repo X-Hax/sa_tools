@@ -123,6 +123,10 @@ namespace Split
 						else
 							SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
 						break;
+					default:
+						Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
+						Console.ReadLine();
+						return;
 				}
 				
 			}
