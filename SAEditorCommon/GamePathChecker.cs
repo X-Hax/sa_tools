@@ -13,8 +13,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			{
 				bool sadxPCPathStringExists = sadxPCPath != null && sadxPCPath.Length > 0;
 				bool sadxPCPathExists = Directory.Exists(sadxPCPath);
-				bool sonicExeExists = File.Exists(string.Concat(sadxPCPath + "\\", "sonic.exe")); // todo: maybe md5 check this so that we can tell it's the right version?
-				bool modLoaderPresent = File.Exists(string.Concat(sadxPCPath + "\\", "SADXModManager.exe"));
+				bool sonicExeExists = File.Exists(Path.Combine(sadxPCPath, "sonic.exe")); // todo: maybe md5 check this so that we can tell it's the right version?
+				bool modLoaderPresent = File.Exists(Path.Combine(sadxPCPath, "SADXModManager.exe"));
 
 				if (!sadxPCPathStringExists)
 				{
