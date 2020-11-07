@@ -80,7 +80,7 @@ namespace SA_Tools.Split
 					int address = data.Address;
 					bool nohash = false;
 
-					string fileOutputPath = string.Concat(projectFolderName, data.Filename);
+					string fileOutputPath = Path.Combine(projectFolderName, data.Filename);
 					Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " → " + fileOutputPath);
 					Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 					switch (type)
@@ -443,7 +443,7 @@ namespace SA_Tools.Split
 						obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
 					}
 
-					string masterObjectListOutputPath = string.Concat(projectFolderName, inifile.MasterObjectList);
+					string masterObjectListOutputPath = Path.Combine(projectFolderName, inifile.MasterObjectList);
 
 					IniSerializer.Serialize(masterobjlist, masterObjectListOutputPath);
 				}

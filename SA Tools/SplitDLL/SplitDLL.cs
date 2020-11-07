@@ -89,7 +89,7 @@ namespace SA_Tools.SplitDLL
 					string fileOutputPath = "";
 					if (data.Filename != null)
 					{
-						fileOutputPath = string.Concat(projectFolderName, data.Filename);
+						fileOutputPath = Path.Combine(projectFolderName, data.Filename);
 
 						Console.WriteLine(name + " -> " + fileOutputPath);
 						Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
@@ -689,7 +689,7 @@ namespace SA_Tools.SplitDLL
 				}
 				foreach (ModelAnimations item in models)
 				{
-					string modelOutputPath = string.Concat(projectFolderName, item.Filename);
+					string modelOutputPath = Path.Combine(projectFolderName, item.Filename);
 					//string modelOutputPath = item.Filename;
 
 					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format);
