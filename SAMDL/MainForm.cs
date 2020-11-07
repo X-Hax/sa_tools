@@ -43,10 +43,10 @@ namespace SonicRetro.SAModel.SAMDL
 		private void SAMDL_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-			LoadAlternate(files);
+			LoadModelList(files);
 		}
 
-		public void LoadAlternate(string[] files, bool cmdLoad = false)
+		public void LoadModelList(string[] files, bool cmdLoad = false)
 		{
 			bool modelLoaded = false; //We can only load one model at once for now. Set to true when user loads first file and ignore others.
 			bool modelLoadedWarning = false; //Flag so we can warn users that they should do one model at a time.
@@ -220,7 +220,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
-				LoadFile(Program.Arguments[0]);
+				LoadModelList(Program.Arguments, true);
 		}
 
 		void ShowWelcomeScreen()
@@ -431,21 +431,32 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe = 0;
 			if (ModelFile.CheckModelFile(filename))
 			{
-				modelFile = new ModelFile(filename);
-				outfmt = modelFile.Format;
-				if (modelFile.Model.Sibling != null)
+				try
 				{
-					model = new NJS_OBJECT { Name = "Root" };
-					model.AddChild(modelFile.Model);
-					rootSiblingMode = true;
+					modelFile = new ModelFile(filename);
+					outfmt = modelFile.Format;
+					if (modelFile.Model.Sibling != null)
+					{
+						model = new NJS_OBJECT { Name = "Root" };
+						model.AddChild(modelFile.Model);
+						rootSiblingMode = true;
+					}
+					else
+					{
+						model = modelFile.Model;
+						rootSiblingMode = false;
+					}
+					animations = new List<NJS_MOTION>(modelFile.Animations);
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 				}
-				else
+				catch (Exception ex)
 				{
-					model = modelFile.Model;
-					rootSiblingMode = false;
+					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
+					log.WriteLog();
+					report.ShowDialog();
+					return;
 				}
-				animations = new List<NJS_MOTION>(modelFile.Animations);
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else if (extension.Equals(".nj") || extension.Equals(".gj"))
 			{

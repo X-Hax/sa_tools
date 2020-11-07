@@ -21,8 +21,6 @@ namespace SonicRetro.SAModel.SAMDL
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(samdl = new MainForm());
-
-			samdl.LoadAlternate(args, true);
 		}
 	}
 }
