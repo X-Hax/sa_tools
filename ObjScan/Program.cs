@@ -159,6 +159,7 @@ namespace ObjScan
 			int flags = 0;
 			uint vertlist = 0;
 			uint polylist = 0;
+			uint chunkend = 0;
 			int radius = 0;
 			uint attach = 0;
 			uint child = 0;
@@ -170,7 +171,9 @@ namespace ObjScan
 			short mesh_count = 0;
 			short mat_count = 0;
 			uint opaquepoly = 0;
+			short opaquecount = 0;
 			uint alphapoly = 0;
+			short alphacount = 0;
 			Vertex pos;
 			Vertex scl;
 			switch (modelfmt)
@@ -231,6 +234,8 @@ namespace ObjScan
 					{
 						if (attach < imageBase) return false;
 						if (attach > (uint)datafile.Length + imageBase - 51) return false;
+						chunkend = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) - 4);
+						if (vertlist != 0 && chunkend != 0xFF) return false;
 						vertlist = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase));
 						if (vertlist > (uint)datafile.Length + imageBase - 51) return false;
 						if (vertlist != 0 && vertlist < imageBase) return false;
@@ -279,6 +284,14 @@ namespace ObjScan
 						alphapoly = ByteConverter.ToUInt32(datafile, (int)(attach - imageBase) + 0xC);
 						if (alphapoly != 0 && alphapoly < imageBase) return false;
 						if (alphapoly > (uint)datafile.Length + imageBase - 51) return false;
+						opaquecount = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x10);
+						if (opaquepoly != 0 && opaquecount < 0) return false;
+						if (opaquepoly == 0 && opaquecount > 0) return false;
+						alphacount = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x12);
+						if (alphapoly != 0 && alphacount < 0) return false;
+						if (alphapoly == 0 && alphacount > 0) return false;
+						radius = ByteConverter.ToInt32(datafile, (int)(attach - imageBase) + 0x20);
+						if (radius < 0) return false;
 					}
 					pos = new Vertex(datafile, address + 8);
 					if (pos.X < -100000 || pos.X > 100000) return false;
