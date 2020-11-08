@@ -13,7 +13,8 @@ namespace ObjScan
 		static public List<int> deleteditems;
 		static public Dictionary<int, string> addresslist;
 		static public Dictionary<int, int[]> actionlist;
-		static void CreateSplitIni(string filename, Game game, uint imageBase, bool bigendian, bool reverse, uint startoffset)
+		static public bool bigendian;
+		static void CreateSplitIni(string filename, uint imageBase, bool dx, bool reverse, uint startoffset)
 		{
 			if (addresslist.Count == 0) return;
 			if (File.Exists(filename)) filename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + "_new.ini");
@@ -21,7 +22,6 @@ namespace ObjScan
 			StreamWriter sw = File.CreateText(filename);
 			sw.WriteLine("key=" + imageBase.ToString("X"));
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") sw.WriteLine("compressed=true");
-			sw.WriteLine("game=" + game.ToString());
 			if (bigendian) sw.WriteLine("bigendian=true");
 			if (reverse) sw.WriteLine("reverse=true");
 			if (startoffset != 0) sw.WriteLine("offset=" + startoffset.ToString("X8"));
@@ -50,7 +50,7 @@ namespace ObjScan
 					case "NJS_OBJECT":
 					case "obj":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
-						if (game == Game.SADX) sw.WriteLine("type=basicdxmodel");
+						if (dx) sw.WriteLine("type=basicdxmodel");
 						else sw.WriteLine("type=basicmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=basicmodels/" + entry.Key.ToString("X8") + ".sa1mdl");
@@ -119,6 +119,7 @@ namespace ObjScan
 		}
 		static uint FindModel(byte[] datafile, string dir, ModelFormat modelfmt, uint imageBase, string filename)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			//Basic only for now
 			uint result = 0;
 			ModelFile modelFile = new ModelFile(filename);
@@ -154,6 +155,7 @@ namespace ObjScan
 		}
 		static bool CheckModel(byte[] datafile, int address, uint imageBase, bool recursive, ModelFormat modelfmt)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			int flags = 0;
 			uint vertlist = 0;
 			uint polylist = 0;
@@ -303,9 +305,9 @@ namespace ObjScan
 			if (recursive) Console.WriteLine("{0} model at {1}", modelfmt.ToString(), address.ToString("X"));
 			return true;
 		}
-
 		static bool CheckLandTable(byte[] datafile, int address, uint imageBase, LandTableFormat landfmt)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			short COLCount;
 			short AnimCount;
 			short ChunkCount;
@@ -374,9 +376,9 @@ namespace ObjScan
 			}
 			return true;
 		}
-
 		static void ScanLandtable(byte[] datafile, uint imageBase, string dir, LandTableFormat landfmt, List<int> landtablelist)
 		{
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			Console.WriteLine("Landtable scan: {0}", landfmt.ToString());
 			string landtable_extension = ".sa1lvl";
 
@@ -417,7 +419,6 @@ namespace ObjScan
 				}
 			}
 		}
-
 		static void AddAction(int objectaddr, int motionaddr, string dir)
 		{
 			using (FileStream str = new FileStream(Path.Combine(dir, "basicmodels", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
@@ -428,7 +429,7 @@ namespace ObjScan
 				tw.Close();
 			}
 		}
-		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt, bool bigendian)
+		static void ScanActions(byte[] datafile, uint imageBase, string dir, int addr, int nummdl, ModelFormat modelfmt)
 		{
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			if (nummdl == 0) return;
@@ -457,7 +458,7 @@ namespace ObjScan
 				}
 			}
 		}
-		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt, bool bigendian)
+		static void ScanAnimations(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			string modelstring = "basicmodels";
@@ -494,7 +495,7 @@ namespace ObjScan
 					try
 					{
 						ModelFile mdlfile = new ModelFile(Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext));
-						ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt, bigendian);
+						ScanActions(datafile, imageBase, dir, maddr, mdlfile.Model.CountAnimated(), modelfmt);
 					}
 					catch (Exception ex)
 					{
@@ -503,7 +504,7 @@ namespace ObjScan
 				}
 			}
 		}
-		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt, bool bigendian)
+		static void ScanModel(byte[] datafile, uint imageBase, string dir, ModelFormat modelfmt)
 		{
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			Console.WriteLine("Model scan: {0}", modelfmt);
@@ -566,8 +567,7 @@ namespace ObjScan
 				}
 			}
 		}
-
-		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, string dir, bool bigendian)
+		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, string dir)
 		{
 			bool delete_basic = false;
 			bool delete_chunk = false;
@@ -663,7 +663,6 @@ namespace ObjScan
 				}
 			}
 		}
-
 		static void Main(string[] args)
 		{
 			bool scan_sa1_land = false;
@@ -678,12 +677,11 @@ namespace ObjScan
 			addresslist = new Dictionary<int, string>();
 			List<int> landtablelist = new List<int>();
 			actionlist = new Dictionary<int, int[]>();
-			Game game;
 			string filename;
 			string dir;
-			bool bigendian = false;
 			bool reverse = false;
 			string matchfile = "";
+			ModelFormat modelfmt = ModelFormat.BasicDX;
 			bool skipactions = false;
 			uint startoffset = 0;
 			byte[] datafile;
@@ -723,7 +721,6 @@ namespace ObjScan
 				if (File.Exists(inifilename))
 				{
 					IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-					game = inifile.Game;
 					bigendian = inifile.BigEndian;
 					reverse = inifile.Reverse;
 					startoffset = inifile.StartOffset;
@@ -755,66 +752,66 @@ namespace ObjScan
 				switch (args[0].ToLowerInvariant())
 				{
 					case "sa1":
-						game = Game.SA1;
 						scan_sa1_land = true;
 						scan_sa1_model = true;
+						modelfmt = ModelFormat.Basic;
 						break;
 					case "sa1_b":
-						game = Game.SA1;
 						bigendian = true;
 						scan_sa1_land = true;
 						scan_sa1_model = true;
+						modelfmt = ModelFormat.Basic;
 						break;
 					case "sadx":
-						game = Game.SADX;
 						scan_sadx_land = true;
 						scan_sadx_model = true;
 						scan_sa2_model = true;
+						modelfmt = ModelFormat.BasicDX;
 						break;
 					case "sadx_b":
-						game = Game.SADX;
 						bigendian = true;
 						scan_sadx_land = true;
 						scan_sadx_model = true;
 						scan_sa2_model = true;
+						modelfmt = ModelFormat.BasicDX;
 						break;
 					case "sadx_g":
-						game = Game.SA1;
 						bigendian = true;
 						reverse = true;
 						scan_sa1_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
+						modelfmt = ModelFormat.Basic;
 						break;
 					case "sa2":
-						game = Game.SA2;
 						scan_sa2_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
+						modelfmt = ModelFormat.Chunk;
 						break;
 					case "sa2_b":
-						game = Game.SA2;
 						bigendian = true;
 						scan_sa2_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
+						modelfmt = ModelFormat.Chunk;
 						break;
 					case "sa2b":
-						game = Game.SA2B;
 						scan_sa2_land = true;
 						scan_sa2b_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
 						scan_sa2b_model = true;
+						modelfmt = ModelFormat.GC;
 						break;
 					case "sa2b_b":
-						game = Game.SA2B;
 						bigendian = true;
 						scan_sa2_land = true;
 						scan_sa2b_land = true;
 						scan_sa1_model = true;
 						scan_sa2_model = true;
 						scan_sa2b_model = true;
+						modelfmt = ModelFormat.GC;
 						break;
 					default:
 						Console.WriteLine("Error parsing game type.\nCorrect game types are: SA1, SADX, SA1_b, SADX_b, SADX_x, SA2, SA2B, SA2_b, SA2B_b");
@@ -844,29 +841,6 @@ namespace ObjScan
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
-			bool SA2 = game == Game.SA2 | game == Game.SA2B;
-			ModelFormat modelfmt = ModelFormat.BasicDX;
-			LandTableFormat landfmt = LandTableFormat.SADX;
-			switch (game)
-			{
-				case Game.SA1:
-					modelfmt = ModelFormat.Basic;
-					landfmt = LandTableFormat.SA1;
-					break;
-				case Game.SADX:
-					modelfmt = ModelFormat.BasicDX;
-					landfmt = LandTableFormat.SADX;
-					break;
-				case Game.SA2:
-					modelfmt = ModelFormat.Chunk;
-					landfmt = LandTableFormat.SA2;
-					break;
-				case Game.SA2B:
-					modelfmt = ModelFormat.GC;
-					landfmt = LandTableFormat.SA2B;
-					break;
-				
-			}
 			byte[] datafile_temp = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
@@ -881,7 +855,7 @@ namespace ObjScan
 			dir = Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename));
 			if (Directory.Exists(dir)) Directory.Delete(dir, true);
 			Directory.CreateDirectory(dir);
-			Console.Write("Game: {0}, file: {1}, key: 0x{2}, scanning for {3}", game.ToString(), filename, imageBase.ToString("X"), type);
+			Console.Write("{0} file: {1}, key: 0x{2}, scanning for {3}", args[0], filename, imageBase.ToString("X"), type);
 			if (startoffset != 0)
 				Console.Write(", Offset: {0}", startoffset);
 			if (bigendian)
@@ -900,10 +874,10 @@ namespace ObjScan
 					if (scan_sadx_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SADX, landtablelist);
 					if (scan_sa2_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA2, landtablelist);
 					if (scan_sa2b_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA2B, landtablelist);
-					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
-					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
-					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
-					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
+					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
+					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
+					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
+					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC);
 					break;
 				case "landtable":
 					if (scan_sa1_land) ScanLandtable(datafile, imageBase, dir, LandTableFormat.SA1, landtablelist);
@@ -913,27 +887,27 @@ namespace ObjScan
 					skipactions = true;
 					break;
 				case "model":
-					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
-					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
-					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
-					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
+					if (scan_sa1_model) ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
+					if (scan_sadx_model) ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
+					if (scan_sa2_model) ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
+					if (scan_sa2b_model) ScanModel(datafile, imageBase, dir, ModelFormat.GC);
 					break;
 				case "basicmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.Basic, bigendian);
+					ScanModel(datafile, imageBase, dir, ModelFormat.Basic);
 					break;
 				case "basicdxmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX, bigendian);
+					ScanModel(datafile, imageBase, dir, ModelFormat.BasicDX);
 					break;
 				case "chunkmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.Chunk, bigendian);
+					ScanModel(datafile, imageBase, dir, ModelFormat.Chunk);
 					break;
 				case "gcmodel":
-					ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
+					ScanModel(datafile, imageBase, dir, ModelFormat.GC);
 					break;
 			}
-			CleanUpLandtable(datafile, landtablelist, imageBase, dir, bigendian);
-			if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt, bigendian);
-			CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
+			CleanUpLandtable(datafile, landtablelist, imageBase, dir);
+			if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt);
+			CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), imageBase, scan_sadx_model, reverse, startoffset);
 			//Clean up empty folders
 			bool land = false;
 			bool basicmodel = false;
