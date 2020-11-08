@@ -942,7 +942,10 @@ namespace ObjScan
 			bool motion = false;
 			foreach (var item in addresslist)
 			{
-				if (item.Value == "landtable") land = true;
+				if (item.Value == "landtable_SA1") land = true;
+				if (item.Value == "landtable_SADX") land = true;
+				if (item.Value == "landtable_SA2") land = true;
+				if (item.Value == "landtable_SA2B") land = true;
 				if (item.Value == "NJS_OBJECT") basicmodel = true;
 				if (item.Value == "NJS_CNK_OBJECT") chunkmodel = true;
 				if (item.Value == "NJS_GC_OBJECT") gcmodel = true;
