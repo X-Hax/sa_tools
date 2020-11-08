@@ -408,7 +408,7 @@ namespace ObjScan
 						land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
 						landtablelist.Add(address);
 						Console.WriteLine("Landtable at {0}", address.ToString("X8"));
-						addresslist.Add(address, "landtable");
+						addresslist.Add(address, "landtable_"+ landfmt.ToString());
 					}
 				}
 				catch (Exception)
@@ -529,7 +529,6 @@ namespace ObjScan
 					model_type = "NJS_GC_OBJECT";
 					break;
 			}
-			Console.WriteLine("Create folder: {0}", model_dir);
 			Directory.CreateDirectory(Path.Combine(dir, model_dir));
 			for (int u = 0; u < datafile.Length - 51; u += 4)
 			{
@@ -568,7 +567,7 @@ namespace ObjScan
 			}
 		}
 
-		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, LandTableFormat landfmt, string dir, bool bigendian)
+		static void CleanUpLandtable(byte[] datafile, List<int> landtablelist, uint imageBase, string dir, bool bigendian)
 		{
 			bool delete_basic = false;
 			bool delete_chunk = false;
@@ -576,25 +575,31 @@ namespace ObjScan
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
 			string model_extension = ".sa1mdl";
 			string model_dir = "basicmodels";
-			switch (landfmt)
-			{
-				case LandTableFormat.SA1:
-				case LandTableFormat.SADX:
-					delete_basic = true;
-					break;
-				case LandTableFormat.SA2:
-					delete_basic = true;
-					delete_chunk = true;
-					break;
-				case LandTableFormat.SA2B:
-					delete_basic = true;
-					delete_gc = true;
-					delete_chunk = true;
-					break;
-			}
-
+			LandTableFormat landfmt = LandTableFormat.SA1;
 			foreach (int landaddr in landtablelist)
 			{
+				switch (addresslist[landaddr])
+				{
+					case "landtable_SA1":
+						landfmt = LandTableFormat.SA1;
+						delete_basic = true;
+						break;
+					case "landtable_SADX":
+						landfmt = LandTableFormat.SADX;
+						delete_basic = true;
+						break;
+					case "landtable_SA2":
+						landfmt = LandTableFormat.SA2;
+						delete_basic = true;
+						delete_chunk = true;
+						break;
+					case "landtable_SA2B":
+						landfmt = LandTableFormat.SA2B;
+						delete_basic = true;
+						delete_gc = true;
+						delete_chunk = true;
+						break;
+				}
 				//Console.WriteLine("Landtable {0}, {1}, {2}", landaddr.ToString("X"), imageBase.ToString("X"), landfmt.ToString());
 				LandTable land = new LandTable(datafile, landaddr, imageBase, landfmt);
 				if (land.COL.Count > 0)
@@ -926,7 +931,7 @@ namespace ObjScan
 					ScanModel(datafile, imageBase, dir, ModelFormat.GC, bigendian);
 					break;
 			}
-			CleanUpLandtable(datafile, landtablelist, imageBase, landfmt, dir, bigendian);
+			CleanUpLandtable(datafile, landtablelist, imageBase, dir, bigendian);
 			if (!skipactions) ScanAnimations(datafile, imageBase, dir, modelfmt, bigendian);
 			CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), game, imageBase, bigendian, reverse, startoffset);
 			//Clean up empty folders
