@@ -2021,7 +2021,7 @@ namespace SonicRetro.SAModel
 			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out _);
 		}
 
-		public void Save(string filename)
+		public void Save(string filename, bool nometa = false)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
@@ -2037,7 +2037,7 @@ namespace SonicRetro.SAModel
 			file.Align(4);
 			file.RemoveRange(0xC, 4);
 			file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
-			if (labels.Count > 0)
+			if (labels.Count > 0 && !nometa)
 			{
 				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
 				int straddr = (labels.Count * 8) + 8;

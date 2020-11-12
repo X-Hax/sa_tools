@@ -20,6 +20,8 @@ namespace SA_Tools
 		public bool BigEndian { get; set; }
 		[IniName("reverse")]
 		public bool Reverse { get; set; }
+		[IniName("nometa")]
+		public bool NoMeta { get; set; }
 		[IniName("offset")]
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint StartOffset { get; set; }

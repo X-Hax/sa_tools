@@ -40,6 +40,7 @@ namespace SA_Tools.Split
 						return (int)SplitERRORVALUE.InvalidDataMapping;
 					}
 				}
+				bool nometa = inifile.NoMeta;
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
 				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
@@ -97,7 +98,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt, nometa);
 							}
 							break;
 						case "basicmodel":
@@ -109,7 +110,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic, nometa);
 							}
 							break;
 						case "basicdxmodel":
@@ -121,7 +122,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX, nometa);
 							}
 							break;
 						case "chunkmodel":
@@ -133,7 +134,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk, nometa);
 							}
 							break;
 						case "gcmodel":
@@ -145,7 +146,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC, nometa);
 							}
 							break;
 						case "action":
@@ -159,7 +160,7 @@ namespace SA_Tools.Split
 									Console.WriteLine("Action {0} has no model data!", ani.Name);
 									continue;
 								}
-								ani.Animation.Save(fileOutputPath);
+								ani.Animation.Save(fileOutputPath, nometa);
 							}
 							break;
 						case "animation":
@@ -167,13 +168,13 @@ namespace SA_Tools.Split
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
-								mot.Save(fileOutputPath);
+								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels);
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
-								mot.Save(fileOutputPath);
+								mot.Save(fileOutputPath, nometa);
 							}
 							break;
 						case "objlist":
