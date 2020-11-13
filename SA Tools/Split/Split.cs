@@ -20,7 +20,7 @@ namespace SA_Tools.Split
 				byte[] datafile;
 				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(inifilename) + "_labels.txt");
+				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				if (File.Exists(listfile))
 					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
