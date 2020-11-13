@@ -1,5 +1,4 @@
-﻿using SA_Tools.Split;
-using SA_Tools.SplitDLL;
+﻿using SA_Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,16 @@ namespace Split
 	{
 		static void Main(string[] args)
 		{
+			if (args.Length > 0 && args[args.Length - 1] == "-m")
+			{
+				SplitM(args);
+				return;
+			}
+			else if (args.Length > 0 && args[args.Length - 1] == "-l")
+			{
+				SplitL(args);
+				return;
+			}
 			string mode;
 			string fullpath_out;
 			bool bigendian = false;
@@ -93,7 +102,7 @@ namespace Split
 							bigendian = true;
 							Console.Write(" (Big Endian)\n");
 						}
-						else 
+						else
 							Console.Write(System.Environment.NewLine);
 						fullpath_out = Path.GetDirectoryName(fullpath_mdl);
 						if (args.Length > 2)
@@ -128,8 +137,168 @@ namespace Split
 						Console.ReadLine();
 						return;
 				}
-				
+
 			}
+		}
+		static void SplitM(string[] args)
+		{
+			Dictionary<string, string> matchstrings;
+			string listname;
+			string inifilename;
+			string splitfilename;
+			string srcext;
+			List<string> fnd = new List<string>();
+			bool match;
+			if (args.Length == 1)
+			{
+				return;
+			}
+			else
+			{
+				TextWriter matchlist = File.CreateText("match.txt");
+				TextWriter nomatchlist = File.CreateText("nomatch_source.txt");
+				TextWriter nomatchlist_l = File.CreateText("nomatch_label.txt");
+				listname = args[0];
+				inifilename = args[1];
+				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				matchstrings = new Dictionary<string, string>();
+				string[] list = File.ReadAllLines(listname);
+				for (int l = 0; l < list.Length; l++)
+				{
+					string filename = Path.GetFullPath(list[l]);
+					match = false;
+					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+					{
+						if (fnd.Contains(fileinfo.Key)) continue;
+						splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename);
+						//Console.WriteLine("Processing split: {0}", splitfilename);
+						//Try the label as-is first
+						if (Path.GetFileNameWithoutExtension(splitfilename).ToLowerInvariant().StartsWith(Path.GetFileNameWithoutExtension(filename).ToLowerInvariant()))
+						{
+							//Console.WriteLine("Match full");
+							match = true;
+						}
+						//Fix "_object", "_action" etc.
+						else if (splitfilename.StartsWith("_"))
+						{
+							splitfilename = splitfilename.Substring(1, splitfilename.Length - 1);
+							if (Path.GetFileNameWithoutExtension(splitfilename).ToLowerInvariant().StartsWith(Path.GetFileNameWithoutExtension(filename).ToLowerInvariant()))
+							{
+								//Console.WriteLine("Match without _");
+								match = true;
+							}
+						}
+						//Try without "object_", "action_" etc.
+						else
+						{
+							switch (fileinfo.Value.Type)
+							{
+								case "landtable":
+									splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename).Replace("obj", "").ToLowerInvariant();
+									srcext = ".c";
+									break;
+								case "chunkmodel":
+									splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename).Replace("object_", "");
+									srcext = ".nja";
+									break;
+								case "action":
+									splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename).Replace("action_", "");
+									srcext = ".nam";
+									break;
+								case "animation":
+									splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename).Replace("motion_", "");
+									srcext = ".nam";
+									break;
+								case "basicdxmodel":
+								case "basicmodel":
+								case "model":
+								default:
+									splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename).Replace("object_", "");
+									srcext = ".nja";
+									break;
+							}
+							if ((Path.GetExtension(filename).ToLowerInvariant() == srcext || Path.GetExtension(filename).ToLowerInvariant() == ".dup") && Path.GetFileNameWithoutExtension(splitfilename).ToLowerInvariant().StartsWith(Path.GetFileNameWithoutExtension(filename).ToLowerInvariant()))
+							{
+								//Console.WriteLine("Match without object_");
+								match = true;
+							}
+							else if (splitfilename.StartsWith("_"))
+							{
+								splitfilename = splitfilename.Substring(1, splitfilename.Length - 1);
+								if ((Path.GetExtension(filename).ToLowerInvariant() == srcext || Path.GetExtension(filename).ToLowerInvariant() == ".dup") && Path.GetFileNameWithoutExtension(splitfilename).ToLowerInvariant().StartsWith(Path.GetFileNameWithoutExtension(filename).ToLowerInvariant()))
+									match = true;
+							}
+						}
+						if (match)
+						{
+							Console.WriteLine("{0}:{1}", fileinfo.Value.Filename, filename);
+							matchlist.WriteLine("{0}={1}", fileinfo.Value.Filename, filename);
+							if (!matchstrings.ContainsKey(fileinfo.Value.Filename)) matchstrings.Add(fileinfo.Value.Filename, filename);
+							else Console.WriteLine("Duplicate of {0} detected:{1}:{2}", matchstrings[fileinfo.Value.Filename], fileinfo.Value.Filename, filename);
+							matchlist.Flush();
+							fnd.Add(fileinfo.Key);
+							break;
+						}
+					}
+					if (!match)
+					{
+						Console.WriteLine("No match for {0}!", Path.GetFileNameWithoutExtension(filename));
+						nomatchlist.WriteLine(filename);
+						nomatchlist.Flush();
+					}
+				}
+				nomatchlist.Close();
+				matchlist.Close();
+				foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+				{
+					if (!matchstrings.ContainsKey(fileinfo.Value.Filename)) 
+					{
+						nomatchlist_l.WriteLine(fileinfo.Value.Filename);
+						nomatchlist_l.Flush();
+					}
+				}
+				nomatchlist_l.Close();
+			}
+		}
+		static void SplitL(string[] args)
+		{
+			Dictionary<string, string> matchlist;
+			List<string> duplicatecheck = new List<string>();
+			string splitext = ".";
+			string listname = args[0];
+			string inifilename = args[1];
+			matchlist = IniSerializer.Deserialize<Dictionary<string, string>>(listname);
+			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+			IniData newinifile = new IniData();
+			newinifile.BigEndian = inifile.BigEndian;
+			newinifile.Compressed = inifile.Compressed;
+			newinifile.Game = inifile.Game;
+			newinifile.ImageBase = inifile.ImageBase;
+			newinifile.Reverse = inifile.Reverse;
+			newinifile.StartOffset = inifile.StartOffset;
+			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			{
+				if (matchlist.ContainsKey(fileinfo.Value.Filename))
+				{
+					string newfilename = matchlist[fileinfo.Value.Filename];
+					if (duplicatecheck.Contains(newfilename))
+					{
+						Console.WriteLine("Duplicate detected: {0}:{1}", newfilename, fileinfo.Value.Filename);
+					}
+					else duplicatecheck.Add(newfilename);
+					splitext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
+					SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
+					newfileinfo.Address = fileinfo.Value.Address;
+					if (fileinfo.Value.CustomProperties != null) newfileinfo.CustomProperties = fileinfo.Value.CustomProperties;
+					if (fileinfo.Value.Filename != null) newfileinfo.Filename = newfilename + splitext;
+					if (fileinfo.Value.PointerList != null) newfileinfo.PointerList = fileinfo.Value.PointerList;
+					if (fileinfo.Value.Type != null) newfileinfo.Type = fileinfo.Value.Type;
+					if (fileinfo.Value.MD5Hash != null) newfileinfo.MD5Hash = fileinfo.Value.MD5Hash;
+					newinifile.Files.Add(fileinfo.Key, newfileinfo);
+				}
+			}
+			IniSerializer.Serialize(newinifile, Path.GetFileNameWithoutExtension(listname) + ".ini");
 		}
 	}
 }
