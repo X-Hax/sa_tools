@@ -413,7 +413,8 @@ namespace SonicRetro.SAModel
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			byte[] mdl = model.GetBytes(0x10, false, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
+			if (!nometa) file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
+			else file.AddRange(ByteConverter.GetBytes(0));
 			file.AddRange(mdl);
 			if (!nometa)
 			{
