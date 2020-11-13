@@ -263,7 +263,7 @@ namespace SonicRetro.SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			};
 			goto loadfiledlg;
 		loadfiledlg:
@@ -1948,6 +1948,7 @@ namespace SonicRetro.SAModel.SAMDL
 				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			}
 			else
@@ -1958,7 +1959,7 @@ namespace SonicRetro.SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
-				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
+				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				clearChildrenToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
@@ -3316,6 +3317,54 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			text.ShowDialog();
+		}
+
+		private void AddPolyNormal(NJS_OBJECT obj)
+		{
+			if (obj.Attach is BasicAttach)
+			{
+				BasicAttach att = (BasicAttach)obj.Attach;
+				foreach (NJS_MESHSET mesh in att.Mesh)
+				{
+					mesh.PolyNormal = new Vertex[mesh.Poly.Count];
+					for (int p = 0; p < mesh.PolyNormal.Count(); p++)
+					{
+						mesh.PolyNormal[p] = new Vertex(0, 0, 0);
+					}
+				}
+			}
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT child in obj.Children)
+					AddPolyNormal(child);
+			}
+		}
+
+		private void RemovePolyNormal(NJS_OBJECT obj)
+		{
+			if (obj.Attach is BasicAttach)
+			{
+				BasicAttach att = (BasicAttach)obj.Attach;
+				foreach (NJS_MESHSET mesh in att.Mesh)
+				{
+					mesh.PolyNormal = null;
+				}
+			}
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT child in obj.Children)
+					RemovePolyNormal(child);
+			}
+		}
+
+		private void createToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			AddPolyNormal(selectedObject);
+		}
+
+		private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			RemovePolyNormal(selectedObject);
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

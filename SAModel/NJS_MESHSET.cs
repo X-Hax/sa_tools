@@ -14,7 +14,7 @@ namespace SonicRetro.SAModel
 		public ReadOnlyCollection<Poly> Poly { get; private set; }
 		public string PolyName { get; set; }
 		public int PAttr { get; set; }
-		public Vertex[] PolyNormal { get; private set; }
+		public Vertex[] PolyNormal { get; set; }
 		public string PolyNormalName { get; set; }
 		public Color[] VColor { get; private set; }
 		public string VColorName { get; set; }
