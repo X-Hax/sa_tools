@@ -100,6 +100,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+#if DEBUG
+			SALVLModeToolStripMenuItem.Enabled = true;
+#endif
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
@@ -125,8 +128,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (Program.args.Length > 0)
 			{
 				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
-				LoadINI(Program.args[0]);
-				ShowLevelSelect();
+				switch (Path.GetExtension(Program.args[0]).ToLowerInvariant())
+				{
+					case ".sa1lvl":
+					case ".sa2lvl":
+					case ".sa2blvl":
+						LoadLandtable(Program.args[0]);
+						unsaved = false;
+						break;
+					case ".ini":
+					default:
+						LoadINI(Program.args[0]);
+						ShowLevelSelect();
+						break;
+				}
 			}
 			else if (Program.SADXGameFolder == "")
 			{
@@ -1883,7 +1898,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
-			renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
+			if (LevelData.StartPositions != null) renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
 
 			#region Adding Death Zones
 			if (LevelData.DeathZones != null & deathZonesToolStripMenuItem.Checked)
@@ -2391,11 +2406,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			#endregion
 
 			#region Picking Start Positions
-			hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
-			if (hit < closesthit)
+			if (LevelData.StartPositions != null)
 			{
-				closesthit = hit;
-				item = LevelData.StartPositions[LevelData.Character];
+				hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.StartPositions[LevelData.Character];
+				}
 			}
 			#endregion
 
@@ -3204,6 +3222,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void LevelData_StateChanged()
 		{
+			if (transformGizmo == null) transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			unsaved = true;
 			DrawLevel();
@@ -3967,15 +3986,166 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-        private void jumpToOriginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+		private void jumpToOriginToolStripMenuItem_Click(object sender, EventArgs e)
+		{
 			JumpToOrigin();
-        }
+		}
 
-        private void materialColorsButton_CheckedChanged(object sender, EventArgs e)
-        {
+		private void materialColorsButton_CheckedChanged(object sender, EventArgs e)
+		{
 			EditorOptions.IgnoreMaterialColors = !materialColorsButton.Checked;
 			DrawLevel();
 		}
-    }
+
+		private void LoadLandtable(string filename)
+		{
+			InitializeDirect3D();
+			selectedItems = new EditorItemSelection();
+			sceneGraphControl1.InitSceneControl(selectedItems);
+			PointHelper.Instances.Clear();
+			LevelData.leveltexs = null;
+			cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			LevelData.geo = LandTable.LoadFromFile(filename);
+			LevelData.ClearLevelItems();
+			LevelData.LevelSplines = new List<SplineData>();
+			LevelData.ObjDefs = new List<ObjectDefinition>();
+			SplineData.Init();
+			for (int i = 0; i < LevelData.geo.COL.Count; i++)
+			{
+				LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
+			}
+			transformGizmo = new TransformGizmo();
+			bool isGeometryPresent = LevelData.geo != null;
+			bool isSETPreset = !LevelData.SETItemsIsNull();
+			bool isDeathZonePresent = LevelData.DeathZones != null;
+			levelPieceToolStripMenuItem.Enabled = isGeometryPresent;
+			objectToolStripMenuItem.Enabled = isSETPreset;
+			missionObjectToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
+			// Import
+			importToolStripMenuItem.Enabled = isGeometryPresent;
+			// Export
+			exportToolStripMenuItem.Enabled = isGeometryPresent;
+			// Edit menu
+			// Clear Level
+			clearLevelToolStripMenuItem.Enabled = isGeometryPresent;
+			// SET Items submenu
+			// Gotta clear up these names at some point...
+			// Drop the 1, and you get the dropdown menu under View.
+			sETItemsToolStripMenuItem1.Enabled = true;
+			sETITemsToolStripMenuItem.Enabled = true;
+			// Calculate All Bounds
+			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
+
+			// The whole view menu!
+			viewToolStripMenuItem.Enabled = true;
+			layersToolStripMenuItem.Enabled = true;
+			statsToolStripMenuItem.Enabled = isGeometryPresent;
+			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			else deathZonesToolStripMenuItem.Enabled = deathZonesButton.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			advancedToolStripMenuItem.Enabled = true;
+			addToolStripMenuItem1.Enabled = true;
+			addToolStripMenuItem.Enabled = true;
+			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
+
+			isStageLoaded = true;
+			selectedItems.SelectionChanged += SelectionChanged;
+			UseWaitCursor = false;
+			Enabled = true;
+
+			gizmoSpaceComboBox.Enabled = true;
+			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
+			pivotComboBox.Enabled = true;
+			if (pivotComboBox.SelectedIndex == -1) pivotComboBox.SelectedIndex = 0;
+			jumpToStartPositionToolStripMenuItem.Enabled = LevelData.StartPositions != null;
+			addAllLevelItemsToolStripMenuItem.Enabled = true;
+			toolStrip1.Enabled = isStageLoaded;
+			LevelData.SuppressEvents = false;
+			LevelData.InvalidateRenderState();
+			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
+		}
+		private void loadLandtableToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog fileDialog = new OpenFileDialog()
+			{
+				DefaultExt = "sa1lvl",
+				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl",
+				InitialDirectory = currentProjectPath,
+				Multiselect = false
+			})
+			{
+				DialogResult result = fileDialog.ShowDialog();
+				if (result == DialogResult.OK)
+				{
+					LoadLandtable(fileDialog.FileName);
+				}
+			}
+		}
+
+		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog fileDialog = new OpenFileDialog()
+			{
+				DefaultExt = "pvm",
+				Filter = "Texture Archives|*.pvm;*.gvm",
+				InitialDirectory = currentProjectPath,
+				Multiselect = false
+			})
+			{
+				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) fileDialog.FileName = LevelData.geo.TextureFileName;
+				DialogResult result = fileDialog.ShowDialog();
+				if (result == DialogResult.OK)
+				{
+					if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+					LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+					LevelData.Textures = new Dictionary<string, Texture[]>();
+					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
+					if (TexBmps != null)
+					{
+						Texture[] texs = new Texture[TexBmps.Length];
+						for (int j = 0; j < TexBmps.Length; j++)
+							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+							LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+						LevelData.leveltexs = LevelData.geo.TextureFileName;
+					}
+					unloadTexturesToolStripMenuItem.Enabled = true;
+					DrawLevel();
+				}
+			}
+		}
+
+		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			LevelData.leveltexs = null;
+			LevelData.Textures = null;
+			unloadTexturesToolStripMenuItem.Enabled = false;
+			DrawLevel();
+		}
+
+		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog fileDialog = new OpenFileDialog()
+			{
+				DefaultExt = "bin",
+				Filter = "SET Files|SET*.BIN",
+				Multiselect = false
+			})
+			{
+				DialogResult result = fileDialog.ShowDialog();
+				if (result == DialogResult.OK)
+				{
+					LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+					LevelData.InitSETItems();
+					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					{
+						LevelData.AssignSetList(i, SETItem.Load(fileDialog.FileName, selectedItems));
+					}
+					LevelData.StateChanged += LevelData_StateChanged;
+				}
+			}
+		}
+	}
 }

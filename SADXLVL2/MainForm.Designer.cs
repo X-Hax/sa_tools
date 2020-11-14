@@ -163,10 +163,18 @@
             this.missionItemsButton = new System.Windows.Forms.ToolStripButton();
             this.splinesButton = new System.Windows.Forms.ToolStripButton();
             this.lightingButton = new System.Windows.Forms.ToolStripButton();
+            this.materialColorsButton = new System.Windows.Forms.ToolStripButton();
             this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.materialColorsButton = new System.Windows.Forms.ToolStripButton();
+            this.SALVLModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadLandtableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadCAMFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.editLevelInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -194,6 +202,7 @@
             this.viewToolStripMenuItem,
             this.layersToolStripMenuItem,
             this.modelLibraryToolStripMenuItem,
+            this.SALVLModeToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -1494,6 +1503,19 @@
             this.lightingButton.Text = "Enable Lighting";
             this.lightingButton.CheckedChanged += new System.EventHandler(this.lightingButton_CheckedChanged);
             // 
+            // materialColorsButton
+            // 
+            this.materialColorsButton.Checked = true;
+            this.materialColorsButton.CheckOnClick = true;
+            this.materialColorsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.materialColorsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.materialColorsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.material;
+            this.materialColorsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.materialColorsButton.Name = "materialColorsButton";
+            this.materialColorsButton.Size = new System.Drawing.Size(40, 40);
+            this.materialColorsButton.Text = "Enable Material Colors";
+            this.materialColorsButton.CheckedChanged += new System.EventHandler(this.materialColorsButton_CheckedChanged);
+            // 
             // moveToStartButton
             // 
             this.moveToStartButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1523,18 +1545,65 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
             this.BackgroundPanel.TabIndex = 2;
             // 
-            // materialColorsButton
+            // SALVLModeToolStripMenuItem
             // 
-            this.materialColorsButton.Checked = true;
-            this.materialColorsButton.CheckOnClick = true;
-            this.materialColorsButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.materialColorsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.materialColorsButton.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.material;
-            this.materialColorsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.materialColorsButton.Name = "materialColorsButton";
-            this.materialColorsButton.Size = new System.Drawing.Size(40, 40);
-            this.materialColorsButton.Text = "Enable Material Colors";
-            this.materialColorsButton.CheckedChanged += new System.EventHandler(this.materialColorsButton_CheckedChanged);
+            this.SALVLModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadLandtableToolStripMenuItem,
+            this.loadTexturesToolStripMenuItem,
+            this.loadSETFileToolStripMenuItem,
+            this.loadCAMFileToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.editLevelInfoToolStripMenuItem,
+            this.unloadTexturesToolStripMenuItem});
+            this.SALVLModeToolStripMenuItem.Enabled = false;
+            this.SALVLModeToolStripMenuItem.Name = "SALVLModeToolStripMenuItem";
+            this.SALVLModeToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            this.SALVLModeToolStripMenuItem.Text = "Advanced";
+            // 
+            // loadLandtableToolStripMenuItem
+            // 
+            this.loadLandtableToolStripMenuItem.Name = "loadLandtableToolStripMenuItem";
+            this.loadLandtableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadLandtableToolStripMenuItem.Text = "Load Landtable...";
+            this.loadLandtableToolStripMenuItem.Click += new System.EventHandler(this.loadLandtableToolStripMenuItem_Click);
+            // 
+            // loadTexturesToolStripMenuItem
+            // 
+            this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
+            this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
+            // 
+            // loadSETFileToolStripMenuItem
+            // 
+            this.loadSETFileToolStripMenuItem.Name = "loadSETFileToolStripMenuItem";
+            this.loadSETFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadSETFileToolStripMenuItem.Text = "Load SET file...";
+            this.loadSETFileToolStripMenuItem.Click += new System.EventHandler(this.loadSETFileToolStripMenuItem_Click);
+            // 
+            // loadCAMFileToolStripMenuItem
+            // 
+            this.loadCAMFileToolStripMenuItem.Name = "loadCAMFileToolStripMenuItem";
+            this.loadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadCAMFileToolStripMenuItem.Text = "Load CAM file...";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // editLevelInfoToolStripMenuItem
+            // 
+            this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info";
+            // 
+            // unloadTexturesToolStripMenuItem
+            // 
+            this.unloadTexturesToolStripMenuItem.Name = "unloadTexturesToolStripMenuItem";
+            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unloadTexturesToolStripMenuItem.Text = "Unload Textures";
+            this.unloadTexturesToolStripMenuItem.Click += new System.EventHandler(this.unloadTexturesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1716,6 +1785,14 @@
 		private System.Windows.Forms.ToolStripButton lightingButton;
         private System.Windows.Forms.ToolStripMenuItem jumpToOriginToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton materialColorsButton;
+        private System.Windows.Forms.ToolStripMenuItem SALVLModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadLandtableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadSETFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadCAMFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem editLevelInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unloadTexturesToolStripMenuItem;
     }
 }
 
