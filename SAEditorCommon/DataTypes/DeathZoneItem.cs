@@ -86,7 +86,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
-			if (LevelData.Textures.Count > 0)
+			if (LevelData.Textures != null && LevelData.leveltexs != null && LevelData.Textures.Count > 0)
 			{
 				result.AddRange(Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, true));
 			}

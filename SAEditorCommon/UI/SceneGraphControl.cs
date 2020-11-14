@@ -216,9 +216,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				}
 
 			// cam node
-			foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+			if (LevelData.CAMItems != null && LevelData.CAMItems[LevelData.Character] != null)
 			{
-				camNode.Nodes.Add(camItem.CamType.ToString());
+				foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+				{
+					camNode.Nodes.Add(camItem.CamType.ToString());
+				}
 			}
 
 			foreach (SplineData splineData in LevelData.LevelSplines)

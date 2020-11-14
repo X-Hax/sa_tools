@@ -56,7 +56,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
 
 		public static Texture[] GetTextures(string name)
 		{
-			if (LevelData.Textures.ContainsKey(name))
+			if (LevelData.Textures != null && LevelData.Textures.ContainsKey(name))
 				return LevelData.Textures[name];
 			return null;
 		}
