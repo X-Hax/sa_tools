@@ -307,6 +307,11 @@ namespace Split
 								//Console.WriteLine("Fixing animation {0}:{1}", animlist[u], Path.GetFileName(matchlist[animlist[u]]));
 								animlist_new.Add(Path.GetFileName(matchlist[animlist[u]]) + ".saanim");
 							}
+							else
+							{
+								//Console.WriteLine("Adding animation {0}", animlist[u]);
+								animlist_new.Add(Path.GetFileNameWithoutExtension(animlist[u]) + ".nam.saanim");
+							}
 						}
 						newfileinfo.CustomProperties["animations"] = string.Join(",", animlist_new.ToArray());
 					}
