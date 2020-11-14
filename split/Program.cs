@@ -290,11 +290,26 @@ namespace Split
 					splitext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
 					SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
 					newfileinfo.Address = fileinfo.Value.Address;
-					if (fileinfo.Value.CustomProperties != null) newfileinfo.CustomProperties = fileinfo.Value.CustomProperties;
 					if (fileinfo.Value.Filename != null) newfileinfo.Filename = newfilename + splitext;
 					if (fileinfo.Value.PointerList != null) newfileinfo.PointerList = fileinfo.Value.PointerList;
 					if (fileinfo.Value.Type != null) newfileinfo.Type = fileinfo.Value.Type;
 					if (fileinfo.Value.MD5Hash != null) newfileinfo.MD5Hash = fileinfo.Value.MD5Hash;
+					newfileinfo.CustomProperties = fileinfo.Value.CustomProperties;
+					//Fix animation names
+					if (fileinfo.Value.CustomProperties != null && fileinfo.Value.CustomProperties.ContainsKey("animations"))
+					{
+						string[] animlist = fileinfo.Value.CustomProperties["animations"].Split(',');
+						List<string> animlist_new = new List<string>();
+						for (int u = 0; u < animlist.Length; u++)
+						{
+							if (matchlist.ContainsKey(animlist[u]))
+							{
+								//Console.WriteLine("Fixing animation {0}:{1}", animlist[u], Path.GetFileName(matchlist[animlist[u]]));
+								animlist_new.Add(Path.GetFileName(matchlist[animlist[u]]) + ".saanim");
+							}
+						}
+						newfileinfo.CustomProperties["animations"] = string.Join(",", animlist_new.ToArray());
+					}
 					newinifile.Files.Add(fileinfo.Key, newfileinfo);
 				}
 			}
