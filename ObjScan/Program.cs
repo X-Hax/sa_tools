@@ -286,10 +286,10 @@ namespace ObjScan
 						if (alphapoly > (uint)datafile.Length + imageBase - 51) return false;
 						opaquecount = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x10);
 						if (opaquepoly != 0 && opaquecount < 0) return false;
-						if (opaquepoly == 0 && opaquecount != 0) return false;
+						if (opaquepoly == 0 && opaquecount > 0) return false;
 						alphacount = ByteConverter.ToInt16(datafile, (int)(attach - imageBase) + 0x12);
 						if (alphapoly != 0 && alphacount < 0) return false;
-						if (alphapoly == 0 && alphacount != 0) return false;
+						if (alphapoly == 0 && alphacount > 0) return false;
 						radius = ByteConverter.ToInt32(datafile, (int)(attach - imageBase) + 0x20);
 						if (radius < 0) return false;
 					}
@@ -827,7 +827,7 @@ namespace ObjScan
 						modelfmt = ModelFormat.GC;
 						break;
 					default:
-						Console.WriteLine("Error parsing game type.\nCorrect game types are: SA1, SADX, SA1_b, SADX_b, SADX_g, SA2, SA2B, SA2_b, SA2B_b");
+						Console.WriteLine("Error parsing game type.\nCorrect game types are: SA1, SADX, SA1_b, SADX_b, SADX_x, SA2, SA2B, SA2_b, SA2B_b");
 						Console.WriteLine("Press ENTER to exit.");
 						Console.ReadLine();
 						return;
