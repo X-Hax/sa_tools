@@ -1363,7 +1363,7 @@ namespace USplit
 						bigendian = true;
 						break;
 					case "sadx_g":
-						game = Game.SADX;
+						game = Game.SA1;
 						bigendian = true;
 						reverse = true;
 						break;
