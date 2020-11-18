@@ -253,6 +253,13 @@ public class UniversalSplit
 					sw.WriteLine("filename=actions/" + v.ObjectName + ".saanim");
 					sw.WriteLine("model=" + itemparamslist[v.ObjectName].StringParam);
 					break;
+				case "NJS_GC_OBJECT":
+				case "gcobj":
+					sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
+					sw.WriteLine("type=gcmodel");
+					sw.WriteLine("address=" + entry.Key.ToString("X8"));
+					sw.WriteLine("filename=gcmodels/" + v.ObjectName + ".sa2bmdl");
+					break;
 				case "NJS_CNK_OBJECT":
 				case "cnkobj":
 					sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
@@ -362,6 +369,7 @@ public class UniversalSplit
 		ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 		byte[] datafile = File.ReadAllBytes(filename);
 		if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
+		if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile, 0xC900000);
 		Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
 		bool SA2 = game == Game.SA2 | game == Game.SA2B;
 		ModelFormat modelfmt = ModelFormat.BasicDX;
@@ -387,9 +395,9 @@ public class UniversalSplit
 				landtable_extension = ".sa2lvl";
 				break;
 			case Game.SA2B:
-				modelfmt = ModelFormat.Chunk;
+				modelfmt = ModelFormat.GC;
 				landfmt = LandTableFormat.SA2B;
-				model_extension = ".sa2mdl";
+				model_extension = ".sa2bmdl";
 				landtable_extension = ".sa2blvl";
 				break;
 		}
@@ -433,6 +441,7 @@ public class UniversalSplit
 					List<NJS_MOTION> motionslist = new List<NJS_MOTION>(); //List of motions for action assignment
 					Dictionary<string, ItemParams> itemparamlist = new Dictionary<string, ItemParams>(); //List of object parameters such as node count for motions
 					ParseDictionary(addresslist, labellist, stringparam, skiplabels);
+					Directory.CreateDirectory(dir + "\\gcmodels");
 					Directory.CreateDirectory(dir + "\\chunkmodels");
 					Directory.CreateDirectory(dir + "\\basicmodels");
 					Directory.CreateDirectory(dir + "\\labels");
@@ -561,6 +570,105 @@ public class UniversalSplit
 						ItemDescriptor v = entry.Value;
 						switch (v.ObjectType)
 						{
+							case "NJS_GC_OBJECT":
+							case "gcobj":
+								model_extension = ".sa2bmdl";
+								fileOutputPath = dir + "\\gcmodels\\" + v.ObjectName;
+								Console.WriteLine("Splitting {0} {1} at {2}", v.ObjectType, v.ObjectName, entry.Key.ToString("X"));
+								try
+								{
+									NJS_OBJECT mdl = new NJS_OBJECT(data, int.Parse(entry.Key.ToString("X"), NumberStyles.AllowHexSpecifier), imageBase, ModelFormat.GC, labellist, new Dictionary<int, Attach>());
+									List<string> mdlanis = new List<string>();
+									if (actionlist.ContainsKey(mdl.Name))
+									{
+										foreach (KeyValuePair<string, List<string>> item in actionlist)
+										{
+											if (item.Key == mdl.Name)
+											{
+												foreach (string animname in item.Value)
+												{
+													mdlanis.Add("../actions/" + animname + ".saanim");
+													Console.WriteLine("Adding animation {0} for model {1}", animname, mdl.Name);
+												}
+											}
+										}
+									}
+									ModelFile.CreateFile(fileOutputPath + model_extension, mdl, mdlanis.ToArray(), null, null, null, ModelFormat.GC);
+									ExportLabels(mdl, dir + "\\labels", labelindex);
+									if (mdl.Children.Count > 0)
+									{
+										foreach (NJS_OBJECT child in mdl.Children)
+										{
+											if (!skiplabels)
+											{
+												File.Delete(dir + "\\gcmodels\\" + child.Name + model_extension);
+												deleteditems.Add(child.Name);
+											}
+											else
+											{
+												if (File.Exists((dir + "\\gcmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension)))
+												{
+													File.Delete(dir + "\\gcmodels\\" + child.Name.Substring(7, child.Name.Length - 7) + model_extension);
+													deleteditems.Add(child.Name.Substring(7, child.Name.Length - 7));
+												}
+												else
+												{
+													int childaddr = int.Parse(child.Name.Substring(7, child.Name.Length - 7), NumberStyles.AllowHexSpecifier);
+													//Console.WriteLine("Deleting at address :{0}", childaddr.ToString("X8"));
+													foreach (var item in addresslist)
+													{
+														if (item.Key == childaddr)
+														{
+															ItemDescriptor v2 = item.Value;
+															//Console.WriteLine("Deleting file: {0}", dir + "\\gcmodels\\" + v2.ObjectName + model_extension);
+															File.Delete(dir + "\\gcmodels\\" + v2.ObjectName + model_extension);
+															deleteditems.Add(v2.ObjectName);
+														}
+													}
+												}
+											}
+										}
+									}
+									if (mdl.Sibling != null)
+									{
+										if (!skiplabels)
+										{
+											File.Delete(dir + "\\gcmodels\\" + mdl.Sibling.Name + model_extension);
+											deleteditems.Add(mdl.Sibling.Name);
+										}
+										else
+										{
+											if (File.Exists(dir + "\\gcmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension))
+											{
+												File.Delete(dir + "\\gcmodels\\" + mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7) + model_extension);
+												deleteditems.Add(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7));
+											}
+											else
+											{
+												foreach (var item in addresslist)
+												{
+													if (item.Key == int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier))
+													{
+														ItemDescriptor v2 = item.Value;
+														//Console.WriteLine("Deleting file: {0}", dir + "\\gcmodels\\" + v2.ObjectName + model_extension);
+														File.Delete(dir + "\\gcmodels\\" + v2.ObjectName + model_extension);
+														deleteditems.Add(v2.ObjectName);
+													}
+												}
+											}
+										}
+									}
+									if (mdlanis.Count > 0)
+									{
+										string allmodels = string.Join(",", mdlanis);
+										itemparamlist.Add(mdl.Name, new ItemParams { StringParam = allmodels });
+									}
+								}
+								catch (Exception ex)
+								{
+									Console.WriteLine("Split failed: {0}", ex.ToString());
+								}
+								break;
 							case "NJS_CNK_OBJECT":
 							case "cnkobj":
 								model_extension = ".sa2mdl";
@@ -864,7 +972,7 @@ public class UniversalSplit
 				case "gcmodel":
 					{
 						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-						ModelFile.CreateFile(fileOutputPath + ".sa2mdl", mdl, null, null, null, null, ModelFormat.GC);
+						ModelFile.CreateFile(fileOutputPath + ".sa2bmdl", mdl, null, null, null, null, ModelFormat.GC);
 					}
 					break;
 				case "action":
@@ -1154,7 +1262,7 @@ namespace USplit
 				Console.WriteLine("USplit is a tool that lets you extract any data supported by SA Tools from any binary file.");
 				Console.WriteLine("Usage: usplit <GAME> <FILENAME> <KEY> <TYPE> <ADDRESS> <PARAMETER1> <PARAMETER2> [-name <NAME>]\n");
 				Console.WriteLine("Argument description:");
-				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian. Use SADX_X for SADX X360.");
+				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to switch to Big Endian, use SADX_g to scan the Gamecube version of SADX.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file.");
 				Console.WriteLine("<TYPE>: One of the following:\n" +
@@ -1254,8 +1362,8 @@ namespace USplit
 						game = Game.SADX;
 						bigendian = true;
 						break;
-					case "sadx_x":
-						game = Game.SADX;
+					case "sadx_g":
+						game = Game.SA1;
 						bigendian = true;
 						reverse = true;
 						break;

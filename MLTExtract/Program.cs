@@ -451,6 +451,7 @@ namespace MLTExtract
 			}
 			string[] headers = { "SMLT", "SMSB", "SMSD", "SMPB", "SOSB", "SFPB", "SFOB", "SFPW", "SMDB", "SPSR" };
 			byte[] file = File.ReadAllBytes(filename);
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") file = FraGag.Compression.Prs.Decompress(file);
 			Console.WriteLine("Extracting MLT file: {0}", filename);
 			int numfiles = BitConverter.ToInt32(file, 8) + 1;
 			int mltsize = numfiles * 0x20;
