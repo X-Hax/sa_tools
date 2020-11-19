@@ -7,6 +7,19 @@ namespace Split
 {
 	class Program
 	{
+		static int CompareModels(string file1, string file2)
+		{
+			int result = 0;
+			byte[] model1 = File.ReadAllBytes(file1);
+			byte[] model2 = File.ReadAllBytes(file2);
+			for (int i = 0; i < Math.Min(model1.Length, model2.Length); i++)
+			{
+				if (model1[i] != model2[i]) result++;
+			}
+			int abs = Math.Abs(model1.Length - model2.Length);
+			if (abs != 0) result += abs;
+			return result;
+		}
 		static void Main(string[] args)
 		{
 			if (args.Length > 0 && args[args.Length - 1] == "-m")
@@ -17,6 +30,11 @@ namespace Split
 			else if (args.Length > 0 && args[args.Length - 1] == "-l")
 			{
 				SplitL(args);
+				return;
+			}
+			else if (args.Length > 0 && args[args.Length - 1] == "-c")
+			{
+				SplitC(args);
 				return;
 			}
 			string mode;
@@ -319,6 +337,31 @@ namespace Split
 				}
 			}
 			IniSerializer.Serialize(newinifile, Path.GetFileNameWithoutExtension(listname) + ".ini");
+		}
+		static void SplitC(string[] args)
+		{
+			if (args.Length < 3)
+			{
+				return;
+			}
+			string[] filenames_dir1 = Directory.GetFiles(args[0], "*", SearchOption.AllDirectories);
+			string[] filenames_dir2 = Directory.GetFiles(args[1], "*", SearchOption.AllDirectories);
+			for (int i = 0; i < filenames_dir1.Length; i++)
+			{
+				bool match = false;
+				for (int u = 0; u < filenames_dir2.Length; u++)
+				{
+					int comp = CompareModels(filenames_dir1[i], filenames_dir2[u]);
+					if (comp == 0)
+					{
+						Console.WriteLine("{0}:{1}", filenames_dir1[i], filenames_dir2[u]);
+						match = true;
+					}
+				}
+				if (!match) Console.WriteLine("No match for {0}", filenames_dir1[i]);
+			}
+			//int res = CompareModels(args[0], args[1]);
+			//Console.WriteLine("Result: {0} byte difference", res);
 		}
 	}
 }
