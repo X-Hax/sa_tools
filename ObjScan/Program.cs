@@ -15,6 +15,8 @@ namespace ObjScan
 		static public Dictionary<int, int[]> actionlist;
 		static public bool bigendian;
 		static public bool nometa;
+		static public bool keepland;
+		static public bool keepchild;
 		static public bool reverse;
 		static public bool skipactions;
 		static public bool findall;
@@ -438,7 +440,7 @@ namespace ObjScan
 					LandTable land = new LandTable(datafile, address, (uint)imageBase, landfmt);
 					if (land.COL.Count > 3)
 					{
-						land.SaveToFile(fileOutputPath + landtable_extension, landfmt);
+						land.SaveToFile(fileOutputPath + landtable_extension, landfmt, nometa);
 						landtablelist.Add(address);
 						Console.WriteLine("Landtable at {0}", address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
@@ -479,7 +481,7 @@ namespace ObjScan
 					addresslist.Add(motaddr - imageBase, "NJS_MOTION");
 					Console.WriteLine("\rMotion found for model {0} at address {1}", addr.ToString("X8"), (motaddr - imageBase).ToString("X"));
 					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - imageBase).ToString("X8"));
-					mot.Save(fileOutputPath + ".saanim");
+					mot.Save(fileOutputPath + ".saanim", nometa);
 					int[] arr = new int[2];
 					arr[0] = addr;
 					arr[1] = nummdl;
@@ -585,7 +587,7 @@ namespace ObjScan
 					ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
 					count++;
 					addresslist.Add(address, model_type);
-					if (mdl.Children.Count > 0 && !findall)
+					if (mdl.Children.Count > 0 && !keepchild)
 					{
 						foreach (NJS_OBJECT child in mdl.Children)
 						{
@@ -597,7 +599,7 @@ namespace ObjScan
 							count--;
 						}
 					}
-					if (mdl.Sibling != null && !findall)
+					if (mdl.Sibling != null && !keepchild)
 					{
 						int itemaddr = int.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier);
 						string spath = Path.Combine(dir, model_dir, itemaddr.ToString("X8") + model_extension);
@@ -733,7 +735,7 @@ namespace ObjScan
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts levels or models from it.");
-				Console.WriteLine("Usage: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset addr] [-file modelfile] [-start addr] [-end addr] [-findall]\n[-noaction] [-nometa]\n");
+				Console.WriteLine("Usage: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset addr] [-file modelfile] [-start addr] [-end addr] [-findall]\n[-noaction] [-nometa] [-keepland] [-keepchild]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to set Big Endian, use SADX_g for the Gamecube version of SADX.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
@@ -745,6 +747,8 @@ namespace ObjScan
 				Console.WriteLine("-findall: Try to find as much stuff as possible.");
 				Console.WriteLine("-nometa: Don't save labels.");
 				Console.WriteLine("-start and -end: Range of addresses to scan.\n");
+				Console.WriteLine("-keepland: Don't clean up landtable models.");
+				Console.WriteLine("-keepchild: Don't clean up child and sibling models.");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
 				return;
@@ -841,6 +845,12 @@ namespace ObjScan
 					case "-nometa":
 						nometa = true;
 						break;
+					case "-keepland":
+						keepland = true;
+						break;
+					case "-keepchild":
+						keepchild = true;
+						break;
 					case "-start":
 						start = int.Parse(args[u + 1], NumberStyles.AllowHexSpecifier);
 						break;
@@ -917,7 +927,7 @@ namespace ObjScan
 					ScanModel(ModelFormat.GC);
 					break;
 			}
-			if (!findall) CleanUpLandtable();
+			if (!keepland) CleanUpLandtable();
 			if (!skipactions) ScanAnimations(modelfmt);
 			CreateSplitIni(Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + ".INI"), scan_sadx_model);
 			//Clean up empty folders
