@@ -11,7 +11,7 @@ namespace SA_Tools.Split
 {
 	public static class Split
 	{
-		public static int SplitFile(string datafilename, string inifilename, string projectFolderName)
+		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
 		{
 #if !DEBUG
 			try
@@ -40,7 +40,6 @@ namespace SA_Tools.Split
 						return (int)SplitERRORVALUE.InvalidDataMapping;
 					}
 				}
-				bool nometa = inifile.NoMeta;
 				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
 				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
@@ -87,7 +86,7 @@ namespace SA_Tools.Split
 					switch (type)
 					{
 						case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
+							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt, nometa);
 							break;
 						case "model":
 							{
@@ -295,7 +294,7 @@ namespace SA_Tools.Split
 								{
 									flags.Add(new DeathZoneFlags(datafile, address));
 									string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt);
+									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt, nometa);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;
 								}
@@ -381,7 +380,7 @@ namespace SA_Tools.Split
 								while (i != -1)
 								{
 									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
-										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
