@@ -746,9 +746,9 @@ namespace ObjScan
 				Console.WriteLine("-noaction: Don't scan for actions.");
 				Console.WriteLine("-findall: Try to find as much stuff as possible.");
 				Console.WriteLine("-nometa: Don't save labels.");
-				Console.WriteLine("-start and -end: Range of addresses to scan.\n");
+				Console.WriteLine("-start and -end: Range of addresses to scan.");
 				Console.WriteLine("-keepland: Don't clean up landtable models.");
-				Console.WriteLine("-keepchild: Don't clean up child and sibling models.");
+				Console.WriteLine("-keepchild: Don't clean up child and sibling models.\n");
 				Console.WriteLine("Press ENTER to exit");
 				Console.ReadLine();
 				return;
