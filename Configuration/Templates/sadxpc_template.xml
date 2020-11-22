@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
-  <GameInfo gameName="SADXPC" gameSystemFolder="D:\SteamLibrary\steamapps\common\Sonic Adventure DX" dataFolder="SADXPC" />
+  <GameInfo gameName="SADXPC" gameSystemFolder="" dataFolder="SADXPC" />
   <SplitEntry SourceFile="sonic.exe" IniFile="STG01" />
   <SplitEntry SourceFile="sonic.exe" IniFile="STG02" />
   <SplitEntry SourceFile="sonic.exe" IniFile="STG03" />
