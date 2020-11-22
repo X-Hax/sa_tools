@@ -10,6 +10,10 @@ namespace Split
 		static int CompareFiles(string file1, string file2)
 		{
 			int result = 0;
+			int length1 = (int)new System.IO.FileInfo(file1).Length;
+			int length2 = (int)new System.IO.FileInfo(file2).Length;
+			result += Math.Abs(length1 - length2);
+			if (Path.GetExtension(file1).ToLowerInvariant() != ".sa1lvl" && result > 64) return result;
 			byte[] model1 = File.ReadAllBytes(file1);
 			byte[] model2 = File.ReadAllBytes(file2);
 			for (int i = 0; i < Math.Min(model1.Length, model2.Length); i++)
@@ -354,11 +358,14 @@ namespace Split
 			string[] filenames_dir2 = Directory.GetFiles(args[1], "*", SearchOption.AllDirectories);
 			for (int i = 0; i < filenames_dir1.Length; i++)
 			{
-				int threshold = 0;
-				if (Path.GetExtension(filenames_dir1[i]).ToLowerInvariant() == ".sa1lvl") threshold = 128;
 				int match = 0;
+				int threshold = 0;
+				string ext1 = Path.GetExtension(filenames_dir1[i]).ToLowerInvariant();
+				if (ext1 == ".sa1lvl") threshold = 128;
 				for (int u = 0; u < filenames_dir2.Length; u++)
 				{
+					string ext2 = Path.GetExtension(filenames_dir2[u]).ToLowerInvariant();
+					if (ext1 != ext2) continue;
 					int comp = CompareFiles(filenames_dir1[i], filenames_dir2[u]);
 					if (comp <= threshold)
 					{
