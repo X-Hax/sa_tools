@@ -25,6 +25,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void TexturePicker_Load(object sender, EventArgs e)
 		{
+			int finalSelection = initialSelection;
+			if (initialSelection > textureInfo.Length - 1)
+			{
+				MessageBox.Show("Texture ID " + initialSelection.ToString() + " is out of range for the loaded texture archive.\nSetting texture ID to 0.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				finalSelection = 0;
+			}
 			for (int i = 0; i < textureInfo.Length; i++)
 			{
 				imageList.Images.Add(ResizeImage(textureInfo[i].Image, imageList.ImageSize));
@@ -32,8 +38,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 
 			// Selects the desired texture and then esures its visiblity (by scrolling)
-			listView.Items[initialSelection].Selected = true;
-			listView.EnsureVisible(initialSelection);
+			listView.Items[finalSelection].Selected = true;
+			listView.EnsureVisible(finalSelection);
 		}
 
 		/// <summary>

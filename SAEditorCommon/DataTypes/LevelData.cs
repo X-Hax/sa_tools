@@ -327,16 +327,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public static string GetStats()
 		{
-			int landtableItems = geo.COL.Count;
-			int textureArcCount = Textures.Count;
+			int landtableItems = 0;
+			int textureArcCount = 0;
 			int setItems = 0;
 			int animatedItems = geo.Anim.Count;
 			int cameraItems = 0;
 
+			if (Textures != null) textureArcCount = Textures.Count;
+			if (geo != null) landtableItems = geo.COL.Count;
 			if (LevelData.setItems != null) setItems = LevelData.GetSetItemCount(LevelData.character);
 			if (CAMItems != null) cameraItems = CAMItems[Character].Count;
 
-			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models:{2}\nSET Items: {3}\nCamera Zones/Items:{4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
+			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models: {2}\nSET Items: {3}\nCamera Zones/Items: {4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
 		}
 
 		public static void DuplicateSelection(EditorItemSelection selection, out bool errorFlag, out string errorMsg)

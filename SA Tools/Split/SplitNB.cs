@@ -76,7 +76,6 @@ namespace SA_Tools.Split
 		}
 		public static void SplitNBFile(string filename, bool extractchunks, string outdir, bool verbose = false)
 		{
-			string dir = Environment.CurrentDirectory;
 			Dictionary<int, string> sectionlist = new Dictionary<int, string>();
 			Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
 			Dictionary<int, NJS_MOTION> animlist = new Dictionary<int, NJS_MOTION>();
@@ -90,10 +89,14 @@ namespace SA_Tools.Split
 			if (BitConverter.ToInt32(file, 0) != 0x04424A4E)
 			{
 				Console.WriteLine("Invalid NB file.");
-				Environment.CurrentDirectory = dir;
 				return;
 			}
-			Environment.CurrentDirectory = outdir;
+			if (!Directory.Exists(outdir))
+				Directory.CreateDirectory(outdir);
+			string outdir_nb = Path.Combine(outdir, Path.GetFileNameWithoutExtension(filename));
+			if (!Directory.Exists(outdir_nb))
+				Directory.CreateDirectory(outdir_nb);
+			Environment.CurrentDirectory = outdir_nb;
 			int numfiles = BitConverter.ToInt16(file, 4);
 			int curaddr = 8;
 			for (int i = 0; i < numfiles; i++)
@@ -145,7 +148,7 @@ namespace SA_Tools.Split
 				}
 				ModelFile.CreateFile(modelitem.Key.ToString("D2") + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
 			}
-			IniSerializer.Serialize(sectionlist, Path.Combine(dir, Path.GetFileNameWithoutExtension(filename) + ".ini"));
+			IniSerializer.Serialize(sectionlist, Path.Combine(outdir, Path.GetFileNameWithoutExtension(filename) + ".ini"));
 		}
 		static byte[] GetSections(NJS_OBJECT mdl)
 		{

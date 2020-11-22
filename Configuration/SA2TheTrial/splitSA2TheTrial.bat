@@ -1,5 +1,4 @@
 call splitmdl.bat
 
-cd ../ProjectManager
-projectmanager -m Split -f ../SA2TheTrial/data/1ST_READ.bin. -d ../SA2TheTrial/1ST_READ.ini -o ../output/
-projectmanager -m Split -f ../SA2TheTrial/data/STG13.prs -d ../SA2TheTrial/STG13.ini -o ../output/
+..\bin\split binary data/1ST_READ.bin 1ST_READ.ini output/
+..\bin\split binary data/SONIC2/STG13.prs STG13.ini output/

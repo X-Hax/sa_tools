@@ -1,73 +1,71 @@
 call splitmdl.bat
 
-cd ../ProjectManager/
-
-projectmanager -m Split -f ../SA2/data/1ST_READ.bin -d ../SA2/1ST_READ.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/ADVERTISE.prs -d ../SA2/ADVERTISE.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/EMBLEMGET.prs -d ../SA2/EMBLEMGET.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG03.prs -d ../SA2/STG03.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG04.prs -d ../SA2/STG04.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG05.prs -d ../SA2/STG05.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG06.prs -d ../SA2/STG06.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG07.prs -d ../SA2/STG07.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG08.prs -d ../SA2/STG08.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG09.prs -d ../SA2/STG09.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG10.prs -d ../SA2/STG10.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG11.prs -d ../SA2/STG11.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG12.prs -d ../SA2/STG12.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG13.prs -d ../SA2/STG13.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG14.prs -d ../SA2/STG14.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG15.prs -d ../SA2/STG15.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG16.prs -d ../SA2/STG16.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG17.prs -d ../SA2/STG17.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG18.prs -d ../SA2/STG18.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG19.prs -d ../SA2/STG19.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG20.prs -d ../SA2/STG20.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG21.prs -d ../SA2/STG21.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG22.prs -d ../SA2/STG22.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG23.prs -d ../SA2/STG23.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG24.prs -d ../SA2/STG24.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG25.prs -d ../SA2/STG25.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG26.prs -d ../SA2/STG26.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG27.prs -d ../SA2/STG27.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG28.prs -d ../SA2/STG28.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG29.prs -d ../SA2/STG29.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG30.prs -d ../SA2/STG30.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG31.prs -d ../SA2/STG31.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG32.prs -d ../SA2/STG32.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG33.prs -d ../SA2/STG33.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG34.prs -d ../SA2/STG34.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG35.prs -d ../SA2/STG35.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG36.prs -d ../SA2/STG36.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG37.prs -d ../SA2/STG37.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG38.prs -d ../SA2/STG38.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG39.prs -d ../SA2/STG39.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG40.prs -d ../SA2/STG40.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG41.prs -d ../SA2/STG41.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG42.prs -d ../SA2/STG42.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG43.prs -d ../SA2/STG43.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG44.prs -d ../SA2/STG44.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/STG45.prs -d ../SA2/STG45.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_BIGBOGY.prs -d ../SA2/BOSS_BIGBOGY.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_BIGFOOT.prs -d ../SA2/BOSS_BIGFOOT.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_FDOG.prs -d ../SA2/BOSS_FDOG.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_GOLEM.prs -d ../SA2/BOSS_GOLEM.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_GOLEM_E.prs -d ../SA2/BOSS_GOLEM_E.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_HOTSHOT.prs -d ../SA2/BOSS_HOTSHOT.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_LAST1.prs -d ../SA2/BOSS_LAST1.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/BOSS_LAST2.prs -d ../SA2/BOSS_LAST2.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CART.prs -d ../SA2/CART.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGDARK.prs -d ../SA2/CHAOSTGDARK.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGENTRANCE.prs -d ../SA2/CHAOSTGENTRANCE.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGHERO.prs -d ../SA2/CHAOSTGHERO.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGKINDER.prs -d ../SA2/CHAOSTGKINDER.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGLOBBYLAND000.prs -d ../SA2/CHAOSTGLOBBYLAND000.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGLOBBYLAND00K.prs -d ../SA2/CHAOSTGLOBBYLAND00K.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGLOBBYLAND0DK.prs -d ../SA2/CHAOSTGLOBBYLAND0DK.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGLOBBYLANDH0K.prs -d ../SA2/CHAOSTGLOBBYLANDH0K.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGLOBBYLANDHDK.prs -d ../SA2/CHAOSTGLOBBYLANDHDK.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGNEUT.prs -d ../SA2/CHAOSTGNEUT.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGRACE.prs -d ../SA2/CHAOSTGRACE.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGRACELANDD.prs -d ../SA2/CHAOSTGRACELANDD.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGRACELANDH.prs -d ../SA2/CHAOSTGRACELANDH.ini -o ../output/
-projectmanager -m Split -f ../SA2/data/CHAOSTGRACELANDN.prs -d ../SA2/CHAOSTGRACELANDN.ini -o ../output/
+..\bin\split binary data/1ST_READ.bin 1ST_READ.ini output/
+..\bin\split binary data/SONIC2/ADVERTISE.prs ADVERTISE.ini output/
+..\bin\split binary data/SONIC2/EMBLEMGET.prs EMBLEMGET.ini output/
+..\bin\split binary data/SONIC2/STG03.prs STG03.ini output/
+..\bin\split binary data/SONIC2/STG04.prs STG04.ini output/
+..\bin\split binary data/SONIC2/STG05.prs STG05.ini output/
+..\bin\split binary data/SONIC2/STG06.prs STG06.ini output/
+..\bin\split binary data/SONIC2/STG07.prs STG07.ini output/
+..\bin\split binary data/SONIC2/STG08.prs STG08.ini output/
+..\bin\split binary data/SONIC2/STG09.prs STG09.ini output/
+..\bin\split binary data/SONIC2/STG10.prs STG10.ini output/
+..\bin\split binary data/SONIC2/STG11.prs STG11.ini output/
+..\bin\split binary data/SONIC2/STG12.prs STG12.ini output/
+..\bin\split binary data/SONIC2/STG13.prs STG13.ini output/
+..\bin\split binary data/SONIC2/STG14.prs STG14.ini output/
+..\bin\split binary data/SONIC2/STG15.prs STG15.ini output/
+..\bin\split binary data/SONIC2/STG16.prs STG16.ini output/
+..\bin\split binary data/SONIC2/STG17.prs STG17.ini output/
+..\bin\split binary data/SONIC2/STG18.prs STG18.ini output/
+..\bin\split binary data/SONIC2/STG19.prs STG19.ini output/
+..\bin\split binary data/SONIC2/STG20.prs STG20.ini output/
+..\bin\split binary data/SONIC2/STG21.prs STG21.ini output/
+..\bin\split binary data/SONIC2/STG22.prs STG22.ini output/
+..\bin\split binary data/SONIC2/STG23.prs STG23.ini output/
+..\bin\split binary data/SONIC2/STG24.prs STG24.ini output/
+..\bin\split binary data/SONIC2/STG25.prs STG25.ini output/
+..\bin\split binary data/SONIC2/STG26.prs STG26.ini output/
+..\bin\split binary data/SONIC2/STG27.prs STG27.ini output/
+..\bin\split binary data/SONIC2/STG28.prs STG28.ini output/
+..\bin\split binary data/SONIC2/STG29.prs STG29.ini output/
+..\bin\split binary data/SONIC2/STG30.prs STG30.ini output/
+..\bin\split binary data/SONIC2/STG31.prs STG31.ini output/
+..\bin\split binary data/SONIC2/STG32.prs STG32.ini output/
+..\bin\split binary data/SONIC2/STG33.prs STG33.ini output/
+..\bin\split binary data/SONIC2/STG34.prs STG34.ini output/
+..\bin\split binary data/SONIC2/STG35.prs STG35.ini output/
+..\bin\split binary data/SONIC2/STG36.prs STG36.ini output/
+..\bin\split binary data/SONIC2/STG37.prs STG37.ini output/
+..\bin\split binary data/SONIC2/STG38.prs STG38.ini output/
+..\bin\split binary data/SONIC2/STG39.prs STG39.ini output/
+..\bin\split binary data/SONIC2/STG40.prs STG40.ini output/
+..\bin\split binary data/SONIC2/STG41.prs STG41.ini output/
+..\bin\split binary data/SONIC2/STG42.prs STG42.ini output/
+..\bin\split binary data/SONIC2/STG43.prs STG43.ini output/
+..\bin\split binary data/SONIC2/STG44.prs STG44.ini output/
+..\bin\split binary data/SONIC2/STG45.prs STG45.ini output/
+..\bin\split binary data/SONIC2/BOSS_BIGBOGY.prs BOSS_BIGBOGY.ini output/
+..\bin\split binary data/SONIC2/BOSS_BIGFOOT.prs BOSS_BIGFOOT.ini output/
+..\bin\split binary data/SONIC2/BOSS_FDOG.prs BOSS_FDOG.ini output/
+..\bin\split binary data/SONIC2/BOSS_GOLEM.prs BOSS_GOLEM.ini output/
+..\bin\split binary data/SONIC2/BOSS_GOLEM_E.prs BOSS_GOLEM_E.ini output/
+..\bin\split binary data/SONIC2/BOSS_HOTSHOT.prs BOSS_HOTSHOT.ini output/
+..\bin\split binary data/SONIC2/BOSS_LAST1.prs BOSS_LAST1.ini output/
+..\bin\split binary data/SONIC2/BOSS_LAST2.prs BOSS_LAST2.ini output/
+..\bin\split binary data/SONIC2/CART.prs CART.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGDARK.prs CHAOSTGDARK.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGENTRANCE.prs CHAOSTGENTRANCE.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGHERO.prs CHAOSTGHERO.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGKINDER.prs CHAOSTGKINDER.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGLOBBYLAND000.prs CHAOSTGLOBBYLAND000.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGLOBBYLAND00K.prs CHAOSTGLOBBYLAND00K.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGLOBBYLAND0DK.prs CHAOSTGLOBBYLAND0DK.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGLOBBYLANDH0K.prs CHAOSTGLOBBYLANDH0K.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGLOBBYLANDHDK.prs CHAOSTGLOBBYLANDHDK.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGNEUT.prs CHAOSTGNEUT.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGRACE.prs CHAOSTGRACE.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGRACELANDD.prs CHAOSTGRACELANDD.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGRACELANDH.prs CHAOSTGRACELANDH.ini output/
+..\bin\split binary data/SONIC2/CHAOSTGRACELANDN.prs CHAOSTGRACELANDN.ini output/

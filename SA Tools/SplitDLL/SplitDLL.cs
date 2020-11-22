@@ -17,7 +17,7 @@ namespace SA_Tools.SplitDLL
 										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
 										"Neutral Chao", "Hero Chao", "Dark Chao"
 									};
-		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName)
+		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
 		{
 #if !DEBUG
 			try
@@ -89,7 +89,7 @@ namespace SA_Tools.SplitDLL
 					string fileOutputPath = "";
 					if (data.Filename != null)
 					{
-						fileOutputPath = string.Concat(projectFolderName, data.Filename);
+						fileOutputPath = Path.Combine(projectFolderName, data.Filename);
 
 						Console.WriteLine(name + " -> " + fileOutputPath);
 						Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
@@ -109,7 +109,7 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
-									land.SaveToFile(fileOutputPath, landfmt);
+									land.SaveToFile(fileOutputPath, landfmt, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
 								}
@@ -126,7 +126,7 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
-									land.SaveToFile(fileOutputPath, LandTableFormat.SA2B);
+									land.SaveToFile(fileOutputPath, LandTableFormat.SA2B, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
 								}
@@ -157,7 +157,7 @@ namespace SA_Tools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext);
 											fileName= Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext);
 										}
-										land.SaveToFile(outputFN, landfmt);
+										land.SaveToFile(outputFN, landfmt, nometa);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
 									}
@@ -446,7 +446,7 @@ namespace SA_Tools.SplitDLL
 									}
 									if (saveani)
 									{
-										ani.Animation.Save(outputFN);
+										ani.Animation.Save(outputFN, nometa);
 										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 									}
 									if (models.Contains(ani.Model.Name))
@@ -463,7 +463,7 @@ namespace SA_Tools.SplitDLL
 										string animationName = Path.GetFileName(outputFN);
 
 										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
-											null, modelfmt);
+											null, modelfmt, nometa);
 										output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
 									}
 								}
@@ -506,7 +506,7 @@ namespace SA_Tools.SplitDLL
 												outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 											}
-											ani.Save(outputFN);
+											ani.Save(outputFN, nometa);
 											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 										}
 									}
@@ -538,7 +538,7 @@ namespace SA_Tools.SplitDLL
 								while (i != -1)
 								{
 									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
-										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
@@ -559,17 +559,17 @@ namespace SA_Tools.SplitDLL
 									chara.MainModel = model.Name;
 									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation1 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"), nometa);
 									hashes.Add($"{chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim")));
 									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation2 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"), nometa);
 									hashes.Add($"{chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim")));
 									anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
 									chara.Animation3 = anim.Name;
-									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"));
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"), nometa);
 									hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
-									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
 									hashes.Add($"{chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl")));
 									int ptr = BitConverter.ToInt32(datafile, address + 16);
 									if (ptr != 0)
@@ -577,7 +577,7 @@ namespace SA_Tools.SplitDLL
 										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 										chara.AccessoryModel = model.Name;
 										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
 										hashes.Add($"{chnm} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl")));
 									}
 									ptr = BitConverter.ToInt32(datafile, address + 24);
@@ -587,17 +587,17 @@ namespace SA_Tools.SplitDLL
 										chara.SuperModel = model.Name;
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation1 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"), nometa);
 										hashes.Add($"Super {chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim")));
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation2 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"), nometa);
 										hashes.Add($"Super {chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim")));
 										anim = new NJS_MOTION(datafile, (int)(BitConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
 										chara.SuperAnimation3 = anim.Name;
-										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"));
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"), nometa);
 										hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk);
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
 										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
 									}
 									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
@@ -626,14 +626,14 @@ namespace SA_Tools.SplitDLL
 									};
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									kart.Model = model.Name;
-									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
 									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
 									int ptr = BitConverter.ToInt32(datafile, address + 8);
 									if (ptr != 0)
 									{
 										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 										kart.LowModel = model.Name;
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk);
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
 										hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
 									}
 									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
@@ -664,7 +664,7 @@ namespace SA_Tools.SplitDLL
 										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, shortrot: true);
 										cmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
-										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"));
+										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
 										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
 									}
 									else
@@ -689,10 +689,10 @@ namespace SA_Tools.SplitDLL
 				}
 				foreach (ModelAnimations item in models)
 				{
-					string modelOutputPath = string.Concat(projectFolderName, item.Filename);
+					string modelOutputPath = Path.Combine(projectFolderName, item.Filename);
 					//string modelOutputPath = item.Filename;
 
-					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format);
+					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format, nometa);
 					string type = "model";
 					switch (item.Format)
 					{

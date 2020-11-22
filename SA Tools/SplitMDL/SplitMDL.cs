@@ -56,7 +56,13 @@ namespace SA_Tools.SplitMDL
 						data = FraGag.Compression.Prs.Decompress(data);
 					animfiles[j] = (Path.GetFileNameWithoutExtension(animationPaths[j]), data);
 				}
-				Environment.CurrentDirectory = (outputFolder.Length != 0) ? outputFolder : Path.GetDirectoryName(mdlfilename);
+				if (outputFolder.Length != 0)
+				{
+					if (!Directory.Exists(outputFolder)) Directory.CreateDirectory(outputFolder);
+					Environment.CurrentDirectory = outputFolder;
+				}
+				else
+					Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
 
 				// getting model pointers

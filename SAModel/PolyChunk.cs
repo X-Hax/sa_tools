@@ -1001,13 +1001,13 @@ namespace SonicRetro.SAModel
 						case ChunkType.Strip_StripUVN:
 						case ChunkType.Strip_StripUVNColor:
 						case ChunkType.Strip_StripUVN2:
-							UVs[i] = new UV(file, address, false);
+							UVs[i] = new UV(file, address, false, true);
 							address += UV.Size;
 							break;
 						case ChunkType.Strip_StripUVH:
 						case ChunkType.Strip_StripUVHColor:
 						case ChunkType.Strip_StripUVH2:
-							UVs[i] = new UV(file, address, true);
+							UVs[i] = new UV(file, address, true, true);
 							address += UV.Size;
 							break;
 					}

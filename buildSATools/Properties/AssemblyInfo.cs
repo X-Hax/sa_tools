@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SplitNB")]
+[assembly: AssemblyTitle("buildSATools")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SplitNB")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCompany("HP")]
+[assembly: AssemblyProduct("buildSATools")]
+[assembly: AssemblyCopyright("Copyright © HP 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ebd7c0a4-b375-421c-a327-2c26c33c4e96")]
+[assembly: Guid("2848869c-9877-418a-900c-853fe69274f6")]
 
 // Version information for an assembly consists of the following four values:
 //

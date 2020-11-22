@@ -43,10 +43,10 @@ namespace SonicRetro.SAModel.SAMDL
 		private void SAMDL_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-			LoadAlternate(files);
+			LoadModelList(files);
 		}
 
-		public void LoadAlternate(string[] files, bool cmdLoad = false)
+		public void LoadModelList(string[] files, bool cmdLoad = false)
 		{
 			bool modelLoaded = false; //We can only load one model at once for now. Set to true when user loads first file and ignore others.
 			bool modelLoadedWarning = false; //Flag so we can warn users that they should do one model at a time.
@@ -220,7 +220,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
-				LoadFile(Program.Arguments[0]);
+				LoadModelList(Program.Arguments, true);
 		}
 
 		void ShowWelcomeScreen()
@@ -263,7 +263,7 @@ namespace SonicRetro.SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
 			};
 			goto loadfiledlg;
 		loadfiledlg:
@@ -431,21 +431,32 @@ namespace SonicRetro.SAModel.SAMDL
 			animframe = 0;
 			if (ModelFile.CheckModelFile(filename))
 			{
-				modelFile = new ModelFile(filename);
-				outfmt = modelFile.Format;
-				if (modelFile.Model.Sibling != null)
+				try
 				{
-					model = new NJS_OBJECT { Name = "Root" };
-					model.AddChild(modelFile.Model);
-					rootSiblingMode = true;
+					modelFile = new ModelFile(filename);
+					outfmt = modelFile.Format;
+					if (modelFile.Model.Sibling != null)
+					{
+						model = new NJS_OBJECT { Name = "Root" };
+						model.AddChild(modelFile.Model);
+						rootSiblingMode = true;
+					}
+					else
+					{
+						model = modelFile.Model;
+						rootSiblingMode = false;
+					}
+					animations = new List<NJS_MOTION>(modelFile.Animations);
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 				}
-				else
+				catch (Exception ex)
 				{
-					model = modelFile.Model;
-					rootSiblingMode = false;
+					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
+					log.WriteLog();
+					report.ShowDialog();
+					return;
 				}
-				animations = new List<NJS_MOTION>(modelFile.Animations);
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else if (extension.Equals(".nj") || extension.Equals(".gj"))
 			{
@@ -1937,6 +1948,7 @@ namespace SonicRetro.SAModel.SAMDL
 				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
+				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
 			}
 			else
@@ -1947,7 +1959,7 @@ namespace SonicRetro.SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
-				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
+				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				clearChildrenToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
@@ -3305,6 +3317,54 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			text.ShowDialog();
+		}
+
+		private void AddPolyNormal(NJS_OBJECT obj)
+		{
+			if (obj.Attach is BasicAttach)
+			{
+				BasicAttach att = (BasicAttach)obj.Attach;
+				foreach (NJS_MESHSET mesh in att.Mesh)
+				{
+					mesh.PolyNormal = new Vertex[mesh.Poly.Count];
+					for (int p = 0; p < mesh.PolyNormal.Count(); p++)
+					{
+						mesh.PolyNormal[p] = new Vertex(0, 0, 0);
+					}
+				}
+			}
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT child in obj.Children)
+					AddPolyNormal(child);
+			}
+		}
+
+		private void RemovePolyNormal(NJS_OBJECT obj)
+		{
+			if (obj.Attach is BasicAttach)
+			{
+				BasicAttach att = (BasicAttach)obj.Attach;
+				foreach (NJS_MESHSET mesh in att.Mesh)
+				{
+					mesh.PolyNormal = null;
+				}
+			}
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT child in obj.Children)
+					RemovePolyNormal(child);
+			}
+		}
+
+		private void createToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			AddPolyNormal(selectedObject);
+		}
+
+		private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			RemovePolyNormal(selectedObject);
 		}
 
 		private void showNodeConnectionsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

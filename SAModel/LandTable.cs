@@ -584,7 +584,7 @@ namespace SonicRetro.SAModel
 			}
 		}
 
-		public void SaveToFile(string filename, LandTableFormat format)
+		public void SaveToFile(string filename, LandTableFormat format, bool nometa = false)
 		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
@@ -610,54 +610,58 @@ namespace SonicRetro.SAModel
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			byte[] lvl = GetBytes(0x10, format, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
+			if (!nometa) file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
+			else file.AddRange(ByteConverter.GetBytes(0));
 			file.AddRange(lvl);
-			if (labels.Count > 0)
+			if (!nometa)
 			{
-				List<byte> chunk = new List<byte>(labels.Count * 8);
-				int straddr = (labels.Count * 8) + 8;
-				List<byte> strbytes = new List<byte>();
-				foreach (KeyValuePair<string, uint> label in labels)
+				if (labels.Count > 0)
 				{
-					chunk.AddRange(ByteConverter.GetBytes(label.Value));
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
-					strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
-					strbytes.Add(0);
-					strbytes.Align(4);
+					List<byte> chunk = new List<byte>(labels.Count * 8);
+					int straddr = (labels.Count * 8) + 8;
+					List<byte> strbytes = new List<byte>();
+					foreach (KeyValuePair<string, uint> label in labels)
+					{
+						chunk.AddRange(ByteConverter.GetBytes(label.Value));
+						chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
+						strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
+						strbytes.Add(0);
+						strbytes.Align(4);
+					}
+					chunk.AddRange(ByteConverter.GetBytes(-1L));
+					chunk.AddRange(strbytes);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
+					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(chunk);
 				}
-				chunk.AddRange(ByteConverter.GetBytes(-1L));
-				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
+				if (!string.IsNullOrEmpty(Author))
+				{
+					List<byte> chunk = new List<byte>(Author.Length + 1);
+					chunk.AddRange(Encoding.UTF8.GetBytes(Author));
+					chunk.Add(0);
+					chunk.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Author));
+					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(chunk);
+				}
+				if (!string.IsNullOrEmpty(Description))
+				{
+					List<byte> chunk = new List<byte>(Description.Length + 1);
+					chunk.AddRange(Encoding.UTF8.GetBytes(Description));
+					chunk.Add(0);
+					chunk.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
+					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(chunk);
+				}
+				foreach (KeyValuePair<uint, byte[]> item in Metadata)
+				{
+					file.AddRange(ByteConverter.GetBytes(item.Key));
+					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
+					file.AddRange(item.Value);
+				}
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			}
-			if (!string.IsNullOrEmpty(Author))
-			{
-				List<byte> chunk = new List<byte>(Author.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Author));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Author));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (!string.IsNullOrEmpty(Description))
-			{
-				List<byte> chunk = new List<byte>(Description.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Description));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			foreach (KeyValuePair<uint, byte[]> item in Metadata)
-			{
-				file.AddRange(ByteConverter.GetBytes(item.Key));
-				file.AddRange(ByteConverter.GetBytes(item.Value.Length));
-				file.AddRange(item.Value);
-			}
-			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;

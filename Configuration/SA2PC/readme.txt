@@ -1,1 +1,1 @@
-To use this, then place these files in the main folder of your Sonic Adventure 2 install with sonic2app.exe.
+To use this, copy all files from Sonic Adventure 2 PC to the "data" folder and run the batch files.

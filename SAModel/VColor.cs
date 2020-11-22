@@ -18,7 +18,8 @@ namespace SonicRetro.SAModel
 					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
 					if (ByteConverter.BigEndian)
 					{
-						if (!ByteConverter.Reverse) 
+						//"Reverse" is for the order used in SADX Gamecube
+						if (ByteConverter.Reverse) 
 							return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 						else
 							return Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);

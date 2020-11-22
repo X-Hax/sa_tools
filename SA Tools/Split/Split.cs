@@ -11,7 +11,7 @@ namespace SA_Tools.Split
 {
 	public static class Split
 	{
-		public static int SplitFile(string datafilename, string inifilename, string projectFolderName)
+		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
 		{
 #if !DEBUG
 			try
@@ -20,7 +20,7 @@ namespace SA_Tools.Split
 				byte[] datafile;
 				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(inifilename) + "_labels.txt");
+				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				if (File.Exists(listfile))
 					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
@@ -80,13 +80,13 @@ namespace SA_Tools.Split
 					int address = data.Address;
 					bool nohash = false;
 
-					string fileOutputPath = string.Concat(projectFolderName, data.Filename);
+					string fileOutputPath = Path.Combine(projectFolderName, data.Filename);
 					Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " → " + fileOutputPath);
 					Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 					switch (type)
 					{
 						case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt);
+							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt, nometa);
 							break;
 						case "model":
 							{
@@ -97,7 +97,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt, nometa);
 							}
 							break;
 						case "basicmodel":
@@ -109,7 +109,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic, nometa);
 							}
 							break;
 						case "basicdxmodel":
@@ -121,7 +121,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX, nometa);
 							}
 							break;
 						case "chunkmodel":
@@ -133,7 +133,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk, nometa);
 							}
 							break;
 						case "gcmodel":
@@ -145,7 +145,7 @@ namespace SA_Tools.Split
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC, nometa);
 							}
 							break;
 						case "action":
@@ -159,7 +159,7 @@ namespace SA_Tools.Split
 									Console.WriteLine("Action {0} has no model data!", ani.Name);
 									continue;
 								}
-								ani.Animation.Save(fileOutputPath);
+								ani.Animation.Save(fileOutputPath, nometa);
 							}
 							break;
 						case "animation":
@@ -167,13 +167,13 @@ namespace SA_Tools.Split
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
-								mot.Save(fileOutputPath);
+								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels);
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
-								mot.Save(fileOutputPath);
+								mot.Save(fileOutputPath, nometa);
 							}
 							break;
 						case "objlist":
@@ -294,7 +294,7 @@ namespace SA_Tools.Split
 								{
 									flags.Add(new DeathZoneFlags(datafile, address));
 									string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt);
+									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt, nometa);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;
 								}
@@ -380,7 +380,7 @@ namespace SA_Tools.Split
 								while (i != -1)
 								{
 									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
-										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+										.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
@@ -443,7 +443,7 @@ namespace SA_Tools.Split
 						obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
 					}
 
-					string masterObjectListOutputPath = string.Concat(projectFolderName, inifile.MasterObjectList);
+					string masterObjectListOutputPath = Path.Combine(projectFolderName, inifile.MasterObjectList);
 
 					IniSerializer.Serialize(masterobjlist, masterObjectListOutputPath);
 				}

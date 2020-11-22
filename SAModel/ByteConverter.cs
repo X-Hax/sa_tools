@@ -118,7 +118,9 @@ namespace SonicRetro.SAModel
 			byte[] y = new byte[4];
 			Array.Copy(value, startIndex, y, 0, 4);
 			SwapEndian(y);
-			return BitConverter.ToSingle(y, 0);
+			float res = BitConverter.ToSingle(y, 0);
+			if (res == -0.0f) res = 0.0f;
+			return res;
 		}
 
 		public static double ToDouble(byte[] value, int startIndex)
