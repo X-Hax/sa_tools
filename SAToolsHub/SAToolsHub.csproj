@@ -96,11 +96,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="toolSettings.cs">
+    <Compile Include="templateWriter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="toolSettings.Designer.cs">
-      <DependentUpon>toolSettings.cs</DependentUpon>
+    <Compile Include="templateWriter.Designer.cs">
+      <DependentUpon>templateWriter.cs</DependentUpon>
     </Compile>
     <Compile Include="ToolsHub.cs">
       <SubType>Form</SubType>
@@ -119,8 +119,8 @@
     <EmbeddedResource Include="newProj.resx">
       <DependentUpon>newProj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="toolSettings.resx">
-      <DependentUpon>toolSettings.cs</DependentUpon>
+    <EmbeddedResource Include="templateWriter.resx">
+      <DependentUpon>templateWriter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolsHub.resx">
       <DependentUpon>ToolsHub.cs</DependentUpon>

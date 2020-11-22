@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -15,6 +16,7 @@ using System.Xml.Serialization;
 using SA_Tools;
 using Fclp.Internals.Extensions;
 using ProjectManagement;
+using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 
 namespace SAToolsHub
 {
@@ -32,22 +34,38 @@ namespace SAToolsHub
 		setobj,
 		data
 	}
-public partial class SAToolsHub : Form
+
+	public partial class SAToolsHub : Form
 	{
 		//Additional Windows
-		private toolSettings toolSettingsDiag;
 		private newProj projectCreateDiag;
 		private editProj projectEditorDiag;
 		private buildWindow buildWindowDiag;
+		private templateWriter templateWriter;
 
-		//Variabels
+		//Variables
 		public static string newProjFile { get; set; }
 		public static string projName { get; set; }
-		public static DirectoryInfo projectDirectory { get; set; }
+		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
-		public static DirectoryInfo gameSystemDirectory { get; set; }
+		public static string gameSystemDirectory { get; set; }
 		public static List<SplitEntry> projSplitEntries { get; set; }
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
+
+		//Program Paths
+		string samdlPath;
+		string salvlPath;
+		string texeditPath;
+		string sadxlvl2Path;
+		string sadxsndsharpPath;
+		string sadxtweakerPath;
+		string sadxfonteditPath;
+		string sasavePath;
+		string sa2eventviewPath;
+		string sa2evtexteditPath;
+		string sa2streditPath;
+		string sa2stgselPath;
+		string datatoolboxPath;
 
 		//Additional Code/Functions
 		private void openProject(string projectFile)
@@ -56,13 +74,13 @@ public partial class SAToolsHub : Form
 			var projFileStream = File.OpenRead(projectFile);
 			var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
-			projectDirectory = new DirectoryInfo(projFile.ModSystemFolder);
-			gameSystemDirectory = new DirectoryInfo(projFile.GameSystemFolder);
+			projectDirectory = (projFile.GameInfo.ModSystemFolder);
+			gameSystemDirectory = (projFile.GameInfo.GameSystemFolder);
 			PopulateTreeView(projectDirectory);
 			this.treeView1.NodeMouseClick +=
 				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
-			setGame = projFile.GameName;
+			setGame = projFile.GameInfo.GameName;
 			projSplitEntries = projFile.SplitEntries;
 			if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2TT" || setGame == "SA2P")
 			{
@@ -71,7 +89,7 @@ public partial class SAToolsHub : Form
 
 			toggleButtons(setGame);
 			closeProjectToolStripMenuItem.Enabled = true;
-			if (projFile.CanBuild)
+			if (projFile.GameInfo.CanBuild)
 			{
 				buildToolStripMenuItem.Enabled = true;
 				editProjectInfoToolStripMenuItem.Enabled = true;
@@ -80,11 +98,12 @@ public partial class SAToolsHub : Form
 				tsEditProj.Enabled = true;
 			}
 		}
-		private void PopulateTreeView(DirectoryInfo directory)
+		
+		private void PopulateTreeView(string directory)
 		{
 			TreeNode rootNode;
 
-			DirectoryInfo info = directory;
+			DirectoryInfo info = new DirectoryInfo(directory);
 			if (info.Exists)
 			{
 				rootNode = new TreeNode(info.Name);
@@ -118,16 +137,22 @@ public partial class SAToolsHub : Form
 			TreeNode newSelected = e.Node;
 			listView1.Items.Clear();
 			DirectoryInfo nodeDirInfo = (DirectoryInfo)newSelected.Tag;
-			ListViewItem.ListViewSubItem[] subItems;
 			ListViewItem item = null;
 
+			LoadFiles(nodeDirInfo, item);
+		}
+
+		void LoadFiles(DirectoryInfo nodeDirInfo, ListViewItem item)
+		{
+			ListViewItem.ListViewSubItem[] subItems;
 			foreach (DirectoryInfo dir in nodeDirInfo.GetDirectories())
 			{
 				item = new ListViewItem(dir.Name, (int)item_icons.folder);
 				subItems = new ListViewItem.ListViewSubItem[]
 					{new ListViewItem.ListViewSubItem(item, "Directory"),
-			 new ListViewItem.ListViewSubItem(item,
-				dir.LastAccessTime.ToShortDateString())};
+						new ListViewItem.ListViewSubItem(item,
+						dir.LastAccessTime.ToShortDateString())};
+				item.Tag = "dir";
 				item.SubItems.AddRange(subItems);
 				listView1.Items.Add(item);
 			}
@@ -148,6 +173,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.model;
+							item.Tag = "mdl";
 							break;
 						}
 					case ".sa1lvl":
@@ -159,6 +185,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.level;
+							item.Tag = "lvl";
 							break;
 						}
 					case ".ini":
@@ -168,6 +195,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.data;
+							item.Tag = "ini";
 							break;
 						}
 					case ".txt":
@@ -177,6 +205,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.document;
+							item.Tag = "txt";
 							break;
 						}
 					case ".bin":
@@ -188,6 +217,7 @@ public partial class SAToolsHub : Form
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
 								item.ImageIndex = (int)item_icons.camera;
+								item.Tag = "cam";
 							}
 							else if (fileName.Contains("set"))
 							{
@@ -196,6 +226,7 @@ public partial class SAToolsHub : Form
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
 								item.ImageIndex = (int)item_icons.setobj;
+								item.Tag = "set";
 							}
 							else
 							{
@@ -203,6 +234,7 @@ public partial class SAToolsHub : Form
 									{ new ListViewItem.ListViewSubItem(item, "Binary File"),
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
+								item.Tag = "bin";
 							}
 							break;
 						}
@@ -215,6 +247,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
+							item.Tag = "tex";
 							break;
 						}
 					case ".prs":
@@ -225,6 +258,7 @@ public partial class SAToolsHub : Form
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Model"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+								item.Tag = "mdl";
 							}
 							else if (fileName.Contains("tex"))
 							{
@@ -232,6 +266,7 @@ public partial class SAToolsHub : Form
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Texture Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+								item.Tag = "tex";
 							}
 							else if (fileName.Contains("mtn"))
 							{
@@ -239,13 +274,15 @@ public partial class SAToolsHub : Form
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Animations Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+								item.Tag = "anm";
 							}
 							else
 							{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Compressed File"),
+								subItems = new ListViewItem.ListViewSubItem[]
+									{ new ListViewItem.ListViewSubItem(item, "Compressed File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+								item.Tag = "prs";
 							}
 							item.ImageIndex = (int)item_icons.compress;
 							break;
@@ -257,6 +294,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.anim;
+							item.Tag = "anm";
 							break;
 						}
 					case ".adx":
@@ -269,6 +307,7 @@ public partial class SAToolsHub : Form
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 						item.ImageIndex = (int)item_icons.audio;
+						item.Tag = "snd";
 						break;
 					default:
 						{
@@ -276,10 +315,11 @@ public partial class SAToolsHub : Form
 								{ new ListViewItem.ListViewSubItem(item, "File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
+							item.Tag = "msc";
 							break;
 						}
 				}
-				
+
 				item.SubItems.AddRange(subItems);
 				listView1.Items.Add(item);
 			}
@@ -287,41 +327,24 @@ public partial class SAToolsHub : Form
 			listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 
-		void checkConfigGames()
-		{
-			bool sadxpcIsValid = GamePathChecker.CheckSADXPCValid(
-				Program.Settings.SADXPCPath, out string sadxFailReason);
-
-			bool sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
-				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
-
-			if (sadxpcIsValid || sa2pcIsValid)
-			{
-				newProjectToolStripMenuItem.Enabled = true;
-				tsNewProj.Enabled = true;
-			}
-			else
-			{
-				newProjectToolStripMenuItem.Enabled = false;
-				tsNewProj.Enabled = false;
-			}
-		}
-
 		void toggleButtons(string game)
 		{
-			if (game == "SADX")
+			switch (game)
 			{
-				tsSADXLVL2.Visible = true;
-				tsSADXTweaker.Visible = true;
-				tsSADXsndSharp.Visible = true;
-				tsSADXFontEdit.Visible = true;
-			}
-			if (game == "SA2PC")
-			{
-				tsSA2EvView.Visible = true;
-				tsSA2EvTxt.Visible = true;
-				tsSA2MsgEdit.Visible = true;
-				tsSA2StgSel.Visible = true;
+				case "SADXPC":
+					tsSADXLVL2.Visible = true;
+					tsSADXTweaker.Visible = true;
+					tsSADXsndSharp.Visible = true;
+					tsSADXFontEdit.Visible = true;
+					break;
+				case "SA2PC":
+					tsSA2EvView.Visible = true;
+					tsSA2EvTxt.Visible = true;
+					tsSA2MsgEdit.Visible = true;
+					tsSA2StgSel.Visible = true;
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -355,24 +378,94 @@ public partial class SAToolsHub : Form
 		{
 			InitializeComponent();
 
-			toolSettingsDiag = new toolSettings();
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
 			buildWindowDiag = new buildWindow();
+			templateWriter = new templateWriter();
+		}
+
+		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			string itemPath = "";
+			string itemName = listView1.SelectedItems[0].Text;
+			string itemTag = (string)listView1.SelectedItems[0].Tag;
+			if (itemTag != "dir")
+				itemPath = treeView1.SelectedNode.FullPath;
+
+			string filePath = string.Format("\"{0}\"", projectDirectory + "/../" + (Path.Combine(itemPath, itemName)));
+
+			if (listView1.SelectedItems.Count > 0)
+			{
+				switch (itemTag)
+				{
+					case "dir":
+						//treeView1.SelectedNode = treeView1.Nodes.Find(itemName, true)[0];
+						break;
+					case "mdl":
+						Process samdlProcess = Process.Start(samdlPath, filePath);
+						break;
+					case "lvl":
+						//Process salvlProcess = Process.Start(salvlPath, filePath);
+						break;
+					case "tex":
+						Process texEditProcess = Process.Start(texeditPath, filePath);
+						break;
+				}
+			}
 		}
 
 		private void toolsHub_Shown(object sender, EventArgs e)
 		{
-			checkConfigGames();
+			string build;
+#if DEBUG
+			build = "Debug/";
+#endif
+#if !DEBUG
+			build = "Release/";
+#endif
+			string rootPath;
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+
+			if (Directory.Exists(appPath + "/../../bin/"))
+			{
+				rootPath = appPath + "/../../../";
+
+				samdlPath = rootPath + "/SAMDL/bin/" + build + "SAMDL.exe";
+				salvlPath = rootPath + "/SALVL/bin/" + build + "SALVL.exe";
+				texeditPath = rootPath + "/TextureEditor/bin/" + build + "TextureEditor.exe";
+				sadxlvl2Path = rootPath + "/SADXLVL2/bin/" + build + "SADXLVL2.exe";
+				sadxsndsharpPath = rootPath + "/SADXsndSharp/bin/" + build + "SADXsndSharp.exe";
+				sadxtweakerPath = rootPath + "/SADXTweaker2/bin/" + build + "SADXTweaker2.exe";
+				sadxfonteditPath = rootPath + "/SADXFontEdit/bin/" + build + "SADXFontEdit.exe";
+				sasavePath = rootPath + "/SASave/bin/" + build + "SASave.exe";
+				sa2eventviewPath = rootPath + "/SA2EventViewer/bin/" + build + "SA2EventViewer.exe";
+				sa2evtexteditPath = rootPath + "/SA2CutsceneTextEditor/bin/" + build + "SA2CutsceneTextEditor.exe";
+				sa2streditPath = rootPath + "/SA2MessageFileEditor/bin/" + build + "SA2MessageFileEditor.exe";
+				sa2stgselPath = rootPath + "/SA2StageSelEdit/bin/" + build + "SA2StageSelEdit.exe";
+				datatoolboxPath = rootPath + "/DataToolbox/bin/" + build + "DataToolbox.exe";
+			}
+			else
+			{
+				rootPath = appPath + "/../";
+
+				samdlPath = rootPath + "/SAMDL/SAMDL.exe";
+				salvlPath = rootPath + "/SALVL/SALVL.exe";
+				texeditPath = rootPath + "/TextureEditor/TextureEditor.exe";
+				sadxlvl2Path = rootPath + "/SADXPC/SADXLVL2/SADXLVL2.exe";
+				sadxsndsharpPath = rootPath + "/SADXPC/SADXsndSharp/SADXsndSharp.exe";
+				sadxtweakerPath = rootPath + "/SADXPC/SADXTweaker2/SADXTweaker2.exe";
+				sadxfonteditPath = rootPath + "/SADXPC/SADXFontEdit/SADXFontEdit.exe";
+				sasavePath = rootPath + "/SASave/SASave.exe";
+				sa2eventviewPath = rootPath + "/SA2PC/SA2EventViewer/SA2EventViewer.exe";
+				sa2evtexteditPath = rootPath + "/SA2PC/SA2CutsceneTextEditor/SA2CutsceneTextEditor.exe";
+				sa2streditPath = rootPath + "/SA2PC/SA2MessageFileEditor/SA2MessageFileEditor.exe";
+				sa2stgselPath = rootPath + "/SA2PC/SA2StageSelEdit/SA2StageSelEdit.exe";
+				datatoolboxPath = rootPath + "/DataToolbox/DataToolbox.exe";
+			}
 		}
 
 		//Tool Strip Functions
 		//Settings
-		private void setGamePathsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			toolSettingsDiag.ShowDialog();
-		}
-
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 
@@ -452,229 +545,143 @@ public partial class SAToolsHub : Form
 		//General Tools Initializers
 		private void sAMDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch samdl
-			string samdlPath = "";
+			ProcessStartInfo samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(samdlPath));
 
-#if DEBUG
-			samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SAMDL/bin/Debug/SAMDL.exe";
-#endif
-#if !DEBUG
-			samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SAMDL/SAMDL.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo samdlStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(samdlPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			System.Diagnostics.Process samdlProcess = System.Diagnostics.Process.Start(samdlStartInfo);
+			Process samdlProcess = Process.Start(samdlStartInfo);
 
 		}
 
 		private void sALVLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch salvl
-			string salvlPath = "";
-
-#if DEBUG
-			salvlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SALVL/bin/Debug/SALVL.exe";
-#endif
-#if !DEBUG
-			salvlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SALVL/SALVL.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo salvlStartInfo = new System.Diagnostics.ProcessStartInfo(
+			ProcessStartInfo salvlStartInfo = new ProcessStartInfo(
 				Path.GetFullPath(salvlPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process salvlProcess = System.Diagnostics.Process.Start(salvlStartInfo);
+			Process salvlProcess = Process.Start(salvlStartInfo);
 		}
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch TextureEditor
-			string texEditPath = "";
-
-#if DEBUG
-			texEditPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../TextureEditor/bin/Debug/TextureEditor.exe";
-#endif
-#if !DEBUG
-			texEditPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../TextureEditor/TextureEditor.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo texEditStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(texEditPath)//,
+			ProcessStartInfo texEditStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(texeditPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process texEditProcess = System.Diagnostics.Process.Start(texEditStartInfo);
+			Process texEditProcess = Process.Start(texEditStartInfo);
 		}
 
 		//SADX Tools Initializers
 		private void sADXLVL2ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch sadxlvl2
-			string sadxlvl2Path = "";
+			ProcessStartInfo sadxlvl2StartInfo;
 
-#if DEBUG
-			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXLVL2/bin/Debug/SADXLVL2.exe";
-#endif
-#if !DEBUG
-			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXLVL2/SADXLVL2.exe";
-#endif
-			string projDir = (projectDirectory.ToString());
-			string projectArgumentsPath = Path.Combine(projDir, "sadxlvl.ini");
+			if (projectDirectory != null)
+			{
+				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sadxlvl.ini"));
 
-			System.Diagnostics.ProcessStartInfo sadxlvl2StartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);
+				sadxlvl2StartInfo = new ProcessStartInfo(
+					Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);
+			}
+			else
+			{
+				sadxlvl2StartInfo = new ProcessStartInfo(
+					Path.GetFullPath(sadxlvl2Path));
+			}
 
-			System.Diagnostics.Process sadxlvl2Process = System.Diagnostics.Process.Start(sadxlvl2StartInfo);
+			Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
 		}
 
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			ProcessStartInfo tweakerStartInfo;
 
+			if (projectDirectory != null)
+			{
+				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sonic_data.ini"));
+
+				tweakerStartInfo = new ProcessStartInfo(
+					Path.GetFullPath(sadxtweakerPath), projectArgumentsPath);
+			}
+			else
+			{
+				tweakerStartInfo = new ProcessStartInfo(
+					Path.GetFullPath(sadxtweakerPath));
+			}
+
+			Process sadxlvl2Process = Process.Start(tweakerStartInfo);
 		}
 
 		private void sADXsndSharpToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch TextureEditor
-			string sndSharpPath = "";
-
-#if DEBUG
-			sndSharpPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXsndSharp/bin/Debug/SADXsndSharp.exe";
-#endif
-#if !DEBUG
-			sndSharpPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXsndSharp/SADXsndSharp.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo sndSharpStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sndSharpPath)//,
+			ProcessStartInfo sndSharpStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sadxsndsharpPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process sndSharpProcess = System.Diagnostics.Process.Start(sndSharpStartInfo);
+			Process sndSharpProcess = Process.Start(sndSharpStartInfo);
 		}
 
 		private void sAFontEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch TextureEditor
-			string saFontPath = "";
-
-#if DEBUG
-			saFontPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXFontEdit/bin/Debug/SADXFontEdit.exe";
-#endif
-#if !DEBUG
-			saFontPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXFontEdit/SADXFontEdit.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo saFontStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(saFontPath)//,
+			ProcessStartInfo saFontStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sadxfonteditPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saFontProcess = System.Diagnostics.Process.Start(saFontStartInfo);
+			Process saFontProcess = Process.Start(saFontStartInfo);
 		}
 
 		private void sASaveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch SA Save
-			string saSavePath = "";
-
-#if DEBUG
-			saSavePath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SASave/bin/Debug/SASave.exe";
-#endif
-#if !DEBUG
-			saSavePath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SASave/SASave.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo saSaveStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(saSavePath)//,
+			ProcessStartInfo saSaveStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sasavePath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(saSaveStartInfo);
+			Process saSaveProcess = Process.Start(saSaveStartInfo);
 		}
 
 		//SA2 Tools Initializers
 		private void sA2EventViewerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch SA2 Event Viewer
-			string sa2EventPath = "";
-
-#if DEBUG
-			sa2EventPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SA2EventViewer/bin/Debug/SA2EventViewer.exe";
-#endif
-#if !DEBUG
-			sa2EventPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2EventViewer/SA2EventViewer.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo sa2EventStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sa2EventPath)//,
+			ProcessStartInfo sa2EventStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sa2eventviewPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(sa2EventStartInfo);
+			Process saSaveProcess = Process.Start(sa2EventStartInfo);
 		}
 
 		private void sA2CutsceneTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch SA2 Cutscene Text Editor
-			string sa2EvTextPath = "";
-
-#if DEBUG
-			sa2EvTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SA2CutsceneTextEditor/bin/Debug/SA2CutsceneTextEditor.exe";
-#endif
-#if !DEBUG
-			sa2EvTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2CutsceneTextEditor/SA2CutsceneTextEditor.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo sa2EvTextStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sa2EvTextPath)//,
+			ProcessStartInfo sa2EvTextStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sa2evtexteditPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(sa2EvTextStartInfo);
+			Process saSaveProcess = Process.Start(sa2EvTextStartInfo);
 		}
 
 		private void sA2MessageEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch SA2 Cutscene Text Editor
-			string sa2MsgTextPath = "";
-
-#if DEBUG
-			sa2MsgTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SA2MessageFileEditor/bin/Debug/SA2MessageFileEditor.exe";
-#endif
-#if !DEBUG
-			sa2MsgTextPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2MessageFileEditor/SA2MessageFileEditor.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo sa2MsgTextStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sa2MsgTextPath)//,
+			ProcessStartInfo sa2MsgTextStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sa2streditPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(sa2MsgTextStartInfo);
+			Process saSaveProcess = Process.Start(sa2MsgTextStartInfo);
 		}
 
 		private void sA2StageSelectEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch SA2 Cutscene Text Editor
-			string sa2StgSelPath = "";
-
-#if DEBUG
-			sa2StgSelPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SA2StageSelEdit/bin/Debug/SA2StageSelEdit.exe";
-#endif
-#if !DEBUG
-			sa2StgSelPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SA2PC/SA2StageSelEdit/SA2StageSelEdit.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo sa2StgSelStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(sa2StgSelPath)//,
+			ProcessStartInfo sa2StgSelStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(sa2stgselPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(sa2StgSelStartInfo);
+			Process saSaveProcess = Process.Start(sa2StgSelStartInfo);
 		}
 
 		//Data Extractor/Convert (new Split UI)
 		private void splitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// launch Data Tool
-			string dataToolPath = "";
-
-#if DEBUG
-			dataToolPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../DataExtractor/bin/Debug/DataExtractor.exe";
-#endif
-#if !DEBUG
-			dataToolPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../DataExtractor/DataExtractor.exe";
-#endif
-			System.Diagnostics.ProcessStartInfo dataToolStartInfo = new System.Diagnostics.ProcessStartInfo(
-				Path.GetFullPath(dataToolPath)//,
+			ProcessStartInfo dataToolStartInfo = new ProcessStartInfo(
+				Path.GetFullPath(datatoolboxPath)//,
 				/*Path.GetFullPath(projectFolder)*/);
 
-			System.Diagnostics.Process saSaveProcess = System.Diagnostics.Process.Start(dataToolStartInfo);
+			Process saSaveProcess = Process.Start(dataToolStartInfo);
 		}
 
 		//Help Links
@@ -683,9 +690,9 @@ public partial class SAToolsHub : Form
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/wiki");
+				Process.Start("https://github.com/sonicretro/sa_tools/wiki");
 			}
-			catch (Exception ex)
+			catch
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
@@ -695,9 +702,9 @@ public partial class SAToolsHub : Form
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_DX:_PC");
+				Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_DX:_PC");
 			}
-			catch (Exception ex)
+			catch
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
@@ -707,9 +714,9 @@ public partial class SAToolsHub : Form
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_2_(PC)");
+				Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_2_(PC)");
 			}
-			catch (Exception ex)
+			catch
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
@@ -719,9 +726,9 @@ public partial class SAToolsHub : Form
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("https://github.com/kellsnc/sadx-modding-guide/wiki");
+				Process.Start("https://github.com/kellsnc/sadx-modding-guide/wiki");
 			}
-			catch (Exception ex)
+			catch
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
@@ -732,9 +739,9 @@ public partial class SAToolsHub : Form
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+				Process.Start("https://github.com/sonicretro/sa_tools/issues");
 			}
-			catch (Exception ex)
+			catch
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
@@ -830,6 +837,11 @@ public partial class SAToolsHub : Form
 		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 
+		}
+
+		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			templateWriter.ShowDialog();
 		}
 	}
 }

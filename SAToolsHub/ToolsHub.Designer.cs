@@ -31,17 +31,13 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SAToolsHub));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.setGamePathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.projectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openProjectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.editProjectInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.closeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mainBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -65,6 +61,13 @@
 			this.sA2StageSelectEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.splitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.frequencyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.dailyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.weeklyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.monthlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.resourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sAToolsWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,7 +75,7 @@
 			this.retrosSCHGForSA2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sADXGitWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubIssueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.rightToolStrip = new System.Windows.Forms.ToolStrip();
 			this.tsSAMDL = new System.Windows.Forms.ToolStripButton();
 			this.tsSALVL = new System.Windows.Forms.ToolStripButton();
 			this.tsTexEdit = new System.Windows.Forms.ToolStripButton();
@@ -85,15 +88,14 @@
 			this.tsSA2EvTxt = new System.Windows.Forms.ToolStripButton();
 			this.tsSA2MsgEdit = new System.Windows.Forms.ToolStripButton();
 			this.tsSA2StgSel = new System.Windows.Forms.ToolStripButton();
-			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.topToolStrip = new System.Windows.Forms.ToolStrip();
 			this.tsNewProj = new System.Windows.Forms.ToolStripButton();
 			this.tsOpenProj = new System.Windows.Forms.ToolStripButton();
 			this.tsEditProj = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsBuild = new System.Windows.Forms.ToolStripButton();
 			this.tsGameRun = new System.Windows.Forms.ToolStripButton();
+			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.listView1 = new System.Windows.Forms.ListView();
@@ -110,8 +112,8 @@
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
-			this.toolStrip1.SuspendLayout();
-			this.toolStrip2.SuspendLayout();
+			this.rightToolStrip.SuspendLayout();
+			this.topToolStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -121,56 +123,19 @@
 			// 
 			// menuStrip1
 			// 
+			this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
 			this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem,
             this.projectsToolStripMenuItem,
             this.buildToolStripMenuItem,
             this.toolsToolStripMenuItem,
+            this.settingsToolStripMenuItem,
             this.helpToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(800, 25);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
-			// 
-			// settingsToolStripMenuItem
-			// 
-			this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setGamePathsToolStripMenuItem,
-            this.checkForUpdatesToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.exitToolStripMenuItem});
-			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(66, 21);
-			this.settingsToolStripMenuItem.Text = "Settings";
-			// 
-			// setGamePathsToolStripMenuItem
-			// 
-			this.setGamePathsToolStripMenuItem.Name = "setGamePathsToolStripMenuItem";
-			this.setGamePathsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.setGamePathsToolStripMenuItem.Text = "Set Game Paths";
-			this.setGamePathsToolStripMenuItem.Click += new System.EventHandler(this.setGamePathsToolStripMenuItem_Click);
-			// 
-			// checkForUpdatesToolStripMenuItem
-			// 
-			this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
-			this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-			this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
-			this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
-			// 
-			// exitToolStripMenuItem
-			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.exitToolStripMenuItem.Text = "Exit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
 			// projectsToolStripMenuItem
 			// 
@@ -179,7 +144,8 @@
             this.openProjectToolStripMenuItem1,
             this.editProjectInfoToolStripMenuItem,
             this.toolStripSeparator1,
-            this.closeProjectToolStripMenuItem});
+            this.closeProjectToolStripMenuItem,
+            this.exitToolStripMenuItem1});
 			this.projectsToolStripMenuItem.Name = "projectsToolStripMenuItem";
 			this.projectsToolStripMenuItem.Size = new System.Drawing.Size(66, 21);
 			this.projectsToolStripMenuItem.Text = "Projects";
@@ -230,6 +196,13 @@
 			this.closeProjectToolStripMenuItem.ToolTipText = "Close the currently open Project.";
 			this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.closeProjectToolStripMenuItem_Click);
 			// 
+			// exitToolStripMenuItem1
+			// 
+			this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
+			this.exitToolStripMenuItem1.Size = new System.Drawing.Size(212, 22);
+			this.exitToolStripMenuItem1.Text = "Exit ToolsHub";
+			this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
 			// buildToolStripMenuItem
 			// 
 			this.buildToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -246,19 +219,19 @@
 			// 
 			this.mainBuildToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
 			this.mainBuildToolStripMenuItem.Name = "mainBuildToolStripMenuItem";
-			this.mainBuildToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.mainBuildToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
 			this.mainBuildToolStripMenuItem.Text = "Build Mod";
 			this.mainBuildToolStripMenuItem.Click += new System.EventHandler(this.manualBuildToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(256, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(211, 6);
 			// 
 			// configureRunOptionsToolStripMenuItem
 			// 
 			this.configureRunOptionsToolStripMenuItem.Name = "configureRunOptionsToolStripMenuItem";
-			this.configureRunOptionsToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.configureRunOptionsToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
 			this.configureRunOptionsToolStripMenuItem.Text = "Configure Run Options";
 			this.configureRunOptionsToolStripMenuItem.Click += new System.EventHandler(this.configureRunOptionsToolStripMenuItem_Click);
 			// 
@@ -280,7 +253,8 @@
             this.sADXToolsToolStripMenuItem,
             this.sA2ToolsToolStripMenuItem,
             this.toolStripSeparator4,
-            this.splitToolStripMenuItem});
+            this.splitToolStripMenuItem,
+            this.toolStripMenuItem1});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(51, 21);
 			this.toolsToolStripMenuItem.Text = "Tools";
@@ -292,7 +266,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
@@ -328,7 +302,7 @@
             this.sAFontEditorToolStripMenuItem,
             this.sASaveToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SADX Tools";
 			// 
 			// sADXLVL2ToolStripMenuItem
@@ -374,7 +348,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -408,14 +382,66 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(226, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
-			this.splitToolStripMenuItem.Text = "Data Extractor / Converter";
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+			this.toolStripMenuItem1.Text = "Template";
+			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+			// 
+			// settingsToolStripMenuItem
+			// 
+			this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkForUpdatesToolStripMenuItem,
+            this.frequencyToolStripMenuItem});
+			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(69, 21);
+			this.settingsToolStripMenuItem.Text = "Updates";
+			// 
+			// checkForUpdatesToolStripMenuItem
+			// 
+			this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
+			this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+			this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
+			this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+			// 
+			// frequencyToolStripMenuItem
+			// 
+			this.frequencyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dailyToolStripMenuItem,
+            this.weeklyToolStripMenuItem,
+            this.monthlyToolStripMenuItem});
+			this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
+			this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.frequencyToolStripMenuItem.Text = "Frequency";
+			// 
+			// dailyToolStripMenuItem
+			// 
+			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+			this.dailyToolStripMenuItem.Text = "Daily";
+			// 
+			// weeklyToolStripMenuItem
+			// 
+			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+			this.weeklyToolStripMenuItem.Text = "Weekly";
+			// 
+			// monthlyToolStripMenuItem
+			// 
+			this.monthlyToolStripMenuItem.Name = "monthlyToolStripMenuItem";
+			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+			this.monthlyToolStripMenuItem.Text = "Monthly";
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -478,10 +504,11 @@
     "r suggestions for the programs.";
 			this.gitHubIssueTrackerToolStripMenuItem.Click += new System.EventHandler(this.gitHubIssueTrackerToolStripMenuItem_Click);
 			// 
-			// toolStrip1
+			// rightToolStrip
 			// 
-			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
-			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.rightToolStrip.Dock = System.Windows.Forms.DockStyle.Right;
+			this.rightToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.rightToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsSAMDL,
             this.tsSALVL,
             this.tsTexEdit,
@@ -494,12 +521,11 @@
             this.tsSA2EvTxt,
             this.tsSA2MsgEdit,
             this.tsSA2StgSel});
-			this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
-			this.toolStrip1.Location = new System.Drawing.Point(747, 25);
-			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(53, 548);
-			this.toolStrip1.TabIndex = 1;
-			this.toolStrip1.Text = "toolStrip1";
+			this.rightToolStrip.Location = new System.Drawing.Point(747, 80);
+			this.rightToolStrip.Name = "rightToolStrip";
+			this.rightToolStrip.Size = new System.Drawing.Size(53, 493);
+			this.rightToolStrip.TabIndex = 1;
+			this.rightToolStrip.Text = "toolStrip1";
 			// 
 			// tsSAMDL
 			// 
@@ -628,38 +654,23 @@
 			this.tsSA2StgSel.Visible = false;
 			this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
 			// 
-			// toolStrip2
+			// topToolStrip
 			// 
-			this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsUpdate,
-            this.toolStripSeparator8,
+			this.topToolStrip.BackColor = System.Drawing.SystemColors.Control;
+			this.topToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.topToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsNewProj,
             this.tsOpenProj,
             this.tsEditProj,
             this.toolStripSeparator6,
             this.tsBuild,
-            this.tsGameRun});
-			this.toolStrip2.Location = new System.Drawing.Point(0, 25);
-			this.toolStrip2.Name = "toolStrip2";
-			this.toolStrip2.Size = new System.Drawing.Size(747, 55);
-			this.toolStrip2.TabIndex = 2;
-			this.toolStrip2.Text = "toolStrip2";
-			// 
-			// tsUpdate
-			// 
-			this.tsUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsUpdate.Image = ((System.Drawing.Image)(resources.GetObject("tsUpdate.Image")));
-			this.tsUpdate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.tsUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsUpdate.Name = "tsUpdate";
-			this.tsUpdate.Size = new System.Drawing.Size(52, 52);
-			this.tsUpdate.Text = "Update Tools";
-			this.tsUpdate.ToolTipText = "Check for Updates to the SA Tools";
-			// 
-			// toolStripSeparator8
-			// 
-			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(6, 55);
+            this.tsGameRun,
+            this.tsUpdate});
+			this.topToolStrip.Location = new System.Drawing.Point(0, 25);
+			this.topToolStrip.Name = "topToolStrip";
+			this.topToolStrip.Size = new System.Drawing.Size(800, 55);
+			this.topToolStrip.TabIndex = 2;
+			this.topToolStrip.Text = "toolStrip2";
 			// 
 			// tsNewProj
 			// 
@@ -726,6 +737,18 @@
 			this.tsGameRun.ToolTipText = "Runs game with mods applied.";
 			this.tsGameRun.Click += new System.EventHandler(this.tsBuildRun_Click);
 			// 
+			// tsUpdate
+			// 
+			this.tsUpdate.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsUpdate.Image = ((System.Drawing.Image)(resources.GetObject("tsUpdate.Image")));
+			this.tsUpdate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.tsUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsUpdate.Name = "tsUpdate";
+			this.tsUpdate.Size = new System.Drawing.Size(52, 52);
+			this.tsUpdate.Text = "Update Tools";
+			this.tsUpdate.ToolTipText = "Check for Updates to the SA Tools";
+			// 
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -740,7 +763,7 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView1);
 			this.splitContainer1.Size = new System.Drawing.Size(747, 493);
-			this.splitContainer1.SplitterDistance = 223;
+			this.splitContainer1.SplitterDistance = 221;
 			this.splitContainer1.TabIndex = 3;
 			// 
 			// treeView1
@@ -748,7 +771,7 @@
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView1.Location = new System.Drawing.Point(0, 0);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(223, 493);
+			this.treeView1.Size = new System.Drawing.Size(221, 493);
 			this.treeView1.TabIndex = 0;
 			// 
 			// listView1
@@ -761,11 +784,12 @@
 			this.listView1.HideSelection = false;
 			this.listView1.Location = new System.Drawing.Point(0, 0);
 			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(520, 493);
+			this.listView1.Size = new System.Drawing.Size(522, 493);
 			this.listView1.SmallImageList = this.imageList1;
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
 			// 
 			// columnHeader1
 			// 
@@ -800,6 +824,7 @@
 			// 
 			// contextMenuStrip1
 			// 
+			this.contextMenuStrip1.Enabled = false;
 			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFileToolStripMenuItem,
             this.convertFileToolStripMenuItem,
@@ -807,13 +832,14 @@
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(151, 98);
 			// 
 			// openFileToolStripMenuItem
 			// 
+			this.openFileToolStripMenuItem.Enabled = false;
 			this.openFileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.openFileToolStripMenuItem.Text = "Open File";
 			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
 			// 
@@ -822,6 +848,7 @@
 			this.convertFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toDataToolStripMenuItem,
             this.toJSONToolStripMenuItem});
+			this.convertFileToolStripMenuItem.Enabled = false;
 			this.convertFileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.convertFileToolStripMenuItem.Name = "convertFileToolStripMenuItem";
 			this.convertFileToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
@@ -847,6 +874,7 @@
 			// 
 			// copyToolStripMenuItem
 			// 
+			this.copyToolStripMenuItem.Enabled = false;
 			this.copyToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
 			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
@@ -855,6 +883,7 @@
 			// 
 			// pasteToolStripMenuItem
 			// 
+			this.pasteToolStripMenuItem.Enabled = false;
 			this.pasteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
 			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
@@ -865,10 +894,11 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(800, 573);
 			this.Controls.Add(this.splitContainer1);
-			this.Controls.Add(this.toolStrip2);
-			this.Controls.Add(this.toolStrip1);
+			this.Controls.Add(this.rightToolStrip);
+			this.Controls.Add(this.topToolStrip);
 			this.Controls.Add(this.menuStrip1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
@@ -878,10 +908,10 @@
 			this.Shown += new System.EventHandler(this.toolsHub_Shown);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
-			this.toolStrip1.ResumeLayout(false);
-			this.toolStrip1.PerformLayout();
-			this.toolStrip2.ResumeLayout(false);
-			this.toolStrip2.PerformLayout();
+			this.rightToolStrip.ResumeLayout(false);
+			this.rightToolStrip.PerformLayout();
+			this.topToolStrip.ResumeLayout(false);
+			this.topToolStrip.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -896,10 +926,7 @@
 
 		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem setGamePathsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem projectsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newProjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem1;
@@ -933,8 +960,8 @@
 		private System.Windows.Forms.ToolStripMenuItem retrosSCHGForSA2ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sADXGitWikiToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gitHubIssueTrackerToolStripMenuItem;
-		private System.Windows.Forms.ToolStrip toolStrip1;
-		private System.Windows.Forms.ToolStrip toolStrip2;
+		private System.Windows.Forms.ToolStrip rightToolStrip;
+		private System.Windows.Forms.ToolStrip topToolStrip;
 		private System.Windows.Forms.ToolStripButton tsSAMDL;
 		private System.Windows.Forms.ToolStripButton tsSALVL;
 		private System.Windows.Forms.ToolStripButton tsTexEdit;
@@ -952,7 +979,6 @@
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.ImageList imageList1;
 		private System.Windows.Forms.ToolStripButton tsUpdate;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem convertFileToolStripMenuItem;
@@ -973,5 +999,11 @@
 		private System.Windows.Forms.ToolStripButton tsSA2EvTxt;
 		private System.Windows.Forms.ToolStripButton tsSA2MsgEdit;
 		private System.Windows.Forms.ToolStripButton tsSA2StgSel;
+		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem frequencyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem dailyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem weeklyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem monthlyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 	}
 }

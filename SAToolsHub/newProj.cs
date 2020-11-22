@@ -19,35 +19,17 @@ namespace SAToolsHub
 {
 	public partial class newProj : Form
 	{
-		public Action CreationCanceled;
-		private static BackgroundWorker backgroundWorker1 = new BackgroundWorker();
 		Stream projFileStream;
-		SaveFileDialog saveFileDialog1;
+		ProjectTemplate projectFile;
 		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
-		//Moddable Game Paths
-		string sadxPath = Program.Settings.SADXPCPath;
-		string sa2pcPath = Program.Settings.SA2PCPath;
-		//SA1 Paths
-		string sa1Path = Program.Settings.SA1Path;
-		string sa1adPath = Program.Settings.SA1ADPath;
-		//SADX (Non-PC) Paths
-		string sadxgcPath = Program.Settings.SADXGCPath;
-		string sadxgcpPath = Program.Settings.SADXGCPPath;
-		string sadxgcrPath = Program.Settings.SADXGCRPath;
-		string sadx360Path = Program.Settings.SADX360Path;
-		//SA2 Paths
-		string sa2Path = Program.Settings.SA2Path;
-		string sa2ttPath = Program.Settings.SA2TTPath;
-		string sa2pPath = Program.Settings.SA2PPath;
-
-		SA_Tools.Game game;
 		string gameName;
 		string gamePath;
-		string iniFolder;
 		string projFolder;
-		bool ableBuild = new bool();
+		string dataFolder;
+		string projName;
 		List<SplitEntry> splitEntries = new List<SplitEntry>();
+		List<SplitEntryMDL> splitMdlEntries = new List<SplitEntryMDL>();
 
 		public newProj()
 		{
@@ -56,81 +38,101 @@ namespace SAToolsHub
 			backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker1_RunWorkerCompleted);
 		}
 
-		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private int setProgressMaxStep()
 		{
-			if (!(e.Error == null))
+			switch (gameName)
 			{
-				MessageBox.Show("Project failed to split!", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				case "SADXPC":
+					return (splitEntries.Count + 3);
+				case "SA2PC":
+					return (splitEntries.Count + splitMdlEntries.Count + 2);
+				case "SA2":
+				case "SA2TT":
+				case "SA2P":
+					return(splitEntries.Count + splitMdlEntries.Count);
+				default:
+					return (splitEntries.Count);
 			}
-			else
+		}
+
+		void openTemplate(string templateSplit)
+		{
+			var templateFileSerializer = new XmlSerializer(typeof(SplitTemplate));
+			var templateFileStream = File.OpenRead(templateSplit);
+			var templateFile = (SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+
+			gameName = templateFile.GameInfo.GameName;
+			gamePath = templateFile.GameInfo.GameSystemFolder;
+			dataFolder = templateFile.GameInfo.DataFolder;
+			splitEntries = templateFile.SplitEntries;
+			splitMdlEntries = templateFile.SplitMDLEntries;
+
+			templateFileStream.Close();
+
+			if (gamePath.IsNullOrWhiteSpace())
 			{
-				DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
-				if (successDiag == DialogResult.OK)
+				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
 				{
-					SAToolsHub.newProjFile = Path.Combine((Path.GetDirectoryName(saveFileDialog1.FileName)), saveFileDialog1.FileName);
-					this.Close();
+					var folderDialog = new VistaFolderBrowserDialog();
+					var folderResult = folderDialog.ShowDialog();
+					if (folderResult.HasValue && folderResult.Value)
+					{
+						gamePath = folderDialog.SelectedPath;
+
+						var templateFileStreamSave = File.OpenWrite(templateSplit);
+						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+
+						templateFile.GameInfo.GameSystemFolder = gamePath;
+
+						templateFileSerializer.Serialize(splitsWriter, templateFile);
+						templateFileStreamSave.Close();
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						if (gamePathWarning == DialogResult.OK)
+						{
+							this.Close();
+						}
+					}
+				}
+			}
+			else if (!Directory.Exists(gamePath))
+			{
+				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + "does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
+				{
+					var folderDialog = new VistaFolderBrowserDialog();
+					var folderResult = folderDialog.ShowDialog();
+					if (folderResult.HasValue && folderResult.Value)
+					{
+						gamePath = folderDialog.SelectedPath;
+
+						var templateFileStreamSave = File.OpenWrite(templateSplit);
+						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+
+						templateFile.GameInfo.GameSystemFolder = gamePath;
+
+						templateFileSerializer.Serialize(splitsWriter, templateFile);
+						templateFileStreamSave.Close();
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						if (gamePathWarning == DialogResult.OK)
+						{
+							this.Close();
+						}
+					}
 				}
 			}
 		}
 
-		private SA_Tools.Game GetGameForRadioButtons()
+		private void makeProjectFolders(string projFolder, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string game)
 		{
-			if (tabControl1.SelectedTab == tabMod)
-			{
-				if (radSADX.Checked) return SA_Tools.Game.SADX;
-				else if (radSA2PC.Checked) return SA_Tools.Game.SA2B;
-				else return SA_Tools.Game.SA1;
-			}
-			else if (tabControl1.SelectedTab == tabBin)
-			{
-				if (radSA1.Checked) return SA_Tools.Game.SA1;
-				else if (radSA1AD.Checked) return SA_Tools.Game.SA1AD;
-				else if (radSA2.Checked) return SA_Tools.Game.SA2;
-				else if (radSA2TT.Checked) return SA_Tools.Game.SA2TT;
-				else if (radSA2P.Checked) return SA_Tools.Game.SA2P;
-				else if (radSADXP.Checked) return SA_Tools.Game.SADXGCP;
-				else if (radSADXR.Checked) return SA_Tools.Game.SADXGCR;
-				else if (radSADX360.Checked) return SA_Tools.Game.SADX360;
-				else return SA_Tools.Game.SA1;
-			}
-			else
-				return SA_Tools.Game.SA1;
-		}
-
-		private string GetIniFolderForGame(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case SA_Tools.Game.SADX:
-					return "SADXPC";
-
-				case SA_Tools.Game.SA2B:
-					return "SA2PC";
-
-				case SA_Tools.Game.SA1:
-					return "SA1";
-
-				case SA_Tools.Game.SA1AD:
-					return "Autodemo";
-
-				case SA_Tools.Game.SA2:
-					return "SA2";
-
-				case SA_Tools.Game.SA2TT:
-					return "SA2TheTrial";
-
-				case SA_Tools.Game.SADX360:
-					return "SADX360";
-				
-				default:
-					break;
-			}
-
-			return "";
-		}
-
-		private void makeProjectFolders(string projFolder, SA_Tools.Game game)
-		{
+			progress.StepProgress();
+			progress.SetStep("Making Additional Mod Folders");
 			string[] readMeSADX = {
 				"Welcome to your new SADX Mod! The info below will assist with some additional folders created for your Mod.\n\n" +
 				"Exports - You can store models for Exports here.\n" +
@@ -150,6 +152,8 @@ namespace SAToolsHub
 				"Please refer to the Help drop down in the SA Tools Hub for additional resources or you can reach members for help in the X-Hax Discord."
 			};
 
+			string systemPath;
+
 			//Exports Folder
 			string exportFolderPath = Path.Combine(projFolder, "Exports");
 			if (!Directory.Exists(exportFolderPath))
@@ -166,27 +170,65 @@ namespace SAToolsHub
 				Directory.CreateDirectory(sourceFolderPath);
 
 			//Game System Folder
-			string systemPath = Path.Combine(projFolder, GamePathChecker.GetSystemPathName(game));
-			if (!Directory.Exists(systemPath))
-				Directory.CreateDirectory(systemPath);
+			
 
 			string projReadMePath = Path.Combine(projFolder, "ReadMe.txt");
 
 			switch (game)
 			{
-				case (SA_Tools.Game.SADX):
+				case ("SADXPC"):
+					systemPath = Path.Combine(projFolder, "system");
+					if (!Directory.Exists(systemPath))
+						Directory.CreateDirectory(systemPath);
 					string texturesPath = Path.Combine(projFolder, "textures");
 					if (!Directory.Exists(texturesPath))
 						Directory.CreateDirectory(texturesPath);
 
 					File.WriteAllLines(projReadMePath, readMeSADX);
 					break;
-				case (SA_Tools.Game.SA2B):
+				case ("SA2PC"):
+					systemPath = Path.Combine(projFolder, "resource/gd_PC");
+					if (!Directory.Exists(systemPath))
+						Directory.CreateDirectory(systemPath);
 					File.WriteAllLines(projReadMePath, readMeSA2PC);
 					break;
 				default:
 					break;
-			}			
+			}
+		}
+
+		private void GenerateModFile(string game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string projectFolder, string name)
+		{
+			progress.StepProgress();
+			progress.SetStep("Generating mod.ini");
+			string outputPath;
+			switch (game)
+			{
+				case ("SADXPC"):
+					SADXModInfo modInfoSADX = new SADXModInfo
+					{
+						Name = name
+
+					};
+					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
+
+					SA_Tools.IniSerializer.Serialize(modInfoSADX, outputPath);
+					break;
+
+				case ("SA2PC"):
+					SA2ModInfo modInfoSA2PC = new SA2ModInfo
+					{
+						Name = name
+					};
+					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
+
+					SA_Tools.IniSerializer.Serialize(modInfoSA2PC, outputPath);
+					break;
+
+				default:
+					break;
+			}
+
 		}
 
 		private void CopyFolder(string sourceFolder, string destinationFolder)
@@ -222,168 +264,38 @@ namespace SAToolsHub
 
 		private string GetObjDefsDirectory()
 		{
-			if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX)))
-				return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
+			if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder))
+				return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder + "/objdefs/";
 			else
 				return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
 		}
 
-		private void GenerateModFile(SA_Tools.Game game, string projectFolder)
-		{
-			string outputPath;
-			switch (game)
-			{
-				case (SA_Tools.Game.SADX):
-					SADXModInfo modInfoSADX = new SADXModInfo
-					{
-						Name = txtName.Text,
-						Author = txtAuthor.Text,
-						Description = txtDesc.Text,
-						Version = string.Format("0")
-
-					};
-					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
-
-					SA_Tools.IniSerializer.Serialize(modInfoSADX, outputPath);
-					break;
-
-				case (SA_Tools.Game.SA2B):
-					SA2ModInfo modInfoSA2PC = new SA2ModInfo
-					{
-						Name = txtName.Text,
-						Author = txtAuthor.Text,
-						Description = txtDesc.Text,
-						Version = string.Format("0")
-					};
-					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
-
-					SA_Tools.IniSerializer.Serialize(modInfoSA2PC, outputPath);
-					break;
-
-				default:
-					break;
-			}
-	
-		}
-
-		private void enableButtons()
-		{
-			bool sadxpcIsValid = GamePathChecker.CheckSADXPCValid(
-				Program.Settings.SADXPCPath, out string sadxFailReason);
-
-			bool sa2pcIsValid = GamePathChecker.CheckSA2PCValid(
-				Program.Settings.SA2PCPath, out string sa2pcInvalidReason);
-
-			bool sa1IsValid = GamePathChecker.CheckBinaryPath("DC", SA_Tools.Game.SA1,
-				Program.Settings.SA1Path, out string sa1InvalidReason);
-
-			bool sa1adIsValid = GamePathChecker.CheckBinaryPath("DC", SA_Tools.Game.SA1AD,
-				Program.Settings.SA1ADPath, out string sa1adInvalidReason);
-
-			bool sa2IsValid = GamePathChecker.CheckBinaryPath("DC", SA_Tools.Game.SA2,
-				Program.Settings.SA2Path, out string sa2InvalidReason);
-
-			bool sa2ttIsValid = GamePathChecker.CheckBinaryPath("DC", SA_Tools.Game.SA2TT,
-				Program.Settings.SA2TTPath, out string sa2ttInvalidReason);
-
-			bool sa2pIsValid = GamePathChecker.CheckBinaryPath("DC", SA_Tools.Game.SA2P,
-				Program.Settings.SA2PPath, out string sa2pInvalidReason);
-
-			bool sadxgcIsValid = GamePathChecker.CheckBinaryPath("GC", SA_Tools.Game.SADXGC,
-				Program.Settings.SADXGCPath, out string sadxgcIsInvalid);
-
-			bool sadxgcpIsValid = GamePathChecker.CheckBinaryPath("GC", SA_Tools.Game.SADXGCP,
-				Program.Settings.SADXGCPPath, out string sadxgcpIsInvalid);
-
-			bool sadxgcrIsValid = GamePathChecker.CheckBinaryPath("GC", SA_Tools.Game.SADXGCR,
-				Program.Settings.SADXGCRPath, out string sadxgcrIsInvalid);
-
-			bool sadx360IsValid = GamePathChecker.CheckBinaryPath("360", SA_Tools.Game.SADX360,
-				Program.Settings.SADX360Path, out string sadx360InvalidReason);
-
-			radSADX.Enabled = sadxpcIsValid;
-			radSA2PC.Enabled = sa2pcIsValid;
-			radSA1.Enabled = sa1IsValid;
-			radSA1AD.Enabled = sa1adIsValid;
-			radSA2.Enabled = sa2IsValid;
-			radSA2TT.Enabled = sa2ttIsValid;
-			radSA2P.Enabled = sa2pIsValid;
-			radSADXGC.Enabled = sadxgcIsValid;
-			radSADXP.Enabled = sadxgcpIsValid;
-			radSADXR.Enabled = sadxgcrIsValid;
-			radSADX360.Enabled = sadx360IsValid;
-		}
-
-		private void setProjVariables(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case (SA_Tools.Game.SADX):
-					gameName = "SADX";
-					gamePath = sadxPath;
-					splitEntries = ProjectManagement.BuildSplits.sadxpc_split;
-					break;
-				case (SA_Tools.Game.SA2B):
-					gameName = "SA2PC";
-					gamePath = sa2Path;
-					splitEntries = ProjectManagement.BuildSplits.sa2pc_split;
-					break;
-				case (SA_Tools.Game.SA1):
-					gameName = "SA1";
-					gamePath = sa1Path;
-					splitEntries = ProjectManagement.NonBuildSplits.sa1_final_split;
-					break;
-				case (SA_Tools.Game.SA1AD):
-					gameName = "SA1AD";
-					gamePath = sa1adPath;
-					splitEntries = ProjectManagement.NonBuildSplits.sa1_autodemo_split;
-					break;
-				case (SA_Tools.Game.SA2):
-					gameName = "SA2";
-					gamePath = sa2Path;
-					splitEntries = ProjectManagement.NonBuildSplits.sa2_final_split;
-					break;
-				case (SA_Tools.Game.SA2TT):
-					gameName = "SA2TT";
-					gamePath = sa2ttPath;
-					splitEntries = ProjectManagement.NonBuildSplits.sa2_trial_split;
-					break;
-				case (SA_Tools.Game.SA2P):
-					gameName = "SA2P";
-					gamePath = sa2pPath;
-					splitEntries = ProjectManagement.NonBuildSplits.sa2_preview_split;
-					break;
-				case (SA_Tools.Game.SADXGC):
-					gameName = "SADXGC";
-					gamePath = sadxgcPath;
-					//splitEntries = ProjectManagement.NonBuildSplits.sadxgc_final_split;
-					break;
-				case (SA_Tools.Game.SADXGCP):
-					gameName = "SADXGCP";
-					gamePath = sadxgcpPath;
-					splitEntries = ProjectManagement.NonBuildSplits.sadxgc_preview_split;
-					break;
-				case (SA_Tools.Game.SADXGCR):
-					gameName = "SADXGCR";
-					gamePath = sadxgcrPath;
-					splitEntries = ProjectManagement.NonBuildSplits.sadxgc_review_split;
-					break;
-				case (SA_Tools.Game.SADX360):
-					gameName = "SADX360";
-					gamePath = sadx360Path;
-					splitEntries = ProjectManagement.NonBuildSplits.sadx360_proto_split;
-					break;
-			}
-		}
-
 		private void splitFiles(SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
-			string datafilename = Path.Combine(gameFolder, splitData.SourceFile);
-			string inifilename = Path.Combine(iniFolder, (splitData.IniFile + ".ini"));
+			string datafilename; 
+			switch (splitData.SourceFile)
+			{
+				case ("chrmodels.dll"):
+					if (!File.Exists(Path.Combine(gameFolder, splitData.SourceFile)))
+						datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
+					else
+						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+					break;
+				case ("DLL_Data.dll"):
+					if (!File.Exists(Path.Combine(gameFolder, splitData.SourceFile)))
+						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/DLL_Data_orig.dll");
+					else
+						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+					break;
+				default:
+					datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+					break;
+			}
+			string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
 			string projectFolderName = (outputFolder + "\\");
 
 			progress.StepProgress();
-			progress.SetStep("Splitting " + splitData.CommonName + " data from " + splitData.SourceFile);
+			progress.SetStep("Splitting " + splitData.IniFile + " from " + splitData.SourceFile);
 
 			#region Validating Inputs
 			if (!File.Exists(datafilename))
@@ -410,177 +322,113 @@ namespace SAToolsHub
 				SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
 		}
 
-		private void splitSADXPC(SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+		private void splitMdlFiles(SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
+			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+			string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.ModelFile));
+			Directory.CreateDirectory(fileOutputFolder);
+
 			progress.StepProgress();
-			progress.SetTask("Splitting Game Content");
+			progress.SetStep("Splitting models from " + splitMDL.ModelFile);
 
-			foreach (SplitEntry splitData in BuildSplits.sadxpc_split)
+			#region Validating Inputs
+			if (!File.Exists(filePath))
 			{
-				splitFiles(splitData, progress, gameFolder, iniFolder, outputFolder);
+				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
+				//return (int)ERRORVALUE.NoSourceFile;
 			}
+			#endregion
 
-			// copy sadxlvl.ini
-			string sadxlvlIniSourcePath = Path.GetFullPath(Path.Combine(iniFolder, "sadxlvl.ini"));
-			string sadxlvlIniOutputPath = Path.GetFullPath(Path.Combine(outputFolder, "sadxlvl.ini"));
-			File.Copy(sadxlvlIniSourcePath, sadxlvlIniOutputPath, true);
-
-			// copy objdefs.ini
-			File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(outputFolder, "objdefs.ini"), true);
-
-			// copy objdefs files (this needs to be turned into a recursive folder copy)
-			string objdefsPath = GetObjDefsDirectory();
-			string outputObjdefsPath = Path.Combine(outputFolder, "objdefs");
-
-			CopyFolder(objdefsPath, outputObjdefsPath);
+			SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.BigEndian, filePath,
+				fileOutputFolder, splitMDL.MotionFiles.ToArray());
 		}
 
-		private void splitSA2PC(SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+		void splitGame(string game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
-			progress.StepProgress();
+			string iniFolder;
+
+			progress.SetMaxSteps(setProgressMaxStep());
+
+			if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder))
+				iniFolder = (Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder);
+			else
+				iniFolder = (Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + dataFolder);
+
 			progress.SetTask("Splitting Game Content");
-			foreach (SplitEntry splitData in BuildSplits.sa2pc_split)
+			foreach (SplitEntry splitEntry in splitEntries)
 			{
-				splitFiles(splitData, progress, gameFolder, iniFolder, outputFolder);
+				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
 			}
 
-			// run split mdl commands
-			progress.StepProgress();
-			progress.SetTask("Splitting Character Files");
-
-			foreach (SplitEntryMDL splitMDL in BuildSplits.sa2pc_mdlsplit)
+			if (splitMdlEntries.Count > 0)
 			{
-				progress.StepProgress();
-				progress.SetStep("Splitting " + splitMDL.ModelFile);
-				string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.ModelFile));
-				Directory.CreateDirectory(fileOutputFolder);
-
-				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.BigEndian, filePath,
-					fileOutputFolder, splitMDL.MotionFiles.ToArray());
-			}
-		}
-
-		private void splitBinary(SA_Tools.Game game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
-		{
-			List<SplitEntry> gameSplitData = new List<SplitEntry>();
-			List<SplitEntryMDL> splitEntryMDL = new List<SplitEntryMDL>();
-
-			progress.StepProgress();
-			progress.SetTask("Splitting Game Content");
-
-			switch (game)
-			{
-				case (SA_Tools.Game.SA1):
-					gameSplitData = NonBuildSplits.sa1_final_split;
-					break;
-
-				case (SA_Tools.Game.SA1AD):
-					gameSplitData = NonBuildSplits.sa1_autodemo_split;
-					break;
-
-				case (SA_Tools.Game.SADXGCP):
-					gameSplitData = NonBuildSplits.sadxgc_preview_split;
-					break;
-
-				case (SA_Tools.Game.SADXGCR):
-					gameSplitData = NonBuildSplits.sadxgc_review_split;
-					break;
-
-				case (SA_Tools.Game.SADX360):
-					gameSplitData = NonBuildSplits.sadx360_proto_split;
-					break;
-
-				case (SA_Tools.Game.SA2):
-					gameSplitData = NonBuildSplits.sa2_final_split;
-					splitEntryMDL = NonBuildSplits.sa2_final_mdlsplit;
-					break;
-
-				case (SA_Tools.Game.SA2TT):
-					gameSplitData = NonBuildSplits.sa2_trial_split;
-					splitEntryMDL = NonBuildSplits.sa2_trial_mdlsplit;
-					break;
-
-				case (SA_Tools.Game.SA2P):
-					gameSplitData = NonBuildSplits.sa2_preview_split;
-					splitEntryMDL = NonBuildSplits.sa2_preview_mdlsplit;
-					break;
-
-				default:
-					break;
-			}
-
-			foreach (SplitEntry splitData in gameSplitData)
-				splitFiles(splitData, progress, gameFolder, iniFolder, outputFolder);
-
-			if (splitEntryMDL.Count > 0)
-			{
-				foreach (SplitEntryMDL splitMDL in splitEntryMDL)
+				progress.SetTask("Splitting Character Models");
+				foreach (SplitEntryMDL splitMDL in splitMdlEntries)
 				{
-					progress.StepProgress();
-					progress.SetStep("Splitting " + splitMDL.ModelFile);
-					string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-					string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.ModelFile));
-					Directory.CreateDirectory(fileOutputFolder);
+					splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+				}
+			}
 
-					SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.BigEndian, filePath,
-						fileOutputFolder, splitMDL.MotionFiles.ToArray());
+			if (game == "SADXPC")
+			{
+				progress.SetTask("Finalizing Moddable Project Setup");
+				makeProjectFolders(projFolder, progress, gameName);
+				progress.StepProgress();
+				progress.SetStep("Copying Object Definitions");
+				string objdefsPath = GetObjDefsDirectory();
+				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				CopyFolder(objdefsPath, outputObjdefsPath);
+				GenerateModFile(gameName, progress, projFolder, projName);
+			}
+				
+			if (game == "SA2PC")
+			{
+				progress.SetTask("Finalizing Moddable Project Setup");
+				makeProjectFolders(projFolder, progress, gameName);
+				GenerateModFile(gameName, progress, projFolder, projName);
+			}
+				
+		}
+
+		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+		{
+			using (splitProgress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
+			{
+				Invoke((Action)splitProgress.Show);
+
+				splitGame(gameName, splitProgress);
+
+				Invoke((Action)splitProgress.Close);
+			}
+		}
+
+		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			if (!(e.Error == null))
+			{
+				MessageBox.Show("Project failed to split!", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
+				if (successDiag == DialogResult.OK)
+				{
+					SAToolsHub.newProjFile = Path.Combine((Path.GetDirectoryName(projName)), projName);
+					this.Close();
 				}
 			}
 		}
 
-		private void splitGame(SA_Tools.Game game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string projFolder)
-		{
-			switch (game)
-			{
-				case (SA_Tools.Game.SADX):
-					splitSADXPC(progress, gameFolder, iniFolder, projFolder);
-					break;
-				case (SA_Tools.Game.SA2B):
-					splitSA2PC(progress, gameFolder, iniFolder, projFolder);
-					break;
-				default:
-					splitBinary(game, progress, gameFolder, iniFolder, projFolder);
-					break;
-			}
-
-		}
-
 		private void newProj_Shown(object sender, EventArgs e)
 		{
-			enableButtons();
-
-			txtAuthor.Text = String.Empty;
-			txtDesc.Text = String.Empty;
-			txtName.Text = String.Empty;
-			txtProjFolder.Text = String.Empty;
+			lblTemplate.Text = "Please Select a Project Template";
+			btnCreate.Enabled = false;
 		}
 
-		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
 		{
-			//This is only here as a failsafe in case something goes catastrophically wrong with the RadioButtons check.
-			if (tabControl1.SelectedTab == tabMod)
-			{
-				radSA1.Checked = false;
-				radSA1AD.Checked = false;
-				radSA2.Checked = false;
-				radSA2P.Checked = false;
-				radSA2TT.Checked = false;
-				radSADX360.Checked = false;
-				radSADXGC.Checked = false;
-				radSADXP.Checked = false;
-				radSADXR.Checked = false;
-			}
-			else if (tabControl1.SelectedTab == tabBin)
-			{
-				radSADX.Checked = false;
-				radSA2PC.Checked = false;
-			}
-		}
-
-		private void btnBrowse_Click(object sender, EventArgs e)
-		{
-			
 			var folderDialog = new VistaFolderBrowserDialog();
 			var folderResult = folderDialog.ShowDialog();
 			if (folderResult.HasValue && folderResult.Value)
@@ -589,19 +437,50 @@ namespace SAToolsHub
 			}
 		}
 
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			if (checkBox1.Checked)
+			{
+				txtProjFolder.Enabled = true;
+				btnBrowse.Enabled = true;
+			}
+			else
+			{
+				txtProjFolder.Enabled = false;
+				btnBrowse.Enabled = false;
+			}
+		}
+
+		private void btnTemplateSelect_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog openFileDialog2 = new OpenFileDialog();
+			openFileDialog2.Filter = "Template File (*_template.xml)|*_template.xml";
+			openFileDialog2.RestoreDirectory = true;
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+
+			if (Directory.Exists((appPath) + "/../Templates/"))
+				openFileDialog2.InitialDirectory = appPath + "/../Templates/";
+			else
+				openFileDialog2.InitialDirectory = appPath + "/../../../Configuration/Templates/";
+
+			if (openFileDialog2.ShowDialog() == DialogResult.OK)
+			{
+				string templateFile = openFileDialog2.FileName;
+				openTemplate(templateFile);
+				lblTemplate.Text = "Selected Template: " + gameName;
+			}
+		}
+
 		private void btnCreate_Click(object sender, EventArgs e)
 		{
-			saveFileDialog1 = new SaveFileDialog();
+			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
 			saveFileDialog1.RestoreDirectory = true;
-			if (tabControl1.SelectedTab == tabControl1.TabPages["PC Games"])
-				saveFileDialog1.FileName = txtName.Text;
 
 			if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
 			{
 				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
 			}
-
 
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
 			{
@@ -622,40 +501,23 @@ namespace SAToolsHub
 						}
 					}
 
-					game = GetGameForRadioButtons();
-					ProjectManagement.ProjectTemplate templateFile = new ProjectManagement.ProjectTemplate();
-					setProjVariables(game);
-					if (game == SA_Tools.Game.SADX || game == SA_Tools.Game.SA2B)
-						ableBuild = true;
+					projName = saveFileDialog1.FileName;
+					projectFile = new ProjectTemplate();
+
+					projectFile.GameInfo.GameName = gameName;
+					if (gameName == "SADXPC" || gameName == "SA2PC")
+						projectFile.GameInfo.CanBuild = true;
 					else
-						ableBuild = false;
+						projectFile.GameInfo.CanBuild = false;
+					projectFile.GameInfo.GameSystemFolder = gamePath;
+					projectFile.GameInfo.ModSystemFolder = projFolder;
+					projectFile.SplitEntries = splitEntries;
+					if (gameName == "SA2" || gameName == "SA2GC" || gameName == "SA2PC")
+						projectFile.SplitMDLEntries = splitMdlEntries;
 
-					templateFile.GameName = gameName;
-					templateFile.CanBuild = ableBuild;
-					templateFile.GameSystemFolder = gamePath;
-					templateFile.ModSystemFolder = projFolder;
-					templateFile.SplitEntries = splitEntries;
-					switch (gameName)
-					{
-						case ("SA2PC"):
-							templateFile.SplitMDLEntries = ProjectManagement.BuildSplits.sa2pc_mdlsplit;
-							break;
-						case ("SA2"):
-							templateFile.SplitMDLEntries = ProjectManagement.NonBuildSplits.sa2_final_mdlsplit;
-							break;
-						case ("SA2TT"):
-							templateFile.SplitMDLEntries = ProjectManagement.NonBuildSplits.sa2_trial_mdlsplit;
-							break;
-						case ("SA2P"):
-							templateFile.SplitMDLEntries = ProjectManagement.NonBuildSplits.sa2_preview_mdlsplit;
-							break;
-						default:
-							break;
-					}
-					
-
-					serializer.Serialize(writer, templateFile);
+					serializer.Serialize(writer, projectFile);
 					projFileStream.Close();
+
 #if !DEBUG
 					backgroundWorker1.RunWorkerAsync();
 #endif
@@ -667,45 +529,10 @@ namespace SAToolsHub
 			}
 		}
 
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		private void lblTemplate_TextChanged(object sender, EventArgs e)
 		{
-			if (checkBox1.Checked)
-			{
-				txtProjFolder.Enabled = true;
-				btnBrowse.Enabled = true;
-			}
-			else
-			{
-				txtProjFolder.Enabled = false;
-				btnBrowse.Enabled = false;
-			}
-		}
-
-		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-		{
-			using (splitProgress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
-			{
-				Invoke((Action)splitProgress.Show);
-				string configFolder = GetIniFolderForGame(GetGameForRadioButtons());
-
-				if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + configFolder))
-					iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../" + configFolder;
-				else
-					iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + configFolder;
-
-				splitGame(game, splitProgress, gamePath, iniFolder, projFolder);
-				if (game == SA_Tools.Game.SADX || game == SA_Tools.Game.SA2B)
-				{
-					splitProgress.StepProgress();
-					splitProgress.SetTask("Creating Folders");
-					makeProjectFolders(projFolder, game);
-					splitProgress.StepProgress();
-					splitProgress.SetTask("Generating Mod File");
-					GenerateModFile(game, projFolder);
-				}
-				
-				Invoke((Action)splitProgress.Close);
-			}
+			if (!gameName.IsNullOrWhiteSpace() && !gamePath.IsNullOrWhiteSpace())
+				btnCreate.Enabled = true;
 		}
 	}
 }

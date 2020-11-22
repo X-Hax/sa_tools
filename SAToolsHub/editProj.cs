@@ -34,9 +34,9 @@ namespace SAToolsHub
 
 		void setVariables()
 		{
-			if (!SAToolsHub.projectDirectory.FullName.IsNullOrWhiteSpace())
+			if (!SAToolsHub.projectDirectory.IsNullOrWhiteSpace())
 			{
-				projDir = SAToolsHub.projectDirectory.FullName;
+				projDir = SAToolsHub.projectDirectory;
 				projModFile = Path.Combine(projDir, "mod.ini");
 			}
 		}

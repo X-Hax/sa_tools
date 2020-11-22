@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+  <GameInfo gameName="SA1" gameSystemFolder="" dataFolder="SA1" />
+  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
+  <SplitEntry SourceFile="SA1\S_MOT.PRS" IniFile="S_MOT" />
+  <SplitEntry SourceFile="SA1\SB_MOT.PRS" IniFile="SB_MOT" />
+  <SplitEntry SourceFile="SA1\M_MOT.PRS" IniFile="M_MOT" />
+  <SplitEntry SourceFile="SA1\K_MOT.PRS" IniFile="K_MOT" />
+  <SplitEntry SourceFile="SA1\A_MOT.PRS" IniFile="A_MOT" />
+  <SplitEntry SourceFile="SA1\B_MOT.PRS" IniFile="B_MOT" />
+  <SplitEntry SourceFile="SA1\E_MOT.PRS" IniFile="E_MOT" />
+  <SplitEntry SourceFile="SA1\STG01.PRS" IniFile="STG01" />
+  <SplitEntry SourceFile="SA1\STG02.PRS" IniFile="STG02" />
+  <SplitEntry SourceFile="SA1\STG03.PRS" IniFile="STG03" />
+  <SplitEntry SourceFile="SA1\STG04.PRS" IniFile="STG04" />
+  <SplitEntry SourceFile="SA1\STG05.PRS" IniFile="STG05" />
+  <SplitEntry SourceFile="SA1\STG06.PRS" IniFile="STG06" />
+  <SplitEntry SourceFile="SA1\STG07.PRS" IniFile="STG07" />
+  <SplitEntry SourceFile="SA1\STG08.PRS" IniFile="STG08" />
+  <SplitEntry SourceFile="SA1\STG09.PRS" IniFile="STG09" />
+  <SplitEntry SourceFile="SA1\STG10.PRS" IniFile="STG10" />
+  <SplitEntry SourceFile="SA1\STG12.PRS" IniFile="STG12" />
+  <SplitEntry SourceFile="SA1\ADV00.PRS" IniFile="ADV00" />
+  <SplitEntry SourceFile="SA1\ADV0100.PRS" IniFile="ADV0100" />
+  <SplitEntry SourceFile="SA1\ADV0130.PRS" IniFile="ADV0130" />
+  <SplitEntry SourceFile="SA1\ADV02.PRS" IniFile="ADV02" />
+  <SplitEntry SourceFile="SA1\ADV03.PRS" IniFile="ADV03" />
+  <SplitEntry SourceFile="SA1\AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
+  <SplitEntry SourceFile="SA1\AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
+  <SplitEntry SourceFile="SA1\AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
+  <SplitEntry SourceFile="SA1\AL_RACE.PRS" IniFile="AL_RACE" />
+  <SplitEntry SourceFile="SA1\B_CHAOS0.PRS" IniFile="B_CHAOS0" />
+  <SplitEntry SourceFile="SA1\B_CHAOS2.PRS" IniFile="B_CHAOS2" />
+  <SplitEntry SourceFile="SA1\B_CHAOS4.PRS" IniFile="B_CHAOS4" />
+  <SplitEntry SourceFile="SA1\B_CHAOS4.PRS" IniFile="B_CHAOS6" />
+  <SplitEntry SourceFile="SA1\B_CHAOS7.PRS" IniFile="B_CHAOS7" />
+  <SplitEntry SourceFile="SA1\B_E101.PRS" IniFile="B_E101" />
+  <SplitEntry SourceFile="SA1\B_E101_R.PRS" IniFile="B_E101_R" />
+  <SplitEntry SourceFile="SA1\B_EGM1.PRS" IniFile="B_EGM1" />
+  <SplitEntry SourceFile="SA1\B_EGM2.PRS" IniFile="B_EGM2" />
+  <SplitEntry SourceFile="SA1\B_EGM3.PRS" IniFile="B_EGM3" />
+  <SplitEntry SourceFile="SA1\B_ROBO.PRS" IniFile="B_ROBO" />
+  <SplitEntry SourceFile="SA1\MINICART.PRS" IniFile="MINICART" />
+  <SplitEntry SourceFile="SA1\SBOARD.PRS" IniFile="SBOARD" />
+  <SplitEntry SourceFile="SA1\SHOOTING.PRS" IniFile="SHOOTING" />
+  <SplitEntry SourceFile="SA1\ADVERTISE.PRS" IniFile="ADVERTISE" />
+  <SplitEntry SourceFile="SA1\SUMMARY.PRS" IniFile="SUMMARY" />
+</SplitTemplate>

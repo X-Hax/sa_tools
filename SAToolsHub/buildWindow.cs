@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using ProjectManagement;
+using SA_Tools;
 
 namespace SAToolsHub
 {
@@ -21,23 +22,24 @@ namespace SAToolsHub
 		Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
 				new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
 
-		SA_Tools.Game game;
 		string gameEXE;
 		string modName;
 		string modFolder;
+		string sysFolder;
 
-		void combINIEntries(Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies)
-		{
+		//private IniFile CombineEXEEntries(SplitEntry splitEntry)
+		//{
 
-		}
+		//}
+
 		void setAssemblies()
 		{
 			assemblies.Clear();
 			List<SplitEntry> splitEntry = SAToolsHub.projSplitEntries;
 			
-			switch (game)
+			switch (SAToolsHub.setGame)
 			{
-				case (SA_Tools.Game.SADX):
+				case ("SADXPC"):
 					for (int i = 0; i < checkedListBox1.Items.Count; i++)
 					{
 						if (checkedListBox1.GetItemChecked(i))
@@ -61,7 +63,7 @@ namespace SAToolsHub
 					}
 					break;
 
-				case (SA_Tools.Game.SA2B):
+				case ("SA2PC"):
 					for (int i = 0; i < checkedListBox1.Items.Count; i++)
 					{
 						if (checkedListBox1.GetItemChecked(i))
@@ -89,7 +91,6 @@ namespace SAToolsHub
 					break;
 			}
 		}
-
 
 		void genAssemblies()
 		{
@@ -128,13 +129,13 @@ namespace SAToolsHub
 
 		void createMod()
 		{
-			string baseModIniPath = Path.Combine(SAToolsHub.projectDirectory.ToString(), "mod.ini");
+			string baseModIniPath = Path.Combine(SAToolsHub.projectDirectory, "mod.ini");
 			string outputModIniPath = Path.Combine(modFolder, "mod.ini");
 			const string dataSuffix = "_data.ini";
 
-			switch (game)
+			switch (SAToolsHub.setGame)
 			{
-				case SA_Tools.Game.SADX:
+				case "SADXPC":
 					SADXModInfo sadxModInfo = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
 
 					// set all of our assemblies properly
@@ -163,7 +164,7 @@ namespace SAToolsHub
 					SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
 					break;
 
-				case SA_Tools.Game.SA2B:
+				case "SA2PC":
 					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
 					if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig" + dataSuffix;
@@ -179,15 +180,15 @@ namespace SAToolsHub
 
 		public void CopySystemFolder(string modFolder)
 		{
-			string projectSystemPath = Path.Combine(SAToolsHub.projectDirectory.ToString(), SonicRetro.SAModel.SAEditorCommon.GamePathChecker.GetSystemPathName(game));
-			string modSystemPath = Path.Combine(modFolder, SonicRetro.SAModel.SAEditorCommon.GamePathChecker.GetSystemPathName(game));
+			string projectSystemPath = Path.Combine(SAToolsHub.projectDirectory, sysFolder);
+			string modSystemPath = Path.Combine(modFolder, sysFolder);
 
 			SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(
 				new DirectoryInfo(projectSystemPath), modSystemPath);
 
-			if (game == SA_Tools.Game.SADX)
+			if (SAToolsHub.setGame == "SADX")
 			{
-				string texturesPath = Path.Combine(SAToolsHub.projectDirectory.ToString(), "textures");
+				string texturesPath = Path.Combine(SAToolsHub.projectDirectory, "textures");
 				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
 			}
 		}
@@ -200,36 +201,26 @@ namespace SAToolsHub
 		private void buildWindow_Shown(object sender, EventArgs e)
 		{
 			chkAll.Checked = false;
-
-			if (SAToolsHub.setGame == "SADX")
-			{
-				game = SA_Tools.Game.SADX;
-				gameEXE = "sonic";
-			}
-			else if (SAToolsHub.setGame == "SA2PC")
-			{
-				game = SA_Tools.Game.SA2B;
-				gameEXE = "sonic2app";
-			}
-
 			checkedListBox1.Items.Clear();
-			switch(game)
+
+			switch (SAToolsHub.setGame)
 			{
-				case (SA_Tools.Game.SADX):
+				case ("SADX"):
 					SADXModInfo sadxMod = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory.ToString(), "mod.ini"));
 					modName = sadxMod.Name;
+					gameEXE = "sonic";
+					sysFolder = "system";
 					break;
-				case (SA_Tools.Game.SA2B):
+				case ("SA2PC"):
 					SA2ModInfo sa2Mod = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory.ToString(), "mod.ini"));
 					modName = sa2Mod.Name;
-					break;
-				default:
+					gameEXE = "sonic2app";
 					break;
 			}
 
 			foreach(SplitEntry splitEntry in SAToolsHub.projSplitEntries)
 			{
-				checkedListBox1.Items.Add(splitEntry.CommonName);
+				checkedListBox1.Items.Add(splitEntry.IniFile);
 			}
 		}
 
@@ -250,8 +241,8 @@ namespace SAToolsHub
 		private void btnManual_Click(object sender, EventArgs e)
 		{
 			setAssemblies();
-			manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
-				Path.Combine(SAToolsHub.gameSystemDirectory.ToString(), "mods"), assemblies);
+			//manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
+				//Path.Combine(SAToolsHub.gameSystemDirectory.ToString(), "mods"), assemblies);
 			manualBuildWindow.ShowDialog();
 		}
 
@@ -296,7 +287,8 @@ namespace SAToolsHub
 		{
 			showProgress();
 
-			modFolder = Path.Combine(Program.Settings.GetModPathForGame(game), modName);
+			string modsFolder = SAToolsHub.gameSystemDirectory + "/mods";
+			modFolder = Path.Combine(modsFolder, modName);
 			
 			if (!Directory.Exists(modFolder))
 				Directory.CreateDirectory(modFolder);
