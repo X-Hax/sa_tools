@@ -331,6 +331,18 @@ namespace SA_Tools.Split
 								SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
 							}
 							break;
+						case "enemyanimationlist":
+							{
+								int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								SA2EnemyAnimInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+							}
+							break;
+						case "sa1actionlist":
+							{
+								int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								SA1ActionInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+							}
+							break;
 						case "levelpathlist":
 							{
 								List<string> hashes = new List<string>();

@@ -44,6 +44,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "levelranktimes", "Level Rank Times" },
 			{ "endpos", "End Positions" },
 			{ "animationlist", "Animation List" },
+			{ "enemyanimationlist", "Enemy Animation List" },
+			{ "sa1actionlist", "Action List" },
 			{ "levelpathlist", "Path List" },
 			{ "pathlist", "Path List" },
 			{ "stagelightdatalist", "Stage Light Data List" },
@@ -814,6 +816,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("AnimationInfo {0}[] = {{", name);
 								List<string> objs = new List<string>(list.Length);
 								foreach (SA2AnimationInfo obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "enemyanimationlist":
+							{
+								SA2EnemyAnimInfo[] list = SA2EnemyAnimInfoList.Load(data.Filename);
+								writer.WriteLine("AnimationInfo {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (SA2EnemyAnimInfo obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "sa1actionlist":
+							{
+								SA1ActionInfo[] list = SA1ActionInfoList.Load(data.Filename);
+								writer.WriteLine("AnimationInfo {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (SA1ActionInfo obj in list)
 									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
