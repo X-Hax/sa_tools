@@ -340,7 +340,7 @@ public class UniversalSplit
 	/// <br/>| action | animation | animmdl | motion | basicdxmodel | basicmodel | chunkmodel | gcmodel | landtable | model 
 	/// <br/>| deathzone | endpos | fieldstartpos | levelclearflags | levelrankscores | levelranktimes | startpos | storysequence | texnamearray | animindexlist | 
 	/// <br/>| bmitemattrlist | creditstextlist | leveltexlist | objlist | pathlist | soundlist | soundtestlist | stagelightdatalist | texlist | weldlist 
-	/// <br/>| bosslevellist | levelpathlist | nextlevellist | triallevellist | animationlist | cutscenetext | masterstringlist | musiclist | npctext | recapscreen 
+	/// <br/>| bosslevellist | levelpathlist | nextlevellist | triallevellist | animationlist | sa1actionlist | enemyanimationlist | cutscenetext | masterstringlist | musiclist | npctext | recapscreen 
 	/// <br/>| skyboxscale | stageselectlist | stringarray | list | binary | 
 	/// </param>
 	/// <param name="address">Address of the item in the binary</param>
@@ -351,7 +351,7 @@ public class UniversalSplit
 	/// <br/>animmdl: model filename
 	/// <br/>motion: node count
 	/// <br/>binary: length in bytes
-	/// <br/>musiclist, stringarray, cutscenetext, recapscreen, npctext, skyboxscale, stageselectlist, animationlist, masterstringlist: item count
+	/// <br/>musiclist, stringarray, cutscenetext, recapscreen, npctext, skyboxscale, stageselectlist, animationlist, sa1actionlist, enemyanimationlist, masterstringlist: item count
 	/// </param>
 	/// <param name="stringparam">String parameter:
 	/// <br/>list: path to list
@@ -1140,6 +1140,16 @@ public class UniversalSplit
 						SA2AnimationInfoList.Load(datafile, address, intparam).Save(fileOutputPath + ".ini");
 					}
 					break;
+				case "sa1actionlist":
+					{
+						SA1ActionInfoList.Load(datafile, address, imageBase, intparam).Save(fileOutputPath + ".ini");
+					}
+					break;
+				case "enemyanimationlist":
+					{
+						SA2EnemyAnimInfoList.Load(datafile, address, imageBase, intparam).Save(fileOutputPath + ".ini");
+					}
+					break;
 				case "levelpathlist":
 					{
 						ushort lvlnum = (ushort)ByteConverter.ToUInt32(datafile, address);
@@ -1272,7 +1282,7 @@ namespace USplit
 					"| soundlist | soundtestlist | stagelightdatalist | texlist | weldlist | bosslevellist | levelpathlist |\n" +
 					"| nextlevellist | triallevellist |\n" +
 					"| animationlist <count> | cutscenetext <count> | masterstringlist <count> | musiclist <count> | npctext <count> |\n" +
-					"| recapscreen <count> | skyboxscale <count> | stageselectlist <count> |\n" +
+					"| recapscreen <count> | skyboxscale <count> | stageselectlist <count> | sa1actionlist <count> | enemyanimationlist <count> |\n" +
 					"| stringarray <count> [language] | list <offset> <filename> [-skiplabels] [-noanims] | binary <length> [hex] |\n" +
 					"| animation <NJS_OBJECT address> [shortrot] | animmdl <*mdl file> [-shortrot] | motion <nodecount> [-shortrot]");
 				Console.WriteLine("<ADDRESS>: The location of data in the file.");

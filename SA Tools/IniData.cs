@@ -2257,6 +2257,175 @@ namespace SA_Tools
 		}
 	}
 
+	public static class SA1ActionInfoList
+	{
+		public static SA1ActionInfo[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA1ActionInfo[]>(filename);
+		}
+
+		public static SA1ActionInfo[] Load(byte[] file, int address, uint imageBase, int count)
+		{
+			SA1ActionInfo[] result = new SA1ActionInfo[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new SA1ActionInfo(file, address, imageBase);
+				address += SA1ActionInfo.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this SA1ActionInfo[] levellist, string filename)
+		{
+			IniSerializer.Serialize(levellist, filename);
+		}
+	}
+	[Serializable]
+	public class SA1ActionInfo
+	{
+		[IniAlwaysInclude]
+		public string Action { get; set; }
+		[IniAlwaysInclude]
+		public byte NodeCount { get; set; }
+		[IniAlwaysInclude]
+		public byte Property { get; set; }
+		[IniAlwaysInclude]
+		public ushort NextAnimation { get; set; }
+		[IniAlwaysInclude]
+		public float TransitionSpeed { get; set; }
+		[IniAlwaysInclude]
+		public float AnimationSpeed { get; set; }
+
+		public static int Size { get { return 16; } }
+
+		public SA1ActionInfo() { }
+
+		public SA1ActionInfo(byte[] file, int address, uint imageBase)
+		{
+			int ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
+					Action = "action_" + ((uint)ptr - imageBase).ToString("X8");
+				else
+					Action = ptr.ToCHex();
+			NodeCount = file[address++];
+			Property = file[address++];
+			NextAnimation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			TransitionSpeed = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			AnimationSpeed = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Action);
+			sb.Append(", ");
+			sb.Append(NodeCount);
+			sb.Append(", ");
+			sb.Append(Property);
+			sb.Append(", ");
+			sb.Append(NextAnimation);
+			sb.Append(", ");
+			sb.Append(TransitionSpeed.ToC());
+			sb.Append(", ");
+			sb.Append(AnimationSpeed.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class SA2EnemyAnimInfoList
+	{
+		public static SA2EnemyAnimInfo[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2EnemyAnimInfo[]>(filename);
+		}
+
+		public static SA2EnemyAnimInfo[] Load(byte[] file, int address, uint imageBase, int count)
+		{
+			SA2EnemyAnimInfo[] result = new SA2EnemyAnimInfo[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new SA2EnemyAnimInfo(file, address, imageBase);
+				address += SA2EnemyAnimInfo.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this SA2EnemyAnimInfo[] levellist, string filename)
+		{
+			IniSerializer.Serialize(levellist, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2EnemyAnimInfo
+	{
+		[IniAlwaysInclude]
+		public string Animation { get; set; }
+		[IniAlwaysInclude]
+		public ushort Property { get; set; }
+		[IniAlwaysInclude]
+		public ushort NextAnimation { get; set; }
+		[IniAlwaysInclude]
+		public float TransitionSpeed { get; set; }
+		[IniAlwaysInclude]
+		public float AnimationSpeed { get; set; }
+
+		public static int Size { get { return 16; } }
+
+		public SA2EnemyAnimInfo() { }
+
+		public SA2EnemyAnimInfo(byte[] file, int address, uint imageBase)
+		{
+			int ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
+					Animation = "animation_" + ((uint)ptr - imageBase).ToString("X8");
+				else
+					Animation = ptr.ToCHex();
+			Property = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			NextAnimation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			TransitionSpeed = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			AnimationSpeed = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Animation);
+			sb.Append(", ");
+			sb.Append(Property);
+			sb.Append(", ");
+			sb.Append(NextAnimation);
+			sb.Append(", ");
+			sb.Append(TransitionSpeed.ToC());
+			sb.Append(", ");
+			sb.Append(AnimationSpeed.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public static class PathList
 	{
 		public static List<PathData> Load(string directory)
@@ -2587,21 +2756,21 @@ namespace SA_Tools
 			int ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
-				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
 					BaseModel = "object_" + ((uint)ptr - imageBase).ToString("X8");
 				else
 					BaseModel = ptr.ToCHex();
 			ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
-				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
 					ModelA = "object_" + ((uint)ptr - imageBase).ToString("X8");
 				else
 					ModelA = ptr.ToCHex();
 			ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
-				if (ptr >= imageBase && (ptr < file.Length + imageBase))
+				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
 					ModelB = "object_" + ((uint)ptr - imageBase).ToString("X8");
 				else
 					ModelB = ptr.ToCHex();
