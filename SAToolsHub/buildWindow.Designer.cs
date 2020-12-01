@@ -84,9 +84,9 @@
 			this.toolTip1.SetToolTip(this.chkAll, "Check all items (This may be slow)");
 			this.chkAll.UseVisualStyleBackColor = true;
 			this.chkAll.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-			//
-			// backgroundworker1
-			//
+			// 
+			// backgroundWorker1
+			// 
 			this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
 			// 
 			// buildWindow
@@ -100,7 +100,7 @@
 			this.Controls.Add(this.btnManual);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "buildWindow";
-			this.Text = "Build Mod";
+			this.Text = "Select Data Files";
 			this.Shown += new System.EventHandler(this.buildWindow_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();

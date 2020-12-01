@@ -71,7 +71,7 @@ namespace SAToolsHub
 
 			switch (game)
 			{
-				case "SADX":
+				case "SADXPC":
 					SADXModInfo modInfoSADX = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(projModFile);
 					txtName.Text = modInfoSADX.Name;
 					txtAuth.Text = modInfoSADX.Author;

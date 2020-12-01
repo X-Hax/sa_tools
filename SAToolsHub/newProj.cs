@@ -23,6 +23,22 @@ namespace SAToolsHub
 		ProjectTemplate projectFile;
 		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
+		List<string> templates = new List<string>
+		{
+			"SADX:PC",
+			"SA2:PC",
+			"SA1 (Final, v1.005)",
+			"SA2 (Final)",
+			"SA1 (AutoDemo)",
+			"SA2: The Trial",
+			//"SA2: Preview",
+			//"SADX:GC (Final)",
+			//"SADX:GC (Preview)",
+			//"SADX:GC (Review)",
+			"SADX:360",
+		};
+
+		string templatesPath;
 		string gameName;
 		string gamePath;
 		string projFolder;
@@ -93,7 +109,7 @@ namespace SAToolsHub
 						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 						if (gamePathWarning == DialogResult.OK)
 						{
-							this.Close();
+							comboBox1.SelectedIndex = -1;
 						}
 					}
 				}
@@ -122,7 +138,7 @@ namespace SAToolsHub
 						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 						if (gamePathWarning == DialogResult.OK)
 						{
-							this.Close();
+							comboBox1.SelectedIndex = -1;
 						}
 					}
 				}
@@ -423,7 +439,18 @@ namespace SAToolsHub
 
 		private void newProj_Shown(object sender, EventArgs e)
 		{
-			lblTemplate.Text = "Please Select a Project Template";
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			if (Directory.Exists(appPath + "/../../bin/"))
+				templatesPath = appPath + "/../../../Configuration/Templates/";
+			else
+				templatesPath = appPath + "/../Templates/";
+
+			DirectoryInfo templatesDir = new DirectoryInfo(templatesPath);
+			foreach (string entry in templates)
+			{
+				comboBox1.Items.Add(entry);
+			}
+
 			btnCreate.Enabled = false;
 		}
 
@@ -448,26 +475,6 @@ namespace SAToolsHub
 			{
 				txtProjFolder.Enabled = false;
 				btnBrowse.Enabled = false;
-			}
-		}
-
-		private void btnTemplateSelect_Click(object sender, EventArgs e)
-		{
-			OpenFileDialog openFileDialog2 = new OpenFileDialog();
-			openFileDialog2.Filter = "Template File (*_template.xml)|*_template.xml";
-			openFileDialog2.RestoreDirectory = true;
-			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-
-			if (Directory.Exists((appPath) + "/../Templates/"))
-				openFileDialog2.InitialDirectory = appPath + "/../Templates/";
-			else
-				openFileDialog2.InitialDirectory = appPath + "/../../../Configuration/Templates/";
-
-			if (openFileDialog2.ShowDialog() == DialogResult.OK)
-			{
-				string templateFile = openFileDialog2.FileName;
-				openTemplate(templateFile);
-				lblTemplate.Text = "Selected Template: " + gameName;
 			}
 		}
 
@@ -503,14 +510,17 @@ namespace SAToolsHub
 
 					projName = saveFileDialog1.FileName;
 					projectFile = new ProjectTemplate();
+					ProjectInfo projInfo = new ProjectInfo();
 
-					projectFile.GameInfo.GameName = gameName;
+					projInfo.GameName = gameName;
 					if (gameName == "SADXPC" || gameName == "SA2PC")
-						projectFile.GameInfo.CanBuild = true;
+						projInfo.CanBuild = true;
 					else
-						projectFile.GameInfo.CanBuild = false;
-					projectFile.GameInfo.GameSystemFolder = gamePath;
-					projectFile.GameInfo.ModSystemFolder = projFolder;
+						projInfo.CanBuild = false;
+					projInfo.GameSystemFolder = gamePath;
+					projInfo.ModSystemFolder = projFolder;
+
+					projectFile.GameInfo = projInfo;
 					projectFile.SplitEntries = splitEntries;
 					if (gameName == "SA2" || gameName == "SA2GC" || gameName == "SA2PC")
 						projectFile.SplitMDLEntries = splitMdlEntries;
@@ -529,8 +539,53 @@ namespace SAToolsHub
 			}
 		}
 
-		private void lblTemplate_TextChanged(object sender, EventArgs e)
+		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			string templateFile = "";
+
+			if (comboBox1.SelectedIndex > -1)
+			{
+				switch (comboBox1.SelectedItem.ToString())
+				{
+					case "SADX:PC":
+						templateFile = templatesPath + "sadxpc_template.xml";
+						break;
+					case "SA2:PC":
+						templateFile = templatesPath + "sa2pc_template.xml";
+						break;
+					case "SA1 (Final)":
+						templateFile = templatesPath + "sa1_template.xml";
+						break;
+					case "SA2 (Final)":
+						templateFile = templatesPath + "sa2_template.xml";
+						break;
+					case "SA1 (AutoDemo)":
+						templateFile = templatesPath + "autodemo_template.xml";
+						break;
+					case "SA2: The Trial":
+						templateFile = templatesPath + "sa2trial_template.xml";
+						break;
+					case "SA2: Preview":
+						break;
+					case "SADX:GC (Final)":
+						break;
+					case "SADX:GC (Preview)":
+						break;
+					case "SADX:GC (Review)":
+						break;
+					case "SADX:360":
+						templateFile = templatesPath + "sadx360_template.xml";
+						break;
+					default:
+						break;
+				}
+			}
+			else
+				templateFile = "";
+
+			if (templateFile.Length > 0)
+				openTemplate(templateFile);
+
 			if (!gameName.IsNullOrWhiteSpace() && !gamePath.IsNullOrWhiteSpace())
 				btnCreate.Enabled = true;
 		}

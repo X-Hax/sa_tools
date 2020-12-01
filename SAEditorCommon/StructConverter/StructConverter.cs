@@ -261,6 +261,219 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			return iniData;
 		}
 
+		public static SA_Tools.IniData LoadMultiINI(List<string> filename,
+			ref Dictionary<string, bool> defaultExportState)
+		{
+			defaultExportState.Clear();
+			SA_Tools.IniData newiniData = new SA_Tools.IniData();
+			Dictionary<string, SA_Tools.FileInfo> curItems = new Dictionary<string, SA_Tools.FileInfo>();
+
+			foreach (string arrFile in filename)
+			{
+				SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(arrFile);
+
+				Environment.CurrentDirectory = Path.GetDirectoryName(arrFile);
+
+				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+				{
+					bool? modified = null;
+					switch (item.Value.Type)
+					{
+						case "cutscenetext":
+							{
+								modified = false;
+								string[] hashes = item.Value.MD5Hash.Split(',');
+								for (int i = 0; i < 5; i++)
+								{
+									string textname = Path.Combine(item.Value.Filename, ((Languages)i).ToString() + ".txt");
+									if (HelperFunctions.FileHash(textname) != hashes[i])
+									{
+										modified = true;
+										break;
+									}
+								}
+							}
+							break;
+						case "recapscreen":
+							{
+								modified = false;
+								int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								string[] hash2 = item.Value.MD5Hash.Split(':');
+								string[][] hashes = new string[hash2.Length][];
+								for (int i = 0; i < hash2.Length; i++)
+									hashes[i] = hash2[i].Split(',');
+								for (int i = 0; i < count; i++)
+									for (int l = 0; l < 5; l++)
+									{
+										string textname = Path.Combine(Path.Combine(item.Value.Filename, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini");
+										if (HelperFunctions.FileHash(textname) != hashes[i][l])
+										{
+											modified = true;
+											break;
+										}
+									}
+							}
+							break;
+						case "npctext":
+							{
+								modified = false;
+								int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								string[] hash2 = item.Value.MD5Hash.Split(':');
+								string[][] hashes = new string[hash2.Length][];
+								for (int i = 0; i < hash2.Length; i++)
+									hashes[i] = hash2[i].Split(',');
+								for (int l = 0; l < 5; l++)
+									for (int i = 0; i < count; i++)
+									{
+										string textname = Path.Combine(Path.Combine(item.Value.Filename, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini");
+										if (HelperFunctions.FileHash(textname) != hashes[l][i])
+										{
+											modified = true;
+											break;
+										}
+									}
+							}
+							break;
+						case "deathzone":
+							{
+								modified = false;
+								string[] hashes = item.Value.MD5Hash.Split(',');
+								if (HelperFunctions.FileHash(item.Value.Filename) != hashes[0])
+								{
+									modified = true;
+									break;
+								}
+								DeathZoneFlags[] flags = DeathZoneFlagsList.Load(item.Value.Filename);
+								if (flags.Length != hashes.Length - 1)
+								{
+									modified = true;
+									break;
+								}
+								string path = Path.GetDirectoryName(item.Value.Filename);
+								for (int i = 0; i < flags.Length; i++)
+									if (HelperFunctions.FileHash(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + (iniData.Game == Game.SA2 || iniData.Game == Game.SA2B ? ".sa2mdl" : ".sa1mdl")))
+										!= hashes[i + 1])
+									{
+										modified = true;
+										break;
+									}
+							}
+							break;
+						case "levelpathlist":
+							{
+								modified = false;
+								Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
+								string[] hash1 = item.Value.MD5Hash.Split('|');
+								foreach (string hash in hash1)
+								{
+									string[] hash2 = hash.Split(':');
+									hashes.Add(hash2[0], hash2[1].Split(','));
+								}
+								foreach (string dir in Directory.GetDirectories(item.Value.Filename))
+								{
+									string name = new DirectoryInfo(dir).Name;
+									if (!hashes.ContainsKey(name))
+									{
+										modified = true;
+										break;
+									}
+								}
+								if (modified.Value)
+									break;
+								foreach (KeyValuePair<string, string[]> dirinfo in hashes)
+								{
+									string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
+									if (!Directory.Exists(dir))
+									{
+										modified = true;
+										break;
+									}
+									if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
+									{
+										modified = true;
+										break;
+									}
+									for (int i = 0; i < dirinfo.Value.Length; i++)
+									{
+										string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+										if (!File.Exists(file))
+										{
+											modified = true;
+											break;
+										}
+										else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
+										{
+											modified = true;
+											break;
+										}
+									}
+									if (modified.Value)
+										break;
+								}
+							}
+							break;
+						case "pathlist":
+							{
+								modified = false;
+								string[] hashes = item.Value.MD5Hash.Split(',');
+								if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
+								{
+									modified = true;
+									break;
+								}
+								for (int i = 0; i < hashes.Length; i++)
+								{
+									string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									if (!File.Exists(file))
+									{
+										modified = true;
+										break;
+									}
+									else if (HelperFunctions.FileHash(file) != hashes[i])
+									{
+										modified = true;
+										break;
+									}
+								}
+							}
+							break;
+						case "animindexlist":
+							modified = false;
+
+							string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
+
+							foreach (string md5KeyValuePair in md5KeyvaluePairs)
+							{
+								string[] keySplit = md5KeyValuePair.Split(':');
+
+								string filePath = Path.Combine(item.Value.Filename, keySplit[0] + ".saanim");
+
+								if (File.Exists(filePath))
+								{
+									if (HelperFunctions.FileHash(filePath) != keySplit[1])
+									{
+										modified = true;
+										break;
+									}
+								}
+							}
+
+							break;
+
+						default:
+							if (!string.IsNullOrEmpty(item.Value.MD5Hash))
+								modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
+							break;
+					}
+
+					curItems.Add(item.Key, item.Value);
+					defaultExportState.Add(item.Key, modified ?? true);
+				}
+			}
+			newiniData.Files = curItems;
+			return newiniData;
+		}
+
 		public static void ExportINI(SA_Tools.IniData iniData,
 			Dictionary<string, bool> itemsToExport, string fileName)
 		{

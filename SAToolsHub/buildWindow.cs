@@ -26,11 +26,7 @@ namespace SAToolsHub
 		string modName;
 		string modFolder;
 		string sysFolder;
-
-		//private IniFile CombineEXEEntries(SplitEntry splitEntry)
-		//{
-
-		//}
+		List<string> iniEXEFiles = new List<string>();
 
 		void setAssemblies()
 		{
@@ -106,7 +102,7 @@ namespace SAToolsHub
 				switch (assembly.Value)
 				{
 					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe:
-						EXEiniData = SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.LoadINI(iniPath, ref itemsEXEToExport);
+						iniEXEFiles.Add(iniPath);
 						break;
 
 					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
@@ -120,8 +116,11 @@ namespace SAToolsHub
 						break;
 				}
 			}
-			if (itemsEXEToExport.Count > 0)
+
+			if (iniEXEFiles.Count > 0)
 			{
+				EXEiniData = SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport);
+
 				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
 			}
@@ -158,7 +157,15 @@ namespace SAToolsHub
 					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_DAYTIME)) sadxModInfo.CHAOSTGGARDEN02MR_DAYTIMEData = CHAOSTGGARDEN02MR_DAYTIME + dataSuffix;
 					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_EVENING)) sadxModInfo.CHAOSTGGARDEN02MR_EVENINGData = CHAOSTGGARDEN02MR_EVENING + dataSuffix;
 					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_NIGHT)) sadxModInfo.CHAOSTGGARDEN02MR_NIGHTData = CHAOSTGGARDEN02MR_NIGHT + dataSuffix;
-					if (assemblies.ContainsKey("sonic")) sadxModInfo.EXEData = "sonic_data.ini";
+					if (iniEXEFiles.Count > 0) sadxModInfo.EXEData = "sonic_data.ini";
+					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "chrmodels_orig_data.ini")))
+					{
+						if (assemblies.ContainsKey("CHRMODELS_Orig")) sadxModInfo.CHRMODELSData = "chrmodels_orig_data.ini";
+					}
+					else
+					{
+						if (assemblies.ContainsKey("CHRMODELS")) sadxModInfo.CHRMODELSData = "chrmodels_data.ini";
+					}
 
 					// save our output
 					SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
@@ -205,14 +212,14 @@ namespace SAToolsHub
 
 			switch (SAToolsHub.setGame)
 			{
-				case ("SADX"):
-					SADXModInfo sadxMod = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory.ToString(), "mod.ini"));
+				case ("SADXPC"):
+					SADXModInfo sadxMod = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = sadxMod.Name;
 					gameEXE = "sonic";
 					sysFolder = "system";
 					break;
 				case ("SA2PC"):
-					SA2ModInfo sa2Mod = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory.ToString(), "mod.ini"));
+					SA2ModInfo sa2Mod = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = sa2Mod.Name;
 					gameEXE = "sonic2app";
 					break;
@@ -240,9 +247,23 @@ namespace SAToolsHub
 
 		private void btnManual_Click(object sender, EventArgs e)
 		{
+			SA_Tools.Game game;
+			switch (SAToolsHub.setGame)
+			{
+				case ("SADXPC"):
+					game = SA_Tools.Game.SADX;
+					break;
+				case ("SA2PC"):
+					game = SA_Tools.Game.SA2B;
+					break;
+				default:
+					game = SA_Tools.Game.SADX;
+					break;
+			}
+
 			setAssemblies();
-			//manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
-				//Path.Combine(SAToolsHub.gameSystemDirectory.ToString(), "mods"), assemblies);
+			manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
+				Path.Combine(SAToolsHub.gameSystemDirectory.ToString(), "mods"), assemblies);
 			manualBuildWindow.ShowDialog();
 		}
 
@@ -267,13 +288,18 @@ namespace SAToolsHub
 					Invoke((Action)progress.Show);
 				};
 
+				Action<int> setSteps = (int count) =>
+				{
+					progress.SetMaxSteps(count);
+				};
+
 				Action<string> stepProgress = (string update) =>
 				{
 					progress.StepProgress();
 					progress.SetStep(update);
 				};
 
-				AutoBuild(showProgress, stepProgress);
+				AutoBuild(showProgress, setSteps, stepProgress);
 			}
 		}
 
@@ -281,17 +307,20 @@ namespace SAToolsHub
 		{
 			backgroundWorker1.RunWorkerCompleted -= BackgroundWorker1_RunWorkerCompleteAlert;
 			MessageBox.Show("Build complete!");
+			this.Close();
 		}
 
-		private void AutoBuild(Action showProgress, Action<string> updateProgress)
+		private void AutoBuild(Action showProgress, Action<int> maxSteps, Action<string> updateProgress)
 		{
 			showProgress();
 
-			string modsFolder = SAToolsHub.gameSystemDirectory + "/mods";
+			string modsFolder = SAToolsHub.gameSystemDirectory + "\\mods";
 			modFolder = Path.Combine(modsFolder, modName);
 			
 			if (!Directory.Exists(modFolder))
 				Directory.CreateDirectory(modFolder);
+
+			maxSteps(4);
 
 			updateProgress("Setting up Assets for Mod Export");
 			setAssemblies();

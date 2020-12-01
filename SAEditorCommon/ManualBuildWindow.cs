@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
+using Ookii.Dialogs.Wpf;
 using SA_Tools;
 using SA_Tools.SplitDLL;
 
@@ -231,66 +231,70 @@ namespace SonicRetro.SAModel.SAEditorCommon
 
 		private void CPPExportButton_Click(object sender, EventArgs e)
 		{
-			string outputFolder = Path.Combine(projectFolder, "source");
-
-			Directory.CreateDirectory(outputFolder);
-
-			// use a folder dialog here instead of a file dialog
-			// todo: make this asyncronous
-			foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
+			var folderDialog = new VistaFolderBrowserDialog();
+			var folderResult = folderDialog.ShowDialog();
+			if (folderResult.HasValue && folderResult.Value)
 			{
-				switch (assembly.Value)
+				string outputFolder = folderDialog.SelectedPath;
+
+				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
-					case AssemblyType.Exe:
-						StructConverter.StructConverter.ExportCPP((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
-							assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
-						break;
+					switch (assembly.Value)
+					{
+						case AssemblyType.Exe:
+							StructConverter.StructConverter.ExportCPP((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
+								assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
+							break;
 
-					case AssemblyType.DLL:
-						DLLModGenerator.DLLModGen.ExportCPP((DllIniData)assemblyIniFiles[assembly.Key],
-							assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
-						break;
+						case AssemblyType.DLL:
+							DLLModGenerator.DLLModGen.ExportCPP((DllIniData)assemblyIniFiles[assembly.Key],
+								assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
+							break;
 
-					default:
-						break;
+						default:
+							break;
+					}
 				}
-			}
 
-			MessageBox.Show(string.Format("Source code files exported to {0}", outputFolder));
+				MessageBox.Show(string.Format("Source code files exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
+			}
+			else
+				MessageBox.Show("No folder was provided.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
 		}
 
 		private void IniExportButton_Click(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+			var folderDialog = new VistaFolderBrowserDialog();
+			var folderResult = folderDialog.ShowDialog();
+			if (folderResult.HasValue && folderResult.Value)
 			{
-				folderDialog.SelectedPath = modFolder;
+				string outputFolder = folderDialog.SelectedPath;
 
-				if (folderDialog.ShowDialog(this) == DialogResult.OK)
+				Dictionary<string, bool> compiledEXEItems = new Dictionary<string, bool>();
+				// use a folder dialog here instead of a file dialog
+				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
-					Dictionary<string, bool> compiledEXEItems = new Dictionary<string, bool>();
-					// use a folder dialog here instead of a file dialog
-					foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
+					switch (assembly.Value)
 					{
-						switch (assembly.Value)
-						{
-							case AssemblyType.Exe:
-								StructConverter.StructConverter.ExportINI((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
-									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
-								break;
+						case AssemblyType.Exe:
+							StructConverter.StructConverter.ExportINI((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
+								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
+							break;
 
-							case AssemblyType.DLL:
-								DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
-									assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
-								break;
+						case AssemblyType.DLL:
+							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
+								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
+							break;
 
-							default:
-								break;
-						}
+						default:
+							break;
 					}
 				}
+				MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}
-
-			MessageBox.Show("Export complete!");
+			else
+				MessageBox.Show("No folder was provided.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void ManualBuildWindow_Shown(object sender, EventArgs e)

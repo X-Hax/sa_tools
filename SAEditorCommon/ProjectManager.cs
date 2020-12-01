@@ -127,7 +127,7 @@ namespace ProjectManagement
 
 	public class ProjectTemplate
 	{
-		[XmlElement("projectInfo")]
+		[XmlElement("GameInfo", typeof(ProjectInfo))]
 		public ProjectInfo GameInfo { get; set; }
 		[XmlElement("SplitEntry", typeof(SplitEntry))]
 		public List<SplitEntry> SplitEntries { get; set; }

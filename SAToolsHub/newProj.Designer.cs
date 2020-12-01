@@ -33,15 +33,15 @@
 			this.btnBrowse = new System.Windows.Forms.Button();
 			this.txtProjFolder = new System.Windows.Forms.TextBox();
 			this.lblTemplate = new System.Windows.Forms.Label();
-			this.btnTemplateSelect = new System.Windows.Forms.Button();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+			this.comboBox1 = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// checkBox1
 			// 
 			this.checkBox1.AutoSize = true;
 			this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkBox1.Location = new System.Drawing.Point(12, 32);
+			this.checkBox1.Location = new System.Drawing.Point(12, 39);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(210, 20);
 			this.checkBox1.TabIndex = 20;
@@ -52,7 +52,7 @@
 			// btnCreate
 			// 
 			this.btnCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnCreate.Location = new System.Drawing.Point(12, 87);
+			this.btnCreate.Location = new System.Drawing.Point(12, 93);
 			this.btnCreate.Name = "btnCreate";
 			this.btnCreate.Size = new System.Drawing.Size(360, 23);
 			this.btnCreate.TabIndex = 19;
@@ -64,7 +64,7 @@
 			// 
 			this.btnBrowse.Enabled = false;
 			this.btnBrowse.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnBrowse.Location = new System.Drawing.Point(285, 58);
+			this.btnBrowse.Location = new System.Drawing.Point(285, 64);
 			this.btnBrowse.Name = "btnBrowse";
 			this.btnBrowse.Size = new System.Drawing.Size(87, 23);
 			this.btnBrowse.TabIndex = 18;
@@ -76,7 +76,7 @@
 			// 
 			this.txtProjFolder.Enabled = false;
 			this.txtProjFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.txtProjFolder.Location = new System.Drawing.Point(12, 58);
+			this.txtProjFolder.Location = new System.Drawing.Point(12, 65);
 			this.txtProjFolder.Name = "txtProjFolder";
 			this.txtProjFolder.Size = new System.Drawing.Size(267, 22);
 			this.txtProjFolder.TabIndex = 17;
@@ -85,37 +85,35 @@
 			// 
 			this.lblTemplate.AutoSize = true;
 			this.lblTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblTemplate.Location = new System.Drawing.Point(12, 9);
+			this.lblTemplate.Location = new System.Drawing.Point(12, 15);
 			this.lblTemplate.Name = "lblTemplate";
-			this.lblTemplate.Size = new System.Drawing.Size(147, 16);
+			this.lblTemplate.Size = new System.Drawing.Size(161, 16);
 			this.lblTemplate.TabIndex = 21;
-			this.lblTemplate.Text = "Select Game Template";
-			this.lblTemplate.TextChanged += new System.EventHandler(this.lblTemplate_TextChanged);
+			this.lblTemplate.Text = "Select a Game Template:";
 			// 
-			// btnTemplateSelect
+			// comboBox1
 			// 
-			this.btnTemplateSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnTemplateSelect.Location = new System.Drawing.Point(251, 6);
-			this.btnTemplateSelect.Name = "btnTemplateSelect";
-			this.btnTemplateSelect.Size = new System.Drawing.Size(121, 23);
-			this.btnTemplateSelect.TabIndex = 26;
-			this.btnTemplateSelect.Text = "Select Template";
-			this.btnTemplateSelect.UseVisualStyleBackColor = true;
-			this.btnTemplateSelect.Click += new System.EventHandler(this.btnTemplateSelect_Click);
+			this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox1.FormattingEnabled = true;
+			this.comboBox1.Location = new System.Drawing.Point(179, 12);
+			this.comboBox1.Name = "comboBox1";
+			this.comboBox1.Size = new System.Drawing.Size(193, 24);
+			this.comboBox1.TabIndex = 22;
+			this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
 			// 
-			// newNEWproj
+			// newProj
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(384, 121);
-			this.Controls.Add(this.btnTemplateSelect);
+			this.ClientSize = new System.Drawing.Size(384, 128);
+			this.Controls.Add(this.comboBox1);
 			this.Controls.Add(this.lblTemplate);
 			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.btnCreate);
 			this.Controls.Add(this.btnBrowse);
 			this.Controls.Add(this.txtProjFolder);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			this.Name = "newNEWproj";
+			this.Name = "newProj";
 			this.Text = "New Project";
 			this.Shown += new System.EventHandler(this.newProj_Shown);
 			this.ResumeLayout(false);
@@ -130,7 +128,7 @@
 		private System.Windows.Forms.Button btnBrowse;
 		private System.Windows.Forms.TextBox txtProjFolder;
 		private System.Windows.Forms.Label lblTemplate;
-		private System.Windows.Forms.Button btnTemplateSelect;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
+		private System.Windows.Forms.ComboBox comboBox1;
 	}
 }

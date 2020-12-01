@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon;
-using Ookii.Dialogs;
 using System.Xml;
 using System.Xml.Serialization;
 using SA_Tools;
@@ -70,9 +69,9 @@ namespace SAToolsHub
 		//Additional Code/Functions
 		private void openProject(string projectFile)
 		{
-			var projFileSerializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
+			var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
 			var projFileStream = File.OpenRead(projectFile);
-			var projFile = (ProjectManagement.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+			var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
 			gameSystemDirectory = (projFile.GameInfo.GameSystemFolder);
@@ -419,9 +418,13 @@ namespace SAToolsHub
 			string build;
 #if DEBUG
 			build = "Debug/";
+			toolStripMenuItem1.Visible = true;
+			toolStripMenuItem1.Enabled = true;
 #endif
 #if !DEBUG
 			build = "Release/";
+			toolStripMenuItem1.Visible = false;
+			toolStripMenuItem1.Enabled = false;
 #endif
 			string rootPath;
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
