@@ -1004,12 +1004,16 @@ namespace TextureEditor
 		private void textureName_TextChanged(object sender, EventArgs e)
 		{
 			bool focus = textureName.Focused;
+			int st = textureName.SelectionStart;
+			int len = textureName.SelectionLength;
 			string name = textureName.Text;
 			foreach (char c in Path.GetInvalidFileNameChars())
 				name = name.Replace(c, '_');
 			listBox1.Items[listBox1.SelectedIndex] = textureName.Text = textures[listBox1.SelectedIndex].Name = name;
 			if (focus)
 				textureName.Focus();
+			textureName.SelectionStart = st;
+			textureName.SelectionLength = len;
 		}
 
 		private void globalIndex_ValueChanged(object sender, EventArgs e)
