@@ -25,6 +25,8 @@ namespace ObjScan
 		static public int imageBase;
 		static public uint startoffset;
 		static public string dir;
+		static public int modelparts;
+		static public bool shortrot;
 		static public byte[] datafile;
 		static void CreateSplitIni(string filename, bool dx)
 		{
@@ -715,6 +717,133 @@ namespace ObjScan
 				}
 			}
 		}
+		static void ScanMotions()
+		{
+			if (modelparts <= 0) modelparts = 1;
+			Console.WriteLine("Scanning for motions with at least {0} model parts... ", modelparts);
+			int count = 0;
+			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			Directory.CreateDirectory(Path.Combine(dir, "actions"));
+			for (int address = start; address < end; address += 1)
+			{
+				Console.Write("\r{0} ", address.ToString("X8"));
+				//Check for a valid MDATA pointer
+				int mdatap = ByteConverter.ToInt32(datafile, address);
+				if (mdatap < imageBase || mdatap - imageBase >= datafile.Length - 36 || mdatap == 0)
+				{
+					//Console.WriteLine("Mdatap {0} fail", mdatap.ToString("X8"));
+					continue;
+				}
+				uint frames = ByteConverter.ToUInt32(datafile, address + 4);
+				if (frames > 100)
+				{
+					//Console.WriteLine("Frames {0} fail", frames.ToString());
+					continue;
+				}
+				AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(datafile, address + 8);
+				if (animtype == 0) continue;
+				int mdata = 0;
+				//Console.WriteLine("Flags: {0}", animtype.ToString());
+				if (animtype.HasFlag(AnimFlags.Position)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Rotation)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Scale)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Vector)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Vertex)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Normal)) mdata++;
+				if (animtype.HasFlag(AnimFlags.Color)) continue;
+				if (animtype.HasFlag(AnimFlags.Intensity)) continue;
+				if (animtype.HasFlag(AnimFlags.Target)) continue;
+				if (animtype.HasFlag(AnimFlags.Spot)) continue;
+				if (animtype.HasFlag(AnimFlags.Point)) continue;
+				if (animtype.HasFlag(AnimFlags.Roll)) continue;
+				int mdatasize = 0;
+				bool lost = false;
+				switch (mdata)
+				{
+					case 1:
+					case 2:
+						mdatasize = 16;
+						break;
+					case 3:
+						mdatasize = 24;
+						break;
+					case 4:
+						mdatasize = 32;
+						break;
+					case 5:
+						mdatasize = 40;
+						break;
+					default:
+						lost = true;
+						break;
+				}
+				if (lost) continue;
+				//Check MKEY pointers
+				int mdatas = 0;
+				for (int u = modelparts - 1; u < 255; u++)
+				{
+					for (int m = 0; m < mdata; m++)
+					{
+						if (lost) continue;
+						uint pointer = ByteConverter.ToUInt32(datafile, mdatap - imageBase + mdatasize * u + 4 * m);
+						if (pointer < imageBase || pointer - imageBase >= datafile.Length - 36)
+						{
+							if (pointer != 0)
+							{
+								lost = true;
+								//Console.WriteLine("Mkey pointer {0} lost", pointer.ToString("X8"));
+							}
+						}
+						if (!lost)
+						{
+							//Read frame count
+							int framecount = ByteConverter.ToInt32(datafile, mdatap - imageBase + mdatasize * u + 4 * mdata + 4 * m);
+							if (framecount < 0 || framecount > 100)
+							{
+								//Console.WriteLine("Framecount lost: {0}", framecount.ToString("X8"));
+								lost = true;
+							}
+							if (pointer == 0 && framecount != 0)
+							{
+								//Console.WriteLine("Framecount non zero");
+								lost = true;
+							}
+							//if (!lost) Console.WriteLine("Mdata size: {0}, MkeyP: {1}, Frames: {2}", mdatasize, pointer.ToString("X8"), framecount.ToString());
+						}
+					}
+					if (!lost)
+					{
+						mdatas++;
+						//Console.WriteLine("Mdata {0}, total {1}", u, mdatas);
+					}
+				}
+				if (mdatas > 0)
+				{
+					try
+					{
+						Console.WriteLine("\rAdding motion at {0}: {1} nodes", address.ToString("X8"), mdatas);
+						//Console.WriteLine("trying Address: {0}, MdataP: {1}, mdatas: {2}", address.ToString("X8"), mdatap.ToString("X8"), mdata);
+						NJS_MOTION mot = NJS_MOTION.ReadDirect(datafile, mdatas, address, (uint)imageBase, new Dictionary<int, Attach>(), shortrot);
+						if (mot.ModelParts <= 0) continue;
+						if (mot.Frames <= 0) continue;
+						if (mot.Models.Count == 0) continue;
+						string fileOutputPath = Path.Combine(dir, "actions", address.ToString("X8") + ".saanim");
+						mot.Save(fileOutputPath, nometa);
+						count++;
+						addresslist.Add(address, "NJS_MOTION");
+						int[] arr = new int[2];
+						arr[0] = address;
+						arr[1] = modelparts;
+						actionlist.Add(address, arr);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Error adding motion at {0}: {1}", address.ToString("X8"), ex.Message);
+					}
+				}
+			}
+			Console.WriteLine("Found {0} motions", count);
+		}
 		static void Main(string[] args)
 		{
 			bool scan_sa1_land = false;
@@ -740,12 +869,14 @@ namespace ObjScan
 				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to set Big Endian, use SADX_g for the Gamecube version of SADX.");
 				Console.WriteLine("<FILENAME>: The name of the binary file, e.g. sonic.exe.");
 				Console.WriteLine("<KEY>: Binary key, e.g. 400000 for sonic.exe or C900000 for SA1 STG file. Use C900000 for Gamecube REL files.");
-				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, chunkmodel, gcmodel, landtable, all, match");
+				Console.WriteLine("<TYPE>: model, basicmodel, basicdxmodel, chunkmodel, gcmodel, landtable, all, match, motion");
 				Console.WriteLine("-offset: Start offset (hexadecimal).");
 				Console.WriteLine("-file: Path to .sa1mdl file to use in match mode.");
 				Console.WriteLine("-noaction: Don't scan for actions.");
 				Console.WriteLine("-findall: Try to find as much stuff as possible.");
 				Console.WriteLine("-nometa: Don't save labels.");
+				Console.WriteLine("-parts: Minimum number of model parts for motions.");
+				Console.WriteLine("-shortrot: Use int16 rotations in motions.");
 				Console.WriteLine("-start and -end: Range of addresses to scan.");
 				Console.WriteLine("-keepland: Don't clean up landtable models.");
 				Console.WriteLine("-keepchild: Don't clean up child and sibling models.\n");
@@ -857,6 +988,12 @@ namespace ObjScan
 					case "-end":
 						end = int.Parse(args[u + 1], NumberStyles.AllowHexSpecifier);
 						break;
+					case "-parts":
+						modelparts = int.Parse(args[u + 1]);
+						break;
+					case "-shortrot":
+						shortrot = true;
+						break;
 				}
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
@@ -925,6 +1062,10 @@ namespace ObjScan
 					break;
 				case "gcmodel":
 					ScanModel(ModelFormat.GC);
+					break;
+				case "motion":
+					ScanMotions();
+					skipactions = true;
 					break;
 			}
 			if (!keepland) CleanUpLandtable();
