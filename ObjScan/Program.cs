@@ -168,6 +168,7 @@ namespace ObjScan
 		static bool CheckModel(uint address, bool recursive, ModelFormat modelfmt)
 		{
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			if (address > (uint)datafile.Length - 20) return false;
 			int flags = 0;
 			uint vertlist = 0;
 			uint polylist = 0;
@@ -192,7 +193,6 @@ namespace ObjScan
 			{
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:
-					if ((int)address > datafile.Length - 20) return false;
 					flags = ByteConverter.ToInt32(datafile, (int)address);
 					if (flags > 0x3FFF || flags < 0) return false;
 					attach = ByteConverter.ToUInt32(datafile, (int)address + 4);
@@ -342,6 +342,7 @@ namespace ObjScan
 		static bool CheckLandTable(uint address, LandTableFormat landfmt)
 		{
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			if (address > (uint)datafile.Length - 52) return false;
 			short COLCount;
 			short AnimCount;
 			short ChunkCount;
@@ -434,6 +435,7 @@ namespace ObjScan
 			Directory.CreateDirectory(Path.Combine(dir, "levels"));
 			for (uint address = start; address < end; address += 1)
 			{
+				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
 				string fileOutputPath = Path.Combine(dir, "levels", address.ToString("X8"));
 				if (!CheckLandTable(address, landfmt)) continue;
 				try
@@ -444,7 +446,7 @@ namespace ObjScan
 					{
 						land.SaveToFile(fileOutputPath + landtable_extension, landfmt, nometa);
 						landtablelist.Add(address);
-						Console.WriteLine("Landtable at {0}", address.ToString("X8"));
+						Console.WriteLine("\rLandtable at {0}", address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
 						address += (uint)LandTable.Size(landfmt);
 					}
@@ -454,7 +456,7 @@ namespace ObjScan
 					continue;
 				}
 			}
-			Console.WriteLine("{0} landtables found", landtablelist.Count);
+			Console.WriteLine("\r{0} landtables found", landtablelist.Count);
 		}
 		static void AddAction(uint objectaddr, uint motionaddr)
 		{
@@ -604,6 +606,7 @@ namespace ObjScan
 			Directory.CreateDirectory(Path.Combine(dir, model_dir));
 			for (uint address = start; address < end; address += 1)
 			{
+				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
 				string fileOutputPath = Path.Combine(dir, model_dir, address.ToString("X8"));
 				try
 				{
@@ -622,11 +625,11 @@ namespace ObjScan
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("Error adding model at {0}: {1}", address.ToString("X"), ex.Message.ToString());
+					Console.WriteLine("\rError adding model at {0}: {1}", address.ToString("X"), ex.Message.ToString());
 					continue;
 				}
 			}
-			Console.WriteLine("{0} models found", count);
+			Console.WriteLine("\r{0} models found", count);
 		}
 		static void CleanUpLandtable()
 		{
@@ -735,7 +738,7 @@ namespace ObjScan
 			Directory.CreateDirectory(Path.Combine(dir, "actions"));
 			for (uint address = start; address < end; address += 1)
 			{
-				Console.Write("\r{0} ", address.ToString("X8"));
+				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
 				//Check for a valid MDATA pointer
 				uint mdatap = ByteConverter.ToUInt32(datafile, (int)address);
 				if (mdatap < imageBase || mdatap >= datafile.Length - 36 + imageBase || mdatap == 0)
@@ -847,11 +850,11 @@ namespace ObjScan
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine("Error adding motion at {0}: {1}", address.ToString("X8"), ex.Message);
+						Console.WriteLine("\rError adding motion at {0}: {1}", address.ToString("X8"), ex.Message);
 					}
 				}
 			}
-			Console.WriteLine("Found {0} motions", count);
+			Console.WriteLine("\rFound {0} motions", count);
 		}
 		static void Main(string[] args)
 		{
@@ -872,7 +875,7 @@ namespace ObjScan
 			string type;
 			if (args.Length == 0)
 			{
-				Console.WriteLine("Object Scanner is a tool that scans a binary file or memory dump and extracts levels or models from it.");
+				Console.WriteLine("Object Scanner scans a binary file or memory dump and extracts levels, models and/or motions from it.");
 				Console.WriteLine("Usage: objscan <GAME> <FILENAME> <KEY> <TYPE> [-offset addr] [-file modelfile] [-start addr] [-end addr] [-findall]\n[-noaction] [-nometa] [-keepland] [-keepchild]\n");
 				Console.WriteLine("Argument description:");
 				Console.WriteLine("<GAME>: SA1, SADX, SA2, SA2B. Add '_b' (e.g. SADX_b) to set Big Endian, use SADX_g for the Gamecube version of SADX.");
