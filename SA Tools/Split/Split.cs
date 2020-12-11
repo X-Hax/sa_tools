@@ -168,7 +168,7 @@ namespace SA_Tools.Split
 								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 							if (customProperties.ContainsKey("shortrot"))
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
