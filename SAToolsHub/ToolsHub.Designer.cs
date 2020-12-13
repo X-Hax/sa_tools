@@ -40,8 +40,6 @@
 			this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mainBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.configureRunOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.RunGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -207,8 +205,6 @@
 			// 
 			this.buildToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mainBuildToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.configureRunOptionsToolStripMenuItem,
             this.RunGameToolStripMenuItem});
 			this.buildToolStripMenuItem.Enabled = false;
 			this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
@@ -219,21 +215,9 @@
 			// 
 			this.mainBuildToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsBuildManual;
 			this.mainBuildToolStripMenuItem.Name = "mainBuildToolStripMenuItem";
-			this.mainBuildToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-			this.mainBuildToolStripMenuItem.Text = "Build Mod";
+			this.mainBuildToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+			this.mainBuildToolStripMenuItem.Text = "Build Options";
 			this.mainBuildToolStripMenuItem.Click += new System.EventHandler(this.manualBuildToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(211, 6);
-			// 
-			// configureRunOptionsToolStripMenuItem
-			// 
-			this.configureRunOptionsToolStripMenuItem.Name = "configureRunOptionsToolStripMenuItem";
-			this.configureRunOptionsToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-			this.configureRunOptionsToolStripMenuItem.Text = "Configure Run Options";
-			this.configureRunOptionsToolStripMenuItem.Click += new System.EventHandler(this.configureRunOptionsToolStripMenuItem_Click);
 			// 
 			// RunGameToolStripMenuItem
 			// 
@@ -241,8 +225,8 @@
 			this.RunGameToolStripMenuItem.Name = "RunGameToolStripMenuItem";
 			this.RunGameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-			this.RunGameToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-			this.RunGameToolStripMenuItem.Text = "Run Game";
+			this.RunGameToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+			this.RunGameToolStripMenuItem.Text = "Game Options";
 			this.RunGameToolStripMenuItem.ToolTipText = "Runs the game with the opened mod and configured run options.";
 			this.RunGameToolStripMenuItem.Click += new System.EventHandler(this.buildRunGameToolStripMenuItem_Click);
 			// 
@@ -733,8 +717,8 @@
 			this.tsGameRun.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsGameRun.Name = "tsGameRun";
 			this.tsGameRun.Size = new System.Drawing.Size(52, 52);
-			this.tsGameRun.Text = "Build Mod & Run Game";
-			this.tsGameRun.ToolTipText = "Runs game with mods applied.";
+			this.tsGameRun.Text = "Launch Options";
+			this.tsGameRun.ToolTipText = "Launch the game or ModManager for that specific title.";
 			this.tsGameRun.Click += new System.EventHandler(this.tsBuildRun_Click);
 			// 
 			// tsUpdate
@@ -935,8 +919,6 @@
 		private System.Windows.Forms.ToolStripMenuItem closeProjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mainBuildToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-		private System.Windows.Forms.ToolStripMenuItem configureRunOptionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem RunGameToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem generalToolsToolStripMenuItem;

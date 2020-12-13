@@ -23,19 +23,19 @@ namespace SAToolsHub
 		ProjectTemplate projectFile;
 		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
-		List<string> templates = new List<string>
+		Dictionary<string, string> templateList = new Dictionary<string, string>()
 		{
-			"SADX:PC",
-			"SA2:PC",
-			"SA1 (Final, v1.005)",
-			"SA2 (Final)",
-			"SA1 (AutoDemo)",
-			"SA2: The Trial",
-			//"SA2: Preview",
-			//"SADX:GC (Final)",
-			//"SADX:GC (Preview)",
-			//"SADX:GC (Review)",
-			"SADX:360",
+			{ "SADX (PC, Moddable)", "sadxpc_template.xml" },
+			{ "SA2 (PC, Moddable)", "sa2pc_template.xml" },
+			{ "SA1 (DC, Final)", "sa1_template.xml" },
+			{ "SA1 (DC, AutoDemo)", "autodemo_template.xml" },
+			{ "SA2 (DC, Final)", "sa2_template.xml" },
+			{ "SA2 (DC, The Trial", "sa2tt_template.xml" },
+			//{ "SA2 (DC, Preview)", "sa2p_template.xml" },
+			//{ "SADX (GC, Final)", "sadxgc_template.xml" },
+			//{ "SADX (GC, Preview)", "sadxgcp_template.xml" },
+			//{ "SADX (GC, Review)", "sadxgcr_template.xml" },
+			{ "SADX (360)", "sadx360_template.xml" }
 		};
 
 		string templatesPath;
@@ -203,7 +203,7 @@ namespace SAToolsHub
 					File.WriteAllLines(projReadMePath, readMeSADX);
 					break;
 				case ("SA2PC"):
-					systemPath = Path.Combine(projFolder, "resource/gd_PC");
+					systemPath = Path.Combine(projFolder, "gd_PC");
 					if (!Directory.Exists(systemPath))
 						Directory.CreateDirectory(systemPath);
 					File.WriteAllLines(projReadMePath, readMeSA2PC);
@@ -341,8 +341,7 @@ namespace SAToolsHub
 		private void splitMdlFiles(SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-			string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.ModelFile));
-			Directory.CreateDirectory(fileOutputFolder);
+			string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, "Characters"));
 
 			progress.StepProgress();
 			progress.SetStep("Splitting models from " + splitMDL.ModelFile);
@@ -446,10 +445,12 @@ namespace SAToolsHub
 				templatesPath = appPath + "/../Templates/";
 
 			DirectoryInfo templatesDir = new DirectoryInfo(templatesPath);
-			foreach (string entry in templates)
+
+			foreach(KeyValuePair<string, string> entry in templateList)
 			{
 				comboBox1.Items.Add(entry);
 			}
+			comboBox1.DisplayMember = "Key";
 
 			btnCreate.Enabled = false;
 		}
@@ -542,46 +543,10 @@ namespace SAToolsHub
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			string templateFile = "";
-
 			if (comboBox1.SelectedIndex > -1)
 			{
-				switch (comboBox1.SelectedItem.ToString())
-				{
-					case "SADX:PC":
-						templateFile = templatesPath + "sadxpc_template.xml";
-						break;
-					case "SA2:PC":
-						templateFile = templatesPath + "sa2pc_template.xml";
-						break;
-					case "SA1 (Final)":
-						templateFile = templatesPath + "sa1_template.xml";
-						break;
-					case "SA2 (Final)":
-						templateFile = templatesPath + "sa2_template.xml";
-						break;
-					case "SA1 (AutoDemo)":
-						templateFile = templatesPath + "autodemo_template.xml";
-						break;
-					case "SA2: The Trial":
-						templateFile = templatesPath + "sa2trial_template.xml";
-						break;
-					case "SA2: Preview":
-						break;
-					case "SADX:GC (Final)":
-						break;
-					case "SADX:GC (Preview)":
-						break;
-					case "SADX:GC (Review)":
-						break;
-					case "SADX:360":
-						templateFile = templatesPath + "sadx360_template.xml";
-						break;
-					default:
-						break;
-				}
+				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
 			}
-			else
-				templateFile = "";
 
 			if (templateFile.Length > 0)
 				openTemplate(templateFile);

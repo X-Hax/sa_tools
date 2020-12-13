@@ -92,6 +92,12 @@
     <Compile Include="editProj.Designer.cs">
       <DependentUpon>editProj.cs</DependentUpon>
     </Compile>
+    <Compile Include="gameOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="gameOptions.Designer.cs">
+      <DependentUpon>gameOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="newProj.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gameOptions.resx">
+      <DependentUpon>gameOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="newProj.resx">
       <DependentUpon>newProj.cs</DependentUpon>

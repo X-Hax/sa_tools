@@ -46,14 +46,14 @@
 			this.chkChaoRedir = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.lstGBItems = new System.Windows.Forms.ComboBox();
-			this.txtAsset = new System.Windows.Forms.TextBox();
 			this.lblLower = new System.Windows.Forms.Label();
 			this.txtUpdateURL = new System.Windows.Forms.TextBox();
 			this.lblUpperBox = new System.Windows.Forms.Label();
 			this.radGamebanana = new System.Windows.Forms.RadioButton();
 			this.radGitHub = new System.Windows.Forms.RadioButton();
 			this.radManual = new System.Windows.Forms.RadioButton();
+			this.lstGBItems = new System.Windows.Forms.ComboBox();
+			this.txtAsset = new System.Windows.Forms.TextBox();
 			this.chkUpdates = new System.Windows.Forms.CheckBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox2.SuspendLayout();
@@ -167,17 +167,6 @@
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.TabStop = false;
 			// 
-			// lstGBItems
-			// 
-			this.lstGBItems.FormattingEnabled = true;
-			resources.ApplyResources(this.lstGBItems, "lstGBItems");
-			this.lstGBItems.Name = "lstGBItems";
-			// 
-			// txtAsset
-			// 
-			resources.ApplyResources(this.txtAsset, "txtAsset");
-			this.txtAsset.Name = "txtAsset";
-			// 
 			// lblLower
 			// 
 			resources.ApplyResources(this.lblLower, "lblLower");
@@ -219,6 +208,18 @@
 			this.toolTip1.SetToolTip(this.radManual, resources.GetString("radManual.ToolTip"));
 			this.radManual.UseVisualStyleBackColor = true;
 			this.radManual.CheckedChanged += new System.EventHandler(this.radManual_CheckedChanged);
+			// 
+			// lstGBItems
+			// 
+			this.lstGBItems.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstGBItems.FormattingEnabled = true;
+			resources.ApplyResources(this.lstGBItems, "lstGBItems");
+			this.lstGBItems.Name = "lstGBItems";
+			// 
+			// txtAsset
+			// 
+			resources.ApplyResources(this.txtAsset, "txtAsset");
+			this.txtAsset.Name = "txtAsset";
 			// 
 			// chkUpdates
 			// 

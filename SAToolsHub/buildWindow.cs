@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using ProjectManagement;
-using SA_Tools;
+using SA_Tools.SAArc;
 
 namespace SAToolsHub
 {
@@ -22,69 +22,75 @@ namespace SAToolsHub
 		Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
 				new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
 
+		private ListBox mdlListBox;
+
 		string gameEXE;
 		string modName;
 		string modFolder;
 		string sysFolder;
 		List<string> iniEXEFiles = new List<string>();
+		List<SplitEntryMDL> mdlEntries = new List<SplitEntryMDL>();
 
 		void setAssemblies()
 		{
 			assemblies.Clear();
-			List<SplitEntry> splitEntry = SAToolsHub.projSplitEntries;
-			
-			switch (SAToolsHub.setGame)
+
+			List<SplitEntry> splitEntries = new List<SplitEntry>();
+			mdlEntries = chkBoxMDL.CheckedItems.OfType<SplitEntryMDL>().ToList();
+
+			foreach (SplitEntry exeEntry in chkBoxEXE.CheckedItems)
 			{
-				case ("SADXPC"):
-					for (int i = 0; i < checkedListBox1.Items.Count; i++)
-					{
-						if (checkedListBox1.GetItemChecked(i))
+				splitEntries.Add(exeEntry);
+			}
+			foreach (SplitEntry dllEntry in chkBoxDLL.CheckedItems)
+			{
+				splitEntries.Add(dllEntry);
+			}
+			foreach (SplitEntryMDL mdlEntry in chkBoxMDL.CheckedItems)
+			{
+				mdlEntries.Add(mdlEntry);
+			}
+
+			foreach (SplitEntry splitEntry in splitEntries)
+			{
+				switch (SAToolsHub.setGame)
+				{
+					case ("SADXPC"):
+						if (splitEntry.SourceFile.Contains("exe"))
 						{
-							if (splitEntry[i].SourceFile.Contains("exe"))
+							assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+						}
+						else
+						{
+							if (splitEntry.IniFile == "chrmodels")
 							{
-								assemblies.Add(splitEntry[i].IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+								assemblies.Add((splitEntry.IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 							else
 							{
-								if (splitEntry[i].IniFile == "chrmodels")
-								{
-									assemblies.Add((splitEntry[i].IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-								}
-								else
-								{
-									assemblies.Add(splitEntry[i].IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-								}
+								assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 						}
-					}
-					break;
+						break;
 
-				case ("SA2PC"):
-					for (int i = 0; i < checkedListBox1.Items.Count; i++)
-					{
-						if (checkedListBox1.GetItemChecked(i))
+					case ("SA2PC"):
+						if (splitEntry.SourceFile.Contains("exe"))
 						{
-							if (splitEntry[i].SourceFile.Contains("exe"))
+							assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+						}
+						else
+						{
+							if (splitEntry.IniFile == "data_dll")
 							{
-								assemblies.Add(splitEntry[i].IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+								assemblies.Add((splitEntry.IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 							else
 							{
-								if (splitEntry[i].IniFile == "data_dll")
-								{
-									assemblies.Add((splitEntry[i].IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-								}
-								else
-								{
-									assemblies.Add(splitEntry[i].IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-								}
+								assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 						}
-					}
-					break;
-
-				default:
-					break;
+						break;
+				}
 			}
 		}
 
@@ -123,6 +129,27 @@ namespace SAToolsHub
 
 				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
+			}
+
+			if (mdlEntries.Count > 0)
+			{
+				string mdlPath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+
+				foreach(SplitEntryMDL mdlFile in mdlEntries)
+				{
+					string file = Path.GetFileNameWithoutExtension(Path.Combine(mdlPath, mdlFile.ModelFile));
+					sa2MDL.Build(true, file);
+				}
+			}
+		}
+
+		void CopySA2Files(string sysFolder)
+		{
+			string charPath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
+			foreach (string file in charFiles)
+			{
+				File.Copy(file, sysFolder);
 			}
 		}
 
@@ -167,17 +194,23 @@ namespace SAToolsHub
 						if (assemblies.ContainsKey("CHRMODELS")) sadxModInfo.CHRMODELSData = "chrmodels_data.ini";
 					}
 
-					// save our output
 					SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
 					break;
 
 				case "SA2PC":
 					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig" + dataSuffix;
-					if (assemblies.ContainsKey("sonic2app")) sa2ModInfo.EXEData = "sonic2app_data.ini";
+					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "Data_DLL_orig.ini")))
+					{
+						if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
+					}
+					else
+					{
+						if (assemblies.ContainsKey("Data_DLL")) sa2ModInfo.DLLData = "Data_DLL.ini";
+					}
 
-					// save our output
+					if (iniEXEFiles.Count > 0) sa2ModInfo.EXEData = "sonic2app_data.ini";
+
 					SA_Tools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
 					break;
 				default:
@@ -193,10 +226,16 @@ namespace SAToolsHub
 			SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(
 				new DirectoryInfo(projectSystemPath), modSystemPath);
 
-			if (SAToolsHub.setGame == "SADX")
+			switch (SAToolsHub.setGame)
 			{
-				string texturesPath = Path.Combine(SAToolsHub.projectDirectory, "textures");
-				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
+				case ("SADXPC"):
+					string texturesPath = Path.Combine(SAToolsHub.projectDirectory, "textures");
+					SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
+					break;
+
+				case ("SA2PC"):
+					CopySA2Files(modSystemPath);
+					break;
 			}
 		}
 
@@ -207,8 +246,9 @@ namespace SAToolsHub
 
 		private void buildWindow_Shown(object sender, EventArgs e)
 		{
-			chkAll.Checked = false;
-			checkedListBox1.Items.Clear();
+			chkBoxEXE.Items.Clear();
+			chkBoxDLL.Items.Clear();
+			chkBoxMDL.Items.Clear();
 
 			switch (SAToolsHub.setGame)
 			{
@@ -217,31 +257,37 @@ namespace SAToolsHub
 					modName = sadxMod.Name;
 					gameEXE = "sonic";
 					sysFolder = "system";
+
+					tabControl1.TabPages.Remove(tabMDL);
 					break;
 				case ("SA2PC"):
 					SA2ModInfo sa2Mod = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = sa2Mod.Name;
 					gameEXE = "sonic2app";
+					sysFolder = "gd_PC";
+
+					foreach (SplitEntryMDL splitEntryMDL in SAToolsHub.projSplitMDLEntries)
+					{
+						chkBoxMDL.Items.Add(splitEntryMDL);
+						chkBoxMDL.DisplayMember = "ModelFile";
+					}
 					break;
 			}
 
 			foreach(SplitEntry splitEntry in SAToolsHub.projSplitEntries)
 			{
-				checkedListBox1.Items.Add(splitEntry.IniFile);
-			}
-		}
+				string srcFile = splitEntry.SourceFile.ToLower();
+				if (srcFile.Contains("exe"))
+				{
+					chkBoxEXE.Items.Add(splitEntry);
+					chkBoxEXE.DisplayMember = "IniFile";
+				}
 
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
-		{
-			if (chkAll.Checked)
-			{
-				for (int i = 0; i < checkedListBox1.Items.Count; i++)
-					checkedListBox1.SetItemCheckState(i, CheckState.Checked);
-				checkedListBox1.Enabled = false;
-			}
-			else if (!chkAll.Checked)
-			{
-				checkedListBox1.Enabled = true;
+				if (srcFile.Contains("dll"))
+				{
+					chkBoxDLL.Items.Add(splitEntry);
+					chkBoxDLL.DisplayMember = "IniFile";
+				}
 			}
 		}
 
@@ -333,6 +379,60 @@ namespace SAToolsHub
 
 			updateProgress("Creating mod.ini");
 			createMod();
+		}
+
+		private void btnChkAll_Click(object sender, EventArgs e)
+		{
+			if (tabControl1.SelectedTab == tabEXE)
+			{
+				for (int i = 0; i < chkBoxEXE.Items.Count; i++)
+				{
+					chkBoxEXE.SetItemChecked(i, true);
+				}
+			}
+
+			if (tabControl1.SelectedTab == tabDLL)
+			{
+				for (int i = 0; i < chkBoxDLL.Items.Count; i++)
+				{
+					chkBoxDLL.SetItemChecked(i, true);
+				}
+			}
+
+			if (tabControl1.SelectedTab == tabMDL)
+			{
+				for (int i = 0; i < chkBoxMDL.Items.Count; i++)
+				{
+					chkBoxMDL.SetItemChecked(i, true);
+				}
+			}
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			if (tabControl1.SelectedTab == tabEXE)
+			{
+				for (int i = 0; i < chkBoxEXE.Items.Count; i++)
+				{
+					chkBoxEXE.SetItemChecked(i, false);
+				}
+			}
+
+			if (tabControl1.SelectedTab == tabDLL)
+			{
+				for (int i = 0; i < chkBoxDLL.Items.Count; i++)
+				{
+					chkBoxDLL.SetItemChecked(i, false);
+				}
+			}
+
+			if (tabControl1.SelectedTab == tabMDL)
+			{
+				for (int i = 0; i < chkBoxMDL.Items.Count; i++)
+				{
+					chkBoxMDL.SetItemChecked(i, false);
+				}
+			}
 		}
 	}
 }

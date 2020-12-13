@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 using SA_Tools;
 using Fclp.Internals.Extensions;
 using ProjectManagement;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 
 namespace SAToolsHub
 {
@@ -41,10 +41,11 @@ namespace SAToolsHub
 		private editProj projectEditorDiag;
 		private buildWindow buildWindowDiag;
 		private templateWriter templateWriter;
+		private gameOptions gameOptionsDiag;
 
 		//Variables
 		public static string newProjFile { get; set; }
-		public static string projName { get; set; }
+		public static string modName { get; set; }
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameSystemDirectory { get; set; }
@@ -73,17 +74,34 @@ namespace SAToolsHub
 			var projFileStream = File.OpenRead(projectFile);
 			var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
+			setGame = projFile.GameInfo.GameName;
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
 			gameSystemDirectory = (projFile.GameInfo.GameSystemFolder);
+
+			string gameDir;
+			switch (setGame)
+			{
+				case "SADXPC":
+					gameDir = gameSystemDirectory + "\\system\\";
+					break;
+				case "SA2PC":
+					gameDir = gameSystemDirectory + "\\gd_PC\\";
+					break;
+				default:
+					gameDir = gameSystemDirectory;
+					break;
+			}
+
 			PopulateTreeView(projectDirectory);
+			PopulateTreeView(gameDir);
 			this.treeView1.NodeMouseClick +=
 				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
-			setGame = projFile.GameInfo.GameName;
 			projSplitEntries = projFile.SplitEntries;
 			if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2TT" || setGame == "SA2P")
 			{
 				projSplitMDLEntries = projFile.SplitMDLEntries;
+				
 			}
 
 			toggleButtons(setGame);
@@ -240,6 +258,7 @@ namespace SAToolsHub
 					case ".pvm":
 					case ".pvmx":
 					case ".gvm":
+					case ".pak":
 						{
 							subItems = new ListViewItem.ListViewSubItem[]
 								{ new ListViewItem.ListViewSubItem(item, "Texture Archive"),
@@ -381,6 +400,7 @@ namespace SAToolsHub
 			projectEditorDiag = new editProj();
 			buildWindowDiag = new buildWindow();
 			templateWriter = new templateWriter();
+			gameOptionsDiag = new gameOptions();
 		}
 
 		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -391,7 +411,11 @@ namespace SAToolsHub
 			if (itemTag != "dir")
 				itemPath = treeView1.SelectedNode.FullPath;
 
-			string filePath = string.Format("\"{0}\"", projectDirectory + "/../" + (Path.Combine(itemPath, itemName)));
+			string filePath;
+			if (treeView1.SelectedNode.Index == 1)
+				filePath = string.Format("\"{0}\"", gameSystemDirectory + "\\" + (Path.Combine(itemPath, itemName)));
+			else
+				filePath = string.Format("\"{0}\"", projectDirectory + "/../" + (Path.Combine(itemPath, itemName)));
 
 			if (listView1.SelectedItems.Count > 0)
 			{
@@ -404,7 +428,7 @@ namespace SAToolsHub
 						Process samdlProcess = Process.Start(samdlPath, filePath);
 						break;
 					case "lvl":
-						//Process salvlProcess = Process.Start(salvlPath, filePath);
+						Process salvlProcess = Process.Start(salvlPath, filePath);
 						break;
 					case "tex":
 						Process texEditProcess = Process.Start(texeditPath, filePath);
@@ -533,16 +557,10 @@ namespace SAToolsHub
 			buildWindowDiag.ShowDialog();
 		}
 
-		private void configureRunOptionsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void buildRunGameToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			gameOptionsDiag.ShowDialog();
 		}
-
 
 		//Tools
 		//General Tools Initializers
@@ -566,8 +584,7 @@ namespace SAToolsHub
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ProcessStartInfo texEditStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(texeditPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
+				Path.GetFullPath(texeditPath));
 
 			Process texEditProcess = Process.Start(texEditStartInfo);
 		}
