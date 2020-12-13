@@ -44,7 +44,7 @@ namespace SonicRetro.SAModel
 			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt, labels, attaches);
 			int actionaddr = (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase);
 			int motionaddr = (int)(ByteConverter.ToUInt32(file, actionaddr + 4) - imageBase);
-			Animation = NJS_MOTION.ReadDirect(file, Model.CountAnimated(), motionaddr, imageBase, mfmt, labels, attaches);
+			Animation = NJS_MOTION.ReadDirect(file, Model.CountAnimated(), motionaddr, imageBase, labels, attaches);
 			Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
 			if (labels.ContainsKey(actionaddr)) ActionName = labels[actionaddr];
 			else

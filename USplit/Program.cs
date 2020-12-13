@@ -1284,7 +1284,7 @@ namespace USplit
 					"| animationlist <count> | cutscenetext <count> | masterstringlist <count> | musiclist <count> | npctext <count> |\n" +
 					"| recapscreen <count> | skyboxscale <count> | stageselectlist <count> | sa1actionlist <count> | enemyanimationlist <count> |\n" +
 					"| stringarray <count> [language] | list <offset> <filename> [-skiplabels] [-noanims] | binary <length> [hex] |\n" +
-					"| animation <NJS_OBJECT address> [shortrot] | animmdl <*mdl file> [-shortrot] | motion <nodecount> [-shortrot]");
+					"| animation <NJS_OBJECT address> [-shortrot] | animmdl <*mdl file> [-shortrot] | motion <nodecount> [-shortrot]");
 				Console.WriteLine("<ADDRESS>: The location of data in the file.");
 				Console.WriteLine("<PARAMETER1>: length, count, secondary address etc. depending on data type");
 				Console.WriteLine("<PARAMETER2>: 'hex' for binary to read length as hexadecimal, 'shortrot' for animation to read rotation as short");
@@ -1293,71 +1293,67 @@ namespace USplit
 				Console.ReadLine();
 				return;
 			}
-			else if (args[0] == "-labeltotype")
-			{
-				if (args.Length != 3)
-				{
-					Console.WriteLine("Incorrect arguments for 'label to type' mode. Correct arguments are:\nusplit -labeltotype <list> <labellist>");
-					Console.ReadLine();
-					return;
-				}
-				Dictionary<int, ItemDescriptor> addresslist_x = new Dictionary<int, ItemDescriptor>(); //Main list of addresses, types and labels
-				ParseDictionary(addresslist_x, null, args[1], false);
-				Dictionary<int, string> matchresultlistx = IniSerializer.Deserialize<Dictionary<int, string>>(args[2]); //Final list of 2004PC model names
-				foreach (var item in addresslist_x)
-				{
-					ItemDescriptor desc = item.Value;
-					foreach (var match in matchresultlistx)
-					{
-						if (match.Value == desc.ObjectName)
-						{
-							Console.WriteLine("{0}, {1}, {2}", (0x400000 + match.Key).ToString("X8"), desc.ObjectType, desc.ObjectName);
-						}
-					}
-				}
-				return;
-			}
-			else if (args[0] == "-match")
-			{
-				if (args.Length != 3)
-				{
-					Console.WriteLine("Incorrect arguments for 'match' mode. Correct arguments are:\nusplit -match <structslist> <matchlist>");
-					Console.ReadLine();
-					return;
-				}
-				string dir = Environment.CurrentDirectory;
-				Dictionary<int, string> matchresultlist = new Dictionary<int, string>(); //Final list of 2004PC model names
-				Dictionary<int, ItemDescriptor> addresslist_m = new Dictionary<int, ItemDescriptor>(); //Main list of addresses, types and labels
-				ParseDictionary(addresslist_m, null, args[1], false);
-				using (TextReader addr_matchlist = File.OpenText(args[2]))
-				{
-					string line = addr_matchlist.ReadLine();
-					while (line != null)
-					{
-						string[] split = line.Split(',');
-						int x360addr = int.Parse(split[1], NumberStyles.AllowHexSpecifier);
-						int dx2004addr = int.Parse(split[0], NumberStyles.AllowHexSpecifier);
-						if (matchresultlist.ContainsKey(dx2004addr))
-						{
-							Console.WriteLine("Address {0} already contains label {1}", dx2004addr.ToString("X"), matchresultlist[dx2004addr]);
-						}
-						else if (addresslist_m.ContainsKey(x360addr))
-						{
-							matchresultlist.Add(dx2004addr, addresslist_m[x360addr].ObjectName);
-							Console.WriteLine("{0} is {1}", dx2004addr.ToString("X"), addresslist_m[x360addr].ObjectName);
-						}
-						line = addr_matchlist.ReadLine();
-					}
-				}
-				IniSerializer.Serialize(matchresultlist, System.IO.Path.Combine(dir, Path.GetFileNameWithoutExtension(args[1]) + "_match.txt"));
-				Console.WriteLine("Matching complete. Labels are saved in " + System.IO.Path.Combine(dir, Path.GetFileNameWithoutExtension(args[1]) + "_match.txt"));
-				return;
-			}
 			else
 			{
 				//Args list: game, filename, key, type, address, [address2/count], [language], [name]
 				switch (args[0].ToLowerInvariant())
 				{
+					case "-labeltotype":
+						if (args.Length != 3)
+						{
+							Console.WriteLine("Incorrect arguments for 'label to type' mode. Correct arguments are:\nusplit -labeltotype <list> <labellist>");
+							Console.ReadLine();
+							return;
+						}
+						Dictionary<int, ItemDescriptor> addresslist_x = new Dictionary<int, ItemDescriptor>(); //Main list of addresses, types and labels
+						ParseDictionary(addresslist_x, null, args[1], false);
+						Dictionary<int, string> matchresultlistx = IniSerializer.Deserialize<Dictionary<int, string>>(args[2]); //Final list of 2004PC model names
+						foreach (var item in addresslist_x)
+						{
+							ItemDescriptor desc = item.Value;
+							foreach (var match in matchresultlistx)
+							{
+								if (match.Value == desc.ObjectName)
+								{
+									Console.WriteLine("{0}, {1}, {2}", (0x400000 + match.Key).ToString("X8"), desc.ObjectType, desc.ObjectName);
+								}
+							}
+						}
+						return;
+					case "-match":
+						if (args.Length != 3)
+						{
+							Console.WriteLine("Incorrect arguments for 'match' mode. Correct arguments are:\nusplit -match <structslist> <matchlist>");
+							Console.ReadLine();
+							return;
+						}
+						string dir = Environment.CurrentDirectory;
+						Dictionary<int, string> matchresultlist = new Dictionary<int, string>(); //Final list of 2004PC model names
+						Dictionary<int, ItemDescriptor> addresslist_m = new Dictionary<int, ItemDescriptor>(); //Main list of addresses, types and labels
+						ParseDictionary(addresslist_m, null, args[1], false);
+						using (TextReader addr_matchlist = File.OpenText(args[2]))
+						{
+							string line = addr_matchlist.ReadLine();
+							while (line != null)
+							{
+								string[] split = line.Split(',');
+								int x360addr = int.Parse(split[1], NumberStyles.AllowHexSpecifier);
+								int dx2004addr = int.Parse(split[0], NumberStyles.AllowHexSpecifier);
+								if (matchresultlist.ContainsKey(dx2004addr))
+								{
+									Console.WriteLine("Address {0} already contains label {1}", dx2004addr.ToString("X"), matchresultlist[dx2004addr]);
+								}
+								else if (addresslist_m.ContainsKey(x360addr))
+								{
+									matchresultlist.Add(dx2004addr, addresslist_m[x360addr].ObjectName);
+									Console.WriteLine("{0} is {1}", dx2004addr.ToString("X"), addresslist_m[x360addr].ObjectName);
+								}
+								line = addr_matchlist.ReadLine();
+							}
+						}
+						IniSerializer.Serialize(matchresultlist, System.IO.Path.Combine(dir, Path.GetFileNameWithoutExtension(args[1]) + "_match.txt"));
+						Console.WriteLine("Matching complete. Labels are saved in " + System.IO.Path.Combine(dir, Path.GetFileNameWithoutExtension(args[1]) + "_match.txt"));
+						return;
 					case "sa1":
 						game = Game.SA1;
 						break;
@@ -1401,17 +1397,27 @@ namespace USplit
 				key = uint.Parse(args[2], NumberStyles.AllowHexSpecifier);
 				type = args[3];
 				address = int.Parse(args[4], NumberStyles.AllowHexSpecifier);
-				if (type == "binary" && args.Length > 6 && args[6] == "-hex") intparam = int.Parse(args[5], NumberStyles.AllowHexSpecifier);
-				else
+				if (args.Length > 5 && args[5] != "-name")
 				{
-					if (args.Length > 5 && args[5] != "-name")
-					{
-						if (type != "list") intparam = int.Parse(args[5]);
-						else stringparam = args[5];
-					}
-					if (args.Length > 6 && args[6] != "-name") stringparam = args[6];
+					if (type != "list") intparam = int.Parse(args[5]);
+					else stringparam = args[5];
 				}
-				if (args[args.Length - 2] == "-name") name = args[args.Length - 1];
+				if (args.Length > 6 && args[6] != "-name") stringparam = args[6];
+				for (int a = 0; a < args.Length; a++)
+				{
+					switch (args[a])
+					{
+						case "-shortrot":
+							boolparam = true;
+							break;
+						case "-name":
+							name = args[a];
+							break;
+						case "-hex":
+							intparam = int.Parse(args[a - 1], NumberStyles.AllowHexSpecifier);
+							break;
+					}
+				}
 				SplitSingle(game, filename, key, type, address, boolparam, intparam, stringparam, name, bigendian, reverse);
 			}
 		}

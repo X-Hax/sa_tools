@@ -163,15 +163,18 @@ namespace SA_Tools.Split
 							}
 							break;
 						case "animation":
+							int numparts = 0;
+							if (customProperties.ContainsKey("numparts"))
+								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 							if (customProperties.ContainsKey("shortrot"))
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels) { ShortRot = bool.Parse(customProperties["shortrot"]) };
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo), labels);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
 								if (!labels.ContainsKey(address)) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}

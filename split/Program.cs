@@ -37,6 +37,16 @@ namespace Split
 				SplitL(args);
 				return;
 			}
+			else if (args.Length > 0 && args[args.Length - 1] == "-la")
+			{
+				SplitL(args, true);
+				return;
+			}
+			else if (args.Length > 0 && args[args.Length - 1] == "-g")
+			{
+				SplitG(args);
+				return;
+			}
 			else if (args.Length > 0 && args[args.Length - 1] == "-c")
 			{
 				SplitC(args);
@@ -278,7 +288,7 @@ namespace Split
 				matchlist.Close();
 				foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
 				{
-					if (!matchstrings.ContainsKey(fileinfo.Value.Filename)) 
+					if (!matchstrings.ContainsKey(fileinfo.Value.Filename))
 					{
 						nomatchlist_l.WriteLine(fileinfo.Value.Filename);
 						nomatchlist_l.Flush();
@@ -287,7 +297,7 @@ namespace Split
 				nomatchlist_l.Close();
 			}
 		}
-		static void SplitL(string[] args)
+		static void SplitL(string[] args, bool addressmatch = false)
 		{
 			Dictionary<string, string> matchlist;
 			List<string> duplicatecheck = new List<string>();
@@ -306,9 +316,20 @@ namespace Split
 			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
 			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
 			{
-				if (matchlist.ContainsKey(fileinfo.Value.Filename))
+				if ((!addressmatch && matchlist.ContainsKey(fileinfo.Value.Filename)) || (addressmatch && matchlist.ContainsKey(fileinfo.Value.Address.ToString("X8"))))
 				{
-					string newfilename = matchlist[fileinfo.Value.Filename];
+					string newfilename;
+					int newaddress;
+					if (!addressmatch)
+					{
+						newfilename = matchlist[fileinfo.Value.Filename];
+						newaddress = fileinfo.Value.Address;
+					}
+					else
+					{
+						newfilename = fileinfo.Value.Filename;
+						newaddress = int.Parse(matchlist[fileinfo.Value.Address.ToString("X8")], System.Globalization.NumberStyles.AllowHexSpecifier);
+					}
 					if (duplicatecheck.Contains(newfilename))
 					{
 						Console.WriteLine("Duplicate detected: {0}:{1}", newfilename, fileinfo.Value.Filename);
@@ -316,7 +337,7 @@ namespace Split
 					else duplicatecheck.Add(newfilename);
 					splitext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
 					SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
-					newfileinfo.Address = fileinfo.Value.Address;
+					newfileinfo.Address = newaddress;
 					if (fileinfo.Value.Filename != null) newfileinfo.Filename = newfilename + splitext;
 					if (fileinfo.Value.PointerList != null) newfileinfo.PointerList = fileinfo.Value.PointerList;
 					if (fileinfo.Value.Type != null) newfileinfo.Type = fileinfo.Value.Type;
@@ -342,7 +363,7 @@ namespace Split
 						}
 						newfileinfo.CustomProperties["animations"] = string.Join(",", animlist_new.ToArray());
 					}
-					newinifile.Files.Add(fileinfo.Key, newfileinfo);
+					newinifile.Files.Add(Path.GetFileNameWithoutExtension(newfilename), newfileinfo);
 				}
 			}
 			IniSerializer.Serialize(newinifile, Path.GetFileNameWithoutExtension(listname) + ".ini");
@@ -362,6 +383,7 @@ namespace Split
 				int threshold = 0;
 				string ext1 = Path.GetExtension(filenames_dir1[i]).ToLowerInvariant();
 				if (ext1 == ".sa1lvl") threshold = 128;
+				if (ext1 == ".saanim") threshold = 16;
 				for (int u = 0; u < filenames_dir2.Length; u++)
 				{
 					string ext2 = Path.GetExtension(filenames_dir2[u]).ToLowerInvariant();
@@ -379,6 +401,60 @@ namespace Split
 				}
 				if (match == 0) Console.WriteLine("No match for {0}", filenames_dir1[i]);
 			}
+		}
+		static void SplitG(string[] args)
+		{
+			Dictionary<string, string> matchlist;
+			List<string> duplicatecheck = new List<string>();
+			string splitext = ".";
+			string listname = args[0];
+			matchlist = IniSerializer.Deserialize<Dictionary<string, string>>(listname);
+			IniData newinifile = new IniData();
+			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
+			foreach (KeyValuePair<string, string> item in matchlist)
+			{
+				string newfilename = item.Key;
+				string addrfilename = item.Value;
+				if (duplicatecheck.Contains(newfilename))
+				{
+					Console.WriteLine("Duplicate detected: {0}", newfilename);
+				}
+				else duplicatecheck.Add(newfilename);
+				splitext = Path.GetExtension(newfilename).ToLowerInvariant();
+				SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
+				newfileinfo.Filename = newfilename;
+				string tp = "basicdxmodel";
+				switch (splitext)
+				{
+					case ".sa2mdl":
+						tp = "chunkmodel";
+						break;
+					case ".sa1lvl":
+						tp = "landtable";
+						break;
+					case ".saanim":
+						tp = "animation";
+						break;
+					case ".sa1mdl":
+					default:
+						tp = "basicdxmodel";
+						break;
+				}
+				newfileinfo.Type = tp;
+				newfileinfo.Address = int.Parse(Path.GetFileNameWithoutExtension(addrfilename), System.Globalization.NumberStyles.AllowHexSpecifier);
+				string newdesc = Path.GetFileNameWithoutExtension(newfilename);
+				if (newinifile.Files.ContainsKey(newdesc))
+				{
+					do
+					{
+						newdesc += "_";
+					}
+					while (newinifile.Files.ContainsKey(newdesc));
+				}
+				Console.WriteLine("{0}:{1}:{2}", newfilename, splitext, newfileinfo.Address.ToString("X8"));
+				newinifile.Files.Add(newdesc, newfileinfo);
+			}
+			IniSerializer.Serialize(newinifile, Path.GetFileNameWithoutExtension(listname) + ".ini");
 		}
 	}
 }

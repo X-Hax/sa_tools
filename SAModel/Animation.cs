@@ -100,8 +100,72 @@ namespace SonicRetro.SAModel
 			MdataName = Name + "_mdat";
 		}
 
+		public int CalculateModelParts(byte[] file, int address, uint imageBase)
+		{
+			int mdatap = ByteConverter.ToInt32(file, address);
+			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
+			if (animtype == 0) return 0;
+			int mdata = 0;
+			if (animtype.HasFlag(AnimFlags.Position)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Rotation)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Scale)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Vector)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Vertex)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Normal)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Color)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Intensity)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Target)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Spot)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Point)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Roll)) mdata++;
+			int mdatasize = 0;
+			bool lost = false;
+			switch (mdata)
+			{
+				case 1:
+				case 2:
+					mdatasize = 16;
+					break;
+				case 3:
+					mdatasize = 24;
+					break;
+				case 4:
+					mdatasize = 32;
+					break;
+				case 5:
+					mdatasize = 40;
+					break;
+				default:
+					lost = true;
+					break;
+			}
+			if (lost) return 0;
+			//Check MKEY pointers
+			int mdatas = 0;
+			for (int u = 0; u < 255; u++)
+			{
+				for (int m = 0; m < mdata; m++)
+				{
+					if (lost) continue;
+					uint pointer = ByteConverter.ToUInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * m);
+					if (pointer != 0 && (pointer < imageBase || pointer - (int)imageBase >= file.Length - 36))
+						lost = true;
+					if (!lost)
+					{
+						int framecount = ByteConverter.ToInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * mdata + 4 * m);
+						if (framecount < 0 || framecount > 100 || (pointer == 0 && framecount != 0))
+							lost = true;
+					}
+				}
+				if (!lost)
+					mdatas++;
+			}
+			return mdatas;
+		}
+
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false)
 		{
+			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
 			else
@@ -557,16 +621,15 @@ namespace SonicRetro.SAModel
 				Model.CountAnimated(), labels);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, Attach> attaches, bool shortrot = false)
 		{
-			return ReadDirect(file, count, motionaddress, imageBase, format, new Dictionary<int, string>(), attaches);
+			return ReadDirect(file, count, motionaddress, imageBase, new Dictionary<int, string>(), attaches, shortrot);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, ModelFormat format,
-			Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool shortrot = false)
 		{
 			return new NJS_MOTION(file, motionaddress, imageBase,
-				count, labels);
+				count, labels, shortrot);
 		}
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
