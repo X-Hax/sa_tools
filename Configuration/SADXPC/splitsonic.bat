@@ -1,1 +1,1 @@
-"../ProjectManager/projectmanager.exe" -m Split -f data/sonic.exe -d sonic.ini -o ../output/
+..\bin\split binary data/sonic.exe sonic.ini output/
