@@ -109,6 +109,8 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
+									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 									land.SaveToFile(fileOutputPath, landfmt, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
@@ -126,6 +128,8 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
+									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 									land.SaveToFile(fileOutputPath, LandTableFormat.SA2B, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
@@ -157,6 +161,8 @@ namespace SA_Tools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext);
 											fileName= Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext);
 										}
+										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
+											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										land.SaveToFile(outputFN, landfmt, nometa);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
@@ -439,29 +445,39 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 									string fn = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
-									if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+									if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_a"))
 									{
-										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
-										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
+										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
+										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 									}
 									if (saveani)
 									{
+										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
+											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ani.Animation.Save(outputFN, nometa);
 										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 									}
 									if (models.Contains(ani.Model.Name))
 									{
 										ModelAnimations mdl = models[ani.Model.Name];
-										System.Text.StringBuilder sb = new System.Text.StringBuilder(260);
+										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
 										PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(projectFolderName, mdl.Filename)), 0, Path.GetFullPath(outputFN), 0);
-										mdl.Animations.Add(sb.ToString()); // this is where the problem is
+										mdl.Animations.Add(sb.ToString());
 									}
 									else
 									{
 										string mfn = Path.ChangeExtension(fn, modelext);
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
+										{
+											mfn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext);
+										}
 										string outputmfn = Path.Combine(projectFolderName, mfn);
-										string animationName = Path.GetFileName(outputFN);
-
+										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+										Console.WriteLine("outputmfn:{0}, outputFN:{1}",Path.GetFullPath(outputmfn),Path.GetFullPath(outputFN));
+										PathRelativePathTo(sb, Path.GetFullPath(outputmfn), 0, Path.GetFullPath(outputFN), 0);
+										string animationName = sb.ToString();
+										if (!Directory.Exists(Path.GetDirectoryName(outputmfn)))
+											Directory.CreateDirectory(Path.GetDirectoryName(outputmfn));
 										ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 											null, modelfmt, nometa);
 										output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
@@ -506,6 +522,8 @@ namespace SA_Tools.SplitDLL
 												outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 											}
+											if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
+												Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 											ani.Save(outputFN, nometa);
 											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 										}
@@ -691,7 +709,8 @@ namespace SA_Tools.SplitDLL
 				{
 					string modelOutputPath = Path.Combine(projectFolderName, item.Filename);
 					//string modelOutputPath = item.Filename;
-
+					if (!Directory.Exists(Path.GetDirectoryName(modelOutputPath)))
+						Directory.CreateDirectory(Path.GetDirectoryName(modelOutputPath));
 					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format, nometa);
 					string type = "model";
 					switch (item.Format)
