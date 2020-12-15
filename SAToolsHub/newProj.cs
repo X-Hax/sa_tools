@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using Ookii.Dialogs.Wpf;
-using SonicRetro.SAModel.SAEditorCommon.UI;
-using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using ProjectManagement;
 using Fclp.Internals.Extensions;
-using System.Threading;
-using System.Linq;
 using SA_Tools.Split;
+using SA_Tools.SAArc;
 
 namespace SAToolsHub
 {
@@ -351,12 +347,12 @@ namespace SAToolsHub
 			{
 				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
+				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 			#endregion
 
-			SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.BigEndian, filePath,
+			sa2MDL.Split(splitMDL.BigEndian, filePath,
 				fileOutputFolder, splitMDL.MotionFiles.ToArray());
 		}
 

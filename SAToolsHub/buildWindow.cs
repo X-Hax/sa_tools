@@ -22,21 +22,18 @@ namespace SAToolsHub
 		Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
 				new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
 
-		private ListBox mdlListBox;
-
 		string gameEXE;
 		string modName;
 		string modFolder;
 		string sysFolder;
 		List<string> iniEXEFiles = new List<string>();
-		List<SplitEntryMDL> mdlEntries = new List<SplitEntryMDL>();
+		List<string> sa2MdlMtnFiles = new List<string>();
 
 		void setAssemblies()
 		{
 			assemblies.Clear();
 
 			List<SplitEntry> splitEntries = new List<SplitEntry>();
-			mdlEntries = chkBoxMDL.CheckedItems.OfType<SplitEntryMDL>().ToList();
 
 			foreach (SplitEntry exeEntry in chkBoxEXE.CheckedItems)
 			{
@@ -46,9 +43,19 @@ namespace SAToolsHub
 			{
 				splitEntries.Add(dllEntry);
 			}
-			foreach (SplitEntryMDL mdlEntry in chkBoxMDL.CheckedItems)
+
+			if (SAToolsHub.setGame == "SA2PC")
 			{
-				mdlEntries.Add(mdlEntry);
+				string charFiles = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+
+				foreach (string dir in Directory.GetDirectories(charFiles))
+				{
+					string name = Path.GetDirectoryName(dir);
+					if (name.Contains("mdl") || name.Contains("mtn"))
+					{
+						chkBoxMDL.Items.Add(name);
+					}
+				}
 			}
 
 			foreach (SplitEntry splitEntry in splitEntries)
@@ -131,14 +138,17 @@ namespace SAToolsHub
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
 			}
 
-			if (mdlEntries.Count > 0)
+			if (sa2MdlMtnFiles.Count > 0)
 			{
-				string mdlPath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+				string filePath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
 
-				foreach(SplitEntryMDL mdlFile in mdlEntries)
+				foreach(string folder in sa2MdlMtnFiles)
 				{
-					string file = Path.GetFileNameWithoutExtension(Path.Combine(mdlPath, mdlFile.ModelFile));
-					sa2MDL.Build(true, file);
+					string file = Path.Combine(filePath, folder);
+					if (file.Contains("mdl"))
+						sa2MDL.Build(true, file);
+					if (file.Contains("mtn"))
+						sa2MTN.Build(true, file);
 				}
 			}
 		}
@@ -265,12 +275,6 @@ namespace SAToolsHub
 					modName = sa2Mod.Name;
 					gameEXE = "sonic2app";
 					sysFolder = "gd_PC";
-
-					foreach (SplitEntryMDL splitEntryMDL in SAToolsHub.projSplitMDLEntries)
-					{
-						chkBoxMDL.Items.Add(splitEntryMDL);
-						chkBoxMDL.DisplayMember = "ModelFile";
-					}
 					break;
 			}
 

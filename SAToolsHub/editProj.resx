@@ -153,11 +153,14 @@
   <data name="txtName.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
+  <data name="txtName.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="txtName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>153, 28</value>
+    <value>150, 28</value>
   </data>
   <data name="txtName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>256, 20</value>
+    <value>256, 22</value>
   </data>
   <data name="txtName.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -177,11 +180,14 @@
   <data name="txtAuth.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
+  <data name="txtAuth.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="txtAuth.Location" type="System.Drawing.Point, System.Drawing">
-    <value>153, 70</value>
+    <value>150, 72</value>
   </data>
   <data name="txtAuth.Size" type="System.Drawing.Size, System.Drawing">
-    <value>256, 20</value>
+    <value>256, 22</value>
   </data>
   <data name="txtAuth.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -205,7 +211,7 @@
     <value>Microsoft Sans Serif, 9.75pt</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>150, 54</value>
+    <value>150, 53</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
     <value>49, 16</value>
@@ -231,8 +237,11 @@
   <data name="txtDesc.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
+  <data name="txtDesc.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="txtDesc.Location" type="System.Drawing.Point, System.Drawing">
-    <value>153, 117</value>
+    <value>150, 116</value>
   </data>
   <data name="txtDesc.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -241,7 +250,7 @@
     <value>Vertical</value>
   </data>
   <data name="txtDesc.Size" type="System.Drawing.Size, System.Drawing">
-    <value>256, 99</value>
+    <value>256, 100</value>
   </data>
   <data name="txtDesc.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -265,7 +274,7 @@
     <value>Microsoft Sans Serif, 9.75pt</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>150, 98</value>
+    <value>150, 97</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
     <value>79, 16</value>

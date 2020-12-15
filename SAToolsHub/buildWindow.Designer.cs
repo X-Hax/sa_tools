@@ -32,12 +32,12 @@
 			this.btnManual = new System.Windows.Forms.Button();
 			this.btnAuto = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.btnChkAll = new System.Windows.Forms.Button();
+			this.btnUnchkAll = new System.Windows.Forms.Button();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.tabEXE = new System.Windows.Forms.TabPage();
 			this.chkBoxEXE = new System.Windows.Forms.CheckedListBox();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
-			this.btnChkAll = new System.Windows.Forms.Button();
-			this.btnUnchkAll = new System.Windows.Forms.Button();
 			this.tabDLL = new System.Windows.Forms.TabPage();
 			this.chkBoxDLL = new System.Windows.Forms.CheckedListBox();
 			this.tabMDL = new System.Windows.Forms.TabPage();
@@ -72,6 +72,30 @@
 			this.toolTip1.SetToolTip(this.btnAuto, "Automatically compiles modified assets into an INI mod.");
 			this.btnAuto.UseVisualStyleBackColor = true;
 			this.btnAuto.Click += new System.EventHandler(this.btnAuto_Click);
+			// 
+			// btnChkAll
+			// 
+			this.btnChkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnChkAll.Location = new System.Drawing.Point(12, 301);
+			this.btnChkAll.Name = "btnChkAll";
+			this.btnChkAll.Size = new System.Drawing.Size(135, 23);
+			this.btnChkAll.TabIndex = 6;
+			this.btnChkAll.Text = "Check All";
+			this.toolTip1.SetToolTip(this.btnChkAll, "Checks all items in current tab. (Selecting all may take a while to process)");
+			this.btnChkAll.UseVisualStyleBackColor = true;
+			this.btnChkAll.Click += new System.EventHandler(this.btnChkAll_Click);
+			// 
+			// btnUnchkAll
+			// 
+			this.btnUnchkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnUnchkAll.Location = new System.Drawing.Point(153, 301);
+			this.btnUnchkAll.Name = "btnUnchkAll";
+			this.btnUnchkAll.Size = new System.Drawing.Size(135, 23);
+			this.btnUnchkAll.TabIndex = 7;
+			this.btnUnchkAll.Text = "Uncheck All";
+			this.toolTip1.SetToolTip(this.btnUnchkAll, "Unselects all items in the current tab.");
+			this.btnUnchkAll.UseVisualStyleBackColor = true;
+			this.btnUnchkAll.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// backgroundWorker1
 			// 
@@ -111,37 +135,13 @@
 			this.tabControl1.Size = new System.Drawing.Size(276, 287);
 			this.tabControl1.TabIndex = 5;
 			// 
-			// btnChkAll
-			// 
-			this.btnChkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnChkAll.Location = new System.Drawing.Point(12, 301);
-			this.btnChkAll.Name = "btnChkAll";
-			this.btnChkAll.Size = new System.Drawing.Size(135, 23);
-			this.btnChkAll.TabIndex = 6;
-			this.btnChkAll.Text = "Check All";
-			this.toolTip1.SetToolTip(this.btnChkAll, "Checks all items in current tab. (Selecting all may take a while to process)");
-			this.btnChkAll.UseVisualStyleBackColor = true;
-			this.btnChkAll.Click += new System.EventHandler(this.btnChkAll_Click);
-			// 
-			// btnUnchkAll
-			// 
-			this.btnUnchkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnUnchkAll.Location = new System.Drawing.Point(153, 301);
-			this.btnUnchkAll.Name = "btnUnchkAll";
-			this.btnUnchkAll.Size = new System.Drawing.Size(135, 23);
-			this.btnUnchkAll.TabIndex = 7;
-			this.btnUnchkAll.Text = "Uncheck All";
-			this.toolTip1.SetToolTip(this.btnUnchkAll, "Unselects all items in the current tab.");
-			this.btnUnchkAll.UseVisualStyleBackColor = true;
-			this.btnUnchkAll.Click += new System.EventHandler(this.button1_Click);
-			// 
 			// tabDLL
 			// 
 			this.tabDLL.Controls.Add(this.chkBoxDLL);
 			this.tabDLL.Location = new System.Drawing.Point(4, 25);
 			this.tabDLL.Name = "tabDLL";
 			this.tabDLL.Padding = new System.Windows.Forms.Padding(3);
-			this.tabDLL.Size = new System.Drawing.Size(279, 258);
+			this.tabDLL.Size = new System.Drawing.Size(268, 258);
 			this.tabDLL.TabIndex = 1;
 			this.tabDLL.Text = "DLL Data";
 			this.tabDLL.UseVisualStyleBackColor = true;
@@ -154,7 +154,7 @@
 			this.chkBoxDLL.FormattingEnabled = true;
 			this.chkBoxDLL.Location = new System.Drawing.Point(3, 3);
 			this.chkBoxDLL.Name = "chkBoxDLL";
-			this.chkBoxDLL.Size = new System.Drawing.Size(273, 252);
+			this.chkBoxDLL.Size = new System.Drawing.Size(262, 252);
 			this.chkBoxDLL.TabIndex = 4;
 			// 
 			// tabMDL
@@ -165,7 +165,7 @@
 			this.tabMDL.Padding = new System.Windows.Forms.Padding(3);
 			this.tabMDL.Size = new System.Drawing.Size(268, 258);
 			this.tabMDL.TabIndex = 2;
-			this.tabMDL.Text = "MDL Files";
+			this.tabMDL.Text = "MDL/MTN Files";
 			this.tabMDL.UseVisualStyleBackColor = true;
 			// 
 			// chkBoxMDL
