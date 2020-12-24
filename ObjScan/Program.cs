@@ -747,7 +747,7 @@ namespace ObjScan
 					continue;
 				}
 				uint frames = ByteConverter.ToUInt32(datafile, (int)address + 4);
-				if (frames > 1000)
+				if (frames > 2000)
 				{
 					//Console.WriteLine("Frames {0} fail", frames.ToString());
 					continue;
@@ -810,7 +810,7 @@ namespace ObjScan
 						{
 							//Read frame count
 							int framecount = ByteConverter.ToInt32(datafile, (int)(mdatap - imageBase) + mdatasize * u + 4 * mdata + 4 * m);
-							if (framecount < 0 || framecount > 1000)
+							if (framecount < 0 || framecount > 2000)
 							{
 								//Console.WriteLine("Framecount lost: {0}", framecount.ToString("X8"));
 								lost = true;
