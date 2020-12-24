@@ -96,9 +96,9 @@ namespace ObjScan
 					case "NJS_MOTION":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=animation");
-						sw.WriteLine("address=" + entry.Key.ToString("X8"));
+						sw.WriteLine("address=" + entry.Key.ToString());
 						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
-						sw.WriteLine("filename=actions/" + entry.Key.ToString("X8") + ".saanim");
+						sw.WriteLine("filename=actions/" + entry.Key.ToString() + ".saanim");
 						sw.WriteLine();
 						break;
 				}
@@ -747,7 +747,7 @@ namespace ObjScan
 					continue;
 				}
 				uint frames = ByteConverter.ToUInt32(datafile, (int)address + 4);
-				if (frames > 100)
+				if (frames > 1000)
 				{
 					//Console.WriteLine("Frames {0} fail", frames.ToString());
 					continue;
@@ -810,7 +810,7 @@ namespace ObjScan
 						{
 							//Read frame count
 							int framecount = ByteConverter.ToInt32(datafile, (int)(mdatap - imageBase) + mdatasize * u + 4 * mdata + 4 * m);
-							if (framecount < 0 || framecount > 100)
+							if (framecount < 0 || framecount > 1000)
 							{
 								//Console.WriteLine("Framecount lost: {0}", framecount.ToString("X8"));
 								lost = true;
@@ -1049,6 +1049,11 @@ namespace ObjScan
 					if (scan_sadx_model) ScanModel(ModelFormat.BasicDX);
 					if (scan_sa2_model) ScanModel(ModelFormat.Chunk);
 					if (scan_sa2b_model) ScanModel(ModelFormat.GC);
+					if (scan_sa2_land || scan_sa2b_land)
+					{
+						ScanMotions();
+						skipactions = true;
+					}
 					break;
 				case "landtable":
 					if (scan_sa1_land) ScanLandtable(LandTableFormat.SA1);
