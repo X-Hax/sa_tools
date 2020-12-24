@@ -96,8 +96,8 @@ namespace ObjScan
 					case "NJS_MOTION":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=animation");
-						sw.WriteLine("address=" + entry.Key.ToString());
-						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
+						sw.WriteLine("address=" + entry.Key.ToString("X8"));
+						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString("X8"));
 						sw.WriteLine("filename=actions/" + entry.Key.ToString() + ".saanim");
 						sw.WriteLine();
 						break;
