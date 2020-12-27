@@ -39,3 +39,6 @@
 ..\bin\split binary data/sonic.exe newsplit/Mission.ini output/
 ..\bin\split binary data/sonic.exe newsplit/SBOARD.ini output/
 ..\bin\split binary data/sonic.exe newsplit/SHOOTING.ini output/
+..\bin\split binary data/system/CHAOSTGGARDEN02MR_DAYTIME.DLL newsplit/chaostggarden02mr_daytime.ini output/
+..\bin\split binary data/system/CHAOSTGGARDEN02MR_EVENING.DLL newsplit/chaostggarden02mr_evening.ini output/
+..\bin\split binary data/system/CHAOSTGGARDEN02MR_NIGHT.DLL newsplit/chaostggarden02mr_night.ini output/
