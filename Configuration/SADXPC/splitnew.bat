@@ -17,6 +17,7 @@
 ..\bin\split binary data/sonic.exe newsplit/ADV03.ini output/
 ..\bin\split binary data/sonic.exe newsplit/ADVERTISE.ini output/
 ..\bin\split binary data/sonic.exe newsplit/Animals.ini output/
+..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/B_CHAOS0.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS2.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS4.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS6.ini output/
