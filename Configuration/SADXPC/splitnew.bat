@@ -43,7 +43,7 @@
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_EVENING.DLL newsplit/chaostggarden02mr_evening.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_NIGHT.DLL newsplit/chaostggarden02mr_night.ini output/
 ..\bin\split binary data/system/CHRMODELS_Orig.DLL newsplit/chrmodels_ex.ini output/
-..\bin\split binary data/system/ADV00MODELS.DLL newsplit/adv00models_ex.ini output/
+..\bin\split binary data/system/ADV00MODELS.DLL newsplit/adv00models.ini output/
 ..\bin\split binary data/system/ADV01MODELS.DLL newsplit/adv01models_ex.ini output/
 ..\bin\split binary data/system/ADV01CMODELS.DLL newsplit/adv01cmodels_ex.ini output/
 ..\bin\split binary data/system/ADV02MODELS.DLL newsplit/adv02models_ex.ini output/
