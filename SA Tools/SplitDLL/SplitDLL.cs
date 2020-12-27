@@ -208,6 +208,17 @@ namespace SA_Tools.SplitDLL
 							}
 							break;
 						case "modelarray":
+							bool srclist_on = false;
+							string[] srclist;
+							int strid = 0;
+							if (File.Exists(name + ".txt"))
+							{
+								srclist_on = true;
+								srclist = File.ReadAllLines(name + ".txt");
+							}
+							else
+								srclist = new string[data.Length];
+							Dictionary<int, string> attachduplist = new Dictionary<int, string>();
 							for (int i = 0; i < data.Length; i++)
 							{
 								int ptr = BitConverter.ToInt32(datafile, address);
@@ -215,6 +226,25 @@ namespace SA_Tools.SplitDLL
 								{
 									ptr = (int)(ptr - imageBase);
 									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
+									bool dup = false;
+									if (srclist_on)
+									{
+										foreach (var dupatt in attachduplist)
+										{
+											if (dupatt.Value == mdl.Attach.Name)
+											{
+												Console.WriteLine(";{0} is a duplicate of {1}", i, dupatt.Key);
+												dup = true;
+											}
+										}
+										if (!dup)
+										{
+											Console.WriteLine("filename{0}={1}", i, srclist[strid]);
+											strid++;
+										}
+										if (!attachduplist.ContainsValue(mdl.Attach.Name))
+											attachduplist.Add(i, mdl.Attach.Name);
+									}
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
