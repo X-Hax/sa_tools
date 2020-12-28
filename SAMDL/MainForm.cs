@@ -1176,7 +1176,22 @@ namespace SonicRetro.SAModel.SAMDL
 				if (hasWeight)
 					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
 				else if (animation != null)
+				{
+					foreach (KeyValuePair<int, AnimModelData> animdata in animation.Models)
+					{
+						if (animdata.Value.Vertex.Count > 0 || animdata.Value.Normal.Count > 0)
+						{
+							model.ProcessShapeMotionVertexData(animation, animframe);
+							NJS_OBJECT[] models = model.GetObjects();
+							meshes = new Mesh[models.Length];
+							for (int i = 0; i < models.Length; i++)
+								if (models[i].Attach != null)
+									try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+									catch { }
+						}
+					}
 					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
+				}
 				else
 					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
 

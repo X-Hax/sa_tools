@@ -166,6 +166,8 @@ namespace SA_Tools.Split
 							int numparts = 0;
 							if (customProperties.ContainsKey("numparts"))
 								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+							else
+								Console.WriteLine("Number of parts not specified for {0}", filedesc);
 							if (customProperties.ContainsKey("shortrot"))
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));

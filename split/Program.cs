@@ -1,4 +1,5 @@
 ﻿using SA_Tools;
+using SonicRetro.SAModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,31 +28,6 @@ namespace Split
 		static void Main(string[] args)
 		{
 			bool nometa = false;
-			if (args.Length > 0 && args[args.Length - 1] == "-m")
-			{
-				SplitM(args);
-				return;
-			}
-			else if (args.Length > 0 && args[args.Length - 1] == "-l")
-			{
-				SplitL(args);
-				return;
-			}
-			else if (args.Length > 0 && args[args.Length - 1] == "-la")
-			{
-				SplitL(args, true);
-				return;
-			}
-			else if (args.Length > 0 && args[args.Length - 1] == "-g")
-			{
-				SplitG(args);
-				return;
-			}
-			else if (args.Length > 0 && args[args.Length - 1] == "-c")
-			{
-				SplitC(args);
-				return;
-			}
 			string mode;
 			string fullpath_out;
 			bool bigendian = false;
@@ -72,110 +48,178 @@ namespace Split
 				Console.ReadLine();
 				return;
 			}
-			else
+#if DEBUG
+			switch (args[args.Length-1])
 			{
-				for (int u = 2; u < args.Length; u++)
-				{
-					if (args[u] == "-nometa") nometa = true;
-				}
-				mode = args[0];
-				switch (mode.ToLowerInvariant())
-				{
-					case "binary":
-						string fullpath_bin = Path.GetFullPath(args[1]);
-						if (!File.Exists(fullpath_bin))
-						{
-							Console.WriteLine("File {0} doesn't exist.", fullpath_bin);
-							return;
-						}
-						Console.WriteLine("File: {0}", fullpath_bin);
-						string fullpath_ini = Path.GetFullPath(args[2]);
-						if (!File.Exists(fullpath_ini))
-						{
-							Console.WriteLine("File {0} doesn't exist.", fullpath_ini);
-							return;
-						}
-						Console.WriteLine("Data mapping: {0}", fullpath_ini);
-						fullpath_out = Path.GetDirectoryName(fullpath_bin);
-						if (args.Length > 3)
-						{
-							fullpath_out = args[3];
-							if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
-							fullpath_out = Path.GetFullPath(fullpath_out);
-						}
-						Console.WriteLine("Output folder: {0}", fullpath_out);
-						if (nometa) Console.WriteLine("Labels are disabled");
-						if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
-							SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, nometa);
-						else SA_Tools.Split.Split.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, nometa);
-						break;
-					case "nb":
-					case "nb_b":
-						string fullpath_nb = Path.GetFullPath(args[1]);
-						if (!File.Exists(fullpath_nb))
-						{
-							Console.WriteLine("File {0} doesn't exist.", fullpath_nb);
-						}
-						Console.WriteLine("File: {0}", fullpath_nb);
-						fullpath_out = Path.GetDirectoryName(fullpath_nb);
-						if (args.Length > 2)
-						{
-							fullpath_out = args[2];
-							if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
-							fullpath_out = Path.GetFullPath(fullpath_out);
-						}
-						Console.WriteLine("Output folder: {0}", fullpath_out);
-						SA_Tools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, true);
-						break;
-					case "mdl":
-					case "mdl_b":
-						string fullpath_mdl = Path.GetFullPath(args[1]);
-						if (!File.Exists(fullpath_mdl))
-						{
-							Console.WriteLine("File {0} doesn't exist.", fullpath_mdl);
-						}
-						Console.Write("File: {0}", fullpath_mdl);
-						if (mode == "mdl_b")
-						{
-							bigendian = true;
-							Console.Write(" (Big Endian)\n");
-						}
-						else
-							Console.Write(System.Environment.NewLine);
-						fullpath_out = Path.GetDirectoryName(fullpath_mdl);
-						if (args.Length > 2)
-						{
-							fullpath_out = args[2];
-							if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
-							fullpath_out = Path.GetFullPath(fullpath_out);
-						}
-						Console.WriteLine("Output path: {0}", fullpath_out);
-						if (args.Length > 3)
-						{
-							mdlanimfiles = new List<string>();
-							Console.WriteLine("Animation files:");
-							for (int u = 3; u < args.Length; u++)
-							{
-								string animpath = Path.GetFullPath(args[u]);
-								if (File.Exists(animpath))
-								{
-									mdlanimfiles.Add(animpath);
-									Console.WriteLine(animpath);
-								}
-								else
-									Console.WriteLine("File {0} doesn't exist.", animpath);
-							}
-							SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
-						}
-						else
-							SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
-						break;
-					default:
-						Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
-						Console.ReadLine();
+				case "-m":
+					SplitM(args);
+					return;
+				case "-l":
+					SplitL(args);
+					return;
+				case "-la":
+					SplitL(args, true);
+					return;
+				case "-g":
+					SplitG(args);
+					return;
+				case "-c":
+					SplitC(args);
+					return;
+				case "-f":
+					SplitF(args);
+					return;
+			}
+#endif
+			for (int u = 2; u < args.Length; u++)
+			{
+				if (args[u] == "-nometa") nometa = true;
+			}
+			mode = args[0];
+			switch (mode.ToLowerInvariant())
+			{
+				case "binary":
+					string fullpath_bin = Path.GetFullPath(args[1]);
+					if (!File.Exists(fullpath_bin))
+					{
+						Console.WriteLine("File {0} doesn't exist.", fullpath_bin);
 						return;
+					}
+					Console.WriteLine("File: {0}", fullpath_bin);
+					string fullpath_ini = Path.GetFullPath(args[2]);
+					if (!File.Exists(fullpath_ini))
+					{
+						Console.WriteLine("File {0} doesn't exist.", fullpath_ini);
+						return;
+					}
+					Console.WriteLine("Data mapping: {0}", fullpath_ini);
+					fullpath_out = Path.GetDirectoryName(fullpath_bin);
+					if (args.Length > 3)
+					{
+						fullpath_out = args[3];
+						if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
+						fullpath_out = Path.GetFullPath(fullpath_out);
+					}
+					Console.WriteLine("Output folder: {0}", fullpath_out);
+					if (nometa) Console.WriteLine("Labels are disabled");
+					if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
+						SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, nometa);
+					else SA_Tools.Split.Split.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, nometa);
+					break;
+				case "nb":
+				case "nb_b":
+					string fullpath_nb = Path.GetFullPath(args[1]);
+					if (!File.Exists(fullpath_nb))
+					{
+						Console.WriteLine("File {0} doesn't exist.", fullpath_nb);
+					}
+					Console.WriteLine("File: {0}", fullpath_nb);
+					fullpath_out = Path.GetDirectoryName(fullpath_nb);
+					if (args.Length > 2)
+					{
+						fullpath_out = args[2];
+						if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
+						fullpath_out = Path.GetFullPath(fullpath_out);
+					}
+					Console.WriteLine("Output folder: {0}", fullpath_out);
+					SA_Tools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, true);
+					break;
+				case "mdl":
+				case "mdl_b":
+					string fullpath_mdl = Path.GetFullPath(args[1]);
+					if (!File.Exists(fullpath_mdl))
+					{
+						Console.WriteLine("File {0} doesn't exist.", fullpath_mdl);
+					}
+					Console.Write("File: {0}", fullpath_mdl);
+					if (mode == "mdl_b")
+					{
+						bigendian = true;
+						Console.Write(" (Big Endian)\n");
+					}
+					else
+						Console.Write(System.Environment.NewLine);
+					fullpath_out = Path.GetDirectoryName(fullpath_mdl);
+					if (args.Length > 2)
+					{
+						fullpath_out = args[2];
+						if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
+						fullpath_out = Path.GetFullPath(fullpath_out);
+					}
+					Console.WriteLine("Output path: {0}", fullpath_out);
+					if (args.Length > 3)
+					{
+						mdlanimfiles = new List<string>();
+						Console.WriteLine("Animation files:");
+						for (int u = 3; u < args.Length; u++)
+						{
+							string animpath = Path.GetFullPath(args[u]);
+							if (File.Exists(animpath))
+							{
+								mdlanimfiles.Add(animpath);
+								Console.WriteLine(animpath);
+							}
+							else
+								Console.WriteLine("File {0} doesn't exist.", animpath);
+						}
+						SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
+					}
+					else
+						SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
+					break;
+				default:
+					Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
+					Console.ReadLine();
+					return;
+			}
+		}
+		static void SplitF(string[] args)
+		{
+			//In mode 1 (second argument = false), this code does the following:
+			//1) Load a list of source filenames for motions and a split INI file
+			//2) Scan for similarly labelled models based on the source list
+			//3) Calculate the NJS_MOTION address based on the assumption that there is an NJS_ACTION right after the model
+			//4) Output split INI data for the motions in the source list
+
+			//In mode 2 (second argument = true), this code does the following:
+			//1) Scan through a split INI file and find similarly labelled models and motions 
+			//2) Add node count to the motions based on the similarly labelled models
+			//3) Assign motions to similarly labelled models
+
+			//Command line arguments: split inifile exefile key [listfile] -f
+			string listname;
+			string inifilename;
+			string[] motionlist;
+			inifilename = args[0];
+			byte[] datafile = File.ReadAllBytes(args[1]);
+			uint imageBase = uint.Parse(args[2], System.Globalization.NumberStyles.AllowHexSpecifier);
+			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_mot in inifile.Files)
+			{
+				if (fileinfo_mot.Value.Type == "animation")
+				{
+					string motionname = Path.GetFileNameWithoutExtension(fileinfo_mot.Value.Filename.Replace(".saanim", ""));
+					bool sucksess = false;
+					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_mdl in inifile.Files)
+					{
+						string modelname = Path.GetFileNameWithoutExtension(fileinfo_mdl.Value.Filename.Replace(".sa1mdl", ""));
+						if (modelname == motionname)
+						{
+							//Console.WriteLine("Motion {0} fond", motionname);
+							NJS_OBJECT obj = new NJS_OBJECT(datafile, fileinfo_mdl.Value.Address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
+							//Console.WriteLine("Setting {0} model parts for motion {1}", obj.CountAnimated(), motionfilename);
+							fileinfo_mot.Value.CustomProperties.Remove("numparts");
+							fileinfo_mot.Value.CustomProperties.Add("numparts", obj.CountAnimated().ToString());
+							fileinfo_mdl.Value.CustomProperties.Remove("animations");
+							fileinfo_mdl.Value.CustomProperties.Add("animations", Path.GetFileName(fileinfo_mot.Value.Filename));
+							sucksess = true;
+						}
+					}
+					if (!sucksess) Console.WriteLine("Model not found for {0}", fileinfo_mot.Value.Filename);
 				}
 			}
+			IniSerializer.Serialize(inifile, "motions.ini");
+			return;
 		}
 		static void SplitM(string[] args)
 		{
