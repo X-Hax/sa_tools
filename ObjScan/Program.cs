@@ -747,7 +747,7 @@ namespace ObjScan
 					continue;
 				}
 				uint frames = ByteConverter.ToUInt32(datafile, (int)address + 4);
-				if (frames > 2000)
+				if (frames > 2000 || frames < 1)
 				{
 					//Console.WriteLine("Frames {0} fail", frames.ToString());
 					continue;
