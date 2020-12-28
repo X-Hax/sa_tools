@@ -593,6 +593,19 @@ namespace SA_Tools.SplitDLL
 								uint ptr = BitConverter.ToUInt32(datafile, address);
 								if (ptr != 0 && !output.TexLists.ContainsKey(ptr))
 									output.TexLists.Add(ptr, new DllTexListInfo(name, i));
+								if (data.Filename != null && ptr != 0)
+								{
+									ptr -= imageBase;
+									TexnameArray texarr = new TexnameArray(datafile, (int)ptr, imageBase);
+									string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".txt");
+									if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+									{
+										fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".txt");
+									}
+									if (!Directory.Exists(Path.GetDirectoryName(fn)))
+										Directory.CreateDirectory(Path.GetDirectoryName(fn));
+									texarr.Save(fn);
+								}
 								address += 4;
 							}
 							break;
