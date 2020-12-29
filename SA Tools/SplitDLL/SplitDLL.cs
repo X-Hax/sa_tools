@@ -490,6 +490,7 @@ namespace SA_Tools.SplitDLL
 									{
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
+										saveani = true;
 									}
 									if (saveani)
 									{
@@ -522,12 +523,12 @@ namespace SA_Tools.SplitDLL
 										string animationName = sb.ToString();
 										if (!Directory.Exists(Path.GetDirectoryName(outputmfn)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputmfn));
-										if (!labels.Contains(ani.Model.Name))
+										if (!labels.Contains(ani.Model.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
 											ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 												null, modelfmt, nometa);
 											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
-											labels.AddRange(ani.Model.GetLabels());
+											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
 										}
 									}
 								}
