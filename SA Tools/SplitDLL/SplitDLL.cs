@@ -231,7 +231,7 @@ namespace SA_Tools.SplitDLL
 									{
 										foreach (var dupatt in attachduplist)
 										{
-											if (dupatt.Value == mdl.Attach.Name)
+											if (mdl.Attach != null && dupatt.Value == mdl.Attach.Name)
 											{
 												Console.WriteLine(";{0} is a duplicate of {1}", i, dupatt.Key);
 												dup = true;
@@ -242,7 +242,7 @@ namespace SA_Tools.SplitDLL
 											Console.WriteLine("filename{0}={1}", i, srclist[strid]);
 											strid++;
 										}
-										if (!attachduplist.ContainsValue(mdl.Attach.Name))
+										if (mdl.Attach != null && !attachduplist.ContainsValue(mdl.Attach.Name))
 											attachduplist.Add(i, mdl.Attach.Name);
 									}
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
