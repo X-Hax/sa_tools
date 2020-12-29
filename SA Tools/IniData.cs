@@ -1742,9 +1742,15 @@ namespace SA_Tools
 			Flags = (SA1CharacterFlags)ByteConverter.ToInt32(file, address);
 		}
 
+		public DeathZoneFlags(byte[] file, int address, string filename)
+		{
+			Flags = (SA1CharacterFlags)ByteConverter.ToInt32(file, address);
+			Filename = filename;
+		}
+
 		[IniAlwaysInclude]
 		public SA1CharacterFlags Flags { get; set; }
-
+		public string Filename { get; set; }
 		public static int Size { get { return 4; } }
 
 		public byte[] GetBytes()
