@@ -210,13 +210,7 @@ namespace SA_Tools.Split
 							break;
 						case "texnamearray":
 							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
-							StreamWriter sw = File.CreateText(fileOutputPath);
-							for (int u = 0; u < texnames.NumTextures; u++)
-							{
-								sw.WriteLine(texnames.TextureNames[u] + ".pvr");
-							}
-							sw.Flush();
-							sw.Close();
+							texnames.Save(fileOutputPath);
 							break;
 						case "leveltexlist":
 							new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
