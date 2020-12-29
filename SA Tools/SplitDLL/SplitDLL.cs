@@ -208,6 +208,17 @@ namespace SA_Tools.SplitDLL
 							}
 							break;
 						case "modelarray":
+							bool srclist_on = false;
+							string[] srclist;
+							int strid = 0;
+							if (File.Exists(name + ".txt"))
+							{
+								srclist_on = true;
+								srclist = File.ReadAllLines(name + ".txt");
+							}
+							else
+								srclist = new string[data.Length];
+							Dictionary<int, string> attachduplist = new Dictionary<int, string>();
 							for (int i = 0; i < data.Length; i++)
 							{
 								int ptr = BitConverter.ToInt32(datafile, address);
@@ -215,6 +226,25 @@ namespace SA_Tools.SplitDLL
 								{
 									ptr = (int)(ptr - imageBase);
 									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
+									bool dup = false;
+									if (srclist_on)
+									{
+										foreach (var dupatt in attachduplist)
+										{
+											if (mdl.Attach != null && dupatt.Value == mdl.Attach.Name)
+											{
+												Console.WriteLine(";{0} is a duplicate of {1}", i, dupatt.Key);
+												dup = true;
+											}
+										}
+										if (!dup)
+										{
+											Console.WriteLine("filename{0}={1}", i, srclist[strid]);
+											strid++;
+										}
+										if (mdl.Attach != null && !attachduplist.ContainsValue(mdl.Attach.Name))
+											attachduplist.Add(i, mdl.Attach.Name);
+									}
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -460,6 +490,7 @@ namespace SA_Tools.SplitDLL
 									{
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
+										saveani = true;
 									}
 									if (saveani)
 									{
@@ -492,12 +523,12 @@ namespace SA_Tools.SplitDLL
 										string animationName = sb.ToString();
 										if (!Directory.Exists(Path.GetDirectoryName(outputmfn)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputmfn));
-										if (!labels.Contains(ani.Model.Name))
+										if (!labels.Contains(ani.Model.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
 											ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 												null, modelfmt, nometa);
 											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
-											labels.AddRange(ani.Model.GetLabels());
+											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
 										}
 									}
 								}
@@ -563,6 +594,19 @@ namespace SA_Tools.SplitDLL
 								uint ptr = BitConverter.ToUInt32(datafile, address);
 								if (ptr != 0 && !output.TexLists.ContainsKey(ptr))
 									output.TexLists.Add(ptr, new DllTexListInfo(name, i));
+								if (data.Filename != null && ptr != 0)
+								{
+									ptr -= imageBase;
+									TexnameArray texarr = new TexnameArray(datafile, (int)ptr, imageBase);
+									string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".txt");
+									if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+									{
+										fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".txt");
+									}
+									if (!Directory.Exists(Path.GetDirectoryName(fn)))
+										Directory.CreateDirectory(Path.GetDirectoryName(fn));
+									texarr.Save(fn);
+								}
 								address += 4;
 							}
 							break;

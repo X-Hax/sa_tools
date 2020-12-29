@@ -210,13 +210,7 @@ namespace SA_Tools.Split
 							break;
 						case "texnamearray":
 							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
-							StreamWriter sw = File.CreateText(fileOutputPath);
-							for (int u = 0; u < texnames.NumTextures; u++)
-							{
-								sw.WriteLine(texnames.TextureNames[u] + ".pvr");
-							}
-							sw.Flush();
-							sw.Close();
+							texnames.Save(fileOutputPath);
 							break;
 						case "leveltexlist":
 							new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
@@ -297,8 +291,13 @@ namespace SA_Tools.Split
 								int num = 0;
 								while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
 								{
-									flags.Add(new DeathZoneFlags(datafile, address));
-									string file = Path.Combine(path, num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl"));
+									string file_tosave;
+									if (customProperties.ContainsKey("filename" + num.ToString()))
+										file_tosave = customProperties["filename" + num++.ToString()] + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl");
+									else
+										file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl");
+									string file = Path.Combine(path, file_tosave);
+									flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
 									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt, nometa);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;

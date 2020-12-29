@@ -622,9 +622,22 @@ namespace SA_Tools
 				for (int u = 0; u < NumTextures; u++)
 				{
 					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
-					TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
+					if (TexnamePointer != 0)
+						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
+					else
+						TextureNames[u] = "empty";
 				}
 			}
+		}
+		public void Save(string fileOutputPath)
+		{
+			StreamWriter sw = File.CreateText(fileOutputPath);
+			for (int u = 0; u < NumTextures; u++)
+			{
+				sw.WriteLine(TextureNames[u] + ".pvr");
+			}
+			sw.Flush();
+			sw.Close();
 		}
 	}
 	public static class TextureList
@@ -1729,9 +1742,15 @@ namespace SA_Tools
 			Flags = (SA1CharacterFlags)ByteConverter.ToInt32(file, address);
 		}
 
+		public DeathZoneFlags(byte[] file, int address, string filename)
+		{
+			Flags = (SA1CharacterFlags)ByteConverter.ToInt32(file, address);
+			Filename = filename;
+		}
+
 		[IniAlwaysInclude]
 		public SA1CharacterFlags Flags { get; set; }
-
+		public string Filename { get; set; }
 		public static int Size { get { return 4; } }
 
 		public byte[] GetBytes()
