@@ -490,6 +490,7 @@ namespace SA_Tools.SplitDLL
 									{
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
+										saveani = true;
 									}
 									if (saveani)
 									{
@@ -522,12 +523,12 @@ namespace SA_Tools.SplitDLL
 										string animationName = sb.ToString();
 										if (!Directory.Exists(Path.GetDirectoryName(outputmfn)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputmfn));
-										if (!labels.Contains(ani.Model.Name))
+										if (!labels.Contains(ani.Model.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
 											ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 												null, modelfmt, nometa);
 											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
-											labels.AddRange(ani.Model.GetLabels());
+											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
 										}
 									}
 								}
@@ -761,6 +762,45 @@ namespace SA_Tools.SplitDLL
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "cactionarray":
+							for (int i = 0; i < data.Length; i++)
+							{
+								uint ptr = BitConverter.ToUInt32(datafile, address);
+								if (ptr != 0)
+								{
+									//NJS_CAMERA
+									uint camaddr = BitConverter.ToUInt32(datafile, (int)(ptr - imageBase));
+									NinjaCamera cam = new NinjaCamera(datafile, (int)(camaddr - imageBase));
+									string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+									if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_c"))
+									{
+										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_c"] + ".ini");
+										fileName = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_c"] + ".ini");
+									}
+									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
+										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+									cam.Save(outputFN);
+									//NJS_MOTION
+									uint motptr = BitConverter.ToUInt32(datafile, (int)(ptr + 4 - imageBase));
+									if (ptr != 0)
+									{
+										int motaddr = (int)(motptr - imageBase);
+										NJS_MOTION ani = new NJS_MOTION(datafile, motaddr, imageBase, 1);
+										string outputFN_m = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim");
+										string fn_m = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
+										{
+											outputFN_m = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + ".saanim");
+											fn_m = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + ".saanim");
+										}
+										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
+											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+										ani.Save(outputFN_m, nometa);
+									}
+								}
 							}
 							break;
 					}

@@ -435,6 +435,10 @@ namespace SA_Tools.Split
 								nohash = true;
 							}
 							break;
+						case "camera":
+							NinjaCamera cam = new NinjaCamera(datafile, address);
+							cam.Save(fileOutputPath);
+							break;
 						default: // raw binary
 							{
 								byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
