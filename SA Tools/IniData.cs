@@ -604,7 +604,7 @@ namespace SA_Tools
 	}
 
 	public class TexnameArray
-	{		
+	{
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint TexnameArrayAddr { get; set; }
 		public uint NumTextures { get; set; }
@@ -3292,6 +3292,37 @@ namespace SA_Tools
 			sb.AppendFormat("{0}", PlaySpeed.ToC());
 			sb.Append(" }");
 			return sb.ToString();
+		}
+	}
+
+	public class NinjaCamera
+	{
+		public Vertex Position  { get; set; } // Camera position
+		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public int Roll { get; set; } // Camera roll
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public int Angle { get; set; } // Camera angle
+		public float NearClip { get; set; } // Near clip 
+		public float FarClip { get; set; } // Far clip
+		public Vertex LocalX { get; set; } // Camera local X axis
+		public Vertex LocalY { get; set; } //Camera local Y axis
+
+		public NinjaCamera(byte[] file, int address)
+		{
+			Position = new Vertex(file, address);
+			Vector = new Vertex(file, address + 12);
+			Roll = BitConverter.ToInt32(file, address + 24);
+			Angle = BitConverter.ToInt32(file, address + 28);
+			NearClip = BitConverter.ToSingle(file, address + 32);
+			FarClip = BitConverter.ToSingle(file, address + 36);
+			LocalX = new Vertex(file, address + 40);
+			LocalY = new Vertex(file, address + 52);
+		}
+
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
 		}
 	}
 
