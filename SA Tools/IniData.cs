@@ -3326,6 +3326,83 @@ namespace SA_Tools
 		}
 	}
 
+	public class FogData
+	{
+		public float Layer { get; set; }
+		public float Distance { get; set; }
+		public byte A { get; set; }
+		public byte R { get; set; }
+		public byte G { get; set; }
+		public byte B { get; set; }
+		public int Toggle { get; set; }
+
+		public FogData(byte[] file, int address)
+		{
+			Layer = BitConverter.ToSingle(file, address);
+			Distance = BitConverter.ToSingle(file, address + 4);
+			if (BitConverter.IsLittleEndian)
+			{
+				A = file[address + 11];
+				R = file[address + 10];
+				G = file[address + 9];
+				B = file[address + 8];
+			}
+			else
+			{
+				A = file[address + 8];
+				R = file[address + 9];
+				G = file[address + 10];
+				B = file[address + 11];
+			}
+			Toggle = BitConverter.ToInt32(file, address + 12);
+		}
+
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+	}
+
+	public class FogDataArray
+	{
+		public FogData High { get; set; }
+		public FogData Medium { get; set; }
+		public FogData Low { get; set; }
+		public FogDataArray(byte[] datafile, int address)
+		{
+			High = new FogData(datafile, address);
+			Medium = new FogData(datafile, address + 16);
+			Low = new FogData(datafile, address + 32);
+		}
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+	}
+
+	public class FogDataTable
+	{
+		[IniCollection(IniCollectionMode.NoSquareBrackets)]
+		public FogDataArray[] Act { get; set; }
+		public FogDataTable(byte[] datafile, int address, uint imageBase, int count = 3)
+		{
+			List<FogDataArray> foglist = new List<FogDataArray>();
+			for (int i = 0; i < count; i++)
+			{
+				uint ptr = BitConverter.ToUInt32(datafile, address + i * 4);
+				if (ptr != 0)
+				{
+					FogDataArray arr = new FogDataArray(datafile, (int)(ptr - imageBase));
+					foglist.Add(arr);
+				}
+			}
+			Act = foglist.ToArray();
+		}
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+	}
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>
