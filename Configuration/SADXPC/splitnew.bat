@@ -18,6 +18,7 @@
 ..\bin\split binary data/sonic.exe newsplit/ADV03.ini output/
 ..\bin\split binary data/sonic.exe newsplit/ADVERTISE.ini output/
 ..\bin\split binary data/sonic.exe newsplit/Animals.ini output/
+..\bin\split binary data/sonic.exe newsplit/B_CHAOS0.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS2.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS4.ini output/
 ..\bin\split binary data/sonic.exe newsplit/B_CHAOS6.ini output/
@@ -40,7 +41,7 @@
 ..\bin\split binary data/sonic.exe newsplit/SBOARD.ini output/
 ..\bin\split binary data/sonic.exe newsplit/SHOOTING.ini output/
 @echo DLL split
-..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/B_CHAOS0.ini output/
+..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/BOSSCHAOS0MODELS.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_DAYTIME.DLL newsplit/chaostggarden02mr_daytime.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_EVENING.DLL newsplit/chaostggarden02mr_evening.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_NIGHT.DLL newsplit/chaostggarden02mr_night.ini output/
