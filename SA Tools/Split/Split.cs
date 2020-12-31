@@ -439,6 +439,13 @@ namespace SA_Tools.Split
 							NinjaCamera cam = new NinjaCamera(datafile, address);
 							cam.Save(fileOutputPath);
 							break;
+						case "fogdatatable":
+							int fcnt = 3;
+							if (customProperties.ContainsKey("count"))
+								fcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							FogDataTable fga = new FogDataTable(datafile, address, imageBase, fcnt);
+							fga.Save(fileOutputPath);
+							break;
 						default: // raw binary
 							{
 								byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
