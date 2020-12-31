@@ -337,7 +337,7 @@ namespace SAToolsHub
 		private void splitMdlFiles(SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-			string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, "Characters"));
+			string fileOutputFolder = Path.Combine(outputFolder, "Characters");
 
 			progress.StepProgress();
 			progress.SetStep("Splitting models from " + splitMDL.ModelFile);
@@ -391,6 +391,7 @@ namespace SAToolsHub
 				string objdefsPath = GetObjDefsDirectory();
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
 				CopyFolder(objdefsPath, outputObjdefsPath);
+				File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
 				GenerateModFile(gameName, progress, projFolder, projName);
 			}
 				
@@ -426,7 +427,7 @@ namespace SAToolsHub
 				DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
 				if (successDiag == DialogResult.OK)
 				{
-					SAToolsHub.newProjFile = Path.Combine((Path.GetDirectoryName(projName)), projName);
+					SAToolsHub.newProjFile = Path.GetFullPath(projName);
 					this.Close();
 				}
 			}
@@ -505,7 +506,7 @@ namespace SAToolsHub
 						}
 					}
 
-					projName = saveFileDialog1.FileName;
+					projName = Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
 					projectFile = new ProjectTemplate();
 					ProjectInfo projInfo = new ProjectInfo();
 

@@ -43,18 +43,11 @@ namespace SAToolsHub
 			{
 				splitEntries.Add(dllEntry);
 			}
-
 			if (SAToolsHub.setGame == "SA2PC")
 			{
-				string charFiles = Path.Combine(SAToolsHub.projectDirectory, "Characters");
-
-				foreach (string dir in Directory.GetDirectories(charFiles))
+				foreach (string chrFile in chkBoxMDL.CheckedItems)
 				{
-					string name = Path.GetDirectoryName(dir);
-					if (name.Contains("mdl") || name.Contains("mtn"))
-					{
-						chkBoxMDL.Items.Add(name);
-					}
+					sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "Characters"), chrFile));
 				}
 			}
 
@@ -159,7 +152,7 @@ namespace SAToolsHub
 			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
 			foreach (string file in charFiles)
 			{
-				File.Copy(file, sysFolder);
+				File.Copy(file, Path.Combine(sysFolder, Path.GetFileName(file)));
 			}
 		}
 
@@ -275,6 +268,17 @@ namespace SAToolsHub
 					modName = sa2Mod.Name;
 					gameEXE = "sonic2app";
 					sysFolder = "gd_PC";
+
+					DirectoryInfo charFiles = new DirectoryInfo(Path.Combine(SAToolsHub.projectDirectory, "Characters"));
+
+					foreach (DirectoryInfo dir in charFiles.GetDirectories())
+					{
+						string name = dir.Name;
+						if (name.Contains("mdl") || name.Contains("mtn"))
+						{
+							chkBoxMDL.Items.Add(name);
+						}
+					}
 					break;
 			}
 

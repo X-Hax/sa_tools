@@ -12,17 +12,25 @@ namespace ProjectManagement
 	/// 
 	public class ProjectSettings
 	{
+		public enum Frequency
+		{
+			daily,
+			weekly,
+			monthly
+		}
+
+		public enum Themes
+		{
+			light,
+			dark
+		}
+
+		public bool AutoUpdate { get; set; }
+		public Frequency UpdateFrequency { get; set; }
+		public Themes HubTheme { get; set; }
+
 		public string SADXPCPath { get; set; }
 		public string SA2PCPath { get; set; }
-		public string SA1Path { get; set; }
-		public string SA1ADPath { get; set; }
-		public string SADXGCPath { get; set; }
-		public string SADXGCPPath { get; set; }
-		public string SADXGCRPath { get; set; }
-		public string SADX360Path { get; set; }
-		public string SA2Path { get; set; }
-		public string SA2TTPath { get; set; }
-		public string SA2PPath { get; set; }
 
 		public static ProjectSettings Load(string iniPath)
 		{
@@ -34,8 +42,9 @@ namespace ProjectManagement
 			{
 				ProjectSettings result = new ProjectSettings()
 				{
-					SA2PCPath = "",
-					SADXPCPath = ""
+					AutoUpdate = false,
+					UpdateFrequency = Frequency.monthly,
+					HubTheme = Themes.light,
 				};
 
 				return result;
@@ -49,63 +58,6 @@ namespace ProjectManagement
 		private static string GetSettingsPath()
 		{
 			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
-		}
-
-		public string GetModPathForGame(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case Game.SA1:
-				case Game.SA2:
-					throw new System.NotSupportedException();
-
-				case Game.SADX:
-					return  Path.Combine(SADXPCPath, "mods");
-				
-				case Game.SA2B:
-					return Path.Combine(SA2PCPath, "mods");
-
-				default:
-					throw new System.NotSupportedException();
-			}
-		}
-
-		public string GetExecutableForGame(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case Game.SA1:
-				case Game.SA2:
-					throw new System.NotSupportedException();
-
-				case Game.SADX:
-					return "sonic.exe";
-
-				case Game.SA2B:
-					return "sonic2App.exe";
-
-				default:
-					throw new System.NotSupportedException();
-			}
-		}
-
-		public string GetGamePath(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case Game.SA1:
-				case Game.SA2:
-					throw new System.NotSupportedException();
-
-				case Game.SADX:
-					return SADXPCPath;
-
-				case Game.SA2B:
-					return SA2PCPath;
-
-				default:
-					throw new System.NotSupportedException();
-			}
 		}
 
 		public void Save()

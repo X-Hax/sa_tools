@@ -92,7 +92,7 @@ namespace SAToolsHub
 						{
 							radGamebanana.Checked = true;
 							txtUpdateURL.Text = modInfoSADX.GameBananaItemId.ToString();
-							txtAsset.Text = modInfoSADX.GameBananaItemType;
+							lstGBItems.Text = modInfoSADX.GameBananaItemType;
 						}
 						if (!modInfoSADX.UpdateUrl.IsNullOrWhiteSpace())
 						{
@@ -153,14 +153,12 @@ namespace SAToolsHub
 
 			switch (game)
 			{
-				case "SADX":
-					SADXModInfo modInfoSADX = new SADXModInfo
-					{
-						Name = txtName.Text,
-						Author = txtAuth.Text,
-						Description = txtDesc.Text,
-						Version = txtVerNum.Text,
-					};
+				case "SADXPC":
+					SADXModInfo modInfoSADX = new SADXModInfo();
+					modInfoSADX.Name = txtName.Text;
+					modInfoSADX.Author = txtAuth.Text;
+					modInfoSADX.Description = txtDesc.Text;
+					modInfoSADX.Version = txtVerNum.Text;
 					if (chkDLLFile.Checked)
 						modInfoSADX.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -187,13 +185,11 @@ namespace SAToolsHub
 					break;
 
 				case "SA2PC":
-					SADXModInfo modInfoSA2PC = new SADXModInfo
-					{
-						Name = txtName.Text,
-						Author = txtAuth.Text,
-						Description = txtDesc.Text,
-						Version = txtVerNum.Text,
-					};
+					SADXModInfo modInfoSA2PC = new SADXModInfo();
+					modInfoSA2PC.Name = txtName.Text;
+					modInfoSA2PC.Author = txtAuth.Text;
+					modInfoSA2PC.Description = txtDesc.Text;
+					modInfoSA2PC.Version = txtVerNum.Text;
 					if (chkDLLFile.Checked)
 						modInfoSA2PC.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)

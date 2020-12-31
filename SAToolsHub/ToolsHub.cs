@@ -36,12 +36,35 @@ namespace SAToolsHub
 
 	public partial class SAToolsHub : Form
 	{
+
+
 		//Additional Windows
 		private newProj projectCreateDiag;
 		private editProj projectEditorDiag;
 		private buildWindow buildWindowDiag;
 		private templateWriter templateWriter;
 		private gameOptions gameOptionsDiag;
+
+		enum fileTags
+		{
+			dir,
+			mdl,
+			lvl,
+			anm,
+			tex,
+			tvr,
+			img,
+			cam,
+			set,
+			ini,
+			txt,
+			bin,
+			prs,
+			snd,
+			msc
+		}
+
+		private Dictionary<fileTags, string> itemTag = new Dictionary<fileTags, string>();
 
 		//Variables
 		public static string newProjFile { get; set; }
@@ -51,6 +74,7 @@ namespace SAToolsHub
 		public static string gameSystemDirectory { get; set; }
 		public static List<SplitEntry> projSplitEntries { get; set; }
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
+		public static ProjectSettings hubSettings { get; set; }
 
 		//Program Paths
 		string samdlPath;
@@ -66,6 +90,20 @@ namespace SAToolsHub
 		string sa2streditPath;
 		string sa2stgselPath;
 		string datatoolboxPath;
+
+		public SAToolsHub()
+		{
+			InitializeComponent();
+
+			hubSettings = ProjectSettings.Load();
+
+			projectCreateDiag = new newProj();
+			projectEditorDiag = new editProj();
+			buildWindowDiag = new buildWindow();
+			templateWriter = new templateWriter();
+			gameOptionsDiag = new gameOptions();
+		}
+
 
 		//Additional Code/Functions
 		private void openProject(string projectFile)
@@ -85,7 +123,7 @@ namespace SAToolsHub
 					gameDir = gameSystemDirectory + "\\system\\";
 					break;
 				case "SA2PC":
-					gameDir = gameSystemDirectory + "\\gd_PC\\";
+					gameDir = gameSystemDirectory + "\\resource\\gd_PC\\";
 					break;
 				default:
 					gameDir = gameSystemDirectory;
@@ -148,15 +186,39 @@ namespace SAToolsHub
 			}
 		}
 
-		void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		private TreeNode SearchTreeView(string p_sSearchTerm, TreeNodeCollection p_Nodes)
 		{
-			listView1.ContextMenuStrip = contextMenuStrip1;
-			TreeNode newSelected = e.Node;
-			listView1.Items.Clear();
-			DirectoryInfo nodeDirInfo = (DirectoryInfo)newSelected.Tag;
-			ListViewItem item = null;
+			foreach (TreeNode node in p_Nodes)
+			{
+				if (node.Text == p_sSearchTerm)
+				{
+					return node;
+				}
 
-			LoadFiles(nodeDirInfo, item);
+				if (node.Nodes.Count > 0)
+				{
+					var result = SearchTreeView(p_sSearchTerm, node.Nodes);
+					if (result != null)
+					{
+						return result;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		void SelectListViewNode(TreeNode node)
+		{
+			if (treeView1.SelectedNode != node)
+			{
+				TreeNode newSelected = node;
+				listView1.Items.Clear();
+				DirectoryInfo nodeDirInfo = (DirectoryInfo)newSelected.Tag;
+				ListViewItem item = null;
+
+				LoadFiles(nodeDirInfo, item);
+			}
 		}
 
 		void LoadFiles(DirectoryInfo nodeDirInfo, ListViewItem item)
@@ -191,6 +253,7 @@ namespace SAToolsHub
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.model;
 							item.Tag = "mdl";
+							item.ToolTipText = "Double click to open in SAMDL";
 							break;
 						}
 					case ".sa1lvl":
@@ -203,6 +266,7 @@ namespace SAToolsHub
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.level;
 							item.Tag = "lvl";
+							item.ToolTipText = "Double click to open in SALVL";
 							break;
 						}
 					case ".ini":
@@ -213,6 +277,18 @@ namespace SAToolsHub
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.data;
 							item.Tag = "ini";
+							switch (fileName)
+							{
+								case "mod":
+									item.ToolTipText = "Double click to open Mod Info Editor";
+									break;
+								case "sadxlvl":
+									item.ToolTipText = "Double click to open SADXLVL2";
+									break;
+								default:
+									item.ToolTipText = "Double click to open in the default text editor.";
+									break;
+							}
 							break;
 						}
 					case ".txt":
@@ -223,6 +299,7 @@ namespace SAToolsHub
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.document;
 							item.Tag = "txt";
+							item.ToolTipText = "Double click to open in the default text editor.";
 							break;
 						}
 					case ".bin":
@@ -266,6 +343,45 @@ namespace SAToolsHub
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
 							item.Tag = "tex";
+							item.ToolTipText = "Double click to open in Texture Editor";
+							break;
+						}
+					case ".pvr":
+					case ".gvr":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+								{ new ListViewItem.ListViewSubItem(item, "Image File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.texture;
+							item.Tag = "tvr";
+							break;
+						}
+					case ".pvp":
+					case ".gvp":
+					case ".plt":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+								{ new ListViewItem.ListViewSubItem(item, "Palette File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.texture;
+							item.Tag = "plt";
+							break;
+						}
+					case ".dds":
+					case ".jpg":
+					case ".png":
+					case ".bmp":
+					case ".gif":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+								{ new ListViewItem.ListViewSubItem(item, "Image File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.texture;
+							item.Tag = "img";
+							item.ToolTipText = "Double click to open in default image program";
 							break;
 						}
 					case ".prs":
@@ -277,14 +393,16 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 								item.Tag = "mdl";
+								item.ToolTipText = "Double click to open in SAMDL";
 							}
-							else if (fileName.Contains("tex"))
+							else if (fileName.Contains("tex") || fileName.Contains("tx") || fileName.Contains("bg"))
 							{
 								subItems = new ListViewItem.ListViewSubItem[]
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Texture Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 								item.Tag = "tex";
+								item.ToolTipText = "Double click to open in Texture Editor";
 							}
 							else if (fileName.Contains("mtn"))
 							{
@@ -320,13 +438,27 @@ namespace SAToolsHub
 					case ".csb":
 					case ".wma":
 					case ".dat":
-						subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Audio File"),
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+									{ new ListViewItem.ListViewSubItem(item, "Audio File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-						item.ImageIndex = (int)item_icons.audio;
-						item.Tag = "snd";
-						break;
+							item.ImageIndex = (int)item_icons.audio;
+							item.Tag = "snd";
+							break;
+						}
+					case ".wmv":
+					case ".sfd":
+					case ".m1v":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+									{ new ListViewItem.ListViewSubItem(item, "Audio File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.camera;
+							item.Tag = "vid";
+							break;
+						}
 					default:
 						{
 							subItems = new ListViewItem.ListViewSubItem[]
@@ -392,52 +524,7 @@ namespace SAToolsHub
 			tsSA2StgSel.Visible = false;
 		}
 
-		public SAToolsHub()
-		{
-			InitializeComponent();
-
-			projectCreateDiag = new newProj();
-			projectEditorDiag = new editProj();
-			buildWindowDiag = new buildWindow();
-			templateWriter = new templateWriter();
-			gameOptionsDiag = new gameOptions();
-		}
-
-		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			string itemPath = "";
-			string itemName = listView1.SelectedItems[0].Text;
-			string itemTag = (string)listView1.SelectedItems[0].Tag;
-			if (itemTag != "dir")
-				itemPath = treeView1.SelectedNode.FullPath;
-
-			string filePath;
-			if (treeView1.SelectedNode.Index == 1)
-				filePath = string.Format("\"{0}\"", gameSystemDirectory + "\\" + (Path.Combine(itemPath, itemName)));
-			else
-				filePath = string.Format("\"{0}\"", projectDirectory + "/../" + (Path.Combine(itemPath, itemName)));
-
-			if (listView1.SelectedItems.Count > 0)
-			{
-				switch (itemTag)
-				{
-					case "dir":
-						//treeView1.SelectedNode = treeView1.Nodes.Find(itemName, true)[0];
-						break;
-					case "mdl":
-						Process samdlProcess = Process.Start(samdlPath, filePath);
-						break;
-					case "lvl":
-						Process salvlProcess = Process.Start(salvlPath, filePath);
-						break;
-					case "tex":
-						Process texEditProcess = Process.Start(texeditPath, filePath);
-						break;
-				}
-			}
-		}
-
-		private void toolsHub_Shown(object sender, EventArgs e)
+		void SetProgramPaths()
 		{
 			string build;
 #if DEBUG
@@ -488,6 +575,42 @@ namespace SAToolsHub
 				sa2streditPath = rootPath + "/SA2PC/SA2MessageFileEditor/SA2MessageFileEditor.exe";
 				sa2stgselPath = rootPath + "/SA2PC/SA2StageSelEdit/SA2StageSelEdit.exe";
 				datatoolboxPath = rootPath + "/DataToolbox/DataToolbox.exe";
+			}
+		}
+
+		private void toolsHub_Shown(object sender, EventArgs e)
+		{
+			SetProgramPaths();
+
+			switch (hubSettings.AutoUpdate)
+			{
+				case true:
+					autoUpdateToolStripMenuItem.Checked = true;
+					frequencyToolStripMenuItem.Enabled = true;
+					break;
+				case false:
+					autoUpdateToolStripMenuItem.Checked = false;
+					frequencyToolStripMenuItem.Enabled = false;
+					break;
+			}
+
+			switch (hubSettings.UpdateFrequency)
+			{
+				case ProjectSettings.Frequency.daily:
+					dailyToolStripMenuItem.Checked = true;
+					weeklyToolStripMenuItem.Checked = false;
+					monthlyToolStripMenuItem.Checked = false;
+					break;
+				case ProjectSettings.Frequency.weekly:
+					dailyToolStripMenuItem.Checked = false;
+					weeklyToolStripMenuItem.Checked = true;
+					monthlyToolStripMenuItem.Checked = false;
+					break;
+				case ProjectSettings.Frequency.monthly:
+					dailyToolStripMenuItem.Checked = false;
+					weeklyToolStripMenuItem.Checked = false;
+					monthlyToolStripMenuItem.Checked = true;
+					break;
 			}
 		}
 
@@ -754,6 +877,31 @@ namespace SAToolsHub
 			}
 		}
 
+		//Additiional Links
+		private void blenderSASupportAddonToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				Process.Start("https://github.com/Justin113D/BlenderSASupport");
+			}
+			catch
+			{
+				MessageBox.Show("Something went wrong, could not open link in browser.");
+			}
+		}
+
+		private void sonicAudioToolsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				Process.Start("https://github.com/blueskythlikesclouds/SonicAudioTools");
+			}
+			catch
+			{
+				MessageBox.Show("Something went wrong, could not open link in browser.");
+			}
+		}
+
 		//GitHub Issue Tracker
 		private void gitHubIssueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -858,10 +1006,165 @@ namespace SAToolsHub
 		{
 
 		}
-
 		private void toolStripMenuItem1_Click(object sender, EventArgs e)
 		{
 			templateWriter.ShowDialog();
+		}
+
+		//treeView + listView click commands
+		void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			SelectListViewNode(e.Node);
+		}
+
+		private void listView1_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				if (listView1.FocusedItem.Bounds.Contains(e.Location))
+				{
+					//contextMenuStrip1.Show(Cursor.Position);
+				}
+			}
+		}
+
+		private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				TreeNode selNode = new TreeNode();
+				string filePath = "";
+
+				string itemName = listView1.SelectedItems[0].Text;
+				string itemTag = (string)listView1.SelectedItems[0].Tag;
+				if (itemTag != "dir")
+				{
+					string itemPath = treeView1.SelectedNode.FullPath;
+					if (treeView1.SelectedNode.Index == 1)
+					{
+						switch (SAToolsHub.setGame)
+						{
+							case ("SADXPC"):
+								filePath = string.Format("\"{0}\"", Path.Combine(gameSystemDirectory, (Path.Combine(itemPath, itemName))));
+								break;
+							case ("SA2PC"):
+								filePath = string.Format("\"{0}\"", Path.Combine(Path.Combine(gameSystemDirectory, "resource"), (Path.Combine(itemPath, itemName))));
+								break;
+						}
+					}
+					else
+						filePath = string.Format("\"{0}\"", Path.Combine(Path.Combine(projectDirectory, "/../"), (Path.Combine(itemPath, itemName))));
+				}
+				else
+				{
+					selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
+				}
+
+				if (listView1.SelectedItems.Count > 0)
+				{
+
+					switch (itemTag)
+					{
+						case "dir":
+							SelectListViewNode(selNode);
+							treeView1.SelectedNode = selNode;
+							break;
+						case "mdl":
+							Process samdlProcess = Process.Start(samdlPath, filePath);
+							break;
+						case "lvl":
+							Process salvlProcess = Process.Start(salvlPath, filePath);
+							break;
+						case "tex":
+						case "tvr":
+							Process texEditProcess = Process.Start(texeditPath, filePath);
+							break;
+						case "txt":
+						case "img":
+							Process.Start(filePath);
+							break;
+						case "ini":
+							switch (itemName)
+							{
+								case "sadxlvl.ini":
+									ProcessStartInfo sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(sadxlvl2Path), filePath);
+
+									Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
+									break;
+								case "mod.ini":
+									projectEditorDiag.ShowDialog();
+									break;
+								default:
+									Process.Start(filePath);
+									break;
+							}
+							break;
+					}
+				}
+			}
+		}
+
+		//Settings Handles
+		private void autoUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			bool curState = autoUpdateToolStripMenuItem.Checked;
+
+			if (curState == false)
+			{
+				autoUpdateToolStripMenuItem.Checked = true;
+				frequencyToolStripMenuItem.Enabled = true;
+
+				hubSettings.AutoUpdate = true;
+			}
+			else
+			{
+				autoUpdateToolStripMenuItem.Checked = false;
+				frequencyToolStripMenuItem.Enabled = false;
+
+				hubSettings.AutoUpdate = false;
+			}
+
+			hubSettings.Save();
+		}
+
+		private void dailyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			dailyToolStripMenuItem.Checked = true;
+			weeklyToolStripMenuItem.Checked = false;
+			monthlyToolStripMenuItem.Checked = false;
+
+			hubSettings.UpdateFrequency = ProjectSettings.Frequency.daily;
+			hubSettings.Save();
+		}
+
+		private void weeklyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			dailyToolStripMenuItem.Checked = false;
+			weeklyToolStripMenuItem.Checked = true;
+			monthlyToolStripMenuItem.Checked = false;
+
+			hubSettings.UpdateFrequency = ProjectSettings.Frequency.weekly;
+			hubSettings.Save();
+		}
+
+		private void monthlyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			dailyToolStripMenuItem.Checked = false;
+			weeklyToolStripMenuItem.Checked = false;
+			monthlyToolStripMenuItem.Checked = true;
+
+			hubSettings.UpdateFrequency = ProjectSettings.Frequency.monthly;
+			hubSettings.Save();
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
