@@ -296,7 +296,7 @@ namespace SA_Tools.SplitDLL
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext);
 										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-										if (!labels.Contains(mdl.Name)) 
+										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
 								}
@@ -343,7 +343,7 @@ namespace SA_Tools.SplitDLL
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
 										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
-										if (!labels.Contains(mdl.Name)) 
+										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
 								}
@@ -390,7 +390,7 @@ namespace SA_Tools.SplitDLL
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
 										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-										if (!labels.Contains(mdl.Name)) 
+										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
 								}
@@ -437,7 +437,7 @@ namespace SA_Tools.SplitDLL
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
-										if (!labels.Contains(mdl.Name)) 
+										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
 								}
@@ -459,7 +459,7 @@ namespace SA_Tools.SplitDLL
 										if (!labels.Contains(ani.Animation.Name)) saveani = true;
 										//else Console.WriteLine("Animation {0} already exists", ani.Animation.Name);
 										anilabels.Add(ani.Animation.Name, nm);
-										ani.Animation.Name = nm;	
+										ani.Animation.Name = nm;
 									}
 									else
 									{
@@ -499,7 +499,7 @@ namespace SA_Tools.SplitDLL
 										//Console.WriteLine("Saving animation: {0}", outputFN);
 										ani.Animation.Save(outputFN, nometa);
 										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
-										if (!anifiles.ContainsKey(nm)) 
+										if (!anifiles.ContainsKey(nm))
 											anifiles.Add(nm, outputFN);
 									}
 									if (models.Contains(ani.Model.Name))
@@ -585,6 +585,13 @@ namespace SA_Tools.SplitDLL
 							if (output.TexLists == null)
 								output.TexLists = new TexListContainer();
 							output.TexLists.Add((uint)(address + imageBase), new DllTexListInfo(name, null));
+							if (data.Filename != null)
+							{
+								TexnameArray texarrs = new TexnameArray(datafile, address, imageBase);
+								if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+								texarrs.Save(fileOutputPath + ".txt");
+							}
 							break;
 						case "texlistarray":
 							if (output.TexLists == null)
