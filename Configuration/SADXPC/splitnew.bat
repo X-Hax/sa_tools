@@ -40,6 +40,7 @@
 ..\bin\split binary data/sonic.exe newsplit/Mission.ini output/
 ..\bin\split binary data/sonic.exe newsplit/SBOARD.ini output/
 ..\bin\split binary data/sonic.exe newsplit/SHOOTING.ini output/
+..\bin\split binary data/sonic.exe newsplit/Texlists.ini output/
 @echo DLL split
 ..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/BOSSCHAOS0MODELS.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_DAYTIME.DLL newsplit/chaostggarden02mr_daytime.ini output/
