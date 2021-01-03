@@ -80,3 +80,5 @@
 ..\bin\split binary data/sonic2app.exe newsplit/CHAOSTGRACE.ini output/
 ..\bin\split binary data/sonic2app.exe newsplit/CHAOSTGKARATE.ini output/
 ..\bin\split binary data/sonic2app.exe newsplit/ObjectLists.ini output/
+@echo Event Data split
+..\bin\split binary data/resource/gd_PC/event/tailsPlain.prs newsplit/TAILSPLAIN.ini output/
