@@ -1513,7 +1513,7 @@ namespace SonicRetro.SAModel.SAMDL
 						BoundingSphere bounds = (model.Attach != null) ? model.Attach.Bounds :
 							new BoundingSphere(model.Position.X, model.Position.Y, model.Position.Z, 10);
 
-						bounds.Center += selectedObject.Position;
+						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
 					}
 					osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
