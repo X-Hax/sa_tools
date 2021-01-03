@@ -448,6 +448,12 @@ namespace Split
 		}
 		static void SplitG(string[] args)
 		{
+			//Generates a split INI file from a list of items in the format 'address=filename.extension'
+			int key = 0;
+			if (args.Length > 2 && args[1] == "-k")
+			{
+				key = int.Parse(args[2], System.Globalization.NumberStyles.AllowHexSpecifier);
+			}
 			Dictionary<string, string> matchlist;
 			List<string> duplicatecheck = new List<string>();
 			string splitext = ".";
@@ -457,8 +463,8 @@ namespace Split
 			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
 			foreach (KeyValuePair<string, string> item in matchlist)
 			{
-				string newfilename = item.Key;
-				string addrfilename = item.Value;
+				int addr = int.Parse(item.Key, System.Globalization.NumberStyles.AllowHexSpecifier);
+				string newfilename = item.Value;
 				if (duplicatecheck.Contains(newfilename))
 				{
 					Console.WriteLine("Duplicate detected: {0}", newfilename);
@@ -466,27 +472,36 @@ namespace Split
 				else duplicatecheck.Add(newfilename);
 				splitext = Path.GetExtension(newfilename).ToLowerInvariant();
 				SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
-				newfileinfo.Filename = newfilename;
-				string tp = "basicdxmodel";
+				string tp = "unk";
+				string finalext = ".";
 				switch (splitext)
 				{
-					case ".sa2mdl":
-						tp = "chunkmodel";
-						break;
-					case ".sa1lvl":
+					case ".c":
 						tp = "landtable";
+						finalext = ".sa1lvl";
 						break;
-					case ".saanim":
+					case ".nam":
 						tp = "animation";
+						finalext = ".saanim";
 						break;
-					case ".sa1mdl":
+					case ".tls":
+						tp = "texnamearray";
+						finalext = ".txt";
+						break;
+					case ".nac":
+						tp = "camera";
+						finalext = ".ini";
+						break;
+					case ".nja":
 					default:
 						tp = "basicdxmodel";
+						finalext = ".sa1mdl";
 						break;
 				}
+				newfileinfo.Filename = newfilename + finalext;
 				newfileinfo.Type = tp;
-				newfileinfo.Address = int.Parse(Path.GetFileNameWithoutExtension(addrfilename), System.Globalization.NumberStyles.AllowHexSpecifier);
-				string newdesc = Path.GetFileNameWithoutExtension(newfilename);
+				newfileinfo.Address = addr - key;
+				string newdesc = Path.GetFileName(newfilename);
 				if (newinifile.Files.ContainsKey(newdesc))
 				{
 					do

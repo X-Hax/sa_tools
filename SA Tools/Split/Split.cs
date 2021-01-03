@@ -293,7 +293,7 @@ namespace SA_Tools.Split
 								{
 									string file_tosave;
 									if (customProperties.ContainsKey("filename" + num.ToString()))
-										file_tosave = customProperties["filename" + num++.ToString()] + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl");
+										file_tosave = customProperties["filename" + num++.ToString()];
 									else
 										file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl");
 									string file = Path.Combine(path, file_tosave);
