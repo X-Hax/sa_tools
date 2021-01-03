@@ -106,7 +106,8 @@
     <Compile Include="ModManagement\SADXLoaderInfo.cs" />
     <Compile Include="ModManagement\SADXModInfo.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="ProjectManager.cs" />
+    <Compile Include="ProjectManagement\ObjectTemplate.cs" />
+    <Compile Include="ProjectManagement\ProjectManagement.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -261,6 +262,7 @@
     <Compile Include="UI\WelcomeForm.Designer.cs">
       <DependentUpon>WelcomeForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectManagement\StageTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
