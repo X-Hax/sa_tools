@@ -3319,10 +3319,10 @@ namespace SA_Tools
 		{
 			Position = new Vertex(file, address);
 			Vector = new Vertex(file, address + 12);
-			Roll = BitConverter.ToInt32(file, address + 24);
-			Angle = BitConverter.ToInt32(file, address + 28);
-			NearClip = BitConverter.ToSingle(file, address + 32);
-			FarClip = BitConverter.ToSingle(file, address + 36);
+			Roll = ByteConverter.ToInt32(file, address + 24);
+			Angle = ByteConverter.ToInt32(file, address + 28);
+			NearClip = ByteConverter.ToSingle(file, address + 32);
+			FarClip = ByteConverter.ToSingle(file, address + 36);
 			LocalX = new Vertex(file, address + 40);
 			LocalY = new Vertex(file, address + 52);
 		}
