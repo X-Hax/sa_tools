@@ -474,7 +474,7 @@ namespace SA_Tools.Split
 
 					IniSerializer.Serialize(masterobjlist, masterObjectListOutputPath);
 				}
-				IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(datafilename) + "_data.ini"));
+				IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
