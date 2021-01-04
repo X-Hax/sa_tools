@@ -108,6 +108,7 @@
     <Compile Include="Logging.cs" />
     <Compile Include="ProjectManagement\ObjectTemplate.cs" />
     <Compile Include="ProjectManagement\ProjectManagement.cs" />
+    <Compile Include="ProjectManagement\ProjectSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

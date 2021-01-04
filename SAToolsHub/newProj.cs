@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using Ookii.Dialogs.Wpf;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
-using ProjectManagement;
+using SAEditorCommon.ProjectManagement;
 using Fclp.Internals.Extensions;
 using SA_Tools.Split;
 using SA_Tools.SAArc;

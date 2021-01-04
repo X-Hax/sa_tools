@@ -1,19 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using SA_Tools;
-using Fclp.Internals.Extensions;
-using ProjectManagement;
-using SA_Tools.Split;
+using SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
 {

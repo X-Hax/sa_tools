@@ -601,7 +601,7 @@ namespace ProjectManager
 				string fileOutputFolder = Path.GetDirectoryName(Path.Combine(outputFolder, splitMDL.dataFile));
 				Directory.CreateDirectory(fileOutputFolder);
 
-				SA_Tools.SplitMDL.SplitMDL.Split(splitMDL.isBigEndian, filePath,
+				SA_Tools.SAArc.sa2MDL.Split(splitMDL.isBigEndian, filePath,
 					fileOutputFolder, splitMDL.animationFiles);
 			}
 

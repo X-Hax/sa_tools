@@ -9,8 +9,8 @@ namespace ProjectManager
 {
 	static class Program
 	{
-		private static ProjectManagement.ProjectSettings settings;
-		public static ProjectManagement.ProjectSettings Settings { get { return settings; } } 
+		private static SAEditorCommon.ProjectManagement.ProjectSettings settings;
+		public static SAEditorCommon.ProjectManagement.ProjectSettings Settings { get { return settings; } } 
 
 		private static void PrintHelp()
 		{
@@ -68,7 +68,7 @@ namespace ProjectManager
 			ProjectManager projectSelect;
 
 			//Properties.Settings.Default.Upgrade();
-			settings = ProjectManagement.ProjectSettings.Load();
+			settings = SAEditorCommon.ProjectManagement.ProjectSettings.Load();
 
 			StartupArgs startupArgs = new StartupArgs();
 			startupArgs.mode = CLIMode.None;
@@ -164,7 +164,7 @@ namespace ProjectManager
 
 		private static void CLISplitMDL(StartupArgs args)
 		{
-			SA_Tools.SplitMDL.SplitMDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
+			SA_Tools.SAArc.sa2MDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
 		}
 
 		private static void CLIBuild(StartupArgs args)
