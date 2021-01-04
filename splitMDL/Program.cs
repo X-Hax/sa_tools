@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SA_Tools.SAArc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -27,7 +28,7 @@ namespace SplitMDL
 			{
 				string filename = argq.Dequeue();
 				Console.WriteLine("File: {0}", filename);
-				SA_Tools.SplitMDL.SplitMDL.Split(be, filename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename)), argq.ToArray());
+				sa2MDL.Split(be, filename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename)), argq.ToArray());
 			}
 			else
 			{

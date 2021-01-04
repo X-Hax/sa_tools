@@ -5,9 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace SA_Tools.SplitMDL
+namespace SA_Tools.SAArc
 {
-	public static class SplitMDL
+	public static class sa2MDL
 	{
 		public static void Split(bool? isBigEndian, string filePath, string outputFolder, string[] animationPaths)
 		{
@@ -141,6 +141,53 @@ namespace SA_Tools.SplitMDL
 				// save ini file
 				IniSerializer.Serialize(new MDLInfo() { BigEndian = ByteConverter.BigEndian, Indexes = modelnames },
 					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
+		}
+
+		public static void Build(bool? isBigEndian, string mdlfilename)
+		{
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				mdlfilename = Path.GetFullPath(mdlfilename);
+				if (Directory.Exists(mdlfilename))
+					mdlfilename += ".prs";
+				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
+				SortedDictionary<int, NJS_OBJECT> models = new SortedDictionary<int, NJS_OBJECT>();
+				foreach (string file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mdlfilename), "*.sa2mdl"))
+					if (int.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int i))
+						models.Add(i, new ModelFile(file).Model);
+				MDLInfo mdlinfo = IniSerializer.Deserialize<MDLInfo>(
+					Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
+				if (!isBigEndian.HasValue)
+					ByteConverter.BigEndian = mdlinfo.BigEndian;
+				else
+					ByteConverter.BigEndian = isBigEndian.Value;
+				List<byte> mdlfile = new List<byte>();
+				List<byte> modelbytes = new List<byte>();
+				Dictionary<string, uint> labels = new Dictionary<string, uint>();
+				uint imageBase = (uint)(mdlinfo.Indexes.Count * 8) + 8;
+				foreach (KeyValuePair<int, NJS_OBJECT> item in models)
+				{
+					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out uint address);
+					modelbytes.AddRange(tmp);
+					imageBase += (uint)tmp.Length;
+				}
+				foreach (KeyValuePair<int, string> item in mdlinfo.Indexes)
+				{
+					mdlfile.AddRange(ByteConverter.GetBytes(item.Key));
+					mdlfile.AddRange(ByteConverter.GetBytes(labels[item.Value]));
+				}
+				mdlfile.AddRange(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0, 0 });
+				mdlfile.AddRange(modelbytes);
+				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(mdlfile.ToArray(), mdlfilename);
+				else
+					File.WriteAllBytes(mdlfilename, mdlfile.ToArray());
 			}
 			finally
 			{
