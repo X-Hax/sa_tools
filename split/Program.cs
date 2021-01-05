@@ -162,10 +162,10 @@ namespace Split
 							else
 								Console.WriteLine("File {0} doesn't exist.", animpath);
 						}
-						SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
+						SA_Tools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
 					}
 					else
-						SA_Tools.SplitMDL.SplitMDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
+						SA_Tools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
 					break;
 				default:
 					Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
