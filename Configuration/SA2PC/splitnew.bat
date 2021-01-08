@@ -80,3 +80,11 @@
 ..\bin\split binary data/sonic2app.exe newsplit/CHAOSTGRACE.ini output/
 ..\bin\split binary data/sonic2app.exe newsplit/CHAOSTGKARATE.ini output/
 ..\bin\split binary data/sonic2app.exe newsplit/ObjectLists.ini output/
+@echo Data_DLL split
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/ADVERTISE_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/BOSS_GOLEM_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/BOSS_GOLEM_E_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/STG34_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/CART_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/Chao_DLL.ini output/
+..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll newsplit/LeftoverDLL.ini output/
