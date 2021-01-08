@@ -173,7 +173,7 @@ namespace ProjectManager
 							break;
 
 						case SplitType.MDL:
-							SA_Tools.SplitMDL.SplitMDL.Split(splitControl.IsBigEndian(), splitControl.GetFilePath(),
+							SA_Tools.SAArc.sa2MDL.Split(splitControl.IsBigEndian(), splitControl.GetFilePath(),
 								outputFolder, splitControl.AnimFiles);
 							break;
 

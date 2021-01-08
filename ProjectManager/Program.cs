@@ -164,7 +164,7 @@ namespace ProjectManager
 
 		private static void CLISplitMDL(StartupArgs args)
 		{
-			SA_Tools.SplitMDL.SplitMDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
+			SA_Tools.SAArc.sa2MDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
 		}
 
 		private static void CLIBuild(StartupArgs args)

@@ -57,20 +57,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "string", "String" }
 		};
 
-		public static SA_Tools.IniData LoadINI(string filename,
-			ref Dictionary<string, bool> defaultExportState)
+		private static void CheckItems(KeyValuePair<string, SA_Tools.FileInfo> item, SA_Tools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
 		{
-			SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(filename);
-			defaultExportState.Clear();
-
-			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+			bool? modified = null;
+			switch (item.Value.Type)
 			{
-				bool? modified = null;
-				switch (item.Value.Type)
-				{
-					case "cutscenetext":
+				case "cutscenetext":
 					{
 						modified = false;
 						string[] hashes = item.Value.MD5Hash.Split(',');
@@ -85,7 +77,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 						}
 					}
 					break;
-					case "recapscreen":
+				case "recapscreen":
 					{
 						modified = false;
 						int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
@@ -105,7 +97,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 					}
 					break;
-					case "npctext":
+				case "npctext":
 					{
 						modified = false;
 						int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
@@ -125,7 +117,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 					}
 					break;
-					case "deathzone":
+				case "deathzone":
 					{
 						modified = false;
 						string[] hashes = item.Value.MD5Hash.Split(',');
@@ -150,20 +142,49 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 					}
 					break;
-					case "levelpathlist":
+				case "levelpathlist":
+					{
+						modified = false;
+						Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
+						string[] hash1 = item.Value.MD5Hash.Split('|');
+						foreach (string hash in hash1)
 						{
-							modified = false;
-							Dictionary<string, string[]> hashes = new Dictionary<string, string[]>();
-							string[] hash1 = item.Value.MD5Hash.Split('|');
-							foreach (string hash in hash1)
+							string[] hash2 = hash.Split(':');
+							hashes.Add(hash2[0], hash2[1].Split(','));
+						}
+						foreach (string dir in Directory.GetDirectories(item.Value.Filename))
+						{
+							string name = new DirectoryInfo(dir).Name;
+							if (!hashes.ContainsKey(name))
 							{
-								string[] hash2 = hash.Split(':');
-								hashes.Add(hash2[0], hash2[1].Split(','));
+								modified = true;
+								break;
 							}
-							foreach (string dir in Directory.GetDirectories(item.Value.Filename))
+						}
+						if (modified.Value)
+							break;
+						foreach (KeyValuePair<string, string[]> dirinfo in hashes)
+						{
+							string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
+							if (!Directory.Exists(dir))
 							{
-								string name = new DirectoryInfo(dir).Name;
-								if (!hashes.ContainsKey(name))
+								modified = true;
+								break;
+							}
+							if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
+							{
+								modified = true;
+								break;
+							}
+							for (int i = 0; i < dirinfo.Value.Length; i++)
+							{
+								string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+								if (!File.Exists(file))
+								{
+									modified = true;
+									break;
+								}
+								else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
 								{
 									modified = true;
 									break;
@@ -171,68 +192,38 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							}
 							if (modified.Value)
 								break;
-							foreach (KeyValuePair<string, string[]> dirinfo in hashes)
-							{
-								string dir = Path.Combine(item.Value.Filename, dirinfo.Key);
-								if (!Directory.Exists(dir))
-								{
-									modified = true;
-									break;
-								}
-								if (Directory.GetFiles(dir, "*.ini").Length != dirinfo.Value.Length)
-								{
-									modified = true;
-									break;
-								}
-								for (int i = 0; i < dirinfo.Value.Length; i++)
-								{
-									string file = Path.Combine(dir, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
-									if (!File.Exists(file))
-									{
-										modified = true;
-										break;
-									}
-									else if (HelperFunctions.FileHash(file) != dirinfo.Value[i])
-									{
-										modified = true;
-										break;
-									}
-								}
-								if (modified.Value)
-									break;
-							}
 						}
-						break;
-					case "pathlist":
+					}
+					break;
+				case "pathlist":
+					{
+						modified = false;
+						string[] hashes = item.Value.MD5Hash.Split(',');
+						if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
 						{
-							modified = false;
-							string[] hashes = item.Value.MD5Hash.Split(',');
-							if (Directory.GetFiles(item.Value.Filename, "*.ini").Length != hashes.Length)
+							modified = true;
+							break;
+						}
+						for (int i = 0; i < hashes.Length; i++)
+						{
+							string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
+							if (!File.Exists(file))
 							{
 								modified = true;
 								break;
 							}
-							for (int i = 0; i < hashes.Length; i++)
+							else if (HelperFunctions.FileHash(file) != hashes[i])
 							{
-								string file = Path.Combine(item.Value.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + ".ini");
-								if (!File.Exists(file))
-								{
-									modified = true;
-									break;
-								}
-								else if (HelperFunctions.FileHash(file) != hashes[i])
-								{
-									modified = true;
-									break;
-								}
+								modified = true;
+								break;
 							}
 						}
+					}
 					break;
-					case "animindexlist":
+				case "animindexlist":
+					{
 						modified = false;
-
 						string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
-
 						foreach (string md5KeyValuePair in md5KeyvaluePairs)
 						{
 							string[] keySplit = md5KeyValuePair.Split(':');
@@ -248,19 +239,54 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								}
 							}
 						}
-
 						break;
+					}
+				default:
+					if (!string.IsNullOrEmpty(item.Value.MD5Hash))
+						modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
+					break;
+			}
+			defaultExportState.Add(item.Key, modified ?? true);
+		}
 
-					default:
-						if (!string.IsNullOrEmpty(item.Value.MD5Hash))
-							modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
-						break;
-				}
+		public static SA_Tools.IniData LoadINI(string filename,
+			ref Dictionary<string, bool> defaultExportState)
+		{
+			SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(filename);
+			defaultExportState.Clear();
 
-				defaultExportState.Add(item.Key, modified ?? true);
+			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+			{
+				CheckItems(item, iniData, ref defaultExportState);
 			}
 
 			return iniData;
+		}
+
+		public static SA_Tools.IniData LoadMultiINI(List<string> filename,
+			ref Dictionary<string, bool> defaultExportState)
+		{
+			defaultExportState.Clear();
+			SA_Tools.IniData newiniData = new SA_Tools.IniData();
+			Dictionary<string, SA_Tools.FileInfo> curItems = new Dictionary<string, SA_Tools.FileInfo>();
+
+			foreach (string arrFile in filename)
+			{
+				SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(arrFile);
+
+				Environment.CurrentDirectory = Path.GetDirectoryName(arrFile);
+
+				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+				{
+					CheckItems(item, iniData, ref defaultExportState);
+
+					curItems.Add(item.Key, item.Value);
+				}
+			}
+			newiniData.Files = curItems;
+			return newiniData;
 		}
 
 		public static void ExportINI(SA_Tools.IniData iniData,
