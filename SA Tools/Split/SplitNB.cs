@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using SonicRetro.SAModel;
 
 namespace SA_Tools.Split
 {
 	public static class SplitNB
 	{
+
+		[DllImport("shlwapi.dll", SetLastError = true)]
+		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath,
+string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+
 		private enum AnimSections
 		{
 			MKEY_F = 0,
@@ -27,8 +33,9 @@ namespace SA_Tools.Split
 			MODEL = 6,
 			OBJECT = 7,
 		}
-		public static void BuildNBFile(string filename, string dest, bool verbose = false)
+		public static void BuildNBFile(string filename, string dest, int verbose = 0)
 		{
+			//Needs update to use filenames from an INI file
 			Dictionary<int, string> sectionlist = IniSerializer.Deserialize<Dictionary<int, string>>(filename);
 			List<byte> result = new List<byte>();
 			result.AddRange(BitConverter.GetBytes(0x04424A4E));
@@ -54,7 +61,7 @@ namespace SA_Tools.Split
 							break;
 						case ".saanim":
 							NJS_MOTION mot = NJS_MOTION.Load(insidepath + ".saanim");
-							if (verbose) Console.WriteLine("Section {0}", item.Key);
+							if (verbose > 1) Console.WriteLine("Section {0}", item.Key);
 							writeout = GetSections(mot, verbose);
 							result.AddRange(BitConverter.GetBytes((ushort)3));
 							result.AddRange(BitConverter.GetBytes((ushort)0xCDCD));
@@ -74,7 +81,7 @@ namespace SA_Tools.Split
 				File.WriteAllBytes(dest, result.ToArray());
 			}
 		}
-		public static void SplitNBFile(string filename, bool extractchunks, string outdir, bool verbose = false)
+		public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null)
 		{
 			Dictionary<int, string> sectionlist = new Dictionary<int, string>();
 			Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
@@ -93,11 +100,25 @@ namespace SA_Tools.Split
 			}
 			if (!Directory.Exists(outdir))
 				Directory.CreateDirectory(outdir);
-			string outdir_nb = Path.Combine(outdir, Path.GetFileNameWithoutExtension(filename));
-			if (!Directory.Exists(outdir_nb))
-				Directory.CreateDirectory(outdir_nb);
-			Environment.CurrentDirectory = outdir_nb;
+			Environment.CurrentDirectory = outdir;
 			int numfiles = BitConverter.ToInt16(file, 4);
+			Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
+			inifilename = Path.GetFullPath(inifilename);
+			if (File.Exists(inifilename))
+			{
+				splitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inifilename);
+				if (verbose > 0)
+					Console.WriteLine("Split INI: {0}", inifilename);
+			}
+			else
+			{
+				if (verbose > 0)
+					Console.WriteLine("Split INI {0} not found!", inifilename);
+				for (int i = 0; i < numfiles; i++)
+				{
+					splitfilenames[i] = i.ToString("D2");
+				}
+			}
 			int curaddr = 8;
 			for (int i = 0; i < numfiles; i++)
 			{
@@ -107,29 +128,29 @@ namespace SA_Tools.Split
 				switch (type)
 				{
 					case 0:
-						if (verbose) Console.Write("\nSection {0} at {1} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (verbose > 0) Console.Write("\nSection {0} at {1} is empty\n", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						sectionlist.Add(i, "NULL");
 						break;
 					case 1:
-						if (verbose) Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-						NJS_OBJECT mdl = ProcessModel(chunk, verbose);
+						NJS_OBJECT mdl = ProcessModel(chunk, verbose, curaddr + 8);
 						//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mdl));
 						modellist.Add(i, mdl);
-						sectionlist.Add(i, i.ToString("D2") + ".sa1mdl");
+						sectionlist.Add(i, splitfilenames[i] + ".sa1mdl");
 						break;
 					case 3:
-						if (verbose) Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-						NJS_MOTION mot = ProcessMotion(chunk, verbose);
+						NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
 						//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
 						animlist.Add(i, mot);
-						sectionlist.Add(i, i.ToString("D2") + ".saanim");
+						sectionlist.Add(i, splitfilenames[i] + ".saanim");
 						break;
 					default:
-						if (verbose) Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-						sectionlist.Add(i, i.ToString("D2") + ".wtf");
+						sectionlist.Add(i, splitfilenames[i] + ".wtf");
 						break;
 				}
 				curaddr += chunk.Length + 8;
@@ -142,11 +163,17 @@ namespace SA_Tools.Split
 				{
 					if (modelitem.Value.CountAnimated() == animitem.Value.ModelParts)
 					{
-						animitem.Value.Save(animitem.Key.ToString("D2") + ".saanim");
-						anims.Add(animitem.Key.ToString("D2") + ".saanim");
+						if (!Directory.Exists(Path.GetDirectoryName(splitfilenames[animitem.Key] + ".saanim")) && Path.GetDirectoryName(splitfilenames[animitem.Key] + ".saanim") != "")
+							Directory.CreateDirectory(Path.GetDirectoryName(splitfilenames[animitem.Key] + ".saanim"));
+						animitem.Value.Save(splitfilenames[animitem.Key] + ".saanim");
+						System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+						PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(outdir, splitfilenames[animitem.Key] + ".saanim")), 0, Path.GetFullPath(splitfilenames[animitem.Key] + ".saanim"), 0);
+						anims.Add(sb.ToString());
 					}
 				}
-				ModelFile.CreateFile(modelitem.Key.ToString("D2") + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
+				if (!Directory.Exists(Path.GetDirectoryName(splitfilenames[modelitem.Key] + ".sa1mdl")) && Path.GetDirectoryName(splitfilenames[modelitem.Key] + ".sa1mdl") != "")
+					Directory.CreateDirectory(Path.GetDirectoryName(splitfilenames[modelitem.Key] + ".sa1mdl"));
+				ModelFile.CreateFile(splitfilenames[modelitem.Key] + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
 			}
 			IniSerializer.Serialize(sectionlist, Path.Combine(outdir, Path.GetFileNameWithoutExtension(filename) + ".ini"));
 		}
@@ -413,7 +440,7 @@ namespace SA_Tools.Split
 			result.InsertRange(objectsection + 4 + 8, BitConverter.GetBytes((uint)objs.Length * 52));
 			return result.ToArray();
 		}
-		static byte[] GetSections(NJS_MOTION motion, bool verbose = false)
+		static byte[] GetSections(NJS_MOTION motion, int verbose = 0)
 		{
 			List<byte> result = new List<byte>();
 			int[] mkey_f_addr = new int[motion.ModelParts];
@@ -427,7 +454,7 @@ namespace SA_Tools.Split
 				if (model.Position != null && model.Position.Count > 0)
 				{
 					mkey_f_addr[anim.Key] = result.Count;
-					if (verbose) Console.WriteLine("MKEY_F: {0} at {1}", anim.Key, result.Count.ToString("X"));
+					if (verbose > 1) Console.WriteLine("MKEY_F: {0} at {1}", anim.Key, result.Count.ToString("X"));
 					foreach (var item in model.Position)
 					{
 						result.AddRange(BitConverter.GetBytes(item.Key));
@@ -452,7 +479,7 @@ namespace SA_Tools.Split
 				if (model.Rotation != null && model.Rotation.Count > 0)
 				{
 					mkey_a_addr[anim.Key] = result.Count;
-					if (verbose) Console.WriteLine("MKEY_A: {0} at {1}", anim.Key, result.Count.ToString("X"));
+					if (verbose > 1) Console.WriteLine("MKEY_A: {0} at {1}", anim.Key, result.Count.ToString("X"));
 					foreach (var item in model.Rotation)
 					{
 						result.AddRange(BitConverter.GetBytes(item.Key));
@@ -517,7 +544,7 @@ namespace SA_Tools.Split
 			result.AddRange(BitConverter.GetBytes((short)motion.InterpolationMode));
 			return result.ToArray();
 		}
-		static NJS_MOTION ProcessMotion(byte[] file, bool verbose = false)
+		static NJS_MOTION ProcessMotion(byte[] file, int verbose = 0, int startaddress = 0)
 		{
 			int frames;
 			InterpolationMode intmode;
@@ -528,27 +555,29 @@ namespace SA_Tools.Split
 				AnimSections section_type = (AnimSections)BitConverter.ToInt16(file, curaddr);
 				int section_size = BitConverter.ToInt32(file, curaddr + 4);
 				int section_addr = curaddr + 8;
-				if (verbose) Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
+				if (verbose > 1) Console.Write("Subsection type {0}, size {1}, data begins at {2}\n", section_type.ToString(), section_size, section_addr.ToString("X"));
 				switch (section_type)
 				{
 					case AnimSections.MKEY_F:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
 						break;
 					case AnimSections.MKEY_A:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
 						break;
 					case AnimSections.UNKNOWN:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
 						break;
 					case AnimSections.MDATA2_HEADER:
-						if (verbose) Console.Write(", number of MDATA entries: {0}\n", BitConverter.ToInt32(file, section_addr) >> BitConverter.ToInt32(file, section_addr + 4));
+						if (verbose > 1) Console.Write(", number of MDATA entries: {0}\n", BitConverter.ToInt32(file, section_addr) >> BitConverter.ToInt32(file, section_addr + 4));
 						break;
 					case AnimSections.MOTION:
+						if (verbose > 0)
+							Console.WriteLine("Motion at {0}", (startaddress + section_addr).ToString("X"));
 						frames = BitConverter.ToInt32(file, section_addr + 4);
 						intmode = (InterpolationMode)BitConverter.ToInt16(file, section_addr + 10);
 						animtype = (AnimFlags)BitConverter.ToInt16(file, section_addr + 8);
 						int mdataaddr = BitConverter.ToInt32(file, section_addr);
-						if (verbose) Console.Write("\nMDATA header at: {0}, frames: {1}, flags: {2}, interpolation: {3}", mdataaddr.ToString("X"), frames, animtype.ToString(), intmode.ToString());
+						if (verbose > 1) Console.Write("\nMDATA header at: {0}, frames: {1}, flags: {2}, interpolation: {3}", mdataaddr.ToString("X"), frames, animtype.ToString(), intmode.ToString());
 						//Create motion stub
 						NJS_MOTION mot = new NJS_MOTION();
 						mot.Name = "animation_" + section_addr.ToString("X8");
@@ -557,7 +586,7 @@ namespace SA_Tools.Split
 						mot.InterpolationMode = intmode;
 						//Read the MDATA header and get the number of MDATA entries
 						mot.ModelParts = BitConverter.ToInt32(file, mdataaddr) >> BitConverter.ToInt32(file, mdataaddr + 4);
-						if (verbose) Console.WriteLine(", model parts: {0}", mot.ModelParts);
+						if (verbose > 1) Console.WriteLine(", model parts: {0}", mot.ModelParts);
 						int tmpaddr = mdataaddr + 8; //Start of actual MDATA array
 						for (int u = 0; u < mot.ModelParts; u++)
 						{
@@ -604,7 +633,7 @@ namespace SA_Tools.Split
 			while (curaddr < file.Length);
 			return null;
 		}
-		static NJS_OBJECT ProcessModel(byte[] file, bool verbose = false)
+		static NJS_OBJECT ProcessModel(byte[] file, int verbose = 0, int startaddress = 0)
 		{
 			int curaddr = 0;
 			do
@@ -612,44 +641,46 @@ namespace SA_Tools.Split
 				int temp = BitConverter.ToInt16(file, curaddr);
 				if (temp < 0 || temp > 7)
 				{
-					if (verbose) Console.WriteLine("Skipping two padding bytes at {0}", curaddr.ToString("X"));
+					if (verbose > 1) Console.WriteLine("Skipping two padding bytes at {0}", curaddr.ToString("X"));
 					curaddr += 2;
 				}
 				ModelSections section_type = (ModelSections)BitConverter.ToInt16(file, curaddr);
 				int itemnum = BitConverter.ToInt16(file, curaddr + 2);
 				int section_size = BitConverter.ToInt32(file, curaddr + 4);
 				int section_addr = curaddr + 8;
-				if (verbose) Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
+				if (verbose > 1) Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
 				switch (section_type)
 				{
 					case ModelSections.POLY:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 2.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 2.0f);
 						break;
 					case ModelSections.VERTEX:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
 						break;
 					case ModelSections.NORMAL:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
 						break;
 					case ModelSections.UV:
-						if (verbose) Console.Write(", calculated item count: {0}\n", (float)section_size / 4.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 4.0f);
 						break;
 					case ModelSections.MATERIAL:
-						if (verbose) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 20.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 20.0f);
 						break;
 					case ModelSections.MESHSET:
-						if (verbose) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 24.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 24.0f);
 						break;
 					case ModelSections.MODEL:
-						if (verbose) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 40.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 40.0f);
 						break;
 					case ModelSections.OBJECT:
-						if (verbose) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 52.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 52.0f);
 						break;
 				}
 				curaddr += 8 + section_size;
 			}
 			while (curaddr < file.Length);
+			if (verbose > 0)
+				Console.WriteLine("Model at {0}", (file.Length - 52 + startaddress).ToString("X"));
 			return new NJS_OBJECT(file, file.Length - 52, 0, ModelFormat.Basic, null);
 		}
 		static int FindModelIndex(NJS_OBJECT mdl, NJS_OBJECT[] array)
