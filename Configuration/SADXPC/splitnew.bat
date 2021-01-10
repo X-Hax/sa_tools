@@ -54,4 +54,4 @@ echo DLL split
 ..\bin\split binary data/system/ADV01MODELS.DLL newsplit/ADV0100_DLL.ini output/
 ..\bin\split binary data/system/ADV01CMODELS.DLL newsplit/ADV0130_DLL.ini output/
 ..\bin\split binary data/system/ADV02MODELS.DLL newsplit/ADV02_DLL.ini output/
-rem ..\bin\split binary data/system/ADV03MODELS.DLL newsplit/adv03models_ex.ini output/
+..\bin\split binary data/system/ADV03MODELS.DLL newsplit/ADV03_DLL.ini output/
