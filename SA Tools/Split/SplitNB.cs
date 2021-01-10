@@ -103,7 +103,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 			Environment.CurrentDirectory = outdir;
 			int numfiles = BitConverter.ToInt16(file, 4);
 			Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
-			inifilename = Path.GetFullPath(inifilename);
+			if (inifilename != null) inifilename = Path.GetFullPath(inifilename);
 			if (File.Exists(inifilename))
 			{
 				splitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inifilename);
