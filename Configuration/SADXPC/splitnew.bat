@@ -46,7 +46,7 @@ echo EXE split
 ..\bin\split binary data/sonic.exe newsplit/Sounds.ini output/
 echo DLL split
 ..\bin\split binary data/system/CHRMODELS_orig.DLL newsplit/CHRMODELS.ini output/
-..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/BOSSCHAOS0MODELS.ini output/
+..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/B_CHAOS0_DLL.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_DAYTIME.DLL newsplit/chaostggarden02mr_daytime.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_EVENING.DLL newsplit/chaostggarden02mr_evening.ini output/
 ..\bin\split binary data/system/CHAOSTGGARDEN02MR_NIGHT.DLL newsplit/chaostggarden02mr_night.ini output/
@@ -55,3 +55,6 @@ echo DLL split
 ..\bin\split binary data/system/ADV01CMODELS.DLL newsplit/ADV0130_DLL.ini output/
 ..\bin\split binary data/system/ADV02MODELS.DLL newsplit/ADV02_DLL.ini output/
 ..\bin\split binary data/system/ADV03MODELS.DLL newsplit/ADV03_DLL.ini output/
+echo NB split
+..\bin\split nb data/system/E101R_GC.NB output/ -ini newsplit/B_E101_R_NB.ini
+..\bin\split nb data/system/EROBO_GC.NB output/ -ini newsplit/B_ROBO_NB.ini
