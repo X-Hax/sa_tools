@@ -10,7 +10,6 @@ ModelConverter: Converts .sa1mdl files to .sa2mdl and vice versa
 ObjScan: Scans a binary or a memory dump for levels or models and extracts them
 PAKTool: Extracts and builds .PAK archives
 SETCodeGenerator: Creates object loading code from a SET file and an object list
-NBTool: Extracts models and animations from .NB files, builds NB files
 Split: Extracts data from binary files
 StructExporter: Converts .sa1lvl, .sa2lvl, .sa1mdl, .sa2mdl and .saanim files to C structs
 TextureRemap: Remaps texture IDs in a model file

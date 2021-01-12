@@ -39,7 +39,7 @@ namespace Split
 				Console.WriteLine("-Splitting binary files with INI data-");
 				Console.WriteLine("split binary <file> <inifile> [output path] [-nometa]\n");
 				Console.WriteLine("-Splitting SA1/SADX NB files-");
-				Console.WriteLine("split nb <file> [output path]\n");
+				Console.WriteLine("split nb <file> [output path] -ini [split INI file]\n");
 				Console.WriteLine("-Splitting SA2 MDL files-");
 				Console.WriteLine("split mdl <file> [output path] -anim [animation files]\n");
 				Console.WriteLine("-Splitting SA2B MDL files-");
@@ -109,6 +109,11 @@ namespace Split
 				case "nb":
 				case "nb_b":
 					string fullpath_nb = Path.GetFullPath(args[1]);
+					string path_ini = null;
+					if (args[args.Length - 2].ToLowerInvariant() == "-ini")
+					{
+						path_ini = Path.GetFullPath(args[args.Length - 1]);
+					}
 					if (!File.Exists(fullpath_nb))
 					{
 						Console.WriteLine("File {0} doesn't exist.", fullpath_nb);
@@ -122,7 +127,7 @@ namespace Split
 						fullpath_out = Path.GetFullPath(fullpath_out);
 					}
 					Console.WriteLine("Output folder: {0}", fullpath_out);
-					SA_Tools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, true);
+					SA_Tools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, 1, path_ini);
 					break;
 				case "mdl":
 				case "mdl_b":
