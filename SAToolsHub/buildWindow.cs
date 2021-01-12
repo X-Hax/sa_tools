@@ -27,6 +27,7 @@ namespace SAToolsHub
 		string modFolder;
 		string sysFolder;
 		List<string> iniEXEFiles = new List<string>();
+		List<string> iniDLLFiles = new List<string>();
 		List<string> sa2MdlMtnFiles = new List<string>();
 
 		void setAssemblies()
@@ -97,7 +98,9 @@ namespace SAToolsHub
 		void genAssemblies()
 		{
 			SA_Tools.IniData EXEiniData = new SA_Tools.IniData();
+			SA_Tools.SplitDLL.DllIniData DLLiniData = new SA_Tools.SplitDLL.DllIniData();
 			Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
+			Dictionary<string, bool> itemsDLLToExport = new Dictionary<string, bool>();
 
 			foreach (KeyValuePair<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assembly in assemblies)
 			{
@@ -112,11 +115,18 @@ namespace SAToolsHub
 						break;
 
 					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
-						SA_Tools.SplitDLL.DllIniData dllIniData =
-							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
+						if (SAToolsHub.setGame == "SA2PC")
+						{
+							iniDLLFiles.Add(iniPath);
+						}
+						else
+						{
+							SA_Tools.SplitDLL.DllIniData dllIniData =
+								SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
-						SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
-							itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
+							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
+								itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
+						}
 						break;
 					default:
 						break;
@@ -129,6 +139,14 @@ namespace SAToolsHub
 
 				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
+			}
+
+			if (iniDLLFiles.Count > 0)
+			{
+				DLLiniData = SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
+
+				SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
+					itemsDLLToExport, Path.Combine(modFolder, "Data_DLL_orig_data.ini"));
 			}
 
 			if (sa2MdlMtnFiles.Count > 0)
@@ -288,13 +306,19 @@ namespace SAToolsHub
 				if (srcFile.Contains("exe"))
 				{
 					chkBoxEXE.Items.Add(splitEntry);
-					chkBoxEXE.DisplayMember = "IniFile";
+					if (splitEntry.CmnName.Length > 0)
+						chkBoxEXE.DisplayMember = "CmnName";
+					else
+						chkBoxEXE.DisplayMember = "IniFile";
 				}
 
 				if (srcFile.Contains("dll"))
 				{
 					chkBoxDLL.Items.Add(splitEntry);
-					chkBoxDLL.DisplayMember = "IniFile";
+					if (splitEntry.CmnName.Length > 0)
+						chkBoxDLL.DisplayMember = "CmnName";
+					else
+						chkBoxDLL.DisplayMember = "IniFile";
 				}
 			}
 		}

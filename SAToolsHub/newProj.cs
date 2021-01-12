@@ -491,7 +491,7 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					XmlSerializer serializer = new XmlSerializer(typeof(ProjectManagement.ProjectTemplate));
+					XmlSerializer serializer = new XmlSerializer(typeof(ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
 					if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
 					{
