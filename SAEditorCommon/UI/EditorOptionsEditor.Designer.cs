@@ -227,7 +227,7 @@
             this.setDrawDistSlider.SmallChange = 100;
             this.setDrawDistSlider.TabIndex = 5;
             this.setDrawDistSlider.TickFrequency = 500;
-            this.setDrawDistSlider.Value = 3000;
+            this.setDrawDistSlider.Value = 6000;
             this.setDrawDistSlider.Scroll += new System.EventHandler(this.setDrawDistSlider_Scroll);
             // 
             // setDrawDistLabel

@@ -216,3 +216,4 @@ pip-log.txt
 *.db
 *.opendb
 /.vs
+/tools

@@ -629,7 +629,11 @@ namespace ProjectManager
 		private string GetObjDefsDirectory()
 		{
 #if DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
+			string objdp= Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
+			if (Directory.Exists(objdp))
+				return objdp;
+			else
+				return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(SA_Tools.Game.SADX) + "/objdefs/";
 #endif
 
 #if !DEBUG
@@ -682,6 +686,8 @@ namespace ProjectManager
 				string iniFolder = "";
 #if DEBUG
 				iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../Configuration/" + GetIniFolderForGame(game);
+				if (!Directory.Exists(iniFolder))
+					iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../" + GetIniFolderForGame(game);
 #endif
 
 #if !DEBUG

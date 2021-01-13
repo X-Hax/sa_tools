@@ -1,0 +1,1 @@
+start /B "" "..\tools\SADXFontEdit.exe"
