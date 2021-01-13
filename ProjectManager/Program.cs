@@ -70,109 +70,24 @@ namespace ProjectManager
 			//Properties.Settings.Default.Upgrade();
 			settings = ProjectManagerSettings.Load();
 
-			StartupArgs startupArgs = new StartupArgs();
-			startupArgs.mode = CLIMode.None;
-
-			FluentCommandLineParser parser = new FluentCommandLineParser();
-			// parse main options
-			parser.Setup<CLIMode>('m', "mode").Callback((CLIMode mode) =>
+			// first check to see if we're configured properly.
+			if (!AnyGamesConfigured())
 			{
-				startupArgs.mode = mode;
-			});
+				GameConfig gameConfig = new GameConfig();
+				DialogResult configResult = gameConfig.ShowDialog();
 
-			// parse split options
-			parser.Setup<string>('f', "FileToSplit").Callback((string fileToSplit) => { startupArgs.filePath = fileToSplit; });
-			parser.Setup<string>('o', "OutputFolder").Callback((string folder) => { startupArgs.outputFolder = folder; });
-			parser.Setup<string>('d', "DataMappingFilePath").Callback((string mappingPath) => { startupArgs.dataMappingPath = mappingPath; });
-			parser.Setup<bool>('b', "BigEndian").Callback((bool bigEndian) => { startupArgs.isBigEndian = bigEndian; });
-			parser.Setup<List<string>>('a', "AnimationList").Callback((List<string> animationList) => { startupArgs.animationList = animationList.ToArray(); });
-			//parser.Setup<bool>
-
-			// parse build options
-			parser.Setup<string>('p', "ProjectName").Callback((string projectName) => { startupArgs.projectName = projectName; });
-			parser.Setup<SA_Tools.Game>('g', "Game").Callback((SA_Tools.Game game) => { startupArgs.game = game; });
-			parser.Setup<bool>('r', "RunAfterBuild").Callback((bool runAfterbuild) => { startupArgs.runAfterBuild = runAfterbuild; });
-
-			// do help
-			parser.SetupHelp("?", "help").Callback((string text) =>
-			{
-				Console.WriteLine("Project Manager cmd line options:");
-				Console.WriteLine(text);
-				Console.WriteLine("NOTE: Not all of these options are valid in all contexts.");
-				Console.WriteLine("You must set Mode. To either Split, SplitMDL, or Build.");
-				Console.WriteLine("Split requires:");
-				Console.WriteLine("   FileToSplit: This is the file with the data you'd like to extract.");
-				Console.WriteLine("   DataMappingFilePath: This is the INI file that says where things are in the data file.");
-				Console.WriteLine("   OutputFolder: This is where the split data will be placed.");
-				Console.WriteLine();
-				Console.WriteLine("SplitMDL requires everything Split does but also:");
-				Console.WriteLine("   BigEndian: true/false. States whether or not the file is big endian.");
-				Console.WriteLine("   AnimationList: (optional) a list of SAAnimation files to use. Paths are relative to the mdl file.");
-				Console.WriteLine("Build requires:");
-				Console.WriteLine("   ProjectName: name of the project to build.");
-				Console.WriteLine("   Game: Game the project is for. Valid values are SADXPC and SA2B");
-				Console.WriteLine("   RunAfterBuild: true/false. Whether or not to start the game and load the mod after build is complete");
-			});
-
-			parser.Parse(args);
-				
-			if(startupArgs.mode != CLIMode.None) // user wants to use the CLI
-			{
-				switch (startupArgs.mode)
-				{
-					case CLIMode.Split:
-						CLISplit(startupArgs);
-						break;
-					case CLIMode.SplitMDL:
-						CLISplitMDL(startupArgs);
-						break;
-					case CLIMode.Build:
-						CLIBuild(startupArgs);
-						break;
-					default:
-						break;
-				}
+				if (configResult == DialogResult.Abort) return (int)SA_Tools.Split.SplitERRORVALUE.InvalidConfig;
+				gameConfig.Dispose();
 			}
-			else
-			{
-				// first check to see if we're configured properly.
-				if(!AnyGamesConfigured())
-				{
-					GameConfig gameConfig = new GameConfig();
-					DialogResult configResult = gameConfig.ShowDialog();
 
-					if (configResult == DialogResult.Abort) return (int)SA_Tools.Split.SplitERRORVALUE.InvalidConfig;
-					gameConfig.Dispose();
-				}
-
-				// todo: catch unhandled exceptions
-				projectSelect = new ProjectManager();
-				Application.ThreadException += Application_ThreadException;
-				Application.Run(projectSelect);
-			}
+			// todo: catch unhandled exceptions
+			projectSelect = new ProjectManager();
+			Application.ThreadException += Application_ThreadException;
+			Application.Run(projectSelect);
 
 			return 0;
 		}
 
-		private static int CLISplit(StartupArgs startupArgs)
-		{
-			System.IO.FileInfo fileInfo = new System.IO.FileInfo(startupArgs.filePath);
-
-			return (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder) :
-				SA_Tools.Split.Split.SplitFile(startupArgs.filePath, startupArgs.dataMappingPath, startupArgs.outputFolder);
-		}
-
-		private static void CLISplitMDL(StartupArgs args)
-		{
-			SA_Tools.SAArc.sa2MDL.Split(args.isBigEndian, args.filePath, args.outputFolder, args.animationList);
-		}
-
-		private static void CLIBuild(StartupArgs args)
-		{
-			Console.WriteLine("CLI Build is not yet implemented");
-			Console.WriteLine("Press any key to exit.");
-			Console.ReadLine();
-		}
 
 		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
