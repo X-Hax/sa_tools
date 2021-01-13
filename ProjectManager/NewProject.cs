@@ -282,7 +282,7 @@ namespace ProjectManager
 			}
 		};
 
-		SplitData sonic2AppSplit = new SplitData() { dataFile = "sonic2app.exe", iniFile = "splitsonic2app.ini" };
+		SplitData sonic2AppSplit = new SplitData() { dataFile = "sonic2app.exe", iniFile = "sonic2app.ini" };
 
 		public NewProject()
 		{
@@ -629,7 +629,7 @@ namespace ProjectManager
 		private string GetObjDefsDirectory()
 		{
 #if DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
+			return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
 #endif
 
 #if !DEBUG
@@ -681,7 +681,7 @@ namespace ProjectManager
 				// get our ini files to split
 				string iniFolder = "";
 #if DEBUG
-				iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + GetIniFolderForGame(game);
+				iniFolder = Path.GetDirectoryName(Application.ExecutablePath) + "/../Configuration/" + GetIniFolderForGame(game);
 #endif
 
 #if !DEBUG
