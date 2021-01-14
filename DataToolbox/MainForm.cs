@@ -509,7 +509,7 @@ namespace SonicRetro.SAModel.DataToolbox
 				}
 				else return;
 			}
-				SplitProgress spl = new SplitProgress(null, listBox_SplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir);
+				SplitProgress spl = new SplitProgress(null, listBox_SplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir, checkBoxFindAllSplit.Checked);
 			spl.ShowDialog();
 		}
 
