@@ -444,6 +444,53 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+						case "gcmodel":
+							{
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = mdl.Name
+								};
+								output.Items.Add(info);
+								if (!labels.Contains(mdl.Name))
+								{
+									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.GC));
+									labels.AddRange(mdl.GetLabels());
+								}
+							}
+							break;
+						case "gcmodelarray":
+							for (int i = 0; i < data.Length; i++)
+							{
+								int ptr = BitConverter.ToInt32(datafile, address);
+								if (ptr != 0)
+								{
+									ptr = (int)(ptr - imageBase);
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
+									DllItemInfo info = new DllItemInfo()
+									{
+										Export = name,
+										Index = i,
+										Label = mdl.Name
+									};
+									output.Items.Add(info);
+									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
+									{
+										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2bmdl");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
+										}
+										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.GC));
+										if (!labels.Contains(mdl.Name))
+											labels.AddRange(mdl.GetLabels());
+									}
+								}
+								address += 4;
+							}
+							break;
 						case "actionarray":
 							for (int i = 0; i < data.Length; i++)
 							{
@@ -850,6 +897,9 @@ namespace SA_Tools.SplitDLL
 							break;
 						case ModelFormat.Chunk:
 							type = "chunkmodel";
+							break;
+						case ModelFormat.GC:
+							type = "gcmodel";
 							break;
 					}
 					output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(modelOutputPath));
