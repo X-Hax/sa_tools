@@ -84,12 +84,7 @@ namespace ProjectManager
 			// launch sadxlvl2
 			string sadxlvl2Path = "";
 
-#if DEBUG
-			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXLVL2/bin/Debug/SADXLVL2.exe";
-#endif
-#if !DEBUG
-			sadxlvl2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXLVL2/SADXLVL2.exe";
-#endif
+			sadxlvl2Path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SADXLVL2.exe");
 
 			string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectFolder, "sadxlvl.ini"));
 
@@ -104,12 +99,7 @@ namespace ProjectManager
 			// launch samdl
 			string samdlPath = "";
 
-#if DEBUG
-			samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SAMDL/bin/Debug/SAMDL.exe";
-#endif
-#if !DEBUG
-			samdlPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../SAMDL/SAMDL.exe";
-#endif
+			samdlPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SAMDL.exe");
 
 			Console.WriteLine(samdlPath);
 
@@ -125,12 +115,8 @@ namespace ProjectManager
 			// launch sadxtweaker2
 			string sadxtweaker2Path = "";
 
-#if DEBUG
-			sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXTweaker2/bin/Debug/SADXTweaker2.exe";
-#endif
-#if !DEBUG
-			sadxtweaker2Path = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/SADXTweaker2/SADXTweaker2.exe";
-#endif
+			sadxtweaker2Path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SADXTweaker2.exe");
+
 			string sonicDataPath = Path.GetFullPath(Path.Combine(projectFolder, "sonic_data.ini"));
 			System.Diagnostics.ProcessStartInfo sadxTweaker2StartInfo = new System.Diagnostics.ProcessStartInfo(
 				Path.GetFullPath(sadxtweaker2Path),

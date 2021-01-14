@@ -24,13 +24,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 				listRecentFiles.Items.Add(s);
 			string projectManagerPath = "";
 
-#if DEBUG
-			projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../../ProjectManager/bin/Debug/Settings.ini";
-#endif
-#if !DEBUG
-			projectManagerPath = Path.GetDirectoryName(Application.ExecutablePath) + "/../../ProjectManager/Settings.ini";
-#endif
-			ProjectManagement.ProjectSettings settings = ProjectManagement.ProjectSettings.Load(projectManagerPath);
+			projectManagerPath = Path.Combine(Application.ExecutablePath) + "Settings.ini";
+
+			ProjectManager.ProjectManagerSettings settings = ProjectManager.ProjectManagerSettings.Load(projectManagerPath);
 
 			string sadxGamePathInvalidReason = "";
 

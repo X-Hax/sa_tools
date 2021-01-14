@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -46,10 +46,12 @@
     <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
       <Project>{0d72870c-29a2-4b16-b016-2f2e266a0e64}</Project>
       <Name>SAEditorCommon</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0ee5d36f-cacf-41e9-8c9a-76ffd946b22d}</Project>
       <Name>SAModel</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

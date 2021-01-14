@@ -117,6 +117,7 @@ namespace Split
 					if (!File.Exists(fullpath_nb))
 					{
 						Console.WriteLine("File {0} doesn't exist.", fullpath_nb);
+						return;
 					}
 					Console.WriteLine("File: {0}", fullpath_nb);
 					fullpath_out = Path.GetDirectoryName(fullpath_nb);

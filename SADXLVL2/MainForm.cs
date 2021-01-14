@@ -666,11 +666,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private string GetObjDefsDirectory()
 		{
 #if DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
+			string objdp= Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
+			if (Directory.Exists(objdp)) return objdp;
+			else return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
 #endif
 
 #if !DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../objdefs/";
+			return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
 #endif
 		}
 

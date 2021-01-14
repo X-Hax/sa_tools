@@ -71,9 +71,9 @@
 			// NextButton
 			// 
 			this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.NextButton.Location = new System.Drawing.Point(334, 226);
+			this.NextButton.Location = new System.Drawing.Point(314, 226);
 			this.NextButton.Name = "NextButton";
-			this.NextButton.Size = new System.Drawing.Size(75, 23);
+			this.NextButton.Size = new System.Drawing.Size(95, 23);
 			this.NextButton.TabIndex = 5;
 			this.NextButton.Text = "Create Project";
 			this.NextButton.UseVisualStyleBackColor = true;
