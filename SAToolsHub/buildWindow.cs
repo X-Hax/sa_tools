@@ -2,11 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
@@ -306,7 +301,7 @@ namespace SAToolsHub
 				if (srcFile.Contains("exe"))
 				{
 					chkBoxEXE.Items.Add(splitEntry);
-					if (splitEntry.CmnName.Length > 0)
+					if (splitEntry.CmnName != null)
 						chkBoxEXE.DisplayMember = "CmnName";
 					else
 						chkBoxEXE.DisplayMember = "IniFile";
@@ -315,7 +310,7 @@ namespace SAToolsHub
 				if (srcFile.Contains("dll"))
 				{
 					chkBoxDLL.Items.Add(splitEntry);
-					if (splitEntry.CmnName.Length > 0)
+					if (splitEntry.CmnName != null)
 						chkBoxDLL.DisplayMember = "CmnName";
 					else
 						chkBoxDLL.DisplayMember = "IniFile";

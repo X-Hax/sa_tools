@@ -56,7 +56,7 @@ namespace SAEditorCommon.ProjectManagement
 		public string SourceFile { get; set; }
 		[XmlAttribute("IniFile")]
 		public string IniFile { get; set; }
-		[XmlElement("CmnName", IsNullable=true)]
+		[XmlElement("CmnName", IsNullable =true)]
 		public string CmnName { get; set; }
 	}
 
