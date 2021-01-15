@@ -79,7 +79,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(338, 78);
             this.label1.TabIndex = 3;
-            this.label1.Text = "The SADX game folder was incorrect because:\r\nreasons\r\n\r\nPlease run ProjectManager" +
+            this.label1.Text = "The SADX game folder was incorrect because:\r\nreasons\r\n\r\nPlease run ProjectManagement" +
     " to configure SADX game path.\r\n\r\nOpen sadxlvl.ini in your project folder manuall" +
     "y to start in manual mode.";
             // 

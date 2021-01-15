@@ -74,6 +74,9 @@
 			this.retrosSCHGForSADXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.retrosSCHGForSA2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sADXGitWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.additionalLinksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.blenderSASupportAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sonicAudioToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubIssueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.rightToolStrip = new System.Windows.Forms.ToolStrip();
 			this.tsSAMDL = new System.Windows.Forms.ToolStripButton();
@@ -111,9 +114,7 @@
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.additionalLinksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.blenderSASupportAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.sonicAudioToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.projectConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -243,7 +244,8 @@
             this.sA2ToolsToolStripMenuItem,
             this.toolStripSeparator4,
             this.splitToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.projectConverterToolStripMenuItem});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(51, 21);
 			this.toolsToolStripMenuItem.Text = "Tools";
@@ -255,7 +257,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
@@ -291,7 +293,7 @@
             this.sAFontEditorToolStripMenuItem,
             this.sASaveToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SADX Tools";
 			// 
 			// sADXLVL2ToolStripMenuItem
@@ -337,7 +339,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -371,19 +373,19 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(166, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
 			// 
@@ -433,7 +435,7 @@
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -441,7 +443,7 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
@@ -449,7 +451,7 @@
 			// monthlyToolStripMenuItem
 			// 
 			this.monthlyToolStripMenuItem.Name = "monthlyToolStripMenuItem";
-			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.monthlyToolStripMenuItem.Text = "Monthly";
 			this.monthlyToolStripMenuItem.ToolTipText = "Checks monthly for updates.";
 			this.monthlyToolStripMenuItem.Click += new System.EventHandler(this.monthlyToolStripMenuItem_Click);
@@ -506,6 +508,32 @@
 			this.sADXGitWikiToolStripMenuItem.Text = "SADX Modding Wiki";
 			this.sADXGitWikiToolStripMenuItem.ToolTipText = "Opens a link to the SADX Modding Guide hosted on GitHub";
 			this.sADXGitWikiToolStripMenuItem.Click += new System.EventHandler(this.sADXGitWikiToolStripMenuItem_Click);
+			// 
+			// additionalLinksToolStripMenuItem
+			// 
+			this.additionalLinksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.blenderSASupportAddonToolStripMenuItem,
+            this.sonicAudioToolsToolStripMenuItem});
+			this.additionalLinksToolStripMenuItem.Name = "additionalLinksToolStripMenuItem";
+			this.additionalLinksToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			this.additionalLinksToolStripMenuItem.Text = "Additional Links";
+			this.additionalLinksToolStripMenuItem.ToolTipText = "Additional resource links on the web.";
+			// 
+			// blenderSASupportAddonToolStripMenuItem
+			// 
+			this.blenderSASupportAddonToolStripMenuItem.Name = "blenderSASupportAddonToolStripMenuItem";
+			this.blenderSASupportAddonToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+			this.blenderSASupportAddonToolStripMenuItem.Text = "Blender SA Support Addon";
+			this.blenderSASupportAddonToolStripMenuItem.ToolTipText = "Justin113D\'s Blender addon for level and object editing.";
+			this.blenderSASupportAddonToolStripMenuItem.Click += new System.EventHandler(this.blenderSASupportAddonToolStripMenuItem_Click);
+			// 
+			// sonicAudioToolsToolStripMenuItem
+			// 
+			this.sonicAudioToolsToolStripMenuItem.Name = "sonicAudioToolsToolStripMenuItem";
+			this.sonicAudioToolsToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+			this.sonicAudioToolsToolStripMenuItem.Text = "Sonic Audio Tools";
+			this.sonicAudioToolsToolStripMenuItem.ToolTipText = "Skythe\'s Audio Tools for CriWare. Works with SA2 CSB Files.";
+			this.sonicAudioToolsToolStripMenuItem.Click += new System.EventHandler(this.sonicAudioToolsToolStripMenuItem_Click);
 			// 
 			// gitHubIssueTrackerToolStripMenuItem
 			// 
@@ -845,7 +873,7 @@
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(151, 98);
 			// 
 			// openFileToolStripMenuItem
 			// 
@@ -891,7 +919,7 @@
 			this.copyToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
 			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.copyToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.copyToolStripMenuItem.Text = "Copy";
 			this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
 			// 
@@ -901,35 +929,16 @@
 			this.pasteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
 			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
 			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
 			// 
-			// additionalLinksToolStripMenuItem
+			// projectConverterToolStripMenuItem
 			// 
-			this.additionalLinksToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.blenderSASupportAddonToolStripMenuItem,
-            this.sonicAudioToolsToolStripMenuItem});
-			this.additionalLinksToolStripMenuItem.Name = "additionalLinksToolStripMenuItem";
-			this.additionalLinksToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.additionalLinksToolStripMenuItem.Text = "Additional Links";
-			this.additionalLinksToolStripMenuItem.ToolTipText = "Additional resource links on the web.";
-			// 
-			// blenderSASupportAddonToolStripMenuItem
-			// 
-			this.blenderSASupportAddonToolStripMenuItem.Name = "blenderSASupportAddonToolStripMenuItem";
-			this.blenderSASupportAddonToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-			this.blenderSASupportAddonToolStripMenuItem.Text = "Blender SA Support Addon";
-			this.blenderSASupportAddonToolStripMenuItem.ToolTipText = "Justin113D\'s Blender addon for level and object editing.";
-			this.blenderSASupportAddonToolStripMenuItem.Click += new System.EventHandler(this.blenderSASupportAddonToolStripMenuItem_Click);
-			// 
-			// sonicAudioToolsToolStripMenuItem
-			// 
-			this.sonicAudioToolsToolStripMenuItem.Name = "sonicAudioToolsToolStripMenuItem";
-			this.sonicAudioToolsToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-			this.sonicAudioToolsToolStripMenuItem.Text = "Sonic Audio Tools";
-			this.sonicAudioToolsToolStripMenuItem.ToolTipText = "Skythe\'s Audio Tools for CriWare. Works with SA2 CSB Files.";
-			this.sonicAudioToolsToolStripMenuItem.Click += new System.EventHandler(this.sonicAudioToolsToolStripMenuItem_Click);
+			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.projectConverterToolStripMenuItem.Text = "Project Converter";
+			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
 			// 
 			// SAToolsHub
 			// 
@@ -1049,5 +1058,6 @@
 		private System.Windows.Forms.ToolStripMenuItem additionalLinksToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem blenderSASupportAddonToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sonicAudioToolsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem projectConverterToolStripMenuItem;
 	}
 }

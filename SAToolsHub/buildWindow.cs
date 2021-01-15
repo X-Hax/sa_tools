@@ -146,9 +146,14 @@ namespace SAToolsHub
 
 			if (sa2MdlMtnFiles.Count > 0)
 			{
-				string filePath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+				string filePath;
 
-				foreach(string folder in sa2MdlMtnFiles)
+				if (Directory.Exists(Path.Combine(SAToolsHub.projectDirectory, "Characters")))
+					filePath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+				else
+					filePath = Path.Combine(SAToolsHub.projectDirectory, "resource/gd_PC");
+
+				foreach (string folder in sa2MdlMtnFiles)
 				{
 					string file = Path.Combine(filePath, folder);
 					if (file.Contains("mdl"))

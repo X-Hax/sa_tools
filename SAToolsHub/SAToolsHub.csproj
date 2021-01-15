@@ -104,6 +104,12 @@
     <Compile Include="newProj.Designer.cs">
       <DependentUpon>newProj.cs</DependentUpon>
     </Compile>
+    <Compile Include="projConv.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="projConv.Designer.cs">
+      <DependentUpon>projConv.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -134,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="newProj.resx">
       <DependentUpon>newProj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="projConv.resx">
+      <DependentUpon>projConv.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="templateWriter.resx">
       <DependentUpon>templateWriter.cs</DependentUpon>

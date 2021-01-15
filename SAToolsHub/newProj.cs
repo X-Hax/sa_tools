@@ -103,7 +103,7 @@ namespace SAToolsHub
 					else
 					{
 						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (gamePathWarning == DialogResult.OK)
+						if (pathWarning == DialogResult.OK)
 						{
 							comboBox1.SelectedIndex = -1;
 						}
@@ -132,7 +132,7 @@ namespace SAToolsHub
 					else
 					{
 						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (gamePathWarning == DialogResult.OK)
+						if (pathWarning == DialogResult.OK)
 						{
 							comboBox1.SelectedIndex = -1;
 						}
@@ -373,15 +373,6 @@ namespace SAToolsHub
 				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
 			}
 
-			if (splitMdlEntries.Count > 0)
-			{
-				progress.SetTask("Splitting Character Models");
-				foreach (SplitEntryMDL splitMDL in splitMdlEntries)
-				{
-					splitMdlFiles(splitMDL, progress, gamePath, projFolder);
-				}
-			}
-
 			if (game == "SADXPC")
 			{
 				progress.SetTask("Finalizing Moddable Project Setup");
@@ -397,6 +388,14 @@ namespace SAToolsHub
 				
 			if (game == "SA2PC")
 			{
+				if (splitMdlEntries.Count > 0)
+				{
+					progress.SetTask("Splitting Character Models");
+					foreach (SplitEntryMDL splitMDL in splitMdlEntries)
+					{
+						splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+					}
+				}
 				progress.SetTask("Finalizing Moddable Project Setup");
 				makeProjectFolders(projFolder, progress, gameName);
 				GenerateModFile(gameName, progress, projFolder, projName);
@@ -435,6 +434,7 @@ namespace SAToolsHub
 
 		private void newProj_Shown(object sender, EventArgs e)
 		{
+			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			if (Directory.Exists(appPath + "/../../bin/"))
 				templatesPath = appPath + "/../../../Configuration/Templates/";

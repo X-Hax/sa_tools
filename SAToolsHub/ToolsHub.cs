@@ -34,6 +34,7 @@ namespace SAToolsHub
 		private buildWindow buildWindowDiag;
 		private templateWriter templateWriter;
 		private gameOptions gameOptionsDiag;
+		private projConv projectConverter;
 
 		enum fileTags
 		{
@@ -92,8 +93,8 @@ namespace SAToolsHub
 			buildWindowDiag = new buildWindow();
 			templateWriter = new templateWriter();
 			gameOptionsDiag = new gameOptions();
+			projectConverter = new projConv();
 		}
-
 
 		//Additional Code/Functions
 		private void openProject(string projectFile)
@@ -1155,6 +1156,11 @@ namespace SAToolsHub
 		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 
+		}
+
+		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			projectConverter.ShowDialog();
 		}
 	}
 }

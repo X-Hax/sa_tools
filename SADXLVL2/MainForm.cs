@@ -831,10 +831,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
-					LevelData.DeathZones.Add(new DeathZoneItem(
-						new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
-							.Model,
-						dzini[i].Flags, selectedItems));
+					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(dzini[i].Filename), dzini[i].Flags, selectedItems));
 				}
 			}
 
@@ -854,17 +851,22 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// Loads mission object textures
 			LoadTextureList(ini.MissionTextureList, syspath);
 
-			progress.SetTaskAndStep("Loading stage texture lists...");
-
-			// Loads the textures in the texture list for this stage (e.g BEACH01)
-			foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+			if (level.TextureList != null)
 			{
-				LevelTextureList texini = LevelTextureList.Load(file);
-				if (texini.Level != levelact)
-					continue;
-
+				progress.SetTaskAndStep("Loading stage texture lists...");
+				LevelTextureList texini = LevelTextureList.Load(Path.Combine(syspath, level.TextureList));
 				LoadTextureList(texini.TextureList, syspath);
 			}
+			
+			// Loads the textures in the texture list for this stage (e.g BEACH01)
+			//foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+			//{
+			//	LevelTextureList texini = LevelTextureList.Load(file);
+			//	if (texini.Level != levelact)
+			//		continue;
+
+			//	LoadTextureList(texini.TextureList, syspath);
+			//}
 
 			progress.SetTaskAndStep("Loading textures for:", "Objects");
 			// Object texture list(s)

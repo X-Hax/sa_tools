@@ -27,11 +27,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// if it isn't set up, let the user know that they need to run and configure project maanger
 			// before continuing
 
-			string projectManagerPath = "";
+			string ProjectManagementPath = "";
 
-			projectManagerPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
+			ProjectManagementPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
 
-			ProjectManagement.ProjectSettings settings = ProjectManagement.ProjectSettings.Load(projectManagerPath);
+			ProjectManagement.ProjectSettings settings = ProjectManagement.ProjectSettings.Load(ProjectManagementPath);
 
 			string sadxGamePathInvalidReason = "";
 

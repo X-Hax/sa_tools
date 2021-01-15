@@ -48,6 +48,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public string SETName { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 		public string[] Textures { get; set; }
+		public string TextureList { get; set; }
 		public string ObjectList { get; set; }
 		public string ObjectTextureList { get; set; }
 		public string DeathZones { get; set; }
