@@ -165,6 +165,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
 			log.DeleteLogFile();
 			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);

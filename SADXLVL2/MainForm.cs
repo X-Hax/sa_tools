@@ -103,6 +103,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 #if DEBUG
 			SALVLModeToolStripMenuItem.Enabled = true;
 #endif
+			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
+
 			settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
