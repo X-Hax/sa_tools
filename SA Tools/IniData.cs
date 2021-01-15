@@ -11,6 +11,8 @@ namespace SA_Tools
 {
 	public class IniData
 	{
+		[IniName("datafile")]
+		public string DataFilename { get; set; }
 		[IniName("key")]
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint? ImageBase { get; set; }

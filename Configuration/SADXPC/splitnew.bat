@@ -44,6 +44,7 @@ echo EXE split
 ..\bin\split binary data/sonic.exe newsplit/SHOOTING.ini output/
 ..\bin\split binary data/sonic.exe newsplit/Texlists.ini output/
 ..\bin\split binary data/sonic.exe newsplit/Sounds.ini output/
+..\bin\split binary data/sonic.exe newsplit/Misc.ini output/
 echo DLL split
 ..\bin\split binary data/system/CHRMODELS_orig.DLL newsplit/CHRMODELS.ini output/
 ..\bin\split binary data/system/BOSSCHAOS0MODELS.DLL newsplit/B_CHAOS0_DLL.ini output/

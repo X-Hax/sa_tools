@@ -56,6 +56,7 @@
             this.checkBox_Structs = new System.Windows.Forms.CheckBox();
             this.checkBox_SAModel = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.fileSelector1 = new SonicRetro.SAModel.DataToolbox.FileSelector();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkBox_StructConvStructs = new System.Windows.Forms.CheckBox();
             this.checkBox_StructConvJSON = new System.Windows.Forms.CheckBox();
@@ -76,16 +77,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button_AddFilesSplit = new System.Windows.Forms.Button();
             this.listBox_SplitFiles = new System.Windows.Forms.ListBox();
-            this.fileSelector1 = new SonicRetro.SAModel.DataToolbox.FileSelector();
+            this.checkBoxFindAllSplit = new System.Windows.Forms.CheckBox();
             this.groupBoxBinary.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.hexNumericOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDownAddress)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonExtract
@@ -407,6 +408,19 @@
             this.label1.TabIndex = 40;
             this.label1.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
             // 
+            // fileSelector1
+            // 
+            this.fileSelector1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.fileSelector1.DefaultExt = "";
+            this.fileSelector1.FileName = "";
+            this.fileSelector1.Filter = "Binary Files|*.exe;*.dll;*.bin;*.prs|All Files|*.*";
+            this.fileSelector1.Location = new System.Drawing.Point(42, 38);
+            this.fileSelector1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.fileSelector1.Name = "fileSelector1";
+            this.fileSelector1.Size = new System.Drawing.Size(378, 24);
+            this.fileSelector1.TabIndex = 27;
+            this.fileSelector1.FileNameChanged += new System.EventHandler(this.fileSelector1_FileNameChanged);
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.checkBox_StructConvStructs);
@@ -548,6 +562,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBoxFindAllSplit);
             this.tabPage3.Controls.Add(this.buttonClearAllSplit);
             this.tabPage3.Controls.Add(this.buttonRemoveSplit);
             this.tabPage3.Controls.Add(this.comboBoxGameSelect);
@@ -656,24 +671,24 @@
             this.listBox_SplitFiles.Margin = new System.Windows.Forms.Padding(2);
             this.listBox_SplitFiles.Name = "listBox_SplitFiles";
             this.listBox_SplitFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBox_SplitFiles.Size = new System.Drawing.Size(330, 290);
+            this.listBox_SplitFiles.Size = new System.Drawing.Size(330, 264);
             this.listBox_SplitFiles.TabIndex = 44;
             this.listBox_SplitFiles.SelectedIndexChanged += new System.EventHandler(this.listBox_SplitFiles_SelectedIndexChanged);
             this.listBox_SplitFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragDrop);
             this.listBox_SplitFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragEnter);
             // 
-            // fileSelector1
+            // checkBoxFindAllSplit
             // 
-            this.fileSelector1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.fileSelector1.DefaultExt = "";
-            this.fileSelector1.FileName = "";
-            this.fileSelector1.Filter = "Binary Files|*.exe;*.dll;*.bin;*.prs|All Files|*.*";
-            this.fileSelector1.Location = new System.Drawing.Point(42, 38);
-            this.fileSelector1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.fileSelector1.Name = "fileSelector1";
-            this.fileSelector1.Size = new System.Drawing.Size(378, 24);
-            this.fileSelector1.TabIndex = 27;
-            this.fileSelector1.FileNameChanged += new System.EventHandler(this.fileSelector1_FileNameChanged);
+            this.checkBoxFindAllSplit.AutoSize = true;
+            this.checkBoxFindAllSplit.Checked = true;
+            this.checkBoxFindAllSplit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxFindAllSplit.Location = new System.Drawing.Point(8, 340);
+            this.checkBoxFindAllSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxFindAllSplit.Name = "checkBoxFindAllSplit";
+            this.checkBoxFindAllSplit.Size = new System.Drawing.Size(303, 17);
+            this.checkBoxFindAllSplit.TabIndex = 52;
+            this.checkBoxFindAllSplit.Text = "Search for split INI files (uncheck to use a single INI file)";
+            this.checkBoxFindAllSplit.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -696,11 +711,11 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSelector1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -756,6 +771,7 @@
 		internal SAEditorCommon.UI.HexNumericUpdown hexNumericOffset;
 		private System.Windows.Forms.CheckBox checkBox_StructConvJSON;
 		private System.Windows.Forms.CheckBox checkBox_StructConvStructs;
+		private System.Windows.Forms.CheckBox checkBoxFindAllSplit;
 	}
 }
 

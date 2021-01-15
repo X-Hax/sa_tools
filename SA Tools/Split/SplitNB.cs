@@ -128,7 +128,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 				switch (type)
 				{
 					case 0:
-						if (verbose > 0) Console.Write("\nSection {0} at {1} is empty\n", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 						sectionlist.Add(i, "NULL");
 						break;
 					case 1:

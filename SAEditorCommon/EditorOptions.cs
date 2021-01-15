@@ -104,16 +104,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			#endregion
 		}
 
-		public static void Load()
-		{
-			throw new NotImplementedException();
-		}
-
-		public static void Save()
-		{
-			throw new NotImplementedException();
-		}
-
 		public static void RenderStateCommonSetup(Device d3ddevice)
 		{
 			d3ddevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
