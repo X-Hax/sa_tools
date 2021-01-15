@@ -133,9 +133,9 @@
             this.pointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHintsButton = new System.Windows.Forms.ToolStripButton();
             this.MessageTimer = new System.Windows.Forms.Timer(this.components);
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.PropertiesSplitter = new System.Windows.Forms.SplitContainer();
+            this.LibrarySplitter = new System.Windows.Forms.SplitContainer();
+            this.ItemsSplitter = new System.Windows.Forms.SplitContainer();
             this.sceneGraphControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.SceneGraphControl();
             this.libraryTabControl = new System.Windows.Forms.TabControl();
             this.modelLibraryPage = new System.Windows.Forms.TabPage();
@@ -177,18 +177,18 @@
             this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.Panel1.SuspendLayout();
-            this.splitContainer3.Panel2.SuspendLayout();
-            this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
+            this.PropertiesSplitter.Panel1.SuspendLayout();
+            this.PropertiesSplitter.Panel2.SuspendLayout();
+            this.PropertiesSplitter.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LibrarySplitter)).BeginInit();
+            this.LibrarySplitter.Panel1.SuspendLayout();
+            this.LibrarySplitter.Panel2.SuspendLayout();
+            this.LibrarySplitter.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemsSplitter)).BeginInit();
+            this.ItemsSplitter.Panel1.SuspendLayout();
+            this.ItemsSplitter.Panel2.SuspendLayout();
+            this.ItemsSplitter.SuspendLayout();
             this.libraryTabControl.SuspendLayout();
             this.modelLibraryPage.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -1123,63 +1123,60 @@
             this.MessageTimer.Interval = 1;
             this.MessageTimer.Tick += new System.EventHandler(this.MessageTimer_Tick);
             // 
-            // splitContainer1
+            // PropertiesSplitter
             // 
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 67);
-            this.splitContainer1.Name = "splitContainer1";
+            this.PropertiesSplitter.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.PropertiesSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertiesSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.PropertiesSplitter.Location = new System.Drawing.Point(0, 67);
+            this.PropertiesSplitter.Name = "PropertiesSplitter";
             // 
-            // splitContainer1.Panel1
+            // PropertiesSplitter.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            this.PropertiesSplitter.Panel1.Controls.Add(this.LibrarySplitter);
             // 
-            // splitContainer1.Panel2
+            // PropertiesSplitter.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer1.Size = new System.Drawing.Size(1203, 774);
-            this.splitContainer1.SplitterDistance = 860;
-            this.splitContainer1.TabIndex = 2;
-            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
+            this.PropertiesSplitter.Panel2.Controls.Add(this.propertyGrid1);
+            this.PropertiesSplitter.Size = new System.Drawing.Size(1203, 774);
+            this.PropertiesSplitter.SplitterDistance = 860;
+            this.PropertiesSplitter.TabIndex = 2;
             // 
-            // splitContainer2
+            // LibrarySplitter
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.LibrarySplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LibrarySplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.LibrarySplitter.Location = new System.Drawing.Point(0, 0);
+            this.LibrarySplitter.Name = "LibrarySplitter";
+            this.LibrarySplitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer2.Panel1
+            // LibrarySplitter.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
+            this.LibrarySplitter.Panel1.Controls.Add(this.ItemsSplitter);
             // 
-            // splitContainer2.Panel2
+            // LibrarySplitter.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.libraryTabControl);
-            this.splitContainer2.Size = new System.Drawing.Size(856, 770);
-            this.splitContainer2.SplitterDistance = 491;
-            this.splitContainer2.TabIndex = 3;
-            this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
+            this.LibrarySplitter.Panel2.Controls.Add(this.libraryTabControl);
+            this.LibrarySplitter.Size = new System.Drawing.Size(856, 770);
+            this.LibrarySplitter.SplitterDistance = 491;
+            this.LibrarySplitter.TabIndex = 3;
             // 
-            // splitContainer3
+            // ItemsSplitter
             // 
-            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Name = "splitContainer3";
+            this.ItemsSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ItemsSplitter.Location = new System.Drawing.Point(0, 0);
+            this.ItemsSplitter.Name = "ItemsSplitter";
             // 
-            // splitContainer3.Panel1
+            // ItemsSplitter.Panel1
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.sceneGraphControl1);
+            this.ItemsSplitter.Panel1.Controls.Add(this.sceneGraphControl1);
             // 
-            // splitContainer3.Panel2
+            // ItemsSplitter.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.RenderPanel);
-            this.splitContainer3.Size = new System.Drawing.Size(856, 491);
-            this.splitContainer3.SplitterDistance = 188;
-            this.splitContainer3.TabIndex = 0;
-            this.splitContainer3.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer3_SplitterMoved);
+            this.ItemsSplitter.Panel2.Controls.Add(this.RenderPanel);
+            this.ItemsSplitter.Size = new System.Drawing.Size(856, 491);
+            this.ItemsSplitter.SplitterDistance = 188;
+            this.ItemsSplitter.TabIndex = 0;
             // 
             // sceneGraphControl1
             // 
@@ -1610,7 +1607,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1203, 841);
-            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.PropertiesSplitter);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.BackgroundPanel);
@@ -1625,18 +1622,18 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.splitContainer3.Panel1.ResumeLayout(false);
-            this.splitContainer3.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
-            this.splitContainer3.ResumeLayout(false);
+            this.PropertiesSplitter.Panel1.ResumeLayout(false);
+            this.PropertiesSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).EndInit();
+            this.PropertiesSplitter.ResumeLayout(false);
+            this.LibrarySplitter.Panel1.ResumeLayout(false);
+            this.LibrarySplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LibrarySplitter)).EndInit();
+            this.LibrarySplitter.ResumeLayout(false);
+            this.ItemsSplitter.Panel1.ResumeLayout(false);
+            this.ItemsSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ItemsSplitter)).EndInit();
+            this.ItemsSplitter.ResumeLayout(false);
             this.libraryTabControl.ResumeLayout(false);
             this.modelLibraryPage.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
@@ -1680,7 +1677,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deathZonesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deathZoneToolStripMenuItem;
-        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer PropertiesSplitter;
         internal System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -1724,8 +1721,8 @@
 		private System.Windows.Forms.ToolStripMenuItem missionObjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolClearMissionSetItems;
         private System.Windows.Forms.ToolStripComboBox pivotComboBox;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.SplitContainer LibrarySplitter;
+        private System.Windows.Forms.SplitContainer ItemsSplitter;
         private System.Windows.Forms.TabControl libraryTabControl;
         private System.Windows.Forms.TabPage setLibraryPage;
         private System.Windows.Forms.TabPage modelLibraryPage;

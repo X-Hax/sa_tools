@@ -20,9 +20,9 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
-
-		Properties.Settings Settings = Properties.Settings.Default;
 
 		public MainForm()
 		{
@@ -178,16 +178,17 @@ namespace SonicRetro.SAModel.SAMDL
 					AutoDepthStencilFormat = Format.D24X8
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			Settings.Reload();
+			AppConfig.Reload();
+			settingsfile = SettingsFile.Load();
 
-			if (Settings.ShowWelcomeScreen)
+			if (settingsfile.SAMDL.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam, false, false);
-			cam.MoveSpeed = Settings.CamMoveSpeed;
+			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
@@ -226,13 +227,12 @@ namespace SonicRetro.SAModel.SAMDL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SAMDL.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SAMDL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
@@ -813,7 +813,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 
-			Settings.Save();
+			settingsfile.Save();
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1547,7 +1547,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1555,7 +1555,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1563,7 +1563,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 

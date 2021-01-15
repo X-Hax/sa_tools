@@ -21,7 +21,8 @@ namespace SonicRetro.SAModel.SALVL
 {
 	public partial class MainForm : Form
 	{
-		Properties.Settings Settings = Properties.Settings.Default;
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log");
 		OnScreenDisplay osd;
 
@@ -71,9 +72,9 @@ namespace SonicRetro.SAModel.SALVL
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-
-			Settings.Reload();
-			if (Settings.ShowWelcomeScreen)
+			settingsfile = SettingsFile.Load();
+			AppConfig.Reload();
+			if (settingsfile.SALVL.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
@@ -112,13 +113,12 @@ namespace SonicRetro.SAModel.SALVL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SALVL.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SALVL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SALVL Documentation";
@@ -249,7 +249,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 
-			Settings.Save();
+			settingsfile.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)

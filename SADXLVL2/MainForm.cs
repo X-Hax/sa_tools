@@ -13,7 +13,6 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
-
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
@@ -32,9 +31,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 	// (Example: sETItemsToolStripMenuItem1 is a dropdown menu. sETITemsToolStripMenuItem is a toggle.)
 	public partial class MainForm : Form
 	{
-		ProgressDialog progress;
-		Properties.Settings Settings = Properties.Settings.Default;
-
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SADXLVL2.config
+		ProgressDialog progress; 
+		
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
@@ -103,26 +103,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 #if DEBUG
 			SALVLModeToolStripMenuItem.Enabled = true;
 #endif
+			settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
+			modelLibraryControl1.InitRenderer();
+			InitGUISettings();
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
-			modelLibraryControl1.InitRenderer();
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			Settings.Reload();
-			EditorOptions.RenderDrawDistance = Settings.DrawDistance_General;
-			EditorOptions.LevelDrawDistance = Settings.DrawDistance_Geometry;
-			EditorOptions.SetItemDrawDistance = Settings.DrawDistance_SET;
-			if (Settings.ShowWelcomeScreen)
-			{
+			AppConfig.Reload();
+			EditorOptions.RenderDrawDistance = settingsfile.SADXLVL2.DrawDistance_General;
+			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
+			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;
+			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			}
-			if (Settings.LibrarySplitterPosition != 0) splitContainer2.SplitterDistance = Settings.LibrarySplitterPosition;
-			if (Settings.ItemsSplitterPosition != 0) splitContainer3.SplitterDistance = Settings.ItemsSplitterPosition;
-			if (Settings.PropertiesSplitterPosition != 0) splitContainer1.SplitterDistance = Settings.PropertiesSplitterPosition;
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
@@ -186,6 +183,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 			sceneGraphControl1.InitSceneControl(selectedItems);
 		}
 
+		private void InitGUISettings()
+		{
+			if (settingsfile.SADXLVL2.PropertiesSplitterPosition != 0) PropertiesSplitter.SplitterDistance = settingsfile.SADXLVL2.PropertiesSplitterPosition;
+			if (settingsfile.SADXLVL2.LibrarySplitterPosition != 0) LibrarySplitter.SplitterDistance = settingsfile.SADXLVL2.LibrarySplitterPosition;
+			if (settingsfile.SADXLVL2.ItemsSplitterPosition != 0) ItemsSplitter.SplitterDistance = settingsfile.SADXLVL2.ItemsSplitterPosition;
+			ItemsSplitter.SplitterMoved += new SplitterEventHandler(ItemsSplitter_SplitterMoved);
+			LibrarySplitter.SplitterMoved += new SplitterEventHandler(LibrarySplitter_SplitterMoved);
+			PropertiesSplitter.SplitterMoved += new SplitterEventHandler(PropertiesSplitter_SplitterMoved);
+		}
+
 		/// <summary>
 		/// I moved these to here instead of setting them to false in the designer,
 		/// because it makes the designer easier to read.
@@ -245,13 +252,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SADXLVL2.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SADXLVL2.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SADXLVL2 Documentation";
@@ -1644,8 +1650,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
-
-			Settings.Save();
+			settingsfile.Save();
+			AppConfig.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3335,9 +3341,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void optionsEditor_FormUpdated()
 		{
-			Settings.DrawDistance_General = EditorOptions.RenderDrawDistance;
-			Settings.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
-			Settings.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
 			DrawLevel();
 		}
 
@@ -3810,19 +3816,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+		private void PropertiesSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.PropertiesSplitterPosition = splitContainer1.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.PropertiesSplitterPosition = PropertiesSplitter.SplitterDistance;
 		}
 
-		private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e)
+		private void ItemsSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.ItemsSplitterPosition = splitContainer3.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.ItemsSplitterPosition = ItemsSplitter.SplitterDistance;
 		}
 
-		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
+		private void LibrarySplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.LibrarySplitterPosition = splitContainer2.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
 		}
 
 		private bool ShowPathWarning()
@@ -3833,18 +3839,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (result = (dialog.ShowDialog() == DialogResult.OK))
 				{
 					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
-					if (Settings.MRUList.Count > 10)
+					if (AppConfig.MRUList.Count > 10)
 					{
-						for (int i = 9; i < Settings.MRUList.Count; i++)
+						for (int i = 9; i < AppConfig.MRUList.Count; i++)
 						{
-							Settings.MRUList.RemoveAt(i);
+							AppConfig.MRUList.RemoveAt(i);
 						}
 					}
-					if (!Settings.MRUList.Contains(dialog.SelectedItem)) Settings.MRUList.Insert(0, dialog.SelectedItem);
+					if (!AppConfig.MRUList.Contains(dialog.SelectedItem)) AppConfig.MRUList.Insert(0, dialog.SelectedItem);
 					else
 					{
-						Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(dialog.SelectedItem));
-						Settings.MRUList.Insert(0, dialog.SelectedItem);
+						AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(dialog.SelectedItem));
+						AppConfig.MRUList.Insert(0, dialog.SelectedItem);
 					}
 					LoadINI(dialog.SelectedItem);
 					ShowLevelSelect();
@@ -3853,7 +3859,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					foreach (string deleted in dialog.RemovedItems)
 					{
-						if (Settings.MRUList.Contains(deleted)) Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(deleted));
+						if (AppConfig.MRUList.Contains(deleted)) AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(deleted));
 					}
 				}
 			}
@@ -3862,12 +3868,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private StringCollection GetRecentFiles()
 		{
-			if (Settings.MRUList == null)
-				Settings.MRUList = new StringCollection();
+			if (AppConfig.MRUList == null)
+				AppConfig.MRUList = new StringCollection();
 
 			StringCollection mru = new StringCollection();
 
-			foreach (string item in Settings.MRUList)
+			foreach (string item in AppConfig.MRUList)
 			{
 				if (File.Exists(item))
 				{
@@ -3875,7 +3881,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			Settings.MRUList = mru;
+			AppConfig.MRUList = mru;
 
 			return mru;
 		}
