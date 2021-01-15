@@ -128,6 +128,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		bool unsaved = false;
 		bool loaded;
+		bool DeviceResizing;
 		bool rootSiblingMode = false;
 		string currentFileName = "";
 		NJS_OBJECT model;
@@ -1157,7 +1158,7 @@ namespace SonicRetro.SAModel.SAMDL
 		#region Rendering Methods
 		internal void DrawEntireModel()
 		{
-			if (!loaded) return;
+			if (!loaded || DeviceResizing) return;
 			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), RenderPanel.Width / (float)RenderPanel.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
@@ -3397,6 +3398,37 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showNodeConnectionsToolStripMenuItem.Checked) shownodecons = "On";
 			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
+			DrawEntireModel();
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			PresentParameters pp = new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8,
+				BackBufferHeight=RenderPanel.Height,
+				BackBufferWidth = RenderPanel.Width
+			};
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.Dispose();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			EditorOptions.Initialize(d3ddevice);
+			if (TextureInfo != null && TextureInfo.Count() > 0)
+			{
+				Texture[] texs = new Texture[TextureInfo.Count()];
+				for (int j = 0; j < TextureInfo.Count(); j++)
+					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
+				Textures = texs;
+			}
+			DeviceResizing = false;
 			DrawEntireModel();
 		}
 

@@ -65,11 +65,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 		string levelID;
 		internal string levelName;
 		bool isStageLoaded;
+		bool DeviceResizing;
 
 		Dictionary<string, List<string>> levelNames;
 
 		// light list
 		List<SA1StageLightData> stageLightList;
+		List<SA1StageLightData> currentLightList;
 		#endregion
 
 		#region UI & Customization
@@ -1417,56 +1419,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if ((stageLightList != null) && (stageLightList.Count > 0))
 			{
-				List<SA1StageLightData> lightList = new List<SA1StageLightData>();
+				currentLightList = new List<SA1StageLightData>();
 
 				foreach (SA1StageLightData lightData in stageLightList)
 				{
 					if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act))
-						lightList.Add(lightData);
+						currentLightList.Add(lightData);
 				}
 
-				if (levelact.Act > 0 && lightList.Count <= 0)
+				if (levelact.Act > 0 && currentLightList.Count <= 0)
 				{
 					for (int i = 1; i < levelact.Act + 1; i++)
 					{
 						foreach (SA1StageLightData lightData in stageLightList)
 						{
 							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
-								lightList.Add(lightData);
+								currentLightList.Add(lightData);
 						}
 					}
 				}
 
-				if (lightList.Count > 0)
+				if (currentLightList.Count > 0)
 				{
-
-					for (int i = 0; i < lightList.Count; i++)
-					{
-						SA1StageLightData lightData = lightList[i];
-						Light light = new Light
-						{
-							Type = LightType.Directional,
-							Direction = lightData.Direction.ToVector3(),
-						};
-						//Set ambient and specular color only for the first light
-						if (i == 0)
-						{
-							light.Ambient = new RawColor4(
-								lightData.AmbientRGB.X,
-								lightData.AmbientRGB.Y,
-								lightData.AmbientRGB.Z,
-								1.0f);
-							light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
-						}
-						//Set non-ambient lights
-						light.Diffuse = new RawColor4(
-							lightData.RGB.X * lightData.Multiplier,
-							lightData.RGB.Y * lightData.Multiplier,
-							lightData.RGB.Z * lightData.Multiplier,
-							1.0f);
-						d3ddevice.SetLight(i, ref light);
-						d3ddevice.EnableLight(i, lightData.UseDirection);
-					}
+					LoadLights(currentLightList);
 				}
 				else
 				{
@@ -1857,7 +1832,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!isStageLoaded || !Enabled)
+			if (!isStageLoaded || !Enabled || DeviceResizing)
 				return;
 
 			cam.FOV = (float)(Math.PI / 4);
@@ -1929,7 +1904,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
-
 			#region Adding CAM Layout
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
@@ -1945,7 +1919,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
 			}
 			#endregion
-
+						
 			#region Adding splines
 			if (splinesToolStripMenuItem.Checked)
 			{
@@ -4155,6 +4129,71 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 					LevelData.StateChanged += LevelData_StateChanged;
 				}
+			}
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			d3ddevice.Dispose();
+			LevelData.Textures = new Dictionary<string, Texture[]>();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
+			new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			});
+			if (LevelData.TextureBitmaps != null)
+			{
+				foreach (var item in LevelData.TextureBitmaps)
+				{
+					Texture[] texs = new Texture[item.Value.Length];
+					for (int j = 0; j < item.Value.Length; j++)
+						texs[j] = item.Value[j].Image.ToTexture(d3ddevice);
+					LevelData.Textures[item.Key] = texs;
+				}
+			}
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			EditorOptions.Initialize(d3ddevice);
+			Gizmo.InitGizmo(d3ddevice);
+			ObjectHelper.Init(d3ddevice);
+			if (currentLightList != null && currentLightList.Count > 0) LoadLights(currentLightList);
+			DeviceResizing = false;
+			if (isStageLoaded) LevelData.InvalidateRenderState();
+		}
+		private void LoadLights(List<SA1StageLightData> lightList)
+		{
+			for (int i = 0; i < lightList.Count; i++)
+			{
+				SA1StageLightData lightData = lightList[i];
+				Light light = new Light
+				{
+					Type = LightType.Directional,
+					Direction = lightData.Direction.ToVector3(),
+				};
+				//Set ambient and specular color only for the first light
+				if (i == 0)
+				{
+					light.Ambient = new RawColor4(
+						lightData.AmbientRGB.X,
+						lightData.AmbientRGB.Y,
+						lightData.AmbientRGB.Z,
+						1.0f);
+					light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+				}
+				//Set non-ambient lights
+				light.Diffuse = new RawColor4(
+					lightData.RGB.X * lightData.Multiplier,
+					lightData.RGB.Y * lightData.Multiplier,
+					lightData.RGB.Z * lightData.Multiplier,
+					1.0f);
+				d3ddevice.SetLight(i, ref light);
+				d3ddevice.EnableLight(i, lightData.UseDirection);
 			}
 		}
 	}

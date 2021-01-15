@@ -1492,5 +1492,33 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			optionsEditor.Show();
 		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			LevelData.Textures = new Dictionary<string, Texture[]>();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
+			new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			});		
+			EditorOptions.Initialize(d3ddevice);
+			if (LevelData.TextureBitmaps != null)
+			{
+				foreach (var item in LevelData.TextureBitmaps)
+				{
+					Texture[] texs = new Texture[item.Value.Length];
+					for (int j = 0; j < item.Value.Length; j++)
+						texs[j] = item.Value[j].Image.ToTexture(d3ddevice);
+					LevelData.Textures[item.Key] = texs;
+				}
+			}
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			LevelData.InvalidateRenderState();
+		}
 	}
 }
