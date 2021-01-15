@@ -78,7 +78,7 @@ namespace SonicRetro.SAModel.SALVL
 				ShowWelcomeScreen();
 			}
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -348,7 +348,7 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini");
 
 			actionList.Save(saveControlsPath);
 

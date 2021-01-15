@@ -160,7 +160,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -2053,7 +2053,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini");
 
 			actionList.Save(saveControlsPath);
 

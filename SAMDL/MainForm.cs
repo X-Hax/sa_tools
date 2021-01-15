@@ -202,7 +202,7 @@ namespace SonicRetro.SAModel.SAMDL
 				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
 			};
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -1377,7 +1377,7 @@ namespace SonicRetro.SAModel.SAMDL
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini");
 
 			actionList.Save(saveControlsPath);
 
