@@ -193,8 +193,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
 
 						NJS_MATERIAL cur_mat = meshInfo.Material;
-						Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
-						materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+						Material material = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" }; ;
+						material.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
 						if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 						{
 							string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
@@ -213,10 +213,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
 								TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
 								wrapU, wrapV, 0); //wrapmode and shit add here
-							materoial.AddMaterialTexture(ref tex);
+							material.AddMaterialTexture(ref tex);
 						}
 						int matIndex = scene.MaterialCount;
-						scene.Materials.Add(materoial);
+						scene.Materials.Add(material);
 						mesh.MaterialIndex = matIndex;
 
 						List<List<WeightData>> vertexWeights = new List<List<WeightData>>(meshInfo.Vertices.Length);
@@ -446,8 +446,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
 
 					NJS_MATERIAL cur_mat = meshInfo.Material;
-					Material materoial = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" };
-					materoial.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+					Material material = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" };
+					material.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
 					if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 					{
 						string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
@@ -466,10 +466,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
 							TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
 							wrapU, wrapV, 0); //wrapmode and shit add here
-						materoial.AddMaterialTexture(ref tex);
+						material.AddMaterialTexture(ref tex);
 					}
 					int matIndex = scene.MaterialCount;
-					scene.Materials.Add(materoial);
+					scene.Materials.Add(material);
 					mesh.MaterialIndex = matIndex;
 
 					for (int i = 0; i < meshInfo.Vertices.Length; i++)
@@ -563,7 +563,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						if (gcUVs != null)
 						{
 							GC.UV uv = (GC.UV)gcUVs[prim.ToTriangles()[i + j].UV0Index];
-							texcoords.Add(new Vector3D(uv.x, uv.y, 1.0f));
+							texcoords.Add(new Vector3D(uv.XF, uv.YF, 1.0f));
 						}
 						if (gcUVs != null)
 						{
@@ -588,8 +588,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				mesh.TextureCoordinateChannels[0].AddRange(texcoords);
 			if (colors.Count > 0)
 				mesh.VertexColorChannels[0].AddRange(colors);
-			Material materoial = new Material() { Name = "material_" + nameMeshIndex }; ;
-			materoial.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
+			Material material = new Material() { Name = "material_" + nameMeshIndex + "_" + MaterialBuffer.TextureID };
+			material.ColorDiffuse = MaterialBuffer.DiffuseColor.ToAssimp();
 			if (MaterialBuffer.UseTexture && texInfo != null)
 			{
 				string texPath = Path.GetFileName(texInfo[MaterialBuffer.TextureID]);
@@ -608,11 +608,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
 					TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
 					wrapU, wrapV, 0); //wrapmode and shit add here
-				materoial.AddMaterialTexture(ref tex);
+				material.AddMaterialTexture(ref tex);
 
 			}
 			int matIndex = scene.MaterialCount;
-			scene.Materials.Add(materoial);
+			scene.Materials.Add(material);
 			mesh.MaterialIndex = matIndex;
 			return mesh;
 		}
