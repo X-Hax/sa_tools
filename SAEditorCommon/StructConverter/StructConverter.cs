@@ -241,6 +241,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								}
 							}
 						}
+					}
+						break;
+				case "motiontable":
+					{
+						modified = false;
+						string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
+						foreach (string md5KeyValuePair in md5KeyvaluePairs)
+						{
+							string[] keySplit = md5KeyValuePair.Split(':');
+
+							string filePath = Path.Combine(item.Value.Filename, keySplit[0] + ".saanim");
+							string filePathIni = Path.Combine(item.Value.Filename, keySplit[0] + ".ini");
+
+							if (File.Exists(filePath))
+							{
+								if (HelperFunctions.FileHash(filePath) != keySplit[1] || HelperFunctions.FileHash(filePathIni) != keySplit[1])
+								{
+									modified = true;
+									break;
+								}
+							}
+						}
 						break;
 					}
 				default:
