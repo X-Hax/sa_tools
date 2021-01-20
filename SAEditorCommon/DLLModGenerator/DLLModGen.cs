@@ -120,6 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 						}
 						break;
 					case "chaomotiontable":
+					case "motiontable":
 						{
 							Dictionary<string, string> hashes = new Dictionary<string, string>();
 							foreach (var hash in item.MD5Hash.Split('|').Select(a =>
@@ -327,6 +328,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							}
 							break;
 						case "chaomotiontable":
+						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
 								{
