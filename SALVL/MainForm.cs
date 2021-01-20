@@ -21,7 +21,8 @@ namespace SonicRetro.SAModel.SALVL
 {
 	public partial class MainForm : Form
 	{
-		Properties.Settings Settings = Properties.Settings.Default;
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log");
 		OnScreenDisplay osd;
 
@@ -67,18 +68,19 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
 			EditorOptions.Initialize(d3ddevice);
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-
-			Settings.Reload();
-			if (Settings.ShowWelcomeScreen)
+			settingsfile = SettingsFile.Load();
+			AppConfig.Reload();
+			if (settingsfile.SALVL.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -112,13 +114,12 @@ namespace SonicRetro.SAModel.SALVL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SALVL.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SALVL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SALVL Documentation";
@@ -249,7 +250,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 
-			Settings.Save();
+			settingsfile.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -348,7 +349,7 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini");
 
 			actionList.Save(saveControlsPath);
 
@@ -1490,6 +1491,34 @@ namespace SonicRetro.SAModel.SALVL
 		private void preferencesButton_Click(object sender, EventArgs e)
 		{
 			optionsEditor.Show();
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			LevelData.Textures = new Dictionary<string, Texture[]>();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
+			new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			});		
+			EditorOptions.Initialize(d3ddevice);
+			if (LevelData.TextureBitmaps != null)
+			{
+				foreach (var item in LevelData.TextureBitmaps)
+				{
+					Texture[] texs = new Texture[item.Value.Length];
+					for (int j = 0; j < item.Value.Length; j++)
+						texs[j] = item.Value[j].Image.ToTexture(d3ddevice);
+					LevelData.Textures[item.Key] = texs;
+				}
+			}
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			LevelData.InvalidateRenderState();
 		}
 	}
 }

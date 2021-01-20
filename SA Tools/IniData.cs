@@ -11,6 +11,8 @@ namespace SA_Tools
 {
 	public class IniData
 	{
+		[IniName("datafile")]
+		public string DataFilename { get; set; }
 		[IniName("key")]
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint? ImageBase { get; set; }
@@ -3289,7 +3291,7 @@ namespace SA_Tools
 			sb.AppendFormat("{0}, ", LoopProperty.ToCHex());
 			sb.AppendFormat("{0}, ", Pose.ToCHex());
 			sb.AppendFormat("{0}, ", NextAnimation);
-			if (NextAnimation != -1 || NextAnimation != 0)
+			if (NextAnimation != -1)
 			{
 				sb.AppendFormat("{0}, ", NextAnimation);
 			}

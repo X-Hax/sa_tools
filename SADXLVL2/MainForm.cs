@@ -13,7 +13,6 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
-
 using SonicRetro.SAModel.SAEditorCommon;
 using SonicRetro.SAModel.SAEditorCommon.DataTypes;
 using SonicRetro.SAModel.SAEditorCommon.SETEditing;
@@ -32,9 +31,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 	// (Example: sETItemsToolStripMenuItem1 is a dropdown menu. sETITemsToolStripMenuItem is a toggle.)
 	public partial class MainForm : Form
 	{
-		ProgressDialog progress;
-		Properties.Settings Settings = Properties.Settings.Default;
-
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SADXLVL2.config
+		ProgressDialog progress; 
+		
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
@@ -65,11 +65,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 		string levelID;
 		internal string levelName;
 		bool isStageLoaded;
+		bool DeviceResizing;
 
 		Dictionary<string, List<string>> levelNames;
 
 		// light list
 		List<SA1StageLightData> stageLightList;
+		List<SA1StageLightData> currentLightList;
 		#endregion
 
 		#region UI & Customization
@@ -103,26 +105,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 #if DEBUG
 			SALVLModeToolStripMenuItem.Enabled = true;
 #endif
+			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
+
+			settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
+			modelLibraryControl1.InitRenderer();
+			InitGUISettings();
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
-			modelLibraryControl1.InitRenderer();
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			Settings.Reload();
-			EditorOptions.RenderDrawDistance = Settings.DrawDistance_General;
-			EditorOptions.LevelDrawDistance = Settings.DrawDistance_Geometry;
-			EditorOptions.SetItemDrawDistance = Settings.DrawDistance_SET;
-			if (Settings.ShowWelcomeScreen)
-			{
+			AppConfig.Reload();
+			EditorOptions.RenderDrawDistance = settingsfile.SADXLVL2.DrawDistance_General;
+			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
+			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;
+			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			}
-			if (Settings.LibrarySplitterPosition != 0) splitContainer2.SplitterDistance = Settings.LibrarySplitterPosition;
-			if (Settings.ItemsSplitterPosition != 0) splitContainer3.SplitterDistance = Settings.ItemsSplitterPosition;
-			if (Settings.PropertiesSplitterPosition != 0) splitContainer1.SplitterDistance = Settings.PropertiesSplitterPosition;
 			systemFallback = Program.SADXGameFolder + "/System/";
 
 			if (Program.args.Length > 0)
@@ -160,7 +161,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -184,6 +185,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 			};
 
 			sceneGraphControl1.InitSceneControl(selectedItems);
+		}
+
+		private void InitGUISettings()
+		{
+			if (settingsfile.SADXLVL2.PropertiesSplitterPosition != 0) PropertiesSplitter.SplitterDistance = settingsfile.SADXLVL2.PropertiesSplitterPosition;
+			if (settingsfile.SADXLVL2.LibrarySplitterPosition != 0) LibrarySplitter.SplitterDistance = settingsfile.SADXLVL2.LibrarySplitterPosition;
+			if (settingsfile.SADXLVL2.ItemsSplitterPosition != 0) ItemsSplitter.SplitterDistance = settingsfile.SADXLVL2.ItemsSplitterPosition;
+			ItemsSplitter.SplitterMoved += new SplitterEventHandler(ItemsSplitter_SplitterMoved);
+			LibrarySplitter.SplitterMoved += new SplitterEventHandler(LibrarySplitter_SplitterMoved);
+			PropertiesSplitter.SplitterMoved += new SplitterEventHandler(PropertiesSplitter_SplitterMoved);
 		}
 
 		/// <summary>
@@ -245,13 +256,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SADXLVL2.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SADXLVL2.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SADXLVL2 Documentation";
@@ -1409,56 +1419,29 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if ((stageLightList != null) && (stageLightList.Count > 0))
 			{
-				List<SA1StageLightData> lightList = new List<SA1StageLightData>();
+				currentLightList = new List<SA1StageLightData>();
 
 				foreach (SA1StageLightData lightData in stageLightList)
 				{
 					if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act))
-						lightList.Add(lightData);
+						currentLightList.Add(lightData);
 				}
 
-				if (levelact.Act > 0 && lightList.Count <= 0)
+				if (levelact.Act > 0 && currentLightList.Count <= 0)
 				{
 					for (int i = 1; i < levelact.Act + 1; i++)
 					{
 						foreach (SA1StageLightData lightData in stageLightList)
 						{
 							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
-								lightList.Add(lightData);
+								currentLightList.Add(lightData);
 						}
 					}
 				}
 
-				if (lightList.Count > 0)
+				if (currentLightList.Count > 0)
 				{
-
-					for (int i = 0; i < lightList.Count; i++)
-					{
-						SA1StageLightData lightData = lightList[i];
-						Light light = new Light
-						{
-							Type = LightType.Directional,
-							Direction = lightData.Direction.ToVector3(),
-						};
-						//Set ambient and specular color only for the first light
-						if (i == 0)
-						{
-							light.Ambient = new RawColor4(
-								lightData.AmbientRGB.X,
-								lightData.AmbientRGB.Y,
-								lightData.AmbientRGB.Z,
-								1.0f);
-							light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
-						}
-						//Set non-ambient lights
-						light.Diffuse = new RawColor4(
-							lightData.RGB.X * lightData.Multiplier,
-							lightData.RGB.Y * lightData.Multiplier,
-							lightData.RGB.Z * lightData.Multiplier,
-							1.0f);
-						d3ddevice.SetLight(i, ref light);
-						d3ddevice.EnableLight(i, lightData.UseDirection);
-					}
+					LoadLights(currentLightList);
 				}
 				else
 				{
@@ -1644,8 +1627,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
-
-			Settings.Save();
+			settingsfile.Save();
+			AppConfig.Save();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1849,7 +1832,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		internal void DrawLevel()
 		{
-			if (!isStageLoaded || !Enabled)
+			if (!isStageLoaded || !Enabled || DeviceResizing)
 				return;
 
 			cam.FOV = (float)(Math.PI / 4);
@@ -1921,7 +1904,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			#endregion
 
-
 			#region Adding CAM Layout
 			if (LevelData.CAMItems != null && cAMItemsToolStripMenuItem.Checked)
 			{
@@ -1937,7 +1919,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
 			}
 			#endregion
-
+						
 			#region Adding splines
 			if (splinesToolStripMenuItem.Checked)
 			{
@@ -2053,7 +2035,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini");
 
 			actionList.Save(saveControlsPath);
 
@@ -3335,9 +3317,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void optionsEditor_FormUpdated()
 		{
-			Settings.DrawDistance_General = EditorOptions.RenderDrawDistance;
-			Settings.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
-			Settings.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
+			settingsfile.SADXLVL2.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
 			DrawLevel();
 		}
 
@@ -3810,19 +3792,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+		private void PropertiesSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.PropertiesSplitterPosition = splitContainer1.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.PropertiesSplitterPosition = PropertiesSplitter.SplitterDistance;
 		}
 
-		private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e)
+		private void ItemsSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.ItemsSplitterPosition = splitContainer3.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.ItemsSplitterPosition = ItemsSplitter.SplitterDistance;
 		}
 
-		private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
+		private void LibrarySplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) Settings.LibrarySplitterPosition = splitContainer2.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.SADXLVL2.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
 		}
 
 		private bool ShowPathWarning()
@@ -3833,18 +3815,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (result = (dialog.ShowDialog() == DialogResult.OK))
 				{
 					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
-					if (Settings.MRUList.Count > 10)
+					if (AppConfig.MRUList.Count > 10)
 					{
-						for (int i = 9; i < Settings.MRUList.Count; i++)
+						for (int i = 9; i < AppConfig.MRUList.Count; i++)
 						{
-							Settings.MRUList.RemoveAt(i);
+							AppConfig.MRUList.RemoveAt(i);
 						}
 					}
-					if (!Settings.MRUList.Contains(dialog.SelectedItem)) Settings.MRUList.Insert(0, dialog.SelectedItem);
+					if (!AppConfig.MRUList.Contains(dialog.SelectedItem)) AppConfig.MRUList.Insert(0, dialog.SelectedItem);
 					else
 					{
-						Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(dialog.SelectedItem));
-						Settings.MRUList.Insert(0, dialog.SelectedItem);
+						AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(dialog.SelectedItem));
+						AppConfig.MRUList.Insert(0, dialog.SelectedItem);
 					}
 					LoadINI(dialog.SelectedItem);
 					ShowLevelSelect();
@@ -3853,7 +3835,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					foreach (string deleted in dialog.RemovedItems)
 					{
-						if (Settings.MRUList.Contains(deleted)) Settings.MRUList.RemoveAt(Settings.MRUList.IndexOf(deleted));
+						if (AppConfig.MRUList.Contains(deleted)) AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(deleted));
 					}
 				}
 			}
@@ -3862,12 +3844,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private StringCollection GetRecentFiles()
 		{
-			if (Settings.MRUList == null)
-				Settings.MRUList = new StringCollection();
+			if (AppConfig.MRUList == null)
+				AppConfig.MRUList = new StringCollection();
 
 			StringCollection mru = new StringCollection();
 
-			foreach (string item in Settings.MRUList)
+			foreach (string item in AppConfig.MRUList)
 			{
 				if (File.Exists(item))
 				{
@@ -3875,7 +3857,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			Settings.MRUList = mru;
+			AppConfig.MRUList = mru;
 
 			return mru;
 		}
@@ -4147,6 +4129,71 @@ namespace SonicRetro.SAModel.SADXLVL2
 					}
 					LevelData.StateChanged += LevelData_StateChanged;
 				}
+			}
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			d3ddevice.Dispose();
+			LevelData.Textures = new Dictionary<string, Texture[]>();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
+			new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			});
+			if (LevelData.TextureBitmaps != null)
+			{
+				foreach (var item in LevelData.TextureBitmaps)
+				{
+					Texture[] texs = new Texture[item.Value.Length];
+					for (int j = 0; j < item.Value.Length; j++)
+						texs[j] = item.Value[j].Image.ToTexture(d3ddevice);
+					LevelData.Textures[item.Key] = texs;
+				}
+			}
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			EditorOptions.Initialize(d3ddevice);
+			Gizmo.InitGizmo(d3ddevice);
+			ObjectHelper.Init(d3ddevice);
+			if (currentLightList != null && currentLightList.Count > 0) LoadLights(currentLightList);
+			DeviceResizing = false;
+			if (isStageLoaded) LevelData.InvalidateRenderState();
+		}
+		private void LoadLights(List<SA1StageLightData> lightList)
+		{
+			for (int i = 0; i < lightList.Count; i++)
+			{
+				SA1StageLightData lightData = lightList[i];
+				Light light = new Light
+				{
+					Type = LightType.Directional,
+					Direction = lightData.Direction.ToVector3(),
+				};
+				//Set ambient and specular color only for the first light
+				if (i == 0)
+				{
+					light.Ambient = new RawColor4(
+						lightData.AmbientRGB.X,
+						lightData.AmbientRGB.Y,
+						lightData.AmbientRGB.Z,
+						1.0f);
+					light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+				}
+				//Set non-ambient lights
+				light.Diffuse = new RawColor4(
+					lightData.RGB.X * lightData.Multiplier,
+					lightData.RGB.Y * lightData.Multiplier,
+					lightData.RGB.Z * lightData.Multiplier,
+					1.0f);
+				d3ddevice.SetLight(i, ref light);
+				d3ddevice.EnableLight(i, lightData.UseDirection);
 			}
 		}
 	}

@@ -30,6 +30,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public void Save(string path)
 		{
+			if (!Directory.Exists(Path.GetDirectoryName(path)))
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
 			IniSerializer.Serialize(this, path);
 		}
 	}

@@ -102,7 +102,7 @@ namespace SA2EventViewer
 				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
 			};
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -483,7 +483,7 @@ namespace SA2EventViewer
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini");
 
 			actionList.Save(saveControlsPath);
 

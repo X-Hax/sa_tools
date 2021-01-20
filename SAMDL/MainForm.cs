@@ -20,9 +20,9 @@ namespace SonicRetro.SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
-
-		Properties.Settings Settings = Properties.Settings.Default;
 
 		public MainForm()
 		{
@@ -128,6 +128,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		bool unsaved = false;
 		bool loaded;
+		bool DeviceResizing;
 		bool rootSiblingMode = false;
 		string currentFileName = "";
 		NJS_OBJECT model;
@@ -165,6 +166,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
 			log.DeleteLogFile();
 			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -178,16 +180,17 @@ namespace SonicRetro.SAModel.SAMDL
 					AutoDepthStencilFormat = Format.D24X8
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			Settings.Reload();
+			AppConfig.Reload();
+			settingsfile = SettingsFile.Load();
 
-			if (Settings.ShowWelcomeScreen)
+			if (settingsfile.SAMDL.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam, false, false);
-			cam.MoveSpeed = Settings.CamMoveSpeed;
+			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
@@ -202,7 +205,7 @@ namespace SonicRetro.SAModel.SAMDL
 				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
 			};
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -226,13 +229,12 @@ namespace SonicRetro.SAModel.SAMDL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = Settings.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SAMDL.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				Settings.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
-				Settings.Save();
+				settingsfile.SAMDL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
@@ -813,7 +815,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 
-			Settings.Save();
+			settingsfile.Save();
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1156,7 +1158,7 @@ namespace SonicRetro.SAModel.SAMDL
 		#region Rendering Methods
 		internal void DrawEntireModel()
 		{
-			if (!loaded) return;
+			if (!loaded || DeviceResizing) return;
 			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), RenderPanel.Width / (float)RenderPanel.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
@@ -1377,7 +1379,7 @@ namespace SonicRetro.SAModel.SAMDL
 			actionInputCollector.SetActions(newMappings);
 
 			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds.ini");
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini");
 
 			actionList.Save(saveControlsPath);
 
@@ -1547,7 +1549,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1555,7 +1557,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1563,7 +1565,7 @@ namespace SonicRetro.SAModel.SAMDL
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					Settings.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -3396,6 +3398,37 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showNodeConnectionsToolStripMenuItem.Checked) shownodecons = "On";
 			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
+			DrawEntireModel();
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			PresentParameters pp = new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8,
+				BackBufferHeight=RenderPanel.Height,
+				BackBufferWidth = RenderPanel.Width
+			};
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.Dispose();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			EditorOptions.Initialize(d3ddevice);
+			if (TextureInfo != null && TextureInfo.Count() > 0)
+			{
+				Texture[] texs = new Texture[TextureInfo.Count()];
+				for (int j = 0; j < TextureInfo.Count(); j++)
+					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
+				Textures = texs;
+			}
+			DeviceResizing = false;
 			DrawEntireModel();
 		}
 
