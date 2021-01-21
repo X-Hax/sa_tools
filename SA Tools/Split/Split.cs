@@ -353,8 +353,9 @@ namespace SA_Tools.Split
 								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
 								List<string> hashes = new List<string>();
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								int Length = int.Parse(data.CustomProperties["length"]);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
-								for (int i = 0; i < nodeCount; i++)
+								for (int i = 0; i < Length; i++)
 								{
 									ChaoMotionTableEntry bmte = new ChaoMotionTableEntry();
 									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);

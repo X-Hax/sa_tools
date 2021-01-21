@@ -604,7 +604,7 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (saveani)
 								{
-									ani.Save(data.Filename, nometa);
+									ani.Save(fileOutputPath, nometa);
 								}
 							}
 							break;
@@ -764,7 +764,7 @@ namespace SA_Tools.SplitDLL
 									chara.Rating = BitConverter.ToInt32(datafile, address + 44);
 									chara.DescriptionID = BitConverter.ToInt32(datafile, address + 48);
 									chara.TextBackTexture = BitConverter.ToInt32(datafile, address + 52);
-									chara.Unknown5 = BitConverter.ToSingle(datafile, address + 56);
+									chara.SelectionSize = BitConverter.ToSingle(datafile, address + 56);
 									result.Add(chara);
 									address += 60;
 								}
