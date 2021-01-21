@@ -3197,7 +3197,9 @@ namespace SA_Tools
 		public int Rating { get; set; }
 		public int DescriptionID { get; set; }
 		public int TextBackTexture { get; set; }
-		public float Unknown5 { get; set; }
+		public float SelectionSize { get; set; }
+		public float? Unknown5 { get { return null; } set { if (value.HasValue) SelectionSize = value.Value; } }
+
 
 		public string ToStruct()
 		{
@@ -3226,7 +3228,7 @@ namespace SA_Tools
 			sb.AppendFormat("{0}, ", Rating);
 			sb.AppendFormat("{0}, ", DescriptionID);
 			sb.AppendFormat("{0}, ", TextBackTexture);
-			sb.Append(Unknown5.ToC());
+			sb.Append(SelectionSize.ToC());
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -3290,7 +3292,6 @@ namespace SA_Tools
 				sb.Append("NULL, ");
 			sb.AppendFormat("{0}, ", LoopProperty.ToCHex());
 			sb.AppendFormat("{0}, ", Pose.ToCHex());
-			sb.AppendFormat("{0}, ", NextAnimation);
 			if (NextAnimation != -1)
 			{
 				sb.AppendFormat("{0}, ", NextAnimation);
