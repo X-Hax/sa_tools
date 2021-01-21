@@ -46,6 +46,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "animationlist", "Animation List" },
 			{ "enemyanimationlist", "Enemy Animation List" },
 			{ "sa1actionlist", "Action List" },
+			{ "motiontable", "Motion Table" },
 			{ "levelpathlist", "Path List" },
 			{ "pathlist", "Path List" },
 			{ "stagelightdatalist", "Stage Light Data List" },
@@ -234,6 +235,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 							if (File.Exists(filePath))
 							{
 								if (HelperFunctions.FileHash(filePath) != keySplit[1])
+								{
+									modified = true;
+									break;
+								}
+							}
+						}
+					}
+						break;
+				case "motiontable":
+					{
+						modified = false;
+						string[] md5KeyvaluePairs = item.Value.MD5Hash.Split('|');
+						foreach (string md5KeyValuePair in md5KeyvaluePairs)
+						{
+							string[] keySplit = md5KeyValuePair.Split(':');
+
+							string filePath = Path.Combine(item.Value.Filename, keySplit[0] + ".saanim");
+							string filePathIni = Path.Combine(item.Value.Filename, keySplit[0] + ".ini");
+
+							if (File.Exists(filePath))
+							{
+								if (HelperFunctions.FileHash(filePath) != keySplit[1] || HelperFunctions.FileHash(filePathIni) != keySplit[1])
 								{
 									modified = true;
 									break;
@@ -1021,6 +1044,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
 									objs.Add($"{{ {obj.Key}, {obj.Value.ModelParts}, &{obj.Value.Name} }}");
 								objs.Add("{ -1 }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "motiontable":
+							{
+								foreach (string file in Directory.GetFiles(data.Filename, "*.saanim"))
+								{
+									NJS_MOTION.Load(file).ToStructVariables(writer);
+									writer.WriteLine();
+								}
+								var table = IniSerializer.Deserialize<ChaoMotionTableEntry[]>(Path.Combine(data.Filename, "info.ini"));
+								writer.WriteLine("MotionTableEntry {0}[] = {{", name);
+								List<string> objs = new List<string>(table.Length);
+								foreach (var obj in table)
+									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
 							}

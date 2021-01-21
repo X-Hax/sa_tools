@@ -586,12 +586,26 @@ namespace SA_Tools.SplitDLL
 							{
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, nodeCount);
+								string nm = item.Key;
+								bool saveani = false;
+								if (!anilabels.ContainsKey(ani.Name))
+								{
+									anilabels.Add(ani.Name, nm);
+									ani.Name = nm;
+									saveani = true;
+								}
+								else
+									nm = anilabels[ani.Name];
 								DllItemInfo info = new DllItemInfo()
-										{
-											Export = name,
-											Label = ani.Name
-										};
-										output.Items.Add(info);
+								{
+									Export = name,
+									Label = nm
+								};
+								output.Items.Add(info);
+								if (saveani)
+								{
+									ani.Save(data.Filename, nometa);
+								}
 							}
 							break;
 						case "motionarray":
