@@ -3197,7 +3197,9 @@ namespace SA_Tools
 		public int Rating { get; set; }
 		public int DescriptionID { get; set; }
 		public int TextBackTexture { get; set; }
-		public float Unknown5 { get; set; }
+		public float SelectionSize { get; set; }
+		public float? Unknown5 { get { return null; } set { if (value.HasValue) SelectionSize = value.Value; } }
+
 
 		public string ToStruct()
 		{
@@ -3226,7 +3228,7 @@ namespace SA_Tools
 			sb.AppendFormat("{0}, ", Rating);
 			sb.AppendFormat("{0}, ", DescriptionID);
 			sb.AppendFormat("{0}, ", TextBackTexture);
-			sb.Append(Unknown5.ToC());
+			sb.Append(SelectionSize.ToC());
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -3267,11 +3269,14 @@ namespace SA_Tools
 	{
 		public string Motion { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public ushort Flag1 { get; set; }
-		public ushort Pose{ get; set; }
-		public int TransitionID { get; set; }
+		public ushort LoopProperty { get; set; }
+		public ushort? Flag1 { get { return null; } set { if (value.HasValue) LoopProperty = value.Value; } }
+		public ushort Pose { get; set; }
+		public int NextAnimation { get; set; }
+		public int? TransitionID { get { return null; } set { if (value.HasValue) NextAnimation = value.Value; } }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public uint Flag2 { get; set; }
+		public uint TransitionSpeed { get; set; }
+		public uint? Flag2 { get { return null; } set { if (value.HasValue) TransitionSpeed = value.Value; } }
 		public float StartFrame { get; set; }
 		public float EndFrame { get; set; }
 		public float PlaySpeed { get; set; }
@@ -3285,10 +3290,15 @@ namespace SA_Tools
 			}
 			else
 				sb.Append("NULL, ");
-			sb.AppendFormat("{0}, ", Flag1.ToCHex());
+			sb.AppendFormat("{0}, ", LoopProperty.ToCHex());
 			sb.AppendFormat("{0}, ", Pose.ToCHex());
-			sb.AppendFormat("{0}, ", TransitionID);
-			sb.AppendFormat("{0}, ", Flag2.ToCHex());
+			if (NextAnimation != -1)
+			{
+				sb.AppendFormat("{0}, ", NextAnimation);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", TransitionSpeed.ToCHex());
 			sb.AppendFormat("{0}, ", StartFrame.ToC());
 			sb.AppendFormat("{0}, ", EndFrame.ToC());
 			sb.AppendFormat("{0}", PlaySpeed.ToC());

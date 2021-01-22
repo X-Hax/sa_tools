@@ -582,6 +582,32 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+						case "motion":
+							{
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, nodeCount);
+								string nm = item.Key;
+								bool saveani = false;
+								if (!anilabels.ContainsKey(ani.Name))
+								{
+									anilabels.Add(ani.Name, nm);
+									ani.Name = nm;
+									saveani = true;
+								}
+								else
+									nm = anilabels[ani.Name];
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = nm
+								};
+								output.Items.Add(info);
+								if (saveani)
+								{
+									ani.Save(fileOutputPath, nometa);
+								}
+							}
+							break;
 						case "motionarray":
 							{
 								int[] nodecounts = data.CustomProperties["nodecounts"].Split(',').Select(a => int.Parse(a)).ToArray();
@@ -738,7 +764,7 @@ namespace SA_Tools.SplitDLL
 									chara.Rating = BitConverter.ToInt32(datafile, address + 44);
 									chara.DescriptionID = BitConverter.ToInt32(datafile, address + 48);
 									chara.TextBackTexture = BitConverter.ToInt32(datafile, address + 52);
-									chara.Unknown5 = BitConverter.ToSingle(datafile, address + 56);
+									chara.SelectionSize = BitConverter.ToSingle(datafile, address + 56);
 									result.Add(chara);
 									address += 60;
 								}
@@ -782,6 +808,42 @@ namespace SA_Tools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "motiontable":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<string> hashes = new List<string>();
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
+								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									ChaoMotionTableEntry bmte = new ChaoMotionTableEntry();
+									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									if (!mtns.ContainsKey(mtnaddr))
+									{
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount);
+										bmte.Motion = motion.Name;
+										mtns.Add(mtnaddr, motion.Name);
+										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
+										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+									}
+									else
+										bmte.Motion = mtns[mtnaddr];
+									bmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
+									bmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
+									bmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
+									bmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
+									bmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
+									bmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
+									bmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
+									result.Add(bmte);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 						case "chaomotiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);
@@ -803,10 +865,10 @@ namespace SA_Tools.SplitDLL
 									}
 									else
 										cmte.Motion = mtns[mtnaddr];
-									cmte.Flag1 = ByteConverter.ToUInt16(datafile, address + 4);
+									cmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
 									cmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
-									cmte.TransitionID = ByteConverter.ToInt32(datafile, address + 8);
-									cmte.Flag2 = ByteConverter.ToUInt32(datafile, address + 12);
+									cmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
+									cmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
 									cmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
 									cmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
 									cmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
