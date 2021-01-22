@@ -3271,7 +3271,7 @@ namespace SA_Tools
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public ushort LoopProperty { get; set; }
 		public ushort? Flag1 { get { return null; } set { if (value.HasValue) LoopProperty = value.Value; } }
-		public ushort Pose{ get; set; }
+		public ushort Pose { get; set; }
 		public int NextAnimation { get; set; }
 		public int? TransitionID { get { return null; } set { if (value.HasValue) NextAnimation = value.Value; } }
 		[TypeConverter(typeof(UInt32HexConverter))]
