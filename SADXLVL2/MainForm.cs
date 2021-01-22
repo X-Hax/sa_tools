@@ -1614,6 +1614,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			toolStrip1.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
+			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
 			progress.StepProgress();
 			JumpToStartPos();
 		}
