@@ -4168,6 +4168,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 		private void LoadLights(List<SA1StageLightData> lightList)
 		{
+			for (int i = 0; i < 4; i++)
+			{
+				d3ddevice.EnableLight(i, false);
+			}
 			for (int i = 0; i < lightList.Count; i++)
 			{
 				SA1StageLightData lightData = lightList[i];
