@@ -4191,6 +4191,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 					light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
 				}
 				//Set non-ambient lights
+				if (lightData.AmbientRGB.X != 0 || lightData.AmbientRGB.Y != 0 || lightData.AmbientRGB.Z != 0)
+				{
+					light.Ambient = new RawColor4(
+							lightList[0].AmbientRGB.X,
+							lightList[0].AmbientRGB.Y,
+							lightList[0].AmbientRGB.Z,
+							1.0f);
+				}
 				light.Diffuse = new RawColor4(
 					lightData.RGB.X * lightData.Multiplier,
 					lightData.RGB.Y * lightData.Multiplier,
