@@ -358,7 +358,7 @@ namespace SA_Tools.Split
 								for (int i = 0; i < Length; i++)
 								{
 									ChaoMotionTableEntry bmte = new ChaoMotionTableEntry();
-									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									int mtnaddr = datafile.GetPointer(address, imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
 										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount);
