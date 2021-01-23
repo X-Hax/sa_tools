@@ -21,6 +21,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 			{ "basicdxmodelarray", "NJS_OBJECT **" },
 			{ "chunkmodel", "NJS_OBJECT *" },
 			{ "chunkmodelarray", "NJS_OBJECT **" },
+			{ "chunkattach", "NJS_CNK_MODEL **" },
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
