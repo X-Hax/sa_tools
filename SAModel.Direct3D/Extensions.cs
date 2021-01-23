@@ -111,12 +111,21 @@ namespace SonicRetro.SAModel.Direct3D
 					device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
 				}*/
 				device.SetTexture(0, material.UseTexture ? texture : null);
-				device.SetRenderState(RenderState.Ambient, (material.IgnoreLighting ? Color.White : Color.Black).ToArgb());
+				device.SetRenderState(RenderState.Ambient, Color.Black.ToArgb());
 				device.SetRenderState(RenderState.AlphaBlendEnable, material.UseAlpha);
-
 				if (material.UseAlpha)
-					device.SetRenderState(RenderState.Ambient, material.DiffuseColor.ToArgb());
-
+				{
+					device.SetRenderState(RenderState.Lighting, true);
+					device.SetRenderState(RenderState.BlendFactor, material.DiffuseColor.ToArgb());
+					if (material.IgnoreLighting) device.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
+				}
+				// When a material ignores lighting, SADXPC converts material color to vertex color if it isn't FFFFFFFF or FFB2B2B2
+				else if (material.IgnoreLighting && material.DiffuseColor != Color.White && material.DiffuseColor != Color.FromArgb(255, 178, 178, 178))
+				{
+					device.SetRenderState(RenderState.Lighting, true);
+					if (material.IgnoreLighting) device.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
+				}
+				else device.SetRenderState(RenderState.Lighting, !material.IgnoreLighting);
 				switch (material.DestinationAlpha)
 				{
 					case AlphaInstruction.Zero:
@@ -634,7 +643,7 @@ namespace SonicRetro.SAModel.Direct3D
 					mesh.UpdateSelection(selind);
 		}
 
-		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat, bool ignorematcolors = false)
+		public static List<RenderInfo> DrawModel(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh mesh, bool useMat, bool ignorematcolors = false, bool ignorelight = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -646,7 +655,6 @@ namespace SonicRetro.SAModel.Direct3D
 
 			if (obj.Attach != null)
 			{
-				Color bkcolor = Color.White;
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					NJS_MATERIAL mat;
@@ -655,7 +663,8 @@ namespace SonicRetro.SAModel.Direct3D
 					// If it is in fact null, it applies a placeholder so that the editor doesn't crash.
 					if (useMat && obj.Attach.MeshInfo[j].Material != null)
 					{
-						mat = obj.Attach.MeshInfo[j].Material;
+						
+						mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
 
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
@@ -677,12 +686,13 @@ namespace SonicRetro.SAModel.Direct3D
 					}
 					if (ignorematcolors)
 					{
-						bkcolor = mat.DiffuseColor;
 						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
+					if (ignorelight)
+					{
+						mat.IgnoreLighting = true;
+					}
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
-					if (ignorematcolors)
-						mat.DiffuseColor = bkcolor;
 				}
 			}
 
@@ -717,21 +727,20 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false)
+		public static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false, bool ignorelight = false)
 		{
 			int modelindex = -1;
 			List<RenderInfo> result = new List<RenderInfo>();
 			do
 			{
-				result.AddRange(obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex, ignorematcolor));
+				result.AddRange(obj.DrawModelTree(fillMode, transform, textures, meshes, ref modelindex, ignorematcolor, ignorelight));
 				obj = obj.Sibling;
 			} while (obj != null);
 			return result;
 		}
 
-		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex, bool ignorematcolors = false)
+		private static List<RenderInfo> DrawModelTree(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, ref int modelindex, bool ignorematcolors = false, bool ignorelight = false)
 		{
-			Color bkcolor = Color.White;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
@@ -745,23 +754,35 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
-					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
+					NJS_MATERIAL mat;
+					if (obj.Attach.MeshInfo[j].Material != null) 
+						mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
+					else
+					{
+						mat = new NJS_MATERIAL
+						{
+							DiffuseColor = Color.White,
+							IgnoreLighting = true,
+							UseAlpha = false
+						};
+					}
 					// HACK: Null material hack 2: Fixes display of objects in SADXLVL2, Twinkle Park 1
 					if (textures != null && mat != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					if (ignorematcolors)
 					{
-						bkcolor = mat.DiffuseColor;
 						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
+					if (ignorelight)
+					{
+						mat.IgnoreLighting = true;
+					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
-					if (ignorematcolors)
-						mat.DiffuseColor = bkcolor;
 				}
 			}
 
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex, ignorematcolors));
+				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex, ignorematcolors, ignorelight));
 			transform.Pop();
 			return result;
 		}
@@ -812,22 +833,21 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, bool ignorematcolor = false)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, bool ignorematcolor = false, bool ignorelight = false)
 		{
 			int modelindex = -1;
 			int animindex = -1;
 			List<RenderInfo> result = new List<RenderInfo>();
 			do
 			{
-				result.AddRange(obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolor));
+				result.AddRange(obj.DrawModelTreeAnimated(fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolor, ignorelight));
 				obj = obj.Sibling;
 			} while (obj != null);
 			return result;
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex, bool ignorematcolors = false)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex, bool ignorematcolors = false, bool ignorelight = false)
 		{
-			Color bkcolor = Color.White;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			modelindex++;
@@ -842,20 +862,32 @@ namespace SonicRetro.SAModel.Direct3D
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
-					NJS_MATERIAL mat = obj.Attach.MeshInfo[j].Material;
+					NJS_MATERIAL mat;
+					if (obj.Attach.MeshInfo[j].Material != null)
+						mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
+					else
+					{
+						mat = new NJS_MATERIAL
+						{
+							DiffuseColor = Color.White,
+							IgnoreLighting = true,
+							UseAlpha = false
+						};
+					}
 					if (textures != null && mat.TextureID < textures.Length)
 						texture = textures[mat.TextureID];
 					if (ignorematcolors)
 					{
-						bkcolor = mat.DiffuseColor;
 						mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 					}
+					if (ignorelight)
+					{
+						mat.IgnoreLighting = true;
+					}
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
-					if (ignorematcolors)
-						mat.DiffuseColor = bkcolor;
 				}
 			foreach (NJS_OBJECT child in obj.Children)
-				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolors));
+				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolors, ignorelight));
 			transform.Pop();
 			return result;
 		}
@@ -904,7 +936,7 @@ namespace SonicRetro.SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false)
+		public static List<RenderInfo> DrawModelTreeWeighted(this NJS_OBJECT obj, FillMode fillMode, Matrix transform, Texture[] textures, Mesh[] meshes, bool ignorematcolor = false, bool ignorelight = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			NJS_OBJECT[] objs = obj.GetObjects();
@@ -913,19 +945,30 @@ namespace SonicRetro.SAModel.Direct3D
 				{
 					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
 					{
-						Color bkcolor = Color.White;
 						Texture texture = null;
-						NJS_MATERIAL mat = objs[i].Attach.MeshInfo[j].Material;
+						NJS_MATERIAL mat;
+						if (obj.Attach.MeshInfo[j].Material != null)
+							mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
+						else
+						{
+							mat = new NJS_MATERIAL
+							{
+								DiffuseColor = Color.White,
+								IgnoreLighting = true,
+								UseAlpha = false
+							};
+						}
 						if (textures != null && mat != null && mat.TextureID < textures.Length)
 							texture = textures[mat.TextureID];
 						if (ignorematcolor)
 						{
-							bkcolor = mat.DiffuseColor;
 							mat.DiffuseColor = Color.FromArgb(mat.DiffuseColor.A, Color.White);
 						}
+						if (ignorelight)
+						{
+							mat.IgnoreLighting = true;
+						}
 						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
-						if (ignorematcolor)
-							mat.DiffuseColor = bkcolor;
 						}
 					}
 			return result;

@@ -1879,7 +1879,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						display = true;
 
 					if (display)
-						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
+						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
@@ -1901,7 +1901,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!LevelData.SETItemsIsNull() && sETITemsToolStripMenuItem.Checked)
 			{
 				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
-					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 
@@ -1917,7 +1917,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.MissionSETItems != null && missionSETItemsToolStripMenuItem.Checked)
 			{
 				foreach (MissionSETItem item in LevelData.MissionSETItems[LevelData.Character])
-					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
+					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
 			}
 			#endregion
 						
@@ -4181,25 +4181,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 					Type = LightType.Directional,
 					Direction = lightData.Direction.ToVector3(),
 				};
-				//Set ambient and specular color only for the first light
-				if (i == 0)
-				{
-					light.Ambient = new RawColor4(
-						lightData.AmbientRGB.X,
-						lightData.AmbientRGB.Y,
-						lightData.AmbientRGB.Z,
-						1.0f);
-					light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
-				}
-				//Set non-ambient lights
-				if (lightData.AmbientRGB.X != 0 || lightData.AmbientRGB.Y != 0 || lightData.AmbientRGB.Z != 0)
-				{
-					light.Ambient = new RawColor4(
-							lightList[0].AmbientRGB.X,
-							lightList[0].AmbientRGB.Y,
-							lightList[0].AmbientRGB.Z,
-							1.0f);
-				}
+				light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+				// SADXPC reuses the first light's ambient color for other lights
+				light.Ambient = new RawColor4(
+					lightList[0].AmbientRGB.X,
+					lightList[0].AmbientRGB.Y,
+					lightList[0].AmbientRGB.Z,
+					1.0f);
 				light.Diffuse = new RawColor4(
 					lightData.RGB.X * lightData.Multiplier,
 					lightData.RGB.Y * lightData.Multiplier,
