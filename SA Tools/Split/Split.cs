@@ -361,7 +361,7 @@ namespace SA_Tools.Split
 									int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
-										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, shortrot: false);
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount);
 										bmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
 										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
