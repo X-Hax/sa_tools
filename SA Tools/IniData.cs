@@ -3265,7 +3265,7 @@ namespace SA_Tools
 		}
 	}
 
-	public class ChaoMotionTableEntry
+	public class MotionTableEntry
 	{
 		public string Motion { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]

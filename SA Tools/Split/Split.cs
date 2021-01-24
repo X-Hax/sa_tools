@@ -350,18 +350,21 @@ namespace SA_Tools.Split
 						case "motiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);
-								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<MotionTableEntry> result = new List<MotionTableEntry>();
 								List<string> hashes = new List<string>();
+								bool shortrot = false;
+								if (customProperties.ContainsKey("shortrot"))
+									shortrot = bool.Parse(customProperties["shortrot"]);
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								int Length = int.Parse(data.CustomProperties["length"]);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								for (int i = 0; i < Length; i++)
 								{
-									ChaoMotionTableEntry bmte = new ChaoMotionTableEntry();
+									MotionTableEntry bmte = new MotionTableEntry();
 									int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
-										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount);
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
 										bmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
 										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);

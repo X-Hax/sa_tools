@@ -336,8 +336,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 									NJS_MOTION.Load(file).ToStructVariables(writer);
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<ChaoMotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
-								writer.WriteLine("ChaoMotionTableEntry {0}[] = {{", item.Export);
+								var data = IniSerializer.Deserialize<MotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
 									objs.Add(obj.ToStruct());

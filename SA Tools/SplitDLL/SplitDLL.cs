@@ -832,17 +832,20 @@ namespace SA_Tools.SplitDLL
 						case "motiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);
-								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<MotionTableEntry> result = new List<MotionTableEntry>();
 								List<string> hashes = new List<string>();
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								bool shortrot = false;
+								if (data.CustomProperties.ContainsKey("shortrot"))
+									shortrot = bool.Parse(data.CustomProperties["shortrot"]);
 								for (int i = 0; i < data.Length; i++)
 								{
-									ChaoMotionTableEntry bmte = new ChaoMotionTableEntry();
+									MotionTableEntry bmte = new MotionTableEntry();
 									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
-										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount);
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
 										bmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
 										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
@@ -868,13 +871,13 @@ namespace SA_Tools.SplitDLL
 						case "chaomotiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);
-								List<ChaoMotionTableEntry> result = new List<ChaoMotionTableEntry>();
+								List<MotionTableEntry> result = new List<MotionTableEntry>();
 								List<string> hashes = new List<string>();
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								for (int i = 0; i < data.Length; i++)
 								{
-									ChaoMotionTableEntry cmte = new ChaoMotionTableEntry();
+									MotionTableEntry cmte = new MotionTableEntry();
 									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
