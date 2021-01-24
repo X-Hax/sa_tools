@@ -413,6 +413,27 @@ namespace SA_Tools.SplitDLL
 								}
 							}
 							break;
+						case "chunkattach":
+							{
+								BasicAttach dummy = new BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.Chunk);
+								NJS_OBJECT mdl = new NJS_OBJECT()
+								{
+									Attach = dummy
+								};
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = dummy.Name
+								};
+								output.Items.Add(info);
+								if (!labels.Contains(dummy.Name))
+								{
+									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
+									if (!labels.Contains(mdl.Name))
+										labels.AddRange(mdl.GetLabels());
+								}
+							}
+							break;
 						case "chunkmodelarray":
 							for (int i = 0; i < data.Length; i++)
 							{
