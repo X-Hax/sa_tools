@@ -22,15 +22,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			this.parent = parent;
 			foreach (string s in recentList)
 				listRecentFiles.Items.Add(s);
-			string projectManagerPath = "";
-
-			projectManagerPath = Path.Combine(Application.ExecutablePath) + "Settings.ini";
-
-			ProjectManager.ProjectManagerSettings settings = ProjectManager.ProjectManagerSettings.Load(projectManagerPath);
 
 			string sadxGamePathInvalidReason = "";
 
-			if (!SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
+			if (!SAEditorCommon.GamePathChecker.CheckSADXPCValid(Program.SADXGameFolder, out sadxGamePathInvalidReason))
 			{
 				label1.Text = string.Format("SADXLVL2 could not locate your SADX game folder for the following reason:\n{0}.\n\nPlease run ProjectManager to configure SADX game path.\n\nFor access without Project Manager, locate sadxlvl.ini in your project folder manually.",
 					sadxGamePathInvalidReason);

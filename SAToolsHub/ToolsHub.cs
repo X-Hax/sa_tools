@@ -517,56 +517,35 @@ namespace SAToolsHub
 
 		void SetProgramPaths()
 		{
-			string build;
+			string rootPath;
+
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools")))
+				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
+			else
+				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../../tools");
 #if DEBUG
-			build = "Debug/";
 			toolStripMenuItem1.Visible = true;
 			toolStripMenuItem1.Enabled = true;
 #endif
 #if !DEBUG
-			build = "Release/";
 			toolStripMenuItem1.Visible = false;
 			toolStripMenuItem1.Enabled = false;
 #endif
-			string rootPath;
-			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			
 
-			if (Directory.Exists(appPath + "/../../bin/"))
-			{
-				rootPath = appPath + "/../../../";
-
-				samdlPath = rootPath + "/SAMDL/bin/" + build + "SAMDL.exe";
-				salvlPath = rootPath + "/SALVL/bin/" + build + "SALVL.exe";
-				texeditPath = rootPath + "/TextureEditor/bin/" + build + "TextureEditor.exe";
-				sadxlvl2Path = rootPath + "/SADXLVL2/bin/" + build + "SADXLVL2.exe";
-				sadxsndsharpPath = rootPath + "/SADXsndSharp/bin/" + build + "SADXsndSharp.exe";
-				sadxtweakerPath = rootPath + "/SADXTweaker2/bin/" + build + "SADXTweaker2.exe";
-				sadxfonteditPath = rootPath + "/SADXFontEdit/bin/" + build + "SADXFontEdit.exe";
-				sasavePath = rootPath + "/SASave/bin/" + build + "SASave.exe";
-				sa2eventviewPath = rootPath + "/SA2EventViewer/bin/" + build + "SA2EventViewer.exe";
-				sa2evtexteditPath = rootPath + "/SA2CutsceneTextEditor/bin/" + build + "SA2CutsceneTextEditor.exe";
-				sa2streditPath = rootPath + "/SA2MessageFileEditor/bin/" + build + "SA2MessageFileEditor.exe";
-				sa2stgselPath = rootPath + "/SA2StageSelEdit/bin/" + build + "SA2StageSelEdit.exe";
-				datatoolboxPath = rootPath + "/DataToolbox/bin/" + build + "DataToolbox.exe";
-			}
-			else
-			{
-				rootPath = appPath + "/../";
-
-				samdlPath = rootPath + "/SAMDL/SAMDL.exe";
-				salvlPath = rootPath + "/SALVL/SALVL.exe";
-				texeditPath = rootPath + "/TextureEditor/TextureEditor.exe";
-				sadxlvl2Path = rootPath + "/SADXPC/SADXLVL2/SADXLVL2.exe";
-				sadxsndsharpPath = rootPath + "/SADXPC/SADXsndSharp/SADXsndSharp.exe";
-				sadxtweakerPath = rootPath + "/SADXPC/SADXTweaker2/SADXTweaker2.exe";
-				sadxfonteditPath = rootPath + "/SADXPC/SADXFontEdit/SADXFontEdit.exe";
-				sasavePath = rootPath + "/SASave/SASave.exe";
-				sa2eventviewPath = rootPath + "/SA2PC/SA2EventViewer/SA2EventViewer.exe";
-				sa2evtexteditPath = rootPath + "/SA2PC/SA2CutsceneTextEditor/SA2CutsceneTextEditor.exe";
-				sa2streditPath = rootPath + "/SA2PC/SA2MessageFileEditor/SA2MessageFileEditor.exe";
-				sa2stgselPath = rootPath + "/SA2PC/SA2StageSelEdit/SA2StageSelEdit.exe";
-				datatoolboxPath = rootPath + "/DataToolbox/DataToolbox.exe";
-			}
+			samdlPath = Path.Combine(rootPath, "SAMDL.exe");
+			salvlPath = Path.Combine(rootPath, "SALVL.exe");
+			texeditPath = Path.Combine(rootPath, "TextureEditor.exe");
+			sadxlvl2Path = Path.Combine(rootPath, "SADXLVL2.exe");
+			sadxsndsharpPath = Path.Combine(rootPath, "SADXsndSharp.exe");
+			sadxtweakerPath = Path.Combine(rootPath, "SADXTweaker2.exe");
+			sadxfonteditPath = Path.Combine(rootPath, "SADXFontEdit.exe");
+			sasavePath = Path.Combine(rootPath, "SASave.exe");
+			sa2eventviewPath = Path.Combine(rootPath, "SA2EventViewer.exe");
+			sa2evtexteditPath = Path.Combine(rootPath, "SA2CutsceneTextEditor.exe");
+			sa2streditPath = Path.Combine(rootPath, "SA2MessageFileEditor.exe");
+			sa2stgselPath = Path.Combine(rootPath, "SA2StageSelEdit.exe");
+			datatoolboxPath = Path.Combine(rootPath, "DataToolbox.exe");
 		}
 
 		private void toolsHub_Shown(object sender, EventArgs e)
@@ -710,7 +689,7 @@ namespace SAToolsHub
 
 			if (projectDirectory != null)
 			{
-				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sadxlvl.ini"));
+				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sadxlvl.ini") + " " + string.Format("\"{0}\"", gameSystemDirectory));
 
 				sadxlvl2StartInfo = new ProcessStartInfo(
 					Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);

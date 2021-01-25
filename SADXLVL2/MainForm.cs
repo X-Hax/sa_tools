@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -22,6 +23,7 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
 using SharpDX.Mathematics.Interop;
+using SAEditorCommon.ProjectManagement;
 
 namespace SonicRetro.SAModel.SADXLVL2
 {
@@ -146,18 +148,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			else if (Program.SADXGameFolder == "")
 			{
-				ShowPathWarning();
-			}
-			else
-			{
-				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-				{
-					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+				OpenFileDialog openFileDialog1 = new OpenFileDialog();
+				openFileDialog1.Title = "Please select an SADX Project File to load.";
+				openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+				openFileDialog1.RestoreDirectory = true;
 
-					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-					{
-						LoadProject(projectSelectDialog.SelectedProject);
-					}
+				if (openFileDialog1.ShowDialog() == DialogResult.OK)
+				{
+					string projectFile = openFileDialog1.FileName;
+
+					var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
+					var projFileStream = File.OpenRead(projectFile);
+					var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+					systemFallback = projFile.GameInfo.GameSystemFolder;
+					projFileStream.Close();
+
+					LoadINI(projectPath);
+					ShowLevelSelect();
 				}
 			}
 
@@ -841,7 +850,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
-					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(dzini[i].Filename), dzini[i].Flags, selectedItems));
+					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
 				}
 			}
 

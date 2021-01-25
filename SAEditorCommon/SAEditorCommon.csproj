@@ -109,7 +109,6 @@
     <Compile Include="ModManagement\SADXModInfo.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ProgramSettings.cs" />
-    <Compile Include="ProjectManagerSettings.cs" />
     <Compile Include="ProjectManagement\ObjectTemplate.cs" />
     <Compile Include="ProjectManagement\ProjectManagement.cs" />
     <Compile Include="ProjectManagement\ProjectSettings.cs" />

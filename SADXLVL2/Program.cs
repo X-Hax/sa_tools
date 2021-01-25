@@ -23,23 +23,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			// check for our game folder validity.
-			// if it isn't set up, let the user know that they need to run and configure project maanger
-			// before continuing
-
-			string ProjectManagementPath = "";
-
-			ProjectManagementPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
-
-			ProjectManagement.ProjectSettings settings = ProjectManagement.ProjectSettings.Load(ProjectManagementPath);
-
-			string sadxGamePathInvalidReason = "";
-
-			if (args.Length == 0 && !SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
+			if (args.Length == 0)
 			{
 				sadxGameFolder = "";
 			}
-			else sadxGameFolder = settings.SADXPCPath;
+			else
+			{
+				sadxGameFolder = args[1];
+			}
 
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);
