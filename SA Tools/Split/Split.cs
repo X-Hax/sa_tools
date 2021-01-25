@@ -355,13 +355,13 @@ namespace SA_Tools.Split
 								bool shortrot = false;
 								if (customProperties.ContainsKey("shortrot"))
 									shortrot = bool.Parse(customProperties["shortrot"]);
-								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
-								int Length = int.Parse(data.CustomProperties["length"]);
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								for (int i = 0; i < Length; i++)
 								{
 									MotionTableEntry bmte = new MotionTableEntry();
-									int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
+									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
 										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);

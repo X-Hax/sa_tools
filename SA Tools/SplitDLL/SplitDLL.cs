@@ -868,42 +868,6 @@ namespace SA_Tools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
-						case "chaomotiontable":
-							{
-								Directory.CreateDirectory(fileOutputPath);
-								List<MotionTableEntry> result = new List<MotionTableEntry>();
-								List<string> hashes = new List<string>();
-								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
-								Dictionary<int, string> mtns = new Dictionary<int, string>();
-								for (int i = 0; i < data.Length; i++)
-								{
-									MotionTableEntry cmte = new MotionTableEntry();
-									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
-									if (!mtns.ContainsKey(mtnaddr))
-									{
-										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, shortrot: true);
-										cmte.Motion = motion.Name;
-										mtns.Add(mtnaddr, motion.Name);
-										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
-										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
-									}
-									else
-										cmte.Motion = mtns[mtnaddr];
-									cmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
-									cmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
-									cmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
-									cmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
-									cmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
-									cmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
-									cmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
-									result.Add(cmte);
-									address += 0x1C;
-								}
-								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
-								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
-							}
-							break;
 						case "cactionarray":
 							for (int i = 0; i < data.Length; i++)
 							{

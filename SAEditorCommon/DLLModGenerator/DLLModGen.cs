@@ -120,7 +120,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								modified = true;
 						}
 						break;
-					case "chaomotiontable":
 					case "motiontable":
 						{
 							Dictionary<string, string> hashes = new Dictionary<string, string>();
