@@ -3415,10 +3415,84 @@ namespace SA_Tools
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
 	}
-	/// <summary>
-	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
-	/// </summary>
-	public class StringConverter<T> : TypeConverter
+
+	public class PaletteLight
+	{
+		[IniAlwaysInclude]
+		public byte Level { get; set; }
+		[IniAlwaysInclude]
+		public byte Act { get; set; }
+		[IniAlwaysInclude]
+		public byte Character { get; set; }
+		[IniAlwaysInclude]
+		public byte Flags { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Direction { get; set; }
+		[IniAlwaysInclude]
+		public float Diffuse { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Ambient { get; set; }
+		[IniAlwaysInclude]
+		public float Color1Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Color1 { get; set; }
+		[IniAlwaysInclude]
+		public float Specular1Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Specular1 { get; set; }
+		[IniAlwaysInclude]
+		public float Color2Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Color2 { get; set; }
+		[IniAlwaysInclude]
+		public float Specular2Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Specular2 { get; set; }
+
+		public PaletteLight(byte[] file, int address)
+		{
+			Level = file[address];
+			Act = file[address + 1];
+			Character = file[address + 2];
+			Flags = file[address + 3];
+			Direction = new Vertex(file, address + 4);
+			Diffuse = ByteConverter.ToSingle(file, address + 16);
+			Ambient = new Vertex(file, address + 20);
+			Color1Power = ByteConverter.ToSingle(file, address + 32);
+			Color1 = new Vertex(file, address + 36);
+			Specular1Power = ByteConverter.ToSingle(file, address + 48);
+			Specular1 = new Vertex(file, address + 52);
+			Color2Power = ByteConverter.ToSingle(file, address + 64);
+			Color2 = new Vertex(file, address + 68);
+			Specular2Power = ByteConverter.ToSingle(file, address + 80);
+			Specular2 = new Vertex(file, address + 84);
+		}
+	}
+
+	public class PaletteLightList
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public PaletteLight[] Lights { get; set; }
+
+		public PaletteLightList(byte[] file, int address, int count)
+		{
+			List<PaletteLight> lightlist = new List<PaletteLight>();
+			for (int i = 0; i < count; i++)
+			{
+				lightlist.Add(new PaletteLight(file, address + i * 96));
+			}
+			Lights = lightlist.ToArray();
+		}
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+	}
+
+		/// <summary>
+		/// Converts between <see cref="string"/> and <typeparamref name="T"/>
+		/// </summary>
+		public class StringConverter<T> : TypeConverter
 	{
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
