@@ -311,7 +311,7 @@ namespace SonicRetro.SAModel.SALVL
 					else if (allToolStripMenuItem.Checked)
 						display = true;
 					if (display)
-						renderlist.AddRange(LevelData.GetLevelitemAtIndex(i).Render(d3ddevice, cam, transform, EditorOptions.IgnoreMaterialColors));
+						renderlist.AddRange(LevelData.GetLevelitemAtIndex(i).Render(d3ddevice, cam, transform));
 				}
 			RenderInfo.Draw(renderlist, d3ddevice, cam);
 			osd.ProcessMessages();

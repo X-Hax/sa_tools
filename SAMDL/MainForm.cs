@@ -1176,7 +1176,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showModelToolStripMenuItem.Checked)
 			{
 				if (hasWeight)
-					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 				else if (animation != null)
 				{
 					foreach (KeyValuePair<int, AnimModelData> animdata in animation.Models)
@@ -1192,10 +1192,10 @@ namespace SonicRetro.SAModel.SAMDL
 									catch { }
 						}
 					}
-					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 				}
 				else
-					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, EditorOptions.IgnoreMaterialColors), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 
 				if (selectedObject != null)
 				{

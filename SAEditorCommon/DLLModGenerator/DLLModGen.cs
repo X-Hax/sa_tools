@@ -21,6 +21,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 			{ "basicdxmodelarray", "NJS_OBJECT **" },
 			{ "chunkmodel", "NJS_OBJECT *" },
 			{ "chunkmodelarray", "NJS_OBJECT **" },
+			{ "chunkattach", "NJS_CNK_MODEL **" },
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
@@ -363,14 +364,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							}
 							break;
 						case "chaomotiontable":
+						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
 								{
 									NJS_MOTION.Load(file).ToStructVariables(writer);
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<ChaoMotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
-								writer.WriteLine("ChaoMotionTableEntry {0}[] = {{", item.Export);
+								var data = IniSerializer.Deserialize<MotionTableEntry[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
 									objs.Add(obj.ToStruct());

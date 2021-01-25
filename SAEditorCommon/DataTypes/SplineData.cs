@@ -283,7 +283,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			return mesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
 
-		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform, bool ignorematcolors = false)
+		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
 				return EmptyRenderInfo;

@@ -39,6 +39,19 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			direct3DDevice = d3dDevice;
 
 			SetDefaultLights(d3dDevice, false);
+
+			#region Font Setup
+			onscreenFont = new Font(d3dDevice, new FontDescription
+			{
+				Height = 24,
+				FaceName = "Verdana",
+				Weight = FontWeight.Black,
+				CharacterSet = FontCharacterSet.Oem,
+				PitchAndFamily = FontPitchAndFamily.Default,
+				OutputPrecision = FontPrecision.TrueType,
+				Quality = FontQuality.ClearType
+			});
+			#endregion
 		}
 
 		public static void SetDefaultLights(Device d3dDevice, bool reset)
@@ -90,18 +103,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3dDevice.EnableLight(2, true);
 			#endregion
 
-			#region Font Setup
-			onscreenFont = new Font(d3dDevice, new FontDescription
-			{
-				Height = 24,
-				FaceName = "Verdana",
-				Weight = FontWeight.Black,
-				CharacterSet = FontCharacterSet.Oem,
-				PitchAndFamily = FontPitchAndFamily.Default,
-				OutputPrecision = FontPrecision.TrueType,
-				Quality = FontQuality.ClearType
-			});
-			#endregion
 		}
 
 		public static void RenderStateCommonSetup(Device d3ddevice)
@@ -119,7 +120,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			d3ddevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
 			d3ddevice.SetRenderState(RenderState.AlphaTestEnable, true);
 			d3ddevice.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
-			d3ddevice.SetRenderState(RenderState.AmbientMaterialSource, ColorSource.Material);
+			d3ddevice.SetRenderState(RenderState.AmbientMaterialSource, ColorSource.Color1);
 			d3ddevice.SetRenderState(RenderState.DiffuseMaterialSource, ColorSource.Color1);
 			d3ddevice.SetRenderState(RenderState.SpecularMaterialSource, ColorSource.Color2);
 			d3ddevice.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.BlendDiffuseAlpha);

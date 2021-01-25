@@ -3204,7 +3204,9 @@ namespace SA_Tools
 		public int Rating { get; set; }
 		public int DescriptionID { get; set; }
 		public int TextBackTexture { get; set; }
-		public float Unknown5 { get; set; }
+		public float SelectionSize { get; set; }
+		public float? Unknown5 { get { return null; } set { if (value.HasValue) SelectionSize = value.Value; } }
+
 
 		public string ToStruct()
 		{
@@ -3233,7 +3235,7 @@ namespace SA_Tools
 			sb.AppendFormat("{0}, ", Rating);
 			sb.AppendFormat("{0}, ", DescriptionID);
 			sb.AppendFormat("{0}, ", TextBackTexture);
-			sb.Append(Unknown5.ToC());
+			sb.Append(SelectionSize.ToC());
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -3270,15 +3272,18 @@ namespace SA_Tools
 		}
 	}
 
-	public class ChaoMotionTableEntry
+	public class MotionTableEntry
 	{
 		public string Motion { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public ushort Flag1 { get; set; }
-		public ushort Pose{ get; set; }
-		public int TransitionID { get; set; }
+		public ushort LoopProperty { get; set; }
+		public ushort? Flag1 { get { return null; } set { if (value.HasValue) LoopProperty = value.Value; } }
+		public ushort Pose { get; set; }
+		public int NextAnimation { get; set; }
+		public int? TransitionID { get { return null; } set { if (value.HasValue) NextAnimation = value.Value; } }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public uint Flag2 { get; set; }
+		public uint TransitionSpeed { get; set; }
+		public uint? Flag2 { get { return null; } set { if (value.HasValue) TransitionSpeed = value.Value; } }
 		public float StartFrame { get; set; }
 		public float EndFrame { get; set; }
 		public float PlaySpeed { get; set; }
@@ -3292,10 +3297,15 @@ namespace SA_Tools
 			}
 			else
 				sb.Append("NULL, ");
-			sb.AppendFormat("{0}, ", Flag1.ToCHex());
+			sb.AppendFormat("{0}, ", LoopProperty.ToCHex());
 			sb.AppendFormat("{0}, ", Pose.ToCHex());
-			sb.AppendFormat("{0}, ", TransitionID);
-			sb.AppendFormat("{0}, ", Flag2.ToCHex());
+			if (NextAnimation != -1)
+			{
+				sb.AppendFormat("{0}, ", NextAnimation);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", TransitionSpeed.ToCHex());
 			sb.AppendFormat("{0}, ", StartFrame.ToC());
 			sb.AppendFormat("{0}, ", EndFrame.ToC());
 			sb.AppendFormat("{0}", PlaySpeed.ToC());
@@ -3412,10 +3422,84 @@ namespace SA_Tools
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
 	}
-	/// <summary>
-	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
-	/// </summary>
-	public class StringConverter<T> : TypeConverter
+
+	public class PaletteLight
+	{
+		[IniAlwaysInclude]
+		public byte Level { get; set; }
+		[IniAlwaysInclude]
+		public byte Act { get; set; }
+		[IniAlwaysInclude]
+		public byte Character { get; set; }
+		[IniAlwaysInclude]
+		public byte Flags { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Direction { get; set; }
+		[IniAlwaysInclude]
+		public float Diffuse { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Ambient { get; set; }
+		[IniAlwaysInclude]
+		public float Color1Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Color1 { get; set; }
+		[IniAlwaysInclude]
+		public float Specular1Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Specular1 { get; set; }
+		[IniAlwaysInclude]
+		public float Color2Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Color2 { get; set; }
+		[IniAlwaysInclude]
+		public float Specular2Power { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Specular2 { get; set; }
+
+		public PaletteLight(byte[] file, int address)
+		{
+			Level = file[address];
+			Act = file[address + 1];
+			Character = file[address + 2];
+			Flags = file[address + 3];
+			Direction = new Vertex(file, address + 4);
+			Diffuse = ByteConverter.ToSingle(file, address + 16);
+			Ambient = new Vertex(file, address + 20);
+			Color1Power = ByteConverter.ToSingle(file, address + 32);
+			Color1 = new Vertex(file, address + 36);
+			Specular1Power = ByteConverter.ToSingle(file, address + 48);
+			Specular1 = new Vertex(file, address + 52);
+			Color2Power = ByteConverter.ToSingle(file, address + 64);
+			Color2 = new Vertex(file, address + 68);
+			Specular2Power = ByteConverter.ToSingle(file, address + 80);
+			Specular2 = new Vertex(file, address + 84);
+		}
+	}
+
+	public class PaletteLightList
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public PaletteLight[] Lights { get; set; }
+
+		public PaletteLightList(byte[] file, int address, int count)
+		{
+			List<PaletteLight> lightlist = new List<PaletteLight>();
+			for (int i = 0; i < count; i++)
+			{
+				lightlist.Add(new PaletteLight(file, address + i * 96));
+			}
+			Lights = lightlist.ToArray();
+		}
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+	}
+
+		/// <summary>
+		/// Converts between <see cref="string"/> and <typeparamref name="T"/>
+		/// </summary>
+		public class StringConverter<T> : TypeConverter
 	{
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{

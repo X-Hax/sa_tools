@@ -347,6 +347,48 @@ namespace SA_Tools.Split
 								SA1ActionInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
 							}
 							break;
+						case "motiontable":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<MotionTableEntry> result = new List<MotionTableEntry>();
+								List<string> hashes = new List<string>();
+								bool shortrot = false;
+								if (customProperties.ContainsKey("shortrot"))
+									shortrot = bool.Parse(customProperties["shortrot"]);
+								int nodeCount = int.Parse(data.CustomProperties["nodecount"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								for (int i = 0; i < Length; i++)
+								{
+									MotionTableEntry bmte = new MotionTableEntry();
+									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									if (!mtns.ContainsKey(mtnaddr))
+									{
+										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
+										bmte.Motion = motion.Name;
+										mtns.Add(mtnaddr, motion.Name);
+										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
+										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+									}
+									else
+									bmte.Motion = mtns[mtnaddr];
+									bmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
+									bmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
+									bmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
+									bmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
+									bmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
+									bmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
+									bmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
+									result.Add(bmte);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+
 						case "levelpathlist":
 							{
 								List<string> hashes = new List<string>();
@@ -445,6 +487,13 @@ namespace SA_Tools.Split
 								fcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 							FogDataTable fga = new FogDataTable(datafile, address, imageBase, fcnt);
 							fga.Save(fileOutputPath);
+							break;
+						case "palettelightlist":
+							int count = 255;
+							if (customProperties.ContainsKey("count"))
+								count = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							PaletteLightList pllist = new PaletteLightList(datafile, address, count);
+							pllist.Save(fileOutputPath);
 							break;
 						default: // raw binary
 							{
