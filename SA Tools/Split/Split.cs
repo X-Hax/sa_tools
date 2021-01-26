@@ -361,7 +361,7 @@ namespace SA_Tools.Split
 								for (int i = 0; i < Length; i++)
 								{
 									MotionTableEntry bmte = new MotionTableEntry();
-									int mtnaddr = (int)(ByteConverter.ToInt32(datafile, address) - imageBase);
+									int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
 									if (!mtns.ContainsKey(mtnaddr))
 									{
 										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
@@ -375,10 +375,10 @@ namespace SA_Tools.Split
 									bmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
 									bmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
 									bmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
-									bmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
-									bmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
-									bmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
-									bmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 24);
+									bmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 0xC);
+									bmte.StartFrame = ByteConverter.ToSingle(datafile, address + 0x10);
+									bmte.EndFrame = ByteConverter.ToSingle(datafile, address + 0x14);
+									bmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 0x18);
 									result.Add(bmte);
 									address += 0x1C;
 								}
@@ -487,13 +487,6 @@ namespace SA_Tools.Split
 								fcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 							FogDataTable fga = new FogDataTable(datafile, address, imageBase, fcnt);
 							fga.Save(fileOutputPath);
-							break;
-						case "palettelightlist":
-							int count = 255;
-							if (customProperties.ContainsKey("count"))
-								count = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-							PaletteLightList pllist = new PaletteLightList(datafile, address, count);
-							pllist.Save(fileOutputPath);
 							break;
 						default: // raw binary
 							{
