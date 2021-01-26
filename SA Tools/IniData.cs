@@ -3423,7 +3423,7 @@ namespace SA_Tools
 		[IniAlwaysInclude]
 		public byte Act { get; set; }
 		[IniAlwaysInclude]
-		public byte Character { get; set; }
+		public byte Type { get; set; }
 		[IniAlwaysInclude]
 		public byte Flags { get; set; }
 		[IniAlwaysInclude]
@@ -3453,7 +3453,7 @@ namespace SA_Tools
 		{
 			Level = file[address];
 			Act = file[address + 1];
-			Character = file[address + 2];
+			Type = file[address + 2];
 			Flags = file[address + 3];
 			Direction = new Vertex(file, address + 4);
 			Diffuse = ByteConverter.ToSingle(file, address + 16);
