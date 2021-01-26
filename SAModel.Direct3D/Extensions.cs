@@ -947,8 +947,8 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						Texture texture = null;
 						NJS_MATERIAL mat;
-						if (obj.Attach.MeshInfo[j].Material != null)
-							mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
+						if (objs[i].Attach.MeshInfo[j].Material != null)
+							mat = new NJS_MATERIAL(objs[i].Attach.MeshInfo[j].Material);
 						else
 						{
 							mat = new NJS_MATERIAL
@@ -969,8 +969,8 @@ namespace SonicRetro.SAModel.Direct3D
 							mat.IgnoreLighting = true;
 						}
 						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
-						}
 					}
+				}
 			return result;
 		}
 
