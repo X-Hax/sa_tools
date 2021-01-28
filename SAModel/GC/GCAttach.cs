@@ -46,6 +46,11 @@ namespace SonicRetro.SAModel.GC
 		/// <param name="address">The address at which the attach is located</param>
 		/// <param name="imageBase">The imagebase of the file</param>
 		/// <param name="labels">The labels of the file</param>
+		/// 
+		public GCAttach(byte[] file, int address, uint imageBase)
+			: this(file, address, imageBase, new Dictionary<int, string>())
+		{
+		}
 		public GCAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
 			if (labels.ContainsKey(address))
