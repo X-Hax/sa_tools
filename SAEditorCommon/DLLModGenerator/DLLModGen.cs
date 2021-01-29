@@ -22,6 +22,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 			{ "chunkmodel", "NJS_OBJECT *" },
 			{ "chunkmodelarray", "NJS_OBJECT **" },
 			{ "chunkattach", "NJS_CNK_MODEL **" },
+			{ "gcmodel", "NJS_OBJECT *" },
+			{ "gcmodelarray", "NJS_OBJECT **" },
+			{ "gcattach", "SA2B_MODEL **" },
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
@@ -190,6 +193,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 					case "model":
 					case "basicmodel":
 					case "chunkmodel":
+					case "gcmodel":
 					case "basicdxmodel":
 						NJS_OBJECT mdl = new ModelFile(item.Key).Model;
 						labels.AddRange(mdl.GetLabels());
@@ -246,6 +250,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							break;
 						case "basicmodel":
 						case "chunkmodel":
+						case "gcmodel":
 							mdl = new ModelFile(item.Key).Model;
 							mdl.ToStructVariables(writer, false, new List<string>());
 							labels.AddRange(mdl.GetLabels());
@@ -327,7 +332,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
-						case "chaomotiontable":
 						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
