@@ -1860,6 +1860,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
 				LevelData.leveleff.Render(d3ddevice, cam);
 
+			List<RenderInfo> renderlist_death = new List<RenderInfo>();
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
@@ -1892,7 +1893,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				foreach (DeathZoneItem item in LevelData.DeathZones)
 				{
 					if (item.Visible)
-						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
+						renderlist_death.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
@@ -1975,6 +1976,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			d3ddevice.SetTransform(TransformState.Projection, projection);
 			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
+
+			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
+			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
+			d3ddevice.SetTransform(TransformState.Projection, projection);
+			cam.BuildFrustum(view, projection);
+			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
+			RenderInfo.Draw(renderlist_death, d3ddevice, cam);
+			d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 
