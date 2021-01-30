@@ -84,7 +84,10 @@ namespace ObjScan
 						if (!first) sw.WriteLine();
 						sw.WriteLine();
 						break;
-					case "landtable":
+					case "landtable_SADX":
+					case "landtable_SA1":
+					case "landtable_SA2":
+					case "landtable_SA2B":
 					case "LandTable":
 					case "_OBJ_LANDTABLE":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
@@ -447,6 +450,7 @@ namespace ObjScan
 						land.SaveToFile(fileOutputPath + landtable_extension, landfmt, nometa);
 						landtablelist.Add(address);
 						Console.WriteLine("\rLandtable at {0}", address.ToString("X8"));
+						Console.WriteLine("landtable_" + landfmt.ToString());
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
 						address += (uint)LandTable.Size(landfmt);
 					}
