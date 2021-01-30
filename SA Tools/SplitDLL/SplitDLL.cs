@@ -102,7 +102,8 @@ namespace SA_Tools.SplitDLL
 					{
 						case "landtable":
 							{
-								LandTable land = new LandTable(datafile, address, imageBase, landfmt) { Description = name };
+								LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt;
+								LandTable land = new LandTable(datafile, address, imageBase, format) { Description = name };
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -113,7 +114,7 @@ namespace SA_Tools.SplitDLL
 								{
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-									land.SaveToFile(fileOutputPath, landfmt, nometa);
+									land.SaveToFile(fileOutputPath, format, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
 								}

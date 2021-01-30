@@ -86,7 +86,8 @@ namespace SA_Tools.Split
 					switch (type)
 					{
 						case "landtable":
-							new LandTable(datafile, address, imageBase, landfmt, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt, nometa);
+							LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt;
+							new LandTable(datafile, address, imageBase, format, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt, nometa);
 							break;
 						case "model":
 							{

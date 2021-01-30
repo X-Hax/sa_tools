@@ -94,6 +94,23 @@ namespace ObjScan
 						sw.WriteLine("type=landtable");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						switch (entry.Value)
+						{
+							case "landtable_SA1":
+								sw.WriteLine("format=SA1");
+								break;
+							case "landtable_SADX":
+								sw.WriteLine("format=SADX");
+								break;
+							case "landtable_SA2":
+								sw.WriteLine("format=SA2");
+								break;
+							case "landtable_SA2B":
+								sw.WriteLine("format=SA2B");
+								break;
+							default:
+								break;
+						}
 						sw.WriteLine();
 						break;
 					case "NJS_MOTION":
@@ -449,8 +466,7 @@ namespace ObjScan
 					{
 						land.SaveToFile(fileOutputPath + landtable_extension, landfmt, nometa);
 						landtablelist.Add(address);
-						Console.WriteLine("\rLandtable at {0}", address.ToString("X8"));
-						Console.WriteLine("landtable_" + landfmt.ToString());
+						Console.WriteLine("\rLandtable {0} at {1}", landfmt.ToString(), address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
 						address += (uint)LandTable.Size(landfmt);
 					}
