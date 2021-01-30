@@ -260,7 +260,6 @@ namespace ObjScan
 					if (scl.X <= 0 || scl.X > 10000) return false;
 					if (scl.Y <= 0 || scl.Y > 10000) return false;
 					if (scl.Z <= 0 || scl.Z > 10000) return false;
-					if (attach == 0 && child == 0 && sibling == 0) return false;
 					if (recursive && child != 0 && !CheckModel(child - imageBase, false, modelfmt)) return false;
 					if (recursive && sibling != 0 && !CheckModel(sibling - imageBase, false, modelfmt)) return false;
 					if (attach == 0 && flags == 0) return false;
@@ -596,6 +595,21 @@ namespace ObjScan
 			}
 		}
 
+		static bool CheckForModelData(NJS_OBJECT obj)
+		{
+			if (obj.Attach != null) return true;
+			if (obj.Sibling != null && obj.Sibling.Attach != null) return true;
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT ch in obj.Children)
+				{
+					bool checc = CheckForModelData(ch);
+					if (checc) return true;
+				}
+			}
+			return false;
+		}
+
 		static void ScanModel(ModelFormat modelfmt)
 		{
 			int count = 0;
@@ -638,21 +652,7 @@ namespace ObjScan
 					//else Console.WriteLine("found: {0}", address.ToString("X"));
 					NJS_OBJECT mdl = new NJS_OBJECT(datafile, (int)address, imageBase, modelfmt, new Dictionary<int, Attach>());
 					//Additional checks to prevent false positives with empty nodes
-					bool create = true;
-					if (mdl.Attach == null)
-					{
-						if (mdl.Children == null || mdl.Children.Count == 0) create = false;
-						else
-						{
-							bool att = false;
-							foreach (NJS_OBJECT obj in mdl.Children)
-							{
-								if (obj.Attach != null) att = true;
-							}
-							if (!att) create = false;
-						}
-					}
-					if (create)
+					if (CheckForModelData(mdl))
 					{
 						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
 						count++;
