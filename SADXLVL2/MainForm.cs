@@ -870,22 +870,27 @@ namespace SonicRetro.SAModel.SADXLVL2
 			// Loads mission object textures
 			LoadTextureList(ini.MissionTextureList, syspath);
 
-			if (level.TextureList != null)
-			{
-				progress.SetTaskAndStep("Loading stage texture lists...");
-				LevelTextureList texini = LevelTextureList.Load(Path.Combine(syspath, level.TextureList));
-				LoadTextureList(texini.TextureList, syspath);
-			}
-			
-			// Loads the textures in the texture list for this stage (e.g BEACH01)
-			//foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
-			//{
-			//	LevelTextureList texini = LevelTextureList.Load(file);
-			//	if (texini.Level != levelact)
-			//		continue;
 
-			//	LoadTextureList(texini.TextureList, syspath);
-			//}
+			if (ini.LevelTextureLists != null)
+			{
+				// Loads the textures in the texture list for this stage (e.g BEACH01)
+				foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+				{
+					LevelTextureList texini = LevelTextureList.Load(file);
+					if (texini.Level != levelact)
+						continue;
+					LoadTextureList(texini.TextureList, syspath);
+				}
+			}
+			else
+			{
+				if (level.TextureList != null)
+				{
+					progress.SetTaskAndStep("Loading stage texture lists...");
+					LevelTextureList texini = LevelTextureList.Load(Path.Combine(syspath, level.TextureList));
+					LoadTextureList(texini.TextureList, syspath);
+				}
+			}
 
 			progress.SetTaskAndStep("Loading textures for:", "Objects");
 			// Object texture list(s)

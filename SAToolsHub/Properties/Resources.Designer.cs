@@ -73,139 +73,9 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap sa1_autodemo {
+        internal static System.Drawing.Bitmap saSave {
             get {
-                object obj = ResourceManager.GetObject("sa1_autodemo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa1_final {
-            get {
-                object obj = ResourceManager.GetObject("sa1_final", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa1_final1 {
-            get {
-                object obj = ResourceManager.GetObject("sa1_final1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa2_final {
-            get {
-                object obj = ResourceManager.GetObject("sa2_final", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa2_ico {
-            get {
-                object obj = ResourceManager.GetObject("sa2_ico", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa2_preview {
-            get {
-                object obj = ResourceManager.GetObject("sa2_preview", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sa2_trial {
-            get {
-                object obj = ResourceManager.GetObject("sa2_trial", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap SA2BANNER {
-            get {
-                object obj = ResourceManager.GetObject("SA2BANNER", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sadx_ljstar {
-            get {
-                object obj = ResourceManager.GetObject("sadx_ljstar", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sadx360_final {
-            get {
-                object obj = ResourceManager.GetObject("sadx360_final", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap SADXBANNER {
-            get {
-                object obj = ResourceManager.GetObject("SADXBANNER", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sadxgc_final {
-            get {
-                object obj = ResourceManager.GetObject("sadxgc_final", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sadxgc_preview {
-            get {
-                object obj = ResourceManager.GetObject("sadxgc_preview", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sadxgc_review {
-            get {
-                object obj = ResourceManager.GetObject("sadxgc_review", resourceCulture);
+                object obj = ResourceManager.GetObject("saSave", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -243,9 +113,49 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap tsDxFontEdit {
+            get {
+                object obj = ResourceManager.GetObject("tsDxFontEdit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsDxLvl2 {
+            get {
+                object obj = ResourceManager.GetObject("tsDxLvl2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsDxTweaker {
+            get {
+                object obj = ResourceManager.GetObject("tsDxTweaker", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tsEditProj {
             get {
                 object obj = ResourceManager.GetObject("tsEditProj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsMsgEdit {
+            get {
+                object obj = ResourceManager.GetObject("tsMsgEdit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -283,6 +193,26 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap tsSa2EvDiag {
+            get {
+                object obj = ResourceManager.GetObject("tsSa2EvDiag", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsSa2StgEdit {
+            get {
+                object obj = ResourceManager.GetObject("tsSa2StgEdit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tsSALVL {
             get {
                 object obj = ResourceManager.GetObject("tsSALVL", resourceCulture);
@@ -296,6 +226,16 @@ namespace SAToolsHub.Properties {
         internal static System.Drawing.Bitmap tsSAMDL {
             get {
                 object obj = ResourceManager.GetObject("tsSAMDL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsSndSharp {
+            get {
+                object obj = ResourceManager.GetObject("tsSndSharp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
