@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>TailsDX.ico</ApplicationIcon>
+    <ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -207,7 +207,9 @@
     <None Include="Resources\lighting.png" />
     <None Include="Resources\jumpzero.png" />
     <None Include="Resources\material.png" />
-    <Content Include="TailsDX.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon_dxLvl2.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

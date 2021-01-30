@@ -136,6 +136,7 @@ namespace Split
 					if (!File.Exists(fullpath_mdl))
 					{
 						Console.WriteLine("File {0} doesn't exist.", fullpath_mdl);
+						return;
 					}
 					Console.Write("File: {0}", fullpath_mdl);
 					if (mode == "mdl_b")

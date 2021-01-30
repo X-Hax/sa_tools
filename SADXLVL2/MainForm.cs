@@ -83,7 +83,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool cameraKeyDown;
 		Point menuLocation;
 		bool isPointOperation;
-		bool displayDeathZonesManual;
 		bool unsaved;
 
 		// TODO: Make these both configurable.
@@ -1610,8 +1609,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewToolStripMenuItem.Enabled = true;
 			layersToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
-			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
-			else deathZonesToolStripMenuItem.Enabled = deathZonesButton.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 			advancedToolStripMenuItem.Enabled = true;
 			addToolStripMenuItem1.Enabled = true;
 			addToolStripMenuItem.Enabled = true;
@@ -1874,8 +1872,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			MatrixStack transform = new MatrixStack();
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 			if (LevelData.leveleff != null & backgroundToolStripMenuItem.Checked)
+			{
+				d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
 				LevelData.leveleff.Render(d3ddevice, cam);
+				d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
+			}
 
+			List<RenderInfo> renderlist_death = new List<RenderInfo>();
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
@@ -1908,7 +1911,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				foreach (DeathZoneItem item in LevelData.DeathZones)
 				{
 					if (item.Visible)
-						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
+						renderlist_death.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
 			#endregion
@@ -1981,16 +1984,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
-			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
-			d3ddevice.SetTransform(TransformState.Projection, projection);
-			cam.BuildFrustum(view, projection);
 			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
 
-			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.RenderDrawDistance);
-			projection = Matrix.PerspectiveFovRH(cam.FOV, cam.Aspect, 1, cam.DrawDistance);
-			d3ddevice.SetTransform(TransformState.Projection, projection);
-			cam.BuildFrustum(view, projection);
+			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.SetItemDrawDistance);
 			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
+
+			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
+			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
+			RenderInfo.Draw(renderlist_death, d3ddevice, cam);
+			d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
 
 			d3ddevice.EndScene(); // scene drawings go before this line
 
@@ -3300,7 +3302,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			displayDeathZonesManual = !displayDeathZonesManual;
 			deathZonesButton.Checked = deathZonesToolStripMenuItem.Checked;
 			DrawLevel();
 		}
@@ -4042,8 +4043,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewToolStripMenuItem.Enabled = true;
 			layersToolStripMenuItem.Enabled = true;
 			statsToolStripMenuItem.Enabled = isGeometryPresent;
-			if (!displayDeathZonesManual) deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
-			else deathZonesToolStripMenuItem.Enabled = deathZonesButton.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
+			deathZonesToolStripMenuItem.Checked = deathZonesButton.Enabled = deathZonesButton.Checked = deathZonesToolStripMenuItem.Enabled = deathZoneToolStripMenuItem.Enabled = isDeathZonePresent;
 			advancedToolStripMenuItem.Enabled = true;
 			addToolStripMenuItem1.Enabled = true;
 			addToolStripMenuItem.Enabled = true;

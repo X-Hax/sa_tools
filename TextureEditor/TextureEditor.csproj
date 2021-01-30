@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon_TexEdit.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FraGag.Compression.Prs">
       <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
@@ -127,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon_TexEdit.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

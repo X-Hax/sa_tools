@@ -37,6 +37,7 @@
 			System.Windows.Forms.Label label1;
 			System.Windows.Forms.Label label2;
 			System.Windows.Forms.Label label3;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -445,6 +446,7 @@
 			this.Controls.Add(this.sceneNum);
 			this.Controls.Add(label4);
 			this.Controls.Add(this.menuStrip1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "SA2 Cutscene Text Editor";

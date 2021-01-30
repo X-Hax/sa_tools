@@ -84,13 +84,33 @@ namespace ObjScan
 						if (!first) sw.WriteLine();
 						sw.WriteLine();
 						break;
-					case "landtable":
+					case "landtable_SADX":
+					case "landtable_SA1":
+					case "landtable_SA2":
+					case "landtable_SA2B":
 					case "LandTable":
 					case "_OBJ_LANDTABLE":
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=landtable");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						switch (entry.Value)
+						{
+							case "landtable_SA1":
+								sw.WriteLine("format=SA1");
+								break;
+							case "landtable_SADX":
+								sw.WriteLine("format=SADX");
+								break;
+							case "landtable_SA2":
+								sw.WriteLine("format=SA2");
+								break;
+							case "landtable_SA2B":
+								sw.WriteLine("format=SA2B");
+								break;
+							default:
+								break;
+						}
 						sw.WriteLine();
 						break;
 					case "NJS_MOTION":
@@ -240,7 +260,6 @@ namespace ObjScan
 					if (scl.X <= 0 || scl.X > 10000) return false;
 					if (scl.Y <= 0 || scl.Y > 10000) return false;
 					if (scl.Z <= 0 || scl.Z > 10000) return false;
-					if (attach == 0 && child == 0 && sibling == 0) return false;
 					if (recursive && child != 0 && !CheckModel(child - imageBase, false, modelfmt)) return false;
 					if (recursive && sibling != 0 && !CheckModel(sibling - imageBase, false, modelfmt)) return false;
 					if (attach == 0 && flags == 0) return false;
@@ -446,7 +465,7 @@ namespace ObjScan
 					{
 						land.SaveToFile(fileOutputPath + landtable_extension, landfmt, nometa);
 						landtablelist.Add(address);
-						Console.WriteLine("\rLandtable at {0}", address.ToString("X8"));
+						Console.WriteLine("\rLandtable {0} at {1}", landfmt.ToString(), address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
 						address += (uint)LandTable.Size(landfmt);
 					}
@@ -576,6 +595,21 @@ namespace ObjScan
 			}
 		}
 
+		static bool CheckForModelData(NJS_OBJECT obj)
+		{
+			if (obj.Attach != null) return true;
+			if (obj.Sibling != null && obj.Sibling.Attach != null) return true;
+			if (obj.Children != null && obj.Children.Count > 0)
+			{
+				foreach (NJS_OBJECT ch in obj.Children)
+				{
+					bool checc = CheckForModelData(ch);
+					if (checc) return true;
+				}
+			}
+			return false;
+		}
+
 		static void ScanModel(ModelFormat modelfmt)
 		{
 			int count = 0;
@@ -617,11 +651,15 @@ namespace ObjScan
 					}
 					//else Console.WriteLine("found: {0}", address.ToString("X"));
 					NJS_OBJECT mdl = new NJS_OBJECT(datafile, (int)address, imageBase, modelfmt, new Dictionary<int, Attach>());
-					ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
-					count++;
-					addresslist.Add(address, model_type);
-					if (!keepchild)
-						DeleteModelTree(mdl, model_dir, model_extension);
+					//Additional checks to prevent false positives with empty nodes
+					if (CheckForModelData(mdl))
+					{
+						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
+						count++;
+						addresslist.Add(address, model_type);
+						if (!keepchild)
+							DeleteModelTree(mdl, model_dir, model_extension);
+					}
 				}
 				catch (Exception ex)
 				{
