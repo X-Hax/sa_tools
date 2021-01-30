@@ -617,11 +617,29 @@ namespace ObjScan
 					}
 					//else Console.WriteLine("found: {0}", address.ToString("X"));
 					NJS_OBJECT mdl = new NJS_OBJECT(datafile, (int)address, imageBase, modelfmt, new Dictionary<int, Attach>());
-					ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
-					count++;
-					addresslist.Add(address, model_type);
-					if (!keepchild)
-						DeleteModelTree(mdl, model_dir, model_extension);
+					//Additional checks to prevent false positives with empty nodes
+					bool create = true;
+					if (mdl.Attach == null)
+					{
+						if (mdl.Children == null || mdl.Children.Count == 0) create = false;
+						else
+						{
+							bool att = false;
+							foreach (NJS_OBJECT obj in mdl.Children)
+							{
+								if (obj.Attach != null) att = true;
+							}
+							if (!att) create = false;
+						}
+					}
+					if (create)
+					{
+						ModelFile.CreateFile(fileOutputPath + model_extension, mdl, null, null, null, null, modelfmt, nometa);
+						count++;
+						addresslist.Add(address, model_type);
+						if (!keepchild)
+							DeleteModelTree(mdl, model_dir, model_extension);
+					}
 				}
 				catch (Exception ex)
 				{
