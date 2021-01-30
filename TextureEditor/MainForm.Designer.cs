@@ -34,9 +34,24 @@
 			System.Windows.Forms.Label label3;
 			System.Windows.Forms.Label labelOriginalSize;
 			System.Windows.Forms.Label labelX;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.importAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -58,6 +73,7 @@
 			this.mipmapCheckBox = new System.Windows.Forms.CheckBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.textureSizeLabel = new System.Windows.Forms.Label();
+			this.textureImage = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.exportButton = new System.Windows.Forms.Button();
 			this.importButton = new System.Windows.Forms.Button();
@@ -69,23 +85,8 @@
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.dummyPanel = new System.Windows.Forms.Panel();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.textureImage = new System.Windows.Forms.PictureBox();
-			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -100,11 +101,11 @@
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownOrigSizeY)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownOrigSizeX)).BeginInit();
 			this.tableLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.textureImage)).BeginInit();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).BeginInit();
 			this.statusStrip1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.textureImage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -181,10 +182,137 @@
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
 			// 
+			// newToolStripMenuItem
+			// 
+			this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newPVMToolStripMenuItem,
+            this.newGVMToolStripMenuItem,
+            this.newPVMXToolStripMenuItem,
+            this.newPAKToolStripMenuItem});
+			this.newToolStripMenuItem.Image = global::TextureEditor.Properties.Resources._new;
+			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.newToolStripMenuItem.Text = "&New";
+			// 
+			// newPVMToolStripMenuItem
+			// 
+			this.newPVMToolStripMenuItem.Name = "newPVMToolStripMenuItem";
+			this.newPVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+			this.newPVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.newPVMToolStripMenuItem.Text = "&PVM";
+			this.newPVMToolStripMenuItem.Click += new System.EventHandler(this.newPVMToolStripMenuItem_Click);
+			// 
+			// newGVMToolStripMenuItem
+			// 
+			this.newGVMToolStripMenuItem.Name = "newGVMToolStripMenuItem";
+			this.newGVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+			this.newGVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.newGVMToolStripMenuItem.Text = "&GVM";
+			this.newGVMToolStripMenuItem.Click += new System.EventHandler(this.newGVMToolStripMenuItem_Click);
+			// 
+			// newPVMXToolStripMenuItem
+			// 
+			this.newPVMXToolStripMenuItem.Name = "newPVMXToolStripMenuItem";
+			this.newPVMXToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.N)));
+			this.newPVMXToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.newPVMXToolStripMenuItem.Text = "PVM&X";
+			this.newPVMXToolStripMenuItem.Click += new System.EventHandler(this.newPVMXToolStripMenuItem_Click);
+			// 
+			// newPAKToolStripMenuItem
+			// 
+			this.newPAKToolStripMenuItem.Name = "newPAKToolStripMenuItem";
+			this.newPAKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+			this.newPAKToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			this.newPAKToolStripMenuItem.Text = "PA&K";
+			this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
+			// 
+			// openToolStripMenuItem
+			// 
+			this.openToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.open;
+			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.openToolStripMenuItem.Text = "&Open...";
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+			// 
+			// saveToolStripMenuItem
+			// 
+			this.saveToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.save;
+			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.saveToolStripMenuItem.Text = "&Save";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+			// 
+			// saveAsToolStripMenuItem
+			// 
+			this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveAsPVMToolStripMenuItem,
+            this.saveAsGVMToolStripMenuItem,
+            this.saveAsPVMXToolStripMenuItem,
+            this.saveAsPAKToolStripMenuItem});
+			this.saveAsToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.saveas;
+			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+			this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.saveAsToolStripMenuItem.Text = "Save &As...";
+			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+			// 
+			// saveAsPVMToolStripMenuItem
+			// 
+			this.saveAsPVMToolStripMenuItem.Name = "saveAsPVMToolStripMenuItem";
+			this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+			this.saveAsPVMToolStripMenuItem.Text = "&PVM";
+			this.saveAsPVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMToolStripMenuItem_Click);
+			// 
+			// saveAsGVMToolStripMenuItem
+			// 
+			this.saveAsGVMToolStripMenuItem.Name = "saveAsGVMToolStripMenuItem";
+			this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+			this.saveAsGVMToolStripMenuItem.Text = "&GVM";
+			this.saveAsGVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsGVMToolStripMenuItem_Click);
+			// 
+			// saveAsPVMXToolStripMenuItem
+			// 
+			this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
+			this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+			this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
+			this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
+			// 
+			// saveAsPAKToolStripMenuItem
+			// 
+			this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
+			this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+			this.saveAsPAKToolStripMenuItem.Text = "PA&K";
+			this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
+			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(222, 6);
+			// 
+			// importAllToolStripMenuItem
+			// 
+			this.importAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.import;
+			this.importAllToolStripMenuItem.Name = "importAllToolStripMenuItem";
+			this.importAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+			this.importAllToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.importAllToolStripMenuItem.Text = "&Import texture pack...";
+			this.importAllToolStripMenuItem.Click += new System.EventHandler(this.importAllToolStripMenuItem_Click);
+			// 
+			// exportAllToolStripMenuItem
+			// 
+			this.exportAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.export;
+			this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
+			this.exportAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+			this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			this.exportAllToolStripMenuItem.Text = "&Export texture pack...";
+			this.exportAllToolStripMenuItem.Click += new System.EventHandler(this.exportAllToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -439,6 +567,21 @@
 			this.textureSizeLabel.Text = "Actual Size: ---";
 			this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
+			// textureImage
+			// 
+			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.textureImage.Location = new System.Drawing.Point(0, 58);
+			this.textureImage.Margin = new System.Windows.Forms.Padding(0);
+			this.textureImage.Name = "textureImage";
+			this.textureImage.Size = new System.Drawing.Size(64, 64);
+			this.textureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.textureImage.TabIndex = 4;
+			this.textureImage.TabStop = false;
+			this.textureImage.DragDrop += new System.Windows.Forms.DragEventHandler(this.textureImage_DragDrop);
+			this.textureImage.DragEnter += new System.Windows.Forms.DragEventHandler(this.textureImage_DragEnter);
+			this.textureImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseClick);
+			this.textureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseMove);
+			// 
 			// panel2
 			// 
 			this.panel2.AutoSize = true;
@@ -555,165 +698,23 @@
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
-			// 
-			// pasteToolStripMenuItem
-			// 
-			this.pasteToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.paste;
-			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.pasteToolStripMenuItem.Text = "&Paste";
-			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
-			// 
-			// textureImage
-			// 
-			this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.textureImage.Location = new System.Drawing.Point(0, 58);
-			this.textureImage.Margin = new System.Windows.Forms.Padding(0);
-			this.textureImage.Name = "textureImage";
-			this.textureImage.Size = new System.Drawing.Size(64, 64);
-			this.textureImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.textureImage.TabIndex = 4;
-			this.textureImage.TabStop = false;
-			this.textureImage.DragDrop += new System.Windows.Forms.DragEventHandler(this.textureImage_DragDrop);
-			this.textureImage.DragEnter += new System.Windows.Forms.DragEventHandler(this.textureImage_DragEnter);
-			this.textureImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseClick);
-			this.textureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseMove);
-			// 
-			// newToolStripMenuItem
-			// 
-			this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newPVMToolStripMenuItem,
-            this.newGVMToolStripMenuItem,
-            this.newPVMXToolStripMenuItem,
-            this.newPAKToolStripMenuItem});
-			this.newToolStripMenuItem.Image = global::TextureEditor.Properties.Resources._new;
-			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.newToolStripMenuItem.Text = "&New";
-			// 
-			// newPVMToolStripMenuItem
-			// 
-			this.newPVMToolStripMenuItem.Name = "newPVMToolStripMenuItem";
-			this.newPVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newPVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			this.newPVMToolStripMenuItem.Text = "&PVM";
-			this.newPVMToolStripMenuItem.Click += new System.EventHandler(this.newPVMToolStripMenuItem_Click);
-			// 
-			// newGVMToolStripMenuItem
-			// 
-			this.newGVMToolStripMenuItem.Name = "newGVMToolStripMenuItem";
-			this.newGVMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.N)));
-			this.newGVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			this.newGVMToolStripMenuItem.Text = "&GVM";
-			this.newGVMToolStripMenuItem.Click += new System.EventHandler(this.newGVMToolStripMenuItem_Click);
-			// 
-			// newPVMXToolStripMenuItem
-			// 
-			this.newPVMXToolStripMenuItem.Name = "newPVMXToolStripMenuItem";
-			this.newPVMXToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.N)));
-			this.newPVMXToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			this.newPVMXToolStripMenuItem.Text = "PVM&X";
-			this.newPVMXToolStripMenuItem.Click += new System.EventHandler(this.newPVMXToolStripMenuItem_Click);
-			// 
-			// newPAKToolStripMenuItem
-			// 
-			this.newPAKToolStripMenuItem.Name = "newPAKToolStripMenuItem";
-			this.newPAKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.N)));
-			this.newPAKToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			this.newPAKToolStripMenuItem.Text = "PA&K";
-			this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
-			// 
-			// openToolStripMenuItem
-			// 
-			this.openToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.open;
-			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.openToolStripMenuItem.Text = "&Open...";
-			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-			// 
-			// saveToolStripMenuItem
-			// 
-			this.saveToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.save;
-			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.saveToolStripMenuItem.Text = "&Save";
-			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-			// 
-			// saveAsToolStripMenuItem
-			// 
-			this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAsPVMToolStripMenuItem,
-            this.saveAsGVMToolStripMenuItem,
-            this.saveAsPVMXToolStripMenuItem,
-            this.saveAsPAKToolStripMenuItem});
-			this.saveAsToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.saveas;
-			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.S)));
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.saveAsToolStripMenuItem.Text = "Save &As...";
-			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-			// 
-			// saveAsPVMToolStripMenuItem
-			// 
-			this.saveAsPVMToolStripMenuItem.Name = "saveAsPVMToolStripMenuItem";
-			this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
-			this.saveAsPVMToolStripMenuItem.Text = "&PVM";
-			this.saveAsPVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMToolStripMenuItem_Click);
-			// 
-			// saveAsGVMToolStripMenuItem
-			// 
-			this.saveAsGVMToolStripMenuItem.Name = "saveAsGVMToolStripMenuItem";
-			this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
-			this.saveAsGVMToolStripMenuItem.Text = "&GVM";
-			this.saveAsGVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsGVMToolStripMenuItem_Click);
-			// 
-			// saveAsPVMXToolStripMenuItem
-			// 
-			this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
-			this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
-			this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
-			this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
-			// 
-			// saveAsPAKToolStripMenuItem
-			// 
-			this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
-			this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
-			this.saveAsPAKToolStripMenuItem.Text = "PA&K";
-			this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
-			// 
-			// importAllToolStripMenuItem
-			// 
-			this.importAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.import;
-			this.importAllToolStripMenuItem.Name = "importAllToolStripMenuItem";
-			this.importAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-			this.importAllToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.importAllToolStripMenuItem.Text = "&Import texture pack...";
-			this.importAllToolStripMenuItem.Click += new System.EventHandler(this.importAllToolStripMenuItem_Click);
-			// 
-			// exportAllToolStripMenuItem
-			// 
-			this.exportAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.export;
-			this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-			this.exportAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-			this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.exportAllToolStripMenuItem.Text = "&Export texture pack...";
-			this.exportAllToolStripMenuItem.Click += new System.EventHandler(this.exportAllToolStripMenuItem_Click);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(103, 48);
 			// 
 			// copyToolStripMenuItem
 			// 
 			this.copyToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.copy;
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.copyToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
 			this.copyToolStripMenuItem.Text = "&Copy";
 			this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+			// 
+			// pasteToolStripMenuItem
+			// 
+			this.pasteToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.paste;
+			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
+			this.pasteToolStripMenuItem.Text = "&Paste";
+			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -724,6 +725,7 @@
 			this.Controls.Add(this.menuStrip1);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.dummyPanel);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "PVM Editor";
@@ -743,13 +745,13 @@
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownOrigSizeX)).EndInit();
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.textureImage)).EndInit();
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.globalIndex)).EndInit();
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			this.contextMenuStrip1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.textureImage)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

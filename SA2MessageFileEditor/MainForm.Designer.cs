@@ -35,6 +35,7 @@
 			System.Windows.Forms.ToolStripMenuItem emptyToolStripMenuItem;
 			System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 			System.Windows.Forms.Label label1;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +57,7 @@
 			this.messageAddButton = new System.Windows.Forms.Button();
 			this.messageNum = new System.Windows.Forms.ComboBox();
 			this.linePanel = new System.Windows.Forms.Panel();
+			this.messageCentered = new System.Windows.Forms.CheckBox();
 			this.waitTimeSelector = new SA2MessageFileEditor.TimeControl();
 			this.waitTimeCheckBox = new System.Windows.Forms.CheckBox();
 			this.voiceSelector = new System.Windows.Forms.NumericUpDown();
@@ -66,7 +68,6 @@
 			this.lineAddButton = new System.Windows.Forms.Button();
 			this.lineNum = new System.Windows.Forms.ComboBox();
 			this.messagePanel = new System.Windows.Forms.Panel();
-			this.messageCentered = new System.Windows.Forms.CheckBox();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -337,6 +338,17 @@
 			this.linePanel.Size = new System.Drawing.Size(334, 223);
 			this.linePanel.TabIndex = 18;
 			// 
+			// messageCentered
+			// 
+			this.messageCentered.AutoSize = true;
+			this.messageCentered.Location = new System.Drawing.Point(12, 89);
+			this.messageCentered.Name = "messageCentered";
+			this.messageCentered.Size = new System.Drawing.Size(69, 17);
+			this.messageCentered.TabIndex = 22;
+			this.messageCentered.Text = "Centered";
+			this.messageCentered.UseVisualStyleBackColor = true;
+			this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
+			// 
 			// waitTimeSelector
 			// 
 			this.waitTimeSelector.AutoSize = true;
@@ -465,17 +477,6 @@
 			this.messagePanel.Size = new System.Drawing.Size(334, 255);
 			this.messagePanel.TabIndex = 19;
 			// 
-			// messageCentered
-			// 
-			this.messageCentered.AutoSize = true;
-			this.messageCentered.Location = new System.Drawing.Point(12, 89);
-			this.messageCentered.Name = "messageCentered";
-			this.messageCentered.Size = new System.Drawing.Size(69, 17);
-			this.messageCentered.TabIndex = 22;
-			this.messageCentered.Text = "Centered";
-			this.messageCentered.UseVisualStyleBackColor = true;
-			this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -487,6 +488,7 @@
 			this.Controls.Add(this.messageNum);
 			this.Controls.Add(label4);
 			this.Controls.Add(this.menuStrip1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "SA2 Message File Editor";
