@@ -47,22 +47,25 @@ namespace SA_Tools.Split
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
 				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile, imageBase);
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
-				ModelFormat modelfmt = 0;
-				LandTableFormat landfmt = 0;
+				ModelFormat modelfmt_def = 0;
+				LandTableFormat landfmt_def = 0;
 				switch (inifile.Game)
 				{
 					case Game.SA1:
-						modelfmt = ModelFormat.Basic;
-						landfmt = LandTableFormat.SA1;
+						modelfmt_def = ModelFormat.Basic;
+						landfmt_def = LandTableFormat.SA1;
 						break;
 					case Game.SADX:
-						modelfmt = ModelFormat.BasicDX;
-						landfmt = LandTableFormat.SADX;
+						modelfmt_def = ModelFormat.BasicDX;
+						landfmt_def = LandTableFormat.SADX;
 						break;
 					case Game.SA2:
+						modelfmt_def = ModelFormat.Chunk;
+						landfmt_def = LandTableFormat.SA2;
+						break;
 					case Game.SA2B:
-						modelfmt = ModelFormat.Chunk;
-						landfmt = LandTableFormat.SA2;
+						modelfmt_def = ModelFormat.GC;
+						landfmt_def = LandTableFormat.SA2B;
 						break;
 				}
 				int itemcount = 0;
@@ -86,72 +89,51 @@ namespace SA_Tools.Split
 					switch (type)
 					{
 						case "landtable":
-							LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt;
-							new LandTable(datafile, address, imageBase, format, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt, nometa);
+							LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt_def;
+							new LandTable(datafile, address, imageBase, format, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt_def, nometa);
 							break;
 						case "model":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
-								string[] mdlanis = new string[0];
-								if (customProperties.ContainsKey("animations"))
-									mdlanis = customProperties["animations"].Split(',');
-								string[] mdlmorphs = new string[0];
-								if (customProperties.ContainsKey("morphs"))
-									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, modelfmt, nometa);
-							}
-							break;
 						case "basicmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>());
-								string[] mdlanis = new string[0];
-								if (customProperties.ContainsKey("animations"))
-									mdlanis = customProperties["animations"].Split(',');
-								string[] mdlmorphs = new string[0];
-								if (customProperties.ContainsKey("morphs"))
-									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Basic, nometa);
-							}
-							break;
 						case "basicdxmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, labels, new Dictionary<int, Attach>());
-								string[] mdlanis = new string[0];
-								if (customProperties.ContainsKey("animations"))
-									mdlanis = customProperties["animations"].Split(',');
-								string[] mdlmorphs = new string[0];
-								if (customProperties.ContainsKey("morphs"))
-									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.BasicDX, nometa);
-							}
-							break;
 						case "chunkmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, labels, new Dictionary<int, Attach>());
-								string[] mdlanis = new string[0];
-								if (customProperties.ContainsKey("animations"))
-									mdlanis = customProperties["animations"].Split(',');
-								string[] mdlmorphs = new string[0];
-								if (customProperties.ContainsKey("morphs"))
-									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.Chunk, nometa);
-							}
-							break;
 						case "gcmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, labels, new Dictionary<int, Attach>());
+								ModelFormat mdlformat;
+								switch (type)
+								{
+									case "basicmodel":
+										mdlformat = ModelFormat.Basic;
+										break;
+									case "basicdxmodel":
+										mdlformat = ModelFormat.BasicDX;
+										break;
+									case "chunkmodel":
+										mdlformat = ModelFormat.Chunk;
+										break;
+									case "gcmodel":
+										mdlformat = ModelFormat.GC;
+										break;
+									case "model":
+									default:
+										mdlformat = modelfmt_def;
+										break;
+								}
+								if (data.CustomProperties.ContainsKey("format"))
+									mdlformat = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>());
 								string[] mdlanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
 									mdlanis = customProperties["animations"].Split(',');
 								string[] mdlmorphs = new string[0];
 								if (customProperties.ContainsKey("morphs"))
 									mdlmorphs = customProperties["morphs"].Split(',');
-								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, ModelFormat.GC, nometa);
+								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, mdlformat, nometa);
 							}
 							break;
 						case "action":
 							{
-								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt, labels, new Dictionary<int, Attach>());
+								ModelFormat modelfmt_act = data.CustomProperties.ContainsKey("format") ? (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]) : modelfmt_def;
+								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt_act, labels, new Dictionary<int, Attach>());
 								if (!labels.ContainsValue(ani.Name)) ani.Name = filedesc;
 								if (customProperties.ContainsKey("numparts"))
 									ani.Animation.ModelParts = int.Parse(customProperties["numparts"]);
@@ -164,6 +146,7 @@ namespace SA_Tools.Split
 							}
 							break;
 						case "animation":
+						case "motion":
 							int numparts = 0;
 							if (customProperties.ContainsKey("numparts"))
 								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
@@ -296,10 +279,11 @@ namespace SA_Tools.Split
 									if (customProperties.ContainsKey("filename" + num.ToString()))
 										file_tosave = customProperties["filename" + num++.ToString()];
 									else
-										file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + (modelfmt == ModelFormat.Chunk ? ".sa2mdl" : ".sa1mdl");
+										file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
 									string file = Path.Combine(path, file_tosave);
 									flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt, new Dictionary<int, Attach>()), null, null, null, null, modelfmt, nometa);
+									ModelFormat modelfmt_death = inifile.Game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
+									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
 									hashes.Add(HelperFunctions.FileHash(file));
 									address += 8;
 								}
@@ -389,7 +373,6 @@ namespace SA_Tools.Split
 								nohash = true;
 							}
 							break;
-
 						case "levelpathlist":
 							{
 								List<string> hashes = new List<string>();

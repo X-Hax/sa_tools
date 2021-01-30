@@ -49,23 +49,23 @@ namespace SA_Tools.SplitDLL
 						ordaddr += 2;
 					}
 				}
-				ModelFormat modelfmt = 0;
-				LandTableFormat landfmt = 0;
-				string modelext = null;
-				string landext = null;
+				ModelFormat modelfmt_def = 0;
+				LandTableFormat landfmt_def = 0;
+				string modelext_def = null;
+				string landext_def = null;
 				switch (inifile.Game)
 				{
 					case Game.SADX:
-						modelfmt = ModelFormat.BasicDX;
-						landfmt = LandTableFormat.SADX;
-						modelext = ".sa1mdl";
-						landext = ".sa1lvl";
+						modelfmt_def = ModelFormat.BasicDX;
+						landfmt_def = LandTableFormat.SADX;
+						modelext_def = ".sa1mdl";
+						landext_def = ".sa1lvl";
 						break;
 					case Game.SA2B:
-						modelfmt = ModelFormat.Chunk;
-						landfmt = LandTableFormat.SA2;
-						modelext = ".sa2mdl";
-						landext = ".sa2lvl";
+						modelfmt_def = ModelFormat.Chunk;
+						landfmt_def = LandTableFormat.SA2;
+						modelext_def = ".sa2mdl";
+						landext_def = ".sa2lvl";
 						break;
 				}
 				int itemcount = 0;
@@ -100,29 +100,38 @@ namespace SA_Tools.SplitDLL
 						Console.WriteLine(name);
 					switch (type)
 					{
+						// Landtables
 						case "landtable":
-							{
-								LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt;
-								LandTable land = new LandTable(datafile, address, imageBase, format) { Description = name };
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = land.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(land.Name))
-								{
-									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
-										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-									land.SaveToFile(fileOutputPath, format, nometa);
-									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
-									labels.AddRange(land.GetLabels());
-								}
-							}
-							break;
+						case "sa1landtable":
+						case "sadxlandtable":
+						case "sa2landtable":
+						case "sa2blandtable":
 						case "battlelandtable":
 							{
-								LandTable land = new LandTable(datafile, address, imageBase, LandTableFormat.SA2B) { Description = name };
+								LandTableFormat landfmt_cur;
+								switch (type)
+								{
+									case "sa1landtable":
+										landfmt_cur = LandTableFormat.SA1;
+										break;
+									case "sadxlandtable":
+										landfmt_cur = LandTableFormat.SADX;
+										break;
+									case "sa2landtable":
+										landfmt_cur = LandTableFormat.SA2;
+										break;
+									case "sa2blandtable":
+									case "battlelandtable":
+										landfmt_cur = LandTableFormat.SA2B;
+										break;
+									case "landtable":
+									default:
+										landfmt_cur = landfmt_def;
+										break;
+								}
+								if (data.CustomProperties.ContainsKey("format")) 
+									landfmt_cur = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
+								LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur) { Description = name };
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -133,12 +142,14 @@ namespace SA_Tools.SplitDLL
 								{
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-									land.SaveToFile(fileOutputPath, LandTableFormat.SA2B, nometa);
+									land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
 									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
 									labels.AddRange(land.GetLabels());
 								}
 							}
 							break;
+
+						// Landtable array (SADX only)
 						case "landtablearray":
 							for (int i = 0; i < data.Length; i++)
 							{
@@ -147,7 +158,7 @@ namespace SA_Tools.SplitDLL
 								{
 									ptr = (int)(ptr - imageBase);
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									LandTable land = new LandTable(datafile, ptr, imageBase, landfmt) { Description = idx };
+									LandTable land = new LandTable(datafile, ptr, imageBase, landfmt_def) { Description = idx };
 									DllItemInfo info = new DllItemInfo()
 									{
 										Export = name,
@@ -157,16 +168,16 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									if (!labels.Contains(land.Name))
 									{
-										string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
-										string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext);
+										string outputFN = Path.Combine(fileOutputPath, i.ToString(NumberFormatInfo.InvariantInfo) + landext_def);
+										string fileName = Path.Combine(data.Filename, i.ToString(NumberFormatInfo.InvariantInfo) + landext_def);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
 										{
-											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext);
-											fileName = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext);
+											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext_def);
+											fileName = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext_def);
 										}
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
-										land.SaveToFile(outputFN, landfmt, nometa);
+										land.SaveToFile(outputFN, landfmt_def, nometa);
 										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
 										labels.AddRange(land.GetLabels());
 									}
@@ -174,9 +185,37 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+
+						// NJS_OBJECT
 						case "model":
+						case "object":
+						case "basicmodel":
+						case "basicdxmodel":
+						case "chunkmodel":
+						case "gcmodel":
 							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt, new Dictionary<int, Attach>());
+								ModelFormat modelfmt_obj;
+								switch (type)
+								{
+									case "basicmodel":
+										modelfmt_obj = ModelFormat.Basic;
+										break;
+									case "basicdxmodel":
+										modelfmt_obj = ModelFormat.BasicDX;
+										break;
+									case "chunkmodel":
+										modelfmt_obj = ModelFormat.Chunk;
+										break;
+									case "gcmodel":
+										modelfmt_obj = ModelFormat.GC;
+										break;
+									default:
+										modelfmt_obj = modelfmt_def;
+										break;
+								}
+								if (data.CustomProperties.ContainsKey("format"))
+									modelfmt_obj = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, new Dictionary<int, Attach>());
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -185,14 +224,45 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_obj));
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							break;
+
+						// NJS_MODEL
 						case "morph":
+						case "attach":
+						case "basicattach":
+						case "basicdxattach":
+						case "chunkattach":
+						case "gcattach":
 							{
-								BasicAttach dummy = new BasicAttach(datafile, address, imageBase, modelfmt == ModelFormat.BasicDX);
+								Attach dummy;
+								ModelFormat modelfmt_att;
+								switch (type)
+								{
+									case "basicattach":
+										modelfmt_att = ModelFormat.Basic;
+										dummy = new BasicAttach(datafile, address, imageBase, false);
+										break;
+									case "basicdxattach":
+										modelfmt_att = ModelFormat.BasicDX;
+										dummy = new BasicAttach(datafile, address, imageBase, true);
+										break;
+									case "chunkattach":
+										modelfmt_att = ModelFormat.Chunk;
+										dummy = new ChunkAttach(datafile, address, imageBase);
+										break;
+									case "gcattach":
+										modelfmt_att = ModelFormat.GC;
+										dummy = new GCAttach(datafile, address, imageBase);
+										break;
+									default:
+										modelfmt_att = modelfmt_def;
+										dummy = new BasicAttach(datafile, address, imageBase, true);
+										break;
+								}
 								NJS_OBJECT mdl = new NJS_OBJECT()
 								{
 									Attach = dummy
@@ -205,14 +275,22 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(dummy.Name))
 								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt));
+									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_att));
 									labels.AddRange(mdl.GetLabels());
 								}
 							}
 							break;
+						
+						// NJS_OBJECT arrays
 						case "modelarray":
-							bool srclist_on = false;
-							string[] srclist;
+						case "basicmodelarray":
+						case "basicdxmodelarray":
+						case "chunkmodelarray":
+						case "gcmodelarray":
+							// The code below was used for identifying models in DLLs using a source file list for SADX X360
+							/*
+							bool srclist_on = false; 
+							/string[] srclist;
 							int strid = 0;
 							if (File.Exists(name + ".txt"))
 							{
@@ -222,13 +300,44 @@ namespace SA_Tools.SplitDLL
 							else
 								srclist = new string[data.Length];
 							Dictionary<int, string> attachduplist = new Dictionary<int, string>();
+							*/
+							ModelFormat modelfmt_arr;
+							string modelext_arr;
+							switch (type)
+							{
+								case "basicmodelarray":
+									modelfmt_arr = ModelFormat.Basic;
+									modelext_arr = ".sa1mdl";
+									break;
+								case "basicdxmodelarray":
+									modelfmt_arr = ModelFormat.BasicDX;
+									modelext_arr = ".sa1mdl";
+									break;
+								case "chunkmodelarray":
+									modelfmt_arr = ModelFormat.Chunk;
+									modelext_arr = ".sa2mdl";
+									break;
+								case "gcmodelarray":
+									modelfmt_arr = ModelFormat.GC;
+									modelext_arr = ".sa2bmdl";
+									break;
+								default:
+									modelfmt_arr = modelfmt_def;
+									modelext_arr = modelext_def;
+									break;
+							}
+							if (data.CustomProperties.ContainsKey("format"))
+								modelfmt_arr = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+
 							for (int i = 0; i < data.Length; i++)
 							{
 								int ptr = BitConverter.ToInt32(datafile, address);
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
+									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt_arr, new Dictionary<int, Attach>());
+									// The code below was used for identifying models in DLLs using a source file list for SADX X360
+									/*
 									bool dup = false;
 									if (srclist_on)
 									{
@@ -248,6 +357,7 @@ namespace SA_Tools.SplitDLL
 										if (mdl.Attach != null && !attachduplist.ContainsValue(mdl.Attach.Name))
 											attachduplist.Add(i, mdl.Attach.Name);
 									}
+									*/
 									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
 									DllItemInfo info = new DllItemInfo()
 									{
@@ -258,12 +368,12 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
 									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext);
+										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
 										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext);
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
 										}
-										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt));
+										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_arr));
 										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
@@ -271,14 +381,17 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+
+						// NJS_MODEL array (SADX only)
 						case "modelsarray":
+						case "attacharray":
 							for (int i = 0; i < data.Length; i++)
 							{
 								int ptr = BitConverter.ToInt32(datafile, address);
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									BasicAttach dummy = new BasicAttach(datafile, ptr, imageBase, modelfmt == ModelFormat.BasicDX);
+									BasicAttach dummy = new BasicAttach(datafile, ptr, imageBase, modelfmt_def == ModelFormat.BasicDX);
 									NJS_OBJECT mdl = new NJS_OBJECT()
 									{
 										Attach = dummy
@@ -293,10 +406,10 @@ namespace SA_Tools.SplitDLL
 									output.Items.Add(info);
 									if (!labels.Contains(dummy.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
 									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext);
+										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_def);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
 										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext);
+											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_def);
 										}
 										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
 										if (!labels.Contains(mdl.Name))
@@ -306,236 +419,8 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
-						case "basicmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Basic));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "basicmodelarray":
-							for (int i = 0; i < data.Length; i++)
-							{
-								int ptr = BitConverter.ToInt32(datafile, address);
-								if (ptr != 0)
-								{
-									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
-									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = i,
-										Label = mdl.Name
-									};
-									output.Items.Add(info);
-									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
-									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa1mdl");
-										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
-										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
-										}
-										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Basic));
-										if (!labels.Contains(mdl.Name))
-											labels.AddRange(mdl.GetLabels());
-									}
-								}
-								address += 4;
-							}
-							break;
-						case "basicdxmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.BasicDX));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "basicdxmodelarray":
-							for (int i = 0; i < data.Length; i++)
-							{
-								int ptr = BitConverter.ToInt32(datafile, address);
-								if (ptr != 0)
-								{
-									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.BasicDX, new Dictionary<int, Attach>());
-									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = i,
-										Label = mdl.Name
-									};
-									output.Items.Add(info);
-									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
-									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa1mdl");
-										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
-										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
-										}
-										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.BasicDX));
-										if (!labels.Contains(mdl.Name))
-											labels.AddRange(mdl.GetLabels());
-									}
-								}
-								address += 4;
-							}
-							break;
-						case "chunkmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "chunkattach":
-							{
-								ChunkAttach dummy = new ChunkAttach(datafile, address, imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT()
-								{
-									Attach = dummy
-								};
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = dummy.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(dummy.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.Chunk));
-									if (!labels.Contains(mdl.Name))
-										labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "chunkmodelarray":
-							for (int i = 0; i < data.Length; i++)
-							{
-								int ptr = BitConverter.ToInt32(datafile, address);
-								if (ptr != 0)
-								{
-									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
-									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = i,
-										Label = mdl.Name
-									};
-									output.Items.Add(info);
-									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
-									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2mdl");
-										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
-										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
-										}
-										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.Chunk));
-										if (!labels.Contains(mdl.Name))
-											labels.AddRange(mdl.GetLabels());
-									}
-								}
-								address += 4;
-							}
-							break;
-						case "gcmodel":
-							{
-								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = mdl.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(mdl.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.GC));
-									labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "gcattach":
-							{
-								GCAttach dummy = new GCAttach(datafile, address, imageBase);
-								NJS_OBJECT mdl = new NJS_OBJECT()
-								{
-									Attach = dummy
-								};
-								DllItemInfo info = new DllItemInfo()
-								{
-									Export = name,
-									Label = dummy.Name
-								};
-								output.Items.Add(info);
-								if (!labels.Contains(dummy.Name))
-								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, ModelFormat.GC));
-									if (!labels.Contains(mdl.Name))
-										labels.AddRange(mdl.GetLabels());
-								}
-							}
-							break;
-						case "gcmodelarray":
-							for (int i = 0; i < data.Length; i++)
-							{
-								int ptr = BitConverter.ToInt32(datafile, address);
-								if (ptr != 0)
-								{
-									ptr = (int)(ptr - imageBase);
-									NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
-									string idx = name + "[" + i.ToString(NumberFormatInfo.InvariantInfo) + "]";
-									DllItemInfo info = new DllItemInfo()
-									{
-										Export = name,
-										Index = i,
-										Label = mdl.Name
-									};
-									output.Items.Add(info);
-									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
-									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2bmdl");
-										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
-										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
-										}
-										models.Add(new ModelAnimations(fn, idx, mdl, ModelFormat.GC));
-										if (!labels.Contains(mdl.Name))
-											labels.AddRange(mdl.GetLabels());
-									}
-								}
-								address += 4;
-							}
-							break;
+
+						// NJS_ACTION array (SADX only?)
 						case "actionarray":
 							for (int i = 0; i < data.Length; i++)
 							{
@@ -543,7 +428,7 @@ namespace SA_Tools.SplitDLL
 								if (ptr != 0)
 								{
 									ptr = (int)(ptr - imageBase);
-									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt, new Dictionary<int, Attach>());
+									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt_def, new Dictionary<int, Attach>());
 									string nm = item.Key + "_" + i;
 									bool saveani = false;
 									if (!anilabels.ContainsKey(ani.Animation.Name))
@@ -603,10 +488,10 @@ namespace SA_Tools.SplitDLL
 									}
 									else
 									{
-										string mfn = Path.ChangeExtension(fn, modelext);
+										string mfn = Path.ChangeExtension(fn, modelext_def);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
-											mfn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext);
+											mfn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
 										}
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
@@ -618,7 +503,7 @@ namespace SA_Tools.SplitDLL
 										if (!labels.Contains(ani.Model.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
 											ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
-												null, modelfmt, nometa);
+												null, modelfmt_def, nometa);
 											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
 											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
 										}
@@ -627,6 +512,8 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+
+						// NJS_MOTION
 						case "motion":
 							{
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
@@ -649,10 +536,14 @@ namespace SA_Tools.SplitDLL
 								output.Items.Add(info);
 								if (saveani)
 								{
+									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 									ani.Save(fileOutputPath, nometa);
 								}
 							}
 							break;
+
+						// NJS_MOTION array
 						case "motionarray":
 							{
 								int[] nodecounts = data.CustomProperties["nodecounts"].Split(',').Select(a => int.Parse(a)).ToArray();
@@ -699,6 +590,8 @@ namespace SA_Tools.SplitDLL
 								}
 							}
 							break;
+
+						// NJS_TEXLIST
 						case "texlist":
 							if (output.TexLists == null)
 								output.TexLists = new TexListContainer();
@@ -711,6 +604,8 @@ namespace SA_Tools.SplitDLL
 								texarrs.Save(fileOutputPath + ".txt");
 							}
 							break;
+
+						// NJS_TEXLIST array
 						case "texlistarray":
 							if (output.TexLists == null)
 								output.TexLists = new TexListContainer();
@@ -735,6 +630,8 @@ namespace SA_Tools.SplitDLL
 								address += 4;
 							}
 							break;
+
+						// Other data
 						case "animindexlist":
 							{
 								Directory.CreateDirectory(fileOutputPath);
