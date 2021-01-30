@@ -489,6 +489,13 @@ namespace SA_Tools.Split
 							FogDataTable fga = new FogDataTable(datafile, address, imageBase, fcnt);
 							fga.Save(fileOutputPath);
 							break;
+						case "palettelightlist":
+							int count = 255;
+							if (customProperties.ContainsKey("count"))
+								count = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							PaletteLightList pllist = new PaletteLightList(datafile, address, count);
+							pllist.Save(fileOutputPath);
+							break;
 						default: // raw binary
 							{
 								byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
