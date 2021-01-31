@@ -122,7 +122,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.addChildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearChildrenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteWholeModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraAngleLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -134,6 +134,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteAttachStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -904,9 +905,10 @@ namespace SonicRetro.SAModel.SAMDL
             this.addChildToolStripMenuItem,
             this.clearChildrenToolStripMenuItem,
             this.toolStripSeparator7,
-            this.deleteToolStripMenuItem});
+            this.deleteAttachStripMenuItem,
+            this.deleteWholeModelToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 248);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 270);
             // 
             // copyModelToolStripMenuItem
             // 
@@ -946,14 +948,14 @@ namespace SonicRetro.SAModel.SAMDL
             // createPolyNormalToolStripMenuItem
             // 
             this.createPolyNormalToolStripMenuItem.Name = "createPolyNormalToolStripMenuItem";
-            this.createPolyNormalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createPolyNormalToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.createPolyNormalToolStripMenuItem.Text = "Create";
             this.createPolyNormalToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
             // 
             // removePolyNormalToolStripMenuItem
             // 
             this.removePolyNormalToolStripMenuItem.Name = "removePolyNormalToolStripMenuItem";
-            this.removePolyNormalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.removePolyNormalToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.removePolyNormalToolStripMenuItem.Text = "Remove";
             this.removePolyNormalToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
@@ -1008,14 +1010,14 @@ namespace SonicRetro.SAModel.SAMDL
             this.toolStripSeparator7.Name = "toolStripSeparator7";
             this.toolStripSeparator7.Size = new System.Drawing.Size(178, 6);
             // 
-            // deleteToolStripMenuItem
+            // deleteWholeModelToolStripMenuItem
             // 
-            this.deleteToolStripMenuItem.Enabled = false;
-            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.delete;
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.deleteWholeModelToolStripMenuItem.Enabled = false;
+            this.deleteWholeModelToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.delete;
+            this.deleteWholeModelToolStripMenuItem.Name = "deleteWholeModelToolStripMenuItem";
+            this.deleteWholeModelToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.deleteWholeModelToolStripMenuItem.Text = "Delete";
+            this.deleteWholeModelToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -1096,6 +1098,15 @@ namespace SonicRetro.SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Size = new System.Drawing.Size(168, 22);
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
+            // 
+            // deleteAttachStripMenuItem
+            // 
+            this.deleteAttachStripMenuItem.Enabled = false;
+            this.deleteAttachStripMenuItem.Name = "deleteAttachStripMenuItem";
+            this.deleteAttachStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.deleteAttachStripMenuItem.Text = "Empty model data";
+            this.deleteAttachStripMenuItem.ToolTipText = "Remove model (attach) data without deleting the node.";
+            this.deleteAttachStripMenuItem.Click += new System.EventHandler(this.deleteAttachStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1199,7 +1210,7 @@ namespace SonicRetro.SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem showAdvancedCameraInfoToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addChildToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem clearChildrenToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem deleteWholeModelToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
@@ -1240,5 +1251,6 @@ namespace SonicRetro.SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem PolyNormalstoolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem createPolyNormalToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem removePolyNormalToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem deleteAttachStripMenuItem;
 	}
 }

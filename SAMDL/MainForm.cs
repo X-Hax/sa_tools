@@ -1970,7 +1970,8 @@ namespace SonicRetro.SAModel.SAMDL
 				editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach?.MeshInfo != null && selectedObject.Attach.MeshInfo.Length > 0;
 				addChildToolStripMenuItem.Enabled = true;
 				clearChildrenToolStripMenuItem.Enabled = selectedObject.Children.Count > 0;
-				deleteToolStripMenuItem.Enabled = selectedObject.Parent != null;
+				deleteWholeModelToolStripMenuItem.Enabled = selectedObject.Parent != null;
+				deleteAttachStripMenuItem.Enabled = selectedObject.Attach != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
@@ -1986,7 +1987,7 @@ namespace SonicRetro.SAModel.SAMDL
 				addChildToolStripMenuItem.Enabled = false;
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				clearChildrenToolStripMenuItem.Enabled = false;
-				deleteToolStripMenuItem.Enabled = false;
+				deleteWholeModelToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
@@ -3005,14 +3006,14 @@ namespace SonicRetro.SAModel.SAMDL
 					selectedObject.ClearChildren();
 					selectedObject.Parent.RemoveChild(selectedObject);
 					selectedObject = null;
-					RefreshModel();
+					RebuildModelCache();
 					SelectedItemChanged();
 					unsaved = true;
 				}
 			}
 		}
 
-		private void RefreshModel()
+		private void RebuildModelCache()
 		{
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
@@ -3036,7 +3037,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (doOperation)
 				{
 					selectedObject.ClearChildren();
-					RefreshModel();
+					RebuildModelCache();
 					DrawEntireModel();
 					SelectedItemChanged();
 					unsaved = true;
@@ -3049,7 +3050,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (selectedObject != null)
 			{
 				selectedObject.AddChild(new NJS_OBJECT());
-				RefreshModel();
+				RebuildModelCache();
 				DrawEntireModel();
 				SelectedItemChanged();
 				unsaved = true;
@@ -3399,6 +3400,20 @@ namespace SonicRetro.SAModel.SAMDL
 			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
 			DrawEntireModel();
+		}
+
+		private void deleteAttachStripMenuItem_Click(object sender, EventArgs e)
+		{
+			bool doOperation = false;
+			DialogResult dialogResult = MessageBox.Show("This will delete all meshes in the selected node. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+			doOperation = dialogResult == DialogResult.Yes;
+			if (doOperation)
+			{
+				selectedObject.Attach = null;
+				RebuildModelCache();
+				DrawEntireModel();
+				unsaved = true;
+			}
 		}
 
 		private void Resize()
