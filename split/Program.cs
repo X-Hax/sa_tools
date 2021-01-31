@@ -255,7 +255,9 @@ namespace Split
 						if (fileinfo_x.Value.Address == lowest)
 						{
 							Console.WriteLine(fileinfo_x.Value.Filename);
-							fileinfo_new.Add(fileinfo_x.Value.Address.ToString("X8"), fileinfo_x.Value);
+							if (!fileinfo_new.ContainsKey(fileinfo_x.Value.Address.ToString("X8"))) 
+								fileinfo_new.Add(fileinfo_x.Value.Address.ToString("X8"), fileinfo_x.Value);
+							else Console.WriteLine("Duplicate detected!");
 						}
 					}
 					lowest = 0xFFFFFFFF;
