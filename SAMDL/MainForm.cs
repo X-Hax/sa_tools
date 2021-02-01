@@ -1974,6 +1974,7 @@ namespace SonicRetro.SAModel.SAMDL
 				deleteNodeToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				emptyModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				splitToolStripMenuItem.Enabled = byMeshsetToolStripMenuItem.Enabled = byFaceToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1987,6 +1988,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
+				splitToolStripMenuItem.Enabled = byMeshsetToolStripMenuItem.Enabled = byFaceToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
@@ -3435,6 +3437,173 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			DeleteSelectedModel();
 			DrawEntireModel();
+		}
+
+		private void byMeshsetToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!(selectedObject.Attach is BasicAttach))
+			{
+				MessageBox.Show("This operation is only supported for basic models.");
+				return;
+			}
+			bool doOperation = false;
+			BasicAttach basicatt = (BasicAttach)selectedObject.Attach;
+			if (selectedObject.Attach == null || basicatt.Mesh.Count == 0)
+			{
+				MessageBox.Show("This model has no meshset data.");
+				return;
+			}
+			else if (basicatt.Mesh.Count == 1)
+			{
+				DialogResult dialogResult = MessageBox.Show("This model only has one meshset. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+				doOperation = dialogResult == DialogResult.Yes;
+			}
+			else
+			{
+				DialogResult dialogResult = MessageBox.Show("This operation cannot be undone. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+				doOperation = dialogResult == DialogResult.Yes;
+			}
+			if (doOperation)
+			{
+				int id = 0;
+				foreach (NJS_MESHSET m in basicatt.Mesh)
+				{
+					Dictionary<ushort, ushort> vmatchlist = new Dictionary<ushort, ushort>();
+					ushort newpid = 0;
+					NJS_MESHSET mesh_new = m.Clone();
+					List<Vertex> vlist_new = new List<Vertex>();
+					List<Vertex> nlist_new = new List<Vertex>();
+					for (int p = 0; p < mesh_new.Poly.Count; p++)
+					{
+						for (int i = 0; i < mesh_new.Poly[p].Indexes.Length; i++)
+						{
+							ushort polyind = mesh_new.Poly[p].Indexes[i];
+							if (!vmatchlist.ContainsKey(polyind))
+							{
+								vlist_new.Add(basicatt.Vertex[polyind]);
+								nlist_new.Add(basicatt.Normal[polyind]);
+								mesh_new.Poly[p].Indexes[i] = newpid;
+								vmatchlist.Add(polyind, newpid);
+								newpid++;
+							}
+							else mesh_new.Poly[p].Indexes[i] = vmatchlist[polyind];
+						}
+					}
+					List<NJS_MESHSET> meshlist_new = new List<NJS_MESHSET>();
+					List<NJS_MATERIAL> matlist_new = new List<NJS_MATERIAL>();
+					mesh_new.MaterialID = 0;
+					meshlist_new.Add(mesh_new);
+					matlist_new.Add(basicatt.Material[m.MaterialID]);
+					BasicAttach newatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), meshlist_new, matlist_new);
+					newatt.Bounds.Center = basicatt.Bounds.Center;
+					newatt.Bounds.Radius = basicatt.Bounds.Radius;
+					newatt.Name = basicatt.Name + "_" + id.ToString();
+					newatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
+					newatt.VertexName = basicatt.VertexName + "_" + id.ToString();
+					newatt.NormalName = basicatt.NormalName + "_" + id.ToString();
+					newatt.MeshName = basicatt.MeshName + "_" + id.ToString();
+					NJS_OBJECT newobj = new NJS_OBJECT();
+					newobj.Attach = newatt;
+					newobj.Name = selectedObject.Name + "_" + id.ToString();
+					selectedObject.AddChild(newobj);
+					id++;
+				}
+				selectedObject.Attach = null;
+				RebuildModelCache();
+				DrawEntireModel();
+				SelectedItemChanged();
+				unsaved = true;
+			}
+		}
+
+		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!(selectedObject.Attach is BasicAttach))
+			{
+				MessageBox.Show("This operation is only supported for basic models.");
+				return;
+			}
+			bool doOperation = false;
+			BasicAttach basicatt = (BasicAttach)selectedObject.Attach;
+			if (selectedObject.Attach == null || basicatt.Mesh.Count == 0)
+			{
+				MessageBox.Show("This model has no meshset data.");
+				return;
+			}
+			else
+			{
+				DialogResult dialogResult = MessageBox.Show("This operation cannot be undone. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+				doOperation = dialogResult == DialogResult.Yes;
+			}
+			if (doOperation)
+			{
+				int id = 0;
+				foreach (NJS_MESHSET m in basicatt.Mesh)
+				{
+					int uvid = 0;
+					if (m.Poly == null) continue;
+					for (int p = 0; p < m.Poly.Count; p++)
+					{
+						List<NJS_MESHSET> meshlist_new = new List<NJS_MESHSET>();
+						List<NJS_MATERIAL> matlist_new = new List<NJS_MATERIAL>();
+						List<Vertex> vlist_new = new List<Vertex>();
+						List<Vertex> nlist_new = new List<Vertex>();
+						List<UV> uvlist_new = new List<UV>();
+						List<Color> vclist_new = new List<Color>();
+						List<ushort> polys = new List<ushort>();
+						Poly newpoly = m.Poly[p].Clone();
+						for (ushort i = 0; i < m.Poly[p].Indexes.Length; i++)
+						{
+							ushort vrtidx = m.Poly[p].Indexes[i];
+							vlist_new.Add(basicatt.Vertex[vrtidx]);
+							nlist_new.Add(basicatt.Normal[vrtidx]);
+							if (m.UV != null) uvlist_new.Add(m.UV[uvid]);
+							if (m.VColor != null) vclist_new.Add(m.VColor[uvid]);
+							newpoly.Indexes[i] = i;
+							uvid++;
+						}
+						Poly[] polyarr = new Poly[1];
+						polyarr[0] = newpoly;
+						NJS_MESHSET mesh_new = new NJS_MESHSET(polyarr, m.PolyNormal != null, m.UV != null, m.VColor != null);
+						mesh_new.PolyName = m.PolyName + "_" + id.ToString();
+						if (mesh_new.UV != null)
+						{
+							mesh_new.UVName = m.UVName + "_" + id.ToString();
+							UV[] list = uvlist_new.ToArray();
+							for (int u = 0; u < mesh_new.UV.Length; u++)
+								mesh_new.UV[u] = list[u];
+						}
+						if (mesh_new.VColor != null)
+						{
+							mesh_new.VColorName = m.VColorName + "_" + id.ToString();
+							Color[] clist = vclist_new.ToArray();
+							for (int u = 0; u < mesh_new.VColor.Length; u++)
+								mesh_new.VColor[u] = clist[u];
+						}
+						mesh_new.MaterialID = 0;
+						meshlist_new.Add(mesh_new);
+						matlist_new.Add(basicatt.Material[m.MaterialID]);
+						BasicAttach newatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), meshlist_new, matlist_new);
+						newatt.Bounds.Center = basicatt.Bounds.Center;
+						newatt.Bounds.Radius = basicatt.Bounds.Radius;
+						newatt.Name = basicatt.Name + "_" + id.ToString();
+						newatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
+						newatt.VertexName = basicatt.VertexName + "_" + id.ToString();
+						newatt.NormalName = basicatt.NormalName + "_" + id.ToString();
+						newatt.MeshName = basicatt.MeshName + "_" + id.ToString();
+						NJS_OBJECT newobj = new NJS_OBJECT();
+						newobj.Attach = newatt;
+						newobj.Name = selectedObject.Name + "_" + id.ToString();
+						selectedObject.AddChild(newobj);
+						id++;
+					}
+				}
+				selectedObject.Attach = null;
+				RebuildModelCache();
+				DrawEntireModel();
+				SelectedItemChanged();
+				unsaved = true;
+			}
 		}
 
 		private void Resize()

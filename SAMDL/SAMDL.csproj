@@ -201,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ico_samdl.ico" />
+    <None Include="Resources\split.png" />
     <None Include="Resources\material.png" />
     <None Include="Resources\lighting.png" />
     <None Include="Resources\nextanim.png" />
