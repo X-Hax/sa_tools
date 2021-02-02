@@ -94,23 +94,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelLoadError.cs">
+    <Compile Include="UI\ModelLoadError.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModelLoadError.designer.cs">
+    <Compile Include="UI\ModelLoadError.designer.cs">
       <DependentUpon>ModelLoadError.cs</DependentUpon>
     </Compile>
     <Compile Include="DefaultActionList.cs" />
-    <Compile Include="FindDialog.cs">
+    <Compile Include="UI\FindDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FindDialog.Designer.cs">
+    <Compile Include="UI\FindDialog.Designer.cs">
       <DependentUpon>FindDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModelFileDialog.cs">
+    <Compile Include="UI\ModelFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModelFileDialog.Designer.cs">
+    <Compile Include="UI\ModelFileDialog.Designer.cs">
       <DependentUpon>ModelFileDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -126,17 +126,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SA2MDLDialog.cs">
+    <Compile Include="UI\SA2MDLDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SA2MDLDialog.Designer.cs">
+    <Compile Include="UI\SA2MDLDialog.Designer.cs">
       <DependentUpon>SA2MDLDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModelText.cs">
+    <Compile Include="UI\ModelCode.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModelText.designer.cs">
-      <DependentUpon>ModelText.cs</DependentUpon>
+    <Compile Include="UI\ModelCode.designer.cs">
+      <DependentUpon>ModelCode.cs</DependentUpon>
     </Compile>
     <None Include="app.config" />
     <None Include="app.manifest" />
@@ -174,33 +174,35 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ModelLoadError.resx">
+    <EmbeddedResource Include="UI\ModelLoadError.resx">
       <DependentUpon>ModelLoadError.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FindDialog.resx">
+    <EmbeddedResource Include="UI\FindDialog.resx">
       <DependentUpon>FindDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ModelFileDialog.resx">
+    <EmbeddedResource Include="UI\ModelFileDialog.resx">
       <DependentUpon>ModelFileDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="SA2MDLDialog.resx">
+    <EmbeddedResource Include="UI\SA2MDLDialog.resx">
       <DependentUpon>SA2MDLDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ModelText.resx">
-      <DependentUpon>ModelText.cs</DependentUpon>
+    <EmbeddedResource Include="UI\ModelCode.resx">
+      <DependentUpon>ModelCode.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ico_samdl.ico" />
+    <None Include="Resources\sort.png" />
     <None Include="Resources\split.png" />
     <None Include="Resources\material.png" />
     <None Include="Resources\lighting.png" />

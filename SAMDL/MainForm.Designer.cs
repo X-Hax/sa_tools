@@ -123,6 +123,11 @@ namespace SonicRetro.SAModel.SAMDL
             this.splitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byMeshsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byFaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+            this.transparentOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sortMeshsetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearChildrenToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -908,10 +913,11 @@ namespace SonicRetro.SAModel.SAMDL
             this.toolStripSeparator6,
             this.addChildToolStripMenuItem,
             this.splitToolStripMenuItem,
+            this.sortToolStripMenuItem,
             this.toolStripSeparator7,
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 248);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 270);
             // 
             // copyModelToolStripMenuItem
             // 
@@ -1003,26 +1009,73 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.splitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.byMeshsetToolStripMenuItem,
-            this.byFaceToolStripMenuItem});
+            this.byFaceToolStripMenuItem,
+            this.toolStripSeparator13,
+            this.transparentOnlyToolStripMenuItem});
             this.splitToolStripMenuItem.Enabled = false;
             this.splitToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.split;
             this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
             this.splitToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.splitToolStripMenuItem.Text = "Split";
+            this.splitToolStripMenuItem.Text = "Split Meshsets";
             // 
             // byMeshsetToolStripMenuItem
             // 
             this.byMeshsetToolStripMenuItem.Name = "byMeshsetToolStripMenuItem";
-            this.byMeshsetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.byMeshsetToolStripMenuItem.Text = "By meshset";
+            this.byMeshsetToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.byMeshsetToolStripMenuItem.Text = "By Mesh";
+            this.byMeshsetToolStripMenuItem.ToolTipText = "Create a child model for each meshset in the parent model.";
             this.byMeshsetToolStripMenuItem.Click += new System.EventHandler(this.byMeshsetToolStripMenuItem_Click);
             // 
             // byFaceToolStripMenuItem
             // 
             this.byFaceToolStripMenuItem.Name = "byFaceToolStripMenuItem";
-            this.byFaceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.byFaceToolStripMenuItem.Text = "By face";
+            this.byFaceToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.byFaceToolStripMenuItem.Text = "By Face";
+            this.byFaceToolStripMenuItem.ToolTipText = "Create a child model for each face in the parent model\'s meshes.";
             this.byFaceToolStripMenuItem.Click += new System.EventHandler(this.byFaceToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(214, 6);
+            // 
+            // transparentOnlyToolStripMenuItem
+            // 
+            this.transparentOnlyToolStripMenuItem.Checked = true;
+            this.transparentOnlyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.transparentOnlyToolStripMenuItem.Name = "transparentOnlyToolStripMenuItem";
+            this.transparentOnlyToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.transparentOnlyToolStripMenuItem.Text = "Don\'t Split Opaque Meshes";
+            this.transparentOnlyToolStripMenuItem.ToolTipText = "Split meshes with transparent polygons as separate models but keep all " +
+    "opaque data in the original model.";
+            this.transparentOnlyToolStripMenuItem.Click += new System.EventHandler(this.transparentOnlyToolStripMenuItem_Click);
+            // 
+            // sortToolStripMenuItem
+            // 
+            this.sortToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sortMeshsetsToolStripMenuItem,
+            this.hierarchyToolStripMenuItem});
+            this.sortToolStripMenuItem.Enabled = false;
+            this.sortToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.sort;
+            this.sortToolStripMenuItem.Name = "sortToolStripMenuItem";
+            this.sortToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.sortToolStripMenuItem.Text = "Sort Transparent Meshes";
+            // 
+            // sortMeshsetsToolStripMenuItem
+            // 
+            this.sortMeshsetsToolStripMenuItem.Name = "sortMeshsetsToolStripMenuItem";
+            this.sortMeshsetsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sortMeshsetsToolStripMenuItem.Text = "Model";
+            this.sortMeshsetsToolStripMenuItem.ToolTipText = "Sort the model\'s meshsets by listing transparent meshes after opaque meshes.";
+            this.sortMeshsetsToolStripMenuItem.Click += new System.EventHandler(this.sortMeshsetsToolStripMenuItem_Click);
+            // 
+            // hierarchyToolStripMenuItem
+            // 
+            this.hierarchyToolStripMenuItem.Name = "hierarchyToolStripMenuItem";
+            this.hierarchyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hierarchyToolStripMenuItem.Text = "Model + Children";
+            this.hierarchyToolStripMenuItem.ToolTipText = "Sort the meshsets of all models in the hierarchy.";
+            this.hierarchyToolStripMenuItem.Click += new System.EventHandler(this.hierarchyToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
@@ -1044,23 +1097,23 @@ namespace SonicRetro.SAModel.SAMDL
             // clearChildrenToolStripMenuItem1
             // 
             this.clearChildrenToolStripMenuItem1.Name = "clearChildrenToolStripMenuItem1";
-            this.clearChildrenToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
-            this.clearChildrenToolStripMenuItem1.Text = "Child models";
+            this.clearChildrenToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.clearChildrenToolStripMenuItem1.Text = "Children";
             this.clearChildrenToolStripMenuItem1.Click += new System.EventHandler(this.clearChildrenToolStripMenuItem1_Click);
             // 
             // emptyModelDataToolStripMenuItem
             // 
             this.emptyModelDataToolStripMenuItem.Name = "emptyModelDataToolStripMenuItem";
-            this.emptyModelDataToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.emptyModelDataToolStripMenuItem.Text = "Model data (attach)";
+            this.emptyModelDataToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.emptyModelDataToolStripMenuItem.Text = "Model Data (Attach)";
             this.emptyModelDataToolStripMenuItem.Click += new System.EventHandler(this.emptyModelDataToolStripMenuItem_Click);
             // 
             // deleteNodeToolStripMenuItem
             // 
             this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
-            this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.deleteNodeToolStripMenuItem.Text = "The entire node";
-            this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteTheWholeHierarchuToolStripMenuItem_Click);
+            this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.deleteNodeToolStripMenuItem.Text = "Node (Object)";
+            this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteTheWholeHierarchyToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -1290,5 +1343,10 @@ namespace SonicRetro.SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem splitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem byMeshsetToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem byFaceToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem sortToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem sortMeshsetsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem hierarchyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem transparentOnlyToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
 	}
 }

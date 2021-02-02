@@ -771,20 +771,7 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 			}
 		}
-
-		private void AddModelToLibrary(NJS_OBJECT objectToAdd, bool additive)
-		{
-			if (additive) modelLibrary.Clear();
-
-			NJS_OBJECT[] models = objectToAdd.GetObjects();
-
-			modelLibrary.BeginUpdate();
-			for (int i = 0; i < models.Length; i++)
-				if (models[i].Attach != null)
-					modelLibrary.Add(models[i].Attach);
-			modelLibrary.EndUpdate();
-		}
-
+	
 		private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
 			int index = 0;
@@ -1974,10 +1961,12 @@ namespace SonicRetro.SAModel.SAMDL
 				deleteNodeToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				emptyModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				splitToolStripMenuItem.Enabled = byMeshsetToolStripMenuItem.Enabled = byFaceToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				sortToolStripMenuItem.Enabled = true;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
 			}
 			else
 			{
@@ -1988,7 +1977,7 @@ namespace SonicRetro.SAModel.SAMDL
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
-				splitToolStripMenuItem.Enabled = byMeshsetToolStripMenuItem.Enabled = byFaceToolStripMenuItem.Enabled = false;
+				splitToolStripMenuItem.Enabled = sortToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
 				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
@@ -3398,20 +3387,6 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 		}
 
-		private void deleteAttachStripMenuItem_Click(object sender, EventArgs e)
-		{
-			bool doOperation = false;
-			DialogResult dialogResult = MessageBox.Show("This will delete all meshes in the selected node. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
-			doOperation = dialogResult == DialogResult.Yes;
-			if (doOperation)
-			{
-				selectedObject.Attach = null;
-				RebuildModelCache();
-				DrawEntireModel();
-				unsaved = true;
-			}
-		}
-
 		private void clearChildrenToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
 			ClearChildren();
@@ -3420,10 +3395,8 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void emptyModelDataToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			bool doOperation = false;
 			DialogResult dialogResult = MessageBox.Show("This will delete all meshes in the selected node. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
-			doOperation = dialogResult == DialogResult.Yes;
-			if (doOperation)
+			if (dialogResult == DialogResult.Yes)
 			{
 				selectedObject.Attach = null;
 				RebuildModelCache();
@@ -3433,12 +3406,96 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 		}
 
-		private void deleteTheWholeHierarchuToolStripMenuItem_Click(object sender, EventArgs e)
+		private void deleteTheWholeHierarchyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DeleteSelectedModel();
 			DrawEntireModel();
 		}
 
+		private void transparentOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			transparentOnlyToolStripMenuItem.Checked = !transparentOnlyToolStripMenuItem.Checked;
+		}
+
+		private void sortMeshsetsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DialogResult dialogResult = MessageBox.Show("This operation cannot be undone. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+			if (dialogResult == DialogResult.Yes)
+				SortModel(selectedObject, false);
+		}
+
+		private void hierarchyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DialogResult dialogResult = MessageBox.Show("This operation cannot be undone. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
+			if (dialogResult == DialogResult.Yes)
+				SortModel(selectedObject, true);
+		}
+
+		// Model Library
+		private void modelLibraryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			// show model library
+			modelLibraryWindow.Show();
+		}
+
+		void modelLibrary_SelectionChanged(ModelLibraryControl sender, int selectionIndex, Attach selectedModel)
+		{
+			if ((selectionIndex >= 0) && (selectedModel != null) && selectedObject != null)
+			{
+				selectedObject.Attach = selectedModel;
+				selectedObject.Attach.ProcessVertexData();
+				NJS_OBJECT[] models = model.GetObjects();
+				try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(); }
+				catch { }
+				DrawEntireModel();
+			}
+		}
+
+		private void AddModelToLibrary(NJS_OBJECT objectToAdd, bool additive)
+		{
+			if (additive) modelLibrary.Clear();
+
+			NJS_OBJECT[] models = objectToAdd.GetObjects();
+
+			modelLibrary.BeginUpdate();
+			for (int i = 0; i < models.Length; i++)
+				if (models[i].Attach != null)
+					modelLibrary.Add(models[i].Attach);
+			modelLibrary.EndUpdate();
+		}
+
+		private void Resize()
+		{
+			// Causes a memory leak so not used for now
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			PresentParameters pp = new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8,
+				BackBufferHeight=RenderPanel.Height,
+				BackBufferWidth = RenderPanel.Width
+			};
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.Dispose();
+			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			EditorOptions.Initialize(d3ddevice);
+			if (TextureInfo != null && TextureInfo.Count() > 0)
+			{
+				Texture[] texs = new Texture[TextureInfo.Count()];
+				for (int j = 0; j < TextureInfo.Count(); j++)
+					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
+				Textures = texs;
+			}
+			DeviceResizing = false;
+			DrawEntireModel();
+		}
+
+		// Splitting models
 		private void byMeshsetToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!(selectedObject.Attach is BasicAttach))
@@ -3463,16 +3520,28 @@ namespace SonicRetro.SAModel.SAMDL
 				DialogResult dialogResult = MessageBox.Show("This operation cannot be undone. Continue?", "Are you sure?", MessageBoxButtons.YesNo);
 				doOperation = dialogResult == DialogResult.Yes;
 			}
-			if (doOperation)
+			if (!doOperation) return;
+			int id = 0;
+			BasicAttach opaqueatt = new BasicAttach();
+			// Add opaque meshes to a child model
+			if (transparentOnlyToolStripMenuItem.Checked)
 			{
-				int id = 0;
+				List<NJS_MESHSET> opaquemeshes = new List<NJS_MESHSET>();
+				List<NJS_MATERIAL> opaquematerials = new List<NJS_MATERIAL>();
+				List<Vertex> vlist_new = new List<Vertex>();
+				List<Vertex> nlist_new = new List<Vertex>();
+				ushort newpid = 0;
 				foreach (NJS_MESHSET m in basicatt.Mesh)
 				{
+					NJS_MATERIAL mat = basicatt.Material[m.MaterialID];
+					if (mat.UseAlpha) continue;
 					Dictionary<ushort, ushort> vmatchlist = new Dictionary<ushort, ushort>();
-					ushort newpid = 0;
 					NJS_MESHSET mesh_new = m.Clone();
-					List<Vertex> vlist_new = new List<Vertex>();
-					List<Vertex> nlist_new = new List<Vertex>();
+					if (!opaquematerials.Contains(mat))
+					{
+						opaquematerials.Add(mat);
+					}
+					mesh_new.MaterialID = (ushort)opaquematerials.IndexOf(mat);
 					for (int p = 0; p < mesh_new.Poly.Count; p++)
 					{
 						for (int i = 0; i < mesh_new.Poly[p].Indexes.Length; i++)
@@ -3489,31 +3558,70 @@ namespace SonicRetro.SAModel.SAMDL
 							else mesh_new.Poly[p].Indexes[i] = vmatchlist[polyind];
 						}
 					}
-					List<NJS_MESHSET> meshlist_new = new List<NJS_MESHSET>();
-					List<NJS_MATERIAL> matlist_new = new List<NJS_MATERIAL>();
-					mesh_new.MaterialID = 0;
-					meshlist_new.Add(mesh_new);
-					matlist_new.Add(basicatt.Material[m.MaterialID]);
-					BasicAttach newatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), meshlist_new, matlist_new);
-					newatt.Bounds.Center = basicatt.Bounds.Center;
-					newatt.Bounds.Radius = basicatt.Bounds.Radius;
-					newatt.Name = basicatt.Name + "_" + id.ToString();
-					newatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
-					newatt.VertexName = basicatt.VertexName + "_" + id.ToString();
-					newatt.NormalName = basicatt.NormalName + "_" + id.ToString();
-					newatt.MeshName = basicatt.MeshName + "_" + id.ToString();
-					NJS_OBJECT newobj = new NJS_OBJECT();
-					newobj.Attach = newatt;
-					newobj.Name = selectedObject.Name + "_" + id.ToString();
-					selectedObject.AddChild(newobj);
-					id++;
+					opaquemeshes.Add(mesh_new);
 				}
-				selectedObject.Attach = null;
-				RebuildModelCache();
-				DrawEntireModel();
-				SelectedItemChanged();
-				unsaved = true;
+				opaqueatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), opaquemeshes, opaquematerials);
+				opaqueatt.Bounds.Center = basicatt.Bounds.Center;
+				opaqueatt.Bounds.Radius = basicatt.Bounds.Radius;
+				opaqueatt.Name = basicatt.Name + "_" + id.ToString();
+				opaqueatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
+				opaqueatt.VertexName = basicatt.VertexName + "_" + id.ToString();
+				opaqueatt.NormalName = basicatt.NormalName + "_" + id.ToString();
+				opaqueatt.MeshName = basicatt.MeshName + "_" + id.ToString();
 			}
+			// Add meshes to a child model (or both opaque and transparent if the option is off)
+			foreach (NJS_MESHSET m in basicatt.Mesh)
+			{
+				if (transparentOnlyToolStripMenuItem.Checked && !basicatt.Material[m.MaterialID].UseAlpha)
+					continue;
+				Dictionary<ushort, ushort> vmatchlist = new Dictionary<ushort, ushort>();
+				ushort newpid = 0;
+				NJS_MESHSET mesh_new = m.Clone();
+				List<Vertex> vlist_new = new List<Vertex>();
+				List<Vertex> nlist_new = new List<Vertex>();
+				for (int p = 0; p < mesh_new.Poly.Count; p++)
+				{
+					for (int i = 0; i < mesh_new.Poly[p].Indexes.Length; i++)
+					{
+						ushort polyind = mesh_new.Poly[p].Indexes[i];
+						if (!vmatchlist.ContainsKey(polyind))
+						{
+							vlist_new.Add(basicatt.Vertex[polyind]);
+							nlist_new.Add(basicatt.Normal[polyind]);
+							mesh_new.Poly[p].Indexes[i] = newpid;
+							vmatchlist.Add(polyind, newpid);
+							newpid++;
+						}
+						else mesh_new.Poly[p].Indexes[i] = vmatchlist[polyind];
+					}
+				}
+				List<NJS_MESHSET> meshlist_new = new List<NJS_MESHSET>();
+				List<NJS_MATERIAL> matlist_new = new List<NJS_MATERIAL>();
+				mesh_new.MaterialID = 0;
+				meshlist_new.Add(mesh_new);
+				matlist_new.Add(basicatt.Material[m.MaterialID]);
+				BasicAttach newatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), meshlist_new, matlist_new);
+				newatt.Bounds.Center = basicatt.Bounds.Center;
+				newatt.Bounds.Radius = basicatt.Bounds.Radius;
+				newatt.Name = basicatt.Name + "_" + id.ToString();
+				newatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
+				newatt.VertexName = basicatt.VertexName + "_" + id.ToString();
+				newatt.NormalName = basicatt.NormalName + "_" + id.ToString();
+				newatt.MeshName = basicatt.MeshName + "_" + id.ToString();
+				NJS_OBJECT newobj = new NJS_OBJECT();
+				newobj.Attach = newatt;
+				newobj.Name = selectedObject.Name + "_" + id.ToString();
+				selectedObject.AddChild(newobj);
+				id++;
+			}
+			if (transparentOnlyToolStripMenuItem.Checked)
+				selectedObject.Attach = opaqueatt;
+			else
+				selectedObject.Attach = null;
+			RebuildModelCache();
+			DrawEntireModel();
+			SelectedItemChanged();
+			unsaved = true;
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3606,54 +3714,84 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 		}
 
-		private void Resize()
+		// Meshset sorting
+		private void SortModel(NJS_OBJECT mdl, bool withchildren)
 		{
-			// Causes a memory leak so not used for now
-			if (d3ddevice == null) return;
-			DeviceResizing = true;
-			PresentParameters pp = new PresentParameters
+			if (mdl.Attach != null)
 			{
-				Windowed = true,
-				SwapEffect = SwapEffect.Discard,
-				EnableAutoDepthStencil = true,
-				AutoDepthStencilFormat = Format.D24X8,
-				BackBufferHeight=RenderPanel.Height,
-				BackBufferWidth = RenderPanel.Width
-			};
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			d3ddevice.Dispose();
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			EditorOptions.Initialize(d3ddevice);
-			if (TextureInfo != null && TextureInfo.Count() > 0)
-			{
-				Texture[] texs = new Texture[TextureInfo.Count()];
-				for (int j = 0; j < TextureInfo.Count(); j++)
-					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-				Textures = texs;
+				if (!(mdl.Attach is BasicAttach))
+				{
+					MessageBox.Show("This operation is only supported for basic models.");
+					return;
+				}
+				BasicAttach basicatt = (BasicAttach)mdl.Attach;
+				List<NJS_MESHSET> mesh_opaque = new List<NJS_MESHSET>();
+				List<NJS_MESHSET> mesh_trans = new List<NJS_MESHSET>();
+				List<NJS_MATERIAL> mats_opaque = new List<NJS_MATERIAL>();
+				List<NJS_MATERIAL> mats_trans = new List<NJS_MATERIAL>();
+				Dictionary<ushort, ushort> matsidx_trans = new Dictionary<ushort, ushort>();
+				Dictionary<ushort, ushort> matsidx_opaque = new Dictionary<ushort, ushort>();
+				ushort matid_current = 0;
+				List<ushort> matids = new List<ushort>();
+				// Opaque meshes
+				foreach (NJS_MESHSET m in basicatt.Mesh)
+				{
+					if (!basicatt.Material[m.MaterialID].UseAlpha)
+					{
+						mesh_opaque.Add(m);
+						if (!mats_opaque.Contains(basicatt.Material[m.MaterialID]))
+						{
+							mats_opaque.Add(basicatt.Material[m.MaterialID]);
+							matids.Add(matid_current);
+							matid_current++;
+						}
+						else
+							matids.Add((ushort)mats_opaque.IndexOf(basicatt.Material[m.MaterialID]));
+					}
+				}
+				// Transparent meshes
+				foreach (NJS_MESHSET m in basicatt.Mesh)
+				{
+					if (basicatt.Material[m.MaterialID].UseAlpha)
+					{
+						mesh_trans.Add(m);
+						if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
+						{
+							mats_trans.Add(basicatt.Material[m.MaterialID]);
+							matids.Add(matid_current);
+							matid_current++;
+						}
+						else
+							matids.Add((ushort)(mats_opaque.Count - 1 + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+					}
+				}
+				mesh_opaque.AddRange(mesh_trans);
+				mats_opaque.AddRange(mats_trans);
+				ushort matid_new = 0;
+				foreach (NJS_MESHSET m in mesh_opaque)
+				{
+					m.MaterialID = matids[matid_new];
+					matid_new++;
+				}
+				BasicAttach basicatt_new = new BasicAttach(basicatt.Vertex, basicatt.Normal, mesh_opaque, mats_opaque);
+				basicatt_new.Bounds.Center = basicatt.Bounds.Center;
+				basicatt_new.Bounds.Radius = basicatt.Bounds.Radius;
+				basicatt_new.MaterialName = basicatt.MaterialName;
+				basicatt_new.MeshName = basicatt.MeshName;
+				basicatt_new.NormalName = basicatt.VertexName;
+				basicatt_new.VertexName = basicatt.VertexName;
+				basicatt_new.Name = basicatt.Name;
+				mdl.Attach = basicatt_new;
 			}
-			DeviceResizing = false;
+			if (withchildren)
+			{
+				foreach (NJS_OBJECT child in mdl.Children)
+					SortModel(child, true);
+			}
+			RebuildModelCache();
 			DrawEntireModel();
-		}
-
-		private void modelLibraryToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			// show model library
-			modelLibraryWindow.Show();
-		}
-
-		void modelLibrary_SelectionChanged(ModelLibraryControl sender, int selectionIndex, Attach selectedModel)
-		{
-			if ((selectionIndex >= 0) && (selectedModel != null) && selectedObject != null)
-			{
-				selectedObject.Attach = selectedModel;
-				selectedObject.Attach.ProcessVertexData();
-				NJS_OBJECT[] models = model.GetObjects();
-				try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(); }
-				catch { }
-				DrawEntireModel();
-			}
+			SelectedItemChanged();
+			unsaved = true;
 		}
 	}
 }
