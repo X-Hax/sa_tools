@@ -241,7 +241,7 @@ namespace Split
 					if ((uint)fileinfo.Value.Address < lowest && !found.Contains((uint)fileinfo.Value.Address))
 					{
 						string ext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
-						if (ext == ".sa1mdl" || ext == ".saanim")
+						if (ext == ".sa1mdl" || ext == ".saanim" || ext == ".sa1lvl")
 							lowest = (uint)fileinfo.Value.Address;
 					}
 					//else Console.WriteLine("{0} is not smaller than {1}", fileinfo.Value.Address.ToString("X"), lowest.ToString("X"));
