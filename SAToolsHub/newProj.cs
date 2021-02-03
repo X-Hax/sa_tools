@@ -21,6 +21,7 @@ namespace SAToolsHub
 
 		Dictionary<string, string> templateList = new Dictionary<string, string>()
 		{
+			{ "SADX Debugging", "dx_debug.xml" },
 			{ "SADX (PC, Moddable)", "sadxpc_template.xml" },
 			{ "SA2 (PC, Moddable)", "sa2pc_template.xml" },
 			{ "SA1 (DC, Final)", "sa1_template.xml" },
@@ -276,10 +277,10 @@ namespace SAToolsHub
 
 		private string GetObjDefsDirectory()
 		{
-			if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder))
-				return Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder + "/objdefs/";
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "lib")))
+				return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../", dataFolder, "objdefs");
 			else
-				return Path.GetDirectoryName(Application.ExecutablePath) + "/../../../SADXObjectDefinitions/";
+				return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../../SADXObjectDefinitions");
 		}
 
 		private void splitFiles(SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -329,9 +330,20 @@ namespace SAToolsHub
 
 			// switch on file extension - if dll, use dll splitter
 			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
+			string ext = fileInfo.Extension;
 
-			int result = (fileInfo.Extension.ToLower().Contains("dll")) ? SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName) :
-				SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+			switch (ext.ToLower())
+			{
+				case ".dll":
+					SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+					break;
+				case ".nb":
+					SA_Tools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+					break;
+				default:
+					SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+					break;
+			}
 		}
 
 		private void splitMdlFiles(SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)

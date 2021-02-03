@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using System.ComponentModel;
 using Ookii.Dialogs.Wpf;
-using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using Fclp.Internals.Extensions;
-using SA_Tools.Split;
-using SA_Tools.SAArc;
 
 namespace SAToolsHub
 {

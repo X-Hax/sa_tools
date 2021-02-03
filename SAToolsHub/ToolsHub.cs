@@ -519,8 +519,8 @@ namespace SAToolsHub
 		{
 			string rootPath;
 
-			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools")))
-				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "lib")))
+				rootPath = Path.GetDirectoryName(Application.ExecutablePath);
 			else
 				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../../tools");
 #if DEBUG
