@@ -3,11 +3,14 @@ using SonicRetro.SAModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Split
 {
 	class Program
 	{
+		[DllImport("shlwapi.dll", SetLastError = true)]
+		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 		static int CompareFiles(string file1, string file2)
 		{
 			int result = 0;
@@ -68,6 +71,12 @@ namespace Split
 					return;
 				case "-f":
 					SplitF(args);
+					return;
+				case "-lf":
+					SplitLF(args);
+					return;
+				case "-rf":
+					SplitRF(args);
 					return;
 			}
 #endif
@@ -180,23 +189,91 @@ namespace Split
 					return;
 			}
 		}
+		static void SplitRF(string[] args)
+		{
+			//Loads a split INI file and a list of filenames and replaces INI filenames for models and animations with the names specified in the list
+			string inifilename = args[0];
+			string listfilename = args[1];
+			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+			string[] list = File.ReadAllLines(listfilename);
+			int n = 0;
+			Dictionary<int, string> filenames = new Dictionary<int, string>();
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			{
+				Console.WriteLine("{0}", list[n]);
+				fileinfo.Value.Filename = list[n];
+				filenames.Add(fileinfo.Value.Address, list[n]);
+				n++;
+			}
+			//Relink animations
+			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			{
+				if (fileinfo.Value.CustomProperties.ContainsKey("animations"))
+				{
+					string[] anims = fileinfo.Value.CustomProperties["animations"].Split(',');
+					for (int a = 0; a < anims.Length; a++)
+					{
+						string newfilename = filenames[int.Parse(Path.GetFileNameWithoutExtension(anims[a]), System.Globalization.NumberStyles.AllowHexSpecifier)];
+						System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+						PathRelativePathTo(sb, Path.GetFullPath(fileinfo.Value.Filename), 0, Path.GetFullPath(newfilename), 0);
+						anims[a] = sb.ToString();
+					}
+					fileinfo.Value.CustomProperties["animations"] = string.Join(",", anims);
+				}
+			}
+			IniSerializer.Serialize(inifile, "result_replaced.ini");
+		}
+
+		static void SplitLF(string[] args)
+		{
+			//Loads a split INI file and lists all filenames by address in ascending order, as well as saves a sorted INI file
+			string inifilename = args[0];
+			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+			List<uint> found = new List<uint>();
+			uint lowest = 0xFFFFFFFF;
+			Dictionary<string, SA_Tools.FileInfo> fileinfo_new = new Dictionary<string, SA_Tools.FileInfo>();
+			for (int n = 0; n < inifile.Files.Count; n++)
+			{
+				//Console.WriteLine(n);
+				foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+				{
+					//Console.WriteLine("testing");
+					if ((uint)fileinfo.Value.Address < lowest && !found.Contains((uint)fileinfo.Value.Address))
+					{
+						string ext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
+						if (ext == ".sa1mdl" || ext == ".saanim" || ext == ".sa1lvl")
+							lowest = (uint)fileinfo.Value.Address;
+					}
+					//else Console.WriteLine("{0} is not smaller than {1}", fileinfo.Value.Address.ToString("X"), lowest.ToString("X"));
+				}
+				if (lowest != 0xFFFFFFFF)
+				{
+					found.Add(lowest);
+					//Console.WriteLine(lowest.ToString("X"));
+					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_x in inifile.Files)
+					{
+						if (fileinfo_x.Value.Address == lowest)
+						{
+							Console.WriteLine(fileinfo_x.Value.Filename);
+							if (!fileinfo_new.ContainsKey(fileinfo_x.Value.Address.ToString("X8"))) 
+								fileinfo_new.Add(fileinfo_x.Value.Address.ToString("X8"), fileinfo_x.Value);
+							else Console.WriteLine("Duplicate detected!");
+						}
+					}
+					lowest = 0xFFFFFFFF;
+				}
+			}
+			inifile.Files = fileinfo_new;
+			IniSerializer.Serialize(inifile, "result_sorted.ini");
+		}
 		static void SplitF(string[] args)
 		{
-			//In mode 1 (second argument = false), this code does the following:
-			//1) Load a list of source filenames for motions and a split INI file
-			//2) Scan for similarly labelled models based on the source list
-			//3) Calculate the NJS_MOTION address based on the assumption that there is an NJS_ACTION right after the model
-			//4) Output split INI data for the motions in the source list
+			//This code does the following:
+			//1) Scan through a split INI file and find identically labelled models and motions
+			//2) Add node count to the motions based on their models
+			//3) Assign motions to matched models
 
-			//In mode 2 (second argument = true), this code does the following:
-			//1) Scan through a split INI file and find similarly labelled models and motions 
-			//2) Add node count to the motions based on the similarly labelled models
-			//3) Assign motions to similarly labelled models
-
-			//Command line arguments: split inifile exefile key [listfile] -f
-			string listname;
 			string inifilename;
-			string[] motionlist;
 			inifilename = args[0];
 			byte[] datafile = File.ReadAllBytes(args[1]);
 			uint imageBase = uint.Parse(args[2], System.Globalization.NumberStyles.AllowHexSpecifier);
@@ -230,6 +307,7 @@ namespace Split
 		}
 		static void SplitM(string[] args)
 		{
+			//This code loads list of source filenames and a split INI file and outputs a list of matches
 			Dictionary<string, string> matchstrings;
 			string listname;
 			string inifilename;
@@ -421,6 +499,7 @@ namespace Split
 		}
 		static void SplitC(string[] args)
 		{
+			//Compares levels, models and motions between two folders and outputs a list of identical files
 			if (args.Length < 3)
 			{
 				return;

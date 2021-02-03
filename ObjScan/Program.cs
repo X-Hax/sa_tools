@@ -20,6 +20,7 @@ namespace ObjScan
 		static public bool reverse;
 		static public bool skipactions;
 		static public bool findall;
+		static public bool nodir;
 		static public uint start = 0;
 		static public uint end = 0;
 		static public uint imageBase;
@@ -49,7 +50,10 @@ namespace ObjScan
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=chunkmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
-						sw.WriteLine("filename=chunkmodels/" + entry.Key.ToString("X8") + ".sa2mdl");
+						if (!nodir)
+							sw.WriteLine("filename=chunkmodels/" + entry.Key.ToString("X8") + ".sa2mdl");
+						else
+							sw.WriteLine("filename=" + entry.Key.ToString("X8") + ".sa2mdl");
 						sw.WriteLine();
 						break;
 					case "NJS_GC_OBJECT":
@@ -57,7 +61,10 @@ namespace ObjScan
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=gcmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
-						sw.WriteLine("filename=gcmodels/" + entry.Key.ToString("X8") + ".sa2bmdl");
+						if (!nodir)
+							sw.WriteLine("filename=gcmodels/" + entry.Key.ToString("X8") + ".sa2bmdl");
+						else
+							sw.WriteLine("filename=" + entry.Key.ToString("X8") + ".sa2bmdl");
 						sw.WriteLine();
 						break;
 					case "NJS_OBJECT":
@@ -66,7 +73,10 @@ namespace ObjScan
 						if (dx) sw.WriteLine("type=basicdxmodel");
 						else sw.WriteLine("type=basicmodel");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
-						sw.WriteLine("filename=basicmodels/" + entry.Key.ToString("X8") + ".sa1mdl");
+						if (!nodir)
+							sw.WriteLine("filename=basicmodels/" + entry.Key.ToString("X8") + ".sa1mdl");
+						else
+							sw.WriteLine("filename=" + entry.Key.ToString("X8") + ".sa1mdl");
 						bool first = true;
 						foreach (var item in actionlist)
 						{
@@ -78,7 +88,10 @@ namespace ObjScan
 									first = false;
 								}
 								else sw.Write(",");
-								sw.Write("../actions/" + item.Key.ToString("X8") + ".saanim");
+								if (!nodir)
+									sw.Write("../actions/" + item.Key.ToString("X8") + ".saanim");
+								else
+									sw.Write(item.Key.ToString("X8") + ".saanim");
 							}
 						}
 						if (!first) sw.WriteLine();
@@ -93,7 +106,10 @@ namespace ObjScan
 						sw.WriteLine("[" + entry.Key.ToString("X8") + "]");
 						sw.WriteLine("type=landtable");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
-						sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						if (!nodir)
+							sw.WriteLine("filename=levels/" + entry.Key.ToString("X8") + ".sa1lvl");
+						else
+							sw.WriteLine("filename=" + entry.Key.ToString("X8") + ".sa1lvl");
 						switch (entry.Value)
 						{
 							case "landtable_SA1":
@@ -118,7 +134,10 @@ namespace ObjScan
 						sw.WriteLine("type=animation");
 						sw.WriteLine("address=" + entry.Key.ToString("X8"));
 						sw.WriteLine("numparts=" + actionlist[entry.Key][1].ToString());
-						sw.WriteLine("filename=actions/" + entry.Key.ToString("X8") + ".saanim");
+						if (!nodir)
+							sw.WriteLine("filename=actions/" + entry.Key.ToString("X8") + ".saanim");
+						else
+							sw.WriteLine("filename=" + entry.Key.ToString("X8") + ".saanim");
 						sw.WriteLine();
 						break;
 				}
@@ -158,10 +177,13 @@ namespace ObjScan
 			ModelFile modelFile = new ModelFile(filename);
 			NJS_OBJECT originalmodel = modelFile.Model;
 			string model_extension = ".sa1mdl";
-			Directory.CreateDirectory(Path.Combine(dir, "models"));
+			if (!nodir)
+				Directory.CreateDirectory(Path.Combine(dir, "models"));
 			for (uint address = 0; address < datafile.Length - 51; address += 4)
 			{
 				string fileOutputPath = Path.Combine(dir, "models", address.ToString("X8"));
+				if (nodir)
+					fileOutputPath = Path.Combine(dir, address.ToString("X8"));
 				try
 				{
 					if (!CheckModel(address, false, modelfmt)) continue;
@@ -451,11 +473,14 @@ namespace ObjScan
 					landtable_extension = ".sa2blvl";
 					break;
 			}
-			Directory.CreateDirectory(Path.Combine(dir, "levels"));
+			if (!nodir)
+				Directory.CreateDirectory(Path.Combine(dir, "levels"));
 			for (uint address = start; address < end; address += 1)
 			{
 				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
 				string fileOutputPath = Path.Combine(dir, "levels", address.ToString("X8"));
+				if (nodir) 
+					fileOutputPath = Path.Combine(dir, address.ToString("X8"));
 				if (!CheckLandTable(address, landfmt)) continue;
 				try
 				{
@@ -479,10 +504,16 @@ namespace ObjScan
 		}
 		static void AddAction(uint objectaddr, uint motionaddr)
 		{
-			using (FileStream str = new FileStream(Path.Combine(dir, "basicmodels", objectaddr.ToString("X8") + ".action"), FileMode.Append, FileAccess.Write))
+			string strpath = Path.Combine(dir, "basicmodels", objectaddr.ToString("X8") + ".action");
+			if (nodir)
+				strpath = Path.Combine(dir, objectaddr.ToString("X8") + ".action");
+			using (FileStream str = new FileStream(strpath, FileMode.Append, FileAccess.Write))
 			using (StreamWriter tw = new StreamWriter(str))
 			{
-				tw.WriteLine("../actions/" + motionaddr.ToString("X8") + ".saanim");
+				if (!nodir) 
+					tw.WriteLine("../actions/" + motionaddr.ToString("X8") + ".saanim");
+				else 
+					tw.WriteLine(motionaddr.ToString("X8") + ".saanim");
 				tw.Flush();
 				tw.Close();
 			}
@@ -504,6 +535,8 @@ namespace ObjScan
 					addresslist.Add(motaddr - imageBase, "NJS_MOTION");
 					Console.WriteLine("\rMotion found for model {0} at address {1}", addr.ToString("X8"), (motaddr - imageBase).ToString("X"));
 					string fileOutputPath = Path.Combine(dir, "actions", (motaddr - imageBase).ToString("X8"));
+					if (nodir) 
+						fileOutputPath = Path.Combine(dir, (motaddr - imageBase).ToString("X8"));
 					mot.Save(fileOutputPath + ".saanim", nometa);
 					uint[] arr = new uint[2];
 					arr[0] = addr;
@@ -528,7 +561,8 @@ namespace ObjScan
 			string modelext = ".sa1mdl";
 			List<uint> modeladdr = new List<uint>();
 			if (addresslist.Count == 0) return;
-			Directory.CreateDirectory(Path.Combine(dir, "actions"));
+			if (!nodir)
+				Directory.CreateDirectory(Path.Combine(dir, "actions"));
 			switch (modelfmt)
 			{
 				case ModelFormat.Basic:
@@ -551,12 +585,17 @@ namespace ObjScan
 			}
 			foreach (uint maddr in modeladdr)
 			{
-				if (File.Exists(Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext)))
+				string modelpath;
+				if (!nodir)
+					modelpath = Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext);
+				else
+					modelpath = Path.Combine(dir, maddr.ToString("X8") + modelext);
+				if (File.Exists(modelpath))
 				{
 					try
 					{
 						Console.Write("\rScanning for actions (model {0} of {1})", modeladdr.IndexOf(maddr) + 1, modeladdr.Count);
-						ModelFile mdlfile = new ModelFile(Path.Combine(dir, modelstring, maddr.ToString("X8") + modelext));
+						ModelFile mdlfile = new ModelFile(modelpath);
 						count += ScanActions(maddr, (uint)mdlfile.Model.CountAnimated(), modelfmt);
 					}
 					catch (Exception ex)
@@ -576,6 +615,8 @@ namespace ObjScan
 				{
 					uint itemaddr = uint.Parse(child.Name.Substring(7, child.Name.Length - 7), NumberStyles.AllowHexSpecifier);
 					string cpath = Path.Combine(dir, model_dir, itemaddr.ToString("X8") + model_extension);
+					if (nodir) 
+						cpath = Path.Combine(dir, itemaddr.ToString("X8") + model_extension);
 					Console.WriteLine("Deleting child object {0}", cpath);
 					File.Delete(cpath);
 					if (addresslist.ContainsKey(itemaddr))
@@ -587,6 +628,8 @@ namespace ObjScan
 			{
 				uint itemaddr = uint.Parse(mdl.Sibling.Name.Substring(7, mdl.Sibling.Name.Length - 7), NumberStyles.AllowHexSpecifier);
 				string spath = Path.Combine(dir, model_dir, itemaddr.ToString("X8") + model_extension);
+				if (nodir)
+					spath = Path.Combine(dir, itemaddr.ToString("X8") + model_extension);
 				Console.WriteLine("Deleting sibling object {0}", spath);
 				File.Delete(spath);
 				if (addresslist.ContainsKey(itemaddr))
@@ -637,11 +680,14 @@ namespace ObjScan
 					model_type = "NJS_GC_OBJECT";
 					break;
 			}
-			Directory.CreateDirectory(Path.Combine(dir, model_dir));
+			if (!nodir)
+				Directory.CreateDirectory(Path.Combine(dir, model_dir));
 			for (uint address = start; address < end; address += 1)
 			{
 				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
 				string fileOutputPath = Path.Combine(dir, model_dir, address.ToString("X8"));
+				if (nodir)
+					fileOutputPath = Path.Combine(dir, address.ToString("X8"));
 				try
 				{
 					if (!CheckModel(address, true, modelfmt))
@@ -726,6 +772,8 @@ namespace ObjScan
 								model_extension = ".sa2bmdl";
 							}
 							string col_filename = Path.Combine(dir, model_dir, col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
+							if (nodir)
+								col_filename = Path.Combine(dir, col.Model.Name.Substring(7, col.Model.Name.Length - 7) + model_extension);
 							if (File.Exists(col_filename))
 							{
 								uint itemaddr = uint.Parse(col.Model.Name.Substring(7, col.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier);
@@ -755,6 +803,8 @@ namespace ObjScan
 								model_extension = ".sa2bmdl";
 							}
 							string anim_filename = Path.Combine(dir, model_dir, anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
+							if (nodir)
+								anim_filename = Path.Combine(dir, anim.Model.Name.Substring(7, anim.Model.Name.Length - 7) + model_extension);
 							if (File.Exists(anim_filename))
 							{
 								uint itemaddr = uint.Parse(anim.Model.Name.Substring(7, anim.Model.Name.Length - 7), NumberStyles.AllowHexSpecifier);
@@ -773,7 +823,8 @@ namespace ObjScan
 			if (shortrot) Console.WriteLine("Using short rotations");
 			int count = 0;
 			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
-			Directory.CreateDirectory(Path.Combine(dir, "actions"));
+			if (!nodir) 
+				Directory.CreateDirectory(Path.Combine(dir, "actions"));
 			for (uint address = start; address < end; address += 1)
 			{
 				if (address % 1000 == 0) Console.Write("\r{0} ", address.ToString("X8"));
@@ -878,6 +929,8 @@ namespace ObjScan
 						if (mot.Frames <= 0) continue;
 						if (mot.Models.Count == 0) continue;
 						string fileOutputPath = Path.Combine(dir, "actions", address.ToString("X8") + ".saanim");
+						if (nodir)
+							fileOutputPath = Path.Combine(dir, address.ToString("X8") + ".saanim");
 						mot.Save(fileOutputPath, nometa);
 						count++;
 						addresslist.Add(address, "NJS_MOTION");
@@ -925,6 +978,7 @@ namespace ObjScan
 				Console.WriteLine("-noaction: Don't scan for actions.");
 				Console.WriteLine("-findall: Less strict scan, try to find as many models as possible.");
 				Console.WriteLine("-nometa: Don't save labels.");
+				Console.WriteLine("-nodir: Don't create folders for file categories.");
 				Console.WriteLine("-parts: Minimum number of model parts for motions.");
 				Console.WriteLine("-shortrot: Use int16 rotations in motions.");
 				Console.WriteLine("-start and -end: Range of addresses to scan.");
@@ -1044,6 +1098,9 @@ namespace ObjScan
 					case "-shortrot":
 						shortrot = true;
 						break;
+					case "-nodir":
+						nodir = true;
+						break;
 				}
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
@@ -1143,12 +1200,15 @@ namespace ObjScan
 				if (item.Value == "NJS_GC_OBJECT") gcmodel = true;
 				if (item.Value == "NJS_MOTION") motion = true;
 			}
-			if (!motion && Directory.Exists(Path.Combine(dir, "actions"))) Directory.Delete(Path.Combine(dir, "actions"), true);
-			if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"), true);
-			if (!basicmodel && Directory.Exists(Path.Combine(dir, "basicmodels"))) Directory.Delete(Path.Combine(dir, "basicmodels"), true);
-			if (!chunkmodel && Directory.Exists(Path.Combine(dir, "chunkmodels"))) Directory.Delete(Path.Combine(dir, "chunkmodels"), true);
-			if (!gcmodel && Directory.Exists(Path.Combine(dir, "gcmodels"))) Directory.Delete(Path.Combine(dir, "gcmodels"), true);
-			if (!land && !basicmodel && !motion && !basicmodel && !chunkmodel && !gcmodel && Directory.Exists(dir)) Directory.Delete(dir, true);
+			if (!nodir)
+			{
+				if (!motion && Directory.Exists(Path.Combine(dir, "actions"))) Directory.Delete(Path.Combine(dir, "actions"), true);
+				if (!land && Directory.Exists(Path.Combine(dir, "levels"))) Directory.Delete(Path.Combine(dir, "levels"), true);
+				if (!basicmodel && Directory.Exists(Path.Combine(dir, "basicmodels"))) Directory.Delete(Path.Combine(dir, "basicmodels"), true);
+				if (!chunkmodel && Directory.Exists(Path.Combine(dir, "chunkmodels"))) Directory.Delete(Path.Combine(dir, "chunkmodels"), true);
+				if (!gcmodel && Directory.Exists(Path.Combine(dir, "gcmodels"))) Directory.Delete(Path.Combine(dir, "gcmodels"), true);
+				if (!land && !basicmodel && !motion && !basicmodel && !chunkmodel && !gcmodel && Directory.Exists(dir)) Directory.Delete(dir, true);
+			}
 		}
 	}
 }
