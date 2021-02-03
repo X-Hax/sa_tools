@@ -130,6 +130,9 @@
   <data name="tsSAMDL" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsSAMDL.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="saSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsSa2StgEdit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsSa2StgEdit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -163,6 +166,9 @@
   <data name="tsOpenProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsOpenProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tsDxLvl2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsDxLvl2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsNewProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsNewProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -172,10 +178,7 @@
   <data name="tsUpdate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsUpdate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tsDxLvl2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tsDxLvl2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="saSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\saSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="tsSa2EvView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsSa2EvView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

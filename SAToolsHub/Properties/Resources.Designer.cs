@@ -203,6 +203,16 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap tsSa2EvView {
+            get {
+                object obj = ResourceManager.GetObject("tsSa2EvView", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tsSa2StgEdit {
             get {
                 object obj = ResourceManager.GetObject("tsSa2StgEdit", resourceCulture);

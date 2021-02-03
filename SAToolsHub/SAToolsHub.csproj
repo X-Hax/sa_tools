@@ -205,9 +205,6 @@
     <None Include="Resources\tsSAMDL.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\tsSALVL.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\tsPaths.png" />
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +302,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\saSave.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsSa2EvView.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsSALVL.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Ookii.Dialogs.3.0.1\build\Ookii.Dialogs.targets" Condition="Exists('..\packages\Ookii.Dialogs.3.0.1\build\Ookii.Dialogs.targets')" />

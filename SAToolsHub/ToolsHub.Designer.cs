@@ -349,6 +349,7 @@
 			// 
 			// sA2EventViewerToolStripMenuItem
 			// 
+			this.sA2EventViewerToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSa2EvView;
 			this.sA2EventViewerToolStripMenuItem.Name = "sA2EventViewerToolStripMenuItem";
 			this.sA2EventViewerToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
 			this.sA2EventViewerToolStripMenuItem.Text = "SA2 Event Viewer";
@@ -675,10 +676,11 @@
 			// tsSA2EvView
 			// 
 			this.tsSA2EvView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsSA2EvView.Image = ((System.Drawing.Image)(resources.GetObject("tsSA2EvView.Image")));
+			this.tsSA2EvView.Image = global::SAToolsHub.Properties.Resources.tsSa2EvView;
+			this.tsSA2EvView.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.tsSA2EvView.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsSA2EvView.Name = "tsSA2EvView";
-			this.tsSA2EvView.Size = new System.Drawing.Size(54, 20);
+			this.tsSA2EvView.Size = new System.Drawing.Size(54, 52);
 			this.tsSA2EvView.Text = "Open SA2 Event Viewer";
 			this.tsSA2EvView.Visible = false;
 			this.tsSA2EvView.Click += new System.EventHandler(this.tsSA2EvView_Click);
