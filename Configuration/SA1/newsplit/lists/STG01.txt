@@ -1,3 +1,6 @@
+stg01_beach/landtable0100.c.sa1lvl
+stg01_beach/landtable0101.c.sa1lvl
+stg01_beach/landtable0102.c.sa1lvl
 stg01_beach/bg/models/sea_nbg.nja.sa1mdl
 stg01_beach/bg/models/sea_nbg3.nja.sa1mdl
 stg01_beach/common/models/seaobj_yashi00.nja.sa1mdl

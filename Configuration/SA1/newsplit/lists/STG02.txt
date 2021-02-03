@@ -1,3 +1,6 @@
+stg02_windy/landtable0200.c.sa1lvl
+stg02_windy/landtable0201.c.sa1lvl
+stg02_windy/landtable0202.c.sa1lvl
 stg02_windy/common/models/00050B70_unknown.sa1mdl
 stg02_windy/common/models/000A61D0_unknown.sa1mdl
 stg02_windy/common/models/000B07EC_unknown.sa1mdl

@@ -1,3 +1,6 @@
+stg03_twinkle/landtable0300.c.sa1lvl
+stg03_twinkle/landtable0301.c.sa1lvl
+stg03_twinkle/landtable0302.c.sa1lvl
 stg03_twinkle/common/models/boom_boomtaru.nja.sa1mdl
 stg03_twinkle/common/models/boom_hahen1.nja.sa1mdl
 stg03_twinkle/common/models/boom_hahen2.nja.sa1mdl
