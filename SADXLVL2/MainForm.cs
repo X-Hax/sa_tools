@@ -2507,7 +2507,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Point mouseDelta = mouseEvent - (Size)mouseLast;
 			bool performedWrap = false;
 
-			if (e.Button == MouseButtons.Middle || transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE)
+			if (e.Button == MouseButtons.Middle || (transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
 			{
 				if (alternativeCameraToolStripMenuItem.Checked && !mouseHide)
 				{
