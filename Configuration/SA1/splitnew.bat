@@ -6,3 +6,5 @@
 ..\bin\split binary data/SONICADV/STG05.PRS newsplit/STG05.ini output/
 ..\bin\split binary data/SONICADV/STG06.PRS newsplit/STG06.ini output/
 ..\bin\split binary data/SONICADV/STG07.PRS newsplit/STG07.ini output/
+..\bin\split binary data/SONICADV/STG08.PRS newsplit/STG08.ini output/
+..\bin\split binary data/SONICADV/STG09.PRS newsplit/STG09.ini output/
