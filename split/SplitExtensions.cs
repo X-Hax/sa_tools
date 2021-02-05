@@ -172,7 +172,9 @@ namespace Split
 				string mdlname = mdl.Model.Name;
 				fileinfo.Address = int.Parse(mdlname.Substring(mdlname.Length - 8, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
 				//Console.WriteLine("{0}={1}", fileinfo.Address.ToString("X8"), modelfiles[u]);
-				files_ini.Add(mdlname, fileinfo);
+				if (!files_ini.ContainsKey(mdlname))
+					files_ini.Add(mdlname, fileinfo);
+				else Console.WriteLine("Duplicate of {0}", mdlname);
 			}
 			for (int u = 0; u < levelfiles.Length; u++)
 			{
@@ -183,7 +185,9 @@ namespace Split
 				string lvlname = lvl.Name;
 				fileinfo.Address = int.Parse(lvlname.Substring(lvlname.Length - 8, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
 				//Console.WriteLine("{0}={1}", fileinfo.Address.ToString("X8"), levelfiles[u]);
-				files_ini.Add(lvlname, fileinfo);
+				if (!files_ini.ContainsKey(lvlname)) 
+					files_ini.Add(lvlname, fileinfo);
+				else Console.WriteLine("Duplicate of {0}", lvlname);
 			}
 			for (int u = 0; u < animfiles.Length; u++)
 			{
@@ -194,7 +198,9 @@ namespace Split
 				string mtnname = mtn.Name;
 				fileinfo.Address = int.Parse(mtnname.Substring(mtnname.Length - 8, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
 				//Console.WriteLine("{0}={1}", fileinfo.Address.ToString("X8"), animfiles[u]);
-				files_ini.Add(mtnname, fileinfo);
+				if (!files_ini.ContainsKey(mtnname)) 
+					files_ini.Add(mtnname, fileinfo);
+				else Console.WriteLine("Duplicate of {0}", mtnname);
 			}
 			IniData inidata_new = new SA_Tools.IniData();
 			inidata_new.Files = SortIniData(files_ini);
