@@ -543,7 +543,7 @@ namespace ObjScan
 					arr[1] = nummdl;
 					actionlist.Add(motaddr - imageBase, arr);
 					AddAction(addr, motaddr - imageBase);
-					address += 8;
+					address += 7;
 					count++;
 				}
 				catch (Exception)
