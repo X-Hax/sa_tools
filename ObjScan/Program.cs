@@ -492,7 +492,7 @@ namespace ObjScan
 						landtablelist.Add(address);
 						Console.WriteLine("\rLandtable {0} at {1}", landfmt.ToString(), address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
-						address += (uint)LandTable.Size(landfmt);
+						address += (uint)LandTable.Size(landfmt) - 1;
 					}
 				}
 				catch (Exception)

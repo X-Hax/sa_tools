@@ -12,3 +12,6 @@
 ..\bin\split binary data/SONICADV/STG10.PRS newsplit/STG10.ini output/
 ..\bin\split binary data/SONICADV/STG12.PRS newsplit/STG12.ini output/
 ..\bin\split binary data/SONICADV/ADV00.PRS newsplit/ADV00.ini output/
+..\bin\split binary data/SONICADV/ADV0100.PRS newsplit/ADV0100.ini output/
+..\bin\split binary data/SONICADV/ADV0130.PRS newsplit/ADV0130.ini output/
+..\bin\split binary data/SONICADV/ADV03.PRS newsplit/ADV03.ini output/

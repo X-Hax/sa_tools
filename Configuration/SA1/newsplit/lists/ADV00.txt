@@ -110,9 +110,9 @@ adv00_stationsquare/object/no_unite/ssobj_twkanban.nja.sa1mdl
 adv00_stationsquare/object/no_unite/ssobj_kartkanban.nja.sa1mdl
 adv00_stationsquare/object/no_unite/ssobj_twrtuuroue.nja.sa1mdl
 adv00_stationsquare/object/no_unite/ssobj_twrtuuroueb.nja.sa1mdl
-figure/sonic/models/s_itemring_s_itemring.nja
-figure/sonic/models/s_itemshoose_si_shoose.nja
-figure/miles/models/m_itemshoose_m_itemshoose.nja
+figure/sonic/models/s_itemring_s_itemring.nja.sa1mdl
+figure/sonic/models/s_itemshoose_si_shoose.nja.sa1mdl
+figure/miles/models/m_itemshoose_m_itemshoose.nja.sa1mdl
 adv00_stationsquare/object/001B1EC0.sa1mdl
 adv00_stationsquare/object/001B42CC.sa1mdl
 adv00_stationsquare/object/001B450C.sa1mdl
