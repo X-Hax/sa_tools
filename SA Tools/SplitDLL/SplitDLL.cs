@@ -19,7 +19,7 @@ namespace SA_Tools.SplitDLL
 										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
 										"Neutral Chao", "Hero Chao", "Dark Chao"
 									};
-		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
+		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
 		{
 #if !DEBUG
 			try
@@ -430,6 +430,8 @@ namespace SA_Tools.SplitDLL
 									ptr = (int)(ptr - imageBase);
 									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt_def, new Dictionary<int, Attach>());
 									string nm = item.Key + "_" + i;
+									if (nolabel) 
+										nm = ani.Animation.Name;
 									bool saveani = false;
 									if (!anilabels.ContainsKey(ani.Animation.Name))
 									{
@@ -519,6 +521,8 @@ namespace SA_Tools.SplitDLL
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, nodeCount);
 								string nm = item.Key;
+								if (nolabel)
+									nm = ani.Name;
 								bool saveani = false;
 								if (!anilabels.ContainsKey(ani.Name))
 								{
@@ -555,6 +559,8 @@ namespace SA_Tools.SplitDLL
 										ptr = (int)(ptr - imageBase);
 										NJS_MOTION ani = new NJS_MOTION(datafile, ptr, imageBase, nodecounts[i]);
 										string nm = item.Key + "_" + i;
+										if (nolabel)
+											nm = ani.Name;
 										bool saveani = false;
 										if (!anilabels.ContainsKey(ani.Name))
 										{

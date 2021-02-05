@@ -11,7 +11,7 @@ namespace SA_Tools.Split
 {
 	public static class Split
 	{
-		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
+		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
 		{
 #if !DEBUG
 			try
@@ -22,8 +22,8 @@ namespace SA_Tools.Split
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();
-				if (File.Exists(listfile))
-					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
+				if (File.Exists(listfile) && !nolabel)
+					labels = IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
 				if (inifile.StartOffset != 0)
 				{
 					byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
@@ -134,7 +134,7 @@ namespace SA_Tools.Split
 							{
 								ModelFormat modelfmt_act = data.CustomProperties.ContainsKey("format") ? (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]) : modelfmt_def;
 								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt_act, labels, new Dictionary<int, Attach>());
-								if (!labels.ContainsValue(ani.Name)) ani.Name = filedesc;
+								if (!labels.ContainsValue(ani.Name) && !nolabel) ani.Name = filedesc;
 								if (customProperties.ContainsKey("numparts"))
 									ani.Animation.ModelParts = int.Parse(customProperties["numparts"]);
 								if (ani.Animation.ModelParts == 0)
@@ -155,13 +155,13 @@ namespace SA_Tools.Split
 							if (customProperties.ContainsKey("shortrot"))
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
-								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
-								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							break;
