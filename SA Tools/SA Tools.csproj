@@ -72,9 +72,16 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Dependencies\SACompGC.dll">
+      <Link>SACompGC.dll</Link>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)tools\lib\*.*" "$(SolutionDir)bin\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)tools\lib\*.*" "$(SolutionDir)bin\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\SACompGC.dll" "$(SolutionDir)bin\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\SACompGC.dll" "$(SolutionDir)tools\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

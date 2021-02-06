@@ -1108,7 +1108,11 @@ namespace ObjScan
 			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 			byte[] datafile_temp = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
-			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel")
+			{
+				datafile_temp = HelperFunctions.DecompressREL(datafile_temp);
+				HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
+			}
 			if (startoffset != 0)
 			{
 				byte[] datafile_new = new byte[startoffset + datafile_temp.Length];

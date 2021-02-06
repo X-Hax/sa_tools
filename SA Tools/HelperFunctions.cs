@@ -3,12 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SA_Tools
 {
 	public static class HelperFunctions
 	{
+		[DllImport("SACompGC.dll", SetLastError = true)]
+		private static extern uint GetDecompressedSize(IntPtr InputBuffer);
+		[DllImport("SACompGC.dll", SetLastError = true)]
+		private static extern void DecompressBuffer(IntPtr InputBuffer, IntPtr OutputBuffer);
 		public static uint? SetupEXE(ref byte[] exefile)
 		{
 			if (ByteConverter.ToUInt16(exefile, 0) != 0x5A4D)
@@ -421,6 +426,40 @@ namespace SA_Tools
 			ByteConverter.BigEndian = bigEndState;
 
 			return isBigEndian;
+		}
+
+		public static byte[] DecompressREL(byte[] file)
+		{
+			// Scan the array for the last instance of the "SaCompGC" string because there are some files with redundant headers
+			int start = 0;
+			bool isCompressed = false;
+			bool bigend = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = true;
+			for (int u = file.Length - 8; u >= 0; u--)
+			{
+				if (ByteConverter.ToUInt32(file, u) == 0x5361436F)// && BitConverter.ToUInt32(file, u + 4) == 0x4347706D)
+				{
+					start = u;
+					isCompressed = true;
+					break;
+				}
+			}
+			if (!isCompressed) return file;
+			byte[] input = new byte[file.Length - start];
+			Array.Copy(file, start, input, 0, input.Length);
+
+			// Process the new array
+			IntPtr pnt_input = Marshal.AllocHGlobal(input.Length);
+			Marshal.Copy(input, 0, pnt_input, input.Length);
+			int size_output = (int)GetDecompressedSize(pnt_input);
+			IntPtr pnt_output = Marshal.AllocHGlobal(size_output);
+			DecompressBuffer(pnt_input, pnt_output);
+			byte[] decompbuf = new byte[size_output];
+			Marshal.Copy(pnt_output, decompbuf, 0, size_output);
+			Marshal.FreeHGlobal(pnt_output);
+			Marshal.FreeHGlobal(pnt_input);
+			ByteConverter.BigEndian = bigend;
+			return decompbuf;
 		}
 	}
 

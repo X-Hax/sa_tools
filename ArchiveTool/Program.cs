@@ -28,9 +28,9 @@ namespace ArchiveTool
 			//Usage
 			if (args.Length == 0)
 			{
-				Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM, PRS, DAT and PB archives.");
+				Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM, PRS, DAT and PB archives.\nIt can also decompress SADX Gamecube 'SaCompGC' REL files.\n");
 				Console.WriteLine("Usage:\n");
-				Console.WriteLine("Extracting a PVM/GVM/PRS/PB/DAT archive:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
+				Console.WriteLine("Extracting a PVM/GVM/PRS/PB/DAT/REL file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
 				Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
 				Console.WriteLine("Creating a PVM/GVM/DAT from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
 				Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
@@ -483,6 +483,12 @@ namespace ArchiveTool
 				}
 				switch (extension)
 				{
+					case ".rel":
+						Console.WriteLine("Decompressing REL file: {0}", filePath);
+						byte[] input = File.ReadAllBytes(args[0]);
+						byte[] output = SA_Tools.HelperFunctions.DecompressREL(input);
+						File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_dec.rel"), output);
+						return;
 					case ".dat":
 						Console.WriteLine("Extracting DAT file: {0}", filePath);
 						bool sndbank_steam = false;
