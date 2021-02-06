@@ -14,4 +14,9 @@
 ..\bin\split binary data/SONICADV/ADV00.PRS newsplit/ADV00.ini output/
 ..\bin\split binary data/SONICADV/ADV0100.PRS newsplit/ADV0100.ini output/
 ..\bin\split binary data/SONICADV/ADV0130.PRS newsplit/ADV0130.ini output/
+..\bin\split binary data/SONICADV/ADV02.PRS newsplit/ADV02.ini output/
 ..\bin\split binary data/SONICADV/ADV03.PRS newsplit/ADV03.ini output/
+..\bin\split binary data/SONICADV/B_CHAOS0.PRS newsplit/B_CHAOS0.ini output/
+..\bin\split binary data/SONICADV/B_CHAOS2.PRS newsplit/B_CHAOS2.ini output/
+..\bin\split binary data/SONICADV/B_CHAOS4.PRS newsplit/B_CHAOS4.ini output/
+..\bin\split binary data/SONICADV/B_CHAOS6.PRS newsplit/B_CHAOS6.ini output/
