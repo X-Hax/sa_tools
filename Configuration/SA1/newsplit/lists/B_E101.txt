@@ -1,0 +1,8 @@
+boss_e101/landtable2300.c.sa1lvl
+boss_e101/e101models/e101old_kihon0_e101old.nja.sa1mdl
+boss_e101/e101models/e101_fun_e101_fun.nja.sa1mdl
+boss_e101/e101models/01_misile_01_misile.nja.sa1mdl
+boss_e101/e101models/034_lkamae_e1034_atack1.nam.saanim
+boss_e101/e101models/e_die34_1034_die.nam.saanim
+boss_e101/e101models/e_hober1_1034_hober.nam.saanim
+boss_e101/e101models/e_wait2_1034_wait0.nam.saanim
