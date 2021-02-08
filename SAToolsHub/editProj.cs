@@ -2,7 +2,6 @@
 using System.IO;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
-using Fclp.Internals.Extensions;
 
 namespace SAToolsHub
 {
@@ -26,7 +25,7 @@ namespace SAToolsHub
 
 		void setVariables()
 		{
-			if (!SAToolsHub.projectDirectory.IsNullOrWhiteSpace())
+			if (SAToolsHub.projectDirectory != null)
 			{
 				projDir = SAToolsHub.projectDirectory;
 				projModFile = Path.Combine(projDir, "mod.ini");
@@ -70,7 +69,7 @@ namespace SAToolsHub
 					txtDesc.Text = modInfoSADX.Description;
 					txtVerNum.Text = modInfoSADX.Version;
 
-					if (!modInfoSADX.DLLFile.IsNullOrWhiteSpace())
+					if (modInfoSADX.DLLFile != null)
 					{
 						chkDLLFile.Checked = true;
 						txtDLLName.Text = modInfoSADX.DLLFile;
@@ -79,10 +78,10 @@ namespace SAToolsHub
 						chkMainRedir.Checked = true;
 					if (modInfoSADX.RedirectChaoSave)
 						chkChaoRedir.Checked = true;
-					if (!modInfoSADX.GitHubRepo.IsNullOrWhiteSpace() || modInfoSADX.GameBananaItemId.HasValue || !modInfoSADX.UpdateUrl.IsNullOrWhiteSpace())
+					if (modInfoSADX.GitHubRepo != null || modInfoSADX.GameBananaItemId.HasValue || modInfoSADX.UpdateUrl != null)
 					{
 						chkUpdates.Checked = true;
-						if (!modInfoSADX.GitHubRepo.IsNullOrWhiteSpace())
+						if (modInfoSADX.GitHubRepo != null)
 						{
 							radGitHub.Checked = true;
 							txtUpdateURL.Text = modInfoSADX.GitHubRepo;
@@ -94,7 +93,7 @@ namespace SAToolsHub
 							txtUpdateURL.Text = modInfoSADX.GameBananaItemId.ToString();
 							lstGBItems.Text = modInfoSADX.GameBananaItemType;
 						}
-						if (!modInfoSADX.UpdateUrl.IsNullOrWhiteSpace())
+						if (modInfoSADX.UpdateUrl != null)
 						{
 							radManual.Checked = true;
 							txtUpdateURL.Text = modInfoSADX.UpdateUrl;
@@ -109,7 +108,7 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSA2PC.Author;
 					txtDesc.Text = modInfoSA2PC.Description;
 					txtVerNum.Text = modInfoSA2PC.Version;
-					if (!modInfoSA2PC.DLLFile.IsNullOrWhiteSpace())
+					if (modInfoSA2PC.DLLFile != null)
 					{
 						chkDLLFile.Checked = true;
 						txtDLLName.Text = modInfoSA2PC.DLLFile;
@@ -118,10 +117,10 @@ namespace SAToolsHub
 						chkMainRedir.Checked = true;
 					if (modInfoSA2PC.RedirectChaoSave)
 						chkChaoRedir.Checked = true;
-					if (!modInfoSA2PC.GitHubRepo.IsNullOrWhiteSpace() || modInfoSA2PC.GameBananaItemId.HasValue || !modInfoSA2PC.UpdateUrl.IsNullOrWhiteSpace())
+					if (modInfoSA2PC.GitHubRepo != null || modInfoSA2PC.GameBananaItemId.HasValue || modInfoSA2PC.UpdateUrl != null)
 					{
 						chkUpdates.Checked = true;
-						if (!modInfoSA2PC.GitHubRepo.IsNullOrWhiteSpace())
+						if (modInfoSA2PC.GitHubRepo != null)
 						{
 							radGitHub.Checked = true;
 							txtUpdateURL.Text = modInfoSA2PC.GitHubRepo;
@@ -133,7 +132,7 @@ namespace SAToolsHub
 							txtUpdateURL.Text = modInfoSA2PC.GameBananaItemId.ToString();
 							txtAsset.Text = modInfoSA2PC.GameBananaItemType;
 						}
-						if (!modInfoSA2PC.UpdateUrl.IsNullOrWhiteSpace())
+						if (modInfoSA2PC.UpdateUrl != null)
 						{
 							radManual.Checked = true;
 							txtUpdateURL.Text = modInfoSA2PC.UpdateUrl;

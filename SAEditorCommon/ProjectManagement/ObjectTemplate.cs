@@ -38,34 +38,34 @@ namespace SAEditorCommon.StageManagement
 
 	public class classBasicDisplay
 	{
-		[XmlElement("TextureFile", typeof(string), IsNullable=true)]
+		[XmlAttribute("TextureFile", typeof(string)]
 		public string TextureFile { get; set; }
-		[XmlElement("Rotation", typeof(RotType), IsNullable=true)]
+		[XmlAttribute("Rotation", typeof(RotType))]
 		public RotType Rotation { get; set; }
-		[XmlElement("Scale", typeof(SclType), IsNullable=true)]
+		[XmlAttribute("Scale", typeof(SclType))]
 		public SclType Scale { get; set; }
-		[XmlElement("AltVariables", typeof(classAltVariables), IsNullable=true)]
+		[XmlAttribute("AltVariables", typeof(classAltVariables))]
 		public classAltVariables AltVariables { get; set; }
 	}
 
 	public class classCodeHandler
 	{
-		[XmlElement("CodeFile", typeof(string), IsNullable = true)]
+		[XmlAttribute("CodeFile", typeof(string))]
 		public string CodeFile { get; set; }
-		[XmlElement("NamespaceClass", typeof(string), IsNullable=true)]
+		[XmlAttribute("NamespaceClass", typeof(string))]
 		public string NamepaceClass { get; set; }
 	}
 
 	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class ObjectTemplate
 	{
-		[XmlElement("ItemName", typeof(string))]
+		[XmlAttribute("ItemName", typeof(string))]
 		public string ItemName { get; set; }
-		[XmlElement("CommonName", typeof(string))]
+		[XmlAttribute("CommonName", typeof(string))]
 		public string CommonName { get; set; }
-		[XmlElement("BasicDisplay", typeof(classBasicDisplay), IsNullable=true)]
+		[XmlAttribute("BasicDisplay", typeof(classBasicDisplay))]
 		public classBasicDisplay BasicDisplay { get; set; }
-		[XmlElement("CodeHandler", typeof(classCodeHandler), IsNullable=true)]
+		[XmlAttribute("CodeHandler", typeof(classCodeHandler))]
 		public classCodeHandler CodeHandler { get; set; }
 	}
 }

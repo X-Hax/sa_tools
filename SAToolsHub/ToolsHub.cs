@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using Fclp.Internals.Extensions;
 using SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
@@ -613,7 +612,7 @@ namespace SAToolsHub
 				projectCreateDiag.ShowDialog();
 			}
 
-			if (!newProjFile.IsNullOrWhiteSpace())
+			if (newProjFile != null)
 			{
 				openProject(newProjFile);
 			}

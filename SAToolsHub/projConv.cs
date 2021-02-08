@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using Ookii.Dialogs.Wpf;
 using SAEditorCommon.ProjectManagement;
-using Fclp.Internals.Extensions;
 
 namespace SAToolsHub
 {
@@ -68,7 +67,7 @@ namespace SAToolsHub
 
 			gamePath = templateFile.GameInfo.GameSystemFolder;
 
-			if (gamePath.IsNullOrWhiteSpace())
+			if (gamePath != null)
 			{
 				DialogResult gamePathWarning = MessageBox.Show(("No game path was found for this game's template. Please browse to the game's installation folder."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)

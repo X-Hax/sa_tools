@@ -7,7 +7,6 @@ using System.ComponentModel;
 using Ookii.Dialogs.Wpf;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
-using Fclp.Internals.Extensions;
 using SA_Tools.Split;
 using SA_Tools.SAArc;
 
@@ -82,7 +81,7 @@ namespace SAToolsHub
 
 			templateFileStream.Close();
 
-			if (gamePath.IsNullOrWhiteSpace())
+			if (gamePath == null)
 			{
 				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
@@ -494,7 +493,7 @@ namespace SAToolsHub
 			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
 			saveFileDialog1.RestoreDirectory = true;
 
-			if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
+			if (checkBox1.Checked && (txtProjFolder.Text != null))
 			{
 				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
 			}
@@ -505,7 +504,7 @@ namespace SAToolsHub
 				{
 					XmlSerializer serializer = new XmlSerializer(typeof(ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
-					if (checkBox1.Checked && (!txtProjFolder.Text.IsNullOrWhiteSpace()))
+					if (checkBox1.Checked && (txtProjFolder.Text != null))
 					{
 						projFolder = txtProjFolder.Text;
 					}
@@ -560,7 +559,7 @@ namespace SAToolsHub
 			if (templateFile.Length > 0)
 				openTemplate(templateFile);
 
-			if (!gameName.IsNullOrWhiteSpace() && !gamePath.IsNullOrWhiteSpace())
+			if (gameName != null && gamePath != null)
 				btnCreate.Enabled = true;
 		}
 	}

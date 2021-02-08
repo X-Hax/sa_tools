@@ -8,63 +8,63 @@ namespace SAEditorCommon.StageManagement
 {
 	public class StgInfo
 	{
-		[XmlElement("StgID", typeof(string))]
+		[XmlAttribute("StgID", typeof(string))]
 		public string StgID { get; set; }
-		[XmlElement("Name", typeof(string))]
+		[XmlAttribute("Name", typeof(string))]
 		public string Name { get; set; }
-		[XmlElement("ActTotal", typeof(int))]
+		[XmlAttribute("ActTotal", typeof(int))]
 		public int ActTotal { get; set; }
-		[XmlElement("StgRoot", typeof(string))]
+		[XmlAttribute("StgRoot", typeof(string))]
 		public string StgRoot { get; set; }
-		[XmlElement("ObjTexLists", typeof(string))]
+		[XmlAttribute("ObjTexLists", typeof(string))]
 		public string ObjTexList { get; set; }
 	}
 
 	public class ActInfo
 	{
-		[XmlElement("ActID", typeof(string))]
+		[XmlAttribute("ActID", typeof(string))]
 		public string ActID { get; set; }
-		[XmlElement("Landtable", typeof(string))]
+		[XmlAttribute("Landtable", typeof(string))]
 		public string Landtable { get; set; }
-		[XmlElement("ActTexList", typeof(string))]
+		[XmlAttribute("ActTexList", typeof(string))]
 		public string ActTexList { get; set; }
-		[XmlElement("ObjList", typeof(string))]
+		[XmlAttribute("ObjList", typeof(string))]
 		public string ObjList { get; set; }
-		[XmlElement("KillColli", typeof(string))]
+		[XmlAttribute("KillColli", typeof(string))]
 		public string KillColli { get; set; }
-		[XmlElement("UseCodeItem", typeof(bool))]
+		[XmlAttribute("UseCodeItem", typeof(bool))]
 		public bool UseCodeItem { get; set; }
-		[XmlElement("CodeItems", typeof(string), IsNullable = true)]
+		[XmlAttribute("CodeItems", typeof(string))]
 		public List<string> CodeItems { get; set; }
 	}
 
 	public class CharInfo
 	{
-		[XmlElement("Name", typeof(string))]
+		[XmlAttribute("Name", typeof(string))]
 		public string Name { get; set; }
-		[XmlElement("CharID", typeof(int))]
+		[XmlAttribute("CharID", typeof(int))]
 		public int CharID { get; set; }
-		[XmlElement("CharTexList", typeof(string))]
+		[XmlAttribute("CharTexList", typeof(string))]
 		public string CharTexList { get; set; }
-		[XmlElement("Height", typeof(float))]
+		[XmlAttribute("Height", typeof(float))]
 		public float Height { get; set; }
-		[XmlElement("StartPosList", typeof(string))]
+		[XmlAttribute("StartPosList", typeof(string))]
 		public string StartPosList { get; set; }
 	}
 
 	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class StageTemplate
 	{
-		[XmlElement("StageInfo", typeof(StgInfo))]
+		[XmlAttribute("StageInfo", typeof(StgInfo))]
 		public StgInfo StageInfo { get; set; }
-		[XmlElement("ActInfo", typeof(ActInfo))]
+		[XmlAttribute("ActInfo", typeof(ActInfo))]
 		public List<ActInfo> ActInfos { get; set; }
 	}
 
 	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class CharacterTemplate
 	{
-		[XmlElement("CharData", typeof(CharInfo))]
+		[XmlAttribute("CharData", typeof(CharInfo))]
 		public List<CharInfo> CharData { get; set; }
 	}
 }
