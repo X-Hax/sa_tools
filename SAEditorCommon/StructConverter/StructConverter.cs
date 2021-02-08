@@ -56,7 +56,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
 			{ "string", "String" },
-			{ "texnamearray", "Texture Name Array" }
+			{ "texnamearray", "Texture Name Array" },
+			{ "texlistarray", "Texture List Array" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SA_Tools.FileInfo> item, SA_Tools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
