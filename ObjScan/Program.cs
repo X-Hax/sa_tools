@@ -492,7 +492,7 @@ namespace ObjScan
 						landtablelist.Add(address);
 						Console.WriteLine("\rLandtable {0} at {1}", landfmt.ToString(), address.ToString("X8"));
 						addresslist.Add(address, "landtable_" + landfmt.ToString());
-						address += (uint)LandTable.Size(landfmt);
+						address += (uint)LandTable.Size(landfmt) - 1;
 					}
 				}
 				catch (Exception)
@@ -543,7 +543,7 @@ namespace ObjScan
 					arr[1] = nummdl;
 					actionlist.Add(motaddr - imageBase, arr);
 					AddAction(addr, motaddr - imageBase);
-					address += 8;
+					address += 7;
 					count++;
 				}
 				catch (Exception)
@@ -1108,7 +1108,11 @@ namespace ObjScan
 			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
 			byte[] datafile_temp = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
-			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel")
+			{
+				datafile_temp = HelperFunctions.DecompressREL(datafile_temp);
+				HelperFunctions.FixRELPointers(datafile_temp, 0xC900000);
+			}
 			if (startoffset != 0)
 			{
 				byte[] datafile_new = new byte[startoffset + datafile_temp.Length];

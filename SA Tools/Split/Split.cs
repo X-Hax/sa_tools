@@ -11,7 +11,7 @@ namespace SA_Tools.Split
 {
 	public static class Split
 	{
-		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false)
+		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
 		{
 #if !DEBUG
 			try
@@ -22,8 +22,8 @@ namespace SA_Tools.Split
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
 				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();
-				if (File.Exists(listfile))
-					labels=IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
+				if (File.Exists(listfile) && !nolabel)
+					labels = IniSerializer.Deserialize<Dictionary<int, string>>(listfile);
 				if (inifile.StartOffset != 0)
 				{
 					byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
@@ -45,7 +45,11 @@ namespace SA_Tools.Split
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin")) datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
-				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase)) HelperFunctions.FixRELPointers(datafile, imageBase);
+				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
+				{
+					datafile = HelperFunctions.DecompressREL(datafile);
+					HelperFunctions.FixRELPointers(datafile, imageBase);
+				}
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
 				ModelFormat modelfmt_def = 0;
 				LandTableFormat landfmt_def = 0;
@@ -134,7 +138,7 @@ namespace SA_Tools.Split
 							{
 								ModelFormat modelfmt_act = data.CustomProperties.ContainsKey("format") ? (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]) : modelfmt_def;
 								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt_act, labels, new Dictionary<int, Attach>());
-								if (!labels.ContainsValue(ani.Name)) ani.Name = filedesc;
+								if (!labels.ContainsValue(ani.Name) && !nolabel) ani.Name = filedesc;
 								if (customProperties.ContainsKey("numparts"))
 									ani.Animation.ModelParts = int.Parse(customProperties["numparts"]);
 								if (ani.Animation.ModelParts == 0)
@@ -155,13 +159,13 @@ namespace SA_Tools.Split
 							if (customProperties.ContainsKey("shortrot"))
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
-								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
 								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
-								if (!labels.ContainsKey(address)) mot.Name = filedesc;
+								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							break;
@@ -195,6 +199,30 @@ namespace SA_Tools.Split
 						case "texnamearray":
 							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
 							texnames.Save(fileOutputPath);
+							break;
+						case "texlistarray":
+							{
+								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								for (int i = 0; i < cnt; i++)
+								{
+									uint ptr = BitConverter.ToUInt32(datafile, address);
+									if (data.Filename != null && ptr != 0)
+									{
+										ptr -= imageBase;
+										TexnameArray texarr = new TexnameArray(datafile, (int)ptr, imageBase);
+										string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".txt");
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".txt");
+										}
+										if (!Directory.Exists(Path.GetDirectoryName(fn)))
+											Directory.CreateDirectory(Path.GetDirectoryName(fn));
+										texarr.Save(fn);
+									}
+									address += 4;
+								}
+								nohash = true;
+							}
 							break;
 						case "leveltexlist":
 							new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
