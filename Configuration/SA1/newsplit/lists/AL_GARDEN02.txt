@@ -1,0 +1,15 @@
+chao/stg_garden02_mr/landtablegarden02.c.sa1lvl
+chao/stg_garden02_mr/obj/mra_o_torokko.nja.sa1mdl
+chao/stg_garden02_mr/obj/mra_o_torokko.nam.saanim
+chao/stg_garden02_mr/obj/mra_o_zenrin.nja.sa1mdl
+chao/stg_garden02_mr/obj/mra_cl_f_torokko.nja.sa1mdl
+chao/stg_garden02_mr/sky/mra_s_sora_hare.nja.sa1mdl
+chao/stg_garden02_mr/sky/mra_s_sora_yuu.nja.sa1mdl
+chao/stg_garden02_mr/sky/mra_s_sora_yoru.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrb_s_sora_hare.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrb_s_sora_yuu.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrb_s_sora_yoru.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrc_bf_s_skyhiru.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrc_bf_s_skyyuu.nja.sa1mdl
+chao/stg_garden02_mr/sky/mrc_bf_s_skyyoru.nja.sa1mdl
+chao/stg_garden02_mr/killcolli/0001BF34.sa1mdl
