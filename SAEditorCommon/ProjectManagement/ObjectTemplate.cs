@@ -38,7 +38,7 @@ namespace SAEditorCommon.StageManagement
 
 	public class classBasicDisplay
 	{
-		[XmlAttribute("TextureFile", typeof(string)]
+		[XmlAttribute("TextureFile", typeof(string))]
 		public string TextureFile { get; set; }
 		[XmlAttribute("Rotation", typeof(RotType))]
 		public RotType Rotation { get; set; }

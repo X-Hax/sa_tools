@@ -276,10 +276,12 @@ namespace SAToolsHub
 
 		private string GetObjDefsDirectory()
 		{
-			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "lib")))
-				return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../", dataFolder, "objdefs");
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+
+			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
+				return Path.Combine(appPath, "SADXObjectDefinitions");
 			else
-				return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../../SADXObjectDefinitions");
+				return Path.Combine(appPath, dataFolder, "objdefs");
 		}
 
 		private void splitFiles(SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -306,8 +308,15 @@ namespace SAToolsHub
 			string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
 			string projectFolderName = (outputFolder + "\\");
 
+			string splitItem;
+
+			if (splitData.CmnName != null)
+				splitItem = splitData.CmnName;
+			else
+				splitItem = splitData.IniFile;
+
 			progress.StepProgress();
-			progress.SetStep("Splitting " + splitData.IniFile + " from " + splitData.SourceFile);
+			progress.SetStep("Splitting " + splitItem + " from " + splitData.SourceFile);
 
 			#region Validating Inputs
 			if (!File.Exists(datafilename))
@@ -369,14 +378,15 @@ namespace SAToolsHub
 
 		void splitGame(string game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
 
 			progress.SetMaxSteps(setProgressMaxStep());
 
-			if (Directory.Exists(Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder))
-				iniFolder = (Path.GetDirectoryName(Application.ExecutablePath) + "/../" + dataFolder);
+			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
+				iniFolder = Path.Combine(appPath, dataFolder);
 			else
-				iniFolder = (Path.GetDirectoryName(Application.ExecutablePath) + "/../../../Configuration/" + dataFolder);
+				iniFolder = Path.Combine(appPath, "Configuration", dataFolder);
 
 			progress.SetTask("Splitting Game Content");
 			foreach (SplitEntry splitEntry in splitEntries)
@@ -394,7 +404,8 @@ namespace SAToolsHub
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
 				CopyFolder(objdefsPath, outputObjdefsPath);
 				File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
-				GenerateModFile(gameName, progress, projFolder, projName);
+				File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
+				GenerateModFile(gameName, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
 			}
 				
 			if (game == "SA2PC")
@@ -409,7 +420,7 @@ namespace SAToolsHub
 				}
 				progress.SetTask("Finalizing Moddable Project Setup");
 				makeProjectFolders(projFolder, progress, gameName);
-				GenerateModFile(gameName, progress, projFolder, projName);
+				GenerateModFile(gameName, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
 			}
 				
 		}
@@ -437,7 +448,7 @@ namespace SAToolsHub
 				DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
 				if (successDiag == DialogResult.OK)
 				{
-					SAToolsHub.newProjFile = Path.GetFullPath(projName);
+					SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
 					this.Close();
 				}
 			}
@@ -447,10 +458,10 @@ namespace SAToolsHub
 		{
 			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-			if (Directory.Exists(appPath + "/../../bin/"))
-				templatesPath = appPath + "/../../../Configuration/Templates/";
+			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
+				templatesPath = Path.Combine(appPath, "Configuration/Templates/");
 			else
-				templatesPath = appPath + "/../Templates/";
+				templatesPath = Path.Combine(appPath, "Templates");
 
 			DirectoryInfo templatesDir = new DirectoryInfo(templatesPath);
 
@@ -517,7 +528,7 @@ namespace SAToolsHub
 						}
 					}
 
-					projName = Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
+					projName = saveFileDialog1.FileName;
 					projectFile = new ProjectTemplate();
 					ProjectInfo projInfo = new ProjectInfo();
 

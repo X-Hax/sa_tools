@@ -79,6 +79,8 @@
 			this.blenderSASupportAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sonicAudioToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubIssueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.rightToolStrip = new System.Windows.Forms.ToolStrip();
 			this.tsSAMDL = new System.Windows.Forms.ToolStripButton();
 			this.tsSALVL = new System.Windows.Forms.ToolStripButton();
@@ -115,8 +117,6 @@
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -564,6 +564,18 @@
     "r suggestions for the programs.";
 			this.gitHubIssueTrackerToolStripMenuItem.Click += new System.EventHandler(this.gitHubIssueTrackerToolStripMenuItem_Click);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(192, 6);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(195, 22);
+			this.toolStripMenuItem2.Text = "About";
+			this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+			// 
 			// rightToolStrip
 			// 
 			this.rightToolStrip.AutoSize = false;
@@ -964,17 +976,6 @@
 			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.pasteToolStripMenuItem.Text = "Paste";
 			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(192, 6);
-			// 
-			// toolStripMenuItem2
-			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(195, 22);
-			this.toolStripMenuItem2.Text = "About";
 			// 
 			// SAToolsHub
 			// 

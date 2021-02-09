@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>.\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,7 +44,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\tools\</OutputPath>
+    <OutputPath>..\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -63,6 +63,7 @@
     </Reference>
     <Reference Include="Ookii.Dialogs.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>..\packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -93,6 +94,12 @@
     </Compile>
     <Compile Include="editProj.Designer.cs">
       <DependentUpon>editProj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="abtInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="abtInfo.Designer.cs">
+      <DependentUpon>abtInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="gameOptions.cs">
       <SubType>Form</SubType>
@@ -136,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="abtInfo.resx">
+      <DependentUpon>abtInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="gameOptions.resx">
       <DependentUpon>gameOptions.cs</DependentUpon>
@@ -315,4 +325,7 @@
     <None Include="Resources\tsSALVL.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\*.*" "$(SolutionDir)tools\lib\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
