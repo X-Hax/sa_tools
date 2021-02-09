@@ -75,9 +75,10 @@ namespace SonicRetro.SAModel.SALVL
 			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = Format.D24X8 } });
+			settingsfile = SettingsFile.Load();
+			EditorOptions.RenderDrawDistance = settingsfile.SALVL.DrawDistance_General;
 			EditorOptions.Initialize(d3ddevice);
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			settingsfile = SettingsFile.Load();
 			AppConfig.Reload();
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 			{
@@ -1443,6 +1444,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		void optionsEditor_FormUpdated()
 		{
+			settingsfile.SALVL.DrawDistance_General = EditorOptions.RenderDrawDistance;
 			DrawLevel();
 		}
 

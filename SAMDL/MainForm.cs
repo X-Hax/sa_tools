@@ -188,6 +188,7 @@ namespace SonicRetro.SAModel.SAMDL
 				ShowWelcomeScreen();
 			}
 
+			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;
 			EditorOptions.Initialize(d3ddevice);
 			optionsEditor = new EditorOptionsEditor(cam, false, false);
 			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
@@ -2353,6 +2354,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		void optionsEditor_FormUpdated()
 		{
+			settingsfile.SAMDL.DrawDistance = EditorOptions.RenderDrawDistance;
 			DrawEntireModel();
 		}
 
