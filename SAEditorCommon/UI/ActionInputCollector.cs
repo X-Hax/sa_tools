@@ -51,7 +51,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			}
 			else
 			{
-				if (altKeyExists)
+				if (altKeyExists && altKeyMatch)
 				{
 					if (modifiersExist) return modifierMatch;
 					else return true;
