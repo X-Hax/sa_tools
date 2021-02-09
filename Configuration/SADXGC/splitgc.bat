@@ -1,1 +1,1 @@
-..\bin\split binary data/_Main.rel Misc.ini output/
+..\bin\split binary data/_Main.rel _Main.ini output/
