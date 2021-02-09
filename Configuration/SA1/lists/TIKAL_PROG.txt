@@ -1,0 +1,5 @@
+figure/tikal/models/tikal.nja.sa1mdl
+figure/tikal/models/a_head.nja.sa1mdl
+figure/tikal/models/ti_dame.nam.saanim
+figure/tikal/models/ti_wait.nam.saanim
+figure/tikal/models/ti_walk.nam.saanim

@@ -37,6 +37,7 @@ echo Misc split
 ..\bin\split binary data/SONICADV/SBOARD.PRS SBOARD.ini output/
 ..\bin\split binary data/SONICADV/MINICART.PRS MINICART.ini output/
 ..\bin\split binary data/SONICADV/ADVERTISE.PRS ADVERTISE.ini output/
+..\bin\split binary data/SONICADV/TIKAL_PROG.PRS TIKAL_PROG.ini output/
 echo AL split
 ..\bin\split binary data/SONICADV/AL_GARDEN00.PRS AL_GARDEN00.ini output/
 ..\bin\split binary data/SONICADV/AL_GARDEN01.PRS AL_GARDEN01.ini output/
