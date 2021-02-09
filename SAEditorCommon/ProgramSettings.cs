@@ -52,7 +52,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
 			[DefaultValue(false)]
-			public bool DisableModelLibrary { get; set; } // Not implemented yet
+			public bool DisableModelLibrary { get; set; }
 			[DefaultValue(0)]
 			public int LibrarySplitterPosition { get; set; }
 			[DefaultValue(0)]

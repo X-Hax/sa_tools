@@ -123,6 +123,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			EditorOptions.RenderDrawDistance = settingsfile.SADXLVL2.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;
+			disableModelLibraryToolStripMenuItem.Checked = settingsfile.SADXLVL2.DisableModelLibrary;
 			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 			systemFallback = Program.SADXGameFolder + "/System/";
@@ -4202,6 +4203,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 				d3ddevice.SetLight(i, ref light);
 				d3ddevice.EnableLight(i, lightData.UseDirection);
 			}
+		}
+
+		private void disableModelLibraryToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			if (disableModelLibraryToolStripMenuItem.Checked)
+			{
+				LibrarySplitter.Panel2Collapsed = true;
+				LibrarySplitter.Panel2.Hide();
+			}
+			else
+			{
+				LibrarySplitter.Panel2Collapsed = false;
+				LibrarySplitter.Panel2.Show();
+			}
+			settingsfile.SADXLVL2.DisableModelLibrary = disableModelLibraryToolStripMenuItem.Checked;
+			modelLibraryToolStripMenuItem.Visible = !disableModelLibraryToolStripMenuItem.Checked;
+			DrawLevel();
 		}
 	}
 }
