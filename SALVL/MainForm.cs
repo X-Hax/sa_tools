@@ -254,7 +254,11 @@ namespace SonicRetro.SAModel.SALVL
 				}
 			}
 
-			settingsfile.Save();
+			try
+			{
+				settingsfile.Save();
+			}
+			catch { };
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)

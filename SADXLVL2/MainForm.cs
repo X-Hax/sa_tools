@@ -1628,7 +1628,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				LevelData.StateChanged -= LevelData_StateChanged;
 			}
-			settingsfile.Save();
+			try
+			{
+				settingsfile.Save();
+			}
+			catch { };
 			AppConfig.Save();
 		}
 

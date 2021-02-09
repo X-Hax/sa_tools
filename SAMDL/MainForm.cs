@@ -802,7 +802,11 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 
-			settingsfile.Save();
+			try
+			{
+				settingsfile.Save();
+			}
+			catch { };
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
