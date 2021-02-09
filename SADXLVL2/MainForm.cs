@@ -102,7 +102,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 #if DEBUG
-			SALVLModeToolStripMenuItem.Enabled = true;
+			SALVLModeToolStripMenuItem.Visible = SALVLModeToolStripMenuItem.Enabled = true;
+#else
+			SALVLModeToolStripMenuItem.Visible = SALVLModeToolStripMenuItem.Enabled = false;
 #endif
 			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
 
