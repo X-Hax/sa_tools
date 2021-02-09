@@ -425,7 +425,7 @@ namespace ObjScan
 					if (AnimPointer != 0 && AnimPointer < imageBase) return false;
 					if (AnimPointer > datafile.Length - 32 + imageBase) return false;
 					Texlist = ByteConverter.ToUInt32(datafile, (int)address + 0x18);
-					if (Texlist < imageBase) return false;
+					if (Texlist != 0 && Texlist < imageBase) return false;
 					if (Texlist > datafile.Length - 32 + imageBase) return false;
 					ObjAddrPointer = (int)(COLAddress - imageBase) + 0x18;
 					ObjAddr = ByteConverter.ToUInt32(datafile, ObjAddrPointer);
