@@ -61,7 +61,6 @@ namespace SonicRetro.SAModel.SALVL
 		bool mouseHide = false;
 		Point mouseBackup;
 		EditorOptionsEditor optionsEditor;
-		ActionKeybindEditor keybindEditor;
 		bool lookKeyDown;
 		bool zoomKeyDown;
 		bool cameraKeyDown;
@@ -93,20 +92,9 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			optionsEditor = new EditorOptionsEditor(cam, false, false);
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
-			optionsEditor.ResetDefaultKeybindsCommand += () =>
-			{
-				actionList.ActionKeyMappings.Clear();
-
-				foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
-				{
-					actionList.ActionKeyMappings.Add(keymapping);
-				}
-
-				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-			};
+			optionsEditor.FormUpdatedKeys += optionsEditor_FormUpdatedKeys;
 
 			Gizmo.InitGizmo(d3ddevice);
 			if (Program.Arguments.Length > 0)
@@ -343,28 +331,19 @@ namespace SonicRetro.SAModel.SALVL
 		}
 
 		#region User Keyboard / Mouse Methods
-		void CustomizeControls()
+		void optionsEditor_FormUpdatedKeys()
 		{
-			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
 
-			editor.ShowDialog();
-
-			// copy all our mappings back
+			// Keybinds
 			actionList.ActionKeyMappings.Clear();
-
-			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
-			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
-
+			ActionKeyMapping[] newMappings = optionsEditor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings) 
+				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-
-			// save our controls
 			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini");
-
 			actionList.Save(saveControlsPath);
-
-			this.BringToFront();
-			optionsEditor.BringToFront();
-			optionsEditor.Focus();
+			// Settings
+			optionsEditor_FormUpdated();
 		}
 
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)

@@ -87,20 +87,6 @@ namespace SA2EventViewer
 			EditorOptions.Initialize(d3ddevice);
 			EditorOptions.OverrideLighting = true;
 			EditorOptions.RenderDrawDistance = 10000;
-			optionsEditor = new EditorOptionsEditor(cam, false, false);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
-			optionsEditor.ResetDefaultKeybindsCommand += () =>
-			{
-				actionList.ActionKeyMappings.Clear();
-
-				foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
-				{
-					actionList.ActionKeyMappings.Add(keymapping);
-				}
-
-				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-			};
 
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
 				DefaultActionList.DefaultActionMapping);
@@ -110,6 +96,10 @@ namespace SA2EventViewer
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+			optionsEditor.FormUpdatedKeys += optionsEditor_FormUpdatedKeys;
+			
 			cammodel = new ModelFile(Properties.Resources.camera).Model;
 			cammodel.Attach.ProcessVertexData();
 			cammesh = cammodel.Attach.CreateD3DMesh();
@@ -468,30 +458,6 @@ namespace SA2EventViewer
 		#endregion
 
 		#region Keyboard/Mouse Methods
-		void CustomizeControls()
-		{
-			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
-
-			editor.ShowDialog();
-
-			// copy all our mappings back
-			actionList.ActionKeyMappings.Clear();
-
-			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
-			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
-
-			actionInputCollector.SetActions(newMappings);
-
-			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini");
-
-			actionList.Save(saveControlsPath);
-
-			this.BringToFront();
-			optionsEditor.BringToFront();
-			optionsEditor.Focus();
-			//this.panel1.Focus();
-		}
 
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
 		{
@@ -933,6 +899,20 @@ namespace SA2EventViewer
 		void optionsEditor_FormUpdated()
 		{
 			DrawEntireModel();
+		}
+
+		void optionsEditor_FormUpdatedKeys()
+		{
+			// Keybinds
+			actionList.ActionKeyMappings.Clear();
+			ActionKeyMapping[] newMappings = optionsEditor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings) 
+				actionList.ActionKeyMappings.Add(mapping);
+			actionInputCollector.SetActions(newMappings);
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini");
+			actionList.Save(saveControlsPath);
+			// Other settings
+			optionsEditor_FormUpdated();
 		}
 
 		private void showCameraToolStripMenuItem_Click(object sender, EventArgs e)

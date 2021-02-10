@@ -57,7 +57,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
-		ActionKeybindEditor keybindEditor;
 		Direct3D.Mesh boundsMesh;
 		#endregion
 
@@ -171,20 +170,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			optionsEditor = new EditorOptionsEditor(cam, true, true);
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
-			optionsEditor.ResetDefaultKeybindsCommand += () =>
-			{
-				actionList.ActionKeyMappings.Clear();
-
-				foreach (ActionKeyMapping keymapping in DefaultActionList.DefaultActionMapping)
-				{
-					actionList.ActionKeyMappings.Add(keymapping);
-				}
-
-				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-			};
+			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
 
 			sceneGraphControl1.InitSceneControl(selectedItems);
 		}
@@ -2030,30 +2018,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		#region User Keyboard / Mouse Methods
-		void CustomizeControls()
-		{
-			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
-
-			editor.ShowDialog();
-
-			// copy all our mappings back
-			actionList.ActionKeyMappings.Clear();
-
-			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
-			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
-
-			actionInputCollector.SetActions(newMappings);
-
-			// save our controls
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini");
-
-			actionList.Save(saveControlsPath);
-
-			this.BringToFront();
-			optionsEditor.BringToFront();
-			optionsEditor.Focus();
-		}
-
 		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
 			switch (e.KeyCode)
@@ -3322,6 +3286,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			optionsEditor.Show();
 			optionsEditor.BringToFront();
 			optionsEditor.Focus();
+		}
+
+		void optionsEditor_UpdateKeys()
+		{
+			// Keybinds
+			actionList.ActionKeyMappings.Clear();
+			ActionKeyMapping[] newMappings = optionsEditor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings)
+				actionList.ActionKeyMappings.Add(mapping);
+			actionInputCollector.SetActions(newMappings);
+			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini");
+			actionList.Save(saveControlsPath);
+			// Other settings
+			optionsEditor_FormUpdated();
 		}
 
 		void optionsEditor_FormUpdated()

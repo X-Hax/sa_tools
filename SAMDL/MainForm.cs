@@ -190,10 +190,19 @@ namespace SonicRetro.SAModel.SAMDL
 
 			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;
 			EditorOptions.Initialize(d3ddevice);
-			optionsEditor = new EditorOptionsEditor(cam, false, false);
 			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
+
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
+				DefaultActionList.DefaultActionMapping);
+
+			actionInputCollector = new ActionInputCollector();
+			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-			optionsEditor.CustomizeKeybindsCommand += CustomizeControls;
+			optionsEditor.FormUpdatedKeys += optionsEditor_FormUpdatedKeys;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
 			{
 				actionList.ActionKeyMappings.Clear();
@@ -205,14 +214,6 @@ namespace SonicRetro.SAModel.SAMDL
 
 				actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
 			};
-
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
-				DefaultActionList.DefaultActionMapping);
-
-			actionInputCollector = new ActionInputCollector();
-			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
-			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
 			modelLibraryWindow = new ModelLibraryWindow();
 			modelLibrary = modelLibraryWindow.modelLibraryControl1;
@@ -1356,29 +1357,18 @@ namespace SonicRetro.SAModel.SAMDL
 		#endregion
 
 		#region Keyboard/Mouse Methods
-		void CustomizeControls()
+		void optionsEditor_FormUpdatedKeys()
 		{
-			ActionKeybindEditor editor = new ActionKeybindEditor(actionList.ActionKeyMappings.ToArray());
-
-			editor.ShowDialog();
-
-			// copy all our mappings back
+			// Keybinds
 			actionList.ActionKeyMappings.Clear();
-
-			ActionKeyMapping[] newMappings = editor.GetActionkeyMappings();
-			foreach (ActionKeyMapping mapping in newMappings) actionList.ActionKeyMappings.Add(mapping);
-
+			ActionKeyMapping[] newMappings = optionsEditor.GetActionkeyMappings();
+			foreach (ActionKeyMapping mapping in newMappings)
+				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-
-			// save our controls
 			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini");
-
 			actionList.Save(saveControlsPath);
-
-			this.BringToFront();
-			optionsEditor.BringToFront();
-			optionsEditor.Focus();
-			//this.panel1.Focus();
+			// Settings
+			optionsEditor_FormUpdated();
 		}
 
 		private void PreviousAnimation()

@@ -115,8 +115,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			// check for on-release events
 			foreach (ActionKeyMapping action in actions.Values)
 			{
-				if (KeysMatch(action.MainKey, keys) ||
-					(KeysMatch(action.AltKey, keys) && action.AltKey != Keys.None)) // keys.none == 0 so this is causing problems?
+				if (KeyMatch(keys, action.MainKey, action.AltKey, Keys.None) && (action.Modifiers == Keys.None || keysDown.Contains(action.Modifiers)))
 				{
 					actionsActiveState[action.Name] = false;
 

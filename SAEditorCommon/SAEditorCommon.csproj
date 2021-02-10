@@ -115,18 +115,6 @@
       <DependentUpon>StructConverterUI.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ActionInputCollector.cs" />
-    <Compile Include="UI\ActionKeybindControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\ActionKeybindControl.Designer.cs">
-      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ActionKeybindEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ActionKeybindEditor.Designer.cs">
-      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\ActionKeyMapping.cs" />
     <Compile Include="UI\ActionMappingList.cs" />
     <Compile Include="UI\ActionMapTest.cs">
@@ -266,12 +254,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
       <DependentUpon>StructConverterUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ActionKeybindControl.resx">
-      <DependentUpon>ActionKeybindControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ActionKeybindEditor.resx">
-      <DependentUpon>ActionKeybindEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ActionMapTest.resx">
       <DependentUpon>ActionMapTest.cs</DependentUpon>
