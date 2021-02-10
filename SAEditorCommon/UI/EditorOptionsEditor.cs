@@ -17,7 +17,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		private EditorCamera camera;
 		private ToolTip toolTip = new ToolTip();
 
-		// Keybind shit
 		ActionKeyMapping[] actionKeyMappings;
 		ActionKeyMapping[] defaultActionKeyMappings;
 
@@ -57,7 +56,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			ignoreMaterialColorsCheck.Checked = EditorOptions.IgnoreMaterialColors;
 			UpdateSliderValues();
 
-			// Keybind shit
+			// Keybind editor
 			actionKeyMappings = actionKeyMappings_f;
 			defaultActionKeyMappings = defaultActionKeyMappings_f;
 			listBoxActions.Items.Clear();
@@ -65,10 +64,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			{
 				listBoxActions.Items.Add(keyMapping.Name);
 			}
-		}
-		public ActionKeyMapping[] GetActionkeyMappings()
-		{
-			return actionKeyMappings;
+			SelectedKeyChanged();
 		}
 
 		private void UpdateSliderValues()
@@ -145,7 +141,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			FormUpdated();
 		}
 
-		// Keybind shit
+		#region Keybinds
+		public ActionKeyMapping[] GetActionkeyMappings()
+		{
+			return actionKeyMappings;
+		}
+
 		private void ResetDefaultKeybindButton_Click(object sender, EventArgs e)
 		{
 			DialogResult dialogResult = MessageBox.Show("This will replace all your keybinds with defaults. Would you like to proceed?", "Are you sure?", MessageBoxButtons.YesNo);
@@ -288,26 +289,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			switch (SelectedKey)
 			{
 				case SelectedKeyType.Main:
+					buttonResetSelectedKey.Enabled = buttonClearSelectedKey.Enabled = true;
 					textBoxMainKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ControlLightLight);
 					textBoxAltKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxModifier.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					break;
 				case SelectedKeyType.Alt:
+					buttonResetSelectedKey.Enabled = buttonClearSelectedKey.Enabled = true;
 					textBoxMainKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxAltKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ControlLightLight);
 					textBoxModifier.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					break;
 				case SelectedKeyType.Modifier:
+					buttonResetSelectedKey.Enabled = buttonClearSelectedKey.Enabled = true;
 					textBoxMainKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxAltKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxModifier.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ControlLightLight);
 					break;
 				default:
+					buttonResetSelectedKey.Enabled = buttonClearSelectedKey.Enabled = false;
 					textBoxMainKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxAltKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxModifier.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					break;
 			}
 		}
+		#endregion
 	}
 }
