@@ -77,7 +77,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				DrawDistance_General = 10000;
 				DrawDistance_SET = 6000;
 				DrawDistance_Geometry = 6000;
-				CameraModifier = 0;
+				CameraModifier = 1;
 				AlternativeCamera = false;
 			}
 		}
@@ -94,7 +94,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			{
 				ShowWelcomeScreen = true;
 				DrawDistance_General = 10000.0f;
-				CameraModifier = 0;
+				CameraModifier = 1;
 				AlternativeCamera = false;
 			}
 		}
@@ -114,7 +114,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				ShowWelcomeScreen = true;
 				CamMoveSpeed = 1.125f;
 				DrawDistance = 10000.0f;
-				CameraModifier = 0;
+				CameraModifier = 1;
 				AlternativeCamera = false;
 			}
 
