@@ -25,8 +25,6 @@ namespace SAToolsHub
 
 	public partial class SAToolsHub : Form
 	{
-
-
 		//Additional Windows
 		private newProj projectCreateDiag;
 		private editProj projectEditorDiag;
@@ -59,7 +57,7 @@ namespace SAToolsHub
 
 		//Variables
 		public static string newProjFile { get; set; }
-		public static string modName { get; set; }
+		public static string projXML { get; set; }
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameSystemDirectory { get; set; }
@@ -107,6 +105,7 @@ namespace SAToolsHub
 			setGame = projFile.GameInfo.GameName;
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
 			gameSystemDirectory = (projFile.GameInfo.GameSystemFolder);
+			projXML = projectFile;
 
 			string gameDir;
 			switch (setGame)
@@ -518,12 +517,7 @@ namespace SAToolsHub
 
 		void SetProgramPaths()
 		{
-			string rootPath;
-
-			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "lib")))
-				rootPath = Path.GetDirectoryName(Application.ExecutablePath);
-			else
-				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../../tools");
+			string rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
 #if DEBUG
 			toolStripMenuItem1.Visible = true;
 			toolStripMenuItem1.Enabled = true;
@@ -688,7 +682,7 @@ namespace SAToolsHub
 		{
 			ProcessStartInfo sadxlvl2StartInfo;
 
-			if (projectDirectory != null)
+			if (projectDirectory != null && setGame == "SADXPC")
 			{
 				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
 

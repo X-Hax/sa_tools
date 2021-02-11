@@ -139,7 +139,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			alternativeCameraToolStripMenuItem.Checked = settingsfile.SADXLVL2.AlternativeCamera;
 			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			systemFallback = Program.SADXGameFolder + "/System/";
+			systemFallback = Path.Combine(Program.SADXGameFolder, "system");
 
 			if (Program.args.Length > 0)
 			{
@@ -159,7 +159,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						break;
 				}
 			}
-			else if (Program.SADXGameFolder == "")
+			else
 			{
 				OpenFileDialog openFileDialog1 = new OpenFileDialog();
 				openFileDialog1.Title = "Please select an SADX Project File to load.";
@@ -174,12 +174,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 					var projFileStream = File.OpenRead(projectFile);
 					var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
-					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
-					systemFallback = projFile.GameInfo.GameSystemFolder;
-					projFileStream.Close();
+					if (projFile.GameInfo.GameName == "SADXPC")
+					{
+						string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+						systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+						projFileStream.Close();
 
-					LoadINI(projectPath);
-					ShowLevelSelect();
+						LoadINI(projectPath);
+						ShowLevelSelect();
+					}
+					else
+					{
+						projFileStream.Close();
+
+						DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					}
 				}
 			}
 
