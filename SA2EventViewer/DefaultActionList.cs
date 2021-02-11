@@ -94,7 +94,7 @@ namespace SA2EventViewer
 				FireType = ActionFireType.OnHold,
 				Description = "Press to move the camera. Use rotate & zoom buttons to change behavior.",
 				IsSearchable = true,
-				Modifiers = Keys.None,
+				Modifiers = Keys.MButton,
 				Synonyms = new string[] { "Pan", "Scroll", "Dolly" }
 			},
 			new ActionKeyMapping()
