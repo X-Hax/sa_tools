@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditorOptionsEditor));
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ignoreMaterialColorsCheck = new System.Windows.Forms.CheckBox();
             this.fullBrightCheck = new System.Windows.Forms.CheckBox();
             this.cullModeDropdown = new System.Windows.Forms.ComboBox();
@@ -517,10 +518,11 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.doneButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MaximizeBox = false;
             this.Name = "EditorOptionsEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Editor Options / Preferences";
+            this.Text = "Editor Preferences";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EditorOptionsEditor_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
