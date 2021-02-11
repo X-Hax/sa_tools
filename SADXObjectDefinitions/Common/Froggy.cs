@@ -124,7 +124,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
+			frog = ObjectHelper.LoadModel("figure/big/models/big_kaeru.nja.sa1mdl");
 			frogmsh = ObjectHelper.GetMeshes(frog);
 		}
 
