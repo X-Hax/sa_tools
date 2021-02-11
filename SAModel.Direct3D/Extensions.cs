@@ -326,6 +326,7 @@ namespace SonicRetro.SAModel.Direct3D
 		{
 			int numverts = 0;
 			byte data = 0;
+			if (attach == null || attach.MeshInfo == null) return null;
 			foreach (MeshInfo item in attach.MeshInfo)
 			{
 				numverts += item.Vertices.Length;

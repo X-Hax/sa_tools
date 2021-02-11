@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using SA_Tools;
+using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SAEditorCommon.UI
 {
@@ -8,23 +9,42 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 	{
 		public List<ActionKeyMapping> ActionKeyMappings { get; set; }
 
+		// Check if the list is from an older version that uses modifiers instead of actual keys (causes problems with current input code)
+		private static bool MappingListOutdated(ActionMappingList testlist)
+		{
+			foreach (ActionKeyMapping action in testlist.ActionKeyMappings)
+			{
+				if (action.MainKey == Keys.Control || action.AltKey == Keys.Control || action.Modifiers == Keys.Control)
+					return true;
+			}
+			return false;
+		}
+
+		private static ActionMappingList CreateMappingList(ActionKeyMapping[] defaultKeyMappings)
+		{
+			ActionMappingList mappingList = new ActionMappingList();
+			mappingList.ActionKeyMappings = new List<ActionKeyMapping>();
+
+			foreach (ActionKeyMapping defaultMapping in defaultKeyMappings)
+			{
+				mappingList.ActionKeyMappings.Add(defaultMapping);
+			}
+
+			return mappingList;
+		}
+
 		public static ActionMappingList Load(string path, ActionKeyMapping[] defaultKeyMappings)
 		{
 			if (File.Exists(path))
 			{
-				return IniSerializer.Deserialize<ActionMappingList>(path);
+				ActionMappingList testlist = IniSerializer.Deserialize<ActionMappingList>(path);
+				if (MappingListOutdated(testlist))
+					return CreateMappingList(defaultKeyMappings);
+				else return testlist;
 			}
 			else
 			{
-				ActionMappingList mappingList = new ActionMappingList();
-				mappingList.ActionKeyMappings = new List<ActionKeyMapping>();
-
-				foreach (ActionKeyMapping defaultMapping in defaultKeyMappings)
-				{
-					mappingList.ActionKeyMappings.Add(defaultMapping);
-				}
-
-				return mappingList;
+				return CreateMappingList(defaultKeyMappings);
 			}
 		}
 

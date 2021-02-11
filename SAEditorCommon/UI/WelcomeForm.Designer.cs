@@ -35,6 +35,7 @@
             this.WikiDocLabel = new System.Windows.Forms.LinkLabel();
             this.discordLinkLabel = new System.Windows.Forms.LinkLabel();
             this.ThisToolLink = new System.Windows.Forms.LinkLabel();
+            this.controlsLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // WelcomeLabel
@@ -53,7 +54,7 @@
             this.showOnStartCheckbox.AutoSize = true;
             this.showOnStartCheckbox.Checked = true;
             this.showOnStartCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showOnStartCheckbox.Location = new System.Drawing.Point(357, 210);
+            this.showOnStartCheckbox.Location = new System.Drawing.Point(14, 228);
             this.showOnStartCheckbox.Name = "showOnStartCheckbox";
             this.showOnStartCheckbox.Size = new System.Drawing.Size(167, 17);
             this.showOnStartCheckbox.TabIndex = 1;
@@ -63,7 +64,7 @@
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(276, 206);
+            this.doneButton.Location = new System.Drawing.Point(439, 222);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 23);
             this.doneButton.TabIndex = 2;
@@ -88,7 +89,7 @@
             // 
             this.WikiDocLabel.AutoSize = true;
             this.WikiDocLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WikiDocLabel.Location = new System.Drawing.Point(11, 86);
+            this.WikiDocLabel.Location = new System.Drawing.Point(10, 119);
             this.WikiDocLabel.Name = "WikiDocLabel";
             this.WikiDocLabel.Size = new System.Drawing.Size(241, 24);
             this.WikiDocLabel.TabIndex = 4;
@@ -100,7 +101,7 @@
             // 
             this.discordLinkLabel.AutoSize = true;
             this.discordLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discordLinkLabel.Location = new System.Drawing.Point(11, 121);
+            this.discordLinkLabel.Location = new System.Drawing.Point(10, 152);
             this.discordLinkLabel.Name = "discordLinkLabel";
             this.discordLinkLabel.Size = new System.Drawing.Size(148, 24);
             this.discordLinkLabel.TabIndex = 5;
@@ -112,7 +113,7 @@
             // 
             this.ThisToolLink.AutoSize = true;
             this.ThisToolLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ThisToolLink.Location = new System.Drawing.Point(11, 159);
+            this.ThisToolLink.Location = new System.Drawing.Point(9, 185);
             this.ThisToolLink.Name = "ThisToolLink";
             this.ThisToolLink.Size = new System.Drawing.Size(279, 24);
             this.ThisToolLink.TabIndex = 6;
@@ -120,12 +121,25 @@
             this.ThisToolLink.Text = "Tool-Specific Documentation";
             this.ThisToolLink.Visible = false;
             // 
+            // controlsLinkLabel
+            // 
+            this.controlsLinkLabel.AutoSize = true;
+            this.controlsLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.controlsLinkLabel.Location = new System.Drawing.Point(10, 86);
+            this.controlsLinkLabel.Name = "controlsLinkLabel";
+            this.controlsLinkLabel.Size = new System.Drawing.Size(179, 24);
+            this.controlsLinkLabel.TabIndex = 7;
+            this.controlsLinkLabel.TabStop = true;
+            this.controlsLinkLabel.Text = "3D Editor Controls";
+            this.controlsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.controlsLinkLabel_LinkClicked);
+            // 
             // WelcomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(536, 262);
+            this.ClientSize = new System.Drawing.Size(526, 257);
             this.ControlBox = false;
+            this.Controls.Add(this.controlsLinkLabel);
             this.Controls.Add(this.ThisToolLink);
             this.Controls.Add(this.discordLinkLabel);
             this.Controls.Add(this.WikiDocLabel);
@@ -150,5 +164,6 @@
 		private System.Windows.Forms.LinkLabel discordLinkLabel;
 		public System.Windows.Forms.CheckBox showOnStartCheckbox;
 		public System.Windows.Forms.LinkLabel ThisToolLink;
+		private System.Windows.Forms.LinkLabel controlsLinkLabel;
 	}
 }

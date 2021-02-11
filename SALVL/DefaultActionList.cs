@@ -114,19 +114,8 @@ namespace SonicRetro.SAModel.SALVL
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Hotkey Search",
-				MainKey = Keys.Space,
-				AltKey = Keys.None,
-				Description = "Search for hotkeys",
-				FireType = ActionFireType.OnPress,
-				IsSearchable = true,
-				Modifiers = Keys.Control,
-				Synonyms = new string[] { "shortcut", "keybind" }
-			},
-			new ActionKeyMapping()
-			{
 				Name = "Camera Move",
-				MainKey = Keys.MButton,
+				MainKey = Keys.ShiftKey,
 				AltKey = Keys.None,
 				FireType = ActionFireType.OnHold,
 				Description = "Press to move the camera. Use rotate & zoom buttons to change behavior.",
@@ -137,9 +126,9 @@ namespace SonicRetro.SAModel.SALVL
 			new ActionKeyMapping()
 			{
 				Name = "Camera Zoom",
-				MainKey = Keys.Control,
+				MainKey = Keys.ControlKey,
 				AltKey = Keys.None,
-				Modifiers = Keys.None,
+				Modifiers = Keys.MButton,
 				Description = "Combine with Camera Move to zoom the camera.",
 				FireType = ActionFireType.OnHold,
 				IsSearchable = true,
@@ -148,7 +137,7 @@ namespace SonicRetro.SAModel.SALVL
 			new ActionKeyMapping()
 			{
 				Name = "Camera Look",
-				MainKey = Keys.ShiftKey,
+				MainKey = Keys.MButton,
 				AltKey = Keys.None,
 				Description = "Combine with Camera Move to mouselook the camera.",
 				FireType = ActionFireType.OnHold,

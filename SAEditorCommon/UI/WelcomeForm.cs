@@ -29,12 +29,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void discordLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			GoToSite("https://discordapp.com/invite/wsNdZ4d");
+			GoToSite("https://discord.gg/7SeUadNC9d");
 		}
 
 		private void doneButton_Click(object sender, EventArgs e)
 		{
 			this.Close();
+		}
+
+		private void controlsLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			GoToSite("https://github.com/sonicretro/sa_tools/wiki/3D-Editor-Controls");
 		}
 	}
 }
