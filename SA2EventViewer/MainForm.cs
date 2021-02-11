@@ -22,8 +22,19 @@ namespace SA2EventViewer
 		public MainForm()
 		{
 			InitializeComponent();
+			AddMouseMoveHandler(this);
 			Application.ThreadException += Application_ThreadException;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+		}
+
+		private void AddMouseMoveHandler(Control c)
+		{
+			c.MouseMove += Panel1_MouseMove;
+			if (c.Controls.Count > 0)
+			{
+				foreach (Control ct in c.Controls)
+					AddMouseMoveHandler(ct);
+			}
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -653,116 +664,21 @@ namespace SA2EventViewer
 			actionInputCollector.KeyUp(e.KeyCode);
 		}
 
-		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			/*switch (e.KeyCode)
-			{
-				case Keys.Down:
-				case Keys.Left:
-				case Keys.Right:
-				case Keys.Up:
-					e.IsInputKey = true;
-					break;
-			}*/
-		}
-
-		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-
-			#region Motion Handling
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
-			{
-				mouseLast = mouseEvent;
-				return;
-			}
-
-			bool mouseWrapScreen = true;
-			ushort mouseWrapThreshold = 2;
-
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
-			bool performedWrap = false;
-
-			if (e.Button != MouseButtons.None)
+			bool mouseWrapScreen = false;
+			int camresult = 0;
+			if (!eventcamera || animframe == -1)
 			{
 				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
-
-				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
-					performedWrap = true;
-				}
+				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
 			}
-			#endregion
-
-			if (cameraKeyDown && (!eventcamera || animframe == -1))
+			if (camresult == 2 && selectedObject != null) propertyGrid1.Refresh();
+			if (camresult >= 1)
 			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-					}
-				}
-
 				UpdateWeightedModels();
 				DrawEntireModel();
-			}
-
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
-			{
-				mouseLast = mouseEvent;
-				if (e.Button != MouseButtons.None && selectedObject != null) propertyGrid1.Refresh();
-
 			}
 		}
 
@@ -940,6 +856,11 @@ namespace SA2EventViewer
 					}
 					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims.ToArray(), null, null, null, ModelFormat.Chunk);
 				}
+		}
+
+		private void MainForm_Deactivate(object sender, EventArgs e)
+		{
+			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 	}
 }

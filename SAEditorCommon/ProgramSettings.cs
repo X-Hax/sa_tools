@@ -65,6 +65,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			public float DrawDistance_SET { get; set; }
 			[DefaultValue(6000.0f)]
 			public float DrawDistance_Geometry { get; set; }
+			public int CameraModifier { get; set; }
+			public bool AlternativeCamera { get; set; }
 			public Settings_SADXLVL2()
 			{
 				ShowWelcomeScreen = true;
@@ -75,6 +77,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				DrawDistance_General = 10000;
 				DrawDistance_SET = 6000;
 				DrawDistance_Geometry = 6000;
+				CameraModifier = 0;
+				AlternativeCamera = false;
 			}
 		}
 
@@ -84,10 +88,14 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			public bool ShowWelcomeScreen { get; set; }
 			[DefaultValue(10000.0f)]
 			public float DrawDistance_General { get; set; }
+			public int CameraModifier { get; set; }
+			public bool AlternativeCamera { get; set; }
 			public Settings_SALVL()
 			{
 				ShowWelcomeScreen = true;
 				DrawDistance_General = 10000.0f;
+				CameraModifier = 0;
+				AlternativeCamera = false;
 			}
 		}
 
@@ -99,11 +107,15 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			public float CamMoveSpeed { get; set; }
 			[DefaultValue(10000.0f)]
 			public float DrawDistance { get; set; }
+			public int CameraModifier { get; set; }
+			public bool AlternativeCamera { get; set; }
 			public Settings_SAMDL()
 			{
 				ShowWelcomeScreen = true;
 				CamMoveSpeed = 1.125f;
 				DrawDistance = 10000.0f;
+				CameraModifier = 0;
+				AlternativeCamera = false;
 			}
 
 		}

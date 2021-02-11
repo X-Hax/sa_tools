@@ -27,12 +27,23 @@ namespace SonicRetro.SAModel.SAMDL
 		public MainForm()
 		{
 			InitializeComponent();
+			AddMouseMoveHandler(this);
 			Application.ThreadException += Application_ThreadException;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
 			this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
 			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
+		}
+
+		private void AddMouseMoveHandler(Control c)
+		{
+			c.MouseMove += Panel1_MouseMove;
+			if (c.Controls.Count > 0)
+			{
+				foreach (Control ct in c.Controls)
+					AddMouseMoveHandler(ct);
+			}
 		}
 
 		private void SAMDL_DragEnter(object sender, DragEventArgs e)
@@ -188,10 +199,11 @@ namespace SonicRetro.SAModel.SAMDL
 				ShowWelcomeScreen();
 			}
 
-			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;
+			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;			
 			EditorOptions.Initialize(d3ddevice);
 			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
-
+			cam.ModifierKey = settingsfile.SAMDL.CameraModifier;
+			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.SAMDL.AlternativeCamera;
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
@@ -806,6 +818,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			try
 			{
+				settingsfile.SAMDL.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
@@ -1127,14 +1140,14 @@ namespace SonicRetro.SAModel.SAMDL
 				Text = "SAMDL: " + currentFileName;
 			else
 				Text = "SAMDL";
-			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
+			cameraPosLabel.Text = $"Camera X: " + cam.Position.X.ToString("0.000") + " Y: " + cam.Position.Y.ToString("0.000") + " Z: " + cam.Position.Z.ToString("0.000");
 			if (showAdvancedCameraInfoToolStripMenuItem.Checked)
 			{
 				if (lookKeyDown) cameramode = look;
 				if (zoomKeyDown) cameramode = zoom;
 				cameraAngleLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
 				cameraModeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X") + " Yaw: " + cam.Yaw.ToString("X") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
+				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X5") + " Yaw: " + cam.Yaw.ToString("X5") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
 				cameraModeLabel.Text = $"Mode: " + cameramode + ", Speed: " + cam.MoveSpeed;
 			}
 			else 
@@ -1146,6 +1159,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
 			animFrameLabel.Text = $"Frame: {animframe}";
+			statusStrip1.Update();
 		}
 
 		#region Rendering Methods
@@ -1661,103 +1675,17 @@ namespace SonicRetro.SAModel.SAMDL
 			}*/
 		}
 
-		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-
-			#region Motion Handling
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
+			bool mouseWrapScreen = false;
+			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked); 
+			if (camresult == 2 && selectedObject != null) propertyGrid1.Refresh();
+			if (camresult >= 1)
 			{
-				mouseLast = mouseEvent;
-				return;
-			}
-
-			bool mouseWrapScreen = true;
-			ushort mouseWrapThreshold = 2;
-
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
-			bool performedWrap = false;
-
-			if (e.Button != MouseButtons.None)
-			{
-				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-
-				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
-					performedWrap = true;
-				}
-			}
-			#endregion
-
-			if (cameraKeyDown)
-			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-					}
-				}
-
 				UpdateWeightedModel();
 				DrawEntireModel();
-			}
-
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
-			{
-				mouseLast = mouseEvent;
-				if (e.Button != MouseButtons.None && selectedObject != null) propertyGrid1.Refresh();
-
 			}
 		}
 
@@ -2345,6 +2273,7 @@ namespace SonicRetro.SAModel.SAMDL
 		void optionsEditor_FormUpdated()
 		{
 			settingsfile.SAMDL.DrawDistance = EditorOptions.RenderDrawDistance;
+			settingsfile.SAMDL.CameraModifier = cam.ModifierKey;
 			DrawEntireModel();
 		}
 
@@ -3788,6 +3717,10 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 			SelectedItemChanged();
 			unsaved = true;
+		}
+		private void MainForm_Deactivate(object sender, EventArgs e)
+		{
+			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 	}
 }

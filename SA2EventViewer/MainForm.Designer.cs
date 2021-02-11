@@ -155,7 +155,6 @@
 			this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
 			this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseMove);
 			this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
-			this.panel1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panel1_PreviewKeyDown);
 			// 
 			// splitContainer1
 			// 
@@ -329,6 +328,7 @@
 			this.Text = "SA2 Event Viewer";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.splitContainer1.Panel1.ResumeLayout(false);

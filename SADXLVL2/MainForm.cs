@@ -33,12 +33,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 	{
 		SettingsFile settingsfile; //For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SADXLVL2.config
-		ProgressDialog progress; 
+		ProgressDialog progress;
 		
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
 			InitializeComponent();
+			AddMouseMoveHandler(this);
+		}
+
+		private void AddMouseMoveHandler(Control c)
+		{
+			c.MouseMove += Panel1_MouseMove;
+			if (c.Controls.Count > 0)
+			{
+				foreach (Control ct in c.Controls)
+					AddMouseMoveHandler(ct);
+			}
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -86,7 +97,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool mouseWrapScreen = false;
 		ushort mouseWrapThreshold = 2;
 		bool mouseHide = false;
-		Point mouseBackup;
+		Point mouseBackup;		
 
 		TransformGizmo transformGizmo;
 		ActionMappingList actionList;
@@ -123,6 +134,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;
 			disableModelLibraryToolStripMenuItem.Checked = settingsfile.SADXLVL2.DisableModelLibrary;
+			alternativeCameraToolStripMenuItem.Checked = settingsfile.SADXLVL2.AlternativeCamera;
 			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 			systemFallback = Program.SADXGameFolder + "/System/";
@@ -170,6 +182,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
+			cam.ModifierKey = settingsfile.SADXLVL2.CameraModifier;
 			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
@@ -727,7 +740,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 			LevelData.leveltexs = null;
-			cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 
 			Invoke((Action)progress.Show);
 
@@ -1619,6 +1631,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			try
 			{
+				settingsfile.SADXLVL2.AlternativeCamera = alternativeCameraToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
@@ -2018,19 +2031,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		}
 
 		#region User Keyboard / Mouse Methods
-		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			switch (e.KeyCode)
-			{
-				case Keys.Down:
-				case Keys.Left:
-				case Keys.Right:
-				case Keys.Up:
-					e.IsInputKey = true;
-					break;
-			}
-		}
-
 		private void panel1_KeyUp(object sender, KeyEventArgs e)
 		{
 			actionInputCollector.KeyUp(e.KeyCode);
@@ -2159,17 +2159,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 						characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
 					}
+					osd.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					break;
 
 				case ("Previous Character"):
 					if (isStageLoaded)
 					{
-						--LevelData.Character;
-
-						if (LevelData.Character < 0)
-							LevelData.Character = 5;
+						int chr = LevelData.Character - 1;
+						if (chr < 0) chr = 5;
+						LevelData.Character = chr;
 
 						characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
+						osd.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					}
 					break;
 
@@ -2201,25 +2202,23 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				case ("Camera Move"):
 					cameraKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				default:
 					break;
 			}
-
-			//lookKeyDown = e.Alt; // move these to the action handling
-			//zoomKeyDown = e.Control;
 		}
-
-		// mouse
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -2313,7 +2312,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			DrawLevel();
+			//DrawLevel();
 		}
 
 		private HitResult PickItem(Point mouse)
@@ -2462,63 +2461,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			UpdatePropertyGrid();
 		}
 
-		Point mouseLast;
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!isStageLoaded)
 				return;
+			bool mouseWrapScreen = false;
+			bool draw = false;
+			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked);
 
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
-			{
-				mouseLast = mouseEvent;
-				return;
-			}
-
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
-			bool performedWrap = false;
-
-			if (e.Button == MouseButtons.Middle || (transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
-			{
-				if (alternativeCameraToolStripMenuItem.Checked && !mouseHide)
-				{
-					mouseBackup = Cursor.Position;
-					mouseHide = true;
-					Cursor.Hide();
-				}
-				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-
-				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
-					performedWrap = true;
-				}
-			}
-			else if (mouseHide)
-			{
-				mouseHide = false;
-				Cursor.Position = mouseBackup;
-				Cursor.Show();
-			}
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -2527,11 +2478,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.Left:
 					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
-						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+						pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && (mouseDelta.X != 0 || mouseDelta.Y != 0)) unsaved = true;
+					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
+					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0)) unsaved = true;
 					DrawLevel();
 					break;
 
@@ -2551,8 +2502,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
 					if (oldSelection != transformGizmo.SelectedAxes)
 					{
-						transformGizmo.Draw(d3ddevice, cam);
-						d3ddevice.Present();
+						draw = true;
 						break;
 					}
 
@@ -2561,65 +2511,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 						GizmoSelectedAxes oldHelperAxes = pointHelper.SelectedAxes;
 						pointHelper.SelectedAxes = pointHelper.CheckHit(Near, Far, viewport, proj, view, cam);
 						if (oldHelperAxes != pointHelper.SelectedAxes) pointHelper.Draw(d3ddevice, cam);
-						d3ddevice.Present();
+						draw = true;
 					}
 
 					break;
 			}
 
-			if (cameraKeyDown)
+			if (camresult == 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
+			if (camresult >= 1 || draw)
 			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-						osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-						osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
-
 				DrawLevel();
 			}
 
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
-			{
-				mouseLast = mouseEvent;
-				if (e.Button != MouseButtons.None && selectedItems.ItemCount > 0)
-					UpdatePropertyGrid();
-			}
 		}
 
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
@@ -2764,7 +2667,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			toolAmy.Checked = false;
 			toolBig.Checked = false;
 			toolGamma.Checked = false;
-
+			
 			UncheckMenuItems(characterToolStripMenuItem);
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 
@@ -3307,6 +3210,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			settingsfile.SADXLVL2.DrawDistance_General = EditorOptions.RenderDrawDistance;
 			settingsfile.SADXLVL2.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
 			settingsfile.SADXLVL2.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
+			settingsfile.SADXLVL2.CameraModifier = cam.ModifierKey;
 			DrawLevel();
 		}
 
@@ -3388,6 +3292,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					transformGizmo.SetGizmo(
 						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
 						firstItem.TransformMatrix);
+					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
 				}
 				if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
 				if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
@@ -3975,7 +3880,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
-			cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
 			LevelData.geo = LandTable.LoadFromFile(filename);
 			LevelData.ClearLevelItems();
@@ -4198,6 +4102,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			settingsfile.SADXLVL2.DisableModelLibrary = disableModelLibraryToolStripMenuItem.Checked;
 			modelLibraryToolStripMenuItem.Visible = !disableModelLibraryToolStripMenuItem.Checked;
 			DrawLevel();
+		}
+
+		private void MainForm_Deactivate(object sender, EventArgs e)
+		{
+			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 	}
 }

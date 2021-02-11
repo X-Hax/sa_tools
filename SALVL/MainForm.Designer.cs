@@ -370,11 +370,10 @@
             this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
             this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
-            this.panel1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panel1_PreviewKeyDown);
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToolStripMenuItem,
             this.cutToolStripMenuItem,
             this.copyToolStripMenuItem,
@@ -589,10 +588,11 @@
             this.alternativeCameraModeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.alternativeCameraModeToolStripMenuItem.Text = "Alternative Camera Mode";
             this.alternativeCameraModeToolStripMenuItem.Click += new System.EventHandler(this.alternativeCameraModeToolStripMenuItem_Click);
-            // 
-            // MainForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.alternativeCameraModeToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides the mouse cursor.";
+			// 
+			// MainForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 564);
             this.Controls.Add(this.splitContainer1);
@@ -607,7 +607,8 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
+			this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);

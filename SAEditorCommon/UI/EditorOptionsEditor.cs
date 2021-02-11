@@ -65,6 +65,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				listBoxActions.Items.Add(keyMapping.Name);
 			}
 			SelectedKeyChanged();
+			ModifierKeyUpdated();
 		}
 
 		private void UpdateSliderValues()
@@ -311,6 +312,43 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					textBoxMainKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxAltKey.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 					textBoxModifier.BackColor = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
+					break;
+			}
+		}
+
+		// Select the priority key
+		private void radioButtonMove_Click(object sender, EventArgs e)
+		{
+			camera.ModifierKey = 0;
+			ModifierKeyUpdated();
+		}
+		private void radioButtonLook_Click(object sender, EventArgs e)
+		{
+			camera.ModifierKey = 1;
+			ModifierKeyUpdated();
+		}
+
+		private void radioButtonZoom_Click(object sender, EventArgs e)
+		{
+			camera.ModifierKey = 2;
+			ModifierKeyUpdated();
+		}
+
+		private void ModifierKeyUpdated()
+		{
+			switch (camera.ModifierKey)
+			{
+				case 0:
+					radioButtonMove.Checked = true;
+					radioButtonZoom.Checked = radioButtonLook.Checked = false;
+					break;
+				case 1:
+					radioButtonLook.Checked = true;
+					radioButtonMove.Checked = radioButtonZoom.Checked = false;
+					break;
+				case 2:
+					radioButtonZoom.Checked = true;
+					radioButtonMove.Checked = radioButtonLook.Checked = false;
 					break;
 			}
 		}

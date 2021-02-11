@@ -49,9 +49,12 @@
             this.tabControlOptions = new System.Windows.Forms.TabControl();
             this.tabPageDisplay = new System.Windows.Forms.TabPage();
             this.tabPageControl = new System.Windows.Forms.TabPage();
+            this.radioButtonZoom = new System.Windows.Forms.RadioButton();
             this.groupBoxActions = new System.Windows.Forms.GroupBox();
             this.listBoxActions = new System.Windows.Forms.ListBox();
             this.groupBoxKeys = new System.Windows.Forms.GroupBox();
+            this.groupBoxDescription = new System.Windows.Forms.GroupBox();
+            this.labelDescription = new System.Windows.Forms.Label();
             this.buttonResetSelectedKey = new System.Windows.Forms.Button();
             this.buttonClearSelectedKey = new System.Windows.Forms.Button();
             this.textBoxModifier = new System.Windows.Forms.TextBox();
@@ -59,9 +62,10 @@
             this.textBoxMainKey = new System.Windows.Forms.TextBox();
             this.labelMainKey = new System.Windows.Forms.Label();
             this.labelModifier = new System.Windows.Forms.Label();
-            this.labelDescription = new System.Windows.Forms.Label();
             this.labelAltKey = new System.Windows.Forms.Label();
-            this.groupBoxDescription = new System.Windows.Forms.GroupBox();
+            this.radioButtonLook = new System.Windows.Forms.RadioButton();
+            this.radioButtonMove = new System.Windows.Forms.RadioButton();
+            this.labelCameraModifier = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.drawDistSlider)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -184,7 +188,7 @@
             // doneButton
             // 
             this.doneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.doneButton.Location = new System.Drawing.Point(441, 289);
+            this.doneButton.Location = new System.Drawing.Point(434, 289);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 23);
             this.doneButton.TabIndex = 1;
@@ -311,14 +315,29 @@
             // tabPageControl
             // 
             this.tabPageControl.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageControl.Controls.Add(this.radioButtonZoom);
             this.tabPageControl.Controls.Add(this.groupBoxActions);
             this.tabPageControl.Controls.Add(this.groupBoxKeys);
+            this.tabPageControl.Controls.Add(this.radioButtonLook);
+            this.tabPageControl.Controls.Add(this.radioButtonMove);
+            this.tabPageControl.Controls.Add(this.labelCameraModifier);
             this.tabPageControl.Location = new System.Drawing.Point(4, 25);
             this.tabPageControl.Name = "tabPageControl";
             this.tabPageControl.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageControl.Size = new System.Drawing.Size(516, 258);
             this.tabPageControl.TabIndex = 1;
             this.tabPageControl.Text = "Control Options";
+            // 
+            // radioButtonZoom
+            // 
+            this.radioButtonZoom.AutoSize = true;
+            this.radioButtonZoom.Location = new System.Drawing.Point(446, 234);
+            this.radioButtonZoom.Name = "radioButtonZoom";
+            this.radioButtonZoom.Size = new System.Drawing.Size(52, 17);
+            this.radioButtonZoom.TabIndex = 17;
+            this.radioButtonZoom.Text = "Zoom";
+            this.radioButtonZoom.UseVisualStyleBackColor = true;
+            this.radioButtonZoom.Click += new System.EventHandler(this.radioButtonZoom_Click);
             // 
             // groupBoxActions
             // 
@@ -354,14 +373,31 @@
             this.groupBoxKeys.Enabled = false;
             this.groupBoxKeys.Location = new System.Drawing.Point(229, 6);
             this.groupBoxKeys.Name = "groupBoxKeys";
-            this.groupBoxKeys.Size = new System.Drawing.Size(281, 242);
+            this.groupBoxKeys.Size = new System.Drawing.Size(281, 224);
             this.groupBoxKeys.TabIndex = 10;
             this.groupBoxKeys.TabStop = false;
             this.groupBoxKeys.Text = "Keys";
             // 
+            // groupBoxDescription
+            // 
+            this.groupBoxDescription.Controls.Add(this.labelDescription);
+            this.groupBoxDescription.Location = new System.Drawing.Point(9, 136);
+            this.groupBoxDescription.Name = "groupBoxDescription";
+            this.groupBoxDescription.Size = new System.Drawing.Size(266, 77);
+            this.groupBoxDescription.TabIndex = 13;
+            this.groupBoxDescription.TabStop = false;
+            this.groupBoxDescription.Text = "Description";
+            // 
+            // labelDescription
+            // 
+            this.labelDescription.Location = new System.Drawing.Point(6, 16);
+            this.labelDescription.Name = "labelDescription";
+            this.labelDescription.Size = new System.Drawing.Size(248, 53);
+            this.labelDescription.TabIndex = 5;
+            // 
             // buttonResetSelectedKey
             // 
-            this.buttonResetSelectedKey.Location = new System.Drawing.Point(150, 123);
+            this.buttonResetSelectedKey.Location = new System.Drawing.Point(150, 107);
             this.buttonResetSelectedKey.Name = "buttonResetSelectedKey";
             this.buttonResetSelectedKey.Size = new System.Drawing.Size(125, 23);
             this.buttonResetSelectedKey.TabIndex = 12;
@@ -371,7 +407,7 @@
             // 
             // buttonClearSelectedKey
             // 
-            this.buttonClearSelectedKey.Location = new System.Drawing.Point(9, 123);
+            this.buttonClearSelectedKey.Location = new System.Drawing.Point(9, 107);
             this.buttonClearSelectedKey.Name = "buttonClearSelectedKey";
             this.buttonClearSelectedKey.Size = new System.Drawing.Size(125, 23);
             this.buttonClearSelectedKey.TabIndex = 11;
@@ -381,7 +417,7 @@
             // 
             // textBoxModifier
             // 
-            this.textBoxModifier.Location = new System.Drawing.Point(90, 95);
+            this.textBoxModifier.Location = new System.Drawing.Point(90, 79);
             this.textBoxModifier.Name = "textBoxModifier";
             this.textBoxModifier.ReadOnly = true;
             this.textBoxModifier.Size = new System.Drawing.Size(173, 20);
@@ -391,7 +427,7 @@
             // 
             // textBoxAltKey
             // 
-            this.textBoxAltKey.Location = new System.Drawing.Point(90, 65);
+            this.textBoxAltKey.Location = new System.Drawing.Point(90, 49);
             this.textBoxAltKey.Name = "textBoxAltKey";
             this.textBoxAltKey.ReadOnly = true;
             this.textBoxAltKey.Size = new System.Drawing.Size(173, 20);
@@ -401,7 +437,7 @@
             // 
             // textBoxMainKey
             // 
-            this.textBoxMainKey.Location = new System.Drawing.Point(90, 35);
+            this.textBoxMainKey.Location = new System.Drawing.Point(90, 19);
             this.textBoxMainKey.Name = "textBoxMainKey";
             this.textBoxMainKey.ReadOnly = true;
             this.textBoxMainKey.Size = new System.Drawing.Size(173, 20);
@@ -412,7 +448,7 @@
             // labelMainKey
             // 
             this.labelMainKey.AutoSize = true;
-            this.labelMainKey.Location = new System.Drawing.Point(30, 38);
+            this.labelMainKey.Location = new System.Drawing.Point(30, 22);
             this.labelMainKey.Name = "labelMainKey";
             this.labelMainKey.Size = new System.Drawing.Size(54, 13);
             this.labelMainKey.TabIndex = 4;
@@ -421,43 +457,59 @@
             // labelModifier
             // 
             this.labelModifier.AutoSize = true;
-            this.labelModifier.Location = new System.Drawing.Point(19, 98);
+            this.labelModifier.Location = new System.Drawing.Point(19, 82);
             this.labelModifier.Name = "labelModifier";
             this.labelModifier.Size = new System.Drawing.Size(71, 13);
             this.labelModifier.TabIndex = 7;
             this.labelModifier.Text = "Modifier Key: ";
             // 
-            // labelDescription
-            // 
-            this.labelDescription.Location = new System.Drawing.Point(6, 16);
-            this.labelDescription.Name = "labelDescription";
-            this.labelDescription.Size = new System.Drawing.Size(248, 62);
-            this.labelDescription.TabIndex = 5;
-            // 
             // labelAltKey
             // 
             this.labelAltKey.AutoSize = true;
-            this.labelAltKey.Location = new System.Drawing.Point(6, 68);
+            this.labelAltKey.Location = new System.Drawing.Point(6, 52);
             this.labelAltKey.Name = "labelAltKey";
             this.labelAltKey.Size = new System.Drawing.Size(84, 13);
             this.labelAltKey.TabIndex = 6;
             this.labelAltKey.Text = "Alternative Key: ";
             // 
-            // groupBoxDescription
+            // radioButtonLook
             // 
-            this.groupBoxDescription.Controls.Add(this.labelDescription);
-            this.groupBoxDescription.Location = new System.Drawing.Point(9, 152);
-            this.groupBoxDescription.Name = "groupBoxDescription";
-            this.groupBoxDescription.Size = new System.Drawing.Size(266, 81);
-            this.groupBoxDescription.TabIndex = 13;
-            this.groupBoxDescription.TabStop = false;
-            this.groupBoxDescription.Text = "Description";
+            this.radioButtonLook.AutoSize = true;
+            this.radioButtonLook.Location = new System.Drawing.Point(391, 234);
+            this.radioButtonLook.Name = "radioButtonLook";
+            this.radioButtonLook.Size = new System.Drawing.Size(49, 17);
+            this.radioButtonLook.TabIndex = 16;
+            this.radioButtonLook.Text = "Look";
+            this.radioButtonLook.UseVisualStyleBackColor = true;
+            this.radioButtonLook.Click += new System.EventHandler(this.radioButtonLook_Click);
+            // 
+            // radioButtonMove
+            // 
+            this.radioButtonMove.AutoSize = true;
+            this.radioButtonMove.Checked = true;
+            this.radioButtonMove.Location = new System.Drawing.Point(333, 234);
+            this.radioButtonMove.Name = "radioButtonMove";
+            this.radioButtonMove.Size = new System.Drawing.Size(52, 17);
+            this.radioButtonMove.TabIndex = 15;
+            this.radioButtonMove.TabStop = true;
+            this.radioButtonMove.Text = "Move";
+            this.radioButtonMove.UseVisualStyleBackColor = true;
+            this.radioButtonMove.Click += new System.EventHandler(this.radioButtonMove_Click);
+            // 
+            // labelCameraModifier
+            // 
+            this.labelCameraModifier.AutoSize = true;
+            this.labelCameraModifier.Location = new System.Drawing.Point(236, 236);
+            this.labelCameraModifier.Name = "labelCameraModifier";
+            this.labelCameraModifier.Size = new System.Drawing.Size(86, 13);
+            this.labelCameraModifier.TabIndex = 14;
+            this.labelCameraModifier.Text = "Camera Modifier:";
             // 
             // EditorOptionsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(528, 318);
+            this.ClientSize = new System.Drawing.Size(521, 318);
             this.Controls.Add(this.tabControlOptions);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.doneButton);
@@ -478,6 +530,7 @@
             this.tabControlOptions.ResumeLayout(false);
             this.tabPageDisplay.ResumeLayout(false);
             this.tabPageControl.ResumeLayout(false);
+            this.tabPageControl.PerformLayout();
             this.groupBoxActions.ResumeLayout(false);
             this.groupBoxKeys.ResumeLayout(false);
             this.groupBoxKeys.PerformLayout();
@@ -522,5 +575,9 @@
         private System.Windows.Forms.Button buttonResetSelectedKey;
         private System.Windows.Forms.Button buttonClearSelectedKey;
         private System.Windows.Forms.GroupBox groupBoxDescription;
-    }
+		private System.Windows.Forms.RadioButton radioButtonZoom;
+		private System.Windows.Forms.RadioButton radioButtonLook;
+		private System.Windows.Forms.RadioButton radioButtonMove;
+		private System.Windows.Forms.Label labelCameraModifier;
+	}
 }

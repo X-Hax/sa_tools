@@ -1,5 +1,7 @@
 ﻿using SharpDX;
 using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.Direct3D
 {
@@ -14,12 +16,17 @@ namespace SonicRetro.SAModel.Direct3D
 		public Vector3 Look { get; private set; }
 		public Vector3 Right { get; private set; }
 		public int mode { get; set; }
+		public int ModifierKey { get; set; }
+		private bool MouseCursorHidden { get; set; }
 		public Vector3 FocalPoint { get; set; }
 		public Vector3 Direction { get; set; }
 		public float DrawDistance { get; set; }
 		public float MoveSpeed { get; set; }
 		public float RotateSpeed { get; set; }
 
+		public System.Drawing.Point mouseLast { get; set; }
+		private System.Drawing.Point mouseBackup { get; set; }
+		public System.Drawing.Point mouseDelta { get; set; }
 		public float FOV { get; set; }
 		public float Aspect { get; set; }
 		public float HNear { get; set; }
@@ -240,6 +247,145 @@ namespace SonicRetro.SAModel.Direct3D
 				FocalPoint = itemVolume.Center.ToVector3();
 				Distance = (itemVolume.Radius + (itemVolume.Radius / 4));
 			}
+		}
+
+		public int UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false)
+		{
+			int result = 0; // 0 - no redraw, 1 - redraw, 2 - redraw + refresh controls
+
+			// Check for multiple keys being pressed, and disable the modifier key. This is to allow the same key to be used both independently and as a modifier.
+			if (Convert.ToInt32(lookKeyDown) + Convert.ToInt32(moveKeyDown) + Convert.ToInt32(zoomKeyDown) > 1)
+			{
+				switch (ModifierKey)
+				{
+					case 0: // Move
+						if (moveKeyDown)
+							moveKeyDown = false;
+						break;
+					case 1: // Look
+						if (lookKeyDown)
+							lookKeyDown = false;
+						break;
+					case 2: // Zoom
+						if (zoomKeyDown)
+							zoomKeyDown = false;
+						break;
+				}
+			}
+
+			System.Drawing.Point mouseEvent = point;
+			if (mouseLast == System.Drawing.Point.Empty)
+			{
+				mouseLast = mouseEvent;
+				if (MouseCursorHidden)
+				{
+					MouseCursorHidden = false;
+					Cursor.Position = mouseBackup;
+					Cursor.Show();
+				}
+				return 0;
+			}
+
+			ushort mouseWrapThreshold = 2;
+
+			mouseDelta = mouseEvent - (Size)mouseLast;
+			bool performedWrap = false;
+
+			if (lookKeyDown || zoomKeyDown || moveKeyDown)
+			{
+				// Hide mouse cursor in alternative mode
+				if (hideCursor && !MouseCursorHidden)
+				{
+					
+					mouseBackup = Cursor.Position;
+					MouseCursorHidden = true;
+					Cursor.Hide();
+				}
+
+				// Wrap X
+				if (Cursor.Position.X <= (mouseBounds.Left + mouseWrapThreshold))
+				{
+					//MessageBox.Show("Wrap X 1");
+					Cursor.Position = new System.Drawing.Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.X >= (mouseBounds.Right - mouseWrapThreshold))
+				{
+					//MessageBox.Show("Wrap X 2");
+					Cursor.Position = new System.Drawing.Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
+					performedWrap = true;
+				}
+
+				// Wrap Y
+				if (Cursor.Position.Y <= (mouseBounds.Top + mouseWrapThreshold))
+				{
+					//MessageBox.Show("Wrap Y 1");
+					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
+					performedWrap = true;
+				}
+				else if (Cursor.Position.Y >= (mouseBounds.Bottom - mouseWrapThreshold))
+				{
+					//MessageBox.Show("Wrap Y 2");
+					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
+					mouseEvent = new System.Drawing.Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
+					performedWrap = true;
+				}
+
+				switch (mode)
+				{
+					case 0: // Normal camera
+						if (zoomKeyDown) // Zoom
+						{
+							Position += Look * (mouseDelta.Y * MoveSpeed);
+						}
+						else if (moveKeyDown) // Move
+						{
+							Position += Up * (mouseDelta.Y * MoveSpeed);
+							Position += Right * (mouseDelta.X * MoveSpeed) * -1;
+						}
+						else if (lookKeyDown) // Look
+						{
+							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
+							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
+						}
+						break;
+					case 1: // Orbit camera
+						if (zoomKeyDown) // Zoom
+						{
+							Distance += (mouseDelta.Y * MoveSpeed) * 3;
+						}
+						else if (moveKeyDown) // Move
+						{
+							FocalPoint += Up * (mouseDelta.Y * MoveSpeed);
+							FocalPoint += Right * (mouseDelta.X * MoveSpeed) * -1;
+						}
+						else if (lookKeyDown) // Look
+						{
+							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
+							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
+						}
+						break;
+				}
+
+				result = 1;
+			}
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * MoveSpeed > 0)
+			{
+				mouseLast = mouseEvent;
+				result = 2;
+			}
+
+			if (MouseCursorHidden && !lookKeyDown && !zoomKeyDown && !moveKeyDown)
+			{
+				MouseCursorHidden = false;
+				Cursor.Position = mouseBackup;
+				Cursor.Show();
+			}
+
+			return result;
 		}
 	}
 }

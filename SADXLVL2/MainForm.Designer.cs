@@ -101,6 +101,7 @@
             this.boundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.upgradeObjDefsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableModelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer_levelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer_deathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -175,7 +176,6 @@
             this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.disableModelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -582,9 +582,9 @@
             this.toolStripSeparator2,
             this.jumpToStartPositionToolStripMenuItem,
             this.jumpToOriginToolStripMenuItem,
-            this.alternativeCameraToolStripMenuItem,
             this.debugToolStripMenuItem,
             this.showHintsToolStripMenuItem,
+            this.alternativeCameraToolStripMenuItem,
             this.disableModelLibraryToolStripMenuItem});
             this.viewToolStripMenuItem.Enabled = false;
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -778,7 +778,7 @@
             this.alternativeCameraToolStripMenuItem.Name = "alternativeCameraToolStripMenuItem";
             this.alternativeCameraToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.alternativeCameraToolStripMenuItem.Text = "Alternative Camera";
-            this.alternativeCameraToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides mouse cursor.";
+            this.alternativeCameraToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides the mouse cursor.";
             // 
             // debugToolStripMenuItem
             // 
@@ -826,6 +826,14 @@
             this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.showHintsToolStripMenuItem.Text = "Show Hints";
             this.showHintsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showHintsToolStripMenuItem_CheckedChanged);
+            // 
+            // disableModelLibraryToolStripMenuItem
+            // 
+            this.disableModelLibraryToolStripMenuItem.CheckOnClick = true;
+            this.disableModelLibraryToolStripMenuItem.Name = "disableModelLibraryToolStripMenuItem";
+            this.disableModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.disableModelLibraryToolStripMenuItem.Text = "Disable Model Library";
+            this.disableModelLibraryToolStripMenuItem.CheckedChanged += new System.EventHandler(this.disableModelLibraryToolStripMenuItem_CheckedChanged);
             // 
             // layersToolStripMenuItem
             // 
@@ -1048,7 +1056,6 @@
             this.RenderPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
             this.RenderPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseMove);
             this.RenderPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
-            this.RenderPanel.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panel1_PreviewKeyDown);
             // 
             // backgroundWorker1
             // 
@@ -1604,14 +1611,6 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1203, 841);
             this.BackgroundPanel.TabIndex = 2;
             // 
-            // disableModelLibraryToolStripMenuItem
-            // 
-            this.disableModelLibraryToolStripMenuItem.CheckOnClick = true;
-            this.disableModelLibraryToolStripMenuItem.Name = "disableModelLibraryToolStripMenuItem";
-            this.disableModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.disableModelLibraryToolStripMenuItem.Text = "Disable Model Library";
-            this.disableModelLibraryToolStripMenuItem.CheckedChanged += new System.EventHandler(this.disableModelLibraryToolStripMenuItem_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1627,6 +1626,7 @@
             this.Name = "MainForm";
             this.Text = "SADXLVL2";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);

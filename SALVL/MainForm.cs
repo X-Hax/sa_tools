@@ -29,8 +29,18 @@ namespace SonicRetro.SAModel.SALVL
 		public MainForm()
 		{
 			InitializeComponent();
+			AddMouseMoveHandler(this);
 			Application.ThreadException += Application_ThreadException;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+		}
+		private void AddMouseMoveHandler(Control c)
+		{
+			c.MouseMove += panel1_MouseMove;
+			if (c.Controls.Count > 0)
+			{
+				foreach (Control ct in c.Controls)
+					AddMouseMoveHandler(ct);
+			}
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -63,7 +73,7 @@ namespace SonicRetro.SAModel.SALVL
 		EditorOptionsEditor optionsEditor;
 		bool lookKeyDown;
 		bool zoomKeyDown;
-		bool cameraKeyDown;
+		bool moveKeyDown;
 		TransformGizmo transformGizmo;
 		ActionMappingList actionList;
 		ActionInputCollector actionInputCollector;
@@ -92,6 +102,8 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
+			cam.ModifierKey = settingsfile.SALVL.CameraModifier;
+			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.SALVL.AlternativeCamera;
 			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.FormUpdatedKeys += optionsEditor_FormUpdatedKeys;
@@ -245,6 +257,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			try
 			{
+				settingsfile.SALVL.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
@@ -596,14 +609,13 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
-						draw = true;
 						osd.UpdateOSDItem("Reset camera rotation", panel1.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
 
 				case ("Camera Move"):
-					cameraKeyDown = false;
+					moveKeyDown = false;
 					break;
 
 				case ("Camera Zoom"):
@@ -629,15 +641,18 @@ namespace SonicRetro.SAModel.SALVL
 			switch (actionName)
 			{
 				case ("Camera Move"):
-					cameraKeyDown = true;
+					moveKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = true;
+					osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				default:
@@ -645,63 +660,14 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 
-		Point mouseLast;
 		private void panel1_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!loaded)
-				return;
+			if (!loaded) return;
+			bool draw = false;
+			bool mouseWrapScreen = false;
+			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, moveKeyDown, alternativeCameraModeToolStripMenuItem.Checked);
 
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
-			{
-				mouseLast = mouseEvent;
-				return;
-			}
-
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
-			bool performedWrap = false;
-
-			if (e.Button == MouseButtons.Middle || (transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
-			{
-				if (alternativeCameraModeToolStripMenuItem.Checked && !mouseHide)
-				{
-					mouseBackup = Cursor.Position;
-					mouseHide = true;
-					Cursor.Hide();
-				}
-				Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
-
-				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - mouseBounds.Width + mouseWrapThreshold, mouseEvent.Y);
-					performedWrap = true;
-				}
-				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
-					performedWrap = true;
-				}
-				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
-				{
-					Cursor.Position = new Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - mouseBounds.Height + mouseWrapThreshold);
-					performedWrap = true;
-				}
-			}
-			else if (mouseHide)
-			{
-				mouseHide = false;
-				Cursor.Position = mouseBackup;
-				Cursor.Show();
-			}
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -710,12 +676,12 @@ namespace SonicRetro.SAModel.SALVL
 				case MouseButtons.Left:
 					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
-						pointHelper.TransformAffected(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+						pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
 
-					transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && (mouseDelta.X != 0 || mouseDelta.Y != 0)) unsaved = true;
-					DrawLevel();
+					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
+					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0)) unsaved = true;
+					draw = true;
 					break;
 
 				case MouseButtons.None:
@@ -734,8 +700,7 @@ namespace SonicRetro.SAModel.SALVL
 					transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
 					if (oldSelection != transformGizmo.SelectedAxes)
 					{
-						transformGizmo.Draw(d3ddevice, cam);
-						d3ddevice.Present();
+						draw = true;
 						break;
 					}
 
@@ -744,182 +709,20 @@ namespace SonicRetro.SAModel.SALVL
 						GizmoSelectedAxes oldHelperAxes = pointHelper.SelectedAxes;
 						pointHelper.SelectedAxes = pointHelper.CheckHit(Near, Far, viewport, proj, view, cam);
 						if (oldHelperAxes != pointHelper.SelectedAxes) pointHelper.Draw(d3ddevice, cam);
-						d3ddevice.Present();
+						draw = true;
 					}
 
 					break;
 			}
 
-			if (cameraKeyDown)
-			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
+			if (camresult == 2 && selectedItems != null && selectedItems.ItemCount > 0) propertyGrid1.Refresh();
 
+			if (camresult >= 1 || draw)
+			{
 				DrawLevel();
-			}
-
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * cam.MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * cam.MoveSpeed > 0)
-			{
-				mouseLast = mouseEvent;
-				if (e.Button != MouseButtons.None && selectedItems.ItemCount > 0)
-					propertyGrid1.Refresh();
 			}
 		}
-		/*
-		private void panel1_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (!loaded) return;
-			Point mouseEvent = e.Location;
-			if (mouseLast == Point.Empty)
-			{
-				mouseLast = mouseEvent;
-				return;
-			}
-
-			Point mouseDelta = mouseEvent - (Size)mouseLast;
-			bool performedWrap = false;
-
-			if (e.Button == MouseButtons.Middle || (e.Button == MouseButtons.Left && transformGizmo != null && transformGizmo.Mode != TransformMode.NONE && transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE))
-			{
-				transformGizmo.TransformGizmoMove(mouseDelta, cam, selectedItems);
-				if (selectedItems.ItemCount > 0 && (mouseDelta.X != 0 || mouseDelta.Y != 0)) unsaved = true;
-				DrawLevel();
-
-				Rectangle scrbnds = Screen.GetBounds(Cursor.Position);
-				if (Cursor.Position.X < (scrbnds.Left + 2))
-				{
-					Cursor.Position = new Point(scrbnds.Right - 2, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X + scrbnds.Width - 2, mouseEvent.Y);
-				}
-				else if (Cursor.Position.X == scrbnds.Right - 1)
-				{
-					Cursor.Position = new Point(scrbnds.Left + 1, Cursor.Position.Y);
-					mouseEvent = new Point(mouseEvent.X - scrbnds.Width + 1, mouseEvent.Y);
-				}
-				if (Cursor.Position.Y == scrbnds.Top)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Bottom - 2);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y + scrbnds.Height - 2);
-				}
-				else if (Cursor.Position.Y == scrbnds.Bottom - 1)
-				{
-					Cursor.Position = new Point(Cursor.Position.X, scrbnds.Top + 1);
-					mouseEvent = new Point(mouseEvent.X, mouseEvent.Y - scrbnds.Height + 1);
-				}
-			}
-			else if (e.Button == MouseButtons.None)
-			{
-				float mindist = cam.DrawDistance; // initialize to max distance, because it will get smaller on each check
-				Vector3 mousepos = new Vector3(e.X, e.Y, 0);
-				Viewport viewport = d3ddevice.Viewport;
-				viewport.Width = panel1.Width;
-				viewport.Height = panel1.Height;
-				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
-				Matrix view = d3ddevice.GetTransform(TransformState.View);
-				Vector3 Near, Far;
-				Near = mousepos;
-				Near.Z = 0;
-				Far = Near;
-				Far.Z = -1;
-
-				if (transformGizmo != null)
-				{
-					GizmoSelectedAxes oldSelection = transformGizmo.SelectedAxes;
-					transformGizmo.SelectedAxes = transformGizmo.CheckHit(Near, Far, viewport, proj, view, cam);
-
-					if (oldSelection != transformGizmo.SelectedAxes) transformGizmo.Draw(d3ddevice, cam);
-				}
-			}
-
-			if (cameraKeyDown)
-			{
-				// all cam controls are now bound to the middle mouse button
-				if (cam.mode == 0)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Position += cam.Look * (mouseDelta.Y * cam.MoveSpeed);
-						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.Position += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.Position += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
-				else if (cam.mode == 1)
-				{
-					if (zoomKeyDown)
-					{
-						cam.Distance += (mouseDelta.Y * cam.MoveSpeed) * 3;
-						osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (lookKeyDown)
-					{
-						cam.Yaw = unchecked((ushort)(cam.Yaw - mouseDelta.X * 0x10));
-						cam.Pitch = unchecked((ushort)(cam.Pitch - mouseDelta.Y * 0x10));
-						osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-					else if (!lookKeyDown && !zoomKeyDown) // pan
-					{
-						cam.FocalPoint += cam.Up * (mouseDelta.Y * cam.MoveSpeed);
-						cam.FocalPoint += cam.Right * (mouseDelta.X * cam.MoveSpeed) * -1;
-						osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-					}
-				}
-
-				DrawLevel();
-			}
-
-			mouseLast = mouseEvent;
-		}
-		*/
+	
 		void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
@@ -949,6 +752,7 @@ namespace SonicRetro.SAModel.SALVL
 				transformGizmo.Enabled = true;
 				transformGizmo.SetGizmo(Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3(),
 					selectedItems.Get(0).TransformMatrix);
+				transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
 			}
 			else
 			{
@@ -1424,6 +1228,7 @@ namespace SonicRetro.SAModel.SALVL
 		void optionsEditor_FormUpdated()
 		{
 			settingsfile.SALVL.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.SALVL.CameraModifier = cam.ModifierKey;
 			DrawLevel();
 		}
 
@@ -1506,6 +1311,7 @@ namespace SonicRetro.SAModel.SALVL
 					transformGizmo.SetGizmo(
 						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
 						firstItem.TransformMatrix);
+					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
 				}
 				if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
 				if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
@@ -1677,6 +1483,11 @@ namespace SonicRetro.SAModel.SALVL
 		private void alternativeCameraModeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			alternativeCameraModeToolStripMenuItem.Checked = !alternativeCameraModeToolStripMenuItem.Checked;
+		}
+
+		private void MainForm_Deactivate(object sender, EventArgs e)
+		{
+			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 	}
 }
