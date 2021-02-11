@@ -424,30 +424,33 @@
             this.textBoxModifier.TabIndex = 10;
             this.textBoxModifier.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxModifier_KeyDown);
             this.textBoxModifier.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBoxModifier_MouseDown);
-            // 
-            // textBoxAltKey
-            // 
-            this.textBoxAltKey.Location = new System.Drawing.Point(90, 49);
+			this.textBoxModifier.ShortcutsEnabled = false;
+			// 
+			// textBoxAltKey
+			// 
+			this.textBoxAltKey.Location = new System.Drawing.Point(90, 49);
             this.textBoxAltKey.Name = "textBoxAltKey";
             this.textBoxAltKey.ReadOnly = true;
             this.textBoxAltKey.Size = new System.Drawing.Size(173, 20);
             this.textBoxAltKey.TabIndex = 9;
             this.textBoxAltKey.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxAltKey_KeyDown);
             this.textBoxAltKey.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBoxAltKey_MouseDown);
-            // 
-            // textBoxMainKey
-            // 
-            this.textBoxMainKey.Location = new System.Drawing.Point(90, 19);
+			this.textBoxAltKey.ShortcutsEnabled = false;
+			// 
+			// textBoxMainKey
+			// 
+			this.textBoxMainKey.Location = new System.Drawing.Point(90, 19);
             this.textBoxMainKey.Name = "textBoxMainKey";
             this.textBoxMainKey.ReadOnly = true;
             this.textBoxMainKey.Size = new System.Drawing.Size(173, 20);
             this.textBoxMainKey.TabIndex = 8;
             this.textBoxMainKey.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxMainKey_KeyDown);
             this.textBoxMainKey.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBoxMainKey_MouseDown);
-            // 
-            // labelMainKey
-            // 
-            this.labelMainKey.AutoSize = true;
+			this.textBoxMainKey.ShortcutsEnabled = false;
+			// 
+			// labelMainKey
+			// 
+			this.labelMainKey.AutoSize = true;
             this.labelMainKey.Location = new System.Drawing.Point(30, 22);
             this.labelMainKey.Name = "labelMainKey";
             this.labelMainKey.Size = new System.Drawing.Size(54, 13);
