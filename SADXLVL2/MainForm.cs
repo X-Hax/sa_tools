@@ -886,7 +886,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (level.TextureList != null)
 				{
 					progress.SetTaskAndStep("Loading stage texture lists...");
-					LevelTextureList texini = LevelTextureList.Load(Path.Combine(syspath, level.TextureList));
+					LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
 					LoadTextureList(texini.TextureList, syspath);
 				}
 			}

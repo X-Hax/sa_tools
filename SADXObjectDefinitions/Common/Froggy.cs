@@ -21,11 +21,11 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			frog = ObjectHelper.LoadModel("Objects/Common/FROGGY.sa1mdl");
+			frog = ObjectHelper.LoadModel("figure/big/models/big_kaeru.nja.sa1mdl");
 			frogmsh = ObjectHelper.GetMeshes(frog);
-			bubble = ObjectHelper.LoadModel("Objects/Common/Animals/AnimalBubble.sa1mdl");
+			bubble = ObjectHelper.LoadModel("a_life/barria/al_barria.nja.sa1mdl");
 			bubblemsh = ObjectHelper.GetMeshes(bubble);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 

@@ -34,6 +34,7 @@ namespace SAToolsHub
 		private templateWriter templateWriter;
 		private gameOptions gameOptionsDiag;
 		private projConv projectConverter;
+		private formAbout abtWindow;
 
 		enum fileTags
 		{
@@ -93,6 +94,7 @@ namespace SAToolsHub
 			templateWriter = new templateWriter();
 			gameOptionsDiag = new gameOptions();
 			projectConverter = new projConv();
+			abtWindow = new formAbout();
 		}
 
 		//Additional Code/Functions
@@ -688,10 +690,11 @@ namespace SAToolsHub
 
 			if (projectDirectory != null)
 			{
-				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sadxlvl.ini") + " " + string.Format("\"{0}\"", gameSystemDirectory));
+				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
 
-				sadxlvl2StartInfo = new ProcessStartInfo(
-					Path.GetFullPath(sadxlvl2Path), projectArgumentsPath);
+				sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(sadxlvl2Path));
+
+				sadxlvl2StartInfo.Arguments = projectArgumentsPath;
 			}
 			else
 			{
@@ -1143,7 +1146,7 @@ namespace SAToolsHub
 
 		private void toolStripMenuItem2_Click(object sender, EventArgs e)
 		{
-
+			abtWindow.Show();
 		}
 	}
 }

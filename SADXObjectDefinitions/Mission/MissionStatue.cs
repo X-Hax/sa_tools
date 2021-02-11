@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Mission
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Mission/Mission Statue.sa1mdl");
+			model = ObjectHelper.LoadModel("mission/model/mi_3dasu.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
