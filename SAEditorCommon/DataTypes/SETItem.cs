@@ -170,12 +170,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			bool bigendianbk = ByteConverter.BigEndian;
 			// Load the value as both Little and Big Endian and compare the result.
-			// If the absolute value is larger on the BE number, it's an LE file.
+			// If the BE number is larger, this is an LE file.
 			ByteConverter.BigEndian = false;
-			int test_le = ByteConverter.ToInt32(setfile, 0);
+			uint test_le = ByteConverter.ToUInt32(setfile, 0);
 			ByteConverter.BigEndian = true;
-			int test_be = ByteConverter.ToInt32(setfile, 0);
-			if (Math.Abs(test_be) > Math.Abs(test_le))
+			uint test_be = ByteConverter.ToUInt32(setfile, 0);
+			if (test_be > test_le)
 			{
 				ByteConverter.BigEndian = false;
 			}
