@@ -1915,14 +1915,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				case ("Camera Move"):
 					cameraKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				default:
@@ -1935,23 +1938,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
+		private void UpdateCameraOSD()
+		{
+			string cameraMode = "";
+			if (cameraKeyDown) cameraMode = "Move";
+			else if (zoomKeyDown) cameraMode = "Zoom";
+			else if (lookKeyDown) cameraMode = "Look";
+			if (cameraMode != "")
+				osd.UpdateOSDItem("Camera mode: " + cameraMode, RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+		}
 		private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
 		{
 			switch (actionName)
 			{
 				case ("Camera Move"):
 					cameraKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				default:
@@ -4277,29 +4289,30 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private void advancedSaveSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		private void SaveSETFile(bool bigendian)
 		{
-			if (!LevelData.SETItemsIsNull())
+			using (SaveFileDialog a = new SaveFileDialog
 			{
-				using (SaveFileDialog a = new SaveFileDialog
+				DefaultExt = "bin",
+				Filter = "SET files|SET*.bin",
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
 				{
-					DefaultExt = "bin",
-					Filter = "SET files|SET*.bin",
-				})
-				{
-					if (a.ShowDialog() == DialogResult.OK)
 					{
-						{
-							List<byte> file = new List<byte>(LevelData.GetSetItemCount(LevelData.Character) * 0x20 + 0x20);
-							file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(LevelData.Character)));
-							file.Align(0x20);
-							foreach (SETItem item in LevelData.SETItems(LevelData.Character))
-								file.AddRange(item.GetBytes());
-							File.WriteAllBytes(a.FileName, file.ToArray());
-						}
+						SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), a.FileName, bigendian);
 					}
 				}
 			}
+		}
+		private void advancedSaveSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveSETFile(false);
+		}
+
+		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveSETFile(true);
 		}
 	}
 }
