@@ -73,6 +73,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultActionList.cs" />
+    <Compile Include="EditLevelInfoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditLevelInfoDialog.designer.cs">
+      <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ErrorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +111,9 @@
     <Compile Include="PathWarning.Designer.cs">
       <DependentUpon>PathWarning.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="EditLevelInfoDialog.resx">
+      <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -210,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_dxLvl2.ico" />
+    <None Include="Resources\save_advanced.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
