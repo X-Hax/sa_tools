@@ -2664,7 +2664,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			int stepCount = 0;
 			int numSteps = 0;
-			if (LevelData.TextureBitmaps.Count > 0)
+			if (LevelData.TextureBitmaps != null && LevelData.TextureBitmaps.Count > 0)
 			{
 				stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length;
 				numSteps = stepCount;
