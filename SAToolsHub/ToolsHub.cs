@@ -999,7 +999,7 @@ namespace SAToolsHub
 								default:
 									if (itemName.Contains("_data"))
 									{
-										sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"");
+										sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
 										Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
 									}
 									else
