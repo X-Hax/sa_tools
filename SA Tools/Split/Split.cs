@@ -507,6 +507,10 @@ namespace SA_Tools.Split
 							PaletteLightList pllist = new PaletteLightList(datafile, address, count);
 							pllist.Save(fileOutputPath);
 							break;
+						case "physicsdata":
+							PlayerParameter plpm = new PlayerParameter(datafile, address);
+							plpm.Save(fileOutputPath);
+							break;
 						default: // raw binary
 							{
 								byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
