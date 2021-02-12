@@ -56,7 +56,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "storysequence", "Story Sequence" },
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
-			{ "texlistarray", "Texture List Array" }
+			{ "texlistarray", "Texture List Array" },
+			{ "playerparameter", "Player Parameters" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SA_Tools.FileInfo> item, SA_Tools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -1083,6 +1084,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 								if (data.CustomProperties.ContainsKey("language"))
 									lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
 								writer.WriteLine("const char *{0} = {1}; {2}", name, str.ToC(lang), str.ToComment());
+							}
+							break;
+						case "physicsdata":
+							{
+								PlayerParameter plpm = PlayerParameter.Load(data.Filename);
+								writer.WriteLine("player_parameter {0} = {1};", name, plpm.ToStruct());
+								initlines.Add(string.Format("*(player_parameter*)0x{0:X} = {1};", data.Address + imagebase, name));
 							}
 							break;
 					}

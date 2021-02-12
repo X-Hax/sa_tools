@@ -168,6 +168,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public static List<SETItem> Load(byte[] setfile, EditorItemSelection selectionManager)
 		{
+			bool bigendianbk = ByteConverter.BigEndian;
+			// Load the value as both Little and Big Endian and compare the result.
+			// If the BE number is larger, this is an LE file.
+			ByteConverter.BigEndian = false;
+			uint test_le = ByteConverter.ToUInt32(setfile, 0);
+			ByteConverter.BigEndian = true;
+			uint test_be = ByteConverter.ToUInt32(setfile, 0);
+			if (test_be > test_le)
+			{
+				ByteConverter.BigEndian = false;
+			}
 			int count = ByteConverter.ToInt32(setfile, 0);
 			List<SETItem> list = new List<SETItem>(count);
 			int address = 0x20;
@@ -177,20 +188,23 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				list.Add(ent);
 				address += 0x20;
 			}
+			ByteConverter.BigEndian = bigendianbk;
 			return list;
 		}
 
-		public static void Save(List<SETItem> items, string filename) => System.IO.File.WriteAllBytes(filename, Save(items));
+		public static void Save(List<SETItem> items, string filename, bool bigendian = false) => System.IO.File.WriteAllBytes(filename, Save(items, bigendian));
 
-		public static byte[] Save(List<SETItem> items)
+		public static byte[] Save(List<SETItem> items, bool bigendian = false)
 		{
 			List<byte> file = new List<byte>(items.Count * 0x20 + 0x20);
+			bool bigendianbk = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = bigendian;
 			file.AddRange(ByteConverter.GetBytes(items.Count));
 			file.Align(0x20);
 
 			foreach (SETItem item in items)
 				file.AddRange(item.GetBytes());
-
+			ByteConverter.BigEndian = bigendianbk;
 			return file.ToArray();
 		}
 

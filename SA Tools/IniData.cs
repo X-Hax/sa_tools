@@ -3496,10 +3496,128 @@ namespace SA_Tools
 		}
 	}
 
-		/// <summary>
-		/// Converts between <see cref="string"/> and <typeparamref name="T"/>
-		/// </summary>
-		public class StringConverter<T> : TypeConverter
+	public class PlayerParameter
+	{
+		public int jump2_timer { get; set; }
+		public float pos_error { get; set; }
+		public float lim_h_spd { get; set; }
+		public float lim_v_spd { get; set; }
+		public float max_x_spd { get; set; }
+		public float max_psh_spd { get; set; }
+		public float jmp_y_spd { get; set; }
+		public float nocon_speed { get; set; }
+		public float slide_speed { get; set; }
+		public float jog_speed { get; set; }
+		public float run_speed { get; set; }
+		public float rush_speed { get; set; }
+		public float crash_speed { get; set; }
+		public float dash_speed { get; set; }
+		public float jmp_addit { get; set; }
+		public float run_accel { get; set; }
+		public float air_accel { get; set; }
+		public float slow_down { get; set; }
+		public float run_break { get; set; }
+		public float air_break { get; set; }
+		public float air_resist_air { get; set; }
+		public float air_resist { get; set; }
+		public float air_resist_y { get; set; }
+		public float air_resist_z { get; set; }
+		public float grd_frict { get; set; }
+		public float grd_frict_z { get; set; }
+		public float lim_frict { get; set; }
+		public float rat_bound { get; set; }
+		public float rad { get; set; }
+		public float height { get; set; }
+		public float weight { get; set; }
+		public float eyes_height { get; set; }
+		public float center_height { get; set; }
+
+		public PlayerParameter(byte[] file, int address)
+		{
+			jump2_timer = ByteConverter.ToInt32(file, address);
+			pos_error = ByteConverter.ToSingle(file, address + 4);
+			lim_h_spd = ByteConverter.ToSingle(file, address + 8);
+			lim_v_spd = ByteConverter.ToSingle(file, address + 12);
+			max_x_spd = ByteConverter.ToSingle(file, address + 16);
+			max_psh_spd = ByteConverter.ToSingle(file, address + 20);
+			jmp_y_spd = ByteConverter.ToSingle(file, address + 24);
+			nocon_speed = ByteConverter.ToSingle(file, address + 28);
+			slide_speed = ByteConverter.ToSingle(file, address + 32);
+			jog_speed = ByteConverter.ToSingle(file, address + 36);
+			run_speed = ByteConverter.ToSingle(file, address + 40);
+			rush_speed = ByteConverter.ToSingle(file, address + 44);
+			crash_speed = ByteConverter.ToSingle(file, address + 48);
+			dash_speed = ByteConverter.ToSingle(file, address + 52);
+			jmp_addit = ByteConverter.ToSingle(file, address + 56);
+			run_accel = ByteConverter.ToSingle(file, address + 60);
+			air_accel = ByteConverter.ToSingle(file, address + 64);
+			slow_down = ByteConverter.ToSingle(file, address + 68);
+			run_break = ByteConverter.ToSingle(file, address + 72);
+			air_break = ByteConverter.ToSingle(file, address + 76);
+			air_resist_air = ByteConverter.ToSingle(file, address + 80);
+			air_resist = ByteConverter.ToSingle(file, address + 84);
+			air_resist_y = ByteConverter.ToSingle(file, address + 88);
+			air_resist_z = ByteConverter.ToSingle(file, address + 92);
+			grd_frict = ByteConverter.ToSingle(file, address + 96);
+			grd_frict_z = ByteConverter.ToSingle(file, address + 100);
+			lim_frict = ByteConverter.ToSingle(file, address + 104);
+			rat_bound = ByteConverter.ToSingle(file, address + 108);
+			rad = ByteConverter.ToSingle(file, address + 112);
+			height = ByteConverter.ToSingle(file, address + 116);
+			weight = ByteConverter.ToSingle(file, address + 120);
+			eyes_height = ByteConverter.ToSingle(file, address + 124);
+			center_height = ByteConverter.ToSingle(file, address + 128);
+		}
+
+		public static PlayerParameter Load(string filename) => IniSerializer.Deserialize<PlayerParameter>(filename);
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", jump2_timer);
+			sb.AppendFormat("{0}, ", pos_error.ToC());
+			sb.AppendFormat("{0}, ", lim_h_spd.ToC());
+			sb.AppendFormat("{0}, ", lim_v_spd.ToC());
+			sb.AppendFormat("{0}, ", max_x_spd.ToC());
+			sb.AppendFormat("{0}, ", max_psh_spd.ToC());
+			sb.AppendFormat("{0}, ", jmp_y_spd.ToC());
+			sb.AppendFormat("{0}, ", nocon_speed.ToC());
+			sb.AppendFormat("{0}, ", slide_speed.ToC());
+			sb.AppendFormat("{0}, ", jog_speed.ToC());
+			sb.AppendFormat("{0}, ", run_speed.ToC());
+			sb.AppendFormat("{0}, ", rush_speed.ToC());
+			sb.AppendFormat("{0}, ", crash_speed.ToC());
+			sb.AppendFormat("{0}, ", dash_speed.ToC());
+			sb.AppendFormat("{0}, ", jmp_addit.ToC());
+			sb.AppendFormat("{0}, ", run_accel.ToC());
+			sb.AppendFormat("{0}, ", air_accel.ToC());
+			sb.AppendFormat("{0}, ", slow_down.ToC());
+			sb.AppendFormat("{0}, ", run_break.ToC());
+			sb.AppendFormat("{0}, ", air_break.ToC());
+			sb.AppendFormat("{0}, ", air_resist_air.ToC());
+			sb.AppendFormat("{0}, ", air_resist.ToC());
+			sb.AppendFormat("{0}, ", air_resist_y.ToC());
+			sb.AppendFormat("{0}, ", air_resist_z.ToC());
+			sb.AppendFormat("{0}, ", grd_frict.ToC());
+			sb.AppendFormat("{0}, ", grd_frict_z.ToC());
+			sb.AppendFormat("{0}, ", lim_frict.ToC());
+			sb.AppendFormat("{0}, ", rat_bound.ToC());
+			sb.AppendFormat("{0}, ", rad.ToC());
+			sb.AppendFormat("{0}, ", height.ToC());
+			sb.AppendFormat("{0}, ", weight.ToC());
+			sb.AppendFormat("{0}, ", eyes_height.ToC());
+			sb.AppendFormat("{0}", center_height.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	/// <summary>
+	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
+	/// </summary>
+	public class StringConverter<T> : TypeConverter
 	{
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
