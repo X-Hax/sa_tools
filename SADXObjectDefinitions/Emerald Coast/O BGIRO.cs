@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BGIRO.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_guillotine.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

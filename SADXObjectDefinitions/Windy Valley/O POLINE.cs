@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.WindyValley
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O POLINE.sa1mdl");
+			model = ObjectHelper.LoadModel("stg02_windy/common/models/windobj_tramp.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			NJS_OBJECT child = model.Children[0];
 			model.ClearChildren();

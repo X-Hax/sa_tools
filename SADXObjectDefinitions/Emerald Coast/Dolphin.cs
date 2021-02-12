@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O DOLPHIN.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_dolphin.nja.sa1mdl");
 			mesh = ObjectHelper.GetMeshes(model);
 		}
 
@@ -85,7 +85,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 

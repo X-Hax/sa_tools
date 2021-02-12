@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Collision/C CUBE.sa1mdl");
+			model = ObjectHelper.LoadModel("nondisp/cube01.nja.sa1mdl");
 			mesh = ObjectHelper.GetMeshes(model);
 		}
 

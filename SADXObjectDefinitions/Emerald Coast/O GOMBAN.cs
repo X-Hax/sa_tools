@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GOMBAN.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_gomubane.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			NJS_OBJECT child = model.Children[0];
 			model.ClearChildren();

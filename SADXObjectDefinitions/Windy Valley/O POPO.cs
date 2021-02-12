@@ -73,7 +73,7 @@ namespace SADXObjectDefinitions.WindyValley
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O POPO.sa1mdl");
+			model = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_popo.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -84,7 +84,7 @@ namespace SADXObjectDefinitions.WindyValley
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_TANPOPO.sa1mdl");
+			model = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_tampopo.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

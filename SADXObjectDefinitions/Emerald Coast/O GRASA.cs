@@ -73,7 +73,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASA.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa4a.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -87,7 +87,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASB.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa4b.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -155,7 +155,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASC.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa6.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -166,7 +166,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O GRASD.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa3.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

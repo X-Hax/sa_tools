@@ -66,19 +66,19 @@ namespace SAToolsHub
 		public static ProjectSettings hubSettings { get; set; }
 
 		//Program Paths
-		string samdlPath;
-		string salvlPath;
-		string texeditPath;
-		string sadxlvl2Path;
-		string sadxsndsharpPath;
-		string sadxtweakerPath;
-		string sadxfonteditPath;
-		string sasavePath;
-		string sa2eventviewPath;
-		string sa2evtexteditPath;
-		string sa2streditPath;
-		string sa2stgselPath;
-		string datatoolboxPath;
+		ProcessStartInfo samdlStartInfo;
+		ProcessStartInfo salvlStartInfo;
+		ProcessStartInfo texeditStartInfo;
+		ProcessStartInfo sadxlvl2StartInfo;
+		ProcessStartInfo sadxsndsharpStartInfo;
+		ProcessStartInfo sadxtweakerStartInfo;
+		ProcessStartInfo sadxfonteditStartInfo;
+		ProcessStartInfo sasaveStartInfo;
+		ProcessStartInfo sa2eventviewStartInfo;
+		ProcessStartInfo sa2evtexteditStartInfo;
+		ProcessStartInfo sa2streditStartInfo;
+		ProcessStartInfo sa2stgselStartInfo;
+		ProcessStartInfo datatoolboxStartInfo;
 
 		public SAToolsHub()
 		{
@@ -526,21 +526,20 @@ namespace SAToolsHub
 			toolStripMenuItem1.Visible = false;
 			toolStripMenuItem1.Enabled = false;
 #endif
-			
 
-			samdlPath = Path.Combine(rootPath, "SAMDL.exe");
-			salvlPath = Path.Combine(rootPath, "SALVL.exe");
-			texeditPath = Path.Combine(rootPath, "TextureEditor.exe");
-			sadxlvl2Path = Path.Combine(rootPath, "SADXLVL2.exe");
-			sadxsndsharpPath = Path.Combine(rootPath, "SADXsndSharp.exe");
-			sadxtweakerPath = Path.Combine(rootPath, "SADXTweaker2.exe");
-			sadxfonteditPath = Path.Combine(rootPath, "SADXFontEdit.exe");
-			sasavePath = Path.Combine(rootPath, "SASave.exe");
-			sa2eventviewPath = Path.Combine(rootPath, "SA2EventViewer.exe");
-			sa2evtexteditPath = Path.Combine(rootPath, "SA2CutsceneTextEditor.exe");
-			sa2streditPath = Path.Combine(rootPath, "SA2MessageFileEditor.exe");
-			sa2stgselPath = Path.Combine(rootPath, "SA2StageSelEdit.exe");
-			datatoolboxPath = Path.Combine(rootPath, "DataToolbox.exe");
+			samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAMDL.exe")));
+			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
+			texeditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "TextureEditor.exe")));
+			sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXLVL2.exe")));
+			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
+			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
+			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
+			sasaveStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SASave.exe")));
+			sa2eventviewStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2EventViewer.exe")));
+			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
+			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
+			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
+			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
 		}
 
 		private void toolsHub_Shown(object sender, EventArgs e)
@@ -654,46 +653,27 @@ namespace SAToolsHub
 		//General Tools Initializers
 		private void sAMDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(samdlPath));
-
 			Process samdlProcess = Process.Start(samdlStartInfo);
-
 		}
 
 		private void sALVLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo salvlStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(salvlPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
 			Process salvlProcess = Process.Start(salvlStartInfo);
 		}
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo texEditStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(texeditPath));
-
-			Process texEditProcess = Process.Start(texEditStartInfo);
+			Process texEditProcess = Process.Start(texeditStartInfo);
 		}
 
 		//SADX Tools Initializers
 		private void sADXLVL2ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo sadxlvl2StartInfo;
-
 			if (projectDirectory != null && setGame == "SADXPC")
 			{
 				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
 
-				sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(sadxlvl2Path));
-
 				sadxlvl2StartInfo.Arguments = projectArgumentsPath;
-			}
-			else
-			{
-				sadxlvl2StartInfo = new ProcessStartInfo(
-					Path.GetFullPath(sadxlvl2Path));
 			}
 
 			Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
@@ -701,96 +681,49 @@ namespace SAToolsHub
 
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo tweakerStartInfo;
-
-			if (projectDirectory != null)
-			{
-				string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectDirectory, "sonic_data.ini"));
-
-				tweakerStartInfo = new ProcessStartInfo(
-					Path.GetFullPath(sadxtweakerPath), projectArgumentsPath);
-			}
-			else
-			{
-				tweakerStartInfo = new ProcessStartInfo(
-					Path.GetFullPath(sadxtweakerPath));
-			}
-
-			Process sadxlvl2Process = Process.Start(tweakerStartInfo);
+			Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
 		}
 
 		private void sADXsndSharpToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ProcessStartInfo sndSharpStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sadxsndsharpPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process sndSharpProcess = Process.Start(sndSharpStartInfo);
+		{ 
+			Process sndSharpProcess = Process.Start(sadxsndsharpStartInfo);
 		}
 
 		private void sAFontEditorToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ProcessStartInfo saFontStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sadxfonteditPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saFontProcess = Process.Start(saFontStartInfo);
+		{ 
+			Process saFontProcess = Process.Start(sadxfonteditStartInfo);
 		}
 
 		private void sASaveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo saSaveStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sasavePath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(saSaveStartInfo);
+			Process saSaveProcess = Process.Start(sasaveStartInfo);
 		}
 
 		//SA2 Tools Initializers
 		private void sA2EventViewerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo sa2EventStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sa2eventviewPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(sa2EventStartInfo);
+			Process saSaveProcess = Process.Start(sa2eventviewStartInfo);
 		}
 
 		private void sA2CutsceneTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo sa2EvTextStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sa2evtexteditPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(sa2EvTextStartInfo);
+			Process saSaveProcess = Process.Start(sa2evtexteditStartInfo);
 		}
 
 		private void sA2MessageEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo sa2MsgTextStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sa2streditPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(sa2MsgTextStartInfo);
+			Process saSaveProcess = Process.Start(sa2streditStartInfo);
 		}
 
 		private void sA2StageSelectEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo sa2StgSelStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(sa2stgselPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(sa2StgSelStartInfo);
+			Process saSaveProcess = Process.Start(sa2stgselStartInfo);
 		}
 
 		//Data Extractor/Convert (new Split UI)
 		private void splitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo dataToolStartInfo = new ProcessStartInfo(
-				Path.GetFullPath(datatoolboxPath)//,
-				/*Path.GetFullPath(projectFolder)*/);
-
-			Process saSaveProcess = Process.Start(dataToolStartInfo);
+			Process saSaveProcess = Process.Start(datatoolboxStartInfo);
 		}
 
 		//Help Links
@@ -1036,14 +969,17 @@ namespace SAToolsHub
 							treeView1.SelectedNode = selNode;
 							break;
 						case "mdl":
-							Process samdlProcess = Process.Start(samdlPath, filePath);
+							samdlStartInfo.Arguments = filePath;
+							Process samdlProcess = Process.Start(samdlStartInfo);
 							break;
 						case "lvl":
-							Process salvlProcess = Process.Start(salvlPath, filePath);
+							salvlStartInfo.Arguments = filePath;
+							Process salvlProcess = Process.Start(salvlStartInfo);
 							break;
 						case "tex":
 						case "tvr":
-							Process texEditProcess = Process.Start(texeditPath, filePath);
+							texeditStartInfo.Arguments = filePath;
+							Process texEditProcess = Process.Start(texeditStartInfo);
 							break;
 						case "txt":
 						case "img":
@@ -1053,7 +989,7 @@ namespace SAToolsHub
 							switch (itemName)
 							{
 								case "sadxlvl.ini":
-									ProcessStartInfo sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(sadxlvl2Path), filePath);
+									sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
 
 									Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
 									break;
@@ -1061,7 +997,13 @@ namespace SAToolsHub
 									projectEditorDiag.ShowDialog();
 									break;
 								default:
-									Process.Start(filePath);
+									if (itemName.Contains("_data"))
+									{
+										sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"");
+										Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
+									}
+									else
+										Process.Start(filePath);
 									break;
 							}
 							break;

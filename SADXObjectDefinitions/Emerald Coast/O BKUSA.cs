@@ -22,11 +22,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_A.sa1mdl");
+			model1 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa5.nja.sa1mdl");
 			meshes1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_B.sa1mdl");
+			model2 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa8.nja.sa1mdl");
 			meshes2 = ObjectHelper.GetMeshes(model2);
-			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BKUSA_C.sa1mdl");
+			model3 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kusa1.nja.sa1mdl");
 			meshes3 = ObjectHelper.GetMeshes(model3);
 		}
 

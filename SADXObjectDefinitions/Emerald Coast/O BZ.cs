@@ -19,9 +19,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			plane = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O BZ.sa1mdl");
+			plane = ObjectHelper.LoadModel("stg01_beach/common/models/zangai_toru.nja.sa1mdl");
 			planemsh = ObjectHelper.GetMeshes(plane);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
