@@ -593,7 +593,7 @@
             this.unloadSETFileToolStripMenuItem,
             this.unloadCAMFileToolStripMenuItem,
             this.unloadObjectListToolStripMenuItem});
-            this.SALVLModeToolStripMenuItem.Enabled = false;
+            this.SALVLModeToolStripMenuItem.Enabled = true;
             this.SALVLModeToolStripMenuItem.Name = "SALVLModeToolStripMenuItem";
             this.SALVLModeToolStripMenuItem.Size = new System.Drawing.Size(72, 22);
             this.SALVLModeToolStripMenuItem.Text = "Advanced";
