@@ -18,22 +18,6 @@ namespace SAToolsHub
 		ProjectTemplate projectFile;
 		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
-		Dictionary<string, string> templateList = new Dictionary<string, string>()
-		{
-			{ "SADX Debugging", "dx_debug.xml" },
-			{ "SADX (PC, Moddable)", "sadxpc_template.xml" },
-			{ "SA2 (PC, Moddable)", "sa2pc_template.xml" },
-			{ "SA1 (DC, Final)", "sa1_template.xml" },
-			{ "SA1 (DC, AutoDemo)", "autodemo_template.xml" },
-			{ "SA2 (DC, Final)", "sa2_template.xml" },
-			{ "SA2 (DC, The Trial", "sa2tt_template.xml" },
-			//{ "SA2 (DC, Preview)", "sa2p_template.xml" },
-			//{ "SADX (GC, Final)", "sadxgc_template.xml" },
-			//{ "SADX (GC, Preview)", "sadxgcp_template.xml" },
-			//{ "SADX (GC, Review)", "sadxgcr_template.xml" },
-			{ "SADX (360)", "sadx360_template.xml" }
-		};
-
 		string templatesPath;
 		string gameName;
 		string gamePath;
@@ -65,6 +49,19 @@ namespace SAToolsHub
 				default:
 					return (splitEntries.Count);
 			}
+		}
+
+		Dictionary<string, string> loadTemplateList(string folder)
+		{
+			Dictionary<string, string> templates = new Dictionary<string, string>();
+			string[] templateNames = Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly);
+
+			foreach (string file in templateNames)
+			{
+				templates.Add(Path.GetFileNameWithoutExtension(file), file);
+			}
+
+			return templates;
 		}
 
 		void openTemplate(string templateSplit)
@@ -112,7 +109,7 @@ namespace SAToolsHub
 			}
 			else if (!Directory.Exists(gamePath))
 			{
-				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + "does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + " does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
 					var folderDialog = new VistaFolderBrowserDialog();
@@ -463,7 +460,7 @@ namespace SAToolsHub
 			else
 				templatesPath = Path.Combine(appPath, "Templates");
 
-			DirectoryInfo templatesDir = new DirectoryInfo(templatesPath);
+			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
 
 			foreach(KeyValuePair<string, string> entry in templateList)
 			{
