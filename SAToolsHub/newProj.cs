@@ -78,7 +78,7 @@ namespace SAToolsHub
 
 			templateFileStream.Close();
 
-			if (gamePath == null)
+			if (gamePath.Length <= 0)
 			{
 				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
