@@ -2274,7 +2274,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			if (camresult == 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
+			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
 			{
 				DrawLevel();

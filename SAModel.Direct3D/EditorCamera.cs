@@ -251,7 +251,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public int UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false)
 		{
-			int result = 0; // 0 - no redraw, 1 - redraw, 2 - redraw + refresh controls
+			int result = 0; // 0 - no redraw, 1 - redraw, 2 - redraw + refresh controls, 3 - refresh controls only
 
 			// Check for multiple keys being pressed, and disable the modifier key. This is to allow the same key to be used both independently and as a modifier.
 			if (Convert.ToInt32(lookKeyDown) + Convert.ToInt32(moveKeyDown) + Convert.ToInt32(zoomKeyDown) > 1)
@@ -371,11 +371,14 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 
 				result = 1;
+
 			}
+
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * MoveSpeed > 0)
 			{
 				mouseLast = mouseEvent;
-				result = 2;
+				if (lookKeyDown || zoomKeyDown || moveKeyDown) result = 2;
+				else result = 3;
 			}
 
 			if (MouseCursorHidden && !lookKeyDown && !zoomKeyDown && !moveKeyDown)

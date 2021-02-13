@@ -678,7 +678,7 @@ namespace SA2EventViewer
 				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
 				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
 			}
-			if (camresult == 2 && selectedObject != null) propertyGrid1.Refresh();
+			if (camresult >= 2 && selectedObject != null) propertyGrid1.Refresh();
 			if (camresult >= 1)
 			{
 				UpdateWeightedModels();
