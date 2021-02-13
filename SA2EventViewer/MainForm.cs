@@ -127,16 +127,20 @@ namespace SA2EventViewer
 				Filter = "Event Files|e????.prs|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
+				{
+					timer1.Stop();
+					timer1.Enabled = false;
+					scenenum = 0;
+					decframe = 0;
+					animframe = -1;
 					LoadFile(a.FileName);
+				}
 		}
 
 		private void LoadFile(string filename)
 		{
 			loaded = false;
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-			timer1.Stop();
-			scenenum = 0;
-			animframe = -1;
 			@event = new Event(filename);
 			meshes = new List<List<Mesh[]>>();
 			bigmeshes = new List<Mesh[]>();
