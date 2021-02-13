@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>TailsDX.ico</ApplicationIcon>
+    <ApplicationIcon>icon_salvl.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -167,6 +167,7 @@
     <None Include="Resources\help.png" />
     <None Include="Resources\import.png" />
     <None Include="Resources\export.png" />
+    <Content Include="icon_salvl.ico" />
     <Content Include="Resources\MoveIcon.png" />
     <None Include="Resources\open.png" />
     <Content Include="Resources\RotateIcon.png" />
@@ -175,7 +176,6 @@
     <Content Include="Resources\SelectIcon.png" />
     <None Include="Resources\stats.png" />
     <None Include="Resources\settings.png" />
-    <Content Include="TailsDX.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
