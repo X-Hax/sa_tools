@@ -52,7 +52,6 @@
     <Compile Include="ByteConverter.cs" />
     <Compile Include="POF0Helper.cs" />
     <Compile Include="COL.cs" />
-    <Compile Include="collada_schema_1_4.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GC\GCAttach.cs" />
     <Compile Include="GC\GCEnums.cs" />

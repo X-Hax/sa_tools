@@ -1730,19 +1730,6 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 		}
 
-		private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
-				if (sd.ShowDialog(this) == DialogResult.OK)
-				{
-					model.ToCollada(TextureInfo?.Select((item) => item.Name).ToArray()).Save(sd.FileName);
-					string p = Path.GetDirectoryName(sd.FileName);
-					if (TextureInfo != null)
-						foreach (BMPInfo img in TextureInfo)
-							img.Image.Save(Path.Combine(p, img.Name + ".png"));
-				}
-		}
-
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C Files|*.c" })
