@@ -2540,7 +2540,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.obj",
+				Filter = "Model Files|*.dae;*.obj;*.fbx;|All Files|*.*",
 				InitialDirectory = currentProjectPath,
 				Multiselect = true
 			})
@@ -2569,9 +2569,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 							switch (extension)
 							{
 								case (".obj"):
-									model = Direct3D.Extensions.obj2nj(file);
+								case (".fbx"):
+								case (".dae"):
+									Assimp.AssimpContext context = new Assimp.AssimpContext();
+									context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
+									Assimp.Scene scene = context.ImportFile(file, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+									NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.Textures.Keys.ToArray(), true);
+									model = newmodel.Attach;
+									model.ProcessVertexData();
+									model.CalculateBounds();
 									break;
-
 								case (".sa1mdl"):
 									ModelFile modelFile = new ModelFile(file);
 									model = modelFile.Model.Attach;
@@ -2737,11 +2744,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			context.ExportFile(scene, fileName, ftype, Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 
 			progress.SetTaskAndStep("Export complete!");
-		}
-
-		private void selectedItemsToolStripMenuItem1_Click(object sender, EventArgs e)
-		{
-
 		}
 
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4107,7 +4109,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				Filter = "Model Files|*.dae;*.obj;*.fbx",
 				InitialDirectory = currentProjectPath
 			})
 			{
@@ -4143,7 +4145,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				Filter = "Model Files|*.dae;*.obj;*.fbx",
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
