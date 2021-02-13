@@ -28,10 +28,10 @@ namespace SonicRetro.SAModel
 			return encoding.GetString(file, address, count);
 		}
 
-		public static string ToC(this float num)
+		public static string ToC(this float num, bool noF = false)
 		{
 			string result = num.ToLongString();
-			if (result.Contains("."))
+			if (result.Contains(".") && !noF)
 				result += "f";
 			return result;
 		}

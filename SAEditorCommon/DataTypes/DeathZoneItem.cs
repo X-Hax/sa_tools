@@ -120,8 +120,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				switch (Path.GetExtension(dlg.FileName).ToLowerInvariant())
 				{
 					case ".obj":
+					case ".fbx":
+					case ".dae":
 					case ".objf":
-						Model.Attach = Direct3D.Extensions.obj2nj(dlg.FileName, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray());
+						Assimp.AssimpContext context = new Assimp.AssimpContext();
+						context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
+						Assimp.Scene scene = context.ImportFile(dlg.FileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+						NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
+						Model.Attach = newmodel.Attach;
+						Model.ProcessVertexData();
 						Mesh = Model.Attach.CreateD3DMesh();
 						break;
 					case ".sa1mdl":

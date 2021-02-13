@@ -898,7 +898,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return result;
 		}
 
-		public static NJS_OBJECT AssimpImport(Scene scene, Node node, ModelFormat modelFormat, string[] texInfo = null)
+		public static NJS_OBJECT AssimpImport(Scene scene, Node node, ModelFormat modelFormat, string[] texInfo = null, bool asSingle = false)
 		{
 			if (modelFormat == ModelFormat.Chunk)
 				foreach (var mesh in scene.Meshes)
@@ -906,11 +906,10 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						return AssimpImportWeighted(scene, texInfo);
 			if (node == null || node == scene.RootNode)
 			{
-				NJS_OBJECT result = AssimpImportNonWeighted(scene, scene.RootNode, modelFormat, texInfo);
-				result.FixSiblings();
-				return result.Children[0];
+				NJS_OBJECT result = AssimpImportNonWeighted(scene, scene.RootNode, modelFormat, texInfo, asSingle);
+				return result;
 			}
-			return AssimpImportNonWeighted(scene, node, modelFormat, texInfo);
+			return AssimpImportNonWeighted(scene, node, modelFormat, texInfo, asSingle);
 		}
 
 		private static NJS_OBJECT AssimpImportWeighted(Scene scene, string[] texInfo = null)
@@ -1044,7 +1043,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			return obj;
 		}
 
-		private static NJS_OBJECT AssimpImportNonWeighted(Scene scene, Node node, ModelFormat format, string[] textures = null)
+		private static NJS_OBJECT AssimpImportNonWeighted(Scene scene, Node node, ModelFormat format, string[] textures = null, bool asSingle = false)
 		{
 			NJS_OBJECT obj = new NJS_OBJECT() { Animate = true, Morph = true };
 			if (nodenameregex.IsMatch(node.Name))
@@ -1054,14 +1053,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			node.Transform.Decompose(out Vector3D scaling, out Assimp.Quaternion rotation, out Vector3D translation);
 			Vector3D rotationConverted = rotation.ToEulerAngles();
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
-			//Rotation = new Rotation(0, 0, 0);
 			obj.Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
-			//Scale = new Vertex(1, 1, 1);
 
-			if (node.HasMeshes)
+			// Import all meshes into a single NJS_OBJECT regardless of nodes
+			if (asSingle)
 			{
-				var meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
+				var meshes = new List<Assimp.Mesh>(scene.Meshes);
 				if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
 					obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
 				else if (format == ModelFormat.GC)
@@ -1069,38 +1067,41 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				else if (format == ModelFormat.Chunk)
 					obj.Attach = AssimpImportChunk(scene.Materials, meshes, textures);
 			}
+
+			// Import node hierarchy
 			else
-				obj.Attach = null;
-
-			if (node.HasChildren)
 			{
-
-				//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
-				foreach (Node n in node.Children)
+				if (node.HasMeshes)
 				{
-					NJS_OBJECT t = AssimpImportNonWeighted(scene, n, format, textures);
-					//HACK: workaround for those weird empty nodes created by most 3d editors
-					if (n.Name == "")
+					var meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
+					if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
+						obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
+					else if (format == ModelFormat.GC)
+						obj.Attach = AssimpImportGC(scene.Materials, meshes, textures);
+					else if (format == ModelFormat.Chunk)
+						obj.Attach = AssimpImportChunk(scene.Materials, meshes, textures);
+				}
+				else
+					obj.Attach = null;
+
+				if (node.HasChildren)
+				{
+
+					//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
+					foreach (Node n in node.Children)
 					{
-						t.Children[0].Position = t.Position;
-						t.Children[0].Rotation = t.Rotation;
-						t.Children[0].Scale = t.Scale;
-						obj.AddChild(t.Children[0]);
-					}
-					else
-						obj.AddChild(t);
-					/*if (Parent != null)
-					{
-						if (t.Attach != null)
+						NJS_OBJECT t = AssimpImportNonWeighted(scene, n, format, textures, false);
+						//HACK: workaround for those weird empty nodes created by most 3d editors
+						if (n.Name == "")
 						{
-							Parent.Attach = t.Attach;
-							if (Parent.children != null && t.children.Count > 0)
-								Parent.children.AddRange(t.children);
+							t.Children[0].Position = t.Position;
+							t.Children[0].Rotation = t.Rotation;
+							t.Children[0].Scale = t.Scale;
+							obj.AddChild(t.Children[0]);
 						}
 						else
-							list.Add(t);
-					}*/
-
+							obj.AddChild(t);
+					}
 				}
 			}
 			return obj;
@@ -1131,7 +1132,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				{
 					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
 				}
-				lookupMaterial.Add(m.MaterialIndex, attach.Material.Count);
+				if (!lookupMaterial.ContainsKey(m.MaterialIndex)) 
+					lookupMaterial.Add(m.MaterialIndex, attach.Material.Count);
 				attach.Material.Add(materials[m.MaterialIndex].ToSAModel());
 
 				if (materials[m.MaterialIndex].HasTextureDiffuse)

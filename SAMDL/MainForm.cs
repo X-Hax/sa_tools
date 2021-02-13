@@ -23,6 +23,8 @@ namespace SonicRetro.SAModel.SAMDL
 		SettingsFile settingsfile; //For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
+		System.Drawing.Rectangle mouseBounds;
+		bool mouseWrapScreen = false;
 
 		public MainForm()
 		{
@@ -44,6 +46,13 @@ namespace SonicRetro.SAModel.SAMDL
 				foreach (Control ct in c.Controls)
 					AddMouseMoveHandler(ct);
 			}
+		}
+
+		protected override void WndProc(ref Message m)
+		{
+			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
+			if (m.Msg == 0x128) return;
+			base.WndProc(ref m);
 		}
 
 		private void SAMDL_DragEnter(object sender, DragEventArgs e)
@@ -114,7 +123,7 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			if (modelFiles.Count > 0) { LoadFile(modelFiles[0], cmdLoad); }
-			if (modelImportFiles.Count > 0) { ImportModel_Assimp(modelImportFiles[0]); }
+			if (modelImportFiles.Count > 0) { ImportModel_Assimp(modelImportFiles[0], false); }
 			if (animFiles.Count > 0) { LoadAnimation(animFiles.ToArray()); }
 		}
 
@@ -1537,7 +1546,6 @@ namespace SonicRetro.SAModel.SAMDL
 
 				case ("Delete"):
 					DeleteSelectedModel();
-					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -1678,11 +1686,10 @@ namespace SonicRetro.SAModel.SAMDL
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			bool mouseWrapScreen = false;
-			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked); 
-			if (camresult == 2 && selectedObject != null) propertyGrid1.Refresh();
-			if (camresult >= 1)
+			if (camresult >= 2 && selectedObject != null) propertyGrid1.Refresh();
+			if (camresult >= 1 && !timer1.Enabled)
 			{
 				UpdateWeightedModel();
 				DrawEntireModel();
@@ -1721,19 +1728,6 @@ namespace SonicRetro.SAModel.SAMDL
 			if (animframe == animation.Frames) animframe = 0;
 			UpdateWeightedModel();
 			DrawEntireModel();
-		}
-
-		private void colladaToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "dae", Filter = "DAE Files|*.dae" })
-				if (sd.ShowDialog(this) == DialogResult.OK)
-				{
-					model.ToCollada(TextureInfo?.Select((item) => item.Name).ToArray()).Save(sd.FileName);
-					string p = Path.GetDirectoryName(sd.FileName);
-					if (TextureInfo != null)
-						foreach (BMPInfo img in TextureInfo)
-							img.Image.Save(Path.Combine(p, img.Name + ".png"));
-				}
 		}
 
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1847,7 +1841,12 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 
 			if (e.Button == MouseButtons.Right)
+			{
+				actionInputCollector.ReleaseKeys();
+				mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+				cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), new System.Drawing.Rectangle(), false, false, false, alternativeCameraModeToolStripMenuItem.Checked);
 				contextMenuStrip1.Show(RenderPanel, e.Location);
+			}
 		}
 
 		internal Type GetAttachType()
@@ -1883,12 +1882,11 @@ namespace SonicRetro.SAModel.SAMDL
 				deleteToolStripMenuItem.Enabled = true;
 				deleteNodeToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				emptyModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null;
-				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
 				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				sortToolStripMenuItem.Enabled = true;
-				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				exportOBJToolStripMenuItem.Enabled = selectedObject.Attach != null;
+				exportContextMenuItem.Enabled = selectedObject.Attach != null;
+				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
 			}
 			else
@@ -1902,137 +1900,13 @@ namespace SonicRetro.SAModel.SAMDL
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				splitToolStripMenuItem.Enabled = sortToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
-				importOBJToolStripMenuItem.Enabled = false;
-				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
-				exportOBJToolStripMenuItem.Enabled = false;
+				importContextMenuItem.Enabled = false;
+				exportContextMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
 			DrawEntireModel();
-		}
-
-		private void objToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj"
-			})
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					using (StreamWriter objstream = new StreamWriter(a.FileName, false))
-					using (StreamWriter mtlstream = new StreamWriter(Path.ChangeExtension(a.FileName, "mtl"), false))
-					{
-						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-						int totalVerts = 0;
-						int totalNorms = 0;
-						int totalUVs = 0;
-
-						bool errorFlag = false;
-
-						Direct3D.Extensions.WriteModelAsObj(objstream, model, ref materials, new MatrixStack(), ref totalVerts, ref totalNorms, ref totalUVs, ref errorFlag);
-
-						#region Material Exporting
-						objstream.WriteLine("mtllib " + Path.GetFileNameWithoutExtension(a.FileName) + ".mtl");
-
-						for (int i = 0; i < materials.Count; i++)
-						{
-							int texIndx = materials[i].TextureID;
-
-							NJS_MATERIAL material = materials[i];
-							mtlstream.WriteLine("newmtl material_{0}", i);
-							mtlstream.WriteLine("Ka 1 1 1");
-							mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-								material.DiffuseColor.R / 255,
-								material.DiffuseColor.G / 255,
-								material.DiffuseColor.B / 255));
-
-							mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-								material.SpecularColor.R / 255,
-								material.SpecularColor.G / 255,
-								material.SpecularColor.B / 255));
-							mtlstream.WriteLine("illum 1");
-
-							if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-							{
-								mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-								// save texture
-								string mypath = Path.GetDirectoryName(a.FileName);
-								TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-							}
-
-							//progress.Step = String.Format("Texture {0}/{1}", material.TextureID + 1, LevelData.TextureBitmaps[LevelData.leveltexs].Length);
-							//progress.StepProgress();
-							Application.DoEvents();
-						}
-						#endregion
-
-						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
-					}
-				}
-		}
-
-		private void multiObjToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (FolderBrowserDialog dlg = new FolderBrowserDialog()
-			{
-				SelectedPath = Environment.CurrentDirectory,
-				ShowNewFolderButton = true
-			})
-			{
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					foreach (NJS_OBJECT obj in model.GetObjects().Where(a => a.Attach != null))
-					{
-						string objFileName = Path.Combine(dlg.SelectedPath, obj.Name + ".obj");
-						using (StreamWriter objstream = new StreamWriter(objFileName, false))
-						{
-							List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-							bool errorFlag = false;
-
-							Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
-
-							if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
-
-							using (StreamWriter mtlstream = new StreamWriter(Path.Combine(dlg.SelectedPath, TexturePackName + ".mtl"), false))
-							{
-								for (int i = 0; i < materials.Count; i++)
-								{
-									int texIndx = materials[i].TextureID;
-
-									NJS_MATERIAL material = materials[i];
-									mtlstream.WriteLine("newmtl material_{0}", i);
-									mtlstream.WriteLine("Ka 1 1 1");
-									mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-										material.DiffuseColor.R / 255,
-										material.DiffuseColor.G / 255,
-										material.DiffuseColor.B / 255));
-
-									mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-										material.SpecularColor.R / 255,
-										material.SpecularColor.G / 255,
-										material.SpecularColor.B / 255));
-									mtlstream.WriteLine("illum 1");
-
-									if (!string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-									{
-										mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-										// save texture
-										string mypath = Path.GetDirectoryName(objFileName);
-										TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2143,106 +2017,6 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 			}
 			unsaved = true;
-		}
-
-		private void importOBJToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog dlg = new OpenFileDialog()
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj"
-			})
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					Attach newattach = Direct3D.Extensions.obj2nj(dlg.FileName, TextureInfo?.Select(a => a.Name).ToArray());
-
-					editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = selectedObject.Attach is BasicAttach;
-
-					modelLibrary.Add(newattach);
-
-					if (selectedObject.Attach != null)
-					{
-						newattach.Name = selectedObject.Attach.Name;
-					}
-
-					meshes[Array.IndexOf(model.GetObjects(), selectedObject)] = newattach.CreateD3DMesh();
-					selectedObject.Attach = newattach;
-
-					Matrix m = Matrix.Identity;
-					selectedObject.ProcessTransforms(m);
-					float scale = Math.Max(Math.Max(selectedObject.Scale.X, selectedObject.Scale.Y), selectedObject.Scale.Z);
-					BoundingSphere bounds = new BoundingSphere(Vector3.TransformCoordinate(selectedObject.Attach.Bounds.Center.ToVector3(), m).ToVertex(), selectedObject.Attach.Bounds.Radius * scale);
-
-					bool boundsVisible = !cam.SphereInFrustum(bounds);
-
-					if (!boundsVisible)
-					{
-						cam.MoveToShowBounds(bounds);
-					}
-
-					DrawEntireModel();
-					unsaved = true;
-				}
-		}
-
-		private void exportOBJToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog a = new SaveFileDialog
-			{
-				DefaultExt = "obj",
-				Filter = "OBJ Files|*.obj",
-				FileName = selectedObject.Name
-			})
-			{
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					string objFileName = a.FileName;
-					NJS_OBJECT obj = selectedObject;
-					using (StreamWriter objstream = new StreamWriter(objFileName, false))
-					{
-						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
-						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-						bool errorFlag = false;
-
-						Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
-
-						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
-
-						string mypath = Path.GetDirectoryName(objFileName);
-						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
-						{
-							for (int i = 0; i < materials.Count; i++)
-							{
-								int texIndx = materials[i].TextureID;
-
-								NJS_MATERIAL material = materials[i];
-								mtlstream.WriteLine("newmtl material_{0}", i);
-								mtlstream.WriteLine("Ka 1 1 1");
-								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-									material.DiffuseColor.R / 255,
-									material.DiffuseColor.G / 255,
-									material.DiffuseColor.B / 255));
-
-								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-									material.SpecularColor.R / 255,
-									material.SpecularColor.G / 255,
-									material.SpecularColor.B / 255));
-								mtlstream.WriteLine("illum 1");
-
-								if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-								{
-									mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-									// save texture
-
-									TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-								}
-							}
-						}
-					}
-				}
-			}
 		}
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -2422,128 +2196,34 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 		}
 
-		private void aSSIMPImportToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			NJS_OBJECT obj = selectedObject;
-
-			using (OpenFileDialog ofd = new OpenFileDialog
-			{
-				DefaultExt = "fbx",
-				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
-			})
-			{
-				if (ofd.ShowDialog() == DialogResult.OK)
-				{
-					ImportModel_Assimp(ofd.FileName);
-				}
-			}
-		}
-
-		private void ImportModel_Assimp(string objFileName)
+		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
 		{
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
-
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
-			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
 			timer1.Stop();
-			modelFile = null;
-			animation = null;
-			animations = null;
-			animnum = -1;
-			animframe = 0;
-
-			//outfmt = ModelFormat.GC;
-			animations = new List<NJS_MOTION>();
-
-			treeView1.Nodes.Clear();
-			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-			//model = new NJS_OBJECT(scene, scene.RootNode, TextureInfo?.Select(t => t.Name).ToArray(), outfmt);
-			model = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, /* ? */ scene.RootNode.Children[0], outfmt, TextureInfo?.Select(t => t.Name).ToArray());
-
-			/*
-			if (scene.Animations.Count > 0)
+			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+			if (!selected)
 			{
-				animations = new NJS_MOTION[scene.Animations.Count];
-				using (FolderBrowserDialog dlg = new FolderBrowserDialog())
-				{
-					if (dlg.ShowDialog(this) == DialogResult.OK)
-					{
-						string animSavePath = dlg.SelectedPath;
-
-						for (int i = 0; i < scene.Animations.Count; i++)
-						{
-							NJS_MOTION motion = new NJS_MOTION();
-							Assimp.Animation anim = scene.Animations[i];
-
-							Dictionary<string, Assimp.NodeAnimationChannel> chans = new Dictionary<string, Assimp.NodeAnimationChannel>();
-							foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels.Where(a => a.NodeName.Contains("_$AssimpFbx$_")))
-							{
-								string name = animChannel.NodeName.Remove(animChannel.NodeName.IndexOf("_$AssimpFbx$_"));
-								if (chans.ContainsKey(name))
-								{
-									if (animChannel.HasPositionKeys)
-										chans[name].PositionKeys.AddRange(animChannel.PositionKeys);
-									if (animChannel.HasRotationKeys)
-										chans[name].RotationKeys.AddRange(animChannel.RotationKeys);
-									if (animChannel.HasScalingKeys)
-										chans[name].ScalingKeys.AddRange(animChannel.ScalingKeys);
-								}
-								else
-								{
-									animChannel.NodeName = name;
-									chans[name] = animChannel;
-								}
-							}
-
-							Dictionary<string, int> getIndex = new Dictionary<string, int>();
-							NJS_OBJECT[] objectArray = model.GetObjects();
-							for(int j = 0; j < objectArray.Length; j++)
-							{
-								getIndex.Add(objectArray[j].Name, j);
-
-							}
-
-							//did it like this instead of using nodeanimationchannelscount because for example, chao dont like if all the nodes arent present and im guessing the other animation functions dont either
-							motion.ModelParts = objectArray.Length;
-
-							foreach (Assimp.NodeAnimationChannel animChannel in anim.NodeAnimationChannels)
-							{
-								AnimModelData modelData = new AnimModelData();
-								if(animChannel.HasPositionKeys)
-									foreach(Assimp.VectorKey vecKey in animChannel.PositionKeys)
-									{
-										modelData.Position.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
-									}
-
-								if (animChannel.HasRotationKeys)
-									foreach (Assimp.QuaternionKey rotKey in animChannel.RotationKeys)
-									{
-										Assimp.Vector3D rotationConverted = rotKey.Value.ToEulerAngles();
-										modelData.Rotation.Add((int)rotKey.Time, new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z)));
-									}
-
-								if (animChannel.HasScalingKeys)
-									foreach (Assimp.VectorKey vecKey in animChannel.ScalingKeys)
-									{
-										modelData.Scale.Add((int)vecKey.Time, new Vertex(vecKey.Value.X, vecKey.Value.Y, vecKey.Value.Z));
-									}
-
-								motion.Models.Add(getIndex[animChannel.NodeName], modelData);
-							}
-							animations[i] = motion;
-						}
-
-					}
-				}
+				modelFile = null;
+				animation = null;
+				animations = null;
+				animnum = -1;
+				animframe = 0;
+				animations = new List<NJS_MOTION>();
+				model = newmodel;
 			}
-			*/
+			else
+			{
+				selectedObject.AddChild(newmodel);
+			}
 
 			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
+			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 
-			if (hasWeight = model.HasWeight)
+			if (model.HasWeight)
 				meshes = model.ProcessWeightedModel().ToArray();
 			else
 			{
@@ -2556,17 +2236,19 @@ namespace SonicRetro.SAModel.SAMDL
 						catch { }
 			}
 
-			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
-
-			AddTreeNode(model, treeView1.Nodes);
-			if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+			if (!selected)
+			{
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+				selectedObject = model;
+				AddModelToLibrary(model, false);
+			}
+			RebuildModelCache();
+			unsaved = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
-			selectedObject = model;
 			SelectedItemChanged();
-			unsaved = true;
-			AddModelToLibrary(model, false);
+			DrawEntireModel();
 		}
 
 		private void ShowWeightsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -2582,6 +2264,51 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 		}
 
+		private void ExportModel_Assimp(string filename, bool selected)
+		{
+			Assimp.AssimpContext context = new Assimp.AssimpContext();
+			Assimp.Scene scene = new Assimp.Scene();
+			scene.Materials.Add(new Assimp.Material());
+			Assimp.Node n = new Assimp.Node();
+			n.Name = "RootNode";
+			scene.RootNode = n;
+			string rootPath = Path.GetDirectoryName(filename);
+			List<string> texturePaths = new List<string>();
+			if (TextureInfo != null)
+			{
+				foreach (BMPInfo bmp in TextureInfo)
+				{
+					texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
+					bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+				}
+			}
+
+			// Export the whole model, the first child (in root sibling mode), or the selection
+			NJS_OBJECT exportmodel;
+			if (selected)
+				exportmodel = selectedObject;
+			else if (rootSiblingMode)
+				exportmodel = model.Children[0];
+			else
+				exportmodel = model;
+				SAEditorCommon.Import.AssimpStuff.AssimpExport(exportmodel, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+
+			string format = "collada";
+			switch (Path.GetExtension(filename).ToLowerInvariant())
+			{
+				case ".obj":
+					format = "obj";
+					break;
+				case ".fbx":
+					format = "fbx";
+					break;
+				case ".dae":
+				default:
+					break;
+			}
+			context.ExportFile(scene, filename, format, Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);
+		}
+
 		private void aSSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string expname = model.Name;
@@ -2590,70 +2317,13 @@ namespace SonicRetro.SAModel.SAMDL
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.fbx;*.dae",
+				Filter = "Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
 				FileName = expname
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					Assimp.AssimpContext context = new Assimp.AssimpContext();
-					Assimp.Scene scene = new Assimp.Scene();
-					scene.Materials.Add(new Assimp.Material());
-					Assimp.Node n = new Assimp.Node();
-					n.Name = "RootNode";
-					scene.RootNode = n;
-					string rootPath = Path.GetDirectoryName(a.FileName);
-					List<string> texturePaths = new List<string>();
-					if (TextureInfo != null)
-					{
-						foreach (BMPInfo bmp in TextureInfo)
-						{
-							texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
-							bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
-						}
-					}
-					if (rootSiblingMode)
-						SAEditorCommon.Import.AssimpStuff.AssimpExport(model.Children[0], scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
-					else
-						SAEditorCommon.Import.AssimpStuff.AssimpExport(model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
-					/*
-					if (animation != null)
-					{
-						Assimp.Animation asAnim = new Assimp.Animation() { Name = animation.Name };
-						asAnim.DurationInTicks = animation.Frames;
-						asAnim.TicksPerSecond = 0.1f;
-						string[] names = model.GetObjects().Select(l => l.Name).ToArray();
-						List<Assimp.NodeAnimationChannel> nodeAnimChannels = new List<Assimp.NodeAnimationChannel>();
-						foreach (KeyValuePair<int, AnimModelData> pair in animation.Models)
-						{
-							Assimp.NodeAnimationChannel channel = new Assimp.NodeAnimationChannel();
-							channel.NodeName = names[pair.Key];
-							AnimModelData data = pair.Value;
-							if(data.Position.Count > 0)
-							{
-								foreach(KeyValuePair<int, Vertex> ver in data.Position)
-									channel.PositionKeys.Add(new Assimp.VectorKey() { Time = ver.Key, Value = new Assimp.Vector3D(ver.Value.X, ver.Value.Y, ver.Value.Z) });
-							}
-							if (data.Rotation.Count > 0)
-							{
-								foreach (KeyValuePair<int, Rotation> ver in data.Rotation)
-									channel.RotationKeys.Add(new Assimp.QuaternionKey()
-									{
-										Time = ver.Key,
-										Value = new Assimp.Quaternion((ver.Value.YDeg) * (float)Math.PI / 180.0f, (ver.Value.ZDeg) * (float)Math.PI / 180.0f, (ver.Value.XDeg) * (float)Math.PI / 180.0f) //umm yeah
-									});
-							}
-							if (data.Scale.Count > 0)
-							{
-								foreach (KeyValuePair<int, Vertex> ver in data.Scale)
-									channel.ScalingKeys.Add(new Assimp.VectorKey() { Time = ver.Key, Value = new Assimp.Vector3D(ver.Value.X, ver.Value.Y, ver.Value.Z) });
-							}
-						}
-						asAnim.NodeAnimationChannels.AddRange(nodeAnimChannels);
-						scene.Animations.Add(asAnim);
-					}
-					*/
-					context.ExportFile(scene, a.FileName, a.FileName.EndsWith("dae") ? "collada" : "fbx", Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+					ExportModel_Assimp(a.FileName, false);
 				}
 			}
 		}
@@ -2925,8 +2595,11 @@ namespace SonicRetro.SAModel.SAMDL
 					RebuildModelCache();
 					SelectedItemChanged();
 					unsaved = true;
+					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				}
 			}
+			else
+				osd.UpdateOSDItem("Cannot delete root node", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 		}
 
 		private void RebuildModelCache()
@@ -2981,7 +2654,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
-			if (osd.UpdateTimer() == true) DrawEntireModel();
+			if (osd != null && osd.UpdateTimer()) DrawEntireModel();
 		}
 
 		private void buttonNew_Click(object sender, EventArgs e)
@@ -3547,6 +3220,138 @@ namespace SonicRetro.SAModel.SAMDL
 			DrawEntireModel();
 			SelectedItemChanged();
 			unsaved = true;
+		}
+
+		private void importAsModelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
+			})
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					ImportModel_Assimp(ofd.FileName, true);
+				}
+			}
+		}
+
+		private void importAsNodesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
+			})
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					ImportModel_Assimp(ofd.FileName, false);
+				}
+			}
+		}
+
+		private void exportContextMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
+				FileName = selectedObject.Name
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					string objFileName = a.FileName;
+					NJS_OBJECT obj = selectedObject;
+					using (StreamWriter objstream = new StreamWriter(objFileName, false))
+					{
+						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
+						if (TexturePackName == null || TexturePackName == "") TexturePackName = Path.ChangeExtension(objFileName, ".mtl");
+						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
+						bool errorFlag = false;
+
+						Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
+
+						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
+
+						string mypath = Path.GetDirectoryName(objFileName);
+						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
+						{
+							for (int i = 0; i < materials.Count; i++)
+							{
+								int texIndx = materials[i].TextureID;
+
+								NJS_MATERIAL material = materials[i];
+								mtlstream.WriteLine("newmtl material_{0}", i);
+								mtlstream.WriteLine("Ka 1 1 1");
+								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
+									((float)material.DiffuseColor.R / 255.0f).ToC(true),
+									((float)material.DiffuseColor.G / 255.0f).ToC(true),
+									((float)material.DiffuseColor.B / 255.0f).ToC(true)));
+
+								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
+									((float)material.SpecularColor.R / 255.0f).ToC(true),
+									((float)material.SpecularColor.G / 255.0f).ToC(true),
+									((float)material.SpecularColor.B / 255.0f).ToC(true)));
+								mtlstream.WriteLine("illum 1");
+
+								if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
+								{
+									mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
+
+									// save texture
+
+									TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private void importSelected(bool asSingle)
+		{
+			using (OpenFileDialog dlg = new OpenFileDialog()
+			{
+				DefaultExt = "obj",
+				Filter = "Model Files|*.dae;*.fbx;*.obj"
+			})
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+
+					ImportModel_Assimp(dlg.FileName, asSingle, true);
+
+					if (selectedObject.Attach != null)
+					{
+						Matrix m = Matrix.Identity;
+						selectedObject.ProcessTransforms(m);
+
+						float scale = Math.Max(Math.Max(selectedObject.Scale.X, selectedObject.Scale.Y), selectedObject.Scale.Z);
+						BoundingSphere bounds = new BoundingSphere(Vector3.TransformCoordinate(selectedObject.Attach.Bounds.Center.ToVector3(), m).ToVertex(), selectedObject.Attach.Bounds.Radius * scale);
+
+						bool boundsVisible = !cam.SphereInFrustum(bounds);
+
+						if (!boundsVisible)
+						{
+							cam.MoveToShowBounds(bounds);
+						}
+					}
+					DrawEntireModel();
+					unsaved = true;
+				}
+		}
+
+		private void importSelectedAsMeshContextMenuItem_Click(object sender, EventArgs e)
+		{
+			importSelected(true);
+		}
+
+		private void importSelectedAsNodesContextMenuItem_Click(object sender, EventArgs e)
+		{
+			importSelected(false);
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)

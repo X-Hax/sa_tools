@@ -44,6 +44,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			AddMouseMoveHandler(this);
 		}
 
+		protected override void WndProc(ref Message m)
+		{
+			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
+			if (m.Msg == 0x128) return;
+			base.WndProc(ref m);
+		}
+
 		private void AddMouseMoveHandler(Control c)
 		{
 			c.MouseMove += Panel1_MouseMove;
@@ -272,7 +279,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
 
 			editLevelInfoToolStripMenuItem.Enabled = false;
-			advancedSaveSETFileToolStripMenuItem.Enabled = false;
+			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
 		}
 		void ShowWelcomeScreen()
@@ -370,18 +377,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return false;
 			}
 
-			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+			ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog();
+			projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+
+			if (projectSelectDialog.ShowDialog() == DialogResult.OK)
 			{
-				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-
-				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-				{
-					LoadProject(projectSelectDialog.SelectedProject);
-
-					return true;
-				}
-				else return false;
+				LoadProject(projectSelectDialog.SelectedProject);
+				return true;
 			}
+
+			else return false;
 		}
 
 		private void LoadINI(string filename)
@@ -1351,7 +1356,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewSETItemsToolStripMenuItem.Enabled = true;
 
 			// Advanced Save menu
-			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
+			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
 
 			// Calculate All Bounds
 			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
@@ -1965,6 +1970,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void UpdateCameraOSD()
 		{
+			if (!isStageLoaded) return;
 			string cameraMode = "";
 			if (cameraKeyDown) cameraMode = "Move";
 			else if (zoomKeyDown) cameraMode = "Zoom";
@@ -2296,7 +2302,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 
-			if (camresult == 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
+			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
 			{
 				DrawLevel();
@@ -2539,6 +2545,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					LevelData.ClearLevelGeoAnims();
 				}
+				selectedItems.Clear();
 			}
 
 			foreach (string s in importFileDialog.FileNames)
@@ -2558,7 +2565,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Model Files|*.sa1mdl;*.obj",
+				Filter = "Model Files|*.dae;*.obj;*.fbx;|All Files|*.*",
 				InitialDirectory = currentProjectPath,
 				Multiselect = true
 			})
@@ -2587,9 +2594,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 							switch (extension)
 							{
 								case (".obj"):
-									model = Direct3D.Extensions.obj2nj(file);
+								case (".fbx"):
+								case (".dae"):
+									Assimp.AssimpContext context = new Assimp.AssimpContext();
+									context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
+									Assimp.Scene scene = context.ImportFile(file, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+									NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.Textures.Keys.ToArray(), true);
+									model = newmodel.Attach;
+									model.ProcessVertexData();
+									model.CalculateBounds();
 									break;
-
 								case (".sa1mdl"):
 									ModelFile modelFile = new ModelFile(file);
 									model = modelFile.Model.Attach;
@@ -2755,11 +2769,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			context.ExportFile(scene, fileName, ftype, Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
 
 			progress.SetTaskAndStep("Export complete!");
-		}
-
-		private void selectedItemsToolStripMenuItem1_Click(object sender, EventArgs e)
-		{
-
 		}
 
 		private void deathZoneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3602,13 +3611,60 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LoadLandtable(string filename)
 		{
+			LandTable land;
+			string ext = Path.GetExtension(filename).ToLowerInvariant();
+			switch (ext)
+			{
+				case ".sa1lvl":
+				case ".sa2lvl":
+				case ".sa2blvl":
+					land = LandTable.LoadFromFile(filename);
+					break;
+				default:
+					BinaryFileDialog bd = new BinaryFileDialog();
+					DialogResult res = bd.ShowDialog();
+					if (res != DialogResult.OK) return;
+					LandTableFormat fmt = LandTableFormat.SADX;
+					switch (bd.comboLevelFormat.SelectedIndex)
+					{
+						case 0: // SA1
+							fmt = LandTableFormat.SA1;
+							break;
+						case 2: // SA2
+							fmt = LandTableFormat.SA2;
+							break;
+						case 3: // SA2B
+							fmt = LandTableFormat.SA2B;
+							break;
+						case 1: // SADXPC 
+						default:
+							break;
+					}
+					bool bigendianbk = ByteConverter.BigEndian;
+					ByteConverter.BigEndian = bd.checkBoxBigEndian.Checked;
+					// PRS and REL hacks
+					byte[] datafile = File.ReadAllBytes(filename);
+					uint key = (uint)bd.numericKey.Value;
+					if (ext == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
+					else if (ext == ".rel")
+					{
+						ByteConverter.BigEndian = true;
+						datafile = SA_Tools.HelperFunctions.DecompressREL(datafile);
+						SA_Tools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
+						if (bd.comboLevelFormat.SelectedIndex == 0)
+							ByteConverter.Reverse = true; // SADX GC
+						key = 0xC900000; // Key always the same for REL pointers
+					}
+					land = new LandTable(datafile, (int)bd.numericAddress.Value, key, fmt);
+					break;
+			}
 			InitializeDirect3D();
 			selectedItems = new EditorItemSelection();
 			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			LevelData.geo = LandTable.LoadFromFile(filename);
+			LevelData.geo = land;
 			LevelData.ClearLevelItems();
 			LevelData.LevelSplines = new List<SplineData>();
 			LevelData.ObjDefs = new List<ObjectDefinition>();
@@ -3662,7 +3718,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
 			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
-			editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+			editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
 			addCAMItemToolStripMenuItem.Enabled = LevelData.CAMItems != null;
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
@@ -3673,7 +3729,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl",
+				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.bin;*.rel;*.prs|All Files|*.*",
 				InitialDirectory = currentProjectPath,
 				Multiselect = false
 			})
@@ -3751,7 +3807,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
 					bool isSETPreset = !LevelData.SETItemsIsNull();
 					objectToolStripMenuItem.Enabled = isSETPreset;
-					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
 					LevelData.StateChanged += LevelData_StateChanged;
 					LevelData.InvalidateRenderState();
 				}
@@ -4125,7 +4181,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				Filter = "Model Files|*.dae;*.obj;*.fbx",
 				InitialDirectory = currentProjectPath
 			})
 			{
@@ -4161,7 +4217,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae",
+				Filter = "Model Files|*.dae;*.obj;*.fbx",
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)

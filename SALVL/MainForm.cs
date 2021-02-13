@@ -715,7 +715,7 @@ namespace SonicRetro.SAModel.SALVL
 					break;
 			}
 
-			if (camresult == 2 && selectedItems != null && selectedItems.ItemCount > 0) propertyGrid1.Refresh();
+			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) propertyGrid1.Refresh();
 
 			if (camresult >= 1 || draw)
 			{

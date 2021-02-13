@@ -10,9 +10,9 @@ namespace SA_Tools
 {
 	public static class HelperFunctions
 	{
-		[DllImport("SACompGC.dll", SetLastError = true)]
+		[DllImport("SACompGC.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
 		private static extern uint GetDecompressedSize(IntPtr InputBuffer);
-		[DllImport("SACompGC.dll", SetLastError = true)]
+		[DllImport("SACompGC.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
 		private static extern void DecompressBuffer(IntPtr InputBuffer, IntPtr OutputBuffer);
 		public static uint? SetupEXE(ref byte[] exefile)
 		{
