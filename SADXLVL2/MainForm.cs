@@ -167,14 +167,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			else
 			{
-				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+				ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog();
+				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
 				{
-					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-
-					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-					{
-						LoadProject(projectSelectDialog.SelectedProject);
-					}
+					LoadProject(projectSelectDialog.SelectedProject);
 				}
 			}
 
@@ -359,18 +356,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return false;
 			}
 
-			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+			ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog();
+			projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+
+			if (projectSelectDialog.ShowDialog() == DialogResult.OK)
 			{
-				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-
-				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-				{
-					LoadProject(projectSelectDialog.SelectedProject);
-
-					return true;
-				}
-				else return false;
+				LoadProject(projectSelectDialog.SelectedProject);
+				return true;
 			}
+
+			else return false;
 		}
 
 		private void LoadINI(string filename)
@@ -1947,6 +1942,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void UpdateCameraOSD()
 		{
+			if (!isStageLoaded) return;
 			string cameraMode = "";
 			if (cameraKeyDown) cameraMode = "Move";
 			else if (zoomKeyDown) cameraMode = "Zoom";
@@ -3587,13 +3583,60 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void LoadLandtable(string filename)
 		{
+			LandTable land;
+			string ext = Path.GetExtension(filename).ToLowerInvariant();
+			switch (ext)
+			{
+				case ".sa1lvl":
+				case ".sa2lvl":
+				case ".sa2blvl":
+					land = LandTable.LoadFromFile(filename);
+					break;
+				default:
+					BinaryFileDialog bd = new BinaryFileDialog();
+					DialogResult res = bd.ShowDialog();
+					if (res != DialogResult.OK) return;
+					LandTableFormat fmt = LandTableFormat.SADX;
+					switch (bd.comboLevelFormat.SelectedIndex)
+					{
+						case 0: // SA1
+							fmt = LandTableFormat.SA1;
+							break;
+						case 2: // SA2
+							fmt = LandTableFormat.SA2;
+							break;
+						case 3: // SA2B
+							fmt = LandTableFormat.SA2B;
+							break;
+						case 1: // SADXPC 
+						default:
+							break;
+					}
+					bool bigendianbk = ByteConverter.BigEndian;
+					ByteConverter.BigEndian = bd.checkBoxBigEndian.Checked;
+					// PRS and REL hacks
+					byte[] datafile = File.ReadAllBytes(filename);
+					uint key = (uint)bd.numericKey.Value;
+					if (ext == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
+					else if (ext == ".rel")
+					{
+						ByteConverter.BigEndian = true;
+						datafile = SA_Tools.HelperFunctions.DecompressREL(datafile);
+						SA_Tools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
+						if (bd.comboLevelFormat.SelectedIndex == 0)
+							ByteConverter.Reverse = true; // SADX GC
+						key = 0xC900000; // Key always the same for REL pointers
+					}
+					land = new LandTable(datafile, (int)bd.numericAddress.Value, key, fmt);
+					break;
+			}
 			InitializeDirect3D();
 			selectedItems = new EditorItemSelection();
 			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			LevelData.geo = LandTable.LoadFromFile(filename);
+			LevelData.geo = land;
 			LevelData.ClearLevelItems();
 			LevelData.LevelSplines = new List<SplineData>();
 			LevelData.ObjDefs = new List<ObjectDefinition>();
@@ -3658,7 +3701,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl",
+				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.bin;*.rel;*.prs|All Files|*.*",
 				InitialDirectory = currentProjectPath,
 				Multiselect = false
 			})
