@@ -261,7 +261,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addAllLevelItemsToolStripMenuItem.Enabled = false;
 
 			editLevelInfoToolStripMenuItem.Enabled = false;
-			advancedSaveSETFileToolStripMenuItem.Enabled = false;
+			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
 		}
 		void ShowWelcomeScreen()
@@ -1333,7 +1333,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			viewSETItemsToolStripMenuItem.Enabled = true;
 
 			// Advanced Save menu
-			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
+			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
 
 			// Calculate All Bounds
 			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
@@ -3647,7 +3647,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
 			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
-			editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+			editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
 			addCAMItemToolStripMenuItem.Enabled = LevelData.CAMItems != null;
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
@@ -3736,7 +3736,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
 					bool isSETPreset = !LevelData.SETItemsIsNull();
 					objectToolStripMenuItem.Enabled = isSETPreset;
-					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
 					LevelData.StateChanged += LevelData_StateChanged;
 					LevelData.InvalidateRenderState();
 				}
