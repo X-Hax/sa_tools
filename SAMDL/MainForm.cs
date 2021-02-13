@@ -1902,7 +1902,7 @@ namespace SonicRetro.SAModel.SAMDL
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				splitToolStripMenuItem.Enabled = sortToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
-				importOBJToolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
+				importOBJToolStripMenuItem.Enabled = false;
 				//importOBJToolstripitem.Enabled = outfmt == ModelFormat.Basic;
 				exportOBJToolStripMenuItem.Enabled = false;
 			}
