@@ -2521,6 +2521,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				{
 					LevelData.ClearLevelGeoAnims();
 				}
+				selectedItems.Clear();
 			}
 
 			foreach (string s in importFileDialog.FileNames)

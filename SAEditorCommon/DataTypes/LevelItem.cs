@@ -159,6 +159,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
 			COL.Model.Attach = newmodel.Attach;
+			COL.Model.ProcessVertexData();
 			Visible = true;
 			Solid = true;
 			mesh = COL.Model.Attach.CreateD3DMesh();
