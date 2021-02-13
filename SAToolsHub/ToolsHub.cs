@@ -127,7 +127,7 @@ namespace SAToolsHub
 				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
 			projSplitEntries = projFile.SplitEntries;
-			if (setGame == "SA2PC" || setGame == "SA2" || setGame == "SA2TT" || setGame == "SA2P")
+			if (setGame.Contains("SA2"))
 			{
 				projSplitMDLEntries = projFile.SplitMDLEntries;
 				
