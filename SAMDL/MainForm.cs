@@ -1689,7 +1689,7 @@ namespace SonicRetro.SAModel.SAMDL
 			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked); 
 			if (camresult == 2 && selectedObject != null) propertyGrid1.Refresh();
-			if (camresult >= 1)
+			if (camresult >= 1 && !timer1.Enabled)
 			{
 				UpdateWeightedModel();
 				DrawEntireModel();
