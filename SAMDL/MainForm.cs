@@ -1991,7 +1991,7 @@ namespace SonicRetro.SAModel.SAMDL
 						using (StreamWriter objstream = new StreamWriter(objFileName, false))
 						{
 							List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
+							if (TexturePackName == null || TexturePackName == "") TexturePackName = Path.ChangeExtension(objFileName, ".mtl");
 							objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
 							bool errorFlag = false;
 
@@ -2201,7 +2201,7 @@ namespace SonicRetro.SAModel.SAMDL
 					using (StreamWriter objstream = new StreamWriter(objFileName, false))
 					{
 						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-
+						if (TexturePackName == null || TexturePackName == "") TexturePackName = Path.ChangeExtension(objFileName, ".mtl");
 						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
 						bool errorFlag = false;
 
@@ -2220,14 +2220,14 @@ namespace SonicRetro.SAModel.SAMDL
 								mtlstream.WriteLine("newmtl material_{0}", i);
 								mtlstream.WriteLine("Ka 1 1 1");
 								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-									material.DiffuseColor.R / 255,
-									material.DiffuseColor.G / 255,
-									material.DiffuseColor.B / 255));
+									((float)material.DiffuseColor.R / 255.0f).ToC(true),
+									((float)material.DiffuseColor.G / 255.0f).ToC(true),
+									((float)material.DiffuseColor.B / 255.0f).ToC(true)));
 
 								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-									material.SpecularColor.R / 255,
-									material.SpecularColor.G / 255,
-									material.SpecularColor.B / 255));
+									((float)material.SpecularColor.R / 255.0f).ToC(true),
+									((float)material.SpecularColor.G / 255.0f).ToC(true),
+									((float)material.SpecularColor.B / 255.0f).ToC(true)));
 								mtlstream.WriteLine("illum 1");
 
 								if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
