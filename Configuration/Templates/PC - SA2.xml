@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
-  <GameInfo gameName="SA2PC" gameSystemFolder="D:\SteamLibrary\steamapps\common\Sonic Adventure 2" dataFolder="SA2PC" />
+  <GameInfo gameName="SA2PC" gameSystemFolder="" dataFolder="SA2PC" />
   <SplitEntry SourceFile="sonic2app.exe" IniFile="splitsonic2app" />
   <SplitEntry SourceFile="resource/gd_PC/DLL/Win32/Data_DLL_orig.dll" IniFile="data_dll" />
   <SplitEntryMDL BigEndian="true" ModelFile="resource\gd_PC\amymdl.prs">

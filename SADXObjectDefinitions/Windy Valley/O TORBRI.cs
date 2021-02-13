@@ -29,7 +29,7 @@ namespace SADXObjectDefinitions.WindyValley
 			meshesB = ObjectHelper.GetMeshes(modelB);
 			modelC = ObjectHelper.LoadModel("stg02_windy/common/models/windobj_bridge_a3.nja.sa1mdl");
 			meshesC = ObjectHelper.GetMeshes(modelC);
-			modelD = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O TORBRI_D.sa1mdl");
+			modelD = ObjectHelper.LoadModel("stg02_windy/common/models/windobj_bridge_a4.nja.sa1mdl");
 			meshesD = ObjectHelper.GetMeshes(modelD);
 		}
 
