@@ -419,11 +419,16 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					// scale all of our editor selected items
 					foreach (Item item in selectedItems.Items)
 					{
-						if (item is LevelItem || item is DeathZoneItem)
-							continue;
 						if (item is IScaleable scalableItem)
 						{
-							scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
+							// Scaling speed for SET items
+							float speed = 1.0f;
+
+							// Non-SET items should have slower scaling
+							if (item is LevelItem || item is DeathZoneItem)
+								speed = 0.01f;
+
+							scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0, speed));
 						}
 						result = true;
 					}
@@ -510,25 +515,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		/// <param name="cam">Reference camera. Provides extra context for Mouse Delta.</param>
 		/// <param name="clamp">If TRUE, minScale is used as the lowest value that the scale can be. Clamp is applied to all dimensions of the vector.</param>
 		/// <param name="minScale">Minimum acceptable scale values.</param>
+		/// /// <param name="multiplier">Scale multiplier to make scaling faster or slower.</param>
 		/// <returns></returns>
-		public Vertex Scale(Vector2 input, Vertex sourceScale, EditorCamera cam, bool clamp, float minScale)
+		public Vertex Scale(Vector2 input, Vertex sourceScale, EditorCamera cam, bool clamp, float minScale, float multiplier)
 		{
 			switch (selectedAxes)
 			{
 				case GizmoSelectedAxes.X_AXIS:
-					return new Vertex(MathHelper.Clamp(sourceScale.X + input.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+					return new Vertex(MathHelper.Clamp(sourceScale.X + input.X * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 
 				case GizmoSelectedAxes.Y_AXIS:
 					return new Vertex(MathHelper.Clamp(sourceScale.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
-						MathHelper.Clamp(sourceScale.Y + input.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+						MathHelper.Clamp(sourceScale.Y + input.Y * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 
 				case GizmoSelectedAxes.Z_AXIS:
 					return new Vertex(MathHelper.Clamp(sourceScale.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
-						MathHelper.Clamp(sourceScale.Z + input.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
+						MathHelper.Clamp(sourceScale.Z + input.X * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 			}
 
 			return sourceScale;
