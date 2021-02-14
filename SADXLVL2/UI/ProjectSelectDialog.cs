@@ -34,16 +34,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			InitializeComponent();
 		}
 
-		private void listRecentFiles_SelectedIndexChanged(object sender, EventArgs e)
+		private void listProjects_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listProjects.SelectedIndices.Count > 0)
 			{
 				buttonGo.Enabled = true;
-				//SelectedItem = listRecentFiles.SelectedItem.ToString();
 			}
 		}
 
-		private void listRecentFiles_DoubleClick(object sender, EventArgs e)
+		private void listProjects_DoubleClick(object sender, EventArgs e)
 		{
 			if (listProjects.SelectedIndices.Count > 0)
 				buttonGo.PerformClick();
@@ -52,7 +51,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void buttonGo_Click(object sender, EventArgs e)
 		{
 			selectedProject = listProjects.Items[listProjects.SelectedIndex].ToString();
-			Hide();
 		}
 
 		private void ProjectSelectDialog_Shown(object sender, EventArgs e)
@@ -60,6 +58,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 			foreach(string project in projects)
 			{
 				listProjects.Items.Add(project);
+			}
+		}
+
+		private void ProjectSelectDialog_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Escape)
+			{
+				DialogResult = DialogResult.Cancel;
 			}
 		}
 	}

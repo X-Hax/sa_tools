@@ -201,6 +201,31 @@ namespace SonicRetro.SAModel.SAMDL
 			},
 			#endregion
 
+			#region Lighting hotkeys
+			new ActionKeyMapping()
+			{
+				Name = "Brighten Ambient",
+				MainKey = Keys.Home,
+				AltKey = Keys.None,
+				Description = "Make ambient lighting brighter (back light)",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Darken Ambient",
+				MainKey = Keys.End,
+				AltKey = Keys.None,
+				Description = "Make ambient lighting darker (back light)",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			#endregion
+
 		};
 
 		public static ActionKeyMapping[] DefaultActionMapping { get { return defaultActionMapping; } }

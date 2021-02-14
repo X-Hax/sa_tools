@@ -103,12 +103,28 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
+
 			[DefaultValue(1.125f)]
 			public float CamMoveSpeed { get; set; }
+
 			[DefaultValue(10000.0f)]
 			public float DrawDistance { get; set; }
+
+			[DefaultValue(1)]
 			public int CameraModifier { get; set; }
+
+			[DefaultValue(false)]
 			public bool AlternativeCamera { get; set; }
+
+			[DefaultValue(0.0f)]
+			public float BackLightAmbientR { get; set; }
+
+			[DefaultValue(0.0f)]
+			public float BackLightAmbientG { get; set; }
+
+			[DefaultValue(0.0f)]
+			public float BackLightAmbientB { get; set; }
+
 			public Settings_SAMDL()
 			{
 				ShowWelcomeScreen = true;
@@ -116,6 +132,9 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				DrawDistance = 10000.0f;
 				CameraModifier = 1;
 				AlternativeCamera = false;
+				BackLightAmbientR = 0.0f;
+				BackLightAmbientG = 0.0f;
+				BackLightAmbientB = 0.0f;
 			}
 
 		}

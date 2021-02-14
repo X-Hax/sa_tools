@@ -35,12 +35,26 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		public static ActionMappingList Load(string path, ActionKeyMapping[] defaultKeyMappings)
 		{
+			ActionMappingList result = new ActionMappingList();
 			if (File.Exists(path))
 			{
 				ActionMappingList testlist = IniSerializer.Deserialize<ActionMappingList>(path);
 				if (MappingListOutdated(testlist))
-					return CreateMappingList(defaultKeyMappings);
-				else return testlist;
+					result = CreateMappingList(defaultKeyMappings);
+				else result = testlist;
+
+				// Check if new actions were added to the default list
+				foreach (ActionKeyMapping map_def in defaultKeyMappings)
+				{
+					bool found = false;
+					foreach (ActionKeyMapping map_act in result.ActionKeyMappings)
+					{
+						if (map_act.Name == map_def.Name)
+							found = true;
+					}
+					if (!found) result.ActionKeyMappings.Add(map_def);
+				}
+				return result;
 			}
 			else
 			{

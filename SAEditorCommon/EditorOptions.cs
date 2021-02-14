@@ -22,6 +22,9 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		private static bool ignoreMaterialColors = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
+		public static Light keyLight;
+		public static Light backLight;
+		public static Light fillLight;
 
 		public static FillMode RenderFillMode { get { return renderFillMode; } set { renderFillMode = value; } }
 		public static Cull RenderCullMode { get { return renderCullMode; } set { renderCullMode = value; } }
@@ -62,7 +65,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			}
 
 			#region Key Light
-			Light l0 = new Light()
+			keyLight = new Light()
 			{
 				Type = LightType.Directional,
 				Diffuse = Color.FromArgb(255, 180, 172, 172).ToRawColor4(),
@@ -71,12 +74,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				Range = 0,
 				Direction = Vector3.Normalize(new Vector3(-0.245f, -1, 0.125f))
 			};
-			d3dDevice.SetLight(0, ref l0);
+			d3dDevice.SetLight(0, ref keyLight);
 			d3dDevice.EnableLight(0, true);
 			#endregion
 
 			#region Fill Light
-			Light l1 = new Light()
+			fillLight = new Light()
 			{
 				Type = LightType.Directional,
 				Diffuse = Color.FromArgb(255, 132, 132, 132).ToRawColor4(),
@@ -85,12 +88,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				Range = 0,
 				Direction = Vector3.Normalize(new Vector3(0.245f, -0.4f, -0.125f))
 			};
-			d3dDevice.SetLight(1, ref l1);
+			d3dDevice.SetLight(1, ref fillLight);
 			d3dDevice.EnableLight(1, true);
 			#endregion
 
 			#region Back Light
-			Light l2 = new Light()
+			backLight = new Light()
 			{
 				Type = LightType.Directional,
 				Diffuse = Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
@@ -99,10 +102,20 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				Range = 0,
 				Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
 			};
-			d3dDevice.SetLight(2, ref l2);
+			d3dDevice.SetLight(2, ref backLight);
 			d3dDevice.EnableLight(2, true);
 			#endregion
 
+		}
+
+		public static void UpdateDefaultLights(Device d3dDevice)
+		{
+			d3dDevice.SetLight(0, ref keyLight);
+			d3dDevice.EnableLight(0, true);
+			d3dDevice.SetLight(1, ref fillLight);
+			d3dDevice.EnableLight(1, true);
+			d3dDevice.SetLight(2, ref backLight);
+			d3dDevice.EnableLight(2, true);
 		}
 
 		public static void RenderStateCommonSetup(Device d3ddevice)

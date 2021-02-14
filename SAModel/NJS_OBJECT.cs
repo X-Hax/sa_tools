@@ -235,6 +235,15 @@ namespace SonicRetro.SAModel
 				Children[i - 1].Sibling = Children[i];
 		}
 
+		public ModelFormat GetModelFormat()
+		{
+			// BasicAttach has no internal distinction between Basic and BasicDX
+			ModelFormat result = ModelFormat.BasicDX;
+			if (Attach is ChunkAttach) result = ModelFormat.Chunk;
+			else if (Attach is GC.GCAttach) result = ModelFormat.GC;
+			return result;
+		}
+
 		public ObjectFlags GetFlags()
 		{
 			ObjectFlags flags = 0;

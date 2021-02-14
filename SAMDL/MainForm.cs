@@ -725,6 +725,10 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
+			EditorOptions.backLight.Ambient.R = settingsfile.SAMDL.BackLightAmbientR;
+			EditorOptions.backLight.Ambient.G = settingsfile.SAMDL.BackLightAmbientG;
+			EditorOptions.backLight.Ambient.B = settingsfile.SAMDL.BackLightAmbientB;
+			EditorOptions.UpdateDefaultLights(d3ddevice);
 		}
 		private void LoadBinFile(byte[] file)
 		{
@@ -927,7 +931,6 @@ namespace SonicRetro.SAModel.SAMDL
 								{
 									if (tex.Name != null)
 									{
-										MessageBox.Show("test");
 										texList.Add(tex.Name);
 									}
 								}
@@ -1623,7 +1626,28 @@ namespace SonicRetro.SAModel.SAMDL
 				case ("Play/Pause Animation"):
 					PlayPause();
 					break;
-
+				case ("Brighten Ambient"):
+					EditorOptions.backLight.Ambient.R = Math.Min(1.0f, EditorOptions.backLight.Ambient.R + 0.1f);
+					EditorOptions.backLight.Ambient.G = Math.Min(1.0f, EditorOptions.backLight.Ambient.G + 0.1f);
+					EditorOptions.backLight.Ambient.B = Math.Min(1.0f, EditorOptions.backLight.Ambient.B + 0.1f);
+					EditorOptions.UpdateDefaultLights(d3ddevice);
+					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					draw = true;
+					break;
+				case ("Darken Ambient"):
+					EditorOptions.backLight.Ambient.R = Math.Max(0.0f, EditorOptions.backLight.Ambient.R - 0.1f);
+					EditorOptions.backLight.Ambient.G = Math.Max(0.0f, EditorOptions.backLight.Ambient.G - 0.1f);
+					EditorOptions.backLight.Ambient.B = Math.Max(0.0f, EditorOptions.backLight.Ambient.B - 0.1f);
+					EditorOptions.UpdateDefaultLights(d3ddevice);
+					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					osd.UpdateOSDItem("Darken Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					draw = true;
+					break;
 				default:
 					break;
 			}
@@ -1702,21 +1726,26 @@ namespace SonicRetro.SAModel.SAMDL
 		}
 		#endregion
 
+		private void LoadTextures(string filename)
+		{
+			TextureInfo = TextureArchive.GetTextures(filename);
+
+			TexturePackName = Path.GetFileNameWithoutExtension(filename);
+			Textures = new Texture[TextureInfo.Length];
+			for (int j = 0; j < TextureInfo.Length; j++)
+				Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
+
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
+			if (loaded) DrawEntireModel();
+		}
+
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					TextureInfo = TextureArchive.GetTextures(a.FileName);
-
-					TexturePackName = Path.GetFileNameWithoutExtension(a.FileName);
-					Textures = new Texture[TextureInfo.Length];
-					for (int j = 0; j < TextureInfo.Length; j++)
-						Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-
-					unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
-					DrawEntireModel();
+					LoadTextures(a.FileName);
 				}
 			}
 		}
@@ -2198,13 +2227,30 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
 		{
+			if (TextureInfo == null)
+			{
+				using (OpenFileDialog a = new OpenFileDialog() { Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
+				{
+					if (a.ShowDialog() == DialogResult.OK)
+					{
+						LoadTextures(a.FileName);
+						DrawEntireModel();
+					}
+					else
+						MessageBox.Show("No textures are loaded. Materials may not be imported properly.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
+			}
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+			Assimp.Node importnode = scene.RootNode;
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			timer1.Stop();
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+			// Collada adds a root node, so use the first child node instead
+			if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
+				importnode = scene.RootNode.Children[0];
+			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
