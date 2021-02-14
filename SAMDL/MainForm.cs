@@ -3309,51 +3309,7 @@ namespace SonicRetro.SAModel.SAMDL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					string objFileName = a.FileName;
-					NJS_OBJECT obj = selectedObject;
-					using (StreamWriter objstream = new StreamWriter(objFileName, false))
-					{
-						List<NJS_MATERIAL> materials = new List<NJS_MATERIAL>();
-						if (TexturePackName == null || TexturePackName == "") TexturePackName = Path.ChangeExtension(objFileName, ".mtl");
-						objstream.WriteLine("mtllib " + TexturePackName + ".mtl");
-						bool errorFlag = false;
-
-						Direct3D.Extensions.WriteSingleModelAsObj(objstream, obj, ref materials, ref errorFlag);
-
-						if (errorFlag) osd.AddMessage("Error(s) encountered during export. Inspect the output file for more details.", 180);
-
-						string mypath = Path.GetDirectoryName(objFileName);
-						using (StreamWriter mtlstream = new StreamWriter(Path.Combine(mypath, TexturePackName + ".mtl"), false))
-						{
-							for (int i = 0; i < materials.Count; i++)
-							{
-								int texIndx = materials[i].TextureID;
-
-								NJS_MATERIAL material = materials[i];
-								mtlstream.WriteLine("newmtl material_{0}", i);
-								mtlstream.WriteLine("Ka 1 1 1");
-								mtlstream.WriteLine(string.Format("Kd {0} {1} {2}",
-									((float)material.DiffuseColor.R / 255.0f).ToC(true),
-									((float)material.DiffuseColor.G / 255.0f).ToC(true),
-									((float)material.DiffuseColor.B / 255.0f).ToC(true)));
-
-								mtlstream.WriteLine(string.Format("Ks {0} {1} {2}",
-									((float)material.SpecularColor.R / 255.0f).ToC(true),
-									((float)material.SpecularColor.G / 255.0f).ToC(true),
-									((float)material.SpecularColor.B / 255.0f).ToC(true)));
-								mtlstream.WriteLine("illum 1");
-
-								if (TextureInfo != null && !string.IsNullOrEmpty(TextureInfo[texIndx].Name) && material.UseTexture)
-								{
-									mtlstream.WriteLine("Map_Kd " + TextureInfo[texIndx].Name + ".png");
-
-									// save texture
-
-									TextureInfo[texIndx].Image.Save(Path.Combine(mypath, TextureInfo[texIndx].Name + ".png"));
-								}
-							}
-						}
-					}
+					ExportModel_Assimp(a.FileName, true);
 				}
 			}
 		}
