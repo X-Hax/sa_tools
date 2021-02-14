@@ -37,20 +37,37 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 		{
 			suppressSelectionEvents = true;
 
-			selection.Clear();
+			// Find items that were in the selection but are no longer selected
+			List<Item> removeitems = new List<Item>();
+			foreach (Item olditem in selection.Items)
+			{
+				bool found = false;
+				foreach (TreeNode selectedNode in sceneTreeView.SelectedNodes)
+				{
+					Item _item = GetItemForNode(selectedNode);
+					if (olditem == _item) found = true;
+				}
+				if (!found) removeitems.Add(olditem);
+			}
 
-			// match our editor selection to our tree
+			// Remove items that are no longer selected
+			foreach (Item remove in removeitems)
+			{
+				selection.Remove(remove);
+			}
+
+			// Add items that weren't selected previously
 			foreach (TreeNode selectedNode in sceneTreeView.SelectedNodes)
 			{
 				// figure out which kind of node we are by looking at the immediate parent.
+				Item _item = GetItemForNode(selectedNode);
 				if (selectedNode == sceneTreeView.TopNode) continue;
 				if (selectedNode == levelItemNode || selectedNode == deathZoneNode ||
 					selectedNode == setNode || selectedNode == camNode ||
 					selectedNode == missionSETNode || selectedNode == splineNode) continue;
 
-				Item _item = GetItemForNode(selectedNode);
-				selection.Add(_item); // todo: need to find a way to suppress 
-									  // selection update events to prevent this from going crazy
+				if (!selection.Contains(_item))
+					selection.Add(_item);
 			}
 
 			suppressSelectionEvents = false;

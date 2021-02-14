@@ -364,59 +364,74 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			return position = (sourcePosition + MoveDirection(input, cam));
 		}
 
-		public void TransformGizmoMove(System.Drawing.Point mouseDelta, EditorCamera cam, EditorItemSelection selectedItems)
+		public bool TransformGizmoMove(System.Drawing.Point mouseDelta, EditorCamera cam, EditorItemSelection selectedItems)
 		{
-			if (Enabled)
+			bool result = false;
+
+			// Returns false if no actual movement happened
+			if (!Enabled) 
+				return false;
+
+				float xChange = mouseDelta.X / 2 * cam.MoveSpeed;
+				float yChange = mouseDelta.Y / 2 * cam.MoveSpeed;
+				if (xChange == 0 && yChange == 0) return false;
+
+				Item firstItem = selectedItems.Get(0);
+				Vector2 gizmoMouseInput = new Vector2(xChange, yChange);
+
+			switch (Mode)
 			{
-				Vector2 gizmoMouseInput = new Vector2(mouseDelta.X / 2 * cam.MoveSpeed, mouseDelta.Y / 2 * cam.MoveSpeed);
-
-				switch (Mode)
-				{
-					case TransformMode.NONE:
-						break;
-					case TransformMode.TRANFORM_MOVE:
-						// move all of our editor selected items
-						foreach (Item item in selectedItems.Items)
+				case TransformMode.TRANFORM_MOVE:
+					// Move selected items
+					foreach (Item item in selectedItems.Items)
+					{
+						Vertex backuppos = item.Position.Clone();
+						item.Position = Move(gizmoMouseInput,
+							item.Position.ToVector3(), cam).ToVertex();
+						// Update item bounds
+						if (item is LevelItem)
 						{
-							item.Position = Move(gizmoMouseInput,
-								item.Position.ToVector3(), cam).ToVertex();
-
-							if (item is LevelItem)
-							{
-								LevelItem levelItem = item as LevelItem; // recalculating the entire bounds could be slow
-								levelItem.CalculateBounds(); // what if we just moved the bounds position instead?
-							}
+							LevelItem levelItem = item as LevelItem;
+							Vertex newpos = item.Position;
+							levelItem.Bounds.Center.X += newpos.X - backuppos.X;
+							levelItem.Bounds.Center.Y += newpos.Y - backuppos.Y;
+							levelItem.Bounds.Center.Z += newpos.Z - backuppos.Z;
 						}
-
-						Item firstItem = selectedItems.Get(0);
-						//transformGizmo.SetGizmo(transformGizmo.Position, firstItem.TransformMatrix);
-						SetGizmo(
-							((Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
-							firstItem.TransformMatrix);
-						break;
-					case TransformMode.TRANSFORM_ROTATE:
-						// rotate all of our editor selected items
-						foreach (Item item in selectedItems.Items)
+						result = true;
+					}
+					// Update gizmo position
+					SetGizmo(
+						((Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+					return result;
+				case TransformMode.TRANSFORM_ROTATE:
+					// rotate all of our editor selected items
+					foreach (Item item in selectedItems.Items)
+					{
+						item.Rotation = Rotate(gizmoMouseInput, cam, item.Rotation);
+						result = true;
+					}
+					SetGizmo(
+						((Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+					return result;
+				case TransformMode.TRANSFORM_SCALE:
+					// scale all of our editor selected items
+					foreach (Item item in selectedItems.Items)
+					{
+						if (item is IScaleable scalableItem)
 						{
-							item.Rotation = Rotate(gizmoMouseInput, cam, item.Rotation);
+							scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
 						}
-
-						firstItem = selectedItems.Get(0);
-						SetGizmo(Position, firstItem.TransformMatrix);
-						break;
-					case TransformMode.TRANSFORM_SCALE:
-						// scale all of our editor selected items
-						foreach (Item item in selectedItems.Items)
-						{
-							if (item is IScaleable scalableItem)
-							{
-								scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
-							}
-						}
-						break;
-					default:
-						break;
-				}
+						result = true;
+					}
+					SetGizmo(
+						((Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
+						firstItem.TransformMatrix);
+					return result;
+				case TransformMode.NONE:
+				default:
+					return false;
 			}
 		}
 		#endregion

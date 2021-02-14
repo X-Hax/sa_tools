@@ -412,6 +412,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			bool importError = false;
 			string importErrorMsg = "";
+			Vector3 pos = camera.Position + (-20 * camera.Look);
 
 			switch (filePathInfo.Extension)
 			{
@@ -427,7 +428,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					break;
 				case ".obj":
 				case ".objf":
-					Vector3 pos = camera.Position + (-20 * camera.Look);
 					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
 					{
 						Visible = true
@@ -472,7 +472,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 									mfmt = ModelFormat.GC;
 									break;
 							}
-						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, mfmt, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray());
+						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, mfmt, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray(), true);
 						{
 							//sa2 collision patch
 							if(obj.Attach.GetType() == typeof(BasicAttach))
@@ -502,7 +502,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 							}
 						}
 						obj.Attach.ProcessVertexData();
-						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X, obj.Position.Y, obj.Position.Z), obj.Rotation, levelItems.Count, selectionManager)
+						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X+pos.X, obj.Position.Y+pos.Y, obj.Position.Z+pos.Z), obj.Rotation, levelItems.Count, selectionManager)
 						{
 							Visible = isVisible
 						};
