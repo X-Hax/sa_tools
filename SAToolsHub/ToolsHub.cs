@@ -53,7 +53,7 @@ namespace SAToolsHub
 			msc
 		}
 
-		private Dictionary<fileTags, string> itemTag = new Dictionary<fileTags, string>();
+		private Dictionary<string, string> itemTag = new Dictionary<string, string>();
 
 		//Variables
 		public static string newProjFile { get; set; }
@@ -231,6 +231,7 @@ namespace SAToolsHub
 				item = new ListViewItem(file.Name, (int)item_icons.file);
 				string fileName = (file.Name.ToLower());
 				string fileType = (file.Extension.ToLower());
+				string filePath = (file.FullName);
 
 				switch (fileType)
 				{
@@ -243,7 +244,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.model;
-							item.Tag = "mdl";
 							item.ToolTipText = "Double click to open in SAMDL";
 							break;
 						}
@@ -256,7 +256,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.level;
-							item.Tag = "lvl";
 							item.ToolTipText = "Double click to open in SALVL";
 							break;
 						}
@@ -267,7 +266,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.data;
-							item.Tag = "ini";
 							switch (fileName)
 							{
 								case "mod":
@@ -289,7 +287,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.document;
-							item.Tag = "txt";
 							item.ToolTipText = "Double click to open in the default text editor.";
 							break;
 						}
@@ -302,7 +299,6 @@ namespace SAToolsHub
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
 								item.ImageIndex = (int)item_icons.camera;
-								item.Tag = "cam";
 							}
 							else if (fileName.Contains("set"))
 							{
@@ -311,7 +307,6 @@ namespace SAToolsHub
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
 								item.ImageIndex = (int)item_icons.setobj;
-								item.Tag = "set";
 							}
 							else
 							{
@@ -319,7 +314,6 @@ namespace SAToolsHub
 									{ new ListViewItem.ListViewSubItem(item, "Binary File"),
 								new ListViewItem.ListViewSubItem(item,
 									file.LastAccessTime.ToShortDateString())};
-								item.Tag = "bin";
 							}
 							break;
 						}
@@ -333,7 +327,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
-							item.Tag = "tex";
 							item.ToolTipText = "Double click to open in Texture Editor";
 							break;
 						}
@@ -345,7 +338,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
-							item.Tag = "tvr";
 							break;
 						}
 					case ".pvp":
@@ -357,7 +349,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
-							item.Tag = "plt";
 							break;
 						}
 					case ".dds":
@@ -371,7 +362,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.texture;
-							item.Tag = "img";
 							item.ToolTipText = "Double click to open in default image program";
 							break;
 						}
@@ -383,7 +373,6 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Model"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-								item.Tag = "mdl";
 								item.ToolTipText = "Double click to open in SAMDL";
 							}
 							else if (fileName.Contains("tex") || fileName.Contains("tx") || fileName.Contains("bg"))
@@ -392,7 +381,6 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Texture Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-								item.Tag = "tex";
 								item.ToolTipText = "Double click to open in Texture Editor";
 							}
 							else if (fileName.Contains("mtn"))
@@ -401,7 +389,6 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "Compressed Animations Archive"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-								item.Tag = "anm";
 							}
 							else
 							{
@@ -409,7 +396,6 @@ namespace SAToolsHub
 									{ new ListViewItem.ListViewSubItem(item, "Compressed File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-								item.Tag = "prs";
 							}
 							item.ImageIndex = (int)item_icons.compress;
 							break;
@@ -421,7 +407,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.anim;
-							item.Tag = "anm";
 							break;
 						}
 					case ".adx":
@@ -435,7 +420,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.audio;
-							item.Tag = "snd";
 							break;
 						}
 					case ".wmv":
@@ -447,7 +431,6 @@ namespace SAToolsHub
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.camera;
-							item.Tag = "vid";
 							break;
 						}
 					default:
@@ -456,11 +439,10 @@ namespace SAToolsHub
 								{ new ListViewItem.ListViewSubItem(item, "File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
-							item.Tag = "msc";
 							break;
 						}
 				}
-
+				item.Tag = filePath;
 				item.SubItems.AddRange(subItems);
 				listView1.Items.Add(item);
 			}
@@ -932,66 +914,74 @@ namespace SAToolsHub
 			if (e.Button == MouseButtons.Left)
 			{
 				TreeNode selNode = new TreeNode();
-				string filePath = "";
-
 				string itemName = listView1.SelectedItems[0].Text;
-				string itemTag = (string)listView1.SelectedItems[0].Tag;
-				if (itemTag != "dir")
+				string itemPath = listView1.SelectedItems[0].Tag.ToString();
+				string itemExt;
+
+				if ((string)listView1.SelectedItems[0].Tag == "dir")
 				{
-					string itemPath = treeView1.SelectedNode.FullPath;
-					if (treeView1.SelectedNode.Index == 1)
-					{
-						switch (SAToolsHub.setGame)
-						{
-							case ("SADXPC"):
-								filePath = string.Format("\"{0}\"", Path.Combine(gameSystemDirectory, (Path.Combine(itemPath, itemName))));
-								break;
-							case ("SA2PC"):
-								filePath = string.Format("\"{0}\"", Path.Combine(Path.Combine(gameSystemDirectory, "resource"), (Path.Combine(itemPath, itemName))));
-								break;
-						}
-					}
-					else
-						filePath = string.Format("\"{0}\"", Path.Combine(Path.Combine(projectDirectory, "/../"), (Path.Combine(itemPath, itemName))));
+					selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
+					itemExt = "dir";
 				}
 				else
 				{
-					selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
+					itemExt = Path.GetExtension(itemPath);
 				}
 
 				if (listView1.SelectedItems.Count > 0)
 				{
-
-					switch (itemTag)
+					switch (itemExt.ToLower())
 					{
 						case "dir":
 							SelectListViewNode(selNode);
 							treeView1.SelectedNode = selNode;
 							break;
-						case "mdl":
-							samdlStartInfo.Arguments = filePath;
-							Process samdlProcess = Process.Start(samdlStartInfo);
+						case ".sa1mdl":
+						case ".sa2mdl":
+						case ".sa2bmdl":
+							samdlStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(samdlStartInfo);
 							break;
-						case "lvl":
-							salvlStartInfo.Arguments = filePath;
-							Process salvlProcess = Process.Start(salvlStartInfo);
+						case ".sa1lvl":
+						case ".sa2lvl":
+						case ".sa2blvl":
+							salvlStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(salvlStartInfo);
 							break;
-						case "tex":
-						case "tvr":
-							texeditStartInfo.Arguments = filePath;
-							Process texEditProcess = Process.Start(texeditStartInfo);
+						case ".pvm":
+						case ".pvmx":
+						case ".gvm":
+						case ".pak":
+							texeditStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(texeditStartInfo);
 							break;
-						case "txt":
-						case "img":
-							Process.Start(filePath);
+						case ".txt":
+						case ".dds":
+						case ".jpg":
+						case ".png":
+						case ".bmp":
+						case ".gif":
+							Process.Start($"\"{itemPath}\"");
 							break;
-						case "ini":
+						case ".prs":
+							if (itemName.Contains("mdl"))
+							{
+								samdlStartInfo.Arguments = $"\"{itemPath}\"";
+								Process.Start(samdlStartInfo);
+							}
+							else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
+							{
+								texeditStartInfo.Arguments = $"\"{itemPath}\"";
+								Process.Start(texeditStartInfo);
+							}
+							break;
+						case ".ini":
 							switch (itemName)
 							{
 								case "sadxlvl.ini":
 									sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
 
-									Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
+									Process.Start(sadxlvl2StartInfo);
 									break;
 								case "mod.ini":
 									projectEditorDiag.ShowDialog();
@@ -1000,10 +990,10 @@ namespace SAToolsHub
 									if (itemName.Contains("_data"))
 									{
 										sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
-										Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
+										Process.Start(sadxtweakerStartInfo);
 									}
 									else
-										Process.Start(filePath);
+										Process.Start($"\"{itemPath}\"");
 									break;
 							}
 							break;
