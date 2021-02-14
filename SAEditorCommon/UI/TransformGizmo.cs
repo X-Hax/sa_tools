@@ -419,6 +419,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 					// scale all of our editor selected items
 					foreach (Item item in selectedItems.Items)
 					{
+						if (item is LevelItem || item is DeathZoneItem)
+							continue;
 						if (item is IScaleable scalableItem)
 						{
 							scalableItem.SetScale(Scale(gizmoMouseInput, scalableItem.GetScale(), cam, true, 0));
