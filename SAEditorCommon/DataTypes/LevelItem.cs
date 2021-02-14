@@ -165,13 +165,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			mesh = COL.Model.Attach.CreateD3DMesh();
 		}
 
-		//[Browsable(true)]
-		[DisplayName("Export Model")]
-		public void ExportModel()
-		{
-
-		}
-
 		[Browsable(true)]
 		[DisplayName("Edit Materials")]
 		public void EditMaterials()
@@ -194,6 +187,56 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			COL.CalculateBounds();
 			COL.Model.Attach.CalculateBounds();
+		}
+
+		[Browsable(true)]
+		[DisplayName("Export Model")]
+		public void ExportModel()
+		{
+			using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "SAModel Files|*.sa1mdl|Collada|*.dae|Wavefront|*.obj"
+			})
+			{
+				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					string ftype = "collada";
+					switch (System.IO.Path.GetExtension(a.FileName).ToLowerInvariant())
+					{
+						case ".sa1mdl":
+							ModelFile.CreateFile(a.FileName, COL.Model, null, null, null, null, COL.Model.GetModelFormat());
+							return;
+						case ".fbx":
+							ftype = "fbx";
+							break;
+						case ".obj":
+							ftype = "obj";
+							break;
+					}
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					string rootPath = System.IO.Path.GetDirectoryName(a.FileName);
+					List<string> texturePaths = new List<string>();
+					int numSteps = 0;
+					if (LevelData.TextureBitmaps != null && LevelData.TextureBitmaps.Count > 0)
+					{
+						numSteps = LevelData.TextureBitmaps[LevelData.leveltexs].Length;
+					}
+					for (int i = 0; i < numSteps; i++)
+					{
+						BMPInfo bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+						texturePaths.Add(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
+						bmp.Image.Save(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
+					}
+					SAEditorCommon.Import.AssimpStuff.AssimpExport(COL.Model, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+					context.ExportFile(scene, a.FileName, ftype, Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+				}
+			}
 		}
 
 		public string Flags
