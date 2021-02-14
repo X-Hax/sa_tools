@@ -143,6 +143,21 @@ namespace SonicRetro.SAModel.SADXLVL2
 				ShowWelcomeScreen();
 			systemFallback = Program.SADXGameFolder + "/System/";
 
+			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini"),
+				DefaultActionList.DefaultActionMapping);
+
+			actionInputCollector = new ActionInputCollector();
+			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
+			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
+			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
+
+			cam.ModifierKey = settingsfile.SADXLVL2.CameraModifier;
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
+			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
+			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
+
+			sceneGraphControl1.InitSceneControl(selectedItems);
+
 			if (Program.args.Length > 0)
 			{
 				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
@@ -167,28 +182,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			else
 			{
-				ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog();
-				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
 				{
-					LoadProject(projectSelectDialog.SelectedProject);
+					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+					{
+						LoadProject(projectSelectDialog.SelectedProject);
+					}
 				}
 			}
-
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SADXLVL2.ini"),
-				DefaultActionList.DefaultActionMapping);
-
-			actionInputCollector = new ActionInputCollector();
-			actionInputCollector.SetActions(actionList.ActionKeyMappings.ToArray());
-			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
-			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
-
-			cam.ModifierKey = settingsfile.SADXLVL2.CameraModifier;
-			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
-			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
-			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
-
-			sceneGraphControl1.InitSceneControl(selectedItems);
 		}
 
 		private void InitGUISettings()
@@ -356,16 +358,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 					return false;
 			}
 
-			ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog();
-			projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-
-			if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
 			{
-				LoadProject(projectSelectDialog.SelectedProject);
-				return true;
-			}
+				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
 
-			else return false;
+				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+				{
+					LoadProject(projectSelectDialog.SelectedProject);
+					return true;
+				}
+
+				else return false;
+			}
 		}
 
 		private void LoadINI(string filename)
@@ -533,10 +537,18 @@ namespace SonicRetro.SAModel.SADXLVL2
 			switch (result)
 			{
 				case DialogResult.Yes:
-					if (ini != null) SaveStage(autoCloseDialog);
+					if (ini != null)
+					{
+						SaveStage(autoCloseDialog);
+						unsaved = false;
+					}
 					break;
 				case DialogResult.No:
-					if (ini != null) return result;
+					if (ini != null)
+					{
+						unsaved = false;
+						return result;
+					}
 					else return DialogResult.Cancel;
 			}
 
@@ -731,7 +743,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				LevelData.Clear();
 				selectedItems = new EditorItemSelection();
-				sceneGraphControl1.InitSceneControl(selectedItems);
 				PointHelper.Instances.Clear();
 			}
 
@@ -2233,13 +2244,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 
 				case MouseButtons.Left:
+					if (transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems))
+						unsaved = true;
 					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
-						pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam);
+						if (pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam))
+							unsaved = true;
 					}
-
-					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0)) unsaved = true;
 					DrawLevel();
 					break;
 
@@ -2793,7 +2804,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (transformGizmo == null) transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
-			unsaved = true;
 			DrawLevel();
 		}
 
@@ -2963,8 +2973,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
-				pivotComboBox.Enabled = false;
-				pivotComboBox.SelectedIndex = 1;
 				rotateModeButton.Checked = true;
 				selectModeButton.Checked = false;
 				moveModeButton.Checked = false;
@@ -2989,8 +2997,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (transformGizmo != null)
 			{
-				string pivotmode = "Origin";
-				string globalorlocal = "Global";
+
 				transformGizmo.LocalTransform = (gizmoSpaceComboBox.SelectedIndex != 0);
 				transformGizmo.Pivot = (pivotComboBox.SelectedIndex != 0) ? Pivot.Origin : Pivot.CenterOfMass;
 
@@ -3000,11 +3007,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 					transformGizmo.SetGizmo(
 						((transformGizmo.Pivot == Pivot.CenterOfMass) ? firstItem.Bounds.Center : firstItem.Position).ToVector3(),
 						firstItem.TransformMatrix);
-					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
 				}
-				if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
-				if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
-				if (!silent) osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+
+				if (!silent)
+				{
+					string pivotmode = "Origin";
+					string globalorlocal = "Global";
+					if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
+					if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
+					osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				}
+				
 				DrawLevel();
 			}
 		}
@@ -3017,8 +3030,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				transformGizmo.LocalTransform = true;
 				gizmoSpaceComboBox.SelectedIndex = 1;
 				gizmoSpaceComboBox.Enabled = false;
-				pivotComboBox.Enabled = false;
-				pivotComboBox.SelectedIndex = 1;
 				selectModeButton.Checked = false;
 				scaleModeButton.Checked = true;
 				moveModeButton.Checked = false;
@@ -3632,7 +3643,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			InitializeDirect3D();
 			selectedItems = new EditorItemSelection();
-			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);

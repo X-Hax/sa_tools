@@ -54,8 +54,8 @@
             this.listProjects.Name = "listProjects";
             this.listProjects.Size = new System.Drawing.Size(359, 238);
             this.listProjects.TabIndex = 0;
-            this.listProjects.SelectedIndexChanged += new System.EventHandler(this.listRecentFiles_SelectedIndexChanged);
-            this.listProjects.DoubleClick += new System.EventHandler(this.listRecentFiles_DoubleClick);
+            this.listProjects.SelectedIndexChanged += new System.EventHandler(this.listProjects_SelectedIndexChanged);
+            this.listProjects.DoubleClick += new System.EventHandler(this.listProjects_DoubleClick);
             // 
             // label1
             // 
@@ -74,6 +74,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listProjects);
             this.Controls.Add(this.buttonGo);
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(400, 300);
@@ -83,6 +84,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Project Select";
             this.Shown += new System.EventHandler(this.ProjectSelectDialog_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ProjectSelectDialog_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
