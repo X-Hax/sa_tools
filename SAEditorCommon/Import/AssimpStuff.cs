@@ -448,6 +448,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					NJS_MATERIAL cur_mat = meshInfo.Material;
 					Material material = new Material() { Name = $"{attach.Name}_material_{nameMeshIndex++}" };
 					material.ColorDiffuse = cur_mat.DiffuseColor.ToAssimp();
+					material.ColorAmbient = cur_mat.DiffuseColor.ToAssimp();
+					material.ColorSpecular = cur_mat.SpecularColor.ToAssimp();
+					material.Shininess = cur_mat.Exponent;
 					if (cur_mat.UseTexture && texInfo != null && cur_mat.TextureID < texInfo.Length)
 					{
 						string texPath = Path.GetFileName(texInfo[cur_mat.TextureID]);
@@ -465,7 +468,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 						TextureSlot tex = new TextureSlot(texPath, TextureType.Diffuse, 0,
 							TextureMapping.FromUV, 0, 1.0f, TextureOperation.Add,
-							wrapU, wrapV, 0); //wrapmode and shit add here
+							wrapU, wrapV, 0); // Wrap mode doesn't export to Collada
 						material.AddMaterialTexture(ref tex);
 					}
 					int matIndex = scene.MaterialCount;
@@ -1055,53 +1058,50 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			obj.Position = new Vertex(translation.X, translation.Y, translation.Z);
 			obj.Rotation = new Rotation(Rotation.DegToBAMS(rotationConverted.X), Rotation.DegToBAMS(rotationConverted.Y), Rotation.DegToBAMS(rotationConverted.Z));
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
+			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 
-			// Import all meshes into a single NJS_OBJECT regardless of nodes
+			// Import all meshes into a single NJS_OBJECT regardless of nodes 
 			if (asSingle)
+				meshes = new List<Assimp.Mesh>(scene.Meshes);
+
+			// Import nodes separately
+			else if (!asSingle && node.HasMeshes)
+				meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
+
+			// Proceed with import
+			if (asSingle || node.HasMeshes)
 			{
-				var meshes = new List<Assimp.Mesh>(scene.Meshes);
-				if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
-					obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
-				else if (format == ModelFormat.GC)
-					obj.Attach = AssimpImportGC(scene.Materials, meshes, textures);
-				else if (format == ModelFormat.Chunk)
-					obj.Attach = AssimpImportChunk(scene.Materials, meshes, textures);
+				switch (format)
+				{
+					case ModelFormat.Basic:
+					case ModelFormat.BasicDX:
+						obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
+						break;
+					case ModelFormat.Chunk:
+						obj.Attach = AssimpImportChunk(scene.Materials, meshes, textures);
+						break;
+					case ModelFormat.GC:
+						obj.Attach = AssimpImportGC(scene.Materials, meshes, textures);
+						break;
+				}
 			}
 
-			// Import node hierarchy
-			else
+			// Proceed child nodes if nodes are imported separately
+			if (!asSingle && node.HasChildren)
 			{
-				if (node.HasMeshes)
+				foreach (Node n in node.Children)
 				{
-					var meshes = new List<Assimp.Mesh>(node.MeshIndices.Select(a => scene.Meshes[a]));
-					if (format == ModelFormat.Basic || format == ModelFormat.BasicDX)
-						obj.Attach = AssimpImportBasic(scene.Materials, meshes, textures);
-					else if (format == ModelFormat.GC)
-						obj.Attach = AssimpImportGC(scene.Materials, meshes, textures);
-					else if (format == ModelFormat.Chunk)
-						obj.Attach = AssimpImportChunk(scene.Materials, meshes, textures);
-				}
-				else
-					obj.Attach = null;
-
-				if (node.HasChildren)
-				{
-
-					//List<NJS_OBJECT> list = new List<NJS_OBJECT>(node.Children.Select(a => new NJS_OBJECT(scene, a, this)));
-					foreach (Node n in node.Children)
+					NJS_OBJECT t = AssimpImportNonWeighted(scene, n, format, textures, false);
+					//HACK: workaround for those weird empty nodes created by most 3d editors
+					if (n.Name == "")
 					{
-						NJS_OBJECT t = AssimpImportNonWeighted(scene, n, format, textures, false);
-						//HACK: workaround for those weird empty nodes created by most 3d editors
-						if (n.Name == "")
-						{
-							t.Children[0].Position = t.Position;
-							t.Children[0].Rotation = t.Rotation;
-							t.Children[0].Scale = t.Scale;
-							obj.AddChild(t.Children[0]);
-						}
-						else
-							obj.AddChild(t);
+						t.Children[0].Position = t.Position;
+						t.Children[0].Rotation = t.Rotation;
+						t.Children[0].Scale = t.Scale;
+						obj.AddChild(t.Children[0]);
 					}
+					else
+						obj.AddChild(t);
 				}
 			}
 			return obj;
@@ -1589,15 +1589,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		public static Vertex ToSAModel(this Vector3D v) => new Vertex(v.X, v.Y, v.Z);
 
-		public static Color4D ToAssimp(this Color c) => new Color4D(c.R / 255f, c.G / 255f, c.B / 255f, c.G / 255f);
+		public static Color4D ToAssimp(this Color c) => new Color4D(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
 
 		public static Color ToColor(this Color4D c) => Color.FromArgb((int)(c.A * 255), (int)(c.R * 255), (int)(c.G * 255), (int)(c.B * 255));
 
 		public static NJS_MATERIAL ToSAModel(this Material mat)
 		{
 			NJS_MATERIAL nj = new NJS_MATERIAL();
-			if (mat.HasColorDiffuse)
+			if (mat.HasColorAmbient)
+				nj.DiffuseColor = mat.ColorAmbient.ToColor();
+			else if (mat.HasColorDiffuse)
 				nj.DiffuseColor = mat.ColorDiffuse.ToColor();
+			if (nj.DiffuseColor.A == 255) nj.UseAlpha = false;
 			if (mat.HasColorSpecular)
 				nj.SpecularColor = mat.ColorSpecular.ToColor();
 			if (mat.HasTextureDiffuse)

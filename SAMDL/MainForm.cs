@@ -2201,10 +2201,14 @@ namespace SonicRetro.SAModel.SAMDL
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
+			Assimp.Node importnode = scene.RootNode;
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			timer1.Stop();
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+			// Collada adds a root node, so use the first child node instead
+			if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
+				importnode = scene.RootNode.Children[0];
+			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
