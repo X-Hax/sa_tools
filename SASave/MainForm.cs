@@ -1187,11 +1187,13 @@ namespace SASave
 			level_score.Value = CurrentData.LevelScores[stagenum];
 			if (action_stage_character.SelectedIndex == 5)
 			{
+				level_timeweight_label.Text = "Best Weights:";
 				level_timeweight.Mode = WeightControlModes.Weight;
 				level_timeweight.Weights = CurrentData.LevelWeights[stagenum - 28];
 			}
 			else
 			{
+				level_timeweight_label.Text = "Best Time:";
 				level_timeweight.Mode = WeightControlModes.Time;
 				level_timeweight.Time = CurrentData.LevelTimes[stagenum];
 			}
