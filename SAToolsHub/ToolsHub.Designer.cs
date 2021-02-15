@@ -41,6 +41,15 @@
 			this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mainBuildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.RunGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.editConvert = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToData = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToJson = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.editCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.editPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.editDel = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.generalToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sAMDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -118,15 +127,6 @@
 			this.cmsCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmsPaste = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmsDelete = new System.Windows.Forms.ToolStripMenuItem();
-			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.editOpen = new System.Windows.Forms.ToolStripMenuItem();
-			this.editConvert = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-			this.editCopy = new System.Windows.Forms.ToolStripMenuItem();
-			this.editPaste = new System.Windows.Forms.ToolStripMenuItem();
-			this.editDel = new System.Windows.Forms.ToolStripMenuItem();
-			this.editToData = new System.Windows.Forms.ToolStripMenuItem();
-			this.editToJson = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -248,6 +248,86 @@
 			this.RunGameToolStripMenuItem.Text = "Game Options";
 			this.RunGameToolStripMenuItem.ToolTipText = "Runs the game with the opened mod and configured run options.";
 			this.RunGameToolStripMenuItem.Click += new System.EventHandler(this.buildRunGameToolStripMenuItem_Click);
+			// 
+			// editToolStripMenuItem
+			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editOpen,
+            this.editConvert,
+            this.toolStripSeparator8,
+            this.editCopy,
+            this.editPaste,
+            this.editDel});
+			this.editToolStripMenuItem.Enabled = false;
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(42, 21);
+			this.editToolStripMenuItem.Text = "Edit";
+			// 
+			// editOpen
+			// 
+			this.editOpen.Enabled = false;
+			this.editOpen.Name = "editOpen";
+			this.editOpen.Size = new System.Drawing.Size(152, 22);
+			this.editOpen.Text = "Open";
+			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
+			// 
+			// editConvert
+			// 
+			this.editConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToData,
+            this.editToJson});
+			this.editConvert.Enabled = false;
+			this.editConvert.Name = "editConvert";
+			this.editConvert.Size = new System.Drawing.Size(152, 22);
+			this.editConvert.Text = "Convert File";
+			// 
+			// editToData
+			// 
+			this.editToData.Enabled = false;
+			this.editToData.Name = "editToData";
+			this.editToData.Size = new System.Drawing.Size(126, 22);
+			this.editToData.Text = "To Data";
+			this.editToData.Click += new System.EventHandler(this.editToData_Click);
+			// 
+			// editToJson
+			// 
+			this.editToJson.Enabled = false;
+			this.editToJson.Name = "editToJson";
+			this.editToJson.Size = new System.Drawing.Size(126, 22);
+			this.editToJson.Text = "To JSON";
+			this.editToJson.Click += new System.EventHandler(this.editToJson_Click);
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(149, 6);
+			// 
+			// editCopy
+			// 
+			this.editCopy.Enabled = false;
+			this.editCopy.Name = "editCopy";
+			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.editCopy.Size = new System.Drawing.Size(152, 22);
+			this.editCopy.Text = "Copy";
+			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
+			// 
+			// editPaste
+			// 
+			this.editPaste.Enabled = false;
+			this.editPaste.Name = "editPaste";
+			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+			this.editPaste.Size = new System.Drawing.Size(152, 22);
+			this.editPaste.Text = "Paste";
+			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
+			// 
+			// editDel
+			// 
+			this.editDel.Enabled = false;
+			this.editDel.Name = "editDel";
+			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.editDel.Size = new System.Drawing.Size(152, 22);
+			this.editDel.Text = "Delete";
+			this.editDel.Click += new System.EventHandler(this.editDel_Click);
 			// 
 			// toolsToolStripMenuItem
 			// 
@@ -887,6 +967,7 @@
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
 			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
@@ -932,7 +1013,7 @@
             this.cmsPaste,
             this.cmsDelete});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 142);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(152, 120);
 			// 
 			// cmsOpen
 			// 
@@ -949,20 +1030,20 @@
             this.cmsToJson});
 			this.cmsConvert.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cmsConvert.Name = "cmsConvert";
-			this.cmsConvert.Size = new System.Drawing.Size(180, 22);
+			this.cmsConvert.Size = new System.Drawing.Size(151, 22);
 			this.cmsConvert.Text = "Convert File";
 			this.cmsConvert.Visible = false;
 			// 
 			// cmsToData
 			// 
 			this.cmsToData.Name = "cmsToData";
-			this.cmsToData.Size = new System.Drawing.Size(180, 22);
+			this.cmsToData.Size = new System.Drawing.Size(126, 22);
 			this.cmsToData.Text = "To Data";
 			// 
 			// cmsToJson
 			// 
 			this.cmsToJson.Name = "cmsToJson";
-			this.cmsToJson.Size = new System.Drawing.Size(180, 22);
+			this.cmsToJson.Size = new System.Drawing.Size(126, 22);
 			this.cmsToJson.Text = "To JSON";
 			this.cmsToJson.Visible = false;
 			// 
@@ -999,86 +1080,6 @@
 			this.cmsDelete.Text = "Delete";
 			this.cmsDelete.Visible = false;
 			this.cmsDelete.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-			// 
-			// editToolStripMenuItem
-			// 
-			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editOpen,
-            this.editConvert,
-            this.toolStripSeparator8,
-            this.editCopy,
-            this.editPaste,
-            this.editDel});
-			this.editToolStripMenuItem.Enabled = false;
-			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-			this.editToolStripMenuItem.Size = new System.Drawing.Size(42, 21);
-			this.editToolStripMenuItem.Text = "Edit";
-			// 
-			// editOpen
-			// 
-			this.editOpen.Enabled = false;
-			this.editOpen.Name = "editOpen";
-			this.editOpen.Size = new System.Drawing.Size(180, 22);
-			this.editOpen.Text = "Open";
-			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
-			// 
-			// editConvert
-			// 
-			this.editConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editToData,
-            this.editToJson});
-			this.editConvert.Enabled = false;
-			this.editConvert.Name = "editConvert";
-			this.editConvert.Size = new System.Drawing.Size(180, 22);
-			this.editConvert.Text = "Convert File";
-			// 
-			// toolStripSeparator8
-			// 
-			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
-			// 
-			// editCopy
-			// 
-			this.editCopy.Enabled = false;
-			this.editCopy.Name = "editCopy";
-			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.editCopy.Size = new System.Drawing.Size(180, 22);
-			this.editCopy.Text = "Copy";
-			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
-			// 
-			// editPaste
-			// 
-			this.editPaste.Enabled = false;
-			this.editPaste.Name = "editPaste";
-			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.editPaste.Size = new System.Drawing.Size(180, 22);
-			this.editPaste.Text = "Paste";
-			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
-			// 
-			// editDel
-			// 
-			this.editDel.Enabled = false;
-			this.editDel.Name = "editDel";
-			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.editDel.Size = new System.Drawing.Size(180, 22);
-			this.editDel.Text = "Delete";
-			this.editDel.Click += new System.EventHandler(this.editDel_Click);
-			// 
-			// editToData
-			// 
-			this.editToData.Enabled = false;
-			this.editToData.Name = "editToData";
-			this.editToData.Size = new System.Drawing.Size(180, 22);
-			this.editToData.Text = "To Data";
-			this.editToData.Click += new System.EventHandler(this.editToData_Click);
-			// 
-			// editToJson
-			// 
-			this.editToJson.Enabled = false;
-			this.editToJson.Name = "editToJson";
-			this.editToJson.Size = new System.Drawing.Size(180, 22);
-			this.editToJson.Text = "To JSON";
-			this.editToJson.Click += new System.EventHandler(this.editToJson_Click);
 			// 
 			// SAToolsHub
 			// 

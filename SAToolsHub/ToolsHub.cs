@@ -34,27 +34,6 @@ namespace SAToolsHub
 		private projConv projectConverter;
 		private formAbout abtWindow;
 
-		enum fileTags
-		{
-			dir,
-			mdl,
-			lvl,
-			anm,
-			tex,
-			tvr,
-			img,
-			cam,
-			set,
-			ini,
-			txt,
-			bin,
-			prs,
-			snd,
-			msc
-		}
-
-		private Dictionary<string, string> itemTag = new Dictionary<string, string>();
-
 		//Variables
 		public static string newProjFile { get; set; }
 		public static string projXML { get; set; }
@@ -204,6 +183,7 @@ namespace SAToolsHub
 
 		void SelectListViewNode(TreeNode node)
 		{
+			listView1.SelectedItems.Clear();
 			if (treeView1.SelectedNode != node)
 			{
 				TreeNode newSelected = node;
@@ -981,7 +961,7 @@ namespace SAToolsHub
 			string itemPath = item.Tag.ToString();
 			string itemExt;
 
-			if ((string)listView1.SelectedItems[0].Tag == "dir")
+			if (listView1.SelectedItems[0].Tag.ToString() == "dir")
 			{
 				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
 				itemExt = "dir";
@@ -1158,6 +1138,11 @@ namespace SAToolsHub
 			{
 				openListItem(listView1.SelectedItems[0]);
 			}
+		}
+
+		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+		{
+
 		}
 
 		//Settings Handles
