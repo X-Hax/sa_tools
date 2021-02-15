@@ -58,7 +58,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
-			{ "playerparameter", "Player Parameters" }
+			{ "physicsdata", "Player Parameters" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SA_Tools.FileInfo> item, SA_Tools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
