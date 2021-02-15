@@ -780,7 +780,7 @@ namespace SA_Tools.SplitDLL
 									kartobj.Unknown2 = ByteConverter.ToUInt32(datafile, address + 0xC);
 									kartobj.Unknown3 = ByteConverter.ToUInt32(datafile, address + 0x10);
 									kartobj.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0x14);
-									ptr = BitConverter.ToInt32(datafile, address + 64);
+									ptr = BitConverter.ToInt32(datafile, address + 0x64);
 									if (ptr != 0)
 									{
 										kartobj.Unknown5 = ((uint)ptr - imageBase).ToCHex();
