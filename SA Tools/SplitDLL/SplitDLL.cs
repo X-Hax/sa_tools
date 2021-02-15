@@ -756,6 +756,44 @@ namespace SA_Tools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "kartmodelsarray":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartModelsArray> result = new List<KartModelsArray>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartModelsArray kartobj = new KartModelsArray();
+									int ptr = BitConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.GC, new Dictionary<int, Attach>());
+										kartobj.Model = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2bmdl"), model, null, null, null, null, ModelFormat.GC, nometa);
+										hashes.Add($"{i}.sa2bmdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2bmdl")));
+										NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+										kartobj.Collision = collision.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa1mdl"), collision, null, null, null, null, ModelFormat.Basic, nometa);
+										hashes.Add($"{i}.sa1mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa1mdl")));
+									}
+									kartobj.Unknown1 = ByteConverter.ToUInt32(datafile, address + 8);
+									kartobj.Unknown2 = ByteConverter.ToUInt32(datafile, address + 0xC);
+									kartobj.Unknown3 = ByteConverter.ToUInt32(datafile, address + 0x10);
+									kartobj.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0x14);
+									ptr = BitConverter.ToInt32(datafile, address + 0x64);
+									if (ptr != 0)
+									{
+										kartobj.Unknown5 = ((uint)ptr - imageBase).ToCHex();
+										kartobj.Unknown6 = ByteConverter.ToInt32(datafile, address + 0x68);
+									}
+									result.Add(kartobj);
+									address += 0x6C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 						case "motiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);

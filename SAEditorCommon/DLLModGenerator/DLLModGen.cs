@@ -108,7 +108,30 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 							modified = true;
 					}
 					break;
-				case "chaomotiontable":
+				case "kartmodelsarray":
+					{
+						Dictionary<string, string> hashes = new Dictionary<string, string>();
+						foreach (var hash in item.MD5Hash.Split('|').Select(a =>
+						{
+							string[] b = a.Split(':');
+							return (b[0], b[1]);
+						}))
+							hashes.Add(hash.Item1, hash.Item2);
+						foreach (var fp in Directory.GetFiles(item.Filename, "*.sa2bmdl").Concat(Directory.GetFiles(item.Filename, "*.sa1mdl")).Append(Path.Combine(item.Filename, "info.ini")))
+						{
+							string fn = Path.GetFileName(fp);
+							if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
+							{
+								modified = true;
+								break;
+							}
+							hashes.Remove(fn);
+						}
+						if (hashes.Count > 0)
+							modified = true;
+					}
+					break;
+				case "motiontable":
 					{
 						Dictionary<string, string> hashes = new Dictionary<string, string>();
 						foreach (var hash in item.MD5Hash.Split('|').Select(a =>
@@ -185,9 +208,6 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 			newIniData.DataItems = curItems;
-
-			return newIniData;
-		}
 
 		private static void CopyDirectory(DirectoryInfo srcdir, string dstdir)
 		{
@@ -368,6 +388,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "kartmodelsarray":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2bmdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa1mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartModelsArray {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
@@ -402,6 +443,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 						case "animindexlist":
 						case "charaobjectdatalist":
 						case "kartspecialinfolist":
+						case "kartmodelsarray":
 							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
 							break;
 						default:

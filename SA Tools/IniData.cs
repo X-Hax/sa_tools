@@ -3272,6 +3272,43 @@ namespace SA_Tools
 		}
 	}
 
+	public class KartModelsArray
+	{
+		public string Model { get; set; }
+		public string Collision { get; set; }
+		public float Unknown1 { get; set; }
+		public float Unknown2 { get; set; }
+		public float Unknown3 { get; set; }
+		public float Unknown4 { get; set; }
+		public string Unknown5 { get; set; }
+		public int Unknown6 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			if (!string.IsNullOrEmpty(Model))
+			{
+				sb.AppendFormat("{0}, ", Model);
+				sb.AppendFormat("{0}, ", Collision);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", Unknown1);
+			sb.AppendFormat("{0}, ", Unknown2);
+			sb.AppendFormat("{0}, ", Unknown3);
+			sb.AppendFormat("{0}, ", Unknown4);
+			if (!string.IsNullOrEmpty(Unknown5))
+			{
+				sb.AppendFormat("{0}, ", Unknown5);
+				sb.AppendFormat("{0}", Unknown6);
+			}
+			else
+				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public class MotionTableEntry
 	{
 		public string Motion { get; set; }
