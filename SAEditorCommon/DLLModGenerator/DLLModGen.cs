@@ -209,6 +209,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
 			}
 			newIniData.DataItems = curItems;
 
+			return newIniData;
+		}
+
 		private static void CopyDirectory(DirectoryInfo srcdir, string dstdir)
 		{
 			foreach (var d in srcdir.GetDirectories())
