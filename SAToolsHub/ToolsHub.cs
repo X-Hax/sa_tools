@@ -64,6 +64,7 @@ namespace SAToolsHub
 		public static List<SplitEntry> projSplitEntries { get; set; }
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
+		string copyPath;
 
 		//Program Paths
 		ProcessStartInfo samdlStartInfo;
@@ -143,6 +144,8 @@ namespace SAToolsHub
 				tsGameRun.Enabled = true;
 				tsEditProj.Enabled = true;
 			}
+
+			editToolStripMenuItem.Enabled = true;
 		}
 		
 		private void PopulateTreeView(string directory)
@@ -708,6 +711,11 @@ namespace SAToolsHub
 			Process saSaveProcess = Process.Start(datatoolboxStartInfo);
 		}
 
+		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			projectConverter.ShowDialog();
+		}
+
 		//Help Links
 		//Resources
 		private void sAToolsWikiToolStripMenuItem_Click(object sender, EventArgs e)
@@ -756,6 +764,11 @@ namespace SAToolsHub
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
+		}
+
+		private void toolStripMenuItem2_Click(object sender, EventArgs e)
+		{
+			abtWindow.Show();
 		}
 
 		//Additiional Links
@@ -882,18 +895,248 @@ namespace SAToolsHub
 			sA2StageSelectEditorToolStripMenuItem_Click(sender, e);
 		}
 
-		//Context Menu
-		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+		//Edit/Context Menu
+		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+		{
+			if (listView1.SelectedItems.Count < 1)
+			{
+				editOpen.Enabled = false;
+				editCopy.Enabled = false;
+				editPaste.Enabled = false;
+				editDel.Enabled = false;
+				editConvert.Enabled = false;
+				editToData.Enabled = false;
+				editToJson.Enabled = false;
+				cmsOpen.Visible = false;
+				cmsCopy.Visible = false;
+				cmsPaste.Visible = false;
+				cmsDelete.Visible = false;
+				cmsConvert.Visible = false;
+				cmsToData.Visible = false;
+				cmsToJson.Visible = false;
+			}
+			else if (listView1.SelectedItems[0].Tag.ToString() == "dir")
+			{
+				editOpen.Enabled = true;
+				cmsOpen.Visible = true;
+			}
+			else
+			{
+				string itemPath = listView1.SelectedItems[0].Tag.ToString();
+				string itemExt = Path.GetExtension(itemPath);
+				switch (itemExt)
+				{
+					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+					case ".sa1lvl":
+					case ".sa2lvl":
+					case ".sa2blvl":
+						editOpen.Enabled = true;
+						editCopy.Enabled = true;
+						editPaste.Enabled = true;
+						editDel.Enabled = true;
+						editConvert.Enabled = true;
+						editToData.Enabled = false;
+						cmsOpen.Visible = true;
+						cmsCopy.Visible = true;
+						cmsPaste.Visible = true;
+						cmsDelete.Visible = true;
+						cmsConvert.Visible = true;
+						cmsToData.Visible = true;
+						break;
+					case ".saanim":
+						editOpen.Enabled = true;
+						editCopy.Enabled = true;
+						editPaste.Enabled = true;
+						editDel.Enabled = true;
+						editConvert.Enabled = true;
+						editToData.Enabled = true;
+						editToJson.Enabled = true;
+						cmsOpen.Visible = true;
+						cmsCopy.Visible = true;
+						cmsPaste.Visible = true;
+						cmsDelete.Visible = true;
+						cmsConvert.Visible = true;
+						cmsToData.Visible = true;
+						cmsToJson.Visible = true;
+						break;
+					default:
+						editOpen.Enabled = true;
+						editCopy.Enabled = true;
+						editPaste.Enabled = true;
+						editDel.Enabled = true;
+						cmsOpen.Visible = true;
+						cmsCopy.Visible = true;
+						cmsPaste.Visible = true;
+						cmsDelete.Visible = true;
+						break;
+				}
+			}
+		}
+		void openListItem(ListViewItem item)
+		{
+			TreeNode selNode = new TreeNode();
+			string itemName = item.Text;
+			string itemPath = item.Tag.ToString();
+			string itemExt;
+
+			if ((string)listView1.SelectedItems[0].Tag == "dir")
+			{
+				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
+				itemExt = "dir";
+			}
+			else
+			{
+				itemExt = Path.GetExtension(itemPath);
+			}
+
+			if (listView1.SelectedItems.Count > 0)
+			{
+				switch (itemExt.ToLower())
+				{
+					case "dir":
+						SelectListViewNode(selNode);
+						treeView1.SelectedNode = selNode;
+						break;
+					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+						samdlStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(samdlStartInfo);
+						break;
+					case ".sa1lvl":
+					case ".sa2lvl":
+					case ".sa2blvl":
+						salvlStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(salvlStartInfo);
+						break;
+					case ".pvm":
+					case ".pvmx":
+					case ".gvm":
+					case ".pak":
+						texeditStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(texeditStartInfo);
+						break;
+					case ".txt":
+					case ".dds":
+					case ".jpg":
+					case ".png":
+					case ".bmp":
+					case ".gif":
+						Process.Start($"\"{itemPath}\"");
+						break;
+					case ".prs":
+						if (itemName.Contains("mdl"))
+						{
+							samdlStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(samdlStartInfo);
+						}
+						else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
+						{
+							texeditStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(texeditStartInfo);
+						}
+						break;
+					case ".ini":
+						switch (itemName)
+						{
+							case "sadxlvl.ini":
+								sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
+
+								Process.Start(sadxlvl2StartInfo);
+								break;
+							case "mod.ini":
+								projectEditorDiag.ShowDialog();
+								break;
+							default:
+								if (itemName.Contains("_data"))
+								{
+									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
+									Process.Start(sadxtweakerStartInfo);
+								}
+								else
+									Process.Start($"\"{itemPath}\"");
+								break;
+						}
+						break;
+				}
+			}
+		}
+
+		private void editOpen_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems[0] != null)
+				openListItem(listView1.SelectedItems[0]);
+		}
+
+		private void editToData_Click(object sender, EventArgs e)
 		{
 
 		}
-		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+
+		private void editToJson_Click(object sender, EventArgs e)
 		{
-			templateWriter.ShowDialog();
+
+		}
+
+		private void editCopy_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems[0] != null && listView1.SelectedItems[0].Tag.ToString() != "dir")
+				copyPath = listView1.SelectedItems[0].Tag.ToString();
+		}
+
+		private void editPaste_Click(object sender, EventArgs e)
+		{
+			if (copyPath != null)
+			{
+				DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
+				ListViewItem item = null;
+				string destFile = Path.Combine(info.FullName, Path.GetFileName(copyPath));
+				File.Copy(copyPath, destFile, true);
+				listView1.Items.Clear();
+				LoadFiles(info, item);
+			}
+		}
+
+		private void editDel_Click(object sender, EventArgs e)
+		{
+			if (listView1.SelectedItems[0] != null)
+			{
+				DialogResult delCheck = MessageBox.Show(("You are about to delete this file.\n\nAre you sure you want to delete this file?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				if (delCheck == DialogResult.Yes)
+				{
+					DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
+					ListViewItem item = null;
+					File.Delete(listView1.SelectedItems[0].Tag.ToString());
+					listView1.Items.Clear();
+					LoadFiles(info, item);
+				}
+			}
+		}
+
+		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editOpen_Click(sender, e);
+		}
+
+		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editCopy_Click(sender, e);
+		}
+
+		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editPaste_Click(sender, e);
+		}
+
+		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editDel_Click(sender, e);
 		}
 
 		//treeView + listView click commands
-		void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			SelectListViewNode(e.Node);
 		}
@@ -902,9 +1145,9 @@ namespace SAToolsHub
 		{
 			if (e.Button == MouseButtons.Right)
 			{
-				if (listView1.FocusedItem.Bounds.Contains(e.Location))
+				if (listView1.FocusedItem.Bounds.Contains(e.Location) && listView1.SelectedItems[0] != null)
 				{
-					//contextMenuStrip1.Show(Cursor.Position);
+					contextMenuStrip1.Show(Cursor.Position);
 				}
 			}
 		}
@@ -913,92 +1156,7 @@ namespace SAToolsHub
 		{
 			if (e.Button == MouseButtons.Left)
 			{
-				TreeNode selNode = new TreeNode();
-				string itemName = listView1.SelectedItems[0].Text;
-				string itemPath = listView1.SelectedItems[0].Tag.ToString();
-				string itemExt;
-
-				if ((string)listView1.SelectedItems[0].Tag == "dir")
-				{
-					selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
-					itemExt = "dir";
-				}
-				else
-				{
-					itemExt = Path.GetExtension(itemPath);
-				}
-
-				if (listView1.SelectedItems.Count > 0)
-				{
-					switch (itemExt.ToLower())
-					{
-						case "dir":
-							SelectListViewNode(selNode);
-							treeView1.SelectedNode = selNode;
-							break;
-						case ".sa1mdl":
-						case ".sa2mdl":
-						case ".sa2bmdl":
-							samdlStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(samdlStartInfo);
-							break;
-						case ".sa1lvl":
-						case ".sa2lvl":
-						case ".sa2blvl":
-							salvlStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(salvlStartInfo);
-							break;
-						case ".pvm":
-						case ".pvmx":
-						case ".gvm":
-						case ".pak":
-							texeditStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(texeditStartInfo);
-							break;
-						case ".txt":
-						case ".dds":
-						case ".jpg":
-						case ".png":
-						case ".bmp":
-						case ".gif":
-							Process.Start($"\"{itemPath}\"");
-							break;
-						case ".prs":
-							if (itemName.Contains("mdl"))
-							{
-								samdlStartInfo.Arguments = $"\"{itemPath}\"";
-								Process.Start(samdlStartInfo);
-							}
-							else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
-							{
-								texeditStartInfo.Arguments = $"\"{itemPath}\"";
-								Process.Start(texeditStartInfo);
-							}
-							break;
-						case ".ini":
-							switch (itemName)
-							{
-								case "sadxlvl.ini":
-									sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
-
-									Process.Start(sadxlvl2StartInfo);
-									break;
-								case "mod.ini":
-									projectEditorDiag.ShowDialog();
-									break;
-								default:
-									if (itemName.Contains("_data"))
-									{
-										sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
-										Process.Start(sadxtweakerStartInfo);
-									}
-									else
-										Process.Start($"\"{itemPath}\"");
-									break;
-							}
-							break;
-					}
-				}
+				openListItem(listView1.SelectedItems[0]);
 			}
 		}
 
@@ -1055,24 +1213,10 @@ namespace SAToolsHub
 			hubSettings.Save();
 		}
 
-		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+		//Debug/Developer Only Options
+		private void toolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-
-		}
-
-		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-
-		}
-
-		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			projectConverter.ShowDialog();
-		}
-
-		private void toolStripMenuItem2_Click(object sender, EventArgs e)
-		{
-			abtWindow.Show();
+			templateWriter.ShowDialog();
 		}
 	}
 }

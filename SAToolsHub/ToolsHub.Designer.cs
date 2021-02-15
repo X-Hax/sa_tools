@@ -110,13 +110,23 @@
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.convertFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsConvert = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsToData = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsToJson = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-			this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsDelete = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.editConvert = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.editCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.editPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.editDel = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToData = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToJson = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -134,6 +144,7 @@
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectsToolStripMenuItem,
             this.buildToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.settingsToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -259,7 +270,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
@@ -295,7 +306,7 @@
             this.sAFontEditorToolStripMenuItem,
             this.sASaveToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SADX Tools";
 			// 
 			// sADXLVL2ToolStripMenuItem
@@ -346,7 +357,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -384,12 +395,12 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(174, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -397,14 +408,14 @@
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
 			// 
 			// projectConverterToolStripMenuItem
 			// 
 			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.projectConverterToolStripMenuItem.Text = "Project Converter";
 			this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
 			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
@@ -456,7 +467,7 @@
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -464,7 +475,7 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
@@ -472,7 +483,7 @@
 			// monthlyToolStripMenuItem
 			// 
 			this.monthlyToolStripMenuItem.Name = "monthlyToolStripMenuItem";
-			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.monthlyToolStripMenuItem.Text = "Monthly";
 			this.monthlyToolStripMenuItem.ToolTipText = "Checks monthly for updates.";
 			this.monthlyToolStripMenuItem.Click += new System.EventHandler(this.monthlyToolStripMenuItem_Click);
@@ -876,6 +887,7 @@
 			this.listView1.TabIndex = 0;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
 			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
 			// 
@@ -912,73 +924,161 @@
 			// 
 			// contextMenuStrip1
 			// 
-			this.contextMenuStrip1.Enabled = false;
 			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openFileToolStripMenuItem,
-            this.convertFileToolStripMenuItem,
+            this.cmsOpen,
+            this.cmsConvert,
             this.toolStripSeparator7,
-            this.copyToolStripMenuItem,
-            this.pasteToolStripMenuItem});
+            this.cmsCopy,
+            this.cmsPaste,
+            this.cmsDelete});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(151, 98);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 142);
 			// 
-			// openFileToolStripMenuItem
+			// cmsOpen
 			// 
-			this.openFileToolStripMenuItem.Enabled = false;
-			this.openFileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.openFileToolStripMenuItem.Text = "Open File";
-			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
+			this.cmsOpen.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cmsOpen.Name = "cmsOpen";
+			this.cmsOpen.Size = new System.Drawing.Size(151, 22);
+			this.cmsOpen.Text = "Open";
+			this.cmsOpen.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
 			// 
-			// convertFileToolStripMenuItem
+			// cmsConvert
 			// 
-			this.convertFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toDataToolStripMenuItem,
-            this.toJSONToolStripMenuItem});
-			this.convertFileToolStripMenuItem.Enabled = false;
-			this.convertFileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.convertFileToolStripMenuItem.Name = "convertFileToolStripMenuItem";
-			this.convertFileToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.convertFileToolStripMenuItem.Text = "Convert File";
+			this.cmsConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsToData,
+            this.cmsToJson});
+			this.cmsConvert.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cmsConvert.Name = "cmsConvert";
+			this.cmsConvert.Size = new System.Drawing.Size(180, 22);
+			this.cmsConvert.Text = "Convert File";
+			this.cmsConvert.Visible = false;
 			// 
-			// toDataToolStripMenuItem
+			// cmsToData
 			// 
-			this.toDataToolStripMenuItem.Name = "toDataToolStripMenuItem";
-			this.toDataToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-			this.toDataToolStripMenuItem.Text = "To Data";
+			this.cmsToData.Name = "cmsToData";
+			this.cmsToData.Size = new System.Drawing.Size(180, 22);
+			this.cmsToData.Text = "To Data";
 			// 
-			// toJSONToolStripMenuItem
+			// cmsToJson
 			// 
-			this.toJSONToolStripMenuItem.Name = "toJSONToolStripMenuItem";
-			this.toJSONToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-			this.toJSONToolStripMenuItem.Text = "To JSON";
-			this.toJSONToolStripMenuItem.Visible = false;
+			this.cmsToJson.Name = "cmsToJson";
+			this.cmsToJson.Size = new System.Drawing.Size(180, 22);
+			this.cmsToJson.Text = "To JSON";
+			this.cmsToJson.Visible = false;
 			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(147, 6);
+			this.toolStripSeparator7.Size = new System.Drawing.Size(148, 6);
 			// 
-			// copyToolStripMenuItem
+			// cmsCopy
 			// 
-			this.copyToolStripMenuItem.Enabled = false;
-			this.copyToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.copyToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.copyToolStripMenuItem.Text = "Copy";
-			this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+			this.cmsCopy.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cmsCopy.Name = "cmsCopy";
+			this.cmsCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.cmsCopy.Size = new System.Drawing.Size(151, 22);
+			this.cmsCopy.Text = "Copy";
+			this.cmsCopy.Visible = false;
+			this.cmsCopy.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
 			// 
-			// pasteToolStripMenuItem
+			// cmsPaste
 			// 
-			this.pasteToolStripMenuItem.Enabled = false;
-			this.pasteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-			this.pasteToolStripMenuItem.Text = "Paste";
-			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+			this.cmsPaste.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cmsPaste.Name = "cmsPaste";
+			this.cmsPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+			this.cmsPaste.Size = new System.Drawing.Size(151, 22);
+			this.cmsPaste.Text = "Paste";
+			this.cmsPaste.Visible = false;
+			this.cmsPaste.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+			// 
+			// cmsDelete
+			// 
+			this.cmsDelete.Name = "cmsDelete";
+			this.cmsDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.cmsDelete.Size = new System.Drawing.Size(151, 22);
+			this.cmsDelete.Text = "Delete";
+			this.cmsDelete.Visible = false;
+			this.cmsDelete.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+			// 
+			// editToolStripMenuItem
+			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editOpen,
+            this.editConvert,
+            this.toolStripSeparator8,
+            this.editCopy,
+            this.editPaste,
+            this.editDel});
+			this.editToolStripMenuItem.Enabled = false;
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(42, 21);
+			this.editToolStripMenuItem.Text = "Edit";
+			// 
+			// editOpen
+			// 
+			this.editOpen.Enabled = false;
+			this.editOpen.Name = "editOpen";
+			this.editOpen.Size = new System.Drawing.Size(180, 22);
+			this.editOpen.Text = "Open";
+			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
+			// 
+			// editConvert
+			// 
+			this.editConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToData,
+            this.editToJson});
+			this.editConvert.Enabled = false;
+			this.editConvert.Name = "editConvert";
+			this.editConvert.Size = new System.Drawing.Size(180, 22);
+			this.editConvert.Text = "Convert File";
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+			// 
+			// editCopy
+			// 
+			this.editCopy.Enabled = false;
+			this.editCopy.Name = "editCopy";
+			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.editCopy.Size = new System.Drawing.Size(180, 22);
+			this.editCopy.Text = "Copy";
+			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
+			// 
+			// editPaste
+			// 
+			this.editPaste.Enabled = false;
+			this.editPaste.Name = "editPaste";
+			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+			this.editPaste.Size = new System.Drawing.Size(180, 22);
+			this.editPaste.Text = "Paste";
+			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
+			// 
+			// editDel
+			// 
+			this.editDel.Enabled = false;
+			this.editDel.Name = "editDel";
+			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.editDel.Size = new System.Drawing.Size(180, 22);
+			this.editDel.Text = "Delete";
+			this.editDel.Click += new System.EventHandler(this.editDel_Click);
+			// 
+			// editToData
+			// 
+			this.editToData.Enabled = false;
+			this.editToData.Name = "editToData";
+			this.editToData.Size = new System.Drawing.Size(180, 22);
+			this.editToData.Text = "To Data";
+			this.editToData.Click += new System.EventHandler(this.editToData_Click);
+			// 
+			// editToJson
+			// 
+			this.editToJson.Enabled = false;
+			this.editToJson.Name = "editToJson";
+			this.editToJson.Size = new System.Drawing.Size(180, 22);
+			this.editToJson.Text = "To JSON";
+			this.editToJson.Click += new System.EventHandler(this.editToJson_Click);
 			// 
 			// SAToolsHub
 			// 
@@ -1068,13 +1168,13 @@
 		private System.Windows.Forms.ImageList imageList1;
 		private System.Windows.Forms.ToolStripButton tsUpdate;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-		private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem convertFileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem toDataToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem toJSONToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem cmsOpen;
+		private System.Windows.Forms.ToolStripMenuItem cmsConvert;
+		private System.Windows.Forms.ToolStripMenuItem cmsToData;
+		private System.Windows.Forms.ToolStripMenuItem cmsToJson;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-		private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem cmsCopy;
+		private System.Windows.Forms.ToolStripMenuItem cmsPaste;
 		private System.Windows.Forms.ColumnHeader columnHeader3;
 		private System.Windows.Forms.ToolStripButton tsSADXLVL2;
 		private System.Windows.Forms.ToolStripButton tsSADXTweaker;
@@ -1101,5 +1201,15 @@
 		private System.Windows.Forms.ToolStripMenuItem projectConverterToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem cmsDelete;
+		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editOpen;
+		private System.Windows.Forms.ToolStripMenuItem editConvert;
+		private System.Windows.Forms.ToolStripMenuItem editToData;
+		private System.Windows.Forms.ToolStripMenuItem editToJson;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripMenuItem editCopy;
+		private System.Windows.Forms.ToolStripMenuItem editPaste;
+		private System.Windows.Forms.ToolStripMenuItem editDel;
 	}
 }
