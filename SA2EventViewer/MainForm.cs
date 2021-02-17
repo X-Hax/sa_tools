@@ -325,7 +325,7 @@ namespace SA2EventViewer
 				}
 			}
 
-			RenderInfo.Draw(renderList, d3ddevice, cam);
+			RenderInfo.Draw(renderList, d3ddevice, cam, true);
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
