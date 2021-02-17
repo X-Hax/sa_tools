@@ -20,7 +20,9 @@ namespace SAToolsHub
 		camera,
 		compress,
 		setobj,
-		data
+		data,
+		cfile,
+		json
 	}
 
 	public partial class SAToolsHub : Form
@@ -39,11 +41,12 @@ namespace SAToolsHub
 		public static string projXML { get; set; }
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
-		public static string gameSystemDirectory { get; set; }
+		public static string gameDirectory { get; set; }
+		string gameDir;
 		public static List<SplitEntry> projSplitEntries { get; set; }
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
-		string copyPath;
+		List<string> copyPaths;
 
 		//Program Paths
 		ProcessStartInfo samdlStartInfo;
@@ -84,20 +87,19 @@ namespace SAToolsHub
 
 			setGame = projFile.GameInfo.GameName;
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
-			gameSystemDirectory = (projFile.GameInfo.GameSystemFolder);
+			gameDirectory = (projFile.GameInfo.GameSystemFolder);
 			projXML = projectFile;
 
-			string gameDir;
 			switch (setGame)
 			{
 				case "SADXPC":
-					gameDir = gameSystemDirectory + "\\system\\";
+					gameDir = gameDirectory + "\\system\\";
 					break;
 				case "SA2PC":
-					gameDir = gameSystemDirectory + "\\resource\\gd_PC\\";
+					gameDir = gameDirectory + "\\resource\\gd_PC\\";
 					break;
 				default:
-					gameDir = gameSystemDirectory;
+					gameDir = gameDirectory;
 					break;
 			}
 
@@ -200,14 +202,17 @@ namespace SAToolsHub
 			ListViewItem.ListViewSubItem[] subItems;
 			foreach (DirectoryInfo dir in nodeDirInfo.GetDirectories())
 			{
-				item = new ListViewItem(dir.Name, (int)item_icons.folder);
-				subItems = new ListViewItem.ListViewSubItem[]
-					{new ListViewItem.ListViewSubItem(item, "Directory"),
+				if (dir.Name != "dllcache")
+				{
+					item = new ListViewItem(dir.Name, (int)item_icons.folder);
+					subItems = new ListViewItem.ListViewSubItem[]
+						{new ListViewItem.ListViewSubItem(item, "Directory"),
 						new ListViewItem.ListViewSubItem(item,
 						dir.LastAccessTime.ToShortDateString())};
-				item.Tag = "dir";
-				item.SubItems.AddRange(subItems);
-				listView1.Items.Add(item);
+					item.Tag = "dir";
+					item.SubItems.AddRange(subItems);
+					listView1.Items.Add(item);
+				}
 			}
 			foreach (System.IO.FileInfo file in nodeDirInfo.GetFiles())
 			{
@@ -410,10 +415,28 @@ namespace SAToolsHub
 					case ".m1v":
 						{
 							subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Audio File"),
+									{ new ListViewItem.ListViewSubItem(item, "Video File"),
 							new ListViewItem.ListViewSubItem(item,
 								file.LastAccessTime.ToShortDateString())};
 							item.ImageIndex = (int)item_icons.camera;
+							break;
+						}
+					case ".c":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+									{ new ListViewItem.ListViewSubItem(item, "Code File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.cfile;
+							break;
+						}
+					case ".json":
+						{
+							subItems = new ListViewItem.ListViewSubItem[]
+									{ new ListViewItem.ListViewSubItem(item, "Javascript File"),
+							new ListViewItem.ListViewSubItem(item,
+								file.LastAccessTime.ToShortDateString())};
+							item.ImageIndex = (int)item_icons.json;
 							break;
 						}
 					default:
@@ -636,7 +659,7 @@ namespace SAToolsHub
 		{
 			if (projectDirectory != null && setGame == "SADXPC")
 			{
-				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
+				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
 
 				sadxlvl2StartInfo.Arguments = projectArgumentsPath;
 			}
@@ -876,20 +899,26 @@ namespace SAToolsHub
 		}
 
 		//Edit/Context Menu
+		void reloadFolder()
+		{
+			DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
+			ListViewItem item = null;
+			listView1.Items.Clear();
+			LoadFiles(info, item);
+		}
+
 		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
 		{
 			if (listView1.SelectedItems.Count < 1)
 			{
 				editOpen.Enabled = false;
 				editCopy.Enabled = false;
-				editPaste.Enabled = false;
 				editDel.Enabled = false;
 				editConvert.Enabled = false;
 				editToData.Enabled = false;
 				editToJson.Enabled = false;
 				cmsOpen.Visible = false;
 				cmsCopy.Visible = false;
-				cmsPaste.Visible = false;
 				cmsDelete.Visible = false;
 				cmsConvert.Visible = false;
 				cmsToData.Visible = false;
@@ -914,13 +943,11 @@ namespace SAToolsHub
 					case ".sa2blvl":
 						editOpen.Enabled = true;
 						editCopy.Enabled = true;
-						editPaste.Enabled = true;
 						editDel.Enabled = true;
 						editConvert.Enabled = true;
 						editToData.Enabled = false;
 						cmsOpen.Visible = true;
 						cmsCopy.Visible = true;
-						cmsPaste.Visible = true;
 						cmsDelete.Visible = true;
 						cmsConvert.Visible = true;
 						cmsToData.Visible = true;
@@ -928,14 +955,12 @@ namespace SAToolsHub
 					case ".saanim":
 						editOpen.Enabled = true;
 						editCopy.Enabled = true;
-						editPaste.Enabled = true;
 						editDel.Enabled = true;
 						editConvert.Enabled = true;
 						editToData.Enabled = true;
 						editToJson.Enabled = true;
 						cmsOpen.Visible = true;
 						cmsCopy.Visible = true;
-						cmsPaste.Visible = true;
 						cmsDelete.Visible = true;
 						cmsConvert.Visible = true;
 						cmsToData.Visible = true;
@@ -944,16 +969,21 @@ namespace SAToolsHub
 					default:
 						editOpen.Enabled = true;
 						editCopy.Enabled = true;
-						editPaste.Enabled = true;
 						editDel.Enabled = true;
 						cmsOpen.Visible = true;
 						cmsCopy.Visible = true;
-						cmsPaste.Visible = true;
 						cmsDelete.Visible = true;
 						break;
 				}
 			}
+
+			if (copyPaths != null)
+			{
+				editPaste.Enabled = true;
+				cmsPaste.Visible = true;
+			}
 		}
+
 		void openListItem(ListViewItem item)
 		{
 			TreeNode selNode = new TreeNode();
@@ -1022,7 +1052,7 @@ namespace SAToolsHub
 						switch (itemName)
 						{
 							case "sadxlvl.ini":
-								sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameSystemDirectory}\"";
+								sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
 
 								Process.Start(sadxlvl2StartInfo);
 								break;
@@ -1052,45 +1082,82 @@ namespace SAToolsHub
 
 		private void editToData_Click(object sender, EventArgs e)
 		{
-
+			if (listView1.SelectedItems.Count > 0)
+			{
+				foreach (ListViewItem selItem in listView1.SelectedItems)
+				{
+					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
+						selItem.Tag.ToString(),
+						SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs,
+						Path.Combine(projectDirectory, "Source", (Path.GetFileNameWithoutExtension(selItem.Tag.ToString()) + ".c")));
+				}
+			}
 		}
 
 		private void editToJson_Click(object sender, EventArgs e)
 		{
-
+			if (listView1.SelectedItems != null)
+			{
+				foreach (ListViewItem selItem in listView1.SelectedItems)
+				{
+					if (Path.GetExtension(selItem.Tag.ToString()) == ".saanim")
+					{
+						SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
+							selItem.Tag.ToString(),
+							SonicRetro.SAModel.DataToolbox.StructConversion.TextType.JSON);
+					}
+					
+				}
+			}
+			reloadFolder();
 		}
 
 		private void editCopy_Click(object sender, EventArgs e)
 		{
-			if (listView1.SelectedItems[0] != null && listView1.SelectedItems[0].Tag.ToString() != "dir")
-				copyPath = listView1.SelectedItems[0].Tag.ToString();
+			if (listView1.SelectedItems.Count > 0)
+			{
+				copyPaths = new List<string>();
+				foreach (ListViewItem selItem in listView1.SelectedItems)
+				{
+					if (selItem != null && selItem.Tag.ToString() != "dir")
+						copyPaths.Add(selItem.Tag.ToString());
+				}
+			}
 		}
 
 		private void editPaste_Click(object sender, EventArgs e)
 		{
-			if (copyPath != null)
+			if (copyPaths.Count > 0)
 			{
 				DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
-				ListViewItem item = null;
-				string destFile = Path.Combine(info.FullName, Path.GetFileName(copyPath));
-				File.Copy(copyPath, destFile, true);
-				listView1.Items.Clear();
-				LoadFiles(info, item);
+				foreach (string file in copyPaths)
+				{
+					if (File.Exists(file))
+					{
+						string destFile = Path.Combine(info.FullName, Path.GetFileName(file));
+						File.Copy(file, destFile, true);
+					}
+				}
+				reloadFolder();
 			}
 		}
 
 		private void editDel_Click(object sender, EventArgs e)
 		{
-			if (listView1.SelectedItems[0] != null)
+			if (listView1.SelectedItems.Count > 0)
 			{
-				DialogResult delCheck = MessageBox.Show(("You are about to delete this file.\n\nAre you sure you want to delete this file?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				DialogResult delCheck;
+				if (listView1.SelectedItems.Count == 1)
+					delCheck = MessageBox.Show(("You are about to delete this file.\n\nAre you sure you want to delete this file?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				else
+					delCheck = MessageBox.Show(("You are about to delete " + listView1.SelectedItems.Count.ToString() + " files\n\nAre you sure you want to delete these files?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (delCheck == DialogResult.Yes)
 				{
-					DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
-					ListViewItem item = null;
-					File.Delete(listView1.SelectedItems[0].Tag.ToString());
-					listView1.Items.Clear();
-					LoadFiles(info, item);
+					foreach (ListViewItem selItem in listView1.SelectedItems)
+					{
+						File.Delete(selItem.Tag.ToString());
+					}
+					reloadFolder();
 				}
 			}
 		}
@@ -1113,6 +1180,16 @@ namespace SAToolsHub
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			editDel_Click(sender, e);
+		}
+
+		private void cmsToData_Click(object sender, EventArgs e)
+		{
+			editToData_Click(sender, e);
+		}
+
+		private void cmsToJson_Click(object sender, EventArgs e)
+		{
+			editToJson_Click(sender, e);
 		}
 
 		//treeView + listView click commands

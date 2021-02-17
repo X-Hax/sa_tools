@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SonicRetro.SAModel.DataToolbox
 {
-	class StructConversion
+	public static class StructConversion
 	{
 		public enum TextType
 		{

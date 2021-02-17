@@ -341,7 +341,7 @@ namespace SAToolsHub
 
 			setAssemblies();
 			manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
-				Path.Combine(SAToolsHub.gameSystemDirectory.ToString(), "mods"), assemblies);
+				Path.Combine(SAToolsHub.gameDirectory.ToString(), "mods"), assemblies);
 			manualBuildWindow.ShowDialog();
 		}
 
@@ -392,7 +392,7 @@ namespace SAToolsHub
 		{
 			showProgress();
 
-			string modsFolder = SAToolsHub.gameSystemDirectory + "\\mods";
+			string modsFolder = SAToolsHub.gameDirectory + "\\mods";
 			modFolder = Path.Combine(modsFolder, modName);
 			
 			if (!Directory.Exists(modFolder))

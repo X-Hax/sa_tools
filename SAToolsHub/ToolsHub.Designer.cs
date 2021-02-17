@@ -1002,6 +1002,8 @@
 			this.imageList1.Images.SetKeyName(9, "compress_ico.png");
 			this.imageList1.Images.SetKeyName(10, "object_ico.png");
 			this.imageList1.Images.SetKeyName(11, "data_ico.png");
+			this.imageList1.Images.SetKeyName(12, "cfile_ico.png");
+			this.imageList1.Images.SetKeyName(13, "json_ico.png");
 			// 
 			// contextMenuStrip1
 			// 
@@ -1039,6 +1041,7 @@
 			this.cmsToData.Name = "cmsToData";
 			this.cmsToData.Size = new System.Drawing.Size(126, 22);
 			this.cmsToData.Text = "To Data";
+			this.cmsToData.Click += new System.EventHandler(this.cmsToData_Click);
 			// 
 			// cmsToJson
 			// 
@@ -1046,6 +1049,7 @@
 			this.cmsToJson.Size = new System.Drawing.Size(126, 22);
 			this.cmsToJson.Text = "To JSON";
 			this.cmsToJson.Visible = false;
+			this.cmsToJson.Click += new System.EventHandler(this.cmsToJson_Click);
 			// 
 			// toolStripSeparator7
 			// 

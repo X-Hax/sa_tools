@@ -188,6 +188,11 @@
     <None Include="Resources\sadx_ico.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataToolbox\DataToolbox.csproj">
+      <Project>{9b0bd77b-12b8-4b68-96b9-90a2868e6df0}</Project>
+      <Name>DataToolbox</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SA Tools\SA Tools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
       <Name>SA Tools</Name>

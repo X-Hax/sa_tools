@@ -23,7 +23,7 @@ namespace SAToolsHub
 
 		void RunGame()
 		{
-			string gamePath = Path.Combine(SAToolsHub.gameSystemDirectory, gameEXE);
+			string gamePath = Path.Combine(SAToolsHub.gameDirectory, gameEXE);
 
 			if (!File.Exists(gamePath))
 			{
@@ -41,7 +41,7 @@ namespace SAToolsHub
 
 		void RunModManager()
 		{
-			string managerPath = Path.Combine(SAToolsHub.gameSystemDirectory, modManager);
+			string managerPath = Path.Combine(SAToolsHub.gameDirectory, modManager);
 
 			if (!File.Exists(managerPath))
 			{
@@ -59,7 +59,7 @@ namespace SAToolsHub
 
 		void UpdateModLoader(string modName)
 		{
-			string modLoaderIniPath = Path.Combine(SAToolsHub.gameSystemDirectory, modLoaderINI);
+			string modLoaderIniPath = Path.Combine(SAToolsHub.gameDirectory, modLoaderINI);
 
 			switch (SAToolsHub.setGame)
 			{
@@ -103,7 +103,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			if (!Directory.Exists(SAToolsHub.gameSystemDirectory + "\\mods\\" + modName))
+			if (!Directory.Exists(SAToolsHub.gameDirectory + "\\mods\\" + modName))
 			{
 				DialogResult buildCheckWindow = MessageBox.Show("No folder for this mod exists in " + SAToolsHub.setGame + "'s mod directory.\n\nWould you like to build a mod?", "Build Mod", MessageBoxButtons.YesNo);
 				if (buildCheckWindow == DialogResult.Yes)
@@ -157,13 +157,13 @@ namespace SAToolsHub
 					modManager = "SADXModManager.exe";
 					gameEXE = "sonic.exe";
 					radRunGame.Text = "Launch SADX";
-					modLoaderINI = SAToolsHub.gameSystemDirectory + "\\mods\\SADXModLoader.ini";
+					modLoaderINI = SAToolsHub.gameDirectory + "\\mods\\SADXModLoader.ini";
 					break;
 				case ("SA2PC"):
 					modManager = "SA2ModManager.exe";
 					gameEXE = "sonic2app.exe";
 					radRunGame.Text = "Launch SA2PC";
-					modLoaderINI = SAToolsHub.gameSystemDirectory + "\\mods\\SA2ModLoader.ini";
+					modLoaderINI = SAToolsHub.gameDirectory + "\\mods\\SA2ModLoader.ini";
 					break;
 			}
 		}
