@@ -4085,7 +4085,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					errorStrings.Add("\t\tExists:\t" + texExists);
 				}
 				log.AddRange(errorStrings);
-				osd.AddMessage(levelName + ":\n" + (Mission ? " Mission SET" : "SET") + count + ((count == 1) ? " object" : " objects") + " failed to load their model(s).\n"
+				osd.AddMessage(levelName + ":\n" + count + (Mission ? " Mission SET" : " SET") + (count == 1 ? " object " : " objects ") + "failed to load their model(s).\n"
 									+ "Please check SET object load errors in the log for details.\n", 300);
 				log.WriteLog();
 			}
