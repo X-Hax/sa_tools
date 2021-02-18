@@ -129,6 +129,7 @@ namespace SAToolsHub
 			this.Controls.Add(this.btnOK);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "formAbout";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "About";
 			this.ResumeLayout(false);
 			this.PerformLayout();

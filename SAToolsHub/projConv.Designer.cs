@@ -85,6 +85,7 @@ namespace SAToolsHub
 			this.Controls.Add(this.txtProjFolder);
 			this.Controls.Add(this.label1);
 			this.Name = "projConv";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Project Converter";
 			this.ResumeLayout(false);
 			this.PerformLayout();

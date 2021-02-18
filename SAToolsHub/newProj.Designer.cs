@@ -115,6 +115,7 @@
 			this.Controls.Add(this.txtProjFolder);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "newProj";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "New Project";
 			this.Shown += new System.EventHandler(this.newProj_Shown);
 			this.ResumeLayout(false);

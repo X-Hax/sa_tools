@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -62,6 +63,28 @@ namespace SAToolsHub
 		ProcessStartInfo sa2streditStartInfo;
 		ProcessStartInfo sa2stgselStartInfo;
 		ProcessStartInfo datatoolboxStartInfo;
+
+		class ListViewItemComparer : IComparer
+		{
+			private int col;
+			public ListViewItemComparer()
+			{
+				col = 0;
+			}
+			public ListViewItemComparer(int column)
+			{
+				col = column;
+			}
+			public int Compare(object x, object y)
+			{
+				if (((ListViewItem)x).Tag == ((ListViewItem)y).Tag)
+					return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
+				else if (((ListViewItem)x).Tag.ToString() == "dir")
+					return -1;
+				else
+					return 1;
+			}
+		}
 
 		public SAToolsHub()
 		{
@@ -1219,7 +1242,7 @@ namespace SAToolsHub
 
 		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-
+			listView1.ListViewItemSorter = new ListViewItemComparer(e.Column);
 		}
 
 		//Settings Handles

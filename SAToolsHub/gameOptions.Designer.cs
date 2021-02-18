@@ -94,6 +94,7 @@ namespace SAToolsHub
 			this.Controls.Add(this.radModManager);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "gameOptions";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Game Options";
 			this.Shown += new System.EventHandler(this.gameOptions_Shown);
 			this.ResumeLayout(false);

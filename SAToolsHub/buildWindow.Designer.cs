@@ -52,7 +52,7 @@
 			// 
 			this.btnManual.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnManual.Location = new System.Drawing.Point(16, 406);
-			this.btnManual.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnManual.Margin = new System.Windows.Forms.Padding(4);
 			this.btnManual.Name = "btnManual";
 			this.btnManual.Size = new System.Drawing.Size(180, 41);
 			this.btnManual.TabIndex = 0;
@@ -66,7 +66,7 @@
 			// 
 			this.btnAuto.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnAuto.Location = new System.Drawing.Point(204, 406);
-			this.btnAuto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnAuto.Margin = new System.Windows.Forms.Padding(4);
 			this.btnAuto.Name = "btnAuto";
 			this.btnAuto.Size = new System.Drawing.Size(180, 41);
 			this.btnAuto.TabIndex = 1;
@@ -79,7 +79,7 @@
 			// 
 			this.btnChkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnChkAll.Location = new System.Drawing.Point(16, 370);
-			this.btnChkAll.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnChkAll.Margin = new System.Windows.Forms.Padding(4);
 			this.btnChkAll.Name = "btnChkAll";
 			this.btnChkAll.Size = new System.Drawing.Size(180, 28);
 			this.btnChkAll.TabIndex = 6;
@@ -92,7 +92,7 @@
 			// 
 			this.btnUnchkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnUnchkAll.Location = new System.Drawing.Point(204, 370);
-			this.btnUnchkAll.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnUnchkAll.Margin = new System.Windows.Forms.Padding(4);
 			this.btnUnchkAll.Name = "btnUnchkAll";
 			this.btnUnchkAll.Size = new System.Drawing.Size(180, 28);
 			this.btnUnchkAll.TabIndex = 7;
@@ -109,9 +109,9 @@
 			// 
 			this.tabEXE.Controls.Add(this.chkBoxEXE);
 			this.tabEXE.Location = new System.Drawing.Point(4, 25);
-			this.tabEXE.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabEXE.Margin = new System.Windows.Forms.Padding(4);
 			this.tabEXE.Name = "tabEXE";
-			this.tabEXE.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabEXE.Padding = new System.Windows.Forms.Padding(4);
 			this.tabEXE.Size = new System.Drawing.Size(360, 324);
 			this.tabEXE.TabIndex = 0;
 			this.tabEXE.Text = "EXE Data";
@@ -125,7 +125,7 @@
 			this.chkBoxEXE.FormattingEnabled = true;
 			this.chkBoxEXE.HorizontalScrollbar = true;
 			this.chkBoxEXE.Location = new System.Drawing.Point(4, 4);
-			this.chkBoxEXE.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.chkBoxEXE.Margin = new System.Windows.Forms.Padding(4);
 			this.chkBoxEXE.Name = "chkBoxEXE";
 			this.chkBoxEXE.Size = new System.Drawing.Size(352, 316);
 			this.chkBoxEXE.TabIndex = 3;
@@ -138,7 +138,7 @@
 			this.tabControl1.Controls.Add(this.tabMDL);
 			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.tabControl1.Location = new System.Drawing.Point(16, 15);
-			this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
 			this.tabControl1.Size = new System.Drawing.Size(368, 353);
@@ -148,9 +148,9 @@
 			// 
 			this.tabDLL.Controls.Add(this.chkBoxDLL);
 			this.tabDLL.Location = new System.Drawing.Point(4, 25);
-			this.tabDLL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabDLL.Margin = new System.Windows.Forms.Padding(4);
 			this.tabDLL.Name = "tabDLL";
-			this.tabDLL.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabDLL.Padding = new System.Windows.Forms.Padding(4);
 			this.tabDLL.Size = new System.Drawing.Size(360, 324);
 			this.tabDLL.TabIndex = 1;
 			this.tabDLL.Text = "DLL Data";
@@ -164,7 +164,7 @@
 			this.chkBoxDLL.FormattingEnabled = true;
 			this.chkBoxDLL.HorizontalScrollbar = true;
 			this.chkBoxDLL.Location = new System.Drawing.Point(4, 4);
-			this.chkBoxDLL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.chkBoxDLL.Margin = new System.Windows.Forms.Padding(4);
 			this.chkBoxDLL.Name = "chkBoxDLL";
 			this.chkBoxDLL.Size = new System.Drawing.Size(352, 316);
 			this.chkBoxDLL.TabIndex = 4;
@@ -174,9 +174,9 @@
 			// 
 			this.tabMDL.Controls.Add(this.chkBoxMDL);
 			this.tabMDL.Location = new System.Drawing.Point(4, 25);
-			this.tabMDL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabMDL.Margin = new System.Windows.Forms.Padding(4);
 			this.tabMDL.Name = "tabMDL";
-			this.tabMDL.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.tabMDL.Padding = new System.Windows.Forms.Padding(4);
 			this.tabMDL.Size = new System.Drawing.Size(360, 324);
 			this.tabMDL.TabIndex = 2;
 			this.tabMDL.Text = "MDL/MTN Files";
@@ -190,7 +190,7 @@
 			this.chkBoxMDL.FormattingEnabled = true;
 			this.chkBoxMDL.HorizontalScrollbar = true;
 			this.chkBoxMDL.Location = new System.Drawing.Point(4, 4);
-			this.chkBoxMDL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.chkBoxMDL.Margin = new System.Windows.Forms.Padding(4);
 			this.chkBoxMDL.Name = "chkBoxMDL";
 			this.chkBoxMDL.Size = new System.Drawing.Size(352, 316);
 			this.chkBoxMDL.TabIndex = 5;
@@ -208,8 +208,9 @@
 			this.Controls.Add(this.btnManual);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "buildWindow";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Select Data Files";
 			this.Shown += new System.EventHandler(this.buildWindow_Shown);
 			this.tabEXE.ResumeLayout(false);

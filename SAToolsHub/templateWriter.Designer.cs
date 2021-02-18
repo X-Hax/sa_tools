@@ -58,6 +58,7 @@
 			this.Controls.Add(this.textBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "templateWriter";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Split Template Writer";
 			this.ResumeLayout(false);
 			this.PerformLayout();
