@@ -953,17 +953,17 @@ namespace SAToolsHub
 				editConvert.Enabled = false;
 				editToData.Enabled = false;
 				editToJson.Enabled = false;
-				cmsOpen.Visible = false;
-				cmsCopy.Visible = false;
-				cmsDelete.Visible = false;
-				cmsConvert.Visible = false;
-				cmsToData.Visible = false;
-				cmsToJson.Visible = false;
+				cmsOpen.Enabled = false;
+				cmsCopy.Enabled = false;
+				cmsDelete.Enabled = false;
+				cmsConvert.Enabled = false;
+				cmsToData.Enabled = false;
+				cmsToJson.Enabled = false;
 			}
 			else if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
 			{
 				editOpen.Enabled = true;
-				cmsOpen.Visible = true;
+				cmsOpen.Enabled = true;
 			}
 			else
 			{
@@ -982,11 +982,11 @@ namespace SAToolsHub
 						editDel.Enabled = true;
 						editConvert.Enabled = true;
 						editToData.Enabled = false;
-						cmsOpen.Visible = true;
-						cmsCopy.Visible = true;
-						cmsDelete.Visible = true;
-						cmsConvert.Visible = true;
-						cmsToData.Visible = true;
+						cmsOpen.Enabled = true;
+						cmsCopy.Enabled = true;
+						cmsDelete.Enabled = true;
+						cmsConvert.Enabled = true;
+						cmsToData.Enabled = true;
 						break;
 					case ".saanim":
 						editOpen.Enabled = true;
@@ -995,20 +995,20 @@ namespace SAToolsHub
 						editConvert.Enabled = true;
 						editToData.Enabled = true;
 						editToJson.Enabled = true;
-						cmsOpen.Visible = true;
-						cmsCopy.Visible = true;
-						cmsDelete.Visible = true;
-						cmsConvert.Visible = true;
-						cmsToData.Visible = true;
-						cmsToJson.Visible = true;
+						cmsOpen.Enabled = true;
+						cmsCopy.Enabled = true;
+						cmsDelete.Enabled = true;
+						cmsConvert.Enabled = true;
+						cmsToData.Enabled = true;
+						cmsToJson.Enabled = true;
 						break;
 					default:
 						editOpen.Enabled = true;
 						editCopy.Enabled = true;
 						editDel.Enabled = true;
-						cmsOpen.Visible = true;
-						cmsCopy.Visible = true;
-						cmsDelete.Visible = true;
+						cmsOpen.Enabled = true;
+						cmsCopy.Enabled = true;
+						cmsDelete.Enabled = true;
 						break;
 				}
 			}
@@ -1016,7 +1016,7 @@ namespace SAToolsHub
 			if (copyPaths != null)
 			{
 				editPaste.Enabled = true;
-				cmsPaste.Visible = true;
+				cmsPaste.Enabled = true;
 			}
 		}
 
