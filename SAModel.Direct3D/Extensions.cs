@@ -698,8 +698,8 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.GetBounds()));
-					// Was: result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					//result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.GetBounds()));
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -728,8 +728,8 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.GetBounds()));
-					// Was: result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					//result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.GetBounds()));
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			transform.Pop();
 			return result;
@@ -786,10 +786,10 @@ namespace SonicRetro.SAModel.Direct3D
 						mat.IgnoreLighting = true;
 					}
 					BoundingSphere bounds;
-					if (mat.UseAlpha)
+					//if (mat.UseAlpha)
 						bounds = obj.Attach.CalculateBounds(j, transform.Top);
-					else
-						bounds = obj.Attach.GetBounds();
+					//else
+					//	bounds = obj.Attach.GetBounds();
 					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, bounds));
 				}
 			}
