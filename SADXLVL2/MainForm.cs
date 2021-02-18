@@ -1709,6 +1709,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
 						renderlist_set.Add(info);
 					}
+					else if (item is SETItem)
+					{
+						SETItem setitem = (SETItem)item;
+						boundsMesh = Direct3D.Mesh.Sphere(setitem.Bounds.Radius, 9, 9);
+
+						debugBoundsStack.NJTranslate(setitem.Bounds.Center);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
+						renderlist_set.Add(info);
+					}
 				}
 				debugBoundsStack.Pop();
 			}
@@ -4376,6 +4385,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveSETFile(true);
+		}
+
+		private void boundsToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
