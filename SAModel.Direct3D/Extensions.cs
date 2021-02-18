@@ -698,7 +698,6 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					//result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.GetBounds()));
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
@@ -728,7 +727,6 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					//result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.GetBounds()));
 					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			transform.Pop();
@@ -785,12 +783,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					BoundingSphere bounds;
-					//if (mat.UseAlpha)
-						bounds = obj.Attach.CalculateBounds(j, transform.Top);
-					//else
-					//	bounds = obj.Attach.GetBounds();
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, bounds));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -836,8 +829,7 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.GetBounds()));
-					// Was: result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			}
 
@@ -898,8 +890,7 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.GetBounds()));
-					// Was: result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolors, ignorelight));
@@ -943,8 +934,7 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.GetBounds()));
-					// Was: result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
 				}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimatedInvert(child, transform, meshes, anim, animframe, ref modelindex, ref animindex));
@@ -984,8 +974,7 @@ namespace SonicRetro.SAModel.Direct3D
 						{
 							mat.IgnoreLighting = true;
 						}
-						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.GetBounds()));
-						// Was: result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
 					}
 				}
 			return result;
@@ -1013,8 +1002,7 @@ namespace SonicRetro.SAModel.Direct3D
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
-						result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, objs[i].Attach.GetBounds()));
-						// Was: result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, objs[i].Attach.CalculateBounds(j, transform)));
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, objs[i].Attach.CalculateBounds(j, transform)));
 					}
 				}
 			return result;
