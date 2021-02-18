@@ -48,6 +48,9 @@ namespace Split
 				case "-lc":
 					SplitLC(args);
 					return true;
+				//case "-defconv":
+					//SplitDefConv(args);
+					//return true;
 				default:
 					return false;
 			}
@@ -597,5 +600,37 @@ namespace Split
 			}
 			IniSerializer.Serialize(newinifile, Path.GetFileNameWithoutExtension(listname) + ".ini");
 		}
+
+		// Reads objdefs.ini and a split INI and tries to fill model filenames with models from the split INI, based on the Draw field in objdefs.ini
+		// Requires a now-deleted Draw field in ObjectData
+		// Needs the SAEditorCommon.SETEditing dependency
+		/*
+		static void SplitDefConv(string[] args)
+		{
+			Dictionary<string, ObjectData> objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(args[0]);
+			IniData splitdata = IniSerializer.Deserialize<IniData>(args[1]);
+			foreach (var data in objdefini)
+			{
+				if (data.Value.Draw != null && data.Value.Draw.Length > 3)
+				{
+					string[] drawsplit = data.Value.Draw.Split(',');
+					string type = drawsplit[1];
+					string addr = drawsplit[2];
+					if (type == "exe")
+					{
+						foreach (var splitinfo in splitdata.Files)
+						{
+							if (splitinfo.Value.Address == int.Parse(addr, System.Globalization.NumberStyles.AllowHexSpecifier))
+							{
+								Console.WriteLine("Draw: for {0} is {1}", data.Value.Name, splitinfo.Value.Address.ToString("X8"));
+								data.Value.Model = splitinfo.Value.Filename;
+							}
+						}
+					}
+				}
+			}
+			IniSerializer.Serialize(objdefini, "uck.ini");
+		}
+		*/
 	}
 }
