@@ -48,6 +48,11 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
+		class itemTags
+		{
+			public string Type { get; set; }
+			public string Path { get; set; }
+		}
 
 		//Program Paths
 		ProcessStartInfo samdlStartInfo;
@@ -77,9 +82,11 @@ namespace SAToolsHub
 			}
 			public int Compare(object x, object y)
 			{
-				if (((ListViewItem)x).Tag == ((ListViewItem)y).Tag)
+				itemTags xTags = (itemTags)((ListViewItem)x).Tag;
+				itemTags yTags = (itemTags)((ListViewItem)y).Tag;
+				if (xTags.Type == yTags.Type)
 					return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
-				else if (((ListViewItem)x).Tag.ToString() == "dir")
+				else if (xTags.Type == "dir")
 					return -1;
 				else
 					return 1;
@@ -232,7 +239,10 @@ namespace SAToolsHub
 						{new ListViewItem.ListViewSubItem(item, "Directory"),
 						new ListViewItem.ListViewSubItem(item,
 						dir.LastAccessTime.ToShortDateString())};
-					item.Tag = "dir";
+					itemTags dirTag = new itemTags();
+					dirTag.Type = "dir";
+					dirTag.Path = dir.FullName;
+					item.Tag = dirTag;
 					item.SubItems.AddRange(subItems);
 					listView1.Items.Add(item);
 				}
@@ -471,7 +481,10 @@ namespace SAToolsHub
 							break;
 						}
 				}
-				item.Tag = filePath;
+				itemTags itemTag = new itemTags();
+				itemTag.Type = "file";
+				itemTag.Path = file.FullName;
+				item.Tag = itemTag;
 				item.SubItems.AddRange(subItems);
 				listView1.Items.Add(item);
 			}
@@ -947,14 +960,14 @@ namespace SAToolsHub
 				cmsToData.Visible = false;
 				cmsToJson.Visible = false;
 			}
-			else if (listView1.SelectedItems[0].Tag.ToString() == "dir")
+			else if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
 			{
 				editOpen.Enabled = true;
 				cmsOpen.Visible = true;
 			}
 			else
 			{
-				string itemPath = listView1.SelectedItems[0].Tag.ToString();
+				string itemPath = ((itemTags)listView1.SelectedItems[0].Tag).Path;
 				string itemExt = Path.GetExtension(itemPath);
 				switch (itemExt)
 				{
@@ -1011,10 +1024,10 @@ namespace SAToolsHub
 		{
 			TreeNode selNode = new TreeNode();
 			string itemName = item.Text;
-			string itemPath = item.Tag.ToString();
+			string itemPath = ((itemTags)item.Tag).Path;
 			string itemExt;
 
-			if (listView1.SelectedItems[0].Tag.ToString() == "dir")
+			if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
 			{
 				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
 				itemExt = "dir";
@@ -1110,9 +1123,9 @@ namespace SAToolsHub
 				foreach (ListViewItem selItem in listView1.SelectedItems)
 				{
 					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
-						selItem.Tag.ToString(),
+						((itemTags)selItem.Tag).Path,
 						SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs,
-						Path.Combine(projectDirectory, "Source", (Path.GetFileNameWithoutExtension(selItem.Tag.ToString()) + ".c")));
+						Path.Combine(projectDirectory, "Source", (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path + ".c"))));
 				}
 			}
 		}
@@ -1123,10 +1136,10 @@ namespace SAToolsHub
 			{
 				foreach (ListViewItem selItem in listView1.SelectedItems)
 				{
-					if (Path.GetExtension(selItem.Tag.ToString()) == ".saanim")
+					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
 						SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
-							selItem.Tag.ToString(),
+							((itemTags)selItem.Tag).Path,
 							SonicRetro.SAModel.DataToolbox.StructConversion.TextType.JSON);
 					}
 					
@@ -1142,8 +1155,8 @@ namespace SAToolsHub
 				copyPaths = new List<string>();
 				foreach (ListViewItem selItem in listView1.SelectedItems)
 				{
-					if (selItem != null && selItem.Tag.ToString() != "dir")
-						copyPaths.Add(selItem.Tag.ToString());
+					if (selItem != null && ((itemTags)selItem.Tag).Type != "dir")
+						copyPaths.Add(((itemTags)selItem.Tag).Path);
 				}
 			}
 		}
@@ -1178,7 +1191,7 @@ namespace SAToolsHub
 				{
 					foreach (ListViewItem selItem in listView1.SelectedItems)
 					{
-						File.Delete(selItem.Tag.ToString());
+						File.Delete(((itemTags)selItem.Tag).Path);
 					}
 					reloadFolder();
 				}
