@@ -55,13 +55,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSelector.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FileSelector.designer.cs">
-      <DependentUpon>FileSelector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileSelectorMode.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,9 +71,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextBoxWriter.cs" />
     <Compile Include="StructConversion.cs" />
-    <EmbeddedResource Include="FileSelector.resx">
-      <DependentUpon>FileSelector.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

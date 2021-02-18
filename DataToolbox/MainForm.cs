@@ -8,6 +8,30 @@ namespace SonicRetro.SAModel.DataToolbox
 	public partial class MainForm : Form
 	{
 		byte[] file;
+		Properties.Settings Settings = Properties.Settings.Default;
+
+		public MainForm()
+		{
+			InitializeComponent();
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			// Binary File Extractor defaults
+			DataMappingFolder = "SADXPC";
+			comboBoxSplitGameSelect.SelectedIndex = 2;
+			comboBoxBinaryFormat.SelectedIndex = 1;
+			textBoxBinaryAuthor.Text = Settings.Author;
+			ComboBoxBinaryType.Items.Clear();
+			comboBoxBinaryItemType.SelectedIndex = 0;
+			for (int i = 0; i < ModelFileTypes.Length; i++)
+			{
+				ComboBoxBinaryType.Items.Add(ModelFileTypes[i].name_or_type);
+			}
+		}
+
+
+		#region Binary Data Extractor Tab
 		public struct BinaryModelType
 		{
 			public string name_or_type;
@@ -71,6 +95,19 @@ namespace SonicRetro.SAModel.DataToolbox
 		new BinaryModelType { name_or_type = "ADVERTISE", key = 0x8C900000u, data_type = 0 },
 		new BinaryModelType { name_or_type = "MOVIE", key = 0x8CEB0000u, data_type = 0 },
 		};
+		private void textBoxBinaryFilename_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void textBoxBinaryFilename_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			textBoxBinaryFilename.Text = fileList[0];
+		}
 
 		private int CheckKnownFile(string filename)
 		{
@@ -95,30 +132,172 @@ namespace SonicRetro.SAModel.DataToolbox
 			return -1;
 		}
 
-		Properties.Settings Settings = Properties.Settings.Default;
-
-		public MainForm()
+		private void CheckBox3_CheckedChanged(object sender, EventArgs e)
 		{
-			InitializeComponent();
+			numericUpDownBinaryAddress.Hexadecimal = checkBoxBinaryHex.Checked;
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			DataMappingFolder = "SADXPC";
-			comboBoxGameSelect.SelectedIndex = 2;
-			comboBoxFormat.SelectedIndex = 1;
-			textBoxAuthor.Text = Settings.Author;
-			ComboBoxBinaryType.Items.Clear();
-			comboBoxItemType.SelectedIndex = 0;
-			for (int i = 0; i < ModelFileTypes.Length; i++)
+			numericUpDownBinaryKey.Value = ModelFileTypes[ComboBoxBinaryType.SelectedIndex].key;
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			bool success = false;
+			uint address = (uint)numericUpDownBinaryAddress.Value;
+			if (checkBoxBinaryMemory.Checked) address -= (uint)numericUpDownBinaryKey.Value;
+			LandTableFormat format = (LandTableFormat)comboBoxBinaryFormat.SelectedIndex;
+			LandTableFormat outfmt = format;
+			if (format == LandTableFormat.SADX) outfmt = LandTableFormat.SA1;
+			ByteConverter.BigEndian = checkBoxBinaryBigEndian.Checked;
+			Settings.Author = textBoxBinaryAuthor.Text;
+			Settings.Save();
+			SaveFileDialog sd = new SaveFileDialog();
+			switch (comboBoxBinaryItemType.SelectedIndex)
 			{
-				ComboBoxBinaryType.Items.Add(ModelFileTypes[i].name_or_type);
+				//Level
+				case 0:
+					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
+					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					{
+						new LandTable(file, (int)numericUpDownBinaryAddress.Value, (uint)numericUpDownBinaryKey.Value, format) { Author = textBoxBinaryAuthor.Text, Description = textBoxBinaryDescription.Text }.SaveToFile(sd.FileName, outfmt);
+						if (checkBoxBinaryStructs.Checked) ConvertToText(sd.FileName);
+						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
+						success = true;
+					}
+					break;
+				//Model
+				case 1:
+					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
+					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					{
+						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
+						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
+						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
+						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
+						success = true;
+					}
+					break;
+				//Action
+				case 2:
+					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
+					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					{
+						//Model
+						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
+						NJS_OBJECT tempmodel = tempaction.Model;
+						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
+						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
+						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
+
+						//Action
+						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
+
+						tempaction.Animation.Save(saanimPath);
+						ConvertToText(saanimPath, checkBoxBinaryStructs.Checked, false, checkBoxBinaryJSON.Checked);
+
+						if (checkBoxBinarySAModel.Checked)
+						{
+							using (TextWriter twmain = File.CreateText(Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".action")))
+							{
+								twmain.WriteLine(Path.GetFileName(saanimPath));
+								twmain.Flush();
+								twmain.Close();
+							}
+						}
+						else File.Delete(saanimPath);
+						success = true;
+					}
+					break;
+			}
+			if (success)
+			{
+				MessageBox.Show("Data extracted!", "Binary Data Extractor", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 
+		private void UpdateStartButtonBinary()
+		{
+			if (!File.Exists(textBoxBinaryFilename.Text) || ((!checkBoxBinaryNJA.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked))) buttonBinaryExtract.Enabled = false;
+			else buttonBinaryExtract.Enabled = true;
+		}
+
+		private void checkBox_SAModel_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateStartButtonBinary();
+		}
+
+		private void checkBox_Structs_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateStartButtonBinary();
+		}
+
+		private void checkBox_NJA_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateStartButtonBinary();
+		}
+
+		private void checkBox_JSON_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateStartButtonBinary();
+		}
+
+		private void textBoxBinaryFilename_TextChanged(object sender, EventArgs e)
+		{
+			if (!checkBoxBinaryNJA.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked)
+			{
+				buttonBinaryExtract.Enabled = false;
+				return;
+			}
+			if (File.Exists(textBoxBinaryFilename.Text))
+			{
+				file = File.ReadAllBytes(textBoxBinaryFilename.Text);
+				if (Path.GetExtension(textBoxBinaryFilename.Text).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
+				buttonBinaryExtract.Enabled = true;
+				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
+				if (!baseaddr.HasValue)
+				{
+					int u = CheckKnownFile(textBoxBinaryFilename.Text);
+					if (u == -5)
+					{
+						numericUpDownBinaryKey.Value = 0xC600000u;
+						comboBoxBinaryFormat.SelectedIndex = 2;
+					}
+					else if (u == -4)
+					{
+						numericUpDownBinaryKey.Value = 0xCB80000u;
+						comboBoxBinaryFormat.SelectedIndex = 0;
+					}
+					else if (u != -1)
+					{
+						numericUpDownBinaryKey.Value = KnownBinaryFiles[u].key;
+						comboBoxBinaryFormat.SelectedIndex = KnownBinaryFiles[u].data_type;
+					}
+					else comboBoxBinaryFormat.SelectedIndex = 1;
+				}
+				else numericUpDownBinaryKey.Value = (int)baseaddr;
+				buttonBinaryExtract.Enabled = true;
+			}
+			else buttonBinaryExtract.Enabled = false;
+		}
+
+		private void buttonBinaryBrowse_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog fileDialog = new OpenFileDialog())
+			{
+				if (fileDialog.ShowDialog() == DialogResult.OK)
+				{
+					textBoxBinaryFilename.Text = fileDialog.FileName;
+				}
+			}
+		}
+		#endregion
+
+		#region Struct Converter Tab
 		void ConvertToText(string FileName, bool CStruct = true, bool NJA = false, bool JSON = false, string outdir = "")
 		{
-			bool dx = comboBoxFormat.SelectedIndex == 1;
+			bool dx = comboBoxBinaryFormat.SelectedIndex == 1;
 			string outext;
 			string outpath;
 			string checkname = Path.GetFileNameWithoutExtension(FileName);
@@ -148,148 +327,11 @@ namespace SonicRetro.SAModel.DataToolbox
 				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx);
 			}
 		}
-		private void CheckBox3_CheckedChanged(object sender, EventArgs e)
-		{
-			NumericUpDownAddress.Hexadecimal = CheckBoxHex.Checked;
-		}
 
-		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			numericUpDownKey.Value = ModelFileTypes[ComboBoxBinaryType.SelectedIndex].key;
-		}
-
-		private void fileSelector1_FileNameChanged(object sender, EventArgs e)
-		{
-			if (!checkBox_NJA.Checked && !checkBox_SAModel.Checked && !checkBox_JSON.Checked && !checkBox_Structs.Checked)
-			{ 
-				buttonExtract.Enabled = false;
-				return;
-			}
-			if (File.Exists(fileSelector1.FileName))
-			{
-				file = File.ReadAllBytes(fileSelector1.FileName);
-				if (Path.GetExtension(fileSelector1.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
-				buttonExtract.Enabled = true;
-				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
-				if (!baseaddr.HasValue)
-				{
-					int u = CheckKnownFile(fileSelector1.FileName);
-					if (u == -5)
-					{
-						numericUpDownKey.Value = 0xC600000u;
-						comboBoxFormat.SelectedIndex = 2;
-					}
-					else if (u == -4)
-					{
-						numericUpDownKey.Value = 0xCB80000u;
-						comboBoxFormat.SelectedIndex = 0;
-					}
-					else if (u != -1)
-					{
-						numericUpDownKey.Value = KnownBinaryFiles[u].key;
-						comboBoxFormat.SelectedIndex = KnownBinaryFiles[u].data_type;
-					}
-					else comboBoxFormat.SelectedIndex = 1;
-				}
-				else numericUpDownKey.Value = (int)baseaddr;
-				buttonExtract.Enabled = true;
-			}
-			else buttonExtract.Enabled = false;
-		}
-
-		enum SectOffs
-		{
-			VSize = 8,
-			VAddr = 0xC,
-			FSize = 0x10,
-			FAddr = 0x14,
-			Flags = 0x24,
-			Size = 0x28
-		}
-
-		private void UpdateStartButton()
-		{
-			if (!File.Exists(fileSelector1.FileName) || ((!checkBox_NJA.Checked && !checkBox_SAModel.Checked && !checkBox_JSON.Checked && !checkBox_Structs.Checked))) buttonExtract.Enabled = false;
-			else buttonExtract.Enabled = true;
-		}
 		private void UpdateConvertButton()
 		{
-			if (listBoxStructConverter.Items.Count == 0 || ((!checkBox_StructConvNJA.Checked && !checkBox_StructConvJSON.Checked && !checkBox_StructConvStructs.Checked))) buttonConvertBatch.Enabled = false;
-			else buttonConvertBatch.Enabled = true;
-		}
-		private void button1_Click(object sender, EventArgs e)
-		{
-			bool success = false;
-			uint address = (uint)NumericUpDownAddress.Value;
-			if (checkBoxMemory.Checked) address -= (uint)numericUpDownKey.Value;
-			LandTableFormat format = (LandTableFormat)comboBoxFormat.SelectedIndex;
-			LandTableFormat outfmt = format;
-			if (format == LandTableFormat.SADX) outfmt = LandTableFormat.SA1;
-			ByteConverter.BigEndian = checkBoxBigEndian.Checked;
-			Settings.Author = textBoxAuthor.Text;
-			Settings.Save();
-			SaveFileDialog sd = new SaveFileDialog();
-			switch (comboBoxItemType.SelectedIndex)
-			{
-				//Level
-				case 0:
-					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
-					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-					{
-						new LandTable(file, (int)NumericUpDownAddress.Value, (uint)numericUpDownKey.Value, format) { Author = textBoxAuthor.Text, Description = textBoxDescription.Text }.SaveToFile(sd.FileName, outfmt);
-						if (checkBox_Structs.Checked) ConvertToText(sd.FileName);
-						if (!checkBox_SAModel.Checked) File.Delete(sd.FileName);
-						success = true;
-					}
-					break;
-				//Model
-				case 1:
-					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
-					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-					{
-						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownKey.Value, (ModelFormat)comboBoxFormat.SelectedIndex, null);
-						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxAuthor.Text, textBoxDescription.Text, null, (ModelFormat)comboBoxFormat.SelectedIndex);
-						ConvertToText(sd.FileName, checkBox_Structs.Checked, checkBox_NJA.Checked, false);
-						if (!checkBox_SAModel.Checked) File.Delete(sd.FileName);
-						success = true;
-					}
-					break;
-				//Action
-				case 2:
-					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
-					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-					{
-						//Model
-						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownKey.Value, (ModelFormat)comboBoxFormat.SelectedIndex, null);
-						NJS_OBJECT tempmodel = tempaction.Model;
-						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxAuthor.Text, textBoxDescription.Text, null, (ModelFormat)comboBoxFormat.SelectedIndex);
-						ConvertToText(sd.FileName, checkBox_Structs.Checked, checkBox_NJA.Checked, false);
-						if (!checkBox_SAModel.Checked) File.Delete(sd.FileName);
-
-						//Action
-						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
-
-						tempaction.Animation.Save(saanimPath);
-						ConvertToText(saanimPath, checkBox_Structs.Checked, false, checkBox_JSON.Checked);
-
-						if (checkBox_SAModel.Checked)
-						{
-							using (TextWriter twmain = File.CreateText(Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".action")))
-							{
-								twmain.WriteLine(Path.GetFileName(saanimPath));
-								twmain.Flush();
-								twmain.Close();
-							}
-						}
-						else File.Delete(saanimPath);
-						success = true;
-					}
-					break;
-			}
-			if (success)
-			{
-				MessageBox.Show("Data extracted!", "Binary Data Extractor", MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
+			if (listBoxStructConverter.Items.Count == 0 || ((!checkBoxStructConvNJA.Checked && !checkBoxStructConvJSON.Checked && !checkBoxStructConvStructs.Checked))) buttonStructConvConvertBatch.Enabled = false;
+			else buttonStructConvConvertBatch.Enabled = true;
 		}
 
 		private void button1_Click_1(object sender, EventArgs e)
@@ -305,24 +347,133 @@ namespace SonicRetro.SAModel.DataToolbox
 		private void buttonConvertBatch_Click(object sender, EventArgs e)
 		{
 			string outdir = "";
-			if (!checkBoxSameOutputFolderBatch.Checked)
+			if (!checkBoxStructConvSameOutputFolderBatch.Checked)
 			{
 				SaveFileDialog sav = new SaveFileDialog() { Filter = "Folder|*.*", Title = "Select output folder" };
 				if (sav.ShowDialog() == System.Windows.Forms.DialogResult.OK) outdir = sav.FileName;
-					else return;
+				else return;
 			}
 			foreach (string item in listBoxStructConverter.Items)
 			{
-				ConvertToText(item, checkBox_StructConvStructs.Checked, checkBox_StructConvNJA.Checked, checkBox_StructConvJSON.Checked, outdir);
+				ConvertToText(item, checkBoxStructConvStructs.Checked, checkBoxStructConvNJA.Checked, checkBoxStructConvJSON.Checked, outdir);
 			}
 			string finished = "Struct conversion finished!";
 			if (outdir != "") finished += "\nConverted files are saved to " + outdir + ".";
 			MessageBox.Show(finished, "Struct Converter", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
+		private void listBoxStructConverter_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listBoxStructConverter.SelectedIndices.Count > 0) buttonStructConvRemoveSelBatch.Enabled = true;
+			else buttonStructConvRemoveSelBatch.Enabled = false;
+		}
+		private void buttonRemoveSelBatch_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBoxStructConverter.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBoxStructConverter.Items.Remove(item);
+			if (listBoxStructConverter.Items.Count == 0) buttonStructConvConvertBatch.Enabled = false;
+		}
+
+		private void buttonRemoveAllBatch_Click(object sender, EventArgs e)
+		{
+			listBoxStructConverter.Items.Clear();
+			buttonStructConvConvertBatch.Enabled = false;
+		}
+
+		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
+			}
+			UpdateConvertButton();
+		}
+
+		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void checkBox_StructConvStructs_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateConvertButton();
+		}
+
+		private void checkBox_StructConvNJA_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateConvertButton();
+		}
+
+		private void checkBox_StructConvJSON_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateConvertButton();
+		}
+		#endregion
+
+		#region Split Tab
+		private void button_AddFilesSplit_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog op = new OpenFileDialog() { Filter = "Binary files|*.exe;*.dll;*.bin;*.mdl|All files|*.*", Multiselect = true };
+			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				listBoxSplitFiles.Items.AddRange(op.FileNames);
+				buttonSplitStart.Enabled = true;
+			}
+		}
+
+		private void buttonSplit_Click(object sender, EventArgs e)
+		{
+			string outdir = "";
+			if (!checkBoxSameFolderSplit.Checked)
+			{
+				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
+				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					outdir = sd.FileName;
+				}
+				else return;
+			}
+			SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir, checkBoxFindAllSplit.Checked);
+			spl.ShowDialog();
+		}
+
+		private void listBox_SplitFiles_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (!listBoxSplitFiles.Items.Contains(fileList[u])) listBoxSplitFiles.Items.Add(fileList[u]);
+			}
+			buttonSplitStart.Enabled = true;
+		}
+
+		private void listBox_SplitFiles_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+		private void buttonRemoveSplit_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBoxSplitFiles.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBoxSplitFiles.Items.Remove(item);
+			if (listBoxSplitFiles.Items.Count == 0) buttonSplitStart.Enabled = false;
+		}
+		private void buttonClearAllSplit_Click(object sender, EventArgs e)
+		{
+			listBoxSplitFiles.Items.Clear();
+			buttonSplitStart.Enabled = false;
+		}
 		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			switch (comboBoxGameSelect.SelectedIndex)
+			switch (comboBoxSplitGameSelect.SelectedIndex)
 			{
 				case 0:
 					DataMappingFolder = "SA1";
@@ -347,142 +498,128 @@ namespace SonicRetro.SAModel.DataToolbox
 					break;
 			}
 		}
-
-		private void button_AddFilesSplit_Click(object sender, EventArgs e)
-		{
-			OpenFileDialog op = new OpenFileDialog() { Filter = "Binary files|*.exe;*.dll;*.bin;*.mdl|All files|*.*", Multiselect = true };
-			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-			{
-				listBox_SplitFiles.Items.AddRange(op.FileNames);
-				buttonSplit.Enabled = true;
-			}
-		}
-
-		private void buttonSplit_Click(object sender, EventArgs e)
-		{
-			string outdir = "";
-			if (!checkBoxSameFolderSplit.Checked)
-			{
-				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName="output", DefaultExt = "" };
-				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-				{
-					outdir = sd.FileName;
-				}
-				else return;
-			}
-				SplitProgress spl = new SplitProgress(null, listBox_SplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir, checkBoxFindAllSplit.Checked);
-			spl.ShowDialog();
-		}
-
-		private void listBox_SplitFiles_DragDrop(object sender, DragEventArgs e)
-		{
-			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			for (int u = 0; u < fileList.Length; u++)
-			{
-				if(!listBox_SplitFiles.Items.Contains(fileList[u])) listBox_SplitFiles.Items.Add(fileList[u]);
-			}
-			buttonSplit.Enabled = true;
-		}
-
-		private void listBox_SplitFiles_DragEnter(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
-				e.Effect = DragDropEffects.Copy;
-			else
-				e.Effect = DragDropEffects.None;
-		}
-
-		private void listBoxStructConverter_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (listBoxStructConverter.SelectedIndices.Count > 0) buttonRemoveSelBatch.Enabled = true;
-			else buttonRemoveSelBatch.Enabled = false;
-		}
-
-		private void buttonRemoveSplit_Click(object sender, EventArgs e)
-		{
-			var selectedItems = listBox_SplitFiles.SelectedItems.Cast<String>().ToList();
-			foreach (var item in selectedItems)
-				listBox_SplitFiles.Items.Remove(item);
-			if (listBox_SplitFiles.Items.Count == 0) buttonSplit.Enabled = false;
-		}
-
-		private void buttonRemoveSelBatch_Click(object sender, EventArgs e)
-		{
-			var selectedItems = listBoxStructConverter.SelectedItems.Cast<String>().ToList();
-			foreach (var item in selectedItems)
-				listBoxStructConverter.Items.Remove(item);
-			if (listBoxStructConverter.Items.Count == 0) buttonConvertBatch.Enabled = false;
-		}
-
-		private void buttonRemoveAllBatch_Click(object sender, EventArgs e)
-		{
-			listBoxStructConverter.Items.Clear();
-			buttonConvertBatch.Enabled = false;
-		}
-
-		private void buttonClearAllSplit_Click(object sender, EventArgs e)
-		{
-			listBox_SplitFiles.Items.Clear();
-			buttonSplit.Enabled = false;
-		}
-
-		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
-		{
-			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			for (int u = 0; u < fileList.Length; u++)
-			{
-				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
-			}
-			UpdateConvertButton();
-		}
-
-		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
-				e.Effect = DragDropEffects.Copy;
-			else
-				e.Effect = DragDropEffects.None;
-		}
-
 		private void listBox_SplitFiles_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (listBox_SplitFiles.SelectedIndices.Count > 0) buttonRemoveSplit.Enabled = true;
+			if (listBoxSplitFiles.SelectedIndices.Count > 0) buttonRemoveSplit.Enabled = true;
 			else buttonRemoveSplit.Enabled = false;
 		}
 
-		private void checkBox_SAModel_CheckedChanged(object sender, EventArgs e)
+		#endregion
+
+		#region SplitMDL Tab
+		private void buttonAnimFilesAdd_Click(object sender, EventArgs e)
 		{
-			UpdateStartButton();
+			using (OpenFileDialog fileDialog = new OpenFileDialog() { Multiselect = true })
+			{
+				if (fileDialog.ShowDialog() == DialogResult.OK)
+				{
+					listBoxMDLAnimationFiles.BeginUpdate();
+
+					foreach (string path in fileDialog.FileNames)
+					{
+						listBoxMDLAnimationFiles.Items.Add(path);
+					}
+
+					listBoxMDLAnimationFiles.EndUpdate();
+				}
+			}
 		}
 
-		private void checkBox_Structs_CheckedChanged(object sender, EventArgs e)
+		private void buttonSplitMDL_Click(object sender, EventArgs e)
 		{
-			UpdateStartButton();
+			string outdir = Path.GetDirectoryName(textBoxMDLFilename.Text);
+			string[] animationFiles = new string[listBoxMDLAnimationFiles.Items.Count];
+
+			for (int i = 0; i < listBoxMDLAnimationFiles.Items.Count; i++)
+			{
+				animationFiles[i] = listBoxMDLAnimationFiles.Items[i].ToString();
+			}
+
+			if (!checkBoxMDLSameFolder.Checked)
+			{
+				FolderBrowserDialog sav = new FolderBrowserDialog();
+				if (sav.ShowDialog() == System.Windows.Forms.DialogResult.OK) outdir = sav.SelectedPath;
+				else return;
+			}
+
+			bool sucksess = true;
+			try
+			{
+				SA_Tools.SAArc.sa2MDL.Split(checkBoxMDLBigEndian.Checked, textBoxMDLFilename.Text, outdir, animationFiles);
+			}
+			catch (Exception ex)
+			{
+				sucksess = false;
+				MessageBox.Show("Error splitting MDL file. Check Endianness and try again.\nError details:\n\n" + ex.Message.ToString(), "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			if (sucksess)
+				MessageBox.Show("Split compete! Files are saved to: \n" + outdir, "Data Toolbox", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
-		private void checkBox_NJA_CheckedChanged(object sender, EventArgs e)
+		private void buttonAnimFilesClear_Click(object sender, EventArgs e)
 		{
-			UpdateStartButton();
+			listBoxMDLAnimationFiles.Items.Clear();
 		}
 
-		private void checkBox_JSON_CheckedChanged(object sender, EventArgs e)
+		private void listBoxMDLAnimationFiles_DragEnter(object sender, DragEventArgs e)
 		{
-			UpdateStartButton();
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
 		}
 
-		private void checkBox_StructConvStructs_CheckedChanged(object sender, EventArgs e)
+		private void listBoxMDLAnimationFiles_DragDrop(object sender, DragEventArgs e)
 		{
-			UpdateConvertButton();
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (!listBoxMDLAnimationFiles.Items.Contains(fileList[u])) listBoxMDLAnimationFiles.Items.Add(fileList[u]);
+			}
+			buttonSplitMDL.Enabled = File.Exists(textBoxMDLFilename.Text);
 		}
 
-		private void checkBox_StructConvNJA_CheckedChanged(object sender, EventArgs e)
+		private void buttonMDLBrowse_Click(object sender, EventArgs e)
 		{
-			UpdateConvertButton();
+			using (OpenFileDialog fileDialog = new OpenFileDialog())
+			{
+				if (fileDialog.ShowDialog() == DialogResult.OK)
+				{
+					textBoxMDLFilename.Text = fileDialog.FileName;
+				}
+			}
 		}
 
-		private void checkBox_StructConvJSON_CheckedChanged(object sender, EventArgs e)
+		private void textBoxMDLFilename_DragDrop(object sender, DragEventArgs e)
 		{
-			UpdateConvertButton();
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			textBoxMDLFilename.Text = fileList[0];
 		}
+
+		private void textBoxMDLFilename_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void textBoxMDLFilename_TextChanged(object sender, EventArgs e)
+		{
+			buttonSplitMDL.Enabled = File.Exists(textBoxMDLFilename.Text);
+		}
+
+		private void buttonMDLAnimFilesRemove_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBoxMDLAnimationFiles.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBoxMDLAnimationFiles.Items.Remove(item);
+		}
+
+		private void listBoxMDLAnimationFiles_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			buttonMDLAnimFilesRemove.Enabled = listBoxMDLAnimationFiles.SelectedIndices.Count > 0;
+		}
+		#endregion
 	}
 }
