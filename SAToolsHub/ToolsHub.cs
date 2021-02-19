@@ -48,7 +48,7 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
-		List<TreeNode> historyPaths = new List<TreeNode>();
+
 		class itemTags
 		{
 			public string Type { get; set; }
@@ -1123,6 +1123,15 @@ namespace SAToolsHub
 
 		private void editToData_Click(object sender, EventArgs e)
 		{
+			string outDir = Path.Combine(projectDirectory, "Code");
+			if (!Directory.Exists(outDir))
+			{
+				Directory.CreateDirectory(outDir);
+				treeView1.Nodes.Clear();
+				PopulateTreeView(projectDirectory);
+				PopulateTreeView(gameDirectory);
+			}
+
 			if (listView1.SelectedItems.Count > 0)
 			{
 				foreach (ListViewItem selItem in listView1.SelectedItems)
@@ -1130,7 +1139,7 @@ namespace SAToolsHub
 					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
 						((itemTags)selItem.Tag).Path,
 						SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs,
-						Path.Combine(projectDirectory, "Source", (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path + ".c"))));
+						Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path + ".c"))));
 				}
 			}
 		}
@@ -1236,7 +1245,6 @@ namespace SAToolsHub
 		//Navigation
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			
 			SelectListViewNode(e.Node);
 			treeView1.SelectedNode = e.Node;
 		}
@@ -1248,9 +1256,6 @@ namespace SAToolsHub
 				browseBack.Enabled = true;
 			else
 				browseBack.Enabled = false;
-
-			if (treeView1.SelectedNode != null)
-				historyPaths.Add(treeView1.SelectedNode);
 
 			if (browseOpenExplorer.Enabled == false)
 				browseOpenExplorer.Enabled = true;

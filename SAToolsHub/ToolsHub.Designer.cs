@@ -130,9 +130,9 @@
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.browseBack = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -274,7 +274,7 @@
 			// 
 			this.editOpen.Enabled = false;
 			this.editOpen.Name = "editOpen";
-			this.editOpen.Size = new System.Drawing.Size(152, 22);
+			this.editOpen.Size = new System.Drawing.Size(180, 22);
 			this.editOpen.Text = "Open";
 			this.editOpen.ToolTipText = "Open Directory or File";
 			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
@@ -286,23 +286,23 @@
             this.editToJson});
 			this.editConvert.Enabled = false;
 			this.editConvert.Name = "editConvert";
-			this.editConvert.Size = new System.Drawing.Size(152, 22);
+			this.editConvert.Size = new System.Drawing.Size(180, 22);
 			this.editConvert.Text = "Convert File";
 			// 
 			// editToData
 			// 
 			this.editToData.Enabled = false;
 			this.editToData.Name = "editToData";
-			this.editToData.Size = new System.Drawing.Size(126, 22);
+			this.editToData.Size = new System.Drawing.Size(180, 22);
 			this.editToData.Text = "To Data";
-			this.editToData.ToolTipText = "Convert select files to data\r\n\r\nOutput located in Project\'s Source folder";
+			this.editToData.ToolTipText = "Convert select files to data\r\n\r\nOutput located in Project\'s Code folder.";
 			this.editToData.Click += new System.EventHandler(this.editToData_Click);
 			// 
 			// editToJson
 			// 
 			this.editToJson.Enabled = false;
 			this.editToJson.Name = "editToJson";
-			this.editToJson.Size = new System.Drawing.Size(126, 22);
+			this.editToJson.Size = new System.Drawing.Size(180, 22);
 			this.editToJson.Text = "To JSON";
 			this.editToJson.ToolTipText = "Convert selected Animation files to json.";
 			this.editToJson.Click += new System.EventHandler(this.editToJson_Click);
@@ -310,14 +310,14 @@
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
 			// 
 			// editCopy
 			// 
 			this.editCopy.Enabled = false;
 			this.editCopy.Name = "editCopy";
 			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.editCopy.Size = new System.Drawing.Size(152, 22);
+			this.editCopy.Size = new System.Drawing.Size(180, 22);
 			this.editCopy.Text = "Copy";
 			this.editCopy.ToolTipText = "Copy selected files.";
 			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
@@ -327,7 +327,7 @@
 			this.editPaste.Enabled = false;
 			this.editPaste.Name = "editPaste";
 			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.editPaste.Size = new System.Drawing.Size(152, 22);
+			this.editPaste.Size = new System.Drawing.Size(180, 22);
 			this.editPaste.Text = "Paste";
 			this.editPaste.ToolTipText = "Paste selected files";
 			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
@@ -337,7 +337,7 @@
 			this.editDel.Enabled = false;
 			this.editDel.Name = "editDel";
 			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.editDel.Size = new System.Drawing.Size(152, 22);
+			this.editDel.Size = new System.Drawing.Size(180, 22);
 			this.editDel.Text = "Delete";
 			this.editDel.ToolTipText = "Delete selected files";
 			this.editDel.Click += new System.EventHandler(this.editDel_Click);
@@ -1074,15 +1074,15 @@
 			// cmsToData
 			// 
 			this.cmsToData.Name = "cmsToData";
-			this.cmsToData.Size = new System.Drawing.Size(126, 22);
+			this.cmsToData.Size = new System.Drawing.Size(180, 22);
 			this.cmsToData.Text = "To Data";
-			this.cmsToData.ToolTipText = "Convert selected files to data\r\n\r\nOutput located in Project\'s Source folder";
+			this.cmsToData.ToolTipText = "Convert select files to data\r\n\r\nOutput located in Project\'s Code folder.\r\n";
 			this.cmsToData.Click += new System.EventHandler(this.cmsToData_Click);
 			// 
 			// cmsToJson
 			// 
 			this.cmsToJson.Name = "cmsToJson";
-			this.cmsToJson.Size = new System.Drawing.Size(126, 22);
+			this.cmsToJson.Size = new System.Drawing.Size(180, 22);
 			this.cmsToJson.Text = "To JSON";
 			this.cmsToJson.ToolTipText = "Convert Animation files to json.";
 			this.cmsToJson.Click += new System.EventHandler(this.cmsToJson_Click);
@@ -1158,6 +1158,18 @@
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
 			this.toolStripSeparator9.Size = new System.Drawing.Size(6, 32);
 			// 
+			// browseCurDirectory
+			// 
+			this.browseCurDirectory.Enabled = false;
+			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.browseCurDirectory.Name = "browseCurDirectory";
+			this.browseCurDirectory.Size = new System.Drawing.Size(580, 32);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(6, 32);
+			// 
 			// browseOpenExplorer
 			// 
 			this.browseOpenExplorer.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -1168,17 +1180,6 @@
 			this.browseOpenExplorer.Size = new System.Drawing.Size(76, 29);
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
-			// 
-			// browseCurDirectory
-			// 
-			this.browseCurDirectory.Enabled = false;
-			this.browseCurDirectory.Name = "browseCurDirectory";
-			this.browseCurDirectory.Size = new System.Drawing.Size(580, 32);
-			// 
-			// toolStripSeparator10
-			// 
-			this.toolStripSeparator10.Name = "toolStripSeparator10";
-			this.toolStripSeparator10.Size = new System.Drawing.Size(6, 32);
 			// 
 			// SAToolsHub
 			// 
