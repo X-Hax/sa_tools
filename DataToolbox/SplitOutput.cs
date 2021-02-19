@@ -2,6 +2,7 @@ using SA_Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.DataToolbox
@@ -10,6 +11,7 @@ namespace SonicRetro.SAModel.DataToolbox
 	{
 		public bool findAll = true;
 		public bool pauseLog = false;
+		public int splitMDL = 0; // 0 - not MDL, 1 - Little Endian, 2 - Big Endian
 		public TextBoxWriter writer;
 		public List<SplitData> SplitDataList;
 		public struct SplitData
@@ -23,7 +25,7 @@ namespace SonicRetro.SAModel.DataToolbox
 		public string game_path;
 		public string out_path;
 
-		public SplitProgress(List<string> log, List <string> files_a, string gamepath, string output_folder, bool findall)
+		public SplitProgress(List<string> log, List <string> files_a, string gamepath, string output_folder, bool findall, int splitMdl = 0)
 		{
 			InitializeComponent();
 			logger = log;
@@ -31,6 +33,7 @@ namespace SonicRetro.SAModel.DataToolbox
 			findAll = findall;
 			game_path = gamepath;
 			out_path = output_folder;
+			splitMDL = splitMdl;
 		}
 
 		private void buttonCloseSplitProgress_Click(object sender, EventArgs e)
@@ -44,108 +47,116 @@ namespace SonicRetro.SAModel.DataToolbox
 			string datafilename;
 			string inifilename;
 			string projectFolderName;
-			Console.WriteLine("Starting batch split for " + files.Count.ToString() + " file(s)" + System.Environment.NewLine);
-
-			foreach (string file in files)
+			if (splitMDL == 0)
 			{
-				SplitData splitdata = new SplitData();
-				splitdata.dataFile = file;
-				string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
+				Console.WriteLine("Starting batch split for " + files.Count.ToString() + " file(s)" + System.Environment.NewLine);
+				foreach (string file in files)
+				{
+					SplitData splitdata = new SplitData();
+					splitdata.dataFile = file;
+					string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
 #if DEBUG
-				folder_parent = Path.Combine(folder_parent, "Configuration");
-				if (!Directory.Exists(Path.Combine(folder_parent, game_path))) folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
+					folder_parent = Path.Combine(folder_parent, "Configuration");
+					if (!Directory.Exists(Path.Combine(folder_parent, game_path))) folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
 #endif
-				List<string> inilist = FindRelevantINIFiles(file, Path.Combine(folder_parent, game_path));
-				if (inilist.Count > 0)
-				{
-					foreach (string iniitem in inilist)
+					List<string> inilist = FindRelevantINIFiles(file, Path.Combine(folder_parent, game_path));
+					if (inilist.Count > 0)
 					{
-						splitdata.iniFile = Path.Combine(folder_parent, game_path, iniitem);
-						SplitDataList.Add(splitdata);
-					}
-				}
-				else
-				{
-					splitdata.iniFile = Path.Combine(folder_parent, game_path, Path.GetFileNameWithoutExtension(file) + ".ini");
-					SplitDataList.Add(splitdata);
-				}
-			}
-
-			foreach (SplitData CurrentSplitData in SplitDataList)
-			{
-				datafilename = CurrentSplitData.dataFile;
-				inifilename = CurrentSplitData.iniFile;
-
-				Console.WriteLine("Splitting file: " + datafilename);
-				if (out_path == "") projectFolderName = Path.GetDirectoryName(datafilename);
-				else projectFolderName = out_path;
-
-				if (projectFolderName[projectFolderName.Length - 1] != '/') projectFolderName = string.Concat(projectFolderName, '/');
-				Console.WriteLine("Output folder: " + projectFolderName);
-
-				if (!File.Exists(datafilename))
-				{
-					Console.WriteLine(datafilename + " not found. Aborting.");
-					continue;
-				}
-
-				if (!Directory.Exists(projectFolderName))
-				{
-					// try creating the directory
-					bool created = true;
-
-					try
-					{
-						// check to see if trailing charcter closes 
-						Directory.CreateDirectory(projectFolderName);
-					}
-					catch
-					{
-						created = false;
-					}
-
-					if (!created)
-					{
-						// couldn't create directory.
-						Console.WriteLine("Output folder did not exist and couldn't be created.");
-						continue;
-					}
-				}
-
-				if (!File.Exists(inifilename))
-				{
-
-					if (inifilename.Length > 9 && File.Exists(inifilename.Substring(0, inifilename.Length - 9) + ".ini"))
-					{
-						inifilename = inifilename.Substring(0, inifilename.Length - 9) + ".ini";
-					}
-					else if (Path.GetExtension(datafilename).ToLowerInvariant() == ".nb")
-					{
-						Console.WriteLine("Splitting NB file without INI data");
-						inifilename = null;
+						foreach (string iniitem in inilist)
+						{
+							splitdata.iniFile = Path.Combine(folder_parent, game_path, iniitem);
+							SplitDataList.Add(splitdata);
+						}
 					}
 					else
 					{
-						Console.WriteLine(inifilename + " not found. Aborting.");
-						continue;
+						splitdata.iniFile = Path.Combine(folder_parent, game_path, Path.GetFileNameWithoutExtension(file) + ".ini");
+						SplitDataList.Add(splitdata);
 					}
 				}
-				if (inifilename != null) 
-					Console.WriteLine("Using split data: " + inifilename);
-				switch (Path.GetExtension(datafilename).ToLowerInvariant())
+
+				foreach (SplitData CurrentSplitData in SplitDataList)
 				{
-					case ".dll":
-						SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
-						break;
-					case ".nb":
-						SA_Tools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
-						break;
-					default:
-						SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
-						break;
-				}					
+					datafilename = CurrentSplitData.dataFile;
+					inifilename = CurrentSplitData.iniFile;
+
+					Console.WriteLine("Splitting file: " + datafilename);
+					if (out_path == "") projectFolderName = Path.GetDirectoryName(datafilename);
+					else projectFolderName = out_path;
+
+					if (projectFolderName[projectFolderName.Length - 1] != '/') projectFolderName = string.Concat(projectFolderName, '/');
+					Console.WriteLine("Output folder: " + projectFolderName);
+
+					if (!File.Exists(datafilename))
+					{
+						Console.WriteLine(datafilename + " not found. Aborting.");
+						continue;
+					}
+
+					if (!Directory.Exists(projectFolderName))
+					{
+						// try creating the directory
+						bool created = true;
+
+						try
+						{
+							// check to see if trailing charcter closes 
+							Directory.CreateDirectory(projectFolderName);
+						}
+						catch
+						{
+							created = false;
+						}
+
+						if (!created)
+						{
+							// couldn't create directory.
+							Console.WriteLine("Output folder did not exist and couldn't be created.");
+							continue;
+						}
+					}
+
+					if (!File.Exists(inifilename))
+					{
+
+						if (inifilename.Length > 9 && File.Exists(inifilename.Substring(0, inifilename.Length - 9) + ".ini"))
+						{
+							inifilename = inifilename.Substring(0, inifilename.Length - 9) + ".ini";
+						}
+						else if (Path.GetExtension(datafilename).ToLowerInvariant() == ".nb")
+						{
+							Console.WriteLine("Splitting NB file without INI data");
+							inifilename = null;
+						}
+						else
+						{
+							Console.WriteLine(inifilename + " not found. Aborting.");
+							continue;
+						}
+					}
+					if (inifilename != null)
+						Console.WriteLine("Using split data: " + inifilename);
+					switch (Path.GetExtension(datafilename).ToLowerInvariant())
+					{
+						case ".dll":
+							SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+							break;
+						case ".nb":
+							SA_Tools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+							break;
+						default:
+							SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+							break;
+					}
+				}
 			}
-			Console.WriteLine("Batch split finished.");
+			else
+			{
+				Console.WriteLine("Starting split for " + files[0] + System.Environment.NewLine);
+				Console.WriteLine("Output folder: " + out_path + System.Environment.NewLine);
+				SA_Tools.SAArc.sa2MDL.Split(splitMDL > 1, files[0], out_path, files.Skip(1).ToArray());
+			}
+			Console.WriteLine("Split job finished.");
 		}
 
 		private List<string> FindRelevantINIFiles(string file, string inilocation)

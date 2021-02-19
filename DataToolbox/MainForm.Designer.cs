@@ -793,7 +793,8 @@
             this.checkBoxMDLBigEndian.Name = "checkBoxMDLBigEndian";
             this.checkBoxMDLBigEndian.Size = new System.Drawing.Size(120, 17);
             this.checkBoxMDLBigEndian.TabIndex = 22;
-            this.checkBoxMDLBigEndian.Text = "Big Endian (GC/PC)";
+			this.checkBoxMDLBigEndian.Checked = true;
+			this.checkBoxMDLBigEndian.Text = "Big Endian (GC/PC)";
             this.checkBoxMDLBigEndian.UseVisualStyleBackColor = true;
             // 
             // buttonSplitMDL

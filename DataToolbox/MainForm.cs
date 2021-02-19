@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace SonicRetro.SAModel.DataToolbox
 {
@@ -542,18 +543,11 @@ namespace SonicRetro.SAModel.DataToolbox
 				else return;
 			}
 
-			bool sucksess = true;
-			try
-			{
-				SA_Tools.SAArc.sa2MDL.Split(checkBoxMDLBigEndian.Checked, textBoxMDLFilename.Text, outdir, animationFiles);
-			}
-			catch (Exception ex)
-			{
-				sucksess = false;
-				MessageBox.Show("Error splitting MDL file. Check Endianness and try again.\nError details:\n\n" + ex.Message.ToString(), "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			if (sucksess)
-				MessageBox.Show("Split compete! Files are saved to: \n" + outdir, "Data Toolbox", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			List<string> files = new List<string>();
+			files.Add(textBoxMDLFilename.Text);
+			files.AddRange(listBoxMDLAnimationFiles.Items.Cast<String>().ToList());
+			SplitProgress spl = new SplitProgress(null, files, null, outdir, false, checkBoxMDLBigEndian.Checked ? 2 : 1);
+			spl.ShowDialog();
 		}
 
 		private void buttonAnimFilesClear_Click(object sender, EventArgs e)
