@@ -48,8 +48,7 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
-		List<string> backPaths;
-		List<string> forwardPaths;
+		List<TreeNode> historyPaths = new List<TreeNode>();
 		class itemTags
 		{
 			public string Type { get; set; }
@@ -522,6 +521,7 @@ namespace SAToolsHub
 		{
 			treeView1.Nodes.Clear();
 			listView1.Items.Clear();
+			historyPaths.Clear();
 
 			//reset Tools Hub Buttons
 			tsBuild.Enabled = false;
@@ -1236,7 +1236,9 @@ namespace SAToolsHub
 		//Navigation
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
+			
 			SelectListViewNode(e.Node);
+			treeView1.SelectedNode = e.Node;
 		}
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1246,6 +1248,12 @@ namespace SAToolsHub
 				browseBack.Enabled = true;
 			else
 				browseBack.Enabled = false;
+
+			if (treeView1.SelectedNode != null)
+				historyPaths.Add(treeView1.SelectedNode);
+
+			if (browseOpenExplorer.Enabled == false)
+				browseOpenExplorer.Enabled = true;
 		}
 
 		private void listView1_MouseClick(object sender, MouseEventArgs e)

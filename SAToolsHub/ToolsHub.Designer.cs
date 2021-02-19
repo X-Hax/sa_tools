@@ -132,6 +132,7 @@
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -974,8 +975,8 @@
 			// 
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.treeView1.FullRowSelect = true;
 			this.treeView1.HideSelection = false;
+			this.treeView1.HotTracking = true;
 			this.treeView1.Location = new System.Drawing.Point(0, 0);
 			this.treeView1.Name = "treeView1";
 			this.treeView1.Size = new System.Drawing.Size(220, 461);
@@ -1130,8 +1131,9 @@
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.browseBack,
             this.toolStripSeparator9,
-            this.browseOpenExplorer,
-            this.browseCurDirectory});
+            this.browseCurDirectory,
+            this.toolStripSeparator10,
+            this.browseOpenExplorer});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 80);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Size = new System.Drawing.Size(745, 32);
@@ -1148,7 +1150,7 @@
 			this.browseBack.Name = "browseBack";
 			this.browseBack.Size = new System.Drawing.Size(54, 29);
 			this.browseBack.Text = "toolStripButton1";
-			this.browseBack.ToolTipText = "Back to previous folder.";
+			this.browseBack.ToolTipText = "Back to Parent Folder";
 			this.browseBack.Click += new System.EventHandler(this.browseBack_Click);
 			// 
 			// toolStripSeparator9
@@ -1158,21 +1160,25 @@
 			// 
 			// browseOpenExplorer
 			// 
-			this.browseOpenExplorer.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.browseOpenExplorer.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.browseOpenExplorer.Enabled = false;
 			this.browseOpenExplorer.Image = ((System.Drawing.Image)(resources.GetObject("browseOpenExplorer.Image")));
 			this.browseOpenExplorer.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.browseOpenExplorer.Name = "browseOpenExplorer";
-			this.browseOpenExplorer.Size = new System.Drawing.Size(99, 29);
-			this.browseOpenExplorer.Text = "Open in Explorer";
+			this.browseOpenExplorer.Size = new System.Drawing.Size(76, 29);
+			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
 			// 
 			// browseCurDirectory
 			// 
-			this.browseCurDirectory.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.browseCurDirectory.Enabled = false;
 			this.browseCurDirectory.Name = "browseCurDirectory";
-			this.browseCurDirectory.Size = new System.Drawing.Size(400, 32);
+			this.browseCurDirectory.Size = new System.Drawing.Size(580, 32);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(6, 32);
 			// 
 			// SAToolsHub
 			// 
@@ -1313,5 +1319,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripButton browseOpenExplorer;
 		private System.Windows.Forms.ToolStripTextBox browseCurDirectory;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 	}
 }
