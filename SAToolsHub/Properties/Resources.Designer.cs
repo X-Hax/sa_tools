@@ -63,6 +63,26 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap browseBack {
+            get {
+                object obj = ResourceManager.GetObject("browseBack", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap browseFoward {
+            get {
+                object obj = ResourceManager.GetObject("browseFoward", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap newProj {
             get {
                 object obj = ResourceManager.GetObject("newProj", resourceCulture);

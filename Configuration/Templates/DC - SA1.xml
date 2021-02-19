@@ -9,6 +9,8 @@
   <SplitEntry SourceFile="SA1\A_MOT.PRS" IniFile="A_MOT" />
   <SplitEntry SourceFile="SA1\B_MOT.PRS" IniFile="B_MOT" />
   <SplitEntry SourceFile="SA1\E_MOT.PRS" IniFile="E_MOT" />
+  <SplitEntry SourceFile="SA1\TIKAL_PROG.PRS" IniFile="TIKAL_PROG" />
+  <SplitEntry SourceFile="SA1\STG00.PRS" IniFile="STG00" />
   <SplitEntry SourceFile="SA1\STG01.PRS" IniFile="STG01" />
   <SplitEntry SourceFile="SA1\STG02.PRS" IniFile="STG02" />
   <SplitEntry SourceFile="SA1\STG03.PRS" IniFile="STG03" />
@@ -25,6 +27,7 @@
   <SplitEntry SourceFile="SA1\ADV0130.PRS" IniFile="ADV0130" />
   <SplitEntry SourceFile="SA1\ADV02.PRS" IniFile="ADV02" />
   <SplitEntry SourceFile="SA1\ADV03.PRS" IniFile="ADV03" />
+  <SplitEntry SourceFile="SA1\AL_MAIN.PRS" IniFile="AL_MAIN" />
   <SplitEntry SourceFile="SA1\AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
   <SplitEntry SourceFile="SA1\AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
   <SplitEntry SourceFile="SA1\AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
@@ -45,4 +48,6 @@
   <SplitEntry SourceFile="SA1\SHOOTING.PRS" IniFile="SHOOTING" />
   <SplitEntry SourceFile="SA1\ADVERTISE.PRS" IniFile="ADVERTISE" />
   <SplitEntry SourceFile="SA1\SUMMARY.PRS" IniFile="SUMMARY" />
+  <SplitEntry SourceFile="B_ROBO.NB" IniFile="B_ROBO_NB" />
+  <SplitEntry SourceFile="B_E101_R.NB" IniFile="B_E101_R_NB" />
 </SplitTemplate>

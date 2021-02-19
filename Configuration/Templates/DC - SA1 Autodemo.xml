@@ -2,7 +2,7 @@
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
   <GameInfo gameName="SA1AD" gameSystemFolder="" dataFolder="AutoDemo" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
-  <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
+  <SplitEntry SourceFile="STG00.PRS" IniFile="STG00" />
   <SplitEntry SourceFile="STG01.PRS" IniFile="STG01" />
   <SplitEntry SourceFile="STG02.PRS" IniFile="STG02" />
   <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" />
@@ -32,4 +32,5 @@
   <SplitEntry SourceFile="LAND1800.BIN" IniFile="LAND1800" />
   <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" />
   <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" />
+  <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
 </SplitTemplate>

@@ -48,6 +48,8 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
+		List<string> backPaths;
+		List<string> forwardPaths;
 		class itemTags
 		{
 			public string Type { get; set; }
@@ -179,15 +181,18 @@ namespace SAToolsHub
 			DirectoryInfo[] subSubDirs;
 			foreach (DirectoryInfo subDir in subDirs)
 			{
-				aNode = new TreeNode(subDir.Name, 0, 0);
-				aNode.Tag = subDir;
-				aNode.ImageKey = "folder";
-				subSubDirs = subDir.GetDirectories();
-				if (subSubDirs.Length != 0)
+				if (subDir.Name != "dllcache")
 				{
-					GetDirectories(subSubDirs, aNode);
+					aNode = new TreeNode(subDir.Name, 0, 0);
+					aNode.Tag = subDir;
+					aNode.ImageKey = "folder";
+					subSubDirs = subDir.GetDirectories();
+					if (subSubDirs.Length != 0)
+					{
+						GetDirectories(subSubDirs, aNode);
+					}
+					nodeToAddTo.Nodes.Add(aNode);
 				}
-				nodeToAddTo.Nodes.Add(aNode);
 			}
 		}
 
@@ -1228,10 +1233,19 @@ namespace SAToolsHub
 			editToJson_Click(sender, e);
 		}
 
-		//treeView + listView click commands
+		//Navigation
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			SelectListViewNode(e.Node);
+		}
+
+		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+			browseCurDirectory.Text = treeView1.SelectedNode.FullPath;
+			if (treeView1.SelectedNode.Parent != null)
+				browseBack.Enabled = true;
+			else
+				browseBack.Enabled = false;
 		}
 
 		private void listView1_MouseClick(object sender, MouseEventArgs e)
@@ -1256,6 +1270,20 @@ namespace SAToolsHub
 		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
 			listView1.ListViewItemSorter = new ListViewItemComparer(e.Column);
+		}
+
+		private void browseBack_Click(object sender, EventArgs e)
+		{
+			if (treeView1.SelectedNode.Parent != null)
+			{
+				SelectListViewNode(treeView1.SelectedNode.Parent);
+				treeView1.SelectedNode = treeView1.SelectedNode.Parent;
+			}
+		}
+
+		private void browseOpenExplorer_Click(object sender, EventArgs e)
+		{
+			Process.Start($"{((DirectoryInfo)treeView1.SelectedNode.Tag).FullName}");
 		}
 
 		//Settings Handles
