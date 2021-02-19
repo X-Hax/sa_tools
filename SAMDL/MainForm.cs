@@ -1274,6 +1274,9 @@ namespace SonicRetro.SAModel.SAMDL
 			if (obj == selectedObject)
 			{
 				if (obj.Attach != null)
+				{
+					if (buttonShowVertexIndices.Checked) 
+						DrawVertexIndices(obj, transform);
 					for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 					{
 						Color col = obj.Attach.MeshInfo[j].Material == null ? Color.White : obj.Attach.MeshInfo[j].Material.DiffuseColor;
@@ -1286,6 +1289,7 @@ namespace SonicRetro.SAModel.SAMDL
 						};
 						new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)).Draw(d3ddevice);
 					}
+				}
 				transform.Pop();
 				return true;
 			}
@@ -1342,6 +1346,26 @@ namespace SonicRetro.SAModel.SAMDL
 			d3ddevice.SetTransform(TransformState.World, Matrix.Identity);
 			d3ddevice.VertexFormat = VertexFormat.Position;
 			d3ddevice.DrawIndexedUserPrimitives(PrimitiveType.LineList, 0, points.Count, indexes.Count / 2, indexes.ToArray(), Format.Index16, points.ToArray());
+		}
+
+		private void DrawVertexIndices(NJS_OBJECT obj, MatrixStack transform)
+		{
+			if (obj.Attach == null || (!(obj.Attach is BasicAttach))) return;
+			{
+				BasicAttach basicatt = (BasicAttach)obj.Attach;
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
+				osd.textSprite.Begin(SpriteFlags.AlphaBlend);
+				for (int i = 0; i < basicatt.Vertex.Length; i++)
+				{
+					Vertex vtx = basicatt.Vertex[i];
+					Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
+					Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
+					EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+				}
+				osd.textSprite.End();
+			}
 		}
 
 		private void DrawNodeConnections(NJS_OBJECT obj, MatrixStack transform, List<Vector3> points, List<short> indexes, short parentidx, ref int modelindex, ref int animindex)
@@ -3354,6 +3378,12 @@ namespace SonicRetro.SAModel.SAMDL
 		private void importSelectedAsNodesContextMenuItem_Click(object sender, EventArgs e)
 		{
 			importSelected(false);
+		}
+
+		private void buttonShowVertexIndices_CheckedChanged(object sender, EventArgs e)
+		{
+			osd.UpdateOSDItem("Show vertex indices: " + (buttonShowVertexIndices.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
