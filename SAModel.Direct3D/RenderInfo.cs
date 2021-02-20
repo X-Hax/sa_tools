@@ -95,7 +95,7 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 
 				// Sort transparent meshes
-				drawListTransparent.Sort((x, y) => x.Key.CompareTo(y.Key));
+				drawListTransparent.Sort((y, x) => x.Key.CompareTo(y.Key));
 
 				// Draw opaque meshes
 				for (int i = drawListOpaque.Count - 1; i >= 0; i--)
