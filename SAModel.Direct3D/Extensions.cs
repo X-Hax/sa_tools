@@ -134,11 +134,11 @@ namespace SonicRetro.SAModel.Direct3D
 				switch (material.DestinationAlpha)
 				{
 					case AlphaInstruction.Zero:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.Zero);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.Zero);
 						break;
 
 					case AlphaInstruction.One:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.One);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.One);
 						break;
 
 					case AlphaInstruction.OtherColor:
@@ -148,29 +148,29 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case AlphaInstruction.SourceAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.SourceAlpha);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.SourceAlpha);
 						break;
 
 					case AlphaInstruction.InverseSourceAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseSourceAlpha);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
 						break;
 
 					case AlphaInstruction.DestinationAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.DestinationAlpha);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationAlpha);
 						break;
 
 					case AlphaInstruction.InverseDestinationAlpha:
-						device.SetRenderState(RenderState.DestinationBlendAlpha, Blend.InverseDestinationAlpha);
+						device.SetRenderState(RenderState.DestinationBlend, Blend.InverseDestinationAlpha);
 						break;
 				}
 				switch (material.SourceAlpha)
 				{
 					case AlphaInstruction.Zero:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.Zero);
+						device.SetRenderState(RenderState.SourceBlend, Blend.Zero);
 						break;
 
 					case AlphaInstruction.One:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.One);
+						device.SetRenderState(RenderState.SourceBlend, Blend.One);
 						break;
 
 					case AlphaInstruction.OtherColor:
@@ -180,19 +180,19 @@ namespace SonicRetro.SAModel.Direct3D
 						break;
 
 					case AlphaInstruction.SourceAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.SourceAlpha);
+						device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
 						break;
 
 					case AlphaInstruction.InverseSourceAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseSourceAlpha);
+						device.SetRenderState(RenderState.SourceBlend, Blend.InverseSourceAlpha);
 						break;
 
 					case AlphaInstruction.DestinationAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.DestinationAlpha);
+						device.SetRenderState(RenderState.SourceBlend, Blend.DestinationAlpha);
 						break;
 
 					case AlphaInstruction.InverseDestinationAlpha:
-						device.SetRenderState(RenderState.SourceBlendAlpha, Blend.InverseDestinationAlpha);
+						device.SetRenderState(RenderState.SourceBlend, Blend.InverseDestinationAlpha);
 						break;
 				}
 				if (material.EnvironmentMap)
