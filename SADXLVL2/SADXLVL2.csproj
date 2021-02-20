@@ -89,12 +89,6 @@
     <Compile Include="UI\EditLevelInfoDialog.designer.cs">
       <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ErrorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ErrorDialog.designer.cs">
-      <DependentUpon>ErrorDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\LevelSelectDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,9 +120,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\EditLevelInfoDialog.resx">
       <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ErrorDialog.resx">
-      <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\LevelSelectDialog.resx">
       <DependentUpon>LevelSelectDialog.cs</DependentUpon>

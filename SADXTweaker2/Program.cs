@@ -27,8 +27,20 @@ namespace SADXTweaker2
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (FormInstance != null)
-				using (ErrorDialog ed = new ErrorDialog((Exception)e.ExceptionObject, false))
-					ed.ShowDialog(FormInstance);
+			{
+				Exception ex = (Exception)e.ExceptionObject;
+				string errDesc = "SADXTweaker2 has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
+	"If you wish to report a bug, please include the following in your report:";
+				SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, ex.ToString());
+				DialogResult dgresult = report.ShowDialog(FormInstance);
+				switch (dgresult)
+				{
+					case DialogResult.Abort:
+					case DialogResult.OK:
+						Application.Exit();
+						break;
+				}
+			}
 			else
 			{
 				System.IO.File.WriteAllText("SADXTweaker2.log", e.ExceptionObject.ToString());

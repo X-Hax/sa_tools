@@ -61,9 +61,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			using (ErrorDialog ed = new ErrorDialog(e.Exception, true))
-				if (ed.ShowDialog(this) == DialogResult.Cancel)
-					Close();
+			log.Add(e.Exception.ToString());
+			string errDesc = "SADXLVL2 has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+				"If you wish to report a bug, please include the following in your report:";
+			ErrorDialog report = new ErrorDialog("SADXLVL2", errDesc, log.GetLogString());
+			log.WriteLog();
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 
 		internal Device d3ddevice;
@@ -1225,7 +1235,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				log.Add(ex.ToString()+"\n");
 				log.WriteLog();
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to SADXLVL2's folder.",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved.",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				initerror = true;
 			}
@@ -2813,8 +2823,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (BugReportDialog dlg = new BugReportDialog("SADXLVL2", null))
-				dlg.ShowDialog(this);
+			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
 		}
 
 		void LevelData_StateChanged()

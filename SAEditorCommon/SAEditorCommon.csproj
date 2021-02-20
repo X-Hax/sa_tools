@@ -123,12 +123,6 @@
     <Compile Include="UI\ActionMapTest.Designer.cs">
       <DependentUpon>ActionMapTest.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\BugReportDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\BugReportDialog.designer.cs">
-      <DependentUpon>BugReportDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\DuplicateTo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +145,12 @@
     </Compile>
     <Compile Include="UI\ModelLibraryWindow.Designer.cs">
       <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MultiSelectTreeview.cs">
       <SubType>Component</SubType>
@@ -258,9 +258,6 @@
     <EmbeddedResource Include="UI\ActionMapTest.resx">
       <DependentUpon>ActionMapTest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\BugReportDialog.resx">
-      <DependentUpon>BugReportDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI\DefaultLightEditor.resx">
       <DependentUpon>DefaultLightEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -285,6 +282,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ModelLibraryWindow.resx">
       <DependentUpon>ModelLibraryWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\NewObjectDialog.resx">
       <DependentUpon>NewObjectDialog.cs</DependentUpon>

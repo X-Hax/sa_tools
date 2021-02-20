@@ -4,21 +4,23 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SonicRetro.SAModel.SAEditorCommon
 {
-	public partial class BugReportDialog : Form
+	public partial class ErrorDialog : Form
 	{
-		private string programName, log;
+		private string programName, errorDescription, log;
 
-		public BugReportDialog(string programName, string log)
+		public ErrorDialog(string programName, string errorDescription, string log)
 		{
 			InitializeComponent();
 			this.programName = programName;
+			this.errorDescription = errorDescription;
 			this.log = log;
 		}
 
 		private void okButton_Click(object sender, EventArgs e)
 		{
+			Clipboard.SetText(textBoxLog.Text);
 			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
 			Close();
 		}
@@ -30,6 +32,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void ErrorReportDialog_Load(object sender, EventArgs e)
 		{
+			this.Text = programName + " Error";
 			StringBuilder text = new StringBuilder();
 			text.Append("Program: ");
 			text.AppendLine(programName);
@@ -42,7 +45,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 				text.AppendLine("Log:");
 				text.AppendLine(log);
 			}
-			textBox1.Text = text.ToString();
+			labelErrorDescription.Text = errorDescription;
+			textBoxLog.Text = text.ToString();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,10 +27,9 @@ namespace SonicRetro.SAModel.SAMDL
 
 		public MainForm()
 		{
+			Application.ThreadException += Application_ThreadException;
 			InitializeComponent();
 			AddMouseMoveHandler(this);
-			Application.ThreadException += Application_ThreadException;
-			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
 			this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
@@ -130,16 +128,18 @@ namespace SonicRetro.SAModel.SAMDL
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
 			log.Add(e.Exception.ToString());
+			string errDesc = "SAMDL has crashed with the following error:\n" + e.Exception.GetType().Name+".\n\n" +
+				"If you wish to report a bug, please include the following in your report:";
+			ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
 			log.WriteLog();
-			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SAMDL Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
-				Close();
-		}
-
-		void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			log.Add(e.ExceptionObject.ToString());
-			log.WriteLog();
-			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SAMDL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.OK:
+				case DialogResult.Abort:
+					Application.Exit();
+					break;
+			}
 		}
 
 		internal Device d3ddevice;
@@ -302,9 +302,22 @@ namespace SonicRetro.SAModel.SAMDL
 				catch (Exception ex)
 				{
 					log.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
-					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
+					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
+						"Please check the model's type and address and try again.\n\n" +
+						"If you wish to report a bug, please include the model file and this information\n" +
+						"in your report.";
+					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
 					log.WriteLog();
-					if (report.ShowDialog() == DialogResult.Cancel)	goto loadfiledlg;
+					DialogResult dgresult = report.ShowDialog();
+					switch (dgresult)
+					{
+						case DialogResult.Cancel:
+							goto loadfiledlg;
+							break;
+						case DialogResult.Abort:
+							Application.Exit();
+							break;
+					}			
 				}
 			}
 		}
@@ -477,7 +490,11 @@ namespace SonicRetro.SAModel.SAMDL
 				catch (Exception ex)
 				{
 					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
-					SonicRetro.SAMDL.ModelLoadError report = new SonicRetro.SAMDL.ModelLoadError("SAMDL", log.GetLogString());
+					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
+						"Please check the model's type and address and try again.\n\n" +
+						"If you wish to report a bug, please include the model file and this information\n" +
+						"in your report.";
+					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
 					log.WriteLog();
 					report.ShowDialog();
 					return;

@@ -48,12 +48,25 @@ namespace SonicRetro.SAModel.SADXLVL2
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (primaryForm != null)
-				using (ErrorDialog ed = new ErrorDialog((Exception)e.ExceptionObject, false))
-					ed.ShowDialog(primaryForm);
+			{
+				Exception ex = (Exception)e.ExceptionObject;
+				string errDesc = "SADXLVL2 has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
+					"If you wish to report a bug, please include the following in your report:";
+				SAEditorCommon.ErrorDialog report = new SAEditorCommon.ErrorDialog("SADXLVL2", errDesc, ex.ToString());
+				DialogResult dgresult = report.ShowDialog(primaryForm);
+				switch (dgresult)
+				{
+					case DialogResult.Abort:
+					case DialogResult.OK:
+						Application.Exit();
+						break;
+				}
+			}
 			else
 			{
-				System.IO.File.WriteAllText("SADXLVL2.log", e.ExceptionObject.ToString());
-				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SADXLVL2.log";
+				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 	}
