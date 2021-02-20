@@ -81,9 +81,9 @@ namespace SonicRetro.SAModel.Direct3D
 			return texture;
 		}
 
-		public static BoundingSphere GetBounds(this Attach attach)
+		public static BoundingSphere TransformBounds(this Attach attach, Matrix transform)
 		{
-			return attach.Bounds;
+			return new BoundingSphere(Vector3.TransformCoordinate(attach.Bounds.Center.ToVector3(), transform).ToVertex(), attach.Bounds.Radius);
 		}
 
 		public static void CalculateBounds(this Attach attach)
@@ -658,9 +658,10 @@ namespace SonicRetro.SAModel.Direct3D
 
 			transform.Push();
 			obj.ProcessTransforms(transform);
-
+		
 			if (obj.Attach != null)
 			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					NJS_MATERIAL mat;
@@ -698,7 +699,11 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, texture, fillMode, attachBounds));
 				}
 			}
 
@@ -716,6 +721,8 @@ namespace SonicRetro.SAModel.Direct3D
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach != null)
+			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Color col = Color.White;
@@ -727,8 +734,13 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(mesh, j, transform.Top, mat, null, FillMode.Wireframe, attachBounds));
 				}
+			}
 			transform.Pop();
 			return result;
 		}
@@ -757,11 +769,12 @@ namespace SonicRetro.SAModel.Direct3D
 
 			if (attachValid & meshValid)
 			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
 					NJS_MATERIAL mat;
-					if (obj.Attach.MeshInfo[j].Material != null) 
+					if (obj.Attach.MeshInfo[j].Material != null)
 						mat = new NJS_MATERIAL(obj.Attach.MeshInfo[j].Material);
 					else
 					{
@@ -783,10 +796,14 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, attachBounds));
 				}
 			}
-
+			
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTree(child, fillMode, transform, textures, meshes, ref modelindex, ignorematcolors, ignorelight));
 			transform.Pop();
@@ -814,6 +831,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 			if (obj.Attach != null & meshes[modelindex] != null)
 			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Color color = Color.Black;
@@ -829,10 +847,14 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, attachBounds));
 				}
 			}
-
+		
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeInvert(child, transform, meshes, ref modelindex));
 			transform.Pop();
@@ -865,6 +887,8 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Texture texture = null;
@@ -890,8 +914,13 @@ namespace SonicRetro.SAModel.Direct3D
 					{
 						mat.IgnoreLighting = true;
 					}
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, texture, fillMode, attachBounds));
 				}
+			}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimated(child, fillMode, transform, textures, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolors, ignorelight));
 			transform.Pop();
@@ -924,6 +953,8 @@ namespace SonicRetro.SAModel.Direct3D
 			else
 				obj.ProcessTransforms(transform);
 			if (obj.Attach != null & meshes[modelindex] != null)
+			{
+				BoundingSphere attachBounds = TransformBounds(obj.Attach, transform.Top);
 				for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 				{
 					Color col = obj.Attach.MeshInfo[j].Material.DiffuseColor;
@@ -934,8 +965,13 @@ namespace SonicRetro.SAModel.Direct3D
 						IgnoreLighting = true,
 						UseAlpha = false
 					};
-					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, obj.Attach.CalculateBounds(j, transform.Top)));
+					if (mat.UseAlpha)
+					{
+						attachBounds = obj.Attach.CalculateBounds(j, transform.Top);
+					}
+					result.Add(new RenderInfo(meshes[modelindex], j, transform.Top, mat, null, FillMode.Wireframe, attachBounds));
 				}
+			}
 			foreach (NJS_OBJECT child in obj.Children)
 				result.AddRange(DrawModelTreeAnimatedInvert(child, transform, meshes, anim, animframe, ref modelindex, ref animindex));
 			transform.Pop();
@@ -949,6 +985,7 @@ namespace SonicRetro.SAModel.Direct3D
 			for (int i = 0; i < objs.Length; i++)
 				if (objs[i].Attach != null & meshes[i] != null)
 				{
+					BoundingSphere attachBounds = TransformBounds(obj.Attach, transform);
 					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
 					{
 						Texture texture = null;
@@ -974,7 +1011,11 @@ namespace SonicRetro.SAModel.Direct3D
 						{
 							mat.IgnoreLighting = true;
 						}
-						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, objs[i].Attach.CalculateBounds(j, transform)));
+						if (mat.UseAlpha)
+						{
+							attachBounds = obj.Attach.CalculateBounds(j, transform);
+						}
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, texture, fillMode, attachBounds));
 					}
 				}
 			return result;
@@ -987,6 +1028,7 @@ namespace SonicRetro.SAModel.Direct3D
 			for (int i = 0; i < objs.Length; i++)
 				if (objs[i].Attach != null & meshes[i] != null)
 				{
+					BoundingSphere attachBounds = TransformBounds(objs[i].Attach, transform);
 					for (int j = 0; j < objs[i].Attach.MeshInfo.Length; j++)
 					{
 						Color color = Color.Black;
@@ -1002,7 +1044,11 @@ namespace SonicRetro.SAModel.Direct3D
 							IgnoreLighting = true,
 							UseAlpha = false
 						};
-						result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, objs[i].Attach.CalculateBounds(j, transform)));
+						if (mat.UseAlpha)
+						{
+							attachBounds = obj.Attach.CalculateBounds(j, transform);
+						}
+						result.Add(new RenderInfo(meshes[i], j, transform, mat, null, FillMode.Wireframe, attachBounds));
 					}
 				}
 			return result;
