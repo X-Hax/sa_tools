@@ -76,6 +76,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
 		Direct3D.Mesh boundsMesh;
+		NJS_MATERIAL boundsMaterial = new NJS_MATERIAL
+		{
+			DiffuseColor = Color.FromArgb(128, Color.White),
+			SpecularColor = Color.Black,
+			UseAlpha = true,
+			DoubleSided = false,
+			Exponent = 10,
+			IgnoreSpecular = false,
+			UseTexture = false
+		};
 		#endregion
 
 		#region Stage Variables
@@ -1704,19 +1714,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						LevelItem lvlItem = (LevelItem)item;
 						boundsMesh = Direct3D.Mesh.Sphere(lvlItem.CollisionData.Bounds.Radius, 9, 9);
-
 						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
-						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
-						renderlist_set.Add(info);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
+						renderlist_death.Add(info);
 					}
 					else if (item is SETItem)
 					{
 						SETItem setitem = (SETItem)item;
 						boundsMesh = Direct3D.Mesh.Sphere(setitem.Bounds.Radius, 9, 9);
-
 						debugBoundsStack.NJTranslate(setitem.Bounds.Center);
-						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
-						renderlist_set.Add(info);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
+						renderlist_death.Add(info);
 					}
 				}
 				debugBoundsStack.Pop();
