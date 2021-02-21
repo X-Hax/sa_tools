@@ -61,9 +61,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			transform.NJScale(item.Scale.X, item.Scale.X, item.Scale.X);
-			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
+				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

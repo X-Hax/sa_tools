@@ -92,7 +92,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 	{
 		public Dictionary<string, int> MessageList { get; set; }
 		private List<OSDItem> OSDItems { get; set; }
-		Sprite textSprite;
+		public Sprite textSprite;
 		public Device d3ddevice;
 		public bool timer_freeze;
 		public RawColorBGRA logcolor;

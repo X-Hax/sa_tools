@@ -63,9 +63,19 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			using (ErrorDialog ed = new ErrorDialog(e.Exception, true))
-				if (ed.ShowDialog(this) == DialogResult.Cancel)
-					Close();
+			log.Add(e.Exception.ToString());
+			string errDesc = "SADXLVL2 has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+				"If you wish to report a bug, please include the following in your report:";
+			ErrorDialog report = new ErrorDialog("SADXLVL2", errDesc, log.GetLogString());
+			log.WriteLog();
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 
 		internal Device d3ddevice;
@@ -78,6 +88,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
 		Direct3D.Mesh boundsMesh;
+		NJS_MATERIAL boundsMaterial = new NJS_MATERIAL
+		{
+			DiffuseColor = Color.FromArgb(128, Color.White),
+			SpecularColor = Color.Black,
+			UseAlpha = true,
+			DoubleSided = false,
+			Exponent = 10,
+			IgnoreSpecular = false,
+			UseTexture = false
+		};
 		#endregion
 
 		#region Stage Variables
@@ -1256,7 +1276,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				log.Add(ex.ToString()+"\n");
 				log.WriteLog();
 				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved to SADXLVL2's folder.",
+					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved.",
 					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				initerror = true;
 			}
@@ -1745,18 +1765,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 					{
 						LevelItem lvlItem = (LevelItem)item;
 						boundsMesh = Direct3D.Mesh.Sphere(lvlItem.CollisionData.Bounds.Radius, 9, 9);
-
 						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
-						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
-						renderlist_set.Add(info);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
+						renderlist_geo.Add(info);
 					}
 					else if (item is SETItem)
 					{
 						SETItem setitem = (SETItem)item;
 						boundsMesh = Direct3D.Mesh.Sphere(setitem.Bounds.Radius, 9, 9);
-
 						debugBoundsStack.NJTranslate(setitem.Bounds.Center);
-						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, CAMItem.Material, null, FillMode.Solid, item.Bounds);
+						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
 						renderlist_set.Add(info);
 					}
 				}
@@ -1777,13 +1795,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
+			List<RenderInfo> drawqueue = new List<RenderInfo>();
+
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
-			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_geo, cam));
 
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.SetItemDrawDistance);
-			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_set, cam));
 
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
+			RenderInfo.Draw(drawqueue, d3ddevice, cam);
+
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
 			RenderInfo.Draw(renderlist_death, d3ddevice, cam);
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
@@ -2846,8 +2868,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (BugReportDialog dlg = new BugReportDialog("SADXLVL2", null))
-				dlg.ShowDialog(this);
+			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
 		}
 
 		void LevelData_StateChanged()

@@ -48,7 +48,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Pop();
 			float sx = (item.Scale.X + 70) * 0.1f;
 			transform.NJScale(sx, 0.02f, sx);
-			result.AddRange(cylmdl.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylmsh));
+			result.AddRange(cylmdl.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylmsh, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

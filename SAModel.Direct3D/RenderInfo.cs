@@ -44,6 +44,18 @@ namespace SonicRetro.SAModel.Direct3D
 			device.SetSamplerState(0, SamplerState.MipFilter, mipfilter);
 		}
 
+		public static List<RenderInfo> Queue(IEnumerable<RenderInfo> items, EditorCamera camera)
+		{
+			List<RenderInfo> result = new List<RenderInfo>();
+			foreach (RenderInfo item in items)
+			{
+				float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+				if (dist > camera.DrawDistance) continue;
+				result.Add(item);
+			}
+			return result;
+		}
+
 		public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera, bool useOldSorting = false)
 		{
 			if (useOldSorting)
@@ -82,7 +94,7 @@ namespace SonicRetro.SAModel.Direct3D
 				foreach (RenderInfo item in items)
 				{
 					// Don't draw if too far
-					float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+					float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) - item.Bounds.Radius;
 					if (dist > camera.DrawDistance) continue;
 
 					// Split into transparent and opaque lists
@@ -95,7 +107,7 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 
 				// Sort transparent meshes
-				drawListTransparent.Sort((x, y) => x.Key.CompareTo(y.Key));
+				drawListTransparent.Sort((y, x) => x.Key.CompareTo(y.Key));
 
 				// Draw opaque meshes
 				for (int i = drawListOpaque.Count - 1; i >= 0; i--)

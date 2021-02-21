@@ -92,12 +92,6 @@
     <Compile Include="CutsceneTextEditor.Designer.cs">
       <DependentUpon>CutsceneTextEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="ErrorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ErrorDialog.designer.cs">
-      <DependentUpon>ErrorDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="FileList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -216,9 +210,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CutsceneTextEditor.resx">
       <DependentUpon>CutsceneTextEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ErrorDialog.resx">
-      <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FileList.resx">
       <DependentUpon>FileList.cs</DependentUpon>

@@ -21,9 +21,17 @@ namespace SADXTweaker2
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			using (ErrorDialog ed = new ErrorDialog(e.Exception, true))
-				if (ed.ShowDialog(this) == System.Windows.Forms.DialogResult.Cancel)
-					Close();
+			string errDesc = "SADXTweaker2 has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+				"If you wish to report a bug, please include the following in your report:";
+			SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, e.Exception.ToString());
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
@@ -109,8 +117,7 @@ namespace SADXTweaker2
 
 		private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (BugReportDialog brd = new BugReportDialog("SADXTweaker2", null))
-				brd.ShowDialog(this);
+			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
 		}
 
 		private void AddChildForm(Type formType, ToolStripMenuItem menuItem)

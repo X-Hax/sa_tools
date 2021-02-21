@@ -40,9 +40,9 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f, (item.Scale.X + 10) / 5f);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

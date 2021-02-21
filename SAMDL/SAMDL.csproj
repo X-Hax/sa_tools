@@ -94,12 +94,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UI\ModelLoadError.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ModelLoadError.designer.cs">
-      <DependentUpon>ModelLoadError.cs</DependentUpon>
-    </Compile>
     <Compile Include="DefaultActionList.cs" />
     <Compile Include="UI\FindDialog.cs">
       <SubType>Form</SubType>
@@ -174,9 +168,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="UI\ModelLoadError.resx">
-      <DependentUpon>ModelLoadError.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI\FindDialog.resx">
       <DependentUpon>FindDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -202,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ico_samdl.ico" />
+    <None Include="Resources\vertid.png" />
     <None Include="Resources\sort.png" />
     <None Include="Resources\split.png" />
     <None Include="Resources\material.png" />
