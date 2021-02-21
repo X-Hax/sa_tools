@@ -34,6 +34,7 @@ namespace SonicRetro.SAModel.SADXLVL2
         [System.Diagnostics.DebuggerStepThrough()]
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BinaryFileDialog));
             this.buttonOK = new System.Windows.Forms.Button();
             this.labelKey = new System.Windows.Forms.Label();
             this.comboFileKeyHint = new System.Windows.Forms.ComboBox();
@@ -172,12 +173,15 @@ namespace SonicRetro.SAModel.SADXLVL2
             this.Controls.Add(this.comboFileKeyHint);
             this.Controls.Add(this.labelKey);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BinaryFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Load Level from a Binary File";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.BinaryFileDialog_HelpButtonClicked);
             this.Load += new System.EventHandler(this.Dialog1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericKey)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAddress)).EndInit();

@@ -677,9 +677,12 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
-					gizmo = true;
 					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0)) unsaved = true;
+					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0))
+					{
+						if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) gizmo = true;
+						unsaved = true;
+					}
 					draw = true;
 					break;
 

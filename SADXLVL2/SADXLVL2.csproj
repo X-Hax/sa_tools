@@ -223,6 +223,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_dxLvl2.ico" />
+    <None Include="Resources\assimp.png" />
+    <None Include="Resources\samdl.png" />
+    <None Include="Resources\source.png" />
+    <None Include="Resources\editinfo.png" />
     <None Include="Resources\save_advanced.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3397,10 +3397,16 @@ namespace SonicRetro.SAModel.SAMDL
 			importSelected(false);
 		}
 
-		private void buttonShowVertexIndices_CheckedChanged(object sender, EventArgs e)
+		private void showVertexIndicesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			osd.UpdateOSDItem("Show vertex indices: " + (buttonShowVertexIndices.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			buttonShowVertexIndices.Checked = showVertexIndicesToolStripMenuItem.Checked;
 			DrawEntireModel();
+		}
+
+		private void buttonShowVertexIndices_Click(object sender, EventArgs e)
+		{
+			showVertexIndicesToolStripMenuItem.Checked = !showVertexIndicesToolStripMenuItem.Checked;
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)

@@ -28,6 +28,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		/// </summary>
 		private void InitializeComponent()
 		{
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
             this.buttonReport = new System.Windows.Forms.Button();
             this.buttonContinue = new System.Windows.Forms.Button();
             this.labelErrorDescription = new System.Windows.Forms.Label();
@@ -96,8 +97,8 @@ namespace SonicRetro.SAModel.SAEditorCommon
             this.labelReportNote.AutoSize = true;
             this.labelReportNote.Location = new System.Drawing.Point(12, 396);
             this.labelReportNote.Name = "labelReportNote";
-            this.labelReportNote.Size = new System.Drawing.Size(220, 13);
-            this.labelReportNote.TabIndex = 5;
+			this.labelReportNote.Size = new System.Drawing.Size(220, 13);
+			this.labelReportNote.TabIndex = 5;
             this.labelReportNote.Text = "Click Report to copy the log to the clipboard and open GitHub.";
             // 
             // ErrorDialog
@@ -113,10 +114,10 @@ namespace SonicRetro.SAModel.SAEditorCommon
             this.Controls.Add(this.buttonContinue);
             this.Controls.Add(this.buttonReport);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ErrorDialog";
-            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SA Tools Error";
