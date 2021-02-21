@@ -83,7 +83,9 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static BoundingSphere TransformBounds(this Attach attach, Matrix transform)
 		{
-			return new BoundingSphere(Vector3.TransformCoordinate(attach.Bounds.Center.ToVector3(), transform).ToVertex(), attach.Bounds.Radius);
+			if (attach != null)
+				return new BoundingSphere(Vector3.TransformCoordinate(attach.Bounds.Center.ToVector3(), transform).ToVertex(), attach.Bounds.Radius);
+			else return new BoundingSphere();
 		}
 
 		public static void CalculateBounds(this Attach attach)
@@ -242,6 +244,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static BoundingSphere CalculateBounds(this Attach attach, int mesh, Matrix transform)
 		{
+			if (attach == null) return new BoundingSphere();
 			List<Vector3> verts = new List<Vector3>();
 			foreach (VertexData vert in attach.MeshInfo[mesh].Vertices)
 				verts.Add(Vector3.TransformCoordinate(vert.Position.ToVector3(), transform));
