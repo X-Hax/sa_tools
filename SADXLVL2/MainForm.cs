@@ -1726,7 +1726,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						boundsMesh = Direct3D.Mesh.Sphere(lvlItem.CollisionData.Bounds.Radius, 9, 9);
 						debugBoundsStack.NJTranslate(lvlItem.CollisionData.Bounds.Center);
 						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
-						renderlist_death.Add(info);
+						renderlist_geo.Add(info);
 					}
 					else if (item is SETItem)
 					{
@@ -1734,7 +1734,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						boundsMesh = Direct3D.Mesh.Sphere(setitem.Bounds.Radius, 9, 9);
 						debugBoundsStack.NJTranslate(setitem.Bounds.Center);
 						RenderInfo info = new RenderInfo(boundsMesh, 0, debugBoundsStack.Top, boundsMaterial, null, FillMode.Solid, item.Bounds);
-						renderlist_death.Add(info);
+						renderlist_set.Add(info);
 					}
 				}
 				debugBoundsStack.Pop();
@@ -1754,11 +1754,15 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
+			List<RenderInfo> drawqueue = new List<RenderInfo>();
+
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
-			RenderInfo.Draw(renderlist_geo, d3ddevice, cam);
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_geo, cam));
 
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.SetItemDrawDistance);
-			RenderInfo.Draw(renderlist_set, d3ddevice, cam);
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_set, cam));
+
+			RenderInfo.Draw(drawqueue, d3ddevice, cam);
 
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
