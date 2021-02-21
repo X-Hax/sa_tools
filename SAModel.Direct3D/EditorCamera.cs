@@ -249,7 +249,7 @@ namespace SonicRetro.SAModel.Direct3D
 			}
 		}
 
-		public int UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false)
+		public int UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false, bool moveGizmo = false)
 		{
 			int result = 0; // 0 - no redraw, 1 - redraw, 2 - redraw + refresh controls, 3 - refresh controls only
 
@@ -291,12 +291,11 @@ namespace SonicRetro.SAModel.Direct3D
 			mouseDelta = mouseEvent - (Size)mouseLast;
 			bool performedWrap = false;
 
-			if (lookKeyDown || zoomKeyDown || moveKeyDown)
+			if (lookKeyDown || zoomKeyDown || moveKeyDown || moveGizmo)
 			{
 				// Hide mouse cursor in alternative mode
-				if (hideCursor && !MouseCursorHidden)
+				if (hideCursor && !MouseCursorHidden && !moveGizmo)
 				{
-					
 					mouseBackup = Cursor.Position;
 					MouseCursorHidden = true;
 					Cursor.Hide();
@@ -340,37 +339,41 @@ namespace SonicRetro.SAModel.Direct3D
 						if (zoomKeyDown) // Zoom
 						{
 							Position += Look * (mouseDelta.Y * MoveSpeed);
+							result = 1;
 						}
 						else if (moveKeyDown) // Move
 						{
 							Position += Up * (mouseDelta.Y * MoveSpeed);
 							Position += Right * (mouseDelta.X * MoveSpeed) * -1;
+							result = 1;
 						}
 						else if (lookKeyDown) // Look
 						{
 							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
 							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
+							result = 1;
 						}
 						break;
 					case 1: // Orbit camera
 						if (zoomKeyDown) // Zoom
 						{
 							Distance += (mouseDelta.Y * MoveSpeed) * 3;
+							result = 1;
 						}
 						else if (moveKeyDown) // Move
 						{
 							FocalPoint += Up * (mouseDelta.Y * MoveSpeed);
 							FocalPoint += Right * (mouseDelta.X * MoveSpeed) * -1;
+							result = 1;
 						}
 						else if (lookKeyDown) // Look
 						{
 							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
 							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
+							result = 1;
 						}
 						break;
 				}
-
-				result = 1;
 
 			}
 

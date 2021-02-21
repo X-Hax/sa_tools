@@ -2266,9 +2266,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!isStageLoaded)
 				return;
 			bool draw = false;
-			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked);
-
+			bool gizmo = false;
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -2282,7 +2280,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 						if (pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam))
 							unsaved = true;
 					}
-					DrawLevel();
+					gizmo = true;
+					draw = true;
 					break;
 
 				case MouseButtons.None:
@@ -2315,6 +2314,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					break;
 			}
+			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked, gizmo);
 
 			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
