@@ -1762,9 +1762,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.SetItemDrawDistance);
 			drawqueue.AddRange(RenderInfo.Queue(renderlist_set, cam));
 
+			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
 			RenderInfo.Draw(drawqueue, d3ddevice, cam);
 
-			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
 			RenderInfo.Draw(renderlist_death, d3ddevice, cam);
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
