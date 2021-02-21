@@ -61,32 +61,32 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(0, 0, 10);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 2);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0x2000);
 			transform.NJTranslate(0, 0, -3);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0xE000);
 			transform.NJTranslate(0, 0, -3);
 			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1000000014901161f);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

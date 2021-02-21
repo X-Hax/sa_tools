@@ -50,9 +50,9 @@ namespace SADXObjectDefinitions.Common
 			Y = (item.Scale.Y + 10) * 0.1f;
 			transform.NJScale(X, Y, X);
 
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

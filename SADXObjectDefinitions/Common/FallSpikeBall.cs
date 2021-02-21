@@ -66,15 +66,15 @@ namespace SADXObjectDefinitions.Common
 			double v22 = item.Scale.X * 0.5 + item.Position.Y;
 			transform.NJTranslate(item.Position.X, (float)v22, item.Position.Z);
 			transform.NJScale(1.0f, (float)v24, 1.0f);
-			result.AddRange(cylindermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylindermeshes));
+			result.AddRange(cylindermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, cylindermeshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(cylindermodel.DrawModelTreeInvert(transform, cylindermeshes));
+				result.AddRange(cylindermodel.DrawModelTreeInvert(transform, cylindermeshes, boundsByMesh: true));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + item.Scale.Z, item.Position.Z);
-			result.AddRange(spheremodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremeshes));
+			result.AddRange(spheremodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremeshes, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(spheremodel.DrawModelTreeInvert(transform, spheremeshes));
+				result.AddRange(spheremodel.DrawModelTreeInvert(transform, spheremeshes, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}

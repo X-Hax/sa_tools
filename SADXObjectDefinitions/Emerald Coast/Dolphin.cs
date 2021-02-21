@@ -109,9 +109,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJScale((item.Scale.X + 1f), (item.Scale.X + 1f), (item.Scale.X + 1f));
-			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh));
+			result.AddRange(sphere.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, spheremsh, boundsByMesh: true));
 			if (item.Selected)
-				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh));
+				result.AddRange(sphere.DrawModelTreeInvert(transform, spheremsh, boundsByMesh: true));
 			transform.Pop();
 			return result;
 		}
