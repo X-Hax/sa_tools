@@ -74,7 +74,7 @@ namespace SonicRetro.SAModel.Direct3D
 			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
 			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
 			bitmap.UnlockBits(bitmapData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Managed);
 			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
 			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
 			texture.UnlockRectangle(0);
