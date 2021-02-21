@@ -44,6 +44,18 @@ namespace SonicRetro.SAModel.Direct3D
 			device.SetSamplerState(0, SamplerState.MipFilter, mipfilter);
 		}
 
+		public static List<RenderInfo> Queue(IEnumerable<RenderInfo> items, EditorCamera camera)
+		{
+			List<RenderInfo> result = new List<RenderInfo>();
+			foreach (RenderInfo item in items)
+			{
+				float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+				if (dist > camera.DrawDistance) continue;
+				result.Add(item);
+			}
+			return result;
+		}
+
 		public static void Draw(IEnumerable<RenderInfo> items, Device device, EditorCamera camera, bool useOldSorting = false)
 		{
 			if (useOldSorting)
