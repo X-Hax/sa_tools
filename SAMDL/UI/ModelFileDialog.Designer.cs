@@ -31,17 +31,16 @@ namespace SonicRetro.SAModel.SAMDL
         [System.Diagnostics.DebuggerStepThrough()]
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelFileDialog));
             this.OK_Button = new System.Windows.Forms.Button();
             this.Label_Key = new System.Windows.Forms.Label();
             this.ComboBox_FileType = new System.Windows.Forms.ComboBox();
-            this.NumericUpDown_ObjectAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-			this.Label_ModelAddress = new System.Windows.Forms.Label();
+            this.Label_ModelAddress = new System.Windows.Forms.Label();
             this.CheckBox_Hex_Object = new System.Windows.Forms.CheckBox();
             this.ComboBox_Format = new System.Windows.Forms.ComboBox();
             this.Label_Format = new System.Windows.Forms.Label();
             this.CheckBox_LoadMotion = new System.Windows.Forms.CheckBox();
-            this.NumericUpDown_MotionAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-			this.Label_MotionAddress = new System.Windows.Forms.Label();
+            this.Label_MotionAddress = new System.Windows.Forms.Label();
             this.CheckBox_BigEndian = new System.Windows.Forms.CheckBox();
             this.RadioButton_Binary = new System.Windows.Forms.RadioButton();
             this.RadioButton_SA2MDL = new System.Windows.Forms.RadioButton();
@@ -56,10 +55,12 @@ namespace SonicRetro.SAModel.SAMDL
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.RadioButton_Attach = new System.Windows.Forms.RadioButton();
             this.NumericUpDown_Key = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
+            this.NumericUpDown_MotionAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.NumericUpDown_ObjectAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).BeginInit();
             this.SuspendLayout();
             // 
             // OK_Button
@@ -100,19 +101,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.ComboBox_FileType.Size = new System.Drawing.Size(121, 21);
             this.ComboBox_FileType.TabIndex = 2;
             this.ComboBox_FileType.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
-            // 
-            // NumericUpDown_ObjectAddress
-            // 
-            this.NumericUpDown_ObjectAddress.Hexadecimal = true;
-            this.NumericUpDown_ObjectAddress.Location = new System.Drawing.Point(66, 55);
-            this.NumericUpDown_ObjectAddress.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
-            this.NumericUpDown_ObjectAddress.Name = "NumericUpDown_ObjectAddress";
-            this.NumericUpDown_ObjectAddress.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_ObjectAddress.TabIndex = 3;
             // 
             // Label_ModelAddress
             // 
@@ -169,20 +157,6 @@ namespace SonicRetro.SAModel.SAMDL
             this.CheckBox_LoadMotion.Text = "Load Motion";
             this.CheckBox_LoadMotion.UseVisualStyleBackColor = true;
             this.CheckBox_LoadMotion.CheckedChanged += new System.EventHandler(this.CheckBox_LoadMotion_CheckedChanged);
-            // 
-            // NumericUpDown_MotionAddress
-            // 
-            this.NumericUpDown_MotionAddress.Enabled = false;
-            this.NumericUpDown_MotionAddress.Hexadecimal = true;
-            this.NumericUpDown_MotionAddress.Location = new System.Drawing.Point(64, 178);
-            this.NumericUpDown_MotionAddress.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
-            this.NumericUpDown_MotionAddress.Name = "NumericUpDown_MotionAddress";
-            this.NumericUpDown_MotionAddress.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_MotionAddress.TabIndex = 19;
             // 
             // Label_MotionAddress
             // 
@@ -356,6 +330,23 @@ namespace SonicRetro.SAModel.SAMDL
             this.NumericUpDown_Key.Size = new System.Drawing.Size(98, 20);
             this.NumericUpDown_Key.TabIndex = 15;
             // 
+            // NumericUpDown_MotionAddress
+            // 
+            this.NumericUpDown_MotionAddress.Enabled = false;
+            this.NumericUpDown_MotionAddress.Hexadecimal = true;
+            this.NumericUpDown_MotionAddress.Location = new System.Drawing.Point(64, 178);
+            this.NumericUpDown_MotionAddress.Name = "NumericUpDown_MotionAddress";
+            this.NumericUpDown_MotionAddress.Size = new System.Drawing.Size(98, 20);
+            this.NumericUpDown_MotionAddress.TabIndex = 19;
+            // 
+            // NumericUpDown_ObjectAddress
+            // 
+            this.NumericUpDown_ObjectAddress.Hexadecimal = true;
+            this.NumericUpDown_ObjectAddress.Location = new System.Drawing.Point(66, 55);
+            this.NumericUpDown_ObjectAddress.Name = "NumericUpDown_ObjectAddress";
+            this.NumericUpDown_ObjectAddress.Size = new System.Drawing.Size(98, 20);
+            this.NumericUpDown_ObjectAddress.TabIndex = 3;
+            // 
             // ModelFileDialog
             // 
             this.AcceptButton = this.OK_Button;
@@ -369,18 +360,19 @@ namespace SonicRetro.SAModel.SAMDL
             this.Controls.Add(this.RadioButton_SA2BMDL);
             this.Controls.Add(this.OK_Button);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ModelFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SA1/SA2 Model Editor";
+            this.Text = "Load from a Binary File";
             this.Load += new System.EventHandler(this.Dialog1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -388,13 +380,11 @@ namespace SonicRetro.SAModel.SAMDL
         internal Button OK_Button;
         internal Label Label_Key;
         internal ComboBox ComboBox_FileType;
-        internal NumericUpDown NumericUpDown_ObjectAddress;
         internal Label Label_ModelAddress;
         internal CheckBox CheckBox_Hex_Object;
         internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_Key;
         internal ComboBox ComboBox_Format;
         internal Label Label_Format;
-        internal NumericUpDown NumericUpDown_MotionAddress;
         internal CheckBox CheckBox_LoadMotion;
         private Label Label_MotionAddress;
 		internal CheckBox CheckBox_BigEndian;
@@ -410,5 +400,7 @@ namespace SonicRetro.SAModel.SAMDL
 		internal CheckBox CheckBox_Hex_Motion;
 		private GroupBox groupBox1;
 		internal RadioButton RadioButton_Attach;
+		internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_ObjectAddress;
+		internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_MotionAddress;
 	}
 }

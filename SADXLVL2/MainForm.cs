@@ -1425,7 +1425,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (pivotComboBox.SelectedIndex == -1) pivotComboBox.SelectedIndex = 0;
 
 			addAllLevelItemsToolStripMenuItem.Enabled = true;
-			toolStrip1.Enabled = isStageLoaded;
+			toolStrip1.Enabled = editLevelInfoToolStripMenuItem.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
 			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
@@ -2088,6 +2088,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 						}
 						return;
 					}
+					if (transformGizmo != null)
+					{
+						if (moveModeButton.Checked)
+							transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
+						else if (rotateModeButton.Checked)
+							transformGizmo.Mode = TransformMode.TRANSFORM_ROTATE;
+						else if (scaleModeButton.Checked) 
+							transformGizmo.Mode = TransformMode.TRANSFORM_SCALE;
+						else
+							transformGizmo.Mode = TransformMode.NONE;
+					}
 					// If we have any helpers selected, don't execute the rest of the method!
 					if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) return;
 
@@ -2307,9 +2318,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (!isStageLoaded)
 				return;
 			bool draw = false;
-			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked);
-
+			bool gizmo = false;
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -2317,13 +2326,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				case MouseButtons.Left:
 					if (transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems))
+					{
 						unsaved = true;
+						if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) gizmo = true;
+					}
 					foreach (PointHelper pointHelper in PointHelper.Instances)
 					{
 						if (pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam))
 							unsaved = true;
 					}
-					DrawLevel();
+					draw = true;
 					break;
 
 				case MouseButtons.None:
@@ -2356,6 +2368,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					break;
 			}
+			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked, gizmo);
 
 			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
@@ -3767,7 +3781,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			if (pivotComboBox.SelectedIndex == -1) pivotComboBox.SelectedIndex = 0;
 			jumpToStartPositionToolStripMenuItem.Enabled = moveToStartButton.Enabled = LevelData.StartPositions != null;
 			addAllLevelItemsToolStripMenuItem.Enabled = true;
-			toolStrip1.Enabled = isStageLoaded;
+			toolStrip1.Enabled = editLevelInfoToolStripMenuItem.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
 			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
@@ -3775,14 +3789,13 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addCAMItemToolStripMenuItem.Enabled = LevelData.CAMItems != null;
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
-			editLevelInfoToolStripMenuItem.Enabled = saveAdvancedToolStripMenuItem.Enabled = true;
 		}
 		private void loadLandtableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.bin;*.rel;*.prs|All Files|*.*",
+				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
 				InitialDirectory = currentProjectPath,
 				Multiselect = false
 			})

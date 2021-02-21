@@ -664,10 +664,9 @@ namespace SonicRetro.SAModel.SALVL
 		{
 			if (!loaded) return;
 			bool draw = false;
+			bool gizmo = false;
 			bool mouseWrapScreen = false;
-			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
-			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, moveKeyDown, alternativeCameraModeToolStripMenuItem.Checked);
-
+			
 			switch (e.Button)
 			{
 				case MouseButtons.Middle:
@@ -678,9 +677,12 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						pointHelper.TransformAffected(cam.mouseDelta.X / 2 * cam.MoveSpeed, cam.mouseDelta.Y / 2 * cam.MoveSpeed, cam);
 					}
-
 					transformGizmo.TransformGizmoMove(cam.mouseDelta, cam, selectedItems);
-					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0)) unsaved = true;
+					if (selectedItems.ItemCount > 0 && (cam.mouseDelta.X != 0 || cam.mouseDelta.Y != 0))
+					{
+						if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) gizmo = true;
+						unsaved = true;
+					}
 					draw = true;
 					break;
 
@@ -714,6 +716,9 @@ namespace SonicRetro.SAModel.SALVL
 
 					break;
 			}
+
+			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, moveKeyDown, alternativeCameraModeToolStripMenuItem.Checked, gizmo);
 
 			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) propertyGrid1.Refresh();
 
