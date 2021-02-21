@@ -82,7 +82,7 @@ namespace SonicRetro.SAModel.Direct3D
 				foreach (RenderInfo item in items)
 				{
 					// Don't draw if too far
-					float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) + item.Bounds.Radius;
+					float dist = Extensions.Distance(camera.Position, item.Bounds.Center.ToVector3()) - item.Bounds.Radius;
 					if (dist > camera.DrawDistance) continue;
 
 					// Split into transparent and opaque lists
