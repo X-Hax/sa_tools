@@ -302,14 +302,14 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 
 				// Wrap X
-				if (Cursor.Position.X <= (mouseBounds.Left + mouseWrapThreshold))
+				if (Cursor.Position.X < (mouseBounds.Left + mouseWrapThreshold))
 				{
 					//MessageBox.Show("Wrap X 1");
 					Cursor.Position = new System.Drawing.Point(mouseBounds.Right - mouseWrapThreshold, Cursor.Position.Y);
 					mouseEvent = new System.Drawing.Point(mouseEvent.X + mouseBounds.Width - mouseWrapThreshold, mouseEvent.Y);
 					performedWrap = true;
 				}
-				else if (Cursor.Position.X >= (mouseBounds.Right - mouseWrapThreshold))
+				else if (Cursor.Position.X > (mouseBounds.Right - mouseWrapThreshold))
 				{
 					//MessageBox.Show("Wrap X 2");
 					Cursor.Position = new System.Drawing.Point(mouseBounds.Left + mouseWrapThreshold, Cursor.Position.Y);
@@ -318,14 +318,14 @@ namespace SonicRetro.SAModel.Direct3D
 				}
 
 				// Wrap Y
-				if (Cursor.Position.Y <= (mouseBounds.Top + mouseWrapThreshold))
+				if (Cursor.Position.Y < (mouseBounds.Top + mouseWrapThreshold))
 				{
 					//MessageBox.Show("Wrap Y 1");
 					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Bottom - mouseWrapThreshold);
 					mouseEvent = new System.Drawing.Point(mouseEvent.X, mouseEvent.Y + mouseBounds.Height - mouseWrapThreshold);
 					performedWrap = true;
 				}
-				else if (Cursor.Position.Y >= (mouseBounds.Bottom - mouseWrapThreshold))
+				else if (Cursor.Position.Y > (mouseBounds.Bottom - mouseWrapThreshold))
 				{
 					//MessageBox.Show("Wrap Y 2");
 					Cursor.Position = new System.Drawing.Point(Cursor.Position.X, mouseBounds.Top + mouseWrapThreshold);
