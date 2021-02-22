@@ -2371,7 +2371,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked, gizmo);
 
-			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) UpdatePropertyGrid();
+			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
 			{
 				DrawLevel();

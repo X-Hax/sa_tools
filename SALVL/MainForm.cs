@@ -720,7 +720,7 @@ namespace SonicRetro.SAModel.SALVL
 			System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
 			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, moveKeyDown, alternativeCameraModeToolStripMenuItem.Checked, gizmo);
 
-			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0) propertyGrid1.Refresh();
+			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null) propertyGrid1.Refresh();
 
 			if (camresult >= 1 || draw)
 			{
