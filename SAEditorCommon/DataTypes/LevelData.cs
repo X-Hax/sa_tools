@@ -312,7 +312,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		/// <summary>
-		/// Clears the entire stage.
+		/// Clears the entire stage except textures.
 		/// </summary>
 		public static void Clear()
 		{
@@ -324,7 +324,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			changes.Push("Clear Stage");
 		}
-
+		/// <summary>
+		/// Clears loaded textures.
+		/// </summary>
+		public static void ClearTextures()
+		{
+			if (Textures != null)
+				foreach (KeyValuePair<string, Texture[]> dicc in Textures)
+					for (int u = 0; u < dicc.Value.Length; u++)
+						dicc.Value[u].Dispose();
+			if (TextureBitmaps != null)
+				foreach (KeyValuePair<string, BMPInfo[]> dicc2 in TextureBitmaps)
+					for (int u = 0; u < dicc2.Value.Length; u++)
+						dicc2.Value[u].Image.Dispose();
+			TextureBitmaps = null;
+			Textures = null;
+		}
 		public static string GetStats()
 		{
 			int landtableItems = 0;
