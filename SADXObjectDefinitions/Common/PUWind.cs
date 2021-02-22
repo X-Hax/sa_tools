@@ -41,8 +41,6 @@ namespace SADXObjectDefinitions.Common
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			if (texture == null)
-				texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
