@@ -521,7 +521,6 @@ namespace SAToolsHub
 		{
 			treeView1.Nodes.Clear();
 			listView1.Items.Clear();
-			historyPaths.Clear();
 
 			//reset Tools Hub Buttons
 			tsBuild.Enabled = false;
