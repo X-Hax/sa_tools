@@ -69,14 +69,25 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
-			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
-			bitmap.UnlockBits(bitmapData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Managed);
+			// May no longer be necessary
+			//if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
+
+			// Set up and lock texture
+			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.AutoGenerateMipMap | Usage.Dynamic, Format.A8R8G8B8, Pool.Default);
 			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
-			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
+
+			// Copy texture data
+			var rgb = new byte[dataRectangle.Pitch * bitmapData.Height];
+			IntPtr ptr = bitmapData.Scan0;
+			for (int y = 0; y < bitmapData.Height; y++)
+			{
+				int ptrOffset = y * bitmapData.Stride;
+				int bufferOffset = y * dataRectangle.Pitch;
+				Marshal.Copy(ptr + ptrOffset, rgb, bufferOffset, dataRectangle.Pitch);
+			}
+			bitmap.UnlockBits(bitmapData);
+			Marshal.Copy(rgb, 0, dataRectangle.DataPointer, rgb.Length);
 			texture.UnlockRectangle(0);
 			return texture;
 		}
