@@ -66,10 +66,6 @@ namespace SonicRetro.SAModel.SALVL
 		EditorItemSelection selectedItems = new EditorItemSelection();
 
 		#region UI & Customization
-		bool mouseWrapScreen = false;
-		ushort mouseWrapThreshold = 2;
-		bool mouseHide = false;
-		Point mouseBackup;
 		EditorOptionsEditor optionsEditor;
 		bool lookKeyDown;
 		bool zoomKeyDown;
@@ -169,7 +165,6 @@ namespace SonicRetro.SAModel.SALVL
 			UseWaitCursor = true;
 			Enabled = false;
 			LevelData.leveltexs = null;
-			cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 			if (LandTable.CheckLevelFile(filename))
 				LevelData.geo = LandTable.LoadFromFile(filename);
 			else
@@ -506,6 +501,17 @@ namespace SonicRetro.SAModel.SALVL
 			actionInputCollector.KeyDown(e.KeyCode);
 		}
 
+		private void UpdateCameraOSD()
+		{
+			if (!loaded) return;
+			string cameraMode = "";
+			if (moveKeyDown) cameraMode = "Move";
+			else if (zoomKeyDown) cameraMode = "Zoom";
+			else if (lookKeyDown) cameraMode = "Look";
+			if (cameraMode != "")
+				osd.UpdateOSDItem("Camera mode: " + cameraMode, panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+		}
+
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
 		{
 			if (!loaded)
@@ -616,14 +622,17 @@ namespace SonicRetro.SAModel.SALVL
 
 				case ("Camera Move"):
 					moveKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = false;
+					UpdateCameraOSD();
 					break;
 
 				default:
@@ -642,17 +651,17 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				case ("Camera Move"):
 					moveKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Move", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Zoom"):
 					zoomKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Zoom", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				case ("Camera Look"):
 					lookKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Look", panel1.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					UpdateCameraOSD();
 					break;
 
 				default:
