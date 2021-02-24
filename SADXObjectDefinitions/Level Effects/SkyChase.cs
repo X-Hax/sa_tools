@@ -23,9 +23,14 @@ namespace SADXObjectDefinitions.Level_Effects
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
+			transform.Push();
 			Texture[] texs = ObjectHelper.GetTextures("SHOOTING0");
-			result.AddRange(carriermdl.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, carriermesh));
-			RenderInfo.Draw(result, dev, cam);
+			carriermdl.ProcessTransforms(transform);
+			carriermdl.ProcessVertexData();
+			dev.SetRenderState(RenderState.ZWriteEnable, true); // Z write is disabled for skybox by default
+			result.AddRange(carriermdl.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, carriermesh, boundsByMesh: true));
+			transform.Pop();
+			RenderInfo.Draw(result, dev, cam, true);
 		}
 	}
 }
