@@ -69,25 +69,29 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
-			// May no longer be necessary
-			//if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-
-			// Set up and lock texture
-			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.AutoGenerateMipMap | Usage.Dynamic, Format.A8R8G8B8, Pool.Default);
-			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
-
-			// Copy texture data
-			var rgb = new byte[dataRectangle.Pitch * bitmapData.Height];
-			IntPtr ptr = bitmapData.Scan0;
-			for (int y = 0; y < bitmapData.Height; y++)
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
+			if (bitmap.Width < 32 || bitmap.Height < 32)
 			{
-				int ptrOffset = y * bitmapData.Stride;
-				int bufferOffset = y * dataRectangle.Pitch;
-				Marshal.Copy(ptr + ptrOffset, rgb, bufferOffset, dataRectangle.Pitch);
+				float scaleFactor = 32.0f / (Math.Min(bitmap.Width, bitmap.Height));
+				int newsize_x = (int)(scaleFactor * bitmap.Width);
+				int newsize_y = (int)(scaleFactor * bitmap.Height);
+				Bitmap result = new Bitmap(newsize_x, newsize_y);
+				using (Graphics g = Graphics.FromImage(result))
+				{
+					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+					g.DrawImage(bitmap, 0, 0, newsize_x, newsize_y);
+				}
+				bitmap = result;
 			}
+			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
+			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
 			bitmap.UnlockBits(bitmapData);
-			Marshal.Copy(rgb, 0, dataRectangle.DataPointer, rgb.Length);
+			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.Dynamic |Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
+			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
+			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
 			texture.UnlockRectangle(0);
 			return texture;
 		}
