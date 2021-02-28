@@ -13,7 +13,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		public Settings_SADXLVL2 SADXLVL2;
 		public Settings_SALVL SALVL;
 		public Settings_SAMDL SAMDL;
-		//public Settings_SA2EventViewer SA2EventViewer;
+		public Settings_SA2EventViewer SA2EventViewer;
 
 		private static string GetSettingsPath()
 		{
@@ -36,7 +36,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 					SADXLVL2 = new Settings_SADXLVL2(),
 					SALVL = new Settings_SALVL(),
 					SAMDL = new Settings_SAMDL(),
-					//SA2EventViewer = new Settings_SA2EventViewer()
+					SA2EventViewer = new Settings_SA2EventViewer()
 				};
 				return settings;
 			}
@@ -142,16 +142,18 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			}
 
 		}
-		/*
+
 		public class Settings_SA2EventViewer
 		{
 			[DefaultValue(10000.0f)]
 			public float DrawDistance_General { get; set; }
+			[DefaultValue(1)]
+			public int CameraModifier { get; set; }
 			public Settings_SA2EventViewer()
 			{
-				DrawDistance_General=10000.0f;
+				DrawDistance_General = 10000.0f;
+				CameraModifier = 1;
 			}
 		}
-		*/
 	}
 }

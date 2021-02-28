@@ -70,6 +70,7 @@ namespace SA2EventViewer
 		Texture[] Textures;
 		EventEntity selectedObject;
 		bool eventcamera = true;
+		SettingsFile settingsfile; //For user editable settings
 
 		#region UI
 		bool lookKeyDown;
@@ -95,10 +96,12 @@ namespace SA2EventViewer
 					AutoDepthStencilFormat = Format.D24X8
 				});
 
+			settingsfile = SettingsFile.Load();
+
 			EditorOptions.Initialize(d3ddevice);
 			EditorOptions.OverrideLighting = true;
-			EditorOptions.RenderDrawDistance = 10000;
-
+			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.SA2EventViewer.DrawDistance_General;
+			cam.ModifierKey = settingsfile.SA2EventViewer.CameraModifier;
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
 				DefaultActionList.DefaultActionMapping);
 
@@ -818,6 +821,8 @@ namespace SA2EventViewer
 
 		void optionsEditor_FormUpdated()
 		{
+			settingsfile.SA2EventViewer.CameraModifier = cam.ModifierKey;
+			settingsfile.SA2EventViewer.DrawDistance_General = EditorOptions.RenderDrawDistance;
 			DrawEntireModel();
 		}
 
@@ -866,5 +871,15 @@ namespace SA2EventViewer
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			try
+			{
+				settingsfile.Save();
+			}
+			catch { };
+		}
+
 	}
 }
