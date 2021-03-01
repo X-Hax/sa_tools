@@ -3269,10 +3269,10 @@ namespace SA_Tools
 	{
 		public string Model { get; set; }
 		public string Collision { get; set; }
-		public float Unknown1 { get; set; }
-		public float Unknown2 { get; set; }
-		public float Unknown3 { get; set; }
-		public float Unknown4 { get; set; }
+		public uint Unknown1 { get; set; }
+		public uint Unknown2 { get; set; }
+		public uint Unknown3 { get; set; }
+		public uint Unknown4 { get; set; }
 		public string Unknown5 { get; set; }
 		public int Unknown6 { get; set; }
 
