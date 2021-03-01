@@ -140,7 +140,8 @@ namespace SA_Tools.SAArc
 								ent.GCModel = GetGCModel(fc, ptr2 + 12, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
 								ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
 								ent.Position = new Vertex(fc, ptr2 + 24);
-								ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 40);
+								ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 36);
+								ent.Layer = ByteConverter.ToUInt32(fc, ptr2 + 40);
 							}
 							else
 							{
@@ -543,6 +544,7 @@ namespace SA_Tools.SAArc
 		public string ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		public uint Flags { get; set; }
+		public uint Layer { get; set; }
 	}
 
 	public class BigInfo
