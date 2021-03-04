@@ -486,15 +486,18 @@ namespace SonicRetro.SAModel.DataToolbox
 					DataMappingFolder = "SADXPC";
 					break;
 				case 3:
-					DataMappingFolder = "SADXX360";
+					DataMappingFolder = "SADXGC";
 					break;
 				case 4:
-					DataMappingFolder = "SA2";
+					DataMappingFolder = "SADXX360";
 					break;
 				case 5:
-					DataMappingFolder = "SA2TheTrial";
+					DataMappingFolder = "SA2";
 					break;
 				case 6:
+					DataMappingFolder = "SA2TheTrial";
+					break;
+				case 7:
 					DataMappingFolder = "SA2PC";
 					break;
 			}

@@ -621,7 +621,8 @@
             "SA1 (Dreamcast)",
             "SA1 Autodemo",
             "SADX (PC)",
-            "SADX (X360 prototype)",
+			"SADX (Gamecube)",
+			"SADX (X360 prototype)",
             "SA2 (Dreamcast)",
             "SA2: The Trial (Dreamcast)",
             "SA2 (PC)"});
