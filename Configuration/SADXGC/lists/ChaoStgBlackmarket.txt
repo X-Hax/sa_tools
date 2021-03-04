@@ -1,0 +1,5 @@
+chao/stg_blackmarket/landtablechaoblackmarket.c
+chao/stg_blackmarket/obj/kin_bl_hanbase.nad.sa1mdl
+chao/stg_blackmarket/obj/kin_bl_buyer.nad.sa1mdl
+chao/stg_blackmarket/obj/kinblo_lamp.nad.sa1mdl
+chao/stg_blackmarket/obj/kinblo_lamp.nam.saanim

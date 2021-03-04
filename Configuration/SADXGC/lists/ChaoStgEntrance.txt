@@ -1,0 +1,5 @@
+chao/stg_entrance1/landtablechaoentrance.c.sa1lvl
+chao/stg_entrance1/obj/crch_nc_door_all.nja.sa1mdl
+chao/stg_entrance1/obj/crch_nc_door_all.nam.saanim
+chao/stg_entrance1/obj/crch_nc_spotlight_all.nja.sa1mdl
+chao/stg_entrance1/obj/crch_nc_spotlight_all.nam.saanim

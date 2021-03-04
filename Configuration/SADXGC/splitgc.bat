@@ -22,3 +22,31 @@ echo ADV split
 ..\bin\split binary data/_ADV0130.rel _ADV0130.ini output/
 ..\bin\split binary data/_ADV02.rel _ADV02.ini output/
 ..\bin\split binary data/_ADV03.rel _ADV03.ini output/
+
+echo Boss split
+..\bin\split binary data/B_CHAOS0.rel B_CHAOS0.ini output/
+..\bin\split binary data/B_CHAOS2.rel B_CHAOS2.ini output/
+..\bin\split binary data/B_CHAOS4.rel B_CHAOS4.ini output/
+..\bin\split binary data/_B_CHAOS6.rel _B_CHAOS6.ini output/
+..\bin\split binary data/_B_CHAOS7.rel _B_CHAOS7.ini output/
+..\bin\split binary data/B_EGM1.rel B_EGM1.ini output/
+..\bin\split binary data/B_EGM2.rel B_EGM2.ini output/
+..\bin\split binary data/B_EGM3.rel B_EGM3.ini output/
+..\bin\split binary data/B_E101.rel B_E101.ini output/
+..\bin\split binary data/B_E101_R.rel B_E101_R.ini output/
+..\bin\split binary data/B_ROBO.rel B_ROBO.ini output/
+
+echo Subgame split
+..\bin\split binary data/_Minicart.rel _Minicart.ini output/
+..\bin\split binary data/_Shooting.rel _Shooting.ini output/
+..\bin\split binary data/sboard.rel sboard.ini output/
+
+echo Chao split
+..\bin\split binary data/ChaoStgGarden00SS.rel ChaoStgGarden00SS.ini output/
+..\bin\split binary data/ChaoStgGarden01EC.rel ChaoStgGarden01EC.ini output/
+..\bin\split binary data/ChaoStgGarden02MR_Daytime.rel ChaoStgGarden02MR_Daytime.ini output/
+..\bin\split binary data/ChaoStgGarden02MR_Evening.rel ChaoStgGarden02MR_Evening.ini output/
+..\bin\split binary data/ChaoStgGarden02MR_Night.rel ChaoStgGarden02MR_Night.ini output/
+..\bin\split binary data/ChaoStgBlackmarket.rel ChaoStgBlackmarket.ini output/
+..\bin\split binary data/ChaoStgEntrance.rel ChaoStgEntrance.ini output/
+..\bin\split binary data/ChaoStgRace.rel ChaoStgRace.ini output/
