@@ -15,3 +15,10 @@ echo STG split
 ..\bin\split binary data/_STG09.rel _STG09.ini output/
 ..\bin\split binary data/_STG10.rel _STG10.ini output/
 ..\bin\split binary data/_STG12.rel _STG12.ini output/
+
+echo ADV split
+..\bin\split binary data/_ADV00.rel _ADV00.ini output/
+..\bin\split binary data/_ADV0100.rel _ADV0100.ini output/
+..\bin\split binary data/_ADV0130.rel _ADV0130.ini output/
+..\bin\split binary data/_ADV02.rel _ADV02.ini output/
+..\bin\split binary data/_ADV03.rel _ADV03.ini output/
