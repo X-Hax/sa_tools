@@ -1,0 +1,8 @@
+stg00_practice/mogobj/mogura_ems_mogura1e.nja.sa1mdl
+stg00_practice/mogobj/mogura_ems_mogura1e.nam.saanim
+stg00_practice/mogobj/mogura_sms_mogura1a.nja.sa1mdl
+stg00_practice/mogobj/mogura_sms_mogura1a.nam.saanim
+stg00_practice/mogobj/mogura_yms_mogura1a.nja.sa1mdl
+stg00_practice/mogobj/mogura_yms_mogura1a.nam.saanim
+stg00_practice/mogobj/tataki1_dai1mt.nja.sa1mdl
+stg00_practice/landtable0000.c.sa1lvl
