@@ -107,11 +107,11 @@ stg10_finalegg/killcolli/act3/lv3n_ochi_shini1.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini2.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini3.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini4.nja.sa1mdl
-stg10_finalegg/killcolli/act3/lv3n_ochi_shini5.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini6.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini7.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini8.nja.sa1mdl
 stg10_finalegg/killcolli/act3/lv3n_ochi_shini9.nja.sa1mdl
+stg10_finalegg/killcolli/act3/lv3n_ochi_shini10.nja.sa1mdl
 stg10_finalegg/killcolli/act4/fegg_ohi4_poly17.nja.sa1mdl
 stg10_finalegg/gachapon/models/minimekam_obj2.nja.sa1mdl
 stg10_finalegg/gachapon/models/mini50_obj3.nja.sa1mdl
