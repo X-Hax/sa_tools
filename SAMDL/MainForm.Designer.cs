@@ -607,7 +607,8 @@ namespace SonicRetro.SAModel.SAMDL
             this.RenderPanel.Name = "RenderPanel";
             this.RenderPanel.Size = new System.Drawing.Size(621, 521);
             this.RenderPanel.TabIndex = 1;
-            this.RenderPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+			this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
+			this.RenderPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
             this.RenderPanel.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyUp);
             this.RenderPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
@@ -1290,7 +1291,9 @@ namespace SonicRetro.SAModel.SAMDL
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.menuStrip1.ResumeLayout(false);
+			this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
+			this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
+			this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

@@ -24,6 +24,8 @@ namespace SonicRetro.SAModel.SAMDL
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
 		System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
+		bool FormResizing;
+		FormWindowState LastWindowState = FormWindowState.Minimized;
 
 		public MainForm()
 		{
@@ -190,7 +192,7 @@ namespace SonicRetro.SAModel.SAMDL
 			log.DeleteLogFile();
 			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
 				{
@@ -3151,9 +3153,8 @@ namespace SonicRetro.SAModel.SAMDL
 			modelLibrary.EndUpdate();
 		}
 
-		private void Resize()
+		private void DeviceReset()
 		{
-			// Causes a memory leak so not used for now
 			if (d3ddevice == null) return;
 			DeviceResizing = true;
 			PresentParameters pp = new PresentParameters
@@ -3161,24 +3162,11 @@ namespace SonicRetro.SAModel.SAMDL
 				Windowed = true,
 				SwapEffect = SwapEffect.Discard,
 				EnableAutoDepthStencil = true,
-				AutoDepthStencilFormat = Format.D24X8,
-				BackBufferHeight=RenderPanel.Height,
-				BackBufferWidth = RenderPanel.Width
+				AutoDepthStencilFormat = Format.D24X8
 			};
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			d3ddevice.Dispose();
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			EditorOptions.Initialize(d3ddevice);
-			if (TextureInfo != null && TextureInfo.Count() > 0)
-			{
-				Texture[] texs = new Texture[TextureInfo.Count()];
-				for (int j = 0; j < TextureInfo.Count(); j++)
-					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-				Textures = texs;
-			}
+			d3ddevice.Reset(pp);
 			DeviceResizing = false;
+			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			DrawEntireModel();
 		}
 
@@ -3409,6 +3397,27 @@ namespace SonicRetro.SAModel.SAMDL
 		private void buttonShowVertexIndices_Click(object sender, EventArgs e)
 		{
 			showVertexIndicesToolStripMenuItem.Checked = !showVertexIndicesToolStripMenuItem.Checked;
+		}
+
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			FormResizing = false;
+			DeviceReset();
+		}
+
+		private void RenderPanel_SizeChanged(object sender, EventArgs e)
+		{
+			if (WindowState != LastWindowState)
+			{
+				LastWindowState = WindowState;
+				DeviceReset();
+			}
+			else if (!FormResizing) DeviceReset();
+		}
+
+		private void MainForm_ResizeBegin(object sender, EventArgs e)
+		{
+			FormResizing = true;
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
