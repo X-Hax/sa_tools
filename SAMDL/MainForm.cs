@@ -1896,6 +1896,8 @@ namespace SonicRetro.SAModel.SAMDL
 				Far.Z = -1;
 				if (hasWeight)
 					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
+				else if (animation != null)
+					dist = model.CheckHitAnimated(Near, Far, viewport, proj, view, new MatrixStack(), meshes, animation, animframe);
 				else
 					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
 				if (dist.IsHit)
