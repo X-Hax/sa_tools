@@ -395,6 +395,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			isStageLoaded = false;
 			ini = SAEditorCommon.IniData.Load(filename);
 			currentProjectPath = Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+			if (File.Exists(Path.Combine(currentProjectPath, "dllcache", "DELETE")))
+			{
+				log.Add("Deleting old object definitions at: " + Path.Combine(currentProjectPath, "dllcache"));
+				try
+				{
+					Directory.Delete(Path.Combine(currentProjectPath, "dllcache"), true);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error deleting old object definitions:\n" + ex.ToString(), "SADXLVL2 Error");
+					log.Add("Error deleting old object definitions:\n" + ex.ToString());
+				}
+				log.WriteLog();
+			}
 			levelNames = new Dictionary<string, List<string>>();
 
 			foreach (KeyValuePair<string, IniLevelData> item in ini.Levels)
@@ -715,30 +729,41 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private string GetObjDefsDirectory()
 		{
-#if DEBUG
 			string objdp = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
 			if (Directory.Exists(objdp)) return objdp;
 			else return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
-#endif
-
-#if !DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
-#endif
 		}
 
-		private void CopyDefaultObjectDefintions()
+		private bool CopyDefaultObjectDefinitions()
 		{
-			// get our original objdefs folder
-			string originalObjdefsPath = GetObjDefsDirectory();
+			bool error = false;
+			try
+			{
+				// get our original objdefs folder
+				string originalObjdefsPath = GetObjDefsDirectory();
 
-			// get our project objdefs folder
-			string projectObjdefsPath = Path.Combine(currentProjectPath, "objdefs");
+				// get our project objdefs folder
+				string projectObjdefsPath = Path.Combine(currentProjectPath, "objdefs");
 
-			// clear the project objdefs folder
-			if (Directory.Exists(projectObjdefsPath)) Directory.Delete(projectObjdefsPath, true);
+				// clear the project objdefs folder
+				if (Directory.Exists(projectObjdefsPath)) Directory.Delete(projectObjdefsPath, true);
 
-			// recusrively copy the original objdefs folder to project folder
-			CopyFolder(originalObjdefsPath, projectObjdefsPath);
+				// recusrively copy the original objdefs folder to project folder
+				CopyFolder(originalObjdefsPath, projectObjdefsPath);
+				if (Directory.Exists(Path.Combine(currentProjectPath, "dllcache")))
+				{
+					byte[] emptyBytes = new byte[1];
+					File.WriteAllBytes(Path.Combine(currentProjectPath, "dllcache", "DELETE"), emptyBytes);
+				}
+			}
+			catch (Exception ex)
+			{
+				error = true;
+				MessageBox.Show("Error copying object definitions:\n" + ex.ToString(), "SADXLVL2 Error");
+				log.Add("Error copying object definitions:\n" + ex.ToString());
+				log.WriteLog();
+			}
+			return error;
 		}
 
 		bool initerror = false;
@@ -1402,6 +1427,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				settingsfile.SADXLVL2.AlternativeCamera = hideCursorDuringCameraMovementToolStripMenuItem.Checked;
 				settingsfile.SADXLVL2.MouseWrapScreen = wrapAroundScreenEdgesToolStripMenuItem.Checked;
 				settingsfile.Save();
+				if (log != null) log.WriteLog();
 			}
 			catch { };
 			AppConfig.Save();
@@ -3434,7 +3460,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void upgradeObjDefsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			CopyDefaultObjectDefintions();
+			DialogResult result = MessageBox.Show("This will overwrite all object definitions in the current project.\nWould you like to continue?", "Overwrite object definitions?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+			if (result == DialogResult.Yes)
+			{
+				bool error = CopyDefaultObjectDefinitions();
+				if (!error)
+					MessageBox.Show("Please restart SADXLVL2 to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
+			}
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4087,9 +4120,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				if (result == DialogResult.Yes)
 				{
-					CopyDefaultObjectDefintions();
 					initerror = true;
-					MessageBox.Show("Please reload the level to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
+					bool error = CopyDefaultObjectDefinitions();
+					if (!error)
+						MessageBox.Show("Please restart SADXLVL2 to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
 					return;
 				}
 			}

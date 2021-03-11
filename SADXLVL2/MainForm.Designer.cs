@@ -999,7 +999,7 @@
             // 
             this.upgradeObjDefsToolStripMenuItem.Name = "upgradeObjDefsToolStripMenuItem";
             this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Obj Defs";
+            this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Object Definitions";
             this.upgradeObjDefsToolStripMenuItem.ToolTipText = "Replace SET object code files in the project with default ones from the current v" +
     "ersion of SADXLVL2.";
             this.upgradeObjDefsToolStripMenuItem.Click += new System.EventHandler(this.upgradeObjDefsToolStripMenuItem_Click);
