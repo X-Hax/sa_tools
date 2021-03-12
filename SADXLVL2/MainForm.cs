@@ -785,7 +785,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (isStageLoaded)
 				{
 					LevelData.Clear();
-					selectedItems = new EditorItemSelection();
+					selectedItems.Clear();
 					PointHelper.Instances.Clear();
 					LevelData.ClearTextures();
 				}
@@ -2739,10 +2739,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();
-					selectedItems.Add(item);
+					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					LevelData.InvalidateRenderState();
+					selectedItems.Add(item);
 					unsaved = true;
 				}
 		}
@@ -3115,7 +3115,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (selectedItems.ItemCount > 0)
+			if (selectedItems.ItemCount < 1)
 			{
 				osd.AddMessage("To use this feature you must have a selection!", 180);
 				return;
