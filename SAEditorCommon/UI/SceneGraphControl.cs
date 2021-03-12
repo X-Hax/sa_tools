@@ -249,7 +249,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 			if (LevelData.MissionSETItems != null && LevelData.MissionSETItems[LevelData.Character] != null)
 				foreach (MissionSETItem missionSet in LevelData.MissionSETItems[LevelData.Character])
 				{
-					missionSETNode.Nodes.Add(missionSETNode.Name);
+					missionSETNode.Nodes.Add(missionSet.Name);
 				}
 
 			sceneTreeView.EndUpdate();
