@@ -428,6 +428,24 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.UseRotation) == SA1SurfaceFlags.UseRotation; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.UseRotation) | (value ? SA1SurfaceFlags.UseRotation : 0); }
 		}
+		[Category("Flags"), Description(" Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
+		public bool Waterfall
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Waterfall) | (value ? SA1SurfaceFlags.Waterfall : 0); }
+		}
+		[Category("Flags"), Description(" Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
+		public bool DynamicCollision
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.DynamicCollision) == SA1SurfaceFlags.DynamicCollision; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.DynamicCollision) | (value ? SA1SurfaceFlags.DynamicCollision : 0); }
+		}
+		[Category("Flags")]
+		public bool Accelerate
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Accelerate) == SA1SurfaceFlags.Accelerate; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Accelerate) | (value ? SA1SurfaceFlags.Accelerate : 0); }
+		}
 
 		#endregion
 

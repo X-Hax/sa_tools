@@ -76,11 +76,11 @@ namespace SonicRetro.SAModel
 		
 		Diggable              = 0x100,
 		//0x200
-		//0x400
+		Waterfall             = 0x400,
 		//0x800
 		
 		Unclimbable           = 0x1000,
-		//0x2000
+		Chaos0Land            = 0x2000, // Turns off Visible when Chaos 0 jumps up a pole
 		Stairs                = 0x4000,
 		//0x8000
 		
@@ -90,14 +90,14 @@ namespace SonicRetro.SAModel
 		//0x80000
 		
 		Footprints            = 0x100000,
-		//0x200000
+		Accelerate            = 0x200000,
 		WaterCollision        = 0x400000,
 		RotateByGravity       = 0x800000,
 
 		NoZWrite              = 0x1000000, // Sets QueuedModelFlagsB_SomeTextureThing when enabled, QueuedModelFlagsB_EnableZWrite otherwise
 		DrawByMesh            = 0x2000000,
 		UVManipulation        = 0x4000000,
-		//0x8000000
+		DynamicCollision      = 0x8000000,
 
 		UseRotation           = 0x10000000,
 		//0x2000000
