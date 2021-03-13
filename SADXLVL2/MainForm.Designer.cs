@@ -1497,24 +1497,27 @@
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-            this.propertyGrid1.Size = new System.Drawing.Size(337, 541);
-            this.propertyGrid1.TabIndex = 13;
-            this.propertyGrid1.ToolbarVisible = false;
-            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            // 
-            // importFileDialog
-            // 
-            this.importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
+			// 
+			// propertyGrid1
+			// 
+			this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.HighlightText;
+			this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.SystemColors.ControlLight;
+			this.propertyGrid1.DisabledItemForeColor = System.Drawing.SystemColors.ControlText;
+			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid1.ImeMode = System.Windows.Forms.ImeMode.Disable;
+			this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
+			this.propertyGrid1.Name = "propertyGrid1";
+			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.CategorizedAlphabetical;
+			this.propertyGrid1.Size = new System.Drawing.Size(337, 541);
+			this.propertyGrid1.TabIndex = 13;
+			this.propertyGrid1.ToolbarVisible = false;
+			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+			// 
+			// importFileDialog
+			// 
+			this.importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
             this.importFileDialog.Multiselect = true;
             this.importFileDialog.RestoreDirectory = true;
             this.importFileDialog.Title = "Select a file to import";
