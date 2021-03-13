@@ -3783,6 +3783,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
 			saveAdvancedToolStripMenuItem.Enabled = true;
+			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
+			upgradeObjDefsToolStripMenuItem.Enabled = ini != null;
 		}
 		private void loadLandtableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
