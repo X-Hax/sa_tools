@@ -62,14 +62,14 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return DefaultObjectDefinition.DefaultInstance;
 		}
 
-		[ParenthesizePropertyName(true)]
+		[Category("Common"), ParenthesizePropertyName(true)]
 		public string Name { get { return objdef.Name; } }
-		[ParenthesizePropertyName(true)]
+		[Category("Data"), ParenthesizePropertyName(true)]
 		public string InternalName { get { return objdef.InternalName; } }
 		protected bool isLoaded = false;
 
 		protected ushort id;
-		[Editor(typeof(IDEditor), typeof(UITypeEditor))]
+		[Category("Data"), Editor(typeof(IDEditor), typeof(UITypeEditor))]
 		public ushort ID
 		{
 			get { return id; }
@@ -89,16 +89,18 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			set { cliplevel = (byte)(value & 0xF); }
 		}
 
-		[DisplayName("Clip Level")]
+		[Category("Data"), DisplayName("Clip Level"), Description("Game detail setting required to display the object.")]
 		public ClipSetting ClipSetting
 		{
 			get { return (ClipSetting)ClipLevel; }
 			set { ClipLevel = (ushort)value; }
 		}
-
+		[Category("Common")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 		protected Vertex scale = new Vertex();
+		[Category("Common")]
 		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
 		public Vertex GetScale()

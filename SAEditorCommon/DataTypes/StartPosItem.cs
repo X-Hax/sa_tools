@@ -35,7 +35,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[Browsable(false)]
 		public int YRotation { get; set; }
 
-		[DisplayName("Y Rotation")]
+		[Category("Data"), DisplayName("Y Rotation")]
 		public float YRotDeg
 		{
 			get { return Rotation.BAMSToDeg(YRotation); }

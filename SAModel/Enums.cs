@@ -68,12 +68,40 @@ namespace SonicRetro.SAModel
 		Water                 = 0x2,
 		NoFriction            = 0x4,
 		NoAcceleration        = 0x8,
+		
+		LowAcceleration       = 0x10,
+		UseSkyDrawDistance    = 0x20,
 		CannotLand            = 0x40,
 		IncreasedAcceleration = 0x80,
+		
 		Diggable              = 0x100,
+		//0x200
+		//0x400
+		//0x800
+		
 		Unclimbable           = 0x1000,
+		//0x2000
+		Stairs                = 0x4000,
+		//0x8000
+		
 		Hurt                  = 0x10000,
+		//0x20000
+		LowDepth              = 0x40000,
+		//0x80000
+		
 		Footprints            = 0x100000,
+		//0x200000
+		WaterCollision        = 0x400000,
+		RotateByGravity       = 0x800000,
+
+		NoZWrite              = 0x1000000, // Sets QueuedModelFlagsB_SomeTextureThing when enabled, QueuedModelFlagsB_EnableZWrite otherwise
+		DrawByMesh            = 0x2000000,
+		UVManipulation        = 0x4000000,
+		//0x8000000
+
+		UseRotation           = 0x10000000,
+		//0x2000000
+		//0x4000000
 		Visible               = unchecked((int)0x80000000)
 	}
 
