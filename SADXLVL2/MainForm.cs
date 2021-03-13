@@ -3719,7 +3719,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 			InitializeDirect3D();
-			selectedItems = new EditorItemSelection();
+			selectedItems.Clear();
+			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
