@@ -3810,7 +3810,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "pvm",
-				Filter = "Texture Archives|*.pvm;*.gvm",
+				Filter = "Texture Archives|*.pvm;*.gvm;*.prs",
 				InitialDirectory = currentProjectPath,
 				Multiselect = false
 			})
