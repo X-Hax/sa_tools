@@ -1912,6 +1912,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						item.Delete(selectedItems);
 					selectedItems.Clear();
 					draw = true;
+					unsaved = true;
 					break;
 
 				case ("Increase camera move speed"):
