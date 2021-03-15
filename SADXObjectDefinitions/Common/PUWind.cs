@@ -14,7 +14,6 @@ namespace SADXObjectDefinitions.Common
 	class PUWind : ObjectDefinition
 	{
 		NJS_MATERIAL material;
-		Texture texture;
 		Mesh mesh;
 
 		public override void Init(ObjectData data, string name)
@@ -53,12 +52,12 @@ namespace SADXObjectDefinitions.Common
 
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = (1.5f * largestScale) };
 
-			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Solid, boxSphere);
+			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Solid, boxSphere);
 			result.Add(outputInfo);
 
 			if (item.Selected)
 			{
-				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Wireframe, boxSphere);
 				result.Add(highlightInfo);
 			}
 

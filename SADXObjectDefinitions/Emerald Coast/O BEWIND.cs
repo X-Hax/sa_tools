@@ -14,7 +14,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	class OBEWind : ObjectDefinition
 	{
 		private NJS_MATERIAL material;
-		private Texture texture;
 		private Mesh mesh;
 
 		public override void Init(ObjectData data, string name)
@@ -125,12 +124,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale};
 
-			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
+			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Wireframe, boxSphere);
 			result.Add(outputInfo);
 
 			if (item.Selected)
 			{
-				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Wireframe, boxSphere);
 				result.Add(highlightInfo);
 			}
 
