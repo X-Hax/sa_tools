@@ -2716,12 +2716,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z), selectedItems);
-			LevelData.CAMItems[LevelData.Character].Add(item);
+			item.Scale = new Vertex(10, 10, 10);
+			LevelData.AddCAMItem(LevelData.Character, item);
 			selectedItems.Clear();
 			selectedItems.Add(item);
 			LevelData.InvalidateRenderState();
 			unsaved = true;
-			//LevelData_StateChanged();
 		}
 
 		private void missionObjectToolStripMenuItem_Click(object sender, EventArgs e)

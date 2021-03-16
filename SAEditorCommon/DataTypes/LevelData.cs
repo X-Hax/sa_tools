@@ -282,6 +282,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			InvalidateRenderState();
 		}
 
+		public static void AddCAMItem(int characterID, CAMItem item)
+		{
+			CAMItems[characterID].Add(item);
+			changes.Push("Add CAM Item");
+			InvalidateRenderState();
+		}
+
+		public static void RemoveCAMItem(int characterID, CAMItem item)
+		{
+			CAMItems[characterID].Remove(item);
+			changes.Push("Remove CAM Item");
+			InvalidateRenderState();
+		}
+
 		/// <summary>
 		/// Clears Mission SET Items for all characters.
 		/// </summary>
