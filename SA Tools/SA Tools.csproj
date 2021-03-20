@@ -55,6 +55,7 @@
     <Compile Include="IniSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SAArc\SplitEvent.cs" />
+    <Compile Include="SAArc\SplitMiniEvent.cs" />
     <Compile Include="SAArc\SplitMTN.cs" />
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />
