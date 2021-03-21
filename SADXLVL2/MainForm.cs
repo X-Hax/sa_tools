@@ -562,7 +562,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private DialogResult SavePrompt(bool autoCloseDialog = false)
 		{
 			if (!unsaved) return DialogResult.No;
-			string dialogText = (ini != null ? "Do you want to save?" : "Are you sure?");
+			string dialogText = (ini != null ? "Do you want to save?" : "Quit without saving?");
 			DialogResult result = MessageBox.Show(this, dialogText, "SADXLVL2",
 				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
