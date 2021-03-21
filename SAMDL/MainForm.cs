@@ -3551,14 +3551,16 @@ namespace SonicRetro.SAModel.SAMDL
 					if (basicatt.Material[m.MaterialID].UseAlpha)
 					{
 						mesh_trans.Add(m);
-						if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
-						{
-							mats_trans.Add(basicatt.Material[m.MaterialID]);
-							matids.Add(matid_current);
-							matid_current++;
-						}
-						else
-							matids.Add((ushort)(mats_opaque.Count - 1 + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+                        if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
+                        {
+                            mats_trans.Add(basicatt.Material[m.MaterialID]);
+                            matids.Add(matid_current);
+                            matid_current++;
+                        }
+                        else
+                        {
+                            matids.Add((ushort)(mats_opaque.Count + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+                        }
 					}
 				}
 				mesh_opaque.AddRange(mesh_trans);
