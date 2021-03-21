@@ -3574,7 +3574,7 @@ namespace SonicRetro.SAModel.SAMDL
 				basicatt_new.Bounds.Radius = basicatt.Bounds.Radius;
 				basicatt_new.MaterialName = basicatt.MaterialName;
 				basicatt_new.MeshName = basicatt.MeshName;
-				basicatt_new.NormalName = basicatt.VertexName;
+				basicatt_new.NormalName = basicatt.NormalName;
 				basicatt_new.VertexName = basicatt.VertexName;
 				basicatt_new.Name = basicatt.Name;
 				mdl.Attach = basicatt_new;
