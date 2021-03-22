@@ -403,7 +403,7 @@ namespace SASave
 		public short NextSequence { get; set; }
 		public short Entrance { get; set; }
 		public ushort Level { get; set; }
-		public ushort Destination { get; set; }
+		public short Destination { get; set; }
 
 		public const int Size = 12;
 
@@ -418,7 +418,7 @@ namespace SASave
             NextSequence = file.ReadInt16();
 			Entrance = file.ReadInt16();
 			Level = file.ReadUInt16();
-            Destination = file.ReadUInt16();
+            Destination = file.ReadInt16();
 			file.Close();
 		}
 

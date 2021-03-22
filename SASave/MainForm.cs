@@ -1156,7 +1156,7 @@ namespace SASave
 		private void adventure_destination_ValueChanged(object sender, EventArgs e)
 		{
 			if (adventure_character.SelectedIndex == -1) return;
-			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Destination = (ushort)adventure_destination.Value;
+			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Destination = (short)adventure_destination.Value;
 		}
 
 		private void action_stage_character_SelectedIndexChanged(object sender, EventArgs e)
