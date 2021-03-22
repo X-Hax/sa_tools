@@ -2848,7 +2848,7 @@
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage9.Size = new System.Drawing.Size(568, 488);
             this.tabPage9.TabIndex = 6;
-            this.tabPage9.Text = "NPC Flags";
+            this.tabPage9.Text = "Cutscene Flags";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
             // npcs
