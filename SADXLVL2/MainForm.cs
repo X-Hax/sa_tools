@@ -614,7 +614,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Text = "SADXLVL2 - Loading " + levelName + "...";
 
 #if !DEBUG
-			backgroundWorker1.RunWorkerAsync();
+            backgroundWorker1.RunWorkerAsync();
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
@@ -787,10 +787,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				if (isStageLoaded)
 				{
 					LevelData.Clear();
-					selectedItems.Clear();
-					PointHelper.Instances.Clear();
-					LevelData.ClearTextures();
-				}
+                    selectedItems = new EditorItemSelection();
+                    PointHelper.Instances.Clear();
+					LevelData.ClearTextures();                 
+                }
 
 				isStageLoaded = false;
 
@@ -2377,37 +2377,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			DrawLevel();
 		}
-		#endregion
+        #endregion
 
-		void SelectionChanged(EditorItemSelection sender)
-		{
-			propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
+        void SelectionChanged(EditorItemSelection sender)
+        {
+            propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
 
-			if (cam.mode == 1)
-			{
-				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
-			}
+            if (cam.mode == 1)
+            {
+                cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+            }
 
-			if (sender.ItemCount > 0) // set up gizmo
-			{
-				transformGizmo.Enabled = true;
-				SetGizmoPivotAndLocality();
-			}
-			else
-			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.Enabled = false;
-				}
-			}
+            if (sender.ItemCount > 0) // set up gizmo
+            {
+                transformGizmo.Enabled = true;
+                SetGizmoPivotAndLocality();
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.Enabled = false;
+                }
+            }
 
-			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
+            duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
-			DrawLevel();
-		}
+            DrawLevel();
+        }
 
 		/// <summary>
 		/// Refreshes the properties for the currently selected items.
