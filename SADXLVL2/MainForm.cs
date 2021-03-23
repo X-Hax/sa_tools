@@ -2717,10 +2717,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z), selectedItems);
 			item.Scale = new Vertex(10, 10, 10);
-			LevelData.AddCAMItem(LevelData.Character, item);
-			selectedItems.Clear();
-			selectedItems.Add(item);
-			LevelData.InvalidateRenderState();
+            selectedItems.Clear();
+            LevelData.CAMItems[LevelData.Character].Add(item);
+            LevelData.InvalidateRenderState();
+            selectedItems.Add(item);
 			unsaved = true;
 		}
 
