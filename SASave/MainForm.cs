@@ -322,8 +322,8 @@ namespace SASave
 			level_clear_table.SuspendLayout();
 			foreach (string item in levels)
 			{
-				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None });
-				NumericUpDown ctrl = new NumericUpDown() { Name = "levelclear_" + i.ToInvariantString(), Width = 45, Maximum = byte.MaxValue, Anchor = AnchorStyles.None };
+				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None, AutoSize=true });
+				NumericUpDown ctrl = new NumericUpDown() { Name = "levelclear_" + i.ToInvariantString(), Width = 64, Maximum = byte.MaxValue, Anchor = AnchorStyles.None };
 				ctrl.ValueChanged += new EventHandler(levelclear_ValueChanged);
 				level_clear_table.Controls.Add(ctrl);
 				i++;
