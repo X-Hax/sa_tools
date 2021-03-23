@@ -33,6 +33,15 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadLandtableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadObjectListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadCAMFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadObjectDefinitionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -131,14 +140,6 @@
             this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SALVLModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadLandtableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadCAMFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.loadObjectDefinitionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadObjectListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadCAMFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -197,6 +198,7 @@
             this.showHintsButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
+            this.splinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -254,11 +256,89 @@
             // 
             // openToolStripMenuItem
             // 
+            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openProjectToolStripMenuItem,
+            this.toolStripSeparator8,
+            this.loadLandtableToolStripMenuItem,
+            this.loadTexturesToolStripMenuItem,
+            this.toolStripSeparator9,
+            this.loadObjectListToolStripMenuItem,
+            this.loadSETFileToolStripMenuItem,
+            this.loadCAMFileToolStripMenuItem,
+            this.loadObjectDefinitionsToolStripMenuItem});
+            this.openToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.openToolStripMenuItem.Text = "Change Projects...";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openNewProjectToolStripMenuItem_Click);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.openToolStripMenuItem.Text = "&Open";
+            // 
+            // openProjectToolStripMenuItem
+            // 
+            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
+            this.openProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openProjectToolStripMenuItem.Text = "&Project...";
+            this.openProjectToolStripMenuItem.ToolTipText = "Open a Project created in SA Tools Hub/Project Manager.";
+            this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+            // 
+            // loadLandtableToolStripMenuItem
+            // 
+            this.loadLandtableToolStripMenuItem.Name = "loadLandtableToolStripMenuItem";
+            this.loadLandtableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadLandtableToolStripMenuItem.Text = "Landtable...";
+            this.loadLandtableToolStripMenuItem.ToolTipText = "Load a level from an .sa*lvl file or a binary.";
+            this.loadLandtableToolStripMenuItem.Click += new System.EventHandler(this.loadLandtableToolStripMenuItem_Click_1);
+            // 
+            // loadTexturesToolStripMenuItem
+            // 
+            this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadTexturesToolStripMenuItem.Text = "Level Textures...";
+            this.loadTexturesToolStripMenuItem.ToolTipText = "Load level textures manually.";
+            this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click_1);
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(177, 6);
+            // 
+            // loadObjectListToolStripMenuItem
+            // 
+            this.loadObjectListToolStripMenuItem.Name = "loadObjectListToolStripMenuItem";
+            this.loadObjectListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadObjectListToolStripMenuItem.Text = "Object List...";
+            this.loadObjectListToolStripMenuItem.ToolTipText = "Load an Object List. Required for displaying SET item names.";
+            this.loadObjectListToolStripMenuItem.Click += new System.EventHandler(this.loadObjectListToolStripMenuItem_Click);
+            // 
+            // loadSETFileToolStripMenuItem
+            // 
+            this.loadSETFileToolStripMenuItem.Name = "loadSETFileToolStripMenuItem";
+            this.loadSETFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadSETFileToolStripMenuItem.Text = "SET File...";
+            this.loadSETFileToolStripMenuItem.ToolTipText = "Load an object layout from a SET file.";
+            this.loadSETFileToolStripMenuItem.Click += new System.EventHandler(this.loadSETFileToolStripMenuItem_Click);
+            // 
+            // loadCAMFileToolStripMenuItem
+            // 
+            this.loadCAMFileToolStripMenuItem.Enabled = false;
+            this.loadCAMFileToolStripMenuItem.Name = "loadCAMFileToolStripMenuItem";
+            this.loadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadCAMFileToolStripMenuItem.Text = "CAM File...";
+            this.loadCAMFileToolStripMenuItem.Visible = false;
+            this.loadCAMFileToolStripMenuItem.Click += new System.EventHandler(this.loadCAMFileToolStripMenuItem_Click);
+            // 
+            // loadObjectDefinitionsToolStripMenuItem
+            // 
+            this.loadObjectDefinitionsToolStripMenuItem.Enabled = false;
+            this.loadObjectDefinitionsToolStripMenuItem.Name = "loadObjectDefinitionsToolStripMenuItem";
+            this.loadObjectDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadObjectDefinitionsToolStripMenuItem.Text = "Object Definitions...";
+            this.loadObjectDefinitionsToolStripMenuItem.Visible = false;
+            this.loadObjectDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.loadObjectDefinitionsToolStripMenuItem_Click);
             // 
             // changeLevelToolStripMenuItem
             // 
@@ -266,15 +346,16 @@
             this.noneToolStripMenuItem});
             this.changeLevelToolStripMenuItem.Enabled = false;
             this.changeLevelToolStripMenuItem.Name = "changeLevelToolStripMenuItem";
-            this.changeLevelToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.changeLevelToolStripMenuItem.Text = "&Change Level...";
-            this.changeLevelToolStripMenuItem.Click += new System.EventHandler(this.changeLevelToolStripMenuItem_Click);
+            this.changeLevelToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.changeLevelToolStripMenuItem.Text = "&Level List...";
+            this.changeLevelToolStripMenuItem.ToolTipText = "Show a list of levels in the current Project.";
+            this.changeLevelToolStripMenuItem.Click += new System.EventHandler(this.changeLevelToolStripMenuItem_Click_1);
             // 
             // noneToolStripMenuItem
             // 
             this.noneToolStripMenuItem.Enabled = false;
             this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            this.noneToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.noneToolStripMenuItem.Text = "(none)";
             // 
             // saveToolStripMenuItem
@@ -283,8 +364,9 @@
             this.saveToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.ToolTipText = "Save the currently open Level in the Project.";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // importToolStripMenuItem
@@ -295,20 +377,21 @@
             this.importToolStripMenuItem.Enabled = false;
             this.importToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.importToolStripMenuItem.Text = "&Import";
             // 
             // toStageToolStripMenuItem
             // 
             this.toStageToolStripMenuItem.Name = "toStageToolStripMenuItem";
-            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.toStageToolStripMenuItem.Text = "To &Stage...";
+            this.toStageToolStripMenuItem.ToolTipText = "Import a model to the level.";
             this.toStageToolStripMenuItem.Click += new System.EventHandler(this.toStageToolStripMenuItem_Click);
             // 
             // toModelLibraryToolStripMenuItem
             // 
             this.toModelLibraryToolStripMenuItem.Name = "toModelLibraryToolStripMenuItem";
-            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.toModelLibraryToolStripMenuItem.Text = "To Model Library...";
             this.toModelLibraryToolStripMenuItem.Click += new System.EventHandler(this.importToModelLibrary_Click);
             // 
@@ -320,7 +403,7 @@
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.export;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // exportLevelToolStripMenuItem
@@ -329,23 +412,25 @@
             this.exportAssimpLevelToolStripMenuItem,
             this.exportLevelStructsToolStripMenuItem});
             this.exportLevelToolStripMenuItem.Name = "exportLevelToolStripMenuItem";
-            this.exportLevelToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exportLevelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportLevelToolStripMenuItem.Text = "Level";
             // 
             // exportAssimpLevelToolStripMenuItem
             // 
             this.exportAssimpLevelToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.assimp;
             this.exportAssimpLevelToolStripMenuItem.Name = "exportAssimpLevelToolStripMenuItem";
-            this.exportAssimpLevelToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.exportAssimpLevelToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportAssimpLevelToolStripMenuItem.Text = "Assimp...";
+            this.exportAssimpLevelToolStripMenuItem.ToolTipText = "Export the entire level to .FBX, .OBJ or .DAE.";
             this.exportAssimpLevelToolStripMenuItem.Click += new System.EventHandler(this.exportAssimpLevelToolStripMenuItem_Click);
             // 
             // exportLevelStructsToolStripMenuItem
             // 
             this.exportLevelStructsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.source;
             this.exportLevelStructsToolStripMenuItem.Name = "exportLevelStructsToolStripMenuItem";
-            this.exportLevelStructsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.exportLevelStructsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportLevelStructsToolStripMenuItem.Text = "C structs...";
+            this.exportLevelStructsToolStripMenuItem.ToolTipText = "Export the level as C structs for use in code mods.";
             this.exportLevelStructsToolStripMenuItem.Click += new System.EventHandler(this.exportLevelStructsToolStripMenuItem_Click);
             // 
             // exportSelectedItemsToolstripMenuItem
@@ -355,37 +440,40 @@
             this.exportSA1MDLSelectedItemsToolStripMenuItem,
             this.exportSelectedItemsStructsToolStripMenuItem});
             this.exportSelectedItemsToolstripMenuItem.Name = "exportSelectedItemsToolstripMenuItem";
-            this.exportSelectedItemsToolstripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exportSelectedItemsToolstripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportSelectedItemsToolstripMenuItem.Text = "Selected Items";
             // 
             // exportAssimpSelectedItemsToolStripMenuItem
             // 
             this.exportAssimpSelectedItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.assimp;
             this.exportAssimpSelectedItemsToolStripMenuItem.Name = "exportAssimpSelectedItemsToolStripMenuItem";
-            this.exportAssimpSelectedItemsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.exportAssimpSelectedItemsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportAssimpSelectedItemsToolStripMenuItem.Text = "Assimp...";
+            this.exportAssimpSelectedItemsToolStripMenuItem.ToolTipText = "Export selected level items as .OBJ, .FBX or .DAE.";
             this.exportAssimpSelectedItemsToolStripMenuItem.Click += new System.EventHandler(this.exportAssimpSelectedItemsToolStripMenuItem_Click);
             // 
             // exportSA1MDLSelectedItemsToolStripMenuItem
             // 
             this.exportSA1MDLSelectedItemsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.samdl;
             this.exportSA1MDLSelectedItemsToolStripMenuItem.Name = "exportSA1MDLSelectedItemsToolStripMenuItem";
-            this.exportSA1MDLSelectedItemsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.exportSA1MDLSelectedItemsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportSA1MDLSelectedItemsToolStripMenuItem.Text = "SA1MDL...";
+            this.exportSA1MDLSelectedItemsToolStripMenuItem.ToolTipText = "Export selected level items as SAModel files.";
             this.exportSA1MDLSelectedItemsToolStripMenuItem.Click += new System.EventHandler(this.exportSA1MDLSelectedItemsToolStripMenuItem_Click);
             // 
             // exportSelectedItemsStructsToolStripMenuItem
             // 
             this.exportSelectedItemsStructsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.source;
             this.exportSelectedItemsStructsToolStripMenuItem.Name = "exportSelectedItemsStructsToolStripMenuItem";
-            this.exportSelectedItemsStructsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.exportSelectedItemsStructsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportSelectedItemsStructsToolStripMenuItem.Text = "C structs...";
+            this.exportSelectedItemsStructsToolStripMenuItem.ToolTipText = "Export selected level items as C structs for use in code mods.";
             this.exportSelectedItemsStructsToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedItemsStructsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
             // 
             // saveAdvancedToolStripMenuItem
             // 
@@ -395,7 +483,7 @@
             this.advancedSaveSETFileBigEndianToolStripMenuItem});
             this.saveAdvancedToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.save_advanced;
             this.saveAdvancedToolStripMenuItem.Name = "saveAdvancedToolStripMenuItem";
-            this.saveAdvancedToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.saveAdvancedToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveAdvancedToolStripMenuItem.Text = "Save (advanced)";
             // 
             // advancedSavelevelToolStripMenuItem
@@ -422,12 +510,12 @@
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -456,16 +544,17 @@
             this.toolClearSetItems,
             this.toolClearCamItems,
             this.toolClearMissionSetItems,
+            this.splinesToolStripMenuItem,
             this.toolClearAll});
             this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
-            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.clearLevelToolStripMenuItem.Text = "Clear Level";
             // 
             // toolClearGeometry
             // 
             this.toolClearGeometry.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.levelitem;
             this.toolClearGeometry.Name = "toolClearGeometry";
-            this.toolClearGeometry.Size = new System.Drawing.Size(169, 22);
+            this.toolClearGeometry.Size = new System.Drawing.Size(188, 30);
             this.toolClearGeometry.Text = "Geometry";
             this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
             // 
@@ -473,7 +562,7 @@
             // 
             this.toolClearAnimations.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.geoanim;
             this.toolClearAnimations.Name = "toolClearAnimations";
-            this.toolClearAnimations.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAnimations.Size = new System.Drawing.Size(188, 30);
             this.toolClearAnimations.Text = "Animations";
             this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
             // 
@@ -481,7 +570,7 @@
             // 
             this.toolClearSetItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.set;
             this.toolClearSetItems.Name = "toolClearSetItems";
-            this.toolClearSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearSetItems.Size = new System.Drawing.Size(188, 30);
             this.toolClearSetItems.Text = "SET Items";
             this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
             // 
@@ -489,7 +578,7 @@
             // 
             this.toolClearCamItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.cam;
             this.toolClearCamItems.Name = "toolClearCamItems";
-            this.toolClearCamItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearCamItems.Size = new System.Drawing.Size(188, 30);
             this.toolClearCamItems.Text = "CAM Items";
             this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
             // 
@@ -497,14 +586,14 @@
             // 
             this.toolClearMissionSetItems.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.mis;
             this.toolClearMissionSetItems.Name = "toolClearMissionSetItems";
-            this.toolClearMissionSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearMissionSetItems.Size = new System.Drawing.Size(188, 30);
             this.toolClearMissionSetItems.Text = "Mission SET Items";
             this.toolClearMissionSetItems.Click += new System.EventHandler(this.toolClearMissionSetItems_Click);
             // 
             // toolClearAll
             // 
             this.toolClearAll.Name = "toolClearAll";
-            this.toolClearAll.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAll.Size = new System.Drawing.Size(188, 30);
             this.toolClearAll.Text = "All";
             this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
             // 
@@ -517,7 +606,7 @@
             this.addMissionItemToolStripMenuItem,
             this.addDeathZoneToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(226, 30);
             this.addToolStripMenuItem1.Text = "&Add";
             // 
             // addLevelPieceToolStripMenuItem
@@ -567,7 +656,7 @@
             this.deleteAllOfTypeToolStripMenuItem,
             this.duplicateToToolStripMenuItem});
             this.editSETItemsToolStripMenuItem.Name = "editSETItemsToolStripMenuItem";
-            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.editSETItemsToolStripMenuItem.Text = "SET Items";
             // 
             // findReplaceToolStripMenuItem
@@ -597,7 +686,7 @@
             this.duplicateToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.duplicate;
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
             this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -605,27 +694,27 @@
             // 
             this.deleteSelectedToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.delete;
             this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
-            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
             this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // pointOneObjectAtAnotherToolStripMenuItem
             // 
             this.pointOneObjectAtAnotherToolStripMenuItem.Name = "pointOneObjectAtAnotherToolStripMenuItem";
-            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.pointOneObjectAtAnotherToolStripMenuItem.Text = "Point one object at another";
             this.pointOneObjectAtAnotherToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(223, 6);
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.preferencesToolStripMenuItem.Text = "&Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -633,7 +722,7 @@
             // 
             this.editLevelInfoToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.editinfo;
             this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
-            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
             this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
             // 
@@ -644,7 +733,7 @@
             this.calculateAllBoundsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
             this.advancedToolStripMenuItem.Text = "Advanced";
             // 
             // usetBasicDXFormatToolStripMenuItem
@@ -981,7 +1070,7 @@
             // 
             this.statsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.stats;
             this.statsToolStripMenuItem.Name = "statsToolStripMenuItem";
-            this.statsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.statsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.statsToolStripMenuItem.Text = "Stats";
             this.statsToolStripMenuItem.ToolTipText = "Show level/selection statistics";
             this.statsToolStripMenuItem.Click += new System.EventHandler(this.statsToolStripMenuItem_Click);
@@ -991,14 +1080,14 @@
             this.boundsToolStripMenuItem.CheckOnClick = true;
             this.boundsToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.bounds;
             this.boundsToolStripMenuItem.Name = "boundsToolStripMenuItem";
-            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.boundsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.boundsToolStripMenuItem.Text = "Bounds";
             this.boundsToolStripMenuItem.ToolTipText = "Show bound spheres for level items";
             // 
             // upgradeObjDefsToolStripMenuItem
             // 
             this.upgradeObjDefsToolStripMenuItem.Name = "upgradeObjDefsToolStripMenuItem";
-            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.upgradeObjDefsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.upgradeObjDefsToolStripMenuItem.Text = "Upgrade Object Definitions";
             this.upgradeObjDefsToolStripMenuItem.ToolTipText = "Replace SET object code files in the project with default ones from the current v" +
     "ersion of SADXLVL2.";
@@ -1123,14 +1212,6 @@
             // SALVLModeToolStripMenuItem
             // 
             this.SALVLModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadLandtableToolStripMenuItem,
-            this.loadTexturesToolStripMenuItem,
-            this.loadSETFileToolStripMenuItem,
-            this.loadCAMFileToolStripMenuItem,
-            this.toolStripSeparator5,
-            this.loadObjectDefinitionsToolStripMenuItem,
-            this.loadObjectListToolStripMenuItem,
-            this.toolStripSeparator6,
             this.unloadTexturesToolStripMenuItem,
             this.unloadSETFileToolStripMenuItem,
             this.unloadCAMFileToolStripMenuItem,
@@ -1139,85 +1220,32 @@
             this.SALVLModeToolStripMenuItem.Size = new System.Drawing.Size(72, 22);
             this.SALVLModeToolStripMenuItem.Text = "Advanced";
             // 
-            // loadLandtableToolStripMenuItem
-            // 
-            this.loadLandtableToolStripMenuItem.Name = "loadLandtableToolStripMenuItem";
-            this.loadLandtableToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadLandtableToolStripMenuItem.Text = "Load Landtable...";
-            this.loadLandtableToolStripMenuItem.Click += new System.EventHandler(this.loadLandtableToolStripMenuItem_Click);
-            // 
-            // loadTexturesToolStripMenuItem
-            // 
-            this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
-            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
-            this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
-            // 
-            // loadSETFileToolStripMenuItem
-            // 
-            this.loadSETFileToolStripMenuItem.Name = "loadSETFileToolStripMenuItem";
-            this.loadSETFileToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadSETFileToolStripMenuItem.Text = "Load SET file...";
-            this.loadSETFileToolStripMenuItem.Click += new System.EventHandler(this.loadSETFileToolStripMenuItem_Click);
-            // 
-            // loadCAMFileToolStripMenuItem
-            // 
-            this.loadCAMFileToolStripMenuItem.Enabled = false;
-            this.loadCAMFileToolStripMenuItem.Name = "loadCAMFileToolStripMenuItem";
-            this.loadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadCAMFileToolStripMenuItem.Text = "Load CAM file...";
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(204, 6);
-            // 
-            // loadObjectDefinitionsToolStripMenuItem
-            // 
-            this.loadObjectDefinitionsToolStripMenuItem.Enabled = false;
-            this.loadObjectDefinitionsToolStripMenuItem.Name = "loadObjectDefinitionsToolStripMenuItem";
-            this.loadObjectDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadObjectDefinitionsToolStripMenuItem.Text = "Load Object Definitions...";
-            this.loadObjectDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.loadObjectDefinitionsToolStripMenuItem_Click);
-            // 
-            // loadObjectListToolStripMenuItem
-            // 
-            this.loadObjectListToolStripMenuItem.Name = "loadObjectListToolStripMenuItem";
-            this.loadObjectListToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.loadObjectListToolStripMenuItem.Text = "Load Object List...";
-            this.loadObjectListToolStripMenuItem.Click += new System.EventHandler(this.loadObjectListToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(204, 6);
-            // 
             // unloadTexturesToolStripMenuItem
             // 
             this.unloadTexturesToolStripMenuItem.Name = "unloadTexturesToolStripMenuItem";
-            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.unloadTexturesToolStripMenuItem.Text = "Unload Textures";
             this.unloadTexturesToolStripMenuItem.Click += new System.EventHandler(this.unloadTexturesToolStripMenuItem_Click);
             // 
             // unloadSETFileToolStripMenuItem
             // 
             this.unloadSETFileToolStripMenuItem.Name = "unloadSETFileToolStripMenuItem";
-            this.unloadSETFileToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.unloadSETFileToolStripMenuItem.Text = "Unload SET file";
+            this.unloadSETFileToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadSETFileToolStripMenuItem.Text = "Unload SET File";
             this.unloadSETFileToolStripMenuItem.Click += new System.EventHandler(this.unloadSETFileToolStripMenuItem_Click);
             // 
             // unloadCAMFileToolStripMenuItem
             // 
             this.unloadCAMFileToolStripMenuItem.Enabled = false;
             this.unloadCAMFileToolStripMenuItem.Name = "unloadCAMFileToolStripMenuItem";
-            this.unloadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.unloadCAMFileToolStripMenuItem.Text = "Unload CAM file";
+            this.unloadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadCAMFileToolStripMenuItem.Text = "Unload CAM File";
             // 
             // unloadObjectListToolStripMenuItem
             // 
             this.unloadObjectListToolStripMenuItem.Enabled = false;
             this.unloadObjectListToolStripMenuItem.Name = "unloadObjectListToolStripMenuItem";
-            this.unloadObjectListToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.unloadObjectListToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.unloadObjectListToolStripMenuItem.Text = "Unload Object List";
             this.unloadObjectListToolStripMenuItem.Click += new System.EventHandler(this.unloadObjectListToolStripMenuItem_Click);
             // 
@@ -1497,27 +1525,26 @@
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
-			// 
-			// propertyGrid1
-			// 
-			this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.HighlightText;
-			this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.SystemColors.ControlLight;
-			this.propertyGrid1.DisabledItemForeColor = System.Drawing.SystemColors.ControlText;
-			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid1.ImeMode = System.Windows.Forms.ImeMode.Disable;
-			this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-			this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
-			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.CategorizedAlphabetical;
-			this.propertyGrid1.Size = new System.Drawing.Size(337, 541);
-			this.propertyGrid1.TabIndex = 13;
-			this.propertyGrid1.ToolbarVisible = false;
-			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-			// 
-			// importFileDialog
-			// 
-			this.importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.HighlightText;
+            this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.SystemColors.ControlLight;
+            this.propertyGrid1.DisabledItemForeColor = System.Drawing.SystemColors.ControlText;
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(337, 541);
+            this.propertyGrid1.TabIndex = 13;
+            this.propertyGrid1.ToolbarVisible = false;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
+            // 
+            // importFileDialog
+            // 
+            this.importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
             this.importFileDialog.Multiselect = true;
             this.importFileDialog.RestoreDirectory = true;
             this.importFileDialog.Title = "Select a file to import";
@@ -1830,6 +1857,14 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1141, 612);
             this.BackgroundPanel.TabIndex = 2;
             // 
+            // splinesToolStripMenuItem
+            // 
+            this.splinesToolStripMenuItem.Image = global::SonicRetro.SAModel.SADXLVL2.Properties.Resources.splines;
+            this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
+            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.splinesToolStripMenuItem.Text = "Splines";
+            this.splinesToolStripMenuItem.Click += new System.EventHandler(this.splinesToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1878,11 +1913,8 @@
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeLevelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.UserControl RenderPanel;
-        private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
@@ -2007,19 +2039,11 @@
         private System.Windows.Forms.ToolStripMenuItem jumpToOriginToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton materialColorsButton;
         private System.Windows.Forms.ToolStripMenuItem SALVLModeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadLandtableToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadSETFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadCAMFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unloadTexturesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem disableModelLibraryToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-		private System.Windows.Forms.ToolStripMenuItem loadObjectListToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripMenuItem unloadSETFileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem unloadCAMFileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem unloadObjectListToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem loadObjectDefinitionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeOfDayToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem daytimeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem eveningToolStripMenuItem;
@@ -2043,6 +2067,19 @@
 		private System.Windows.Forms.ToolStripMenuItem mouseOptionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem wrapAroundScreenEdgesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem hideCursorDuringCameraMovementToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem changeLevelToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripMenuItem loadLandtableToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem loadTexturesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripMenuItem loadObjectListToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem loadSETFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem loadCAMFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem loadObjectDefinitionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem splinesToolStripMenuItem;
 	}
 }
 

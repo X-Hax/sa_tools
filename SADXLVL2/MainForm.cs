@@ -1571,10 +1571,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			progress.StepProgress();
-			progress.SetTaskAndStep("Save complete!");
-			Application.DoEvents();
-
 			#endregion
 
 			#region Saving Mission SET Items
@@ -1625,11 +1621,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			progress.StepProgress();
-			unsaved = false;
-			#endregion
-		}
+            #endregion
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+            #region Saving Splines
+            progress.Step = "Splines...";
+            Application.DoEvents();
+            if (LevelData.LevelSplines != null)
+            {
+                string splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
+                            levelact.ToString());
+                int s = 0;
+                foreach (SplineData spline in LevelData.LevelSplines)
+                {
+                    string path = Path.Combine(splineDirectory, string.Format("{0}.ini", s));
+                    spline.Save(path);
+                    s++;
+                }
+            }
+            #endregion
+            
+            progress.StepProgress();
+            progress.SetTaskAndStep("Save complete!");
+            unsaved = false;
+            Application.DoEvents();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -3217,8 +3234,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (result != DialogResult.Yes)
 				return;
-
-			result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+            
+            result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
 
 			if (result == DialogResult.Cancel)
 				return;
@@ -3235,9 +3252,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.ClearCAMItems(LevelData.Character);
 				LevelData.ClearMissionSETItems(LevelData.Character);
 			}
-
-			LevelData.ClearLevelGeoAnims();
+            LevelData.LevelSplines.Clear();
+            LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
+            selectedItems.Clear();
 			unsaved = true;
 		}
 
@@ -3789,58 +3807,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
 			upgradeObjDefsToolStripMenuItem.Enabled = ini != null;
 		}
-		private void loadLandtableToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
-				InitialDirectory = currentProjectPath,
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadLandtable(fileDialog.FileName);
-				}
-			}
-		}
-
-		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "pvm",
-				Filter = "Texture Archives|*.pvm;*.gvm;*.prs",
-				InitialDirectory = currentProjectPath,
-				Multiselect = false
-			})
-			{
-				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) fileDialog.FileName = LevelData.geo.TextureFileName;
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-					LevelData.Textures = new Dictionary<string, Texture[]>();
-					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
-					if (TexBmps != null)
-					{
-						Texture[] texs = new Texture[TexBmps.Length];
-						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-						LevelData.leveltexs = LevelData.geo.TextureFileName;
-					}
-					unloadTexturesToolStripMenuItem.Enabled = true;
-					DrawLevel();
-				}
-			}
-		}
 
 		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -3848,35 +3814,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			LevelData.Textures = null;
 			unloadTexturesToolStripMenuItem.Enabled = false;
 			DrawLevel();
-		}
-
-		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "bin",
-				Filter = "SET Files|SET*.BIN",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
-					LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						if (LevelData.SETItems(i) == null)
-							LevelData.AssignSetList(i, new List<SETItem>());
-					}
-					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
-					bool isSETPreset = !LevelData.SETItemsIsNull();
-					objectToolStripMenuItem.Enabled = isSETPreset;
-					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
-					LevelData.StateChanged += LevelData_StateChanged;
-					LevelData.InvalidateRenderState();
-				}
-			}
 		}
 
 		private void DeviceReset()
@@ -4022,23 +3959,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private void loadObjectListToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object List Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadObjectList(fileDialog.FileName);
-				}
-			}
-		}
-
 		private void LoadObjectList(string objectList, bool Mission = false)
 		{
 			List<ObjectData> objectErrors = new List<ObjectData>();
@@ -4160,25 +4080,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.InvalidateRenderState();
-
-		}
-
-		private void loadObjectDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object Definition Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
-					currentProjectPath = Path.GetDirectoryName(fileDialog.FileName);
-				}
-			}
 
 		}
 
@@ -4466,6 +4367,152 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private void MainForm_ResizeBegin(object sender, EventArgs e)
 		{
 			FormResizing = true;
+		}
+
+		private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            OpenNewProject();
+        }
+
+		private void changeLevelToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            ShowLevelSelect();
+        }
+
+		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "sa1lvl",
+                Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
+                InitialDirectory = currentProjectPath,
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadLandtable(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadTexturesToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "pvm",
+                Filter = "Texture Archives|*.pvm;*.gvm;*.prs",
+                InitialDirectory = currentProjectPath,
+                Multiselect = false
+            })
+            {
+                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) fileDialog.FileName = LevelData.geo.TextureFileName;
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+                    LevelData.Textures = new Dictionary<string, Texture[]>();
+                    BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
+                    if (TexBmps != null)
+                    {
+                        Texture[] texs = new Texture[TexBmps.Length];
+                        for (int j = 0; j < TexBmps.Length; j++)
+                            texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+                        if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+                        if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+                        LevelData.leveltexs = LevelData.geo.TextureFileName;
+                    }
+                    unloadTexturesToolStripMenuItem.Enabled = true;
+                    DrawLevel();
+                }
+            }
+        }
+
+		private void loadObjectListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object List Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadObjectList(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "bin",
+                Filter = "SET Files|SET*.BIN",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
+                    LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    for (int i = 0; i < LevelData.SETChars.Length; i++)
+                    {
+                        if (LevelData.SETItems(i) == null)
+                            LevelData.AssignSetList(i, new List<SETItem>());
+                    }
+                    LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
+                    bool isSETPreset = !LevelData.SETItemsIsNull();
+                    objectToolStripMenuItem.Enabled = isSETPreset;
+                    editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+                    LevelData.StateChanged += LevelData_StateChanged;
+                    LevelData.InvalidateRenderState();
+                    selectedItems.Clear();
+                }
+            }
+        }
+
+		private void loadObjectDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object Definition Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
+                    currentProjectPath = Path.GetDirectoryName(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadCAMFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            return;
+		}
+
+		private void splinesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            DialogResult result = MessageBox.Show("This will remove all path data in the stage.\n\nAre you sure you want to continue?",
+                "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            LevelData.LevelSplines.Clear();
+            LevelData.InvalidateRenderState();
+            selectedItems.Clear();
 		}
 	}
 }
