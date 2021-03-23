@@ -385,7 +385,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				}
 				else if (currentItems[i] is LevelItem)
 				{
-					LevelItem originalItem = (LevelItem)currentItems[0];
+					LevelItem originalItem = (LevelItem)currentItems[i];
 					LevelItem newItem = new LevelItem(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection);
 
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
