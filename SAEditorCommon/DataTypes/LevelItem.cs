@@ -255,7 +255,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 				
-		[Category("Miscellaneous"), DisplayName("Y Width"), Description("Unused field that can store a floating point value. Is actually used in SA1 Autodemo levels.")]
+		[Category("Miscellaneous"), DisplayName("Y Width"), Description("A field that can store a floating point value. Only used in some SA1 Autodemo levels.")]
 		public string WidthY
 		{
 			get
@@ -268,7 +268,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		[Category("Miscellaneous"), DisplayName("Z Width"), Description("Unused field that can store a floating point value. Is actually used in SA1 Autodemo levels.")]
+		[Category("Miscellaneous"), DisplayName("Z Width"), Description("A field that can store a floating point value. Only used in some SA1 Autodemo levels.")]
 		public string WidthZ
 		{
 			get
@@ -281,7 +281,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		[Category("Miscellaneous"), DisplayName("Block Bits"), Description("Controls how the item pops in. Set to 0 to make it pop in gradually.")]
+		[Category("Miscellaneous"), DisplayName("Block Bits"), Description("Controls how the item pops in. Set to 0 to make it pop in gradually. Used for texlist pointers in some SA1 Autodemo levels.")]
 		public string BlockBits
 		{
 			get
@@ -416,11 +416,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.DrawByMesh) == SA1SurfaceFlags.DrawByMesh; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.DrawByMesh) | (value ? SA1SurfaceFlags.DrawByMesh : 0); }
 		}
-		[Category("Flags"), Description("Enable UV animations for this model.")]
-		public bool UVManipulation
+		[Category("Flags"), Description("Enable model data manipulation by disabling meshset buffers. Useful for UV animations.")]
+		public bool EnableManipulation
 		{
-			get { return (COL.SurfaceFlags & SA1SurfaceFlags.UVManipulation) == SA1SurfaceFlags.UVManipulation; }
-			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.UVManipulation) | (value ? SA1SurfaceFlags.UVManipulation : 0); }
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.EnableManipulation) == SA1SurfaceFlags.EnableManipulation; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.EnableManipulation) | (value ? SA1SurfaceFlags.EnableManipulation : 0); }
 		}
 		[Category("Flags")]
 		public bool UseRotation
@@ -428,13 +428,13 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.UseRotation) == SA1SurfaceFlags.UseRotation; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.UseRotation) | (value ? SA1SurfaceFlags.UseRotation : 0); }
 		}
-		[Category("Flags"), Description(" Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
+		[Category("Flags"), Description("Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
 		public bool Waterfall
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Waterfall) | (value ? SA1SurfaceFlags.Waterfall : 0); }
 		}
-		[Category("Flags"), Description(" Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
+		[Category("Flags")]
 		public bool DynamicCollision
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.DynamicCollision) == SA1SurfaceFlags.DynamicCollision; }

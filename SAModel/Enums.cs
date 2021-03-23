@@ -96,7 +96,7 @@ namespace SonicRetro.SAModel
 
 		NoZWrite              = 0x1000000, // Sets QueuedModelFlagsB_SomeTextureThing when enabled, QueuedModelFlagsB_EnableZWrite otherwise
 		DrawByMesh            = 0x2000000,
-		UVManipulation        = 0x4000000,
+		EnableManipulation    = 0x4000000,
 		DynamicCollision      = 0x8000000,
 
 		UseRotation           = 0x10000000,
