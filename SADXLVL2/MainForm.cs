@@ -137,9 +137,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
-
-			settingsfile = SettingsFile.Load();
+            if (Environment.Is64BitOperatingSystem)
+			    Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+            else
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+            settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();

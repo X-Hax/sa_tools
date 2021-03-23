@@ -188,8 +188,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
-			log.DeleteLogFile();
+            if (Environment.Is64BitOperatingSystem)
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+            else
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+            log.DeleteLogFile();
 			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
