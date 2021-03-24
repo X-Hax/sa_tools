@@ -4411,23 +4411,38 @@ namespace SonicRetro.SAModel.SADXLVL2
                 Multiselect = false
             })
             {
-                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) fileDialog.FileName = LevelData.geo.TextureFileName;
+                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                    fileDialog.FileName = LevelData.geo.TextureFileName;
                 DialogResult result = fileDialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-                    LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-                    LevelData.Textures = new Dictionary<string, Texture[]>();
+                    // Initialize data if necessary
+                    if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                        LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    if (LevelData.TextureBitmaps == null)
+                        LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+                    if (LevelData.Textures == null) 
+                        LevelData.Textures = new Dictionary<string, Texture[]>();
+
+                    // Load or replace textures
                     BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
                     if (TexBmps != null)
                     {
+                        // Load texture bitmaps
                         Texture[] texs = new Texture[TexBmps.Length];
                         for (int j = 0; j < TexBmps.Length; j++)
                             texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-                        if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-                            LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-                        if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-                            LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+
+                        // Remove old textures if they exist
+                        if (LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.TextureBitmaps.Remove(LevelData.geo.TextureFileName);
+
+                        if (LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.Textures.Remove(LevelData.geo.TextureFileName);
+
+                        // Add new textures
+                        LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+                        LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
                         LevelData.leveltexs = LevelData.geo.TextureFileName;
                     }
                     unloadTexturesToolStripMenuItem.Enabled = true;
