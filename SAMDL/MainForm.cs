@@ -3428,6 +3428,43 @@ namespace SonicRetro.SAModel.SAMDL
 			FormResizing = true;
 		}
 
+        private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
+        {
+            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfo != null ? TextureInfo?.Select(a => a.Name).ToArray() : null);
+            RebuildModelCache();
+            DrawEntireModel();
+        }
+
+		private void legacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ImportOBJLegacy(model, ofd.FileName);
+                }
+            }
+        }
+
+		private void selectedLegacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ImportOBJLegacy(selectedObject, ofd.FileName);
+                }
+            }
+        }
+
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!(selectedObject.Attach is BasicAttach))

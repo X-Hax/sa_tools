@@ -163,7 +163,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
             {
                 newmodel = new NJS_OBJECT
                 {
-                    Attach = SAModel.Direct3D.Extensions.obj2nj(filePath),
+                    Attach = SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps != null ? LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray() : null),
 				};
 				COL.Model.Attach = newmodel.Attach;
                 COL.Model.ProcessVertexData();
