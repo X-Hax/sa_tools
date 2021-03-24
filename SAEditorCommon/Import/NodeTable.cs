@@ -271,7 +271,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager)
+						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true)
 						{
 							Flags = surfaceFlags
 						};

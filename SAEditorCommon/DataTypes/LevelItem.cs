@@ -32,7 +32,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="filePath">location of the file to use.</param>
 		/// <param name="position">Position to place the resulting model (worldspace).</param>
 		/// <param name="rotation">Rotation to apply to the model.</param>
-		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false)
 			: base(selectionManager)
 		{
 			this.index = index;
@@ -44,7 +44,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					Rotation = rotation
 				}
 			};
-			ImportModel(filePath);
+			ImportModel(filePath, legacyImport);
 			COL.CalculateBounds();
 			Paste();
 
@@ -155,12 +155,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public void RegenerateMesh() => mesh = COL.Model.Attach.CreateD3DMesh();
 
-		public void ImportModel(string filePath)
+        public void ImportModel(string filePath, bool legacyImport = false)
 		{
+            NJS_OBJECT newmodel;
+            // Old OBJ import (with vcolor face) for NodeTable and legacy import
+            if (legacyImport)
+            {
+                newmodel = new NJS_OBJECT
+                {
+                    Attach = SAModel.Direct3D.Extensions.obj2nj(filePath),
+				};
+				COL.Model.Attach = newmodel.Attach;
+                COL.Model.ProcessVertexData();
+                Visible = true;
+                Solid = true;
+                mesh = COL.Model.Attach.CreateD3DMesh();
+                return;
+            }
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
+			newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
 			COL.Model.Attach = newmodel.Attach;
 			COL.Model.ProcessVertexData();
 			Visible = true;
