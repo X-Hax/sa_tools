@@ -2,6 +2,7 @@
 using SonicRetro.SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace SonicRetro.SAModel.SAEditorCommon.Import
@@ -64,7 +65,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 			nodeCountLines = nodeCountLines[2].Split(';');
 
-			if (!Int32.TryParse(nodeCountLines[0], out int nodeCount))
+			if (!Int32.TryParse(nodeCountLines[0], NumberStyles.Any, new CultureInfo("en-US"), out int nodeCount))
 			{
 				errorFlag = true;
 				errorMsg = "Error parsing node count!";
@@ -85,7 +86,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					string[] nodeIndexSplit = nodeDescriptorSplit[1].Split(';');
 
 
-					if (!Int32.TryParse(nodeIndexSplit[0], out int nodeIndex))
+					if (!Int32.TryParse(nodeIndexSplit[0], NumberStyles.Any, new CultureInfo("en-US"), out int nodeIndex))
 					{
 						errorFlag = true;
 						errorMsg = String.Format("Error parsing node label for node {0}.", n);
@@ -106,7 +107,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					positionSplit[3] = positionSplit[3].Split(';')[0];
 
-					if ((float.TryParse(positionSplit[1], out float xPos)) && (float.TryParse(positionSplit[2], out float yPos)) && (float.TryParse(positionSplit[3], out float zPos)))
+					if ((float.TryParse(positionSplit[1], NumberStyles.Any, new CultureInfo("en-US"), out float xPos)) && (float.TryParse(positionSplit[2], NumberStyles.Any, new CultureInfo("en-US"), out float yPos)) && (float.TryParse(positionSplit[3], NumberStyles.Any, new CultureInfo("en-US"), out float zPos)))
 					{
 						position = new Vertex(xPos, yPos, zPos);
 					}
@@ -132,7 +133,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					rotationSplit[3] = rotationSplit[3].Split(';')[0];
 
-					if (float.TryParse(rotationSplit[1], out float xRot) && float.TryParse(rotationSplit[2], out float yRot) && float.TryParse(rotationSplit[3], out float zRot))
+					if (float.TryParse(rotationSplit[1], NumberStyles.Any, new CultureInfo("en-US"), out float xRot) && float.TryParse(rotationSplit[2], NumberStyles.Any, new CultureInfo("en-US"), out float yRot) && float.TryParse(rotationSplit[3], NumberStyles.Any, new CultureInfo("en-US"), out float zRot))
 					{
 
 						rotation = new Rotation(Rotation.DegToBAMS(xRot), Rotation.DegToBAMS(yRot), Rotation.DegToBAMS(zRot));
@@ -185,7 +186,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					string[] nodeIndexSplit = nodeDescriptorSplit[1].Split(';');
 
 
-					if (!Int32.TryParse(nodeIndexSplit[0], out int nodeIndex))
+					if (!Int32.TryParse(nodeIndexSplit[0], NumberStyles.Any, new CultureInfo("en-US"), out int nodeIndex))
 					{
 						errorFlag = true;
 						errorMsg = String.Format("Error parsing node label for node {0}.", n);
@@ -205,8 +206,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 						return;
 					}
 					positionSplit[3] = positionSplit[3].Split(';')[0];
-
-					if ((float.TryParse(positionSplit[1], out float xPos)) && (float.TryParse(positionSplit[2], out float yPos)) && (float.TryParse(positionSplit[3], out float zPos)))
+					if ((float.TryParse(positionSplit[1], NumberStyles.Any, new CultureInfo("en-US"), out float xPos)) && (float.TryParse(positionSplit[2], NumberStyles.Any, new CultureInfo("en-US"), out float yPos)) && (float.TryParse(positionSplit[3], NumberStyles.Any, new CultureInfo("en-US"), out float zPos)))
 					{
 						position = new Vertex(xPos, yPos, zPos);
 					}
@@ -232,7 +232,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					}
 					rotationSplit[3] = rotationSplit[3].Split(';')[0];
 
-					if (float.TryParse(rotationSplit[1], out float xRot) && float.TryParse(rotationSplit[2], out float yRot) && float.TryParse(rotationSplit[3], out float zRot))
+					if (float.TryParse(rotationSplit[1], NumberStyles.Any, new CultureInfo("en-US"), out float xRot) && float.TryParse(rotationSplit[2], NumberStyles.Any, new CultureInfo("en-US"), out float yRot) && float.TryParse(rotationSplit[3], NumberStyles.Any, new CultureInfo("en-US"), out float zRot))
 					{
 
 						rotation = new Rotation(Rotation.DegToBAMS(xRot), Rotation.DegToBAMS(yRot), Rotation.DegToBAMS(zRot));
