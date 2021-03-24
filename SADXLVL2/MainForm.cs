@@ -152,7 +152,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			AppConfig.Reload();
+            log.Add("Build Date: ");
+            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            log.Add("OS Version: ");
+            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+            AppConfig.Reload();
 			EditorOptions.RenderDrawDistance = settingsfile.SADXLVL2.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;

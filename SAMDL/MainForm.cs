@@ -193,8 +193,13 @@ namespace SonicRetro.SAModel.SAMDL
             else
                 Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
             log.DeleteLogFile();
-			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+            log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
+            log.Add("Build Date: ");
+            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            log.Add("OS Version: ");
+            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+            log.WriteLog();
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
