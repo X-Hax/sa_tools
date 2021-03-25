@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SonicRetro.SAModel.SAEditorCommon
@@ -10,7 +11,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 	{
 		private string programName, errorDescription, log;
 
-		public ErrorDialog(string programName, string errorDescription, string log)
+        public ErrorDialog(string programName, string errorDescription, string log)
 		{
 			InitializeComponent();
 			this.programName = programName;
@@ -18,12 +19,20 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			this.log = log;
 		}
 
-		private void okButton_Click(object sender, EventArgs e)
-		{
-			Clipboard.SetText(textBoxLog.Text);
-			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
-			Close();
-		}
+        static void UpdateClipboard(object info)
+        {
+            string text = (string)info;
+            Clipboard.SetText(text);
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            Thread newThread = new Thread(new ParameterizedThreadStart(UpdateClipboard));
+            newThread.SetApartmentState(ApartmentState.STA);
+            newThread.Start(textBoxLog.Text);
+            System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+            Close();
+        }
 
 		private void cancelButton_Click(object sender, EventArgs e)
 		{
