@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PuyoTools.Modules">
       <HintPath>..\Dependencies\PuyoTools.Modules.dll</HintPath>
@@ -130,6 +131,12 @@
     <Content Include="icon_TexEdit.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\PuyoTools.Modules.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\GimSharp.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\FraGag.Compression.Prs.dll" "$(SolutionDir)tools\lib\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
