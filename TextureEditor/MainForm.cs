@@ -1,5 +1,4 @@
-﻿using Microsoft.DirectX.Direct3D;
-using PAKLib;
+﻿using PAKLib;
 using PuyoTools.Modules.Archive;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,8 @@ using System.Text;
 using System.Windows.Forms;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 
 namespace TextureEditor
 {
@@ -22,7 +23,6 @@ namespace TextureEditor
 			InitializeComponent();
 		}
 
-		Device d3ddevice;
 		TextureFormat format;
 		string filename;
 		List<TextureInfo> textures = new List<TextureInfo>();
@@ -63,32 +63,53 @@ namespace TextureEditor
 				pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 			ArchiveBase pvmfile = new PvmArchive();
 			List<TextureInfo> newtextures;
-			if (PvmxArchive.Is(pvmdata))
-			{
-				format = TextureFormat.PVMX;
-				newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata).Cast<TextureInfo>());
-			}
-			else if (PAKFile.Is(filename))
-			{
-				format = TextureFormat.PAK;
-				PAKFile pak = new PAKFile(filename);
-				string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
-				byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
-				newtextures = new List<TextureInfo>(inf.Length / 0x3C);
-				for (int i = 0; i < inf.Length; i += 0x3C)
-				{
-					StringBuilder sb = new StringBuilder(0x1C);
-					for (int j = 0; j < 0x1C; j++)
-						if (inf[i + j] != 0)
-							sb.Append((char)inf[i + j]);
-						else
-							break;
-					byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-					using (MemoryStream str = new MemoryStream(dds))
-					using (Texture tex = TextureLoader.FromStream(d3ddevice, str))
-					using (Stream bmp = TextureLoader.SaveToStream(ImageFileFormat.Png, tex))
-						newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), new Bitmap(bmp)));
-				}
+            if (PvmxArchive.Is(pvmdata))
+            {
+                format = TextureFormat.PVMX;
+                newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata).Cast<TextureInfo>());
+            }
+            else if (PAKFile.Is(filename))
+            {
+                format = TextureFormat.PAK;
+                PAKFile pak = new PAKFile(filename);
+                string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+                byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                newtextures = new List<TextureInfo>(inf.Length / 0x3C);
+                for (int i = 0; i < inf.Length; i += 0x3C)
+                {
+                    StringBuilder sb = new StringBuilder(0x1C);
+                    for (int j = 0; j < 0x1C; j++)
+                        if (inf[i + j] != 0)
+                            sb.Append((char)inf[i + j]);
+                        else
+                            break;
+                    byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+                    using (MemoryStream str = new MemoryStream(dds))
+                    {
+                        uint check = BitConverter.ToUInt32(dds, 0);
+                        if (check == 0x20534444) // DDS header
+                        {
+                            PixelFormat pxformat;
+                            var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+                            switch (image.Format)
+                            {
+                                case Pfim.ImageFormat.Rgba32:
+                                    pxformat = PixelFormat.Format32bppArgb;
+                                    break;
+                                default:
+                                    MessageBox.Show("Unsupported image format.");
+                                    throw new NotImplementedException();
+                            }
+                            var bitmap = new Bitmap(image.Width, image.Height, pxformat);
+                            BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+                            Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+                            bitmap.UnlockBits(bmpData);
+                            newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), bitmap));
+                        }
+                        else
+                            newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), new Bitmap(str)));
+                    }
+                }
 			}
 			else
 			{
@@ -194,8 +215,6 @@ namespace TextureEditor
 
 			makePCCompatibleGVMsToolStripMenuItem.Checked = Settings.PCCompatGVM;
 
-			d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } });
-
 			if (Program.Arguments.Length > 0 && !GetTextures(Program.Arguments[0]))
 				Close();
 		}
@@ -270,7 +289,7 @@ namespace TextureEditor
 						{
 							if (tex.DataFormat != PvrDataFormat.Index4 && tex.DataFormat != PvrDataFormat.Index8)
 							{
-								System.Drawing.Imaging.BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+								BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 								int stride = bmpd.Stride;
 								byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
 								System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
@@ -323,7 +342,7 @@ namespace TextureEditor
 							{
 								if (Settings.PCCompatGVM)
 								{
-									System.Drawing.Imaging.BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+									BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 									int stride = bmpd.Stride;
 									byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
 									System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
@@ -372,22 +391,24 @@ namespace TextureEditor
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (TextureInfo item in textures)
 						{
-							Stream tex = TextureLoader.SaveToStream(ImageFileFormat.Dds, Texture.FromBitmap(d3ddevice, item.Image, Usage.SoftwareProcessing, Pool.Managed));
-							byte[] tb = new byte[tex.Length];
-							tex.Read(tb, 0, tb.Length);
-							string name = item.Name.ToLowerInvariant();
-							if (name.Length > 0x1C)
-								name = name.Substring(0, 0x1C);
-							pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
-							inf.AddRange(Encoding.ASCII.GetBytes(name));
-							if (name.Length != 0x1C)
-								inf.AddRange(new byte[0x1C - name.Length]);
-							inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
-							inf.AddRange(new byte[0xC]);
-							inf.AddRange(BitConverter.GetBytes(item.Image.Width));
-							inf.AddRange(BitConverter.GetBytes(item.Image.Height));
-							inf.AddRange(new byte[4]);
-							inf.AddRange(BitConverter.GetBytes(0x80000000));
+                            using (MemoryStream tex = new MemoryStream())
+                            {
+                                item.Image.Save(tex, ImageFormat.Png);
+                                byte[] tb = tex.ToArray();
+                                string name = item.Name.ToLowerInvariant();
+                                if (name.Length > 0x1C)
+                                    name = name.Substring(0, 0x1C);
+                                pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
+                                inf.AddRange(Encoding.ASCII.GetBytes(name));
+                                if (name.Length != 0x1C)
+                                    inf.AddRange(new byte[0x1C - name.Length]);
+                                inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
+                                inf.AddRange(new byte[0xC]);
+                                inf.AddRange(BitConverter.GetBytes(item.Image.Width));
+                                inf.AddRange(BitConverter.GetBytes(item.Image.Height));
+                                inf.AddRange(new byte[4]);
+                                inf.AddRange(BitConverter.GetBytes(0x80000000));
+                            }
 						}
 						pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
 						pak.Save(filename);
