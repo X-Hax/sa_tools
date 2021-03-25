@@ -1792,7 +1792,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.txt|All Files|*.*" })
+			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*" })
             {
 				if (a.ShowDialog() == DialogResult.OK)
 				{

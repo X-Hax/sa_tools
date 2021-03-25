@@ -6,6 +6,9 @@ using PuyoTools.Modules.Archive;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
+using PAKLib;
+using System.Linq;
+using System.Drawing.Imaging;
 
 namespace SonicRetro.SAModel.Direct3D.TextureSystem
 {
@@ -20,6 +23,47 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
             string ext = Path.GetExtension(filename).ToLowerInvariant();
             switch (ext)
             {
+                case ".pak":
+                    PAKFile pak = new PAKFile(filename);
+                    string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+                    byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                    List<BMPInfo> newtextures = new List<BMPInfo>(inf.Length / 0x3C);
+                    for (int i = 0; i < inf.Length; i += 0x3C)
+                    {
+						System.Text.StringBuilder sb = new System.Text.StringBuilder(0x1C);
+                        for (int j = 0; j < 0x1C; j++)
+                            if (inf[i + j] != 0)
+                                sb.Append((char)inf[i + j]);
+                            else
+                                break;
+                        byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+                        using (MemoryStream str = new MemoryStream(dds))
+                        {
+                            uint check = BitConverter.ToUInt32(dds, 0);
+                            if (check == 0x20534444) // DDS header
+                            {
+                                PixelFormat pxformat;
+                                var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+                                switch (image.Format)
+                                {
+                                    case Pfim.ImageFormat.Rgba32:
+                                        pxformat = PixelFormat.Format32bppArgb;
+                                        break;
+                                    default:
+										System.Windows.Forms.MessageBox.Show("Unsupported image format.");
+                                        throw new NotImplementedException();
+                                }
+                                var bitmap = new Bitmap(image.Width, image.Height, pxformat);
+                                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+								System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+                                bitmap.UnlockBits(bmpData);
+                                newtextures.Add(new BMPInfo(sb.ToString(), bitmap));
+                            }
+                            else
+                                newtextures.Add(new BMPInfo(sb.ToString(), new Bitmap(str)));
+                        }
+                    }
+                    return newtextures.ToArray();
                 case ".pvmx":
                     byte[] pvmxdata = File.ReadAllBytes(filename);
                     if (!(pvmxdata.Length > 4 && BitConverter.ToInt32(pvmxdata, 0) == 0x584D5650))
