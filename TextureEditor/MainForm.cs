@@ -73,6 +73,23 @@ namespace TextureEditor
                 format = TextureFormat.PAK;
                 PAKFile pak = new PAKFile(filename);
                 string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+                bool hasIndex = false;
+                foreach (PAKFile.File fl in pak.Files)
+                {
+                    if (fl.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                        hasIndex = true;
+                }
+                if (!hasIndex)
+                {
+                    MessageBox.Show("This PAK archive does not contain an index file, and Texture Editor cannot open it. Use PAKTool to open such files.", "Texture Editor");
+                    textures.Clear();
+                    listBox1.Items.Clear();
+                    filename = null;
+                    format = TextureFormat.PAK;
+                    Text = "PAK Editor";
+                    UpdateTextureCount();
+                    return true;
+                }
                 byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
                 newtextures = new List<TextureInfo>(inf.Length / 0x3C);
                 for (int i = 0; i < inf.Length; i += 0x3C)
