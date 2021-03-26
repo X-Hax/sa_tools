@@ -123,7 +123,27 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			if (modelFiles.Count > 0) { LoadFile(modelFiles[0], cmdLoad); }
-			if (modelImportFiles.Count > 0) { ImportModel_Assimp(modelImportFiles[0], false); }
+			if (modelImportFiles.Count > 0) 
+            {
+                if (Path.GetExtension(modelImportFiles[0]).ToLowerInvariant() == ".dae")
+                {
+                    // Ask which model format to import
+                    DialogResult res = MessageBox.Show("Would you like to import a GC model?\nClick No to import as Chunk, Cancel to import as Basic.", "Select Import Format", MessageBoxButtons.YesNoCancel);
+                    switch (res)
+                    {
+                        case DialogResult.Yes:
+                            outfmt = ModelFormat.GC;
+                            break;
+                        case DialogResult.No:
+                            outfmt = ModelFormat.Chunk;
+                            break;
+                        default:
+                            outfmt = ModelFormat.Basic;
+                            break;
+                    }
+                }
+                ImportModel_Assimp(modelImportFiles[0], false); 
+            }
 			if (animFiles.Count > 0) { LoadAnimation(animFiles.ToArray()); }
 		}
 
@@ -2287,8 +2307,8 @@ namespace SonicRetro.SAModel.SAMDL
 					if (a.ShowDialog() == DialogResult.OK)
 					{
 						LoadTextures(a.FileName);
-						DrawEntireModel();
-					}
+                        DrawEntireModel();
+                    }
 					else
 						MessageBox.Show("No textures are loaded. Materials may not be imported properly.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
@@ -2297,13 +2317,13 @@ namespace SonicRetro.SAModel.SAMDL
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 			Assimp.Node importnode = scene.RootNode;
-			loaded = false;
+            loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			timer1.Stop();
-			// Collada adds a root node, so use the first child node instead
-			if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
-				importnode = scene.RootNode.Children[0];
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+            // Collada adds a root node, so use the first child node instead
+            if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
+                importnode = scene.RootNode.Children[0];
+            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
