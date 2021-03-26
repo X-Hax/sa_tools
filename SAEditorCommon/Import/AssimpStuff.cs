@@ -63,8 +63,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 		private static void ProcessNodes(this NJS_OBJECT obj, Matrix parentMatrix, ref int mdlindex)
 		{
 			mdlindex++;
-			string nodename = $"n{mdlindex:000}_{obj.Name}";
-			NodeNames.Add(nodename);
+            string nodename = $"n{mdlindex:000}_{obj.Name}";
+            NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
 
@@ -568,7 +568,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 							GC.UV uv = (GC.UV)gcUVs[prim.ToTriangles()[i + j].UV0Index];
 							texcoords.Add(new Vector3D(uv.XF, uv.YF, 1.0f));
 						}
-						if (gcUVs != null)
+						if (gcColors != null)
 						{
 							GC.Color c = (GC.Color)gcColors[(int)prim.ToTriangles()[i + j].Color0Index];
 							colors.Add(new Color4D(c.AlphaF, c.BlueF, c.GreenF, c.RedF));//colors.Add( new Color4D(c.A,c.B,c.G,c.R));
