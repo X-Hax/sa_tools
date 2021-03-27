@@ -275,7 +275,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return COL.WidthY.ToC();
+				return COL.WidthY.ToC(true);
 			}
 			set
 			{
@@ -288,7 +288,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return COL.WidthZ.ToC();
+				return COL.WidthZ.ToC(true);
 			}
 			set
 			{
