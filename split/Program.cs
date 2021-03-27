@@ -159,6 +159,7 @@ namespace Split
                     byte[] datafile = File.ReadAllBytes(fullpath_dllex);
                     uint imageBase = SA_Tools.HelperFunctions.SetupEXE(ref datafile).Value;
                     Dictionary<string, int> exports;
+                    Dictionary<int, string> labels = new Dictionary<int, string>();
                     {
                         int ptr = BitConverter.ToInt32(datafile, BitConverter.ToInt32(datafile, 0x3c) + 4 + 20 + 96);
                         GCHandle handle = GCHandle.Alloc(datafile, GCHandleType.Pinned);
@@ -175,6 +176,7 @@ namespace Split
                             int addr = BitConverter.ToInt32(datafile,
                                 dir.AddressOfFunctions + (BitConverter.ToInt16(datafile, ordaddr) * 4));
                             exports.Add(namex, addr);
+                            labels.Add(addr, namex);
                             nameaddr += 4;
                             ordaddr += 2;
                         }
@@ -223,7 +225,7 @@ namespace Split
                                     landext = ".sa1lvl";
                                     break;
                             }
-                            LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur);
+                            LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur, labels);
                             if (fileOutputPath == "") 
                                 fileOutputPath = land.Name + landext;
                             land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
@@ -261,7 +263,7 @@ namespace Split
                                         modelext = ".sa1mdl";
                                         break;
                                 }
-                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, new Dictionary<int, Attach>());
+                                NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, labels, new Dictionary<int, Attach>());
                                 if (fileOutputPath == "")
                                     fileOutputPath = mdl.Name + modelext;
                                 ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_obj, nometa);
@@ -276,7 +278,7 @@ namespace Split
                                 if (args[a] == "-p")
                                     numparts = int.Parse(args[a + 1], System.Globalization.NumberStyles.Integer);
                             }
-                            NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts);
+                            NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
                             if (fileOutputPath == "")
                                 fileOutputPath = ani.Name + "saanim";
                             ani.Save(fileOutputPath, nometa);
