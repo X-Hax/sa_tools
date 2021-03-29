@@ -228,6 +228,8 @@ namespace Split
                             LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur, labels);
                             if (fileOutputPath == "") 
                                 fileOutputPath = land.Name + landext;
+                            if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+                                Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
                             land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
                             break;
                         // NJS_OBJECT
@@ -266,6 +268,8 @@ namespace Split
                                 NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, labels, new Dictionary<int, Attach>());
                                 if (fileOutputPath == "")
                                     fileOutputPath = mdl.Name + modelext;
+                                if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+                                    Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
                                 ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_obj, nometa);
                             }
                             break;
@@ -281,6 +285,8 @@ namespace Split
                             NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
                             if (fileOutputPath == "")
                                 fileOutputPath = ani.Name + "saanim";
+                            if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+                                Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
                             ani.Save(fileOutputPath, nometa);
                             break;
                         default:
