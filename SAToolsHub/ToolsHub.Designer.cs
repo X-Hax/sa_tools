@@ -274,7 +274,7 @@
 			// 
 			this.editOpen.Enabled = false;
 			this.editOpen.Name = "editOpen";
-			this.editOpen.Size = new System.Drawing.Size(180, 22);
+			this.editOpen.Size = new System.Drawing.Size(152, 22);
 			this.editOpen.Text = "Open";
 			this.editOpen.ToolTipText = "Open Directory or File";
 			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
@@ -286,14 +286,14 @@
             this.editToJson});
 			this.editConvert.Enabled = false;
 			this.editConvert.Name = "editConvert";
-			this.editConvert.Size = new System.Drawing.Size(180, 22);
+			this.editConvert.Size = new System.Drawing.Size(152, 22);
 			this.editConvert.Text = "Convert File";
 			// 
 			// editToData
 			// 
 			this.editToData.Enabled = false;
 			this.editToData.Name = "editToData";
-			this.editToData.Size = new System.Drawing.Size(180, 22);
+			this.editToData.Size = new System.Drawing.Size(126, 22);
 			this.editToData.Text = "To Data";
 			this.editToData.ToolTipText = "Convert select files to data\r\n\r\nOutput located in Project\'s Code folder.";
 			this.editToData.Click += new System.EventHandler(this.editToData_Click);
@@ -302,7 +302,7 @@
 			// 
 			this.editToJson.Enabled = false;
 			this.editToJson.Name = "editToJson";
-			this.editToJson.Size = new System.Drawing.Size(180, 22);
+			this.editToJson.Size = new System.Drawing.Size(126, 22);
 			this.editToJson.Text = "To JSON";
 			this.editToJson.ToolTipText = "Convert selected Animation files to json.";
 			this.editToJson.Click += new System.EventHandler(this.editToJson_Click);
@@ -310,14 +310,14 @@
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(149, 6);
 			// 
 			// editCopy
 			// 
 			this.editCopy.Enabled = false;
 			this.editCopy.Name = "editCopy";
 			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.editCopy.Size = new System.Drawing.Size(180, 22);
+			this.editCopy.Size = new System.Drawing.Size(152, 22);
 			this.editCopy.Text = "Copy";
 			this.editCopy.ToolTipText = "Copy selected files.";
 			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
@@ -327,7 +327,7 @@
 			this.editPaste.Enabled = false;
 			this.editPaste.Name = "editPaste";
 			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.editPaste.Size = new System.Drawing.Size(180, 22);
+			this.editPaste.Size = new System.Drawing.Size(152, 22);
 			this.editPaste.Text = "Paste";
 			this.editPaste.ToolTipText = "Paste selected files";
 			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
@@ -337,7 +337,7 @@
 			this.editDel.Enabled = false;
 			this.editDel.Name = "editDel";
 			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.editDel.Size = new System.Drawing.Size(180, 22);
+			this.editDel.Size = new System.Drawing.Size(152, 22);
 			this.editDel.Text = "Delete";
 			this.editDel.ToolTipText = "Delete selected files";
 			this.editDel.Click += new System.EventHandler(this.editDel_Click);
@@ -363,34 +363,34 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
 			// 
 			this.sAMDLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSAMDL;
 			this.sAMDLToolStripMenuItem.Name = "sAMDLToolStripMenuItem";
-			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sAMDLToolStripMenuItem.Text = "SAMDL";
-			this.sAMDLToolStripMenuItem.ToolTipText = "Open SAMDL";
+			this.sAMDLToolStripMenuItem.ToolTipText = "Open SAMDL (Model Viewer)\r\n";
 			this.sAMDLToolStripMenuItem.Click += new System.EventHandler(this.sAMDLToolStripMenuItem_Click);
 			// 
 			// sALVLToolStripMenuItem
 			// 
 			this.sALVLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSALVL;
 			this.sALVLToolStripMenuItem.Name = "sALVLToolStripMenuItem";
-			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sALVLToolStripMenuItem.Text = "SALVL";
-			this.sALVLToolStripMenuItem.ToolTipText = "Open SALVL";
+			this.sALVLToolStripMenuItem.ToolTipText = "Open SALVL (Level Viewer)";
 			this.sALVLToolStripMenuItem.Click += new System.EventHandler(this.sALVLToolStripMenuItem_Click);
 			// 
 			// textureEditorToolStripMenuItem
 			// 
 			this.textureEditorToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsTexEdit;
 			this.textureEditorToolStripMenuItem.Name = "textureEditorToolStripMenuItem";
-			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.textureEditorToolStripMenuItem.Text = "Texture Editor";
-			this.textureEditorToolStripMenuItem.ToolTipText = "Open Texture Editor";
+			this.textureEditorToolStripMenuItem.ToolTipText = "Open Texture Editor (Texture Archive Viewer and Editor)";
 			this.textureEditorToolStripMenuItem.Click += new System.EventHandler(this.textureEditorToolStripMenuItem_Click);
 			// 
 			// sADXToolsToolStripMenuItem
@@ -402,41 +402,41 @@
             this.sAFontEditorToolStripMenuItem,
             this.sASaveToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SADX Tools";
 			// 
 			// sADXLVL2ToolStripMenuItem
 			// 
 			this.sADXLVL2ToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxLvl2;
 			this.sADXLVL2ToolStripMenuItem.Name = "sADXLVL2ToolStripMenuItem";
-			this.sADXLVL2ToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.sADXLVL2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXLVL2ToolStripMenuItem.Text = "SADXLVL2";
-			this.sADXLVL2ToolStripMenuItem.ToolTipText = "Open SADXLVL2";
+			this.sADXLVL2ToolStripMenuItem.ToolTipText = "Open SADXLVL2 (Level Editor)";
 			this.sADXLVL2ToolStripMenuItem.Click += new System.EventHandler(this.sADXLVL2ToolStripMenuItem_Click);
 			// 
 			// sADXTweakerToolStripMenuItem
 			// 
 			this.sADXTweakerToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxTweaker;
 			this.sADXTweakerToolStripMenuItem.Name = "sADXTweakerToolStripMenuItem";
-			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXTweakerToolStripMenuItem.Text = "SADX Tweaker";
-			this.sADXTweakerToolStripMenuItem.ToolTipText = "Open SADX Tweaker";
+			this.sADXTweakerToolStripMenuItem.ToolTipText = "Open SADX Tweaker (Modify *_data.ini Files)";
 			this.sADXTweakerToolStripMenuItem.Click += new System.EventHandler(this.sADXTweakerToolStripMenuItem_Click);
 			// 
 			// sADXsndSharpToolStripMenuItem
 			// 
 			this.sADXsndSharpToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSndSharp;
 			this.sADXsndSharpToolStripMenuItem.Name = "sADXsndSharpToolStripMenuItem";
-			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXsndSharpToolStripMenuItem.Text = "SADXsndSharp";
-			this.sADXsndSharpToolStripMenuItem.ToolTipText = "Open SADXsndSharp";
+			this.sADXsndSharpToolStripMenuItem.ToolTipText = "Open SADXsndSharp (Open SADX Sound .dat Files)\r\n";
 			this.sADXsndSharpToolStripMenuItem.Click += new System.EventHandler(this.sADXsndSharpToolStripMenuItem_Click);
 			// 
 			// sAFontEditorToolStripMenuItem
 			// 
 			this.sAFontEditorToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxFontEdit;
 			this.sAFontEditorToolStripMenuItem.Name = "sAFontEditorToolStripMenuItem";
-			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sAFontEditorToolStripMenuItem.Text = "SADX Font Editor";
 			this.sAFontEditorToolStripMenuItem.ToolTipText = "Open SADX Font Editor";
 			this.sAFontEditorToolStripMenuItem.Click += new System.EventHandler(this.sAFontEditorToolStripMenuItem_Click);
@@ -445,7 +445,7 @@
 			// 
 			this.sASaveToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.saSave;
 			this.sASaveToolStripMenuItem.Name = "sASaveToolStripMenuItem";
-			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sASaveToolStripMenuItem.Text = "SASave";
 			this.sASaveToolStripMenuItem.ToolTipText = "Open SA Save";
 			this.sASaveToolStripMenuItem.Click += new System.EventHandler(this.sASaveToolStripMenuItem_Click);
@@ -458,7 +458,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -500,12 +500,12 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(174, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -513,7 +513,7 @@
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.ToolTipText = "Open Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
@@ -521,7 +521,7 @@
 			// projectConverterToolStripMenuItem
 			// 
 			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.projectConverterToolStripMenuItem.Text = "Project Converter";
 			this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
 			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
@@ -1074,7 +1074,7 @@
 			// cmsToData
 			// 
 			this.cmsToData.Name = "cmsToData";
-			this.cmsToData.Size = new System.Drawing.Size(180, 22);
+			this.cmsToData.Size = new System.Drawing.Size(126, 22);
 			this.cmsToData.Text = "To Data";
 			this.cmsToData.ToolTipText = "Convert select files to data\r\n\r\nOutput located in Project\'s Code folder.\r\n";
 			this.cmsToData.Click += new System.EventHandler(this.cmsToData_Click);
@@ -1082,7 +1082,7 @@
 			// cmsToJson
 			// 
 			this.cmsToJson.Name = "cmsToJson";
-			this.cmsToJson.Size = new System.Drawing.Size(180, 22);
+			this.cmsToJson.Size = new System.Drawing.Size(126, 22);
 			this.cmsToJson.Text = "To JSON";
 			this.cmsToJson.ToolTipText = "Convert Animation files to json.";
 			this.cmsToJson.Click += new System.EventHandler(this.cmsToJson_Click);
@@ -1161,7 +1161,6 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
-			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
 			this.browseCurDirectory.Size = new System.Drawing.Size(580, 32);
 			// 

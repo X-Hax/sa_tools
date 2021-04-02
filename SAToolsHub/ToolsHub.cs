@@ -529,6 +529,9 @@ namespace SAToolsHub
 			closeProjectToolStripMenuItem.Enabled = false;
 			editProjectInfoToolStripMenuItem.Enabled = false;
 			buildToolStripMenuItem.Enabled = false;
+			browseBack.Enabled = false;
+			browseCurDirectory.TextBox.Clear();
+			browseOpenExplorer.Enabled = false;
 
 			//reset DX game buttons
 			tsSADXLVL2.Visible = false;
