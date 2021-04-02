@@ -1213,6 +1213,7 @@ namespace ObjScan
 				if (!gcmodel && Directory.Exists(Path.Combine(dir, "gcmodels"))) Directory.Delete(Path.Combine(dir, "gcmodels"), true);
 				if (!land && !basicmodel && !motion && !basicmodel && !chunkmodel && !gcmodel && Directory.Exists(dir)) Directory.Delete(dir, true);
 			}
+			if (addresslist.Count == 0) Directory.Delete(dir, true);
 		}
 	}
 }

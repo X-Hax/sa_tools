@@ -13,21 +13,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 	public abstract class Item : IComponent
 	{
 		[ReadOnly(true)]
-		[ParenthesizePropertyName(true)]
+		[Category("Common"), ParenthesizePropertyName(true)]
 		public string Type { get { return GetType().Name; } }
 
 		[Browsable(false)]
 		public bool Selected { get; private set; }
 		private BoundingSphere bounds = new BoundingSphere();
-		[ParenthesizePropertyName(true)]
+		[Category("Common"), ParenthesizePropertyName(true)]
 		public virtual BoundingSphere Bounds { get { return bounds; } }
-
 		protected Matrix transformMatrix = Matrix.Identity;
 		protected Vertex position = new Vertex();
 		protected Rotation rotation = new Rotation();
 		protected bool rotateZYX = false;
 
+		[Category("Common")]
 		public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 		[Browsable(false)]
 		public Matrix TransformMatrix { get { return transformMatrix; } }

@@ -1,0 +1,5 @@
+chao/stg_garden00_ss/landtablegarden00.c.sa1lvl
+chao/stg_garden00_ss/obj/stch_bldoor_waku.nad.sa1mdl
+chao/stg_garden00_ss/obj/sssikake_hotelele.nja.sa1mdl
+chao/stg_garden00_ss/obj/stch_racegate_waku.nad.sa1mdl
+chao/stg_garden00_ss/obj/stch_nc_sibukia.nad.sa1mdl

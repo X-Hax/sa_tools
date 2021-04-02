@@ -315,17 +315,17 @@ namespace SonicRetro.SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
 			}
 			if (NJA)
 			{
 				outext = ".nja";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
 			{
 				outext = ".json";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx, false);
 			}
 		}
 
@@ -486,15 +486,18 @@ namespace SonicRetro.SAModel.DataToolbox
 					DataMappingFolder = "SADXPC";
 					break;
 				case 3:
-					DataMappingFolder = "SADXX360";
+					DataMappingFolder = "SADXGC";
 					break;
 				case 4:
-					DataMappingFolder = "SA2";
+					DataMappingFolder = "SADXX360";
 					break;
 				case 5:
-					DataMappingFolder = "SA2TheTrial";
+					DataMappingFolder = "SA2";
 					break;
 				case 6:
+					DataMappingFolder = "SA2TheTrial";
+					break;
+				case 7:
 					DataMappingFolder = "SA2PC";
 					break;
 			}

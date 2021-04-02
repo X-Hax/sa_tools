@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TextureEditor</RootNamespace>
     <AssemblyName>TextureEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -27,7 +27,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\tools\</OutputPath>
@@ -44,17 +44,12 @@
       <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PuyoTools.Modules">
       <HintPath>..\Dependencies\PuyoTools.Modules.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -90,6 +85,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -135,6 +131,12 @@
     <Content Include="icon_TexEdit.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\PuyoTools.Modules.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\GimSharp.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\FraGag.Compression.Prs.dll" "$(SolutionDir)tools\lib\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -32,7 +32,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		/// <param name="filePath">location of the file to use.</param>
 		/// <param name="position">Position to place the resulting model (worldspace).</param>
 		/// <param name="rotation">Rotation to apply to the model.</param>
-		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false)
 			: base(selectionManager)
 		{
 			this.index = index;
@@ -44,7 +44,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					Rotation = rotation
 				}
 			};
-			ImportModel(filePath);
+			ImportModel(filePath, legacyImport);
 			COL.CalculateBounds();
 			Paste();
 
@@ -94,7 +94,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[ReadOnly(true)]
-		[ParenthesizePropertyName(true)]
+		[Category("Common"), ParenthesizePropertyName(true)]
 		public string Name
 		{
 			get
@@ -104,7 +104,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		[ReadOnly(true)]
-		[ParenthesizePropertyName(true)]
+		[Category("Common"), ParenthesizePropertyName(true)]
 		public int Index
 		{
 			get
@@ -113,8 +113,11 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
+		[Category("Common")]
 		public override Vertex Position { get { return COL.Model.Position; } set { COL.Model.Position = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -152,12 +155,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		public void RegenerateMesh() => mesh = COL.Model.Attach.CreateD3DMesh();
 
-		public void ImportModel(string filePath)
+        public void ImportModel(string filePath, bool legacyImport = false)
 		{
+            NJS_OBJECT newmodel;
+            // Old OBJ import (with vcolor face) for NodeTable and legacy import
+            if (legacyImport)
+            {
+                newmodel = new NJS_OBJECT
+                {
+                    Attach = SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps != null ? LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray() : null),
+				};
+				COL.Model.Attach = newmodel.Attach;
+                COL.Model.ProcessVertexData();
+                Visible = true;
+                Solid = true;
+                mesh = COL.Model.Attach.CreateD3DMesh();
+                return;
+            }
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
+			newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, scene.RootNode, ModelFormat.BasicDX, LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray(), true);
 			COL.Model.Attach = newmodel.Attach;
 			COL.Model.ProcessVertexData();
 			Visible = true;
@@ -239,6 +257,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
+		[Category("Common"), DisplayName("Flags"), Description("Surface flags that configure collision and transparency sorting.")]
 		public string Flags
 		{
 			get
@@ -250,6 +269,45 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				COL.Flags = int.Parse(value, NumberStyles.HexNumber);
 			}
 		}
+				
+		[Category("Miscellaneous"), DisplayName("Y Width"), Description("A field that can store a floating point value. Only used in some SA1 Autodemo levels.")]
+		public string WidthY
+		{
+			get
+			{
+				return COL.WidthY.ToC(true);
+			}
+			set
+			{
+				COL.WidthY = float.Parse(value, NumberStyles.Float, NumberFormatInfo.InvariantInfo);
+			}
+		}
+
+		[Category("Miscellaneous"), DisplayName("Z Width"), Description("A field that can store a floating point value. Only used in some SA1 Autodemo levels.")]
+		public string WidthZ
+		{
+			get
+			{
+				return COL.WidthZ.ToC(true);
+			}
+			set
+			{
+				COL.WidthZ = float.Parse(value, NumberStyles.Float, NumberFormatInfo.InvariantInfo);
+			}
+		}
+
+		[Category("Miscellaneous"), DisplayName("Block Bits"), Description("Controls how the item pops in. Set to 0 to make it pop in gradually. Used for texlist pointers in some SA1 Autodemo levels.")]
+		public string BlockBits
+		{
+			get
+			{
+				return COL.BlockBits.ToString("X8");
+			}
+			set
+			{
+				COL.BlockBits = int.Parse(value, NumberStyles.HexNumber);
+			}
+		}
 
 		protected override void GetHandleMatrix()
 		{
@@ -259,71 +317,151 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		#region Surface Flag Accessors
+		[Category("Flags")]
 		public bool Solid
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Solid) == SA1SurfaceFlags.Solid; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Solid) | (value ? SA1SurfaceFlags.Solid : 0); }
 		}
-
+		[Category("Flags"), Description("Water collision and transparency sorting.")]
 		public bool Water
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Water) == SA1SurfaceFlags.Water; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Water) | (value ? SA1SurfaceFlags.Water : 0); }
 		}
-
+		[Category("Flags")]
 		public bool NoFriction
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.NoFriction) == SA1SurfaceFlags.NoFriction; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.NoFriction) | (value ? SA1SurfaceFlags.NoFriction : 0); }
 		}
-
+		[Category("Flags")]
 		public bool NoAcceleration
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.NoAcceleration) == SA1SurfaceFlags.NoAcceleration; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.NoAcceleration) | (value ? SA1SurfaceFlags.NoAcceleration : 0); }
 		}
-
+		[Category("Flags")]
 		public bool CannotLand
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.CannotLand) == SA1SurfaceFlags.CannotLand; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.CannotLand) | (value ? SA1SurfaceFlags.CannotLand : 0); }
 		}
-
+		[Category("Flags")]
 		public bool IncreasedAcceleration
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.IncreasedAcceleration) == SA1SurfaceFlags.IncreasedAcceleration; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.IncreasedAcceleration) | (value ? SA1SurfaceFlags.IncreasedAcceleration : 0); }
 		}
-
+		[Category("Flags")]
 		public bool Diggable
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Diggable) == SA1SurfaceFlags.Diggable; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Diggable) | (value ? SA1SurfaceFlags.Diggable : 0); }
 		}
-
+		[Category("Flags")]
 		public bool Unclimbable
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Unclimbable) == SA1SurfaceFlags.Unclimbable; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Unclimbable) | (value ? SA1SurfaceFlags.Unclimbable : 0); }
 		}
-
+		[Category("Flags")]
 		public bool Hurt
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Hurt) == SA1SurfaceFlags.Hurt; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Hurt) | (value ? SA1SurfaceFlags.Hurt : 0); }
 		}
-
+		[Category("Flags")]
 		public bool Footprints
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Footprints) == SA1SurfaceFlags.Footprints; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Footprints) | (value ? SA1SurfaceFlags.Footprints : 0); }
 		}
-
+		[Category("Flags")]
 		public bool Visible
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Visible) == SA1SurfaceFlags.Visible; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Visible) | (value ? SA1SurfaceFlags.Visible : 0); }
 		}
+		[Category("Flags")]
+		public bool LowAcceleration
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.LowAcceleration) == SA1SurfaceFlags.LowAcceleration; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.LowAcceleration) | (value ? SA1SurfaceFlags.LowAcceleration : 0); }
+		}
+		[Category("Flags"), Description("Use skybox draw distance instead of level draw distance.")]
+		public bool UseSkyDrawDistance
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.UseSkyDrawDistance) == SA1SurfaceFlags.UseSkyDrawDistance; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.UseSkyDrawDistance) | (value ? SA1SurfaceFlags.UseSkyDrawDistance : 0); }
+		}
+		[Category("Flags")]
+		public bool Stairs
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Stairs) == SA1SurfaceFlags.Stairs; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Stairs) | (value ? SA1SurfaceFlags.Stairs : 0); }
+		}
+		[Category("Flags"), Description("Put the model earlier in the draw queue for transparency sorting.")]
+		public bool LowDepth
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.LowDepth) == SA1SurfaceFlags.LowDepth; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.LowDepth) | (value ? SA1SurfaceFlags.LowDepth : 0); }
+		}
+		[Category("Flags"), Description("Water collision without transparency sorting.")]
+		public bool WaterCollision
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.WaterCollision) == SA1SurfaceFlags.WaterCollision; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.WaterCollision) | (value ? SA1SurfaceFlags.WaterCollision : 0); }
+		}
+		[Category("Flags")]
+		public bool RotateByGravity
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.RotateByGravity) == SA1SurfaceFlags.RotateByGravity; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.RotateByGravity) | (value ? SA1SurfaceFlags.RotateByGravity : 0); }
+		}
+		[Category("Flags"), Description("Disable Z Write when rendering the model.")]
+		public bool NoZWrite
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.NoZWrite) == SA1SurfaceFlags.NoZWrite; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.NoZWrite) | (value ? SA1SurfaceFlags.NoZWrite : 0); }
+		}
+		[Category("Flags"), Description("Use per-mesh transparency sorting when rendering this model.")]
+		public bool DrawByMesh
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.DrawByMesh) == SA1SurfaceFlags.DrawByMesh; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.DrawByMesh) | (value ? SA1SurfaceFlags.DrawByMesh : 0); }
+		}
+		[Category("Flags"), Description("Enable model data manipulation by disabling meshset buffers. Useful for UV animations.")]
+		public bool EnableManipulation
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.EnableManipulation) == SA1SurfaceFlags.EnableManipulation; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.EnableManipulation) | (value ? SA1SurfaceFlags.EnableManipulation : 0); }
+		}
+		[Category("Flags")]
+		public bool UseRotation
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.UseRotation) == SA1SurfaceFlags.UseRotation; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.UseRotation) | (value ? SA1SurfaceFlags.UseRotation : 0); }
+		}
+		[Category("Flags"), Description("Force alpha sorting; Disable Z Write when used together with Water; Force disable Z write in all levels except Lost World 2.")]
+		public bool Waterfall
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Waterfall) | (value ? SA1SurfaceFlags.Waterfall : 0); }
+		}
+		[Category("Flags")]
+		public bool DynamicCollision
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.DynamicCollision) == SA1SurfaceFlags.DynamicCollision; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.DynamicCollision) | (value ? SA1SurfaceFlags.DynamicCollision : 0); }
+		}
+		[Category("Flags")]
+		public bool Accelerate
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Accelerate) == SA1SurfaceFlags.Accelerate; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Accelerate) | (value ? SA1SurfaceFlags.Accelerate : 0); }
+		}
+
 		#endregion
 
 		public void Save() { COL.CalculateBounds(); }

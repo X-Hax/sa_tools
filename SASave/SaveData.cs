@@ -399,11 +399,11 @@ namespace SASave
 	class AdventureData
 	{
 		public TimesOfDay TimeOfDay { get; set; }
-		public short Unknown1 { get; set; }
-		public short Unknown2 { get; set; }
+		public short CurrentSequence { get; set; }
+		public short NextSequence { get; set; }
 		public short Entrance { get; set; }
-		public ushort LevelAct { get; set; }
-		public short Unknown3 { get; set; }
+		public ushort Level { get; set; }
+		public short Destination { get; set; }
 
 		public const int Size = 12;
 
@@ -414,11 +414,11 @@ namespace SASave
 			BinaryReader file = new BinaryReader(new MemoryStream(data));
 			TimeOfDay = (TimesOfDay)file.ReadByte();
 			file.ReadByte();
-			Unknown1 = file.ReadInt16();
-			Unknown2 = file.ReadInt16();
+            CurrentSequence = file.ReadInt16();
+            NextSequence = file.ReadInt16();
 			Entrance = file.ReadInt16();
-			LevelAct = file.ReadUInt16();
-			Unknown3 = file.ReadInt16();
+			Level = file.ReadUInt16();
+            Destination = file.ReadInt16();
 			file.Close();
 		}
 
@@ -428,11 +428,11 @@ namespace SASave
 			BinaryWriter writer = new BinaryWriter(buffer);
 			writer.Write((byte)TimeOfDay);
 			writer.Write((byte)0);
-			writer.Write(Unknown1);
-			writer.Write(Unknown2);
+			writer.Write(CurrentSequence);
+			writer.Write(NextSequence);
 			writer.Write(Entrance);
-			writer.Write(LevelAct);
-			writer.Write(Unknown3);
+			writer.Write(Level);
+			writer.Write(Destination);
 			byte[] result = buffer.ToArray();
 			writer.Close();
 			return result;

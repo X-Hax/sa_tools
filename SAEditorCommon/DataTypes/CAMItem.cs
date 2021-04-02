@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
@@ -132,19 +133,31 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		#region Camera Data Vars
+		[Category("Data")]
 		public SADXCamType CamType { get; set; }
+		[Category("Data")]
 		public SADXCamColType CollisionType { get; set; }
+		[Category("Data")]
 		public SADXCamAdjustType AdjustType { get; set; }
+		[Category("Data")]
 		public byte Priority { get; set; }
+		[Category("Common")]
 		public Vertex Scale { get; set; }
 		//public Int32 NotUsed { get; set; }
+		[Category("Data")]
 		public short CameraAngleX { get; set; }
+		[Category("Data")]
 		public short CameraAngleY { get; set; }
+		[Category("Data")]
 		public Vertex PointA { get; set; }
+		[Category("Data")]
 		public Vertex PointB { get; set; }
+		[Category("Data")]
 		public float Variable { get; set; }
 
+		[Category("Common")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override Rotation Rotation
 		{
 			get { return rotation; }
@@ -158,6 +171,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				rotation.X = value.X; rotation.Y = value.Y; rotation.Z = 0; GetHandleMatrix();
 			}
 		}
+		[Category("Common")]
 		public override BoundingSphere Bounds
 		{
 			get

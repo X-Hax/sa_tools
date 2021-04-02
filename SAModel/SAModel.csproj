@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SonicRetro.SAModel</RootNamespace>
     <AssemblyName>SAModel</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -41,7 +41,7 @@
     <Reference Include="System.XML" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +81,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\assimp.dll" "$(SolutionDir)tools\lib\"
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x86.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x64.dll" "$(SolutionDir)tools\lib\"
 xcopy /D /Y "$(SolutionDir)tools\lib\*.*" "$(SolutionDir)bin\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

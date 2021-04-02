@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SASave</RootNamespace>
     <AssemblyName>SASave</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>SonicDXLife.ico</ApplicationIcon>
     <FileUpgradeFlags>
@@ -141,6 +141,9 @@
     </Compile>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="CutsceneFlags.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -181,6 +184,9 @@
     <Compile Include="WeightControl.Designer.cs">
       <DependentUpon>WeightControl.cs</DependentUpon>
     </Compile>
+    <None Include="StoryFlags.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Amy.png" />
@@ -215,12 +221,6 @@
     <None Include="Resources\Super Sonic.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Events.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="NPCs.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\GCPreview.gci" />
     <None Include="Resources\INTERNAT.VMS" />
     <None Include="Resources\NTSCJ.VMS" />

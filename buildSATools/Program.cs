@@ -7,19 +7,24 @@ namespace buildSATools
 	{
 		static void Main(string[] args)
 		{
-			string[] script = File.ReadAllLines("BuildScript.ini");
-			Directory.CreateDirectory("build");
+            // Set output directory
+            string outdir = "build";
+            if (args.Length > 0) 
+                outdir = args[0];
+            Console.WriteLine("Output directory: {0}", Path.GetFullPath(outdir));
+            string[] script = File.ReadAllLines("BuildScript.ini");
+			Directory.CreateDirectory(outdir);
 			for (int i = 0; i < script.Length; i++)
 			{
 				string[] srcdest = script[i].Split('=');
 				Console.WriteLine("Source: {1}, Destination: {0}", srcdest[0], srcdest[1]);
 				if (File.Exists(srcdest[1]))
 				{
-					File.Copy(srcdest[1], "build\\" + srcdest[0], true);
+					File.Copy(srcdest[1], Path.Combine(outdir, srcdest[0]), true);
 				}
 				else if (Directory.Exists(srcdest[1]))
 				{
-					DirectoryCopy(srcdest[1], "build\\" + srcdest[0], true);
+					DirectoryCopy(srcdest[1], Path.Combine(outdir, srcdest[0]), true);
 				}
 				else
 				{

@@ -39,8 +39,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			GetHandleMatrix();
 		}
-
+		[Category("Common")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 
 		protected override void GetHandleMatrix()
@@ -66,27 +67,27 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 		private byte[] prmbytes = new byte[0xC];
 		[ParenthesizePropertyName(true)]
-		[Description("The bytes from the PRM file associated with this object.")]
+		[Category("Data"), Description("The bytes from the PRM file associated with this object.")]
 		public byte[] PRMBytes
 		{
 			get { return prmbytes; }
 		}
 
-		[Description("The mission this object is associated with, from 1 to 60.")]
+		[Category("Data"), Description("The mission this object is associated with, from 1 to 60.")]
 		public byte MissionNumber
 		{
 			get { return (byte)(PRMBytes[0] + 1); }
 			set { PRMBytes[0] = (byte)Math.Max(Math.Min(value - 1, 59), 0); }
 		}
 
-		[Description("When this object will appear.")]
+		[Category("Data"), Description("When this object will appear.")]
 		public Appear Appear
 		{
 			get { return (Appear)PRMBytes[1]; }
 			set { PRMBytes[1] = (byte)value; }
 		}
 
-		[Description("The object list to use with the ID to determine the type of object. Changing the value resets ID to 0.")]
+		[Category("Data"), Description("The object list to use with the ID to determine the type of object. Changing the value resets ID to 0.")]
 		public MsnObjectList ObjectList
 		{
 			get { return (MsnObjectList)PRMBytes[2]; }

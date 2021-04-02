@@ -122,12 +122,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 		bool isPointOperation;
 		bool unsaved;
 
-		// TODO: Make these both configurable.
-		bool mouseWrapScreen = false;
 		System.Drawing.Rectangle mouseBounds;
-		ushort mouseWrapThreshold = 2;
-		bool mouseHide = false;
-		Point mouseBackup;
+		bool FormResizing;
+		FormWindowState LastWindowState = FormWindowState.Minimized;
 
 		TransformGizmo transformGizmo;
 		ActionMappingList actionList;
@@ -142,9 +139,11 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
-
-			settingsfile = SettingsFile.Load();
+            if (Environment.Is64BitOperatingSystem)
+			    Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+            else
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+            settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SADXLVL2", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();
@@ -155,12 +154,17 @@ namespace SonicRetro.SAModel.SADXLVL2
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SADXLVL2: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			AppConfig.Reload();
+            log.Add("Build Date: ");
+            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            log.Add("OS Version: ");
+            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+            AppConfig.Reload();
 			EditorOptions.RenderDrawDistance = settingsfile.SADXLVL2.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.SADXLVL2.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SADXLVL2.DrawDistance_SET;
 			disableModelLibraryToolStripMenuItem.Checked = settingsfile.SADXLVL2.DisableModelLibrary;
-			alternativeCameraToolStripMenuItem.Checked = settingsfile.SADXLVL2.AlternativeCamera;
+			hideCursorDuringCameraMovementToolStripMenuItem.Checked = settingsfile.SADXLVL2.AlternativeCamera;
+			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.SADXLVL2.MouseWrapScreen;
 			if (settingsfile.SADXLVL2.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 			systemFallback = Path.Combine(Program.SADXGameFolder, "system");
@@ -372,7 +376,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			if (d3ddevice == null)
 			{
-				d3ddevice = new Device(new SharpDX.Direct3D9.Direct3D(), 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
+				d3ddevice = new Device(new SharpDX.Direct3D9.Direct3DEx(), 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 					new PresentParameters
 					{
 						Windowed = true,
@@ -431,6 +435,20 @@ namespace SonicRetro.SAModel.SADXLVL2
 			isStageLoaded = false;
 			ini = SAEditorCommon.IniData.Load(filename);
 			currentProjectPath = Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+			if (File.Exists(Path.Combine(currentProjectPath, "dllcache", "DELETE")))
+			{
+				log.Add("Deleting old object definitions at: " + Path.Combine(currentProjectPath, "dllcache"));
+				try
+				{
+					Directory.Delete(Path.Combine(currentProjectPath, "dllcache"), true);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error deleting old object definitions:\n" + ex.ToString(), "SADXLVL2 Error");
+					log.Add("Error deleting old object definitions:\n" + ex.ToString());
+				}
+				log.WriteLog();
+			}
 			levelNames = new Dictionary<string, List<string>>();
 
 			foreach (KeyValuePair<string, IniLevelData> item in ini.Levels)
@@ -584,7 +602,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 		private DialogResult SavePrompt(bool autoCloseDialog = false)
 		{
 			if (!unsaved) return DialogResult.No;
-			string dialogText = (ini != null ? "Do you want to save?" : "Are you sure?"); 
+			string dialogText = (ini != null ? "Do you want to save?" : "Quit without saving?");
 			DialogResult result = MessageBox.Show(this, dialogText, "SADXLVL2",
 				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
@@ -634,7 +652,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 			Text = "SADXLVL2 - Loading " + levelName + "...";
 
 #if !DEBUG
-			backgroundWorker1.RunWorkerAsync();
+            backgroundWorker1.RunWorkerAsync();
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
@@ -751,30 +769,41 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private string GetObjDefsDirectory()
 		{
-#if DEBUG
 			string objdp = Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXObjectDefinitions/";
 			if (Directory.Exists(objdp)) return objdp;
 			else return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
-#endif
-
-#if !DEBUG
-			return Path.GetDirectoryName(Application.ExecutablePath) + "/../SADXPC/objdefs/";
-#endif
 		}
 
-		private void CopyDefaultObjectDefintions()
+		private bool CopyDefaultObjectDefinitions()
 		{
-			// get our original objdefs folder
-			string originalObjdefsPath = GetObjDefsDirectory();
+			bool error = false;
+			try
+			{
+				// get our original objdefs folder
+				string originalObjdefsPath = GetObjDefsDirectory();
 
-			// get our project objdefs folder
-			string projectObjdefsPath = Path.Combine(currentProjectPath, "objdefs");
+				// get our project objdefs folder
+				string projectObjdefsPath = Path.Combine(currentProjectPath, "objdefs");
 
-			// clear the project objdefs folder
-			if (Directory.Exists(projectObjdefsPath)) Directory.Delete(projectObjdefsPath, true);
+				// clear the project objdefs folder
+				if (Directory.Exists(projectObjdefsPath)) Directory.Delete(projectObjdefsPath, true);
 
-			// recusrively copy the original objdefs folder to project folder
-			CopyFolder(originalObjdefsPath, projectObjdefsPath);
+				// recusrively copy the original objdefs folder to project folder
+				CopyFolder(originalObjdefsPath, projectObjdefsPath);
+				if (Directory.Exists(Path.Combine(currentProjectPath, "dllcache")))
+				{
+					byte[] emptyBytes = new byte[1];
+					File.WriteAllBytes(Path.Combine(currentProjectPath, "dllcache", "DELETE"), emptyBytes);
+				}
+			}
+			catch (Exception ex)
+			{
+				error = true;
+				MessageBox.Show("Error copying object definitions:\n" + ex.ToString(), "SADXLVL2 Error");
+				log.Add("Error copying object definitions:\n" + ex.ToString());
+				log.WriteLog();
+			}
+			return error;
 		}
 
 		bool initerror = false;
@@ -784,157 +813,142 @@ namespace SonicRetro.SAModel.SADXLVL2
 			try
 			{
 #endif
-			int steps = 10;
-			if (d3ddevice == null)
-				++steps;
+				int steps = 9;
+				if (d3ddevice == null)
+					++steps;
 
-			toolStrip1.Enabled = false;
-			LevelData.SuppressEvents = true;
+				toolStrip1.Enabled = false;
+				LevelData.SuppressEvents = true;
 
-			// HACK: Fixes Twinkle Circuit's geometry lingering if loaded before Sky Chase.
-			// I'm sure the real problem is somewhere below, but this is sort of an all around cleanup.
-			if (isStageLoaded)
-			{
-				LevelData.Clear();
-				selectedItems = new EditorItemSelection();
-				PointHelper.Instances.Clear();
-			}
+				#region Initialization and cleanup
 
-			isStageLoaded = false;
-
-			progress.SetTask("Loading stage: " + levelName);
-			progress.ResetSteps();
-			progress.SetMaxSteps(steps);
-			IniLevelData level = ini.Levels[levelID];
-
-			string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
-			//string modpath = ini.ModPath;
-
-			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
-			LevelData.leveltexs = null;
-
-			Invoke((Action)progress.Show);
-
-			if (d3ddevice == null)
-			{
-				progress.SetTask("Initializing Direct3D...");
-				Invoke((Action)InitializeDirect3D);
-				progress.StepProgress();
-			}
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			progress.SetTaskAndStep("Loading level data:", "Geometry");
-
-			if (string.IsNullOrEmpty(level.LevelGeometry))
-				LevelData.geo = null;
-			else
-			{
-				LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
-				LevelData.ClearLevelItems();
-
-				for (int i = 0; i < LevelData.geo.COL.Count; i++)
+				if (isStageLoaded)
 				{
-					LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
-				}
-			}
+					LevelData.Clear();
+                    selectedItems = new EditorItemSelection();
+                    PointHelper.Instances.Clear();
+					LevelData.ClearTextures();                 
+                }
 
-			progress.StepProgress();
-			progress.SetStep("Textures");
+				isStageLoaded = false;
 
-			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-			LevelData.Textures = new Dictionary<string, Texture[]>();
-			if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
-			{
-				string fallbackTexturePath = Path.Combine(systemFallback, LevelData.geo.TextureFileName) + ".PVM";
-				string texturePath = Path.Combine(syspath, LevelData.geo.TextureFileName) + ".PVM";
+				progress.SetTask("Loading stage: " + levelName);
+				progress.ResetSteps();
+				progress.SetMaxSteps(steps);
+				IniLevelData level = ini.Levels[levelID];
 
-				BMPInfo[] TexBmps =
-					TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, fallbackTexturePath));
-				if (TexBmps != null)
+				string syspath = Path.Combine(Environment.CurrentDirectory, ini.SystemPath);
+				//string modpath = ini.ModPath;
+
+				SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
+				LevelData.leveltexs = null;
+
+				Invoke((Action)progress.Show);
+
+				if (d3ddevice == null)
 				{
-					Texture[] texs = new Texture[TexBmps.Length];
-					for (int j = 0; j < TexBmps.Length; j++)
-						texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-					if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-					if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-					LevelData.leveltexs = LevelData.geo.TextureFileName;
+					progress.SetTask("Initializing Direct3D...");
+					Invoke((Action)InitializeDirect3D);
+					progress.StepProgress();
 				}
-			}
+				d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+				progress.SetTaskAndStep("Loading level data:", "Geometry");
 
-			progress.StepProgress();
-
-			#region Start Positions
-
-			progress.SetTaskAndStep("Setting up start positions...");
-
-			LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
-			for (int i = 0; i < LevelData.StartPositions.Length; i++)
-			{
-				progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
-
-				IniCharInfo character;
-				if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
-					character = ini.Characters["SuperSonic"];
+				if (string.IsNullOrEmpty(level.LevelGeometry))
+					LevelData.geo = null;
 				else
-					character = ini.Characters[LevelData.Characters[i]];
-
-				Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
-					SA1StartPosList.Load(character.StartPositions);
-
-				Vertex pos = new Vertex();
-				int rot = 0;
-
-				if (posini.ContainsKey(levelact))
 				{
-					pos = posini[levelact].Position;
-					rot = posini[levelact].YRotation;
+					LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
+					LevelData.ClearLevelItems();
+
+					for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					{
+						LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
+					}
 				}
-				LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 
-				LoadTextureList(character.TextureList, syspath);
-			}
+				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+				LevelData.Textures = new Dictionary<string, Texture[]>();
+				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
+					LevelData.leveltexs = LevelData.geo.TextureFileName;
 
-			progress.StepProgress();
+				progress.StepProgress();
 
-			#endregion
+				#endregion
 
-			#region Death Zones
+				#region Start Positions
 
-			progress.SetTaskAndStep("Death Zones:", "Initializing...");
+				progress.SetTaskAndStep("Setting up start positions...");
 
-			if (string.IsNullOrEmpty(level.DeathZones))
-				LevelData.DeathZones = null;
-			else
-			{
-				LevelData.DeathZones = new List<DeathZoneItem>();
-				DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
-				string path = Path.GetDirectoryName(level.DeathZones);
-				for (int i = 0; i < dzini.Length; i++)
+				LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
+				for (int i = 0; i < LevelData.StartPositions.Length; i++)
 				{
-					progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+					progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
+
+					IniCharInfo character;
+					if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
+						character = ini.Characters["SuperSonic"];
+					else
+						character = ini.Characters[LevelData.Characters[i]];
+
+					Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
+						SA1StartPosList.Load(character.StartPositions);
+
+					Vertex pos = new Vertex();
+					int rot = 0;
+
+					if (posini.ContainsKey(levelact))
+					{
+						pos = posini[levelact].Position;
+						rot = posini[levelact].YRotation;
+					}
+					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+
+					LoadTextureList(character.TextureList, syspath);
+				}
+				JumpToStartPos();
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Death Zones
+
+				progress.SetTaskAndStep("Death Zones:", "Initializing...");
+
+				if (string.IsNullOrEmpty(level.DeathZones))
+					LevelData.DeathZones = null;
+				else
+				{
+					LevelData.DeathZones = new List<DeathZoneItem>();
+					DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
+					string path = Path.GetDirectoryName(level.DeathZones);
+					for (int i = 0; i < dzini.Length; i++)
+					{
+						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
 					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
 				}
 			}
 
-			progress.StepProgress();
+				progress.StepProgress();
 
-			#endregion
+				#endregion
 
-			#region Textures and Texture Lists
+				#region Textures and Texture Lists
 
-			progress.SetTaskAndStep("Loading textures for:");
+				progress.SetTaskAndStep("Loading textures for:");
 
-			progress.SetStep("Common objects");
-			// Loads common object textures (e.g OBJ_REGULAR)
-			LoadTextureList(ini.ObjectTextureList, syspath);
+				progress.SetStep("Common objects");
+				// Loads common object textures (e.g OBJ_REGULAR)
+				LoadTextureList(ini.ObjectTextureList, syspath);
 
-			progress.SetStep("Mission objects");
-			// Loads mission object textures
-			LoadTextureList(ini.MissionTextureList, syspath);
+				progress.SetStep("Mission objects");
+				// Loads mission object textures
+				LoadTextureList(ini.MissionTextureList, syspath);
 
+				progress.SetTaskAndStep("Loading stage texture lists...");
 
 			if (ini.LevelTextureLists != null)
 			{
@@ -957,64 +971,74 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			progress.SetTaskAndStep("Loading textures for:", "Objects");
-			// Object texture list(s)
-			LoadTextureList(level.ObjectTextureList, syspath);
+				progress.SetTaskAndStep("Loading textures for:", "Objects");
+				// Object texture list(s)
+				LoadTextureList(level.ObjectTextureList, syspath);
 
-			progress.SetStep("Stage");
-			// The stage textures... again? "Extra"?
-			if (level.Textures != null && level.Textures.Length > 0)
-				foreach (string tex in level.Textures)
-				{
-					LoadPVM(tex, syspath);
-
-					if (string.IsNullOrEmpty(LevelData.leveltexs))
-						LevelData.leveltexs = tex;
-				}
-
-			progress.StepProgress();
-
-			#endregion
-
-			#region Object Definitions / SET Layout
-
-			progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
-
-			// Load Object Definitions INI file
-			objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
-			LevelData.ObjDefs = new List<ObjectDefinition>();
-			LevelData.MisnObjDefs = new List<ObjectDefinition>();
-
-
-			// Load SET items
-			if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
-			{
-				LoadObjectList(level.ObjectList);
-				progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-				// Assign SET data
-				if (LevelData.ObjDefs.Count > 0)
-				{
-					LevelData.SETName = level.SETName ?? level.LevelID;
-					string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-					string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
-					LevelData.InitSETItems();
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+				progress.SetStep("Stage");
+				// Set stage PVM name for stages that don't have it.
+				// This also loads things like skybox textures for some stages.
+				if (level.Textures != null && level.Textures.Length > 0)
+					foreach (string tex in level.Textures)
 					{
-						string formatted = string.Format(setstr, LevelData.SETChars[i]);
-						string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+						LoadPVM(tex, syspath);
+						if (string.IsNullOrEmpty(LevelData.leveltexs))
+							LevelData.leveltexs = tex;
+					}
 
-						string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+				// Load PVMs for stages that don't have a stage texture list.
+				if (!string.IsNullOrEmpty(LevelData.leveltexs))
+					LoadPVM(LevelData.leveltexs, syspath);
 
-						if (File.Exists(useSetPath))
+				progress.StepProgress();
+
+				#endregion
+
+				#region Object Definitions / SET Layout
+
+				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
+
+				// Load Object Definitions INI file
+				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(ini.ObjectDefinitions);
+				LevelData.ObjDefs = new List<ObjectDefinition>();
+				LevelData.MisnObjDefs = new List<ObjectDefinition>();
+
+
+				// Load SET items
+				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
+				{
+					LoadObjectList(level.ObjectList);
+					progress.SetTaskAndStep("Loading SET items", "Initializing...");
+
+					// Assign SET data
+					if (LevelData.ObjDefs.Count > 0)
+					{
+						LevelData.SETName = level.SETName ?? level.LevelID;
+						string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
+						string setstr = Path.Combine(syspath, "SET" + LevelData.SETName + "{0}.bin");
+						LevelData.InitSETItems();
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
-							if (progress != null) progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
-							LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+							string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+							string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+
+							if (File.Exists(useSetPath))
+							{
+								if (progress != null) progress.SetTask("SET: " + useSetPath.Replace(Environment.CurrentDirectory, ""));
+								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							}
+							else
+							{
+								LevelData.AssignSetList(i, new List<SETItem>());
+							}
 						}
-						else
-						{
-							LevelData.AssignSetList(i, new List<SETItem>());
-						}
+					}
+					else
+					{
+						LevelData.NullifySETItems();
+						osd.AddMessage("Object definitions not found, SET files skipped", 180);
 					}
 				}
 				else
@@ -1022,263 +1046,267 @@ namespace SonicRetro.SAModel.SADXLVL2
 					LevelData.NullifySETItems();
 					osd.AddMessage("Object definitions not found, SET files skipped", 180);
 				}
-			}
-			else
-			{
-				LevelData.NullifySETItems();
-				osd.AddMessage("Object definitions not found, SET files skipped", 180);
-			}
 
-			// Load Mission SET items
-			if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
-			{
-				LoadObjectList(ini.MissionObjectList, true);
-
-				// Assign Mission SET data
-				progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
-
-				if (LevelData.MisnObjDefs.Count > 0)
+				// Load Mission SET items
+				if (!string.IsNullOrEmpty(ini.MissionObjectList) && File.Exists(ini.MissionObjectList))
 				{
-					string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
-					string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
+					LoadObjectList(ini.MissionObjectList, true);
 
-					string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
-					string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
-					LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					// Assign Mission SET data
+					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+
+					if (LevelData.MisnObjDefs.Count > 0)
 					{
-						List<MissionSETItem> list = new List<MissionSETItem>();
-						byte[] setfile = null;
-						byte[] prmfile = null;
+						string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+						string setstr = Path.Combine(syspath, "SETMI" + level.LevelID + "{0}.bin");
 
-						string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
-						string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
-
-						string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
-						string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
-
-						string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
-						string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
-
-						if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-						if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-
-						if (setfile != null && prmfile != null)
+						string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+						string prmstr = Path.Combine(syspath, "PRMMI" + level.LevelID + "{0}.bin");
+						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
-							progress.SetTask("Mission SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
+							List<MissionSETItem> list = new List<MissionSETItem>();
+							byte[] setfile = null;
+							byte[] prmfile = null;
 
-							int count = BitConverter.ToInt32(setfile, 0);
-							int setaddr = 0x20;
-							int prmaddr = 0x20;
-							for (int j = 0; j < count; j++)
+							string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+							string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
+
+							string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+							string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+							string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
+							string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
+
+							if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+							if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+
+							if (setfile != null && prmfile != null)
 							{
-								progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+								progress.SetTask("Mission SET: " + setfmt.Replace(Environment.CurrentDirectory, ""));
 
-								MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
-								list.Add(ent);
-								setaddr += 0x20;
-								prmaddr += 0xC;
+								int count = BitConverter.ToInt32(setfile, 0);
+								int setaddr = 0x20;
+								int prmaddr = 0x20;
+								for (int j = 0; j < count; j++)
+								{
+									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+									list.Add(ent);
+									setaddr += 0x20;
+									prmaddr += 0xC;
+								}
 							}
+							LevelData.MissionSETItems[i] = list;
 						}
-						LevelData.MissionSETItems[i] = list;
 					}
+					else
+					{
+						LevelData.MissionSETItems = null;
+					}
+
 				}
 				else
 				{
 					LevelData.MissionSETItems = null;
 				}
 
-			}
-			else
-			{
-				LevelData.MissionSETItems = null;
-			}
+				progress.StepProgress();
 
-			progress.StepProgress();
+				#endregion
 
-			#endregion
+				#region CAM Layout
 
-			#region CAM Layout
+				progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-			progress.SetTaskAndStep("Loading CAM items", "Initializing...");
+				string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
+				string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
 
-			string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
-			string camstr = Path.Combine(syspath, "CAM" + LevelData.SETName + "{0}.bin");
-
-			LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
-			for (int i = 0; i < LevelData.SETChars.Length; i++)
-			{
-				List<CAMItem> list = new List<CAMItem>();
-				byte[] camfile = null;
-
-				string camfmt = string.Format(camstr, LevelData.SETChars[i]);
-				string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
-
-				string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
-
-				/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-					camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-				else if (File.Exists(formatted))*/
-				if (File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
-
-				if (camfile != null)
+				LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
 				{
-					progress.SetTask("CAM: " + formatted.Replace(Environment.CurrentDirectory, ""));
+					List<CAMItem> list = new List<CAMItem>();
+					byte[] camfile = null;
 
-					int count = BitConverter.ToInt32(camfile, 0);
-					int address = 0x40;
-					for (int j = 0; j < count; j++)
+					string camfmt = string.Format(camstr, LevelData.SETChars[i]);
+					string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
+
+					string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
+
+					/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+						camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
+					else if (File.Exists(formatted))*/
+					if (File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
+
+					if (camfile != null)
 					{
-						progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+						progress.SetTask("CAM: " + formatted.Replace(Environment.CurrentDirectory, ""));
 
-						CAMItem ent = new CAMItem(camfile, address, selectedItems);
-						list.Add(ent);
-						address += 0x40;
+						int count = BitConverter.ToInt32(camfile, 0);
+						int address = 0x40;
+						for (int j = 0; j < count; j++)
+						{
+							progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+							CAMItem ent = new CAMItem(camfile, address, selectedItems);
+							list.Add(ent);
+							address += 0x40;
+						}
 					}
+
+					LevelData.CAMItems[i] = list;
 				}
 
-				LevelData.CAMItems[i] = list;
-			}
+				CAMItem.Init();
 
-			CAMItem.Init();
+				progress.StepProgress();
 
-			progress.StepProgress();
+				#endregion
 
-			#endregion
+				#region Loading Level Effects
 
-			#region Loading Level Effects
-
-			LevelData.leveleff = null;
-			if (!string.IsNullOrEmpty(level.Effects))
-			{
-				progress.SetTaskAndStep("Loading Level Effects...");
-
-				LevelDefinition def = null;
-				string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
-				string dllfile = Path.Combine("dllcache", ty + ".dll");
-				DateTime modDate = DateTime.MinValue;
-
-				if (File.Exists(dllfile))
-					modDate = File.GetLastWriteTime(dllfile);
-
-				string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-				if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+				LevelData.leveleff = null;
+				if (!string.IsNullOrEmpty(level.Effects))
 				{
-					def =
-						(LevelDefinition)
-							Activator.CreateInstance(
-								Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
-				}
-				else
-				{
-					string ext = Path.GetExtension(fp);
-					CodeDomProvider pr = null;
-					switch (ext.ToLowerInvariant())
+					progress.SetTaskAndStep("Loading Level Effects...");
+
+					LevelDefinition def = null;
+					string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+					string dllfile = Path.Combine("dllcache", ty + ".dll");
+					DateTime modDate = DateTime.MinValue;
+
+					if (File.Exists(dllfile))
+						modDate = File.GetLastWriteTime(dllfile);
+
+					string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
+					if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 					{
-						case ".cs":
-							pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
-							break;
-						case ".vb":
-							pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
-							break;
+						def =
+							(LevelDefinition)
+								Activator.CreateInstance(
+									Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile)).GetType(ty));
 					}
-					if (pr != null)
+					else
 					{
-						// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-						// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-						CompilerParameters para =
-							new CompilerParameters(new string[]
-							{
+						string ext = Path.GetExtension(fp);
+						CodeDomProvider pr = null;
+						switch (ext.ToLowerInvariant())
+						{
+							case ".cs":
+								pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
+								break;
+							case ".vb":
+								pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
+								break;
+						}
+						if (pr != null)
+						{
+							// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+							// SADXLVL2, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+							CompilerParameters para =
+								new CompilerParameters(new string[]
+								{
 												"System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
 												Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
 												Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
 												Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
 												Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-							})
-							{
-								GenerateExecutable = false,
-								GenerateInMemory = false,
-								IncludeDebugInformation = true,
-								OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
-							};
-						CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-						if (!res.Errors.HasErrors)
-							def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
-					}
-				}
-
-				if (def != null)
-					def.Init(level, levelact.Act);
-
-				LevelData.leveleff = def;
-			}
-
-			progress.StepProgress();
-
-			#endregion
-
-			#region Loading Splines
-
-			LevelData.LevelSplines = new List<SplineData>();
-			SplineData.Init();
-
-			if (!string.IsNullOrEmpty(ini.Paths))
-			{
-				progress.SetTaskAndStep("Reticulating splines...");
-
-				String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
-					levelact.ToString());
-
-				if (Directory.Exists(splineDirectory))
-				{
-					List<string> pathFiles = new List<string>();
-
-					for (int i = 0; i < int.MaxValue; i++)
-					{
-						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
-						if (File.Exists(path))
-						{
-							pathFiles.Add(path);
+								})
+								{
+									GenerateExecutable = false,
+									GenerateInMemory = false,
+									IncludeDebugInformation = true,
+									OutputAssembly = Path.Combine(Environment.CurrentDirectory, dllfile)
+								};
+							CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
+							if (!res.Errors.HasErrors)
+								def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
 						}
-						else
-							break;
 					}
 
-					foreach (string pathFile in pathFiles) // looping through path files
+					if (def != null)
+						def.Init(level, levelact.Act);
+
+					LevelData.leveleff = def;
+				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Loading Splines
+
+				LevelData.LevelSplines = new List<SplineData>();
+				SplineData.Init();
+
+				if (!string.IsNullOrEmpty(ini.Paths))
+				{
+					progress.SetTaskAndStep("Reticulating splines...");
+
+					String splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
+						levelact.ToString());
+
+					if (Directory.Exists(splineDirectory))
 					{
-						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+						List<string> pathFiles = new List<string>();
 
-						newSpline.RebuildMesh(d3ddevice);
+						for (int i = 0; i < int.MaxValue; i++)
+						{
+							string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+							if (File.Exists(path))
+							{
+								pathFiles.Add(path);
+							}
+							else
+								break;
+						}
 
-						LevelData.LevelSplines.Add(newSpline);
+						foreach (string pathFile in pathFiles) // looping through path files
+						{
+							SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+							newSpline.RebuildMesh(d3ddevice);
+
+							LevelData.LevelSplines.Add(newSpline);
+						}
 					}
 				}
-			}
 
-			progress.StepProgress();
+				progress.StepProgress();
 
-			#endregion
+				#endregion
 
-			#region Stage Lights
-			progress.SetTaskAndStep("Loading lights...");
+				#region Stage Lights
+				progress.SetTaskAndStep("Loading lights...");
 
-			LoadStageLights(levelact);
-			#endregion
+				LoadStageLights(levelact);
+				#endregion
 
-			transformGizmo = new TransformGizmo();
+				transformGizmo = new TransformGizmo();
 
-			log.Add("----Level load complete: " + levelName + "----\n");
-			log.WriteLog();
+				log.Add("----Level load complete: " + levelName + "----\n");
+				log.WriteLog();
 #if !DEBUG
 			}
 			catch (Exception ex)
 			{
-				log.Add(ex.ToString()+"\n");
+				log.Add(ex.ToString() + "\n");
+				string errDesc = "SADXLVL2 could not load the level for the following reason:\n" + ex.GetType().Name + ".\n\n" +
+					"If you wish to report a bug, please include the following in your report:";
+				ErrorDialog report = new ErrorDialog("SADXLVL2", errDesc, log.GetLogString());
 				log.WriteLog();
-				MessageBox.Show(
-					ex.GetType().Name + ": " + ex.Message + "\nLog file has been saved.",
-					"SADXLVL2 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				initerror = true;
+				DialogResult dgresult = report.ShowDialog();
+				switch (dgresult)
+				{
+					case DialogResult.Cancel:
+						initerror = true;
+						break;
+					case DialogResult.Abort:
+					case DialogResult.OK:
+						Application.Exit();
+						break;
+				}
 			}
 #endif
 		}
@@ -1444,8 +1472,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 			try
 			{
-				settingsfile.SADXLVL2.AlternativeCamera = alternativeCameraToolStripMenuItem.Checked;
+				settingsfile.SADXLVL2.AlternativeCamera = hideCursorDuringCameraMovementToolStripMenuItem.Checked;
+				settingsfile.SADXLVL2.MouseWrapScreen = wrapAroundScreenEdgesToolStripMenuItem.Checked;
 				settingsfile.Save();
+				if (log != null) log.WriteLog();
 			}
 			catch { };
 			AppConfig.Save();
@@ -1587,10 +1617,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				}
 			}
 
-			progress.StepProgress();
-			progress.SetTaskAndStep("Save complete!");
-			Application.DoEvents();
-
 			#endregion
 
 			#region Saving Mission SET Items
@@ -1641,11 +1667,32 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 
 			progress.StepProgress();
-			unsaved = false;
-			#endregion
-		}
+            #endregion
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+            #region Saving Splines
+            progress.Step = "Splines...";
+            Application.DoEvents();
+            if (LevelData.LevelSplines != null)
+            {
+                string splineDirectory = Path.Combine(Path.Combine(Environment.CurrentDirectory, ini.Paths),
+                            levelact.ToString());
+                int s = 0;
+                foreach (SplineData spline in LevelData.LevelSplines)
+                {
+                    string path = Path.Combine(splineDirectory, string.Format("{0}.ini", s));
+                    spline.Save(path);
+                    s++;
+                }
+            }
+            #endregion
+            
+            progress.StepProgress();
+            progress.SetTaskAndStep("Save complete!");
+            unsaved = false;
+            Application.DoEvents();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -1930,6 +1977,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 						item.Delete(selectedItems);
 					selectedItems.Clear();
 					draw = true;
+					unsaved = true;
 					break;
 
 				case ("Increase camera move speed"):
@@ -2094,7 +2142,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 							transformGizmo.Mode = TransformMode.TRANFORM_MOVE;
 						else if (rotateModeButton.Checked)
 							transformGizmo.Mode = TransformMode.TRANSFORM_ROTATE;
-						else if (scaleModeButton.Checked) 
+						else if (scaleModeButton.Checked)
 							transformGizmo.Mode = TransformMode.TRANSFORM_SCALE;
 						else
 							transformGizmo.Mode = TransformMode.NONE;
@@ -2129,8 +2177,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				case MouseButtons.Right:
 					actionInputCollector.ReleaseKeys();
-					mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-					cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), new System.Drawing.Rectangle(), false, false, false, alternativeCameraToolStripMenuItem.Checked);
+					mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+					cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), new System.Drawing.Rectangle(), false, false, false, hideCursorDuringCameraMovementToolStripMenuItem.Checked);
 
 					if (isPointOperation)
 					{
@@ -2179,8 +2227,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			item = null;
 			Vector3 mousepos = new Vector3(mouse.X, mouse.Y, 0);
 			Viewport viewport = d3ddevice.Viewport;
-			viewport.Width = RenderPanel.Width;
-			viewport.Height = RenderPanel.Height;
 			Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 			Matrix view = d3ddevice.GetTransform(TransformState.View);
 			Vector3 Near, Far;
@@ -2341,8 +2387,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 				case MouseButtons.None:
 					Vector3 mousepos = new Vector3(e.X, e.Y, 0);
 					Viewport viewport = d3ddevice.Viewport;
-					viewport.Width = RenderPanel.Width;
-					viewport.Height = RenderPanel.Height;
 					Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 					Matrix view = d3ddevice.GetTransform(TransformState.View);
 					Vector3 Near = mousepos;
@@ -2368,8 +2412,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 					break;
 			}
-			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraToolStripMenuItem.Checked, gizmo);
+			mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, hideCursorDuringCameraMovementToolStripMenuItem.Checked, gizmo);
 
 			if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null) UpdatePropertyGrid();
 			if (camresult >= 1 || draw)
@@ -2396,37 +2440,37 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			DrawLevel();
 		}
-		#endregion
+        #endregion
 
-		void SelectionChanged(EditorItemSelection sender)
-		{
-			propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
+        void SelectionChanged(EditorItemSelection sender)
+        {
+            propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
 
-			if (cam.mode == 1)
-			{
-				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
-			}
+            if (cam.mode == 1)
+            {
+                cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+            }
 
-			if (sender.ItemCount > 0) // set up gizmo
-			{
-				transformGizmo.Enabled = true;
-				SetGizmoPivotAndLocality();
-			}
-			else
-			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.Enabled = false;
-				}
-			}
+            if (sender.ItemCount > 0) // set up gizmo
+            {
+                transformGizmo.Enabled = true;
+                SetGizmoPivotAndLocality();
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.Enabled = false;
+                }
+            }
 
-			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
+            duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
-			DrawLevel();
-		}
+            DrawLevel();
+        }
 
 		/// <summary>
 		/// Refreshes the properties for the currently selected items.
@@ -2737,12 +2781,12 @@ namespace SonicRetro.SAModel.SADXLVL2
 		{
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z), selectedItems);
-			LevelData.CAMItems[LevelData.Character].Add(item);
-			selectedItems.Clear();
-			selectedItems.Add(item);
-			LevelData.InvalidateRenderState();
+			item.Scale = new Vertex(10, 10, 10);
+            selectedItems.Clear();
+            LevelData.CAMItems[LevelData.Character].Add(item);
+            LevelData.InvalidateRenderState();
+            selectedItems.Add(item);
 			unsaved = true;
-			//LevelData_StateChanged();
 		}
 
 		private void missionObjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2761,10 +2805,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 					else
 						pos = cam.Position + (-20 * cam.Look);
 					item.Position = new Vertex(pos.X, pos.Y, pos.Z);
-					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					selectedItems.Clear();
-					selectedItems.Add(item);
+					LevelData.MissionSETItems[LevelData.Character].Add(item);
 					LevelData.InvalidateRenderState();
+					selectedItems.Add(item);
 					unsaved = true;
 				}
 		}
@@ -2882,7 +2926,16 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+			string errDesc = "You can submit a new issue on SA Tools GitHub issue tracker.\n\nPlease make sure the problem is reproducible on the latest version of SA Tools.\n\nIf you wish to report a bug, please include the following in your report:";
+			ErrorDialog report = new ErrorDialog("SADXLVL2", errDesc, log.GetLogString());
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 
 		void LevelData_StateChanged()
@@ -3102,7 +3155,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 					if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
 					osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				}
-				
+
 				DrawLevel();
 			}
 		}
@@ -3128,7 +3181,7 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void duplicateToToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (selectedItems.ItemCount > 0)
+			if (selectedItems.ItemCount < 1)
 			{
 				osd.AddMessage("To use this feature you must have a selection!", 180);
 				return;
@@ -3227,8 +3280,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			if (result != DialogResult.Yes)
 				return;
-
-			result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+            
+            result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
 
 			if (result == DialogResult.Cancel)
 				return;
@@ -3245,9 +3298,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 				LevelData.ClearCAMItems(LevelData.Character);
 				LevelData.ClearMissionSETItems(LevelData.Character);
 			}
-
-			LevelData.ClearLevelGeoAnims();
+            LevelData.LevelSplines.Clear();
+            LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
+            selectedItems.Clear();
 			unsaved = true;
 		}
 
@@ -3390,8 +3444,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			{
 				Vector3 mousepos = new Vector3(mousePanelPoint.X, mousePanelPoint.Y, 0);
 				Viewport viewport = d3ddevice.Viewport;
-				viewport.Width = RenderPanel.Width;
-				viewport.Height = RenderPanel.Height;
 				Matrix proj = d3ddevice.GetTransform(TransformState.Projection);
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Matrix camMatrix = cam.ToMatrix();
@@ -3475,7 +3527,14 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 		private void upgradeObjDefsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			CopyDefaultObjectDefintions();
+			DialogResult result = MessageBox.Show("This will overwrite all object definitions in the current project.\nWould you like to continue?", "Overwrite object definitions?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+			if (result == DialogResult.Yes)
+			{
+				bool error = CopyDefaultObjectDefinitions();
+				if (!error)
+					MessageBox.Show("Please restart SADXLVL2 to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
+			}
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3727,7 +3786,8 @@ namespace SonicRetro.SAModel.SADXLVL2
 					break;
 			}
 			InitializeDirect3D();
-			selectedItems = new EditorItemSelection();
+			selectedItems.Clear();
+			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
@@ -3789,58 +3849,9 @@ namespace SonicRetro.SAModel.SADXLVL2
 			addCAMItemToolStripMenuItem.Enabled = LevelData.CAMItems != null;
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
-		}
-		private void loadLandtableToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
-				InitialDirectory = currentProjectPath,
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadLandtable(fileDialog.FileName);
-				}
-			}
-		}
-
-		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "pvm",
-				Filter = "Texture Archives|*.pvm;*.gvm",
-				InitialDirectory = currentProjectPath,
-				Multiselect = false
-			})
-			{
-				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) fileDialog.FileName = LevelData.geo.TextureFileName;
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-					LevelData.Textures = new Dictionary<string, Texture[]>();
-					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
-					if (TexBmps != null)
-					{
-						Texture[] texs = new Texture[TexBmps.Length];
-						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
-						if (!LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-						if (!LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-						LevelData.leveltexs = LevelData.geo.TextureFileName;
-					}
-					unloadTexturesToolStripMenuItem.Enabled = true;
-					DrawLevel();
-				}
-			}
+			saveAdvancedToolStripMenuItem.Enabled = true;
+			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
+			upgradeObjDefsToolStripMenuItem.Enabled = ini != null;
 		}
 
 		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3851,69 +3862,24 @@ namespace SonicRetro.SAModel.SADXLVL2
 			DrawLevel();
 		}
 
-		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		private void DeviceReset()
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "bin",
-				Filter = "SET Files|SET*.BIN",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
-					LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						if (LevelData.SETItems(i) == null)
-							LevelData.AssignSetList(i, new List<SETItem>());
-					}
-					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
-					bool isSETPreset = !LevelData.SETItemsIsNull();
-					objectToolStripMenuItem.Enabled = isSETPreset;
-					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
-					LevelData.StateChanged += LevelData_StateChanged;
-					LevelData.InvalidateRenderState();
-				}
-			}
-		}
-
-		private void Resize()
-		{
-			// Causes a memory leak so not used for now
 			if (d3ddevice == null) return;
 			DeviceResizing = true;
-			d3ddevice.Dispose();
-			LevelData.Textures = new Dictionary<string, Texture[]>();
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
-			new PresentParameters
+			PresentParameters pp = new PresentParameters
 			{
 				Windowed = true,
 				SwapEffect = SwapEffect.Discard,
 				EnableAutoDepthStencil = true,
 				AutoDepthStencilFormat = Format.D24X8
-			});
-			if (LevelData.TextureBitmaps != null)
-			{
-				foreach (var item in LevelData.TextureBitmaps)
-				{
-					Texture[] texs = new Texture[item.Value.Length];
-					for (int j = 0; j < item.Value.Length; j++)
-						texs[j] = item.Value[j].Image.ToTexture(d3ddevice);
-					LevelData.Textures[item.Key] = texs;
-				}
-			}
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			EditorOptions.Initialize(d3ddevice);
-			Gizmo.InitGizmo(d3ddevice);
-			ObjectHelper.Init(d3ddevice);
-			if (currentLightList != null && currentLightList.Count > 0) LoadLights(currentLightList);
+			};
+			d3ddevice.Reset(pp);
 			DeviceResizing = false;
 			if (isStageLoaded) LevelData.InvalidateRenderState();
+			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			DrawLevel();
 		}
+
 		private void LoadLights(List<SA1StageLightData> lightList)
 		{
 			for (int i = 0; i < 4; i++)
@@ -4039,23 +4005,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 			}
 		}
 
-		private void loadObjectListToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object List Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadObjectList(fileDialog.FileName);
-				}
-			}
-		}
-
 		private void LoadObjectList(string objectList, bool Mission = false)
 		{
 			List<ObjectData> objectErrors = new List<ObjectData>();
@@ -4143,9 +4092,10 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 				if (result == DialogResult.Yes)
 				{
-					CopyDefaultObjectDefintions();
 					initerror = true;
-					MessageBox.Show("Please reload the level to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
+					bool error = CopyDefaultObjectDefinitions();
+					if (!error)
+						MessageBox.Show("Please restart SADXLVL2 to complete the operation.", "SADXLVL2", MessageBoxButtons.OK);
 					return;
 				}
 			}
@@ -4176,25 +4126,6 @@ namespace SonicRetro.SAModel.SADXLVL2
 
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.InvalidateRenderState();
-
-		}
-
-		private void loadObjectDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object Definition Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
-					currentProjectPath = Path.GetDirectoryName(fileDialog.FileName);
-				}
-			}
 
 		}
 
@@ -4462,9 +4393,187 @@ namespace SonicRetro.SAModel.SADXLVL2
 			SaveSETFile(true);
 		}
 
-		private void boundsToolStripMenuItem_Click_1(object sender, EventArgs e)
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
 		{
+			FormResizing = false;
+			DeviceReset();
+		}
 
+
+		private void RenderPanel_SizeChanged(object sender, EventArgs e)
+		{
+			if (WindowState != LastWindowState)
+			{
+				LastWindowState = WindowState;
+				DeviceReset();
+			}
+			else if (!FormResizing) DeviceReset();
+		}
+
+		private void MainForm_ResizeBegin(object sender, EventArgs e)
+		{
+			FormResizing = true;
+		}
+
+		private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            OpenNewProject();
+        }
+
+		private void changeLevelToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            ShowLevelSelect();
+        }
+
+		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "sa1lvl",
+                Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
+                InitialDirectory = currentProjectPath,
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadLandtable(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadTexturesToolStripMenuItem_Click_1(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "pvm",
+                Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*",
+                InitialDirectory = currentProjectPath,
+                Multiselect = false
+            })
+            {
+                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                    fileDialog.FileName = LevelData.geo.TextureFileName;
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Initialize data if necessary
+                    if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                        LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    if (LevelData.TextureBitmaps == null)
+                        LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+                    if (LevelData.Textures == null) 
+                        LevelData.Textures = new Dictionary<string, Texture[]>();
+
+                    // Load or replace textures
+                    BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
+                    if (TexBmps != null)
+                    {
+                        // Load texture bitmaps
+                        Texture[] texs = new Texture[TexBmps.Length];
+                        for (int j = 0; j < TexBmps.Length; j++)
+                            texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+
+                        // Remove old textures if they exist
+                        if (LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.TextureBitmaps.Remove(LevelData.geo.TextureFileName);
+
+                        if (LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.Textures.Remove(LevelData.geo.TextureFileName);
+
+                        // Add new textures
+                        LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+                        LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+                        LevelData.leveltexs = LevelData.geo.TextureFileName;
+                    }
+                    unloadTexturesToolStripMenuItem.Enabled = true;
+                    DrawLevel();
+                }
+            }
+        }
+
+		private void loadObjectListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object List Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadObjectList(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "bin",
+                Filter = "SET Files|SET*.BIN",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
+                    LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    for (int i = 0; i < LevelData.SETChars.Length; i++)
+                    {
+                        if (LevelData.SETItems(i) == null)
+                            LevelData.AssignSetList(i, new List<SETItem>());
+                    }
+                    LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
+                    bool isSETPreset = !LevelData.SETItemsIsNull();
+                    objectToolStripMenuItem.Enabled = isSETPreset;
+                    editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+                    LevelData.StateChanged += LevelData_StateChanged;
+                    LevelData.InvalidateRenderState();
+                    selectedItems.Clear();
+                }
+            }
+        }
+
+		private void loadObjectDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object Definition Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
+                    currentProjectPath = Path.GetDirectoryName(fileDialog.FileName);
+                }
+            }
+        }
+
+		private void loadCAMFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            return;
+		}
+
+		private void splinesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            DialogResult result = MessageBox.Show("This will remove all path data in the stage.\n\nAre you sure you want to continue?",
+                "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            LevelData.LevelSplines.Clear();
+            LevelData.InvalidateRenderState();
+            selectedItems.Clear();
 		}
 	}
 }

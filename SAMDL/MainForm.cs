@@ -24,6 +24,8 @@ namespace SonicRetro.SAModel.SAMDL
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
 		System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
+		bool FormResizing;
+		FormWindowState LastWindowState = FormWindowState.Minimized;
 
 		public MainForm()
 		{
@@ -121,7 +123,27 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 			}
 			if (modelFiles.Count > 0) { LoadFile(modelFiles[0], cmdLoad); }
-			if (modelImportFiles.Count > 0) { ImportModel_Assimp(modelImportFiles[0], false); }
+			if (modelImportFiles.Count > 0) 
+            {
+                if (Path.GetExtension(modelImportFiles[0]).ToLowerInvariant() == ".dae")
+                {
+                    // Ask which model format to import
+                    DialogResult res = MessageBox.Show("Would you like to import a GC model?\nClick No to import as Chunk, Cancel to import as Basic.", "Select Import Format", MessageBoxButtons.YesNoCancel);
+                    switch (res)
+                    {
+                        case DialogResult.Yes:
+                            outfmt = ModelFormat.GC;
+                            break;
+                        case DialogResult.No:
+                            outfmt = ModelFormat.Chunk;
+                            break;
+                        default:
+                            outfmt = ModelFormat.Basic;
+                            break;
+                    }
+                }
+                ImportModel_Assimp(modelImportFiles[0], false); 
+            }
 			if (animFiles.Count > 0) { LoadAnimation(animFiles.ToArray()); }
 		}
 
@@ -186,11 +208,19 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp.dll"));
-			log.DeleteLogFile();
-			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
+            if (Environment.Is64BitOperatingSystem)
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+            else
+                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+            log.DeleteLogFile();
+            log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
+            log.Add("Build Date: ");
+            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            log.Add("OS Version: ");
+            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+            log.WriteLog();
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
 				{
@@ -1782,8 +1812,8 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
-			{
+			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*" })
+            {
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					LoadTextures(a.FileName);
@@ -1896,6 +1926,8 @@ namespace SonicRetro.SAModel.SAMDL
 				Far.Z = -1;
 				if (hasWeight)
 					dist = model.CheckHitWeighted(Near, Far, viewport, proj, view, Matrix.Identity, meshes);
+				else if (animation != null)
+					dist = model.CheckHitAnimated(Near, Far, viewport, proj, view, new MatrixStack(), meshes, animation, animframe);
 				else
 					dist = model.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes);
 				if (dist.IsHit)
@@ -2275,8 +2307,8 @@ namespace SonicRetro.SAModel.SAMDL
 					if (a.ShowDialog() == DialogResult.OK)
 					{
 						LoadTextures(a.FileName);
-						DrawEntireModel();
-					}
+                        DrawEntireModel();
+                    }
 					else
 						MessageBox.Show("No textures are loaded. Materials may not be imported properly.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
@@ -2285,13 +2317,13 @@ namespace SonicRetro.SAModel.SAMDL
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 			Assimp.Node importnode = scene.RootNode;
-			loaded = false;
+            loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			timer1.Stop();
-			// Collada adds a root node, so use the first child node instead
-			if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
-				importnode = scene.RootNode.Children[0];
-			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+            // Collada adds a root node, so use the first child node instead
+            if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
+                importnode = scene.RootNode.Children[0];
+            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
@@ -3149,9 +3181,8 @@ namespace SonicRetro.SAModel.SAMDL
 			modelLibrary.EndUpdate();
 		}
 
-		private void Resize()
+		private void DeviceReset()
 		{
-			// Causes a memory leak so not used for now
 			if (d3ddevice == null) return;
 			DeviceResizing = true;
 			PresentParameters pp = new PresentParameters
@@ -3159,24 +3190,11 @@ namespace SonicRetro.SAModel.SAMDL
 				Windowed = true,
 				SwapEffect = SwapEffect.Discard,
 				EnableAutoDepthStencil = true,
-				AutoDepthStencilFormat = Format.D24X8,
-				BackBufferHeight=RenderPanel.Height,
-				BackBufferWidth = RenderPanel.Width
+				AutoDepthStencilFormat = Format.D24X8
 			};
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
-			d3ddevice.Dispose();
-			SharpDX.Direct3D9.Direct3D d3d = new SharpDX.Direct3D9.Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing, pp);
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			EditorOptions.Initialize(d3ddevice);
-			if (TextureInfo != null && TextureInfo.Count() > 0)
-			{
-				Texture[] texs = new Texture[TextureInfo.Count()];
-				for (int j = 0; j < TextureInfo.Count(); j++)
-					texs[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-				Textures = texs;
-			}
+			d3ddevice.Reset(pp);
 			DeviceResizing = false;
+			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			DrawEntireModel();
 		}
 
@@ -3409,6 +3427,64 @@ namespace SonicRetro.SAModel.SAMDL
 			showVertexIndicesToolStripMenuItem.Checked = !showVertexIndicesToolStripMenuItem.Checked;
 		}
 
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			FormResizing = false;
+			DeviceReset();
+		}
+
+		private void RenderPanel_SizeChanged(object sender, EventArgs e)
+		{
+			if (WindowState != LastWindowState)
+			{
+				LastWindowState = WindowState;
+				DeviceReset();
+			}
+			else if (!FormResizing) DeviceReset();
+		}
+
+		private void MainForm_ResizeBegin(object sender, EventArgs e)
+		{
+			FormResizing = true;
+		}
+
+        private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
+        {
+            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfo != null ? TextureInfo?.Select(a => a.Name).ToArray() : null);
+            RebuildModelCache();
+            DrawEntireModel();
+        }
+
+		private void legacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ImportOBJLegacy(model, ofd.FileName);
+                }
+            }
+        }
+
+		private void selectedLegacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                DefaultExt = "obj",
+                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ImportOBJLegacy(selectedObject, ofd.FileName);
+                }
+            }
+        }
+
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!(selectedObject.Attach is BasicAttach))
@@ -3540,14 +3616,16 @@ namespace SonicRetro.SAModel.SAMDL
 					if (basicatt.Material[m.MaterialID].UseAlpha)
 					{
 						mesh_trans.Add(m);
-						if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
-						{
-							mats_trans.Add(basicatt.Material[m.MaterialID]);
-							matids.Add(matid_current);
-							matid_current++;
-						}
-						else
-							matids.Add((ushort)(mats_opaque.Count - 1 + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+                        if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
+                        {
+                            mats_trans.Add(basicatt.Material[m.MaterialID]);
+                            matids.Add(matid_current);
+                            matid_current++;
+                        }
+                        else
+                        {
+                            matids.Add((ushort)(mats_opaque.Count + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+                        }
 					}
 				}
 				mesh_opaque.AddRange(mesh_trans);
@@ -3563,7 +3641,7 @@ namespace SonicRetro.SAModel.SAMDL
 				basicatt_new.Bounds.Radius = basicatt.Bounds.Radius;
 				basicatt_new.MaterialName = basicatt.MaterialName;
 				basicatt_new.MeshName = basicatt.MeshName;
-				basicatt_new.NormalName = basicatt.VertexName;
+				basicatt_new.NormalName = basicatt.NormalName;
 				basicatt_new.VertexName = basicatt.VertexName;
 				basicatt_new.Name = basicatt.Name;
 				mdl.Attach = basicatt_new;

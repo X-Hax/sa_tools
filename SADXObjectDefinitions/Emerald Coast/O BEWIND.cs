@@ -14,7 +14,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	class OBEWind : ObjectDefinition
 	{
 		private NJS_MATERIAL material;
-		private Texture texture;
 		private Mesh mesh;
 
 		public override void Init(ObjectData data, string name)
@@ -77,9 +76,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			// is this even necessary?
-			if (texture == null)
-				texture = new Texture(dev, 2, 2, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			float scaleX = item.Scale.X;
@@ -128,12 +124,12 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale};
 
-			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
+			RenderInfo outputInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Wireframe, boxSphere);
 			result.Add(outputInfo);
 
 			if (item.Selected)
 			{
-				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, texture, FillMode.Wireframe, boxSphere);
+				RenderInfo highlightInfo = new RenderInfo(mesh, 0, transform.Top, material, null, FillMode.Wireframe, boxSphere);
 				result.Add(highlightInfo);
 			}
 

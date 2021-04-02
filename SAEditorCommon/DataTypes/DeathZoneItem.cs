@@ -22,6 +22,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		[Category("Common")]
 		public string Name { get { return Model.Name; } }
 
 		[Browsable(false)]
@@ -141,13 +142,44 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		//[Browsable(true)]
+		[Browsable(true)]
 		[DisplayName("Export Model")]
 		public void ExportModel()
 		{
-
+			using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
+			{
+				DefaultExt = "dae",
+				Filter = "SAModel Files|*.sa1mdl|Collada|*.dae|Wavefront|*.obj"
+			})
+			{
+				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					string ftype = "collada";
+					switch (System.IO.Path.GetExtension(a.FileName).ToLowerInvariant())
+					{
+						case ".sa1mdl":
+							ModelFile.CreateFile(a.FileName, Model, null, null, null, null, Model.GetModelFormat());
+							return;
+						case ".fbx":
+							ftype = "fbx";
+							break;
+						case ".obj":
+							ftype = "obj";
+							break;
+					}
+					Assimp.AssimpContext context = new Assimp.AssimpContext();
+					Assimp.Scene scene = new Assimp.Scene();
+					scene.Materials.Add(new Assimp.Material());
+					Assimp.Node n = new Assimp.Node();
+					n.Name = "RootNode";
+					scene.RootNode = n;
+					string rootPath = System.IO.Path.GetDirectoryName(a.FileName);
+					SAEditorCommon.Import.AssimpStuff.AssimpExport(Model, scene, Matrix.Identity, null, scene.RootNode);
+					context.ExportFile(scene, a.FileName, ftype, Assimp.PostProcessSteps.ValidateDataStructure | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.FlipUVs);//
+				}
+			}
 		}
-
+		[Category("Common"), Description("All characters flags in one field.")]
 		public SA1CharacterFlags Flags { get; set; }
 
 		[Browsable(false)]
@@ -173,7 +205,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				return false;
 			}
 		}
-
+		[Category("Flags")]
 		public bool Sonic
 		{
 			get
@@ -185,7 +217,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Flags = (Flags & ~SA1CharacterFlags.Sonic) | (value ? SA1CharacterFlags.Sonic : 0);
 			}
 		}
-
+		[Category("Flags")]
 		public bool Tails
 		{
 			get
@@ -197,7 +229,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Flags = (Flags & ~SA1CharacterFlags.Tails) | (value ? SA1CharacterFlags.Tails : 0);
 			}
 		}
-
+		[Category("Flags")]
 		public bool Knuckles
 		{
 			get
@@ -209,7 +241,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Flags = (Flags & ~SA1CharacterFlags.Knuckles) | (value ? SA1CharacterFlags.Knuckles : 0);
 			}
 		}
-
+		[Category("Flags")]
 		public bool Amy
 		{
 			get
@@ -221,7 +253,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Flags = (Flags & ~SA1CharacterFlags.Amy) | (value ? SA1CharacterFlags.Amy : 0);
 			}
 		}
-
+		[Category("Flags")]
 		public bool Gamma
 		{
 			get
@@ -233,7 +265,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				Flags = (Flags & ~SA1CharacterFlags.Gamma) | (value ? SA1CharacterFlags.Gamma : 0);
 			}
 		}
-
+		[Category("Flags")]
 		public bool Big
 		{
 			get

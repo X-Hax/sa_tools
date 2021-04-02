@@ -69,14 +69,25 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-			BitmapData bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			byte[] tmp = new byte[Math.Abs(bitmapData.Stride) * bitmapData.Height];
-			Marshal.Copy(bitmapData.Scan0, tmp, 0, tmp.Length);
-			bitmap.UnlockBits(bitmapData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Managed);
+			//if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb); // May no longer be necessary
+			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+			int depth = Image.GetPixelFormatSize(bmpData.PixelFormat);
+			int pixelCount = bmpData.Width * bmpData.Height;
+			int bytesPerPixel = depth / 8;
+			var rgb = new byte[pixelCount * bytesPerPixel];
+			int lineBytes = bmpData.Width * bytesPerPixel;
+			IntPtr ptr = bmpData.Scan0;
+			for (int y = 0; y < bmpData.Height; y++)
+			{
+				int ptrOffset = y * bmpData.Stride;
+				int bufferOffset = y * lineBytes;
+				Marshal.Copy(ptr + ptrOffset, rgb, bufferOffset, lineBytes);
+			}
+			bitmap.UnlockBits(bmpData);
+			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.Dynamic | Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
 			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
-			Marshal.Copy(tmp, 0, dataRectangle.DataPointer, tmp.Length);
+			for (int y = 0; y < bmpData.Height; y++)
+				Marshal.Copy(rgb, y * bmpData.Width * bytesPerPixel, dataRectangle.DataPointer + y * dataRectangle.Pitch, bmpData.Width * bytesPerPixel);
 			texture.UnlockRectangle(0);
 			return texture;
 		}

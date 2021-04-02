@@ -328,6 +328,7 @@
 			this.Text = "SA2 Event Viewer";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();

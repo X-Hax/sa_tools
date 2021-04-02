@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SA_Tools</RootNamespace>
     <AssemblyName>SA Tools</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -55,6 +55,7 @@
     <Compile Include="IniSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SAArc\SplitEvent.cs" />
+    <Compile Include="SAArc\SplitMiniEvent.cs" />
     <Compile Include="SAArc\SplitMTN.cs" />
     <Compile Include="SplitDLL\IniData.cs" />
     <Compile Include="SplitDLL\SplitDLL.cs" />

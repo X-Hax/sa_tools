@@ -10,13 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DLCTool</RootNamespace>
     <AssemblyName>DLCTool</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -27,7 +27,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\</OutputPath>
@@ -79,9 +79,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Readme.txt" />
+    <Content Include="readme_DLCTool.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\AForge.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Imaging.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Math.dll" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\AForge.xml" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Imaging.xml" "$(SolutionDir)tools\lib\"
+xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Math.xml" "$(SolutionDir)tools\lib\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

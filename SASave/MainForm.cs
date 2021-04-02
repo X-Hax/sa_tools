@@ -248,8 +248,8 @@ namespace SASave
 			metal_level_select.DataSource = new List<KeyValuePair<string, int>>(ActionStages[0]);
 			metal_level_select.SelectedIndex = 0;
 			Dictionary<int, string> events;
-			if (System.IO.File.Exists("Events.ini"))
-				events = IniFile.Deserialize<Dictionary<int, string>>("Events.ini");
+			if (System.IO.File.Exists("StoryFlags.ini"))
+				events = IniFile.Deserialize<Dictionary<int, string>>("StoryFlags.ini");
 			else
 				events = new Dictionary<int, string>();
 			int i = 0;
@@ -310,20 +310,20 @@ namespace SASave
 			}
 			events_big.EndUpdate();
 			Dictionary<int, string> npcs;
-			if (System.IO.File.Exists("NPCs.ini"))
-				npcs = IniFile.Deserialize<Dictionary<int, string>>("NPCs.ini");
+			if (System.IO.File.Exists("CutsceneFlags.ini"))
+				npcs = IniFile.Deserialize<Dictionary<int, string>>("CutsceneFlags.ini");
 			else
 				npcs = new Dictionary<int, string>();
 			this.npcs.BeginUpdate();
 			for (i = 0; i < 512; i++)
-				this.npcs.Items.Add(npcs.ContainsKey(i) ? npcs[i] : "Unknown");
+				this.npcs.Items.Add(npcs.ContainsKey(i) ? npcs[i] : "Unused");
 			this.npcs.EndUpdate();
 			i = 0;
 			level_clear_table.SuspendLayout();
 			foreach (string item in levels)
 			{
-				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None });
-				NumericUpDown ctrl = new NumericUpDown() { Name = "levelclear_" + i.ToInvariantString(), Width = 45, Maximum = byte.MaxValue, Anchor = AnchorStyles.None };
+				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None, AutoSize=true });
+				NumericUpDown ctrl = new NumericUpDown() { Name = "levelclear_" + i.ToInvariantString(), Width = 64, Maximum = byte.MaxValue, Anchor = AnchorStyles.None };
 				ctrl.ValueChanged += new EventHandler(levelclear_ValueChanged);
 				level_clear_table.Controls.Add(ctrl);
 				i++;
@@ -1058,11 +1058,11 @@ namespace SASave
 					break;
 			}
 			adventure_tod.Value = CurrentData.AdventureModeData[index].TimeOfDay;
-			adventure_unk1.Value = CurrentData.AdventureModeData[index].Unknown1;
-			adventure_unk2.Value = CurrentData.AdventureModeData[index].Unknown2;
+			adventure_seq.Value = CurrentData.AdventureModeData[index].CurrentSequence;
+			adventure_nextseq.Value = CurrentData.AdventureModeData[index].NextSequence;
 			adventure_entrance.Value = CurrentData.AdventureModeData[index].Entrance;
-			adventure_levelact.LevelAct = CurrentData.AdventureModeData[index].LevelAct;
-			adventure_unk3.Value = CurrentData.AdventureModeData[index].Unknown3;
+			adventure_levelact.LevelAct = CurrentData.AdventureModeData[index].Level;
+			adventure_destination.Value = CurrentData.AdventureModeData[index].Destination;
 		}
 
 		private void lives_ValueChanged(object sender, EventArgs e)
@@ -1129,16 +1129,16 @@ namespace SASave
 			CurrentData.AdventureModeData[adventure_character.SelectedIndex].TimeOfDay = adventure_tod.Value;
 		}
 
-		private void adventure_unk1_ValueChanged(object sender, EventArgs e)
+		private void adventure_seq_ValueChanged(object sender, EventArgs e)
 		{
 			if (adventure_character.SelectedIndex == -1) return;
-			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Unknown1 = (short)adventure_unk1.Value;
+			CurrentData.AdventureModeData[adventure_character.SelectedIndex].CurrentSequence = (short)adventure_seq.Value;
 		}
 
-		private void adventure_unk2_ValueChanged(object sender, EventArgs e)
+		private void adventure_nextseq_ValueChanged(object sender, EventArgs e)
 		{
 			if (adventure_character.SelectedIndex == -1) return;
-			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Unknown2 = (short)adventure_unk2.Value;
+			CurrentData.AdventureModeData[adventure_character.SelectedIndex].NextSequence = (short)adventure_nextseq.Value;
 		}
 
 		private void adventure_entrance_ValueChanged(object sender, EventArgs e)
@@ -1150,13 +1150,13 @@ namespace SASave
 		private void adventure_levelact_ValueChanged(object sender, EventArgs e)
 		{
 			if (adventure_character.SelectedIndex == -1) return;
-			CurrentData.AdventureModeData[adventure_character.SelectedIndex].LevelAct = adventure_levelact.LevelAct;
+			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Level = adventure_levelact.LevelAct;
 		}
 
-		private void adventure_unk3_ValueChanged(object sender, EventArgs e)
+		private void adventure_destination_ValueChanged(object sender, EventArgs e)
 		{
 			if (adventure_character.SelectedIndex == -1) return;
-			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Unknown3 = (short)adventure_unk3.Value;
+			CurrentData.AdventureModeData[adventure_character.SelectedIndex].Destination = (short)adventure_destination.Value;
 		}
 
 		private void action_stage_character_SelectedIndexChanged(object sender, EventArgs e)

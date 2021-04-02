@@ -20,7 +20,7 @@ namespace SonicRetro.SAModel.DataToolbox
 		/// <param name="type">Type of text conversion.</param>
 		/// <param name="destination">Destination pathname. Leave blank to export in the same folder with a swapped extension.</param>
 		/// <param name="basicDX">Use the SADX2004 format for Basic models.</param>
-		public static void ConvertFileToText(string source, TextType type, string destination = "", bool basicDX = true)
+		public static void ConvertFileToText(string source, TextType type, string destination = "", bool basicDX = true, bool overwrite = true)
 		{
 			string outext = ".c";
 			string extension = Path.GetExtension(source);
@@ -33,6 +33,13 @@ namespace SonicRetro.SAModel.DataToolbox
 						if (destination == "")
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
+						}
+						if (!overwrite && File.Exists(destination))
+						{
+							while (File.Exists(destination))
+							{
+								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+							}
 						}
 						LandTable land = LandTable.LoadFromFile(source);
 						List<string> labels = new List<string>() { land.Name };
@@ -98,6 +105,13 @@ namespace SonicRetro.SAModel.DataToolbox
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
 						}
+						if (!overwrite && File.Exists(destination))
+						{
+							while (File.Exists(destination))
+							{
+								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+							}
+						}
 						using (StreamWriter sw = File.CreateText(destination))
 						{
 							sw.Write("/* NINJA ");
@@ -157,6 +171,13 @@ namespace SonicRetro.SAModel.DataToolbox
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
 						}
+						if (!overwrite && File.Exists(destination))
+						{
+							while (File.Exists(destination))
+							{
+								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+							}
+						}
 						using (StreamWriter sw2 = File.CreateText(destination))
 						{
 							List<string> labels_nj = new List<string>() { model.Name };
@@ -172,6 +193,13 @@ namespace SonicRetro.SAModel.DataToolbox
 						if (destination == "")
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
+						}
+						if (!overwrite && File.Exists(destination))
+						{
+							while (File.Exists(destination))
+							{
+								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+							}
 						}
 						using (StreamWriter sw = File.CreateText(destination))
 						{
@@ -191,6 +219,13 @@ namespace SonicRetro.SAModel.DataToolbox
 						if (destination == "")
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
+						}
+						if (!overwrite && File.Exists(destination))
+						{
+							while (File.Exists(destination))
+							{
+								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+							}
 						}
 						JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
 						using (TextWriter tw = File.CreateText(destination))

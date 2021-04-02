@@ -117,7 +117,16 @@ namespace SADXTweaker2
 
 		private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+			string errDesc = "You can submit a new issue on SA Tools GitHub issue tracker.\n\nPlease make sure the problem is reproducible on the latest version of SA Tools.\n\nIf you wish to report a bug, please include the following in your report:";
+			SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, null);
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 
 		private void AddChildForm(Type formType, ToolStripMenuItem menuItem)

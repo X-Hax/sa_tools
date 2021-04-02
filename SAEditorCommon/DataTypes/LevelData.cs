@@ -312,7 +312,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		}
 
 		/// <summary>
-		/// Clears the entire stage.
+		/// Clears the entire stage except textures.
 		/// </summary>
 		public static void Clear()
 		{
@@ -324,7 +324,22 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 
 			changes.Push("Clear Stage");
 		}
-
+		/// <summary>
+		/// Clears loaded textures.
+		/// </summary>
+		public static void ClearTextures()
+		{
+			if (Textures != null)
+				foreach (KeyValuePair<string, Texture[]> dicc in Textures)
+					for (int u = 0; u < dicc.Value.Length; u++)
+						dicc.Value[u].Dispose();
+			if (TextureBitmaps != null)
+				foreach (KeyValuePair<string, BMPInfo[]> dicc2 in TextureBitmaps)
+					for (int u = 0; u < dicc2.Value.Length; u++)
+						dicc2.Value[u].Image.Dispose();
+			TextureBitmaps = null;
+			Textures = null;
+		}
 		public static string GetStats()
 		{
 			int landtableItems = 0;
@@ -370,7 +385,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 				}
 				else if (currentItems[i] is LevelItem)
 				{
-					LevelItem originalItem = (LevelItem)currentItems[0];
+					LevelItem originalItem = (LevelItem)currentItems[i];
 					LevelItem newItem = new LevelItem(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection);
 
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
@@ -387,13 +402,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 			}
 
 			selection.Clear();
-			selection.Add(newItems);
+            InvalidateRenderState();
+            selection.Add(newItems);
 
 			changes.Push("Duplicate Item");
-
-			InvalidateRenderState();
-
-			errorFlag = false;
+            
+            errorFlag = false;
 			errorMsg = "";
 		}
 

@@ -8,10 +8,10 @@ namespace SonicRetro.SAModel
 	public class COL
 	{
 		public BoundingSphere Bounds { get; set; }
-		public int Unknown1 { get; set; }
-		public int Unknown2 { get; set; }
+		public float WidthY { get; set; }
+		public float WidthZ { get; set; }
 		public NJS_OBJECT Model { get; set; }
-		public int Unknown3 { get; set; }
+		public int BlockBits { get; set; }
 		public int Flags { get; set; }
 
 		public SA1SurfaceFlags SurfaceFlags
@@ -79,11 +79,11 @@ namespace SonicRetro.SAModel
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					Unknown1 = ByteConverter.ToInt32(file, address + 0x10);
-					Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
+					WidthY = ByteConverter.ToSingle(file, address + 0x10);
+					WidthZ = ByteConverter.ToSingle(file, address + 0x14);
 					uint tmpaddr = ByteConverter.ToUInt32(file, address + 0x18) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
-					Unknown3 = ByteConverter.ToInt32(file, address + 0x1C);
+					BlockBits = ByteConverter.ToInt32(file, address + 0x1C);
 					Flags = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
@@ -93,8 +93,8 @@ namespace SonicRetro.SAModel
 						mfmt = ModelFormat.Basic;
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
-					Unknown2 = ByteConverter.ToInt32(file, address + 0x14);
-					Unknown3 = ByteConverter.ToInt32(file, address + 0x18);
+					WidthZ = ByteConverter.ToInt32(file, address + 0x14);
+					BlockBits = ByteConverter.ToInt32(file, address + 0x18);
 					break;
 			}
 		}
@@ -107,16 +107,16 @@ namespace SonicRetro.SAModel
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					result.AddRange(ByteConverter.GetBytes(Unknown1));
-					result.AddRange(ByteConverter.GetBytes(Unknown2));
+					result.AddRange(ByteConverter.GetBytes(WidthY));
+					result.AddRange(ByteConverter.GetBytes(WidthZ));
 					result.AddRange(ByteConverter.GetBytes(modelptr));
-					result.AddRange(ByteConverter.GetBytes(Unknown3));
+					result.AddRange(ByteConverter.GetBytes(BlockBits));
 					break;
 				case LandTableFormat.SA2:
 				case LandTableFormat.SA2B:
 					result.AddRange(ByteConverter.GetBytes(modelptr));
-					result.AddRange(ByteConverter.GetBytes(Unknown2));
-					result.AddRange(ByteConverter.GetBytes(Unknown3));
+					result.AddRange(ByteConverter.GetBytes(WidthZ));
+					result.AddRange(ByteConverter.GetBytes(BlockBits));
 					break;
 			}
 			result.AddRange(ByteConverter.GetBytes(Flags));
@@ -132,20 +132,20 @@ namespace SonicRetro.SAModel
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					result.Append(Unknown1.ToCHex());
+					result.Append(WidthY.ToC());
 					result.Append(", ");
-					result.Append(Unknown2.ToCHex());
+					result.Append(WidthZ.ToC());
 					result.Append(", ");
 					result.Append(Model != null ? "&" + Model.Name : "NULL");
 					result.Append(", ");
-					result.AppendFormat(Unknown3.ToCHex());
+					result.AppendFormat(BlockBits.ToCHex());
 					break;
 				case LandTableFormat.SA2:
 					result.Append(Model != null ? "&" + Model.Name : "NULL");
 					result.Append(", ");
-					result.Append(Unknown2.ToCHex());
+					result.Append(WidthZ.ToC());
 					result.Append(", ");
-					result.Append(Unknown3.ToCHex());
+					result.Append(BlockBits.ToCHex());
 					break;
 			}
 			result.Append(", ");

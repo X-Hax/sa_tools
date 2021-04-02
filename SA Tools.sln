@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA Tools", "SA Tools\SA Tools.csproj", "{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}"
 EndProject
@@ -98,6 +98,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Split", "Split\Split.csproj", "{2DC86B9B-D691-4D64-9F74-65420B56F6A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompareTool", "CompareTool\CompareTool.csproj", "{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildMiniEvent", "buildMiniEvent\buildMiniEvent.csproj", "{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splitMiniEvent", "splitMiniEvent\splitMiniEvent.csproj", "{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAToolsHub", "SAToolsHub\SAToolsHub.csproj", "{D2033BDD-7B02-4F32-832D-B32A33722080}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -285,6 +289,14 @@ Global
 		{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D2033BDD-7B02-4F32-832D-B32A33722080}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{D2033BDD-7B02-4F32-832D-B32A33722080}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
@@ -333,6 +345,8 @@ Global
 		{BDB09269-4596-4020-9250-1711D19C3014} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{2DC86B9B-D691-4D64-9F74-65420B56F6A7} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{E5DA1E0B-F730-43A3-B4DB-FDD6F4A5447D} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
+		{CB3DA377-29F7-45F3-A451-5B5999AD7D7D} = {485AB560-BEA5-4CC1-9324-43B12A687E57}
+		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6} = {485AB560-BEA5-4CC1-9324-43B12A687E57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}
