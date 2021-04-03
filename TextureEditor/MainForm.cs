@@ -1005,6 +1005,7 @@ namespace TextureEditor
                                                         }
                                             }
                                             string name = Path.GetFileNameWithoutExtension(entry.Name);
+                                            vrstream.Seek(0, SeekOrigin.Begin);
                                             textures.Add(new PvrTextureInfo(name, vrstream, pvp));
                                             listBox1.Items.Add(name);
                                         }
@@ -1034,6 +1035,7 @@ namespace TextureEditor
                                                         }
                                             }
                                             string name = Path.GetFileNameWithoutExtension(entry.Name);
+                                            vrstream.Seek(0, SeekOrigin.Begin);
                                             textures.Add(new GvrTextureInfo(name, vrstream, gvp));
                                             listBox1.Items.Add(name);
                                         }
