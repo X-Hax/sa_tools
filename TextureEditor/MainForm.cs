@@ -149,10 +149,11 @@ namespace TextureEditor
 				switch (format)
 				{
 					case TextureFormat.PVM:
-						PvpPalette pvp = null;
-						foreach (ArchiveEntry file in pvmentries)
+                        PvpPalette pvp = null;
+                        foreach (ArchiveEntry file in pvmentries)
 						{
-							PvrTexture vrfile = new PvrTexture(file.Open());
+                            MemoryStream str = (MemoryStream)file.Open();
+                            PvrTexture vrfile = new PvrTexture(str);
 							if (vrfile.NeedsExternalPalette)
 							{
 								if (pvp == null)
@@ -164,26 +165,27 @@ namespace TextureEditor
 										Title = "External palette file"
 									})
 										if (a.ShowDialog(this) == DialogResult.OK)
-											pvp = new PvpPalette(a.FileName);
-										else
+                                            pvp = new PvpPalette(a.FileName);
+                                        else
 										{
 											MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 											return false;
 										}
-								vrfile.SetPalette(pvp);
 							}
-							newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
+                            str.Seek(0, SeekOrigin.Begin);
+                            newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, pvp));
 						}
 						break;
 					case TextureFormat.GVM:
-						GvpPalette gvp = null;
-						foreach (ArchiveEntry file in pvmentries)
+                        GvpPalette gvp = null;
+                        foreach (ArchiveEntry file in pvmentries)
 						{
-							GvrTexture vrfile = new GvrTexture(file.Open());
+                            MemoryStream str = (MemoryStream)file.Open();
+                            GvrTexture vrfile = new GvrTexture(file.Open());
 							if (vrfile.NeedsExternalPalette)
 							{
-								if (gvp == null)
-									using (OpenFileDialog a = new OpenFileDialog
+                                if (gvp == null)
+                                    using (OpenFileDialog a = new OpenFileDialog
 									{
 										DefaultExt = "gvp",
 										Filter = "GVP Files|*.gvp",
@@ -191,15 +193,15 @@ namespace TextureEditor
 										Title = "External palette file"
 									})
 										if (a.ShowDialog(this) == DialogResult.OK)
-											gvp = new GvpPalette(a.FileName);
-										else
+                                            gvp = new GvpPalette(a.FileName);
+                                        else
 										{
 											MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 											return false;
 										}
-								vrfile.SetPalette(gvp);
 							}
-							newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), vrfile));
+                            str.Seek(0, SeekOrigin.Begin);
+                            newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, gvp));
 						}
 						break;
 				}
@@ -237,7 +239,7 @@ namespace TextureEditor
 				Close();
 		}
 
-		private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
+        private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
 		{
 			if (listBox1.SelectedIndex > -1)
 				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
@@ -293,122 +295,174 @@ namespace TextureEditor
 				}
 		}
 
-		private void SaveTextures()
-		{
-			byte[] data;
-			using (MemoryStream str = new MemoryStream())
-			{
-				ArchiveWriter writer = null;
-				switch (format)
-				{
-					case TextureFormat.PVM:
-						writer = new PvmArchiveWriter(str);
-						foreach (PvrTextureInfo tex in textures)
-						{
-							if (tex.DataFormat != PvrDataFormat.Index4 && tex.DataFormat != PvrDataFormat.Index8)
-							{
-								BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-								int stride = bmpd.Stride;
-								byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
-								System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
-								tex.Image.UnlockBits(bmpd);
-								int tlevels = 0;
-								for (int y = 0; y < tex.Image.Height; y++)
-								{
-									int srcaddr = y * Math.Abs(stride);
-									for (int x = 0; x < tex.Image.Width; x++)
-									{
-										Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
-										if (c.A == 0)
-											tlevels = 1;
-										else if (c.A < 255)
-										{
-											tlevels = 2;
-											break;
-										}
-									}
-									if (tlevels == 2)
-										break;
-								}
-								if (tlevels == 0)
-									tex.PixelFormat = PvrPixelFormat.Rgb565;
-								else if (tlevels == 1)
-									tex.PixelFormat = PvrPixelFormat.Argb1555;
-								else if (tlevels == 2)
-									tex.PixelFormat = PvrPixelFormat.Argb4444;
-								if (tex.Image.Width == tex.Image.Height)
-									if (tex.Mipmap)
-										tex.DataFormat = PvrDataFormat.SquareTwiddledMipmaps;
-									else
-										tex.DataFormat = PvrDataFormat.SquareTwiddled;
-								else
-									tex.DataFormat = PvrDataFormat.Rectangle;
-							}
-							PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
-							encoder.GlobalIndex = tex.GlobalIndex;
-							MemoryStream pvr = new MemoryStream();
-							encoder.Save(pvr);
-							pvr.Seek(0, SeekOrigin.Begin);
-							writer.CreateEntry(pvr, tex.Name);
-						}
-						break;
-					case TextureFormat.GVM:
-						writer = new GvmArchiveWriter(str);
-						foreach (GvrTextureInfo tex in textures)
-						{
-							if (tex.DataFormat != GvrDataFormat.Index4 && tex.DataFormat != GvrDataFormat.Index8)
-							{
-								if (Settings.PCCompatGVM)
-								{
-									BitmapData bmpd = tex.Image.LockBits(new Rectangle(Point.Empty, tex.Image.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-									int stride = bmpd.Stride;
-									byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
-									System.Runtime.InteropServices.Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
-									tex.Image.UnlockBits(bmpd);
-									int tlevels = 0;
-									for (int y = 0; y < tex.Image.Height; y++)
-									{
-										int srcaddr = y * Math.Abs(stride);
-										for (int x = 0; x < tex.Image.Width; x++)
-										{
-											Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
-											if (c.A == 0)
-												tlevels = 1;
-											else if (c.A < 255)
-											{
-												tlevels = 2;
-												break;
-											}
-										}
-										if (tlevels == 2)
-											break;
-									}
-									if (tlevels == 0)
-										tex.DataFormat = GvrDataFormat.Dxt1;
-									else
-										tex.DataFormat = GvrDataFormat.Rgb5a3;
-								}
-								else
-									tex.DataFormat = GvrDataFormat.Argb8888;
-							}
-							GvrTextureEncoder encoder = new GvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
-							encoder.GlobalIndex = tex.GlobalIndex;
-							MemoryStream gvr = new MemoryStream();
-							encoder.Save(gvr);
-							gvr.Seek(0, SeekOrigin.Begin);
-							writer.CreateEntry(gvr, tex.Name);
-						}
-						break;
-					case TextureFormat.PVMX:
-						PvmxArchive.Save(str, textures.Cast<PvmxTextureInfo>());
-						break;
-					case TextureFormat.PAK:
-						PAKFile pak = new PAKFile();
-						string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
-						string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
-						List<byte> inf = new List<byte>(textures.Count * 0x3C);
-						foreach (TextureInfo item in textures)
-						{
+        private int GetAlphaLevel(Bitmap img)
+        {
+            BitmapData bmpd = img.LockBits(new Rectangle(Point.Empty, img.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            int stride = bmpd.Stride;
+            byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
+            Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
+            img.UnlockBits(bmpd);
+            int tlevels = 0;
+            for (int y = 0; y < img.Height; y++)
+            {
+                int srcaddr = y * Math.Abs(stride);
+                for (int x = 0; x < img.Width; x++)
+                {
+                    Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
+                    if (c.A == 0)
+                        tlevels = 1;
+                    else if (c.A < 255)
+                    {
+                        tlevels = 2;
+                        break;
+                    }
+                }
+                if (tlevels == 2)
+                    break;
+            }
+            return tlevels;
+        }
+
+        private MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false)
+        {
+            byte[] arr = stream.ToArray();
+            for (int u = 0; u < arr.Length - 4; u++)
+            {
+                if (BitConverter.ToUInt32(arr, u) == 0x58494247) // GBIX
+                {
+                    byte[] value = BitConverter.GetBytes(gbix);
+                    if (bigendian)
+                    {
+                        arr[u + 11] = value[0];
+                        arr[u + 10] = value[1];
+                        arr[u + 9] = value[2];
+                        arr[u + 8] = value[3];
+                    }
+                    else
+                    {
+                        arr[u + 8] = value[0];
+                        arr[u + 9] = value[1];
+                        arr[u + 10] = value[2];
+                        arr[u + 11] = value[3];
+                    }
+                    return new MemoryStream(arr);
+                }
+            }
+            MessageBox.Show("Unable to set the global index. The texture may be corrupted.");
+            return stream;
+        }
+
+        private MemoryStream EncodePVR(PvrTextureInfo tex)
+        {
+            if (tex.TextureData != null)
+                return UpdateGBIX(tex.TextureData, tex.GlobalIndex);
+            if (tex.DataFormat != PvrDataFormat.Index4 && tex.DataFormat != PvrDataFormat.Index8)
+            {
+                int tlevels = GetAlphaLevel(tex.Image);
+                if (tlevels == 0)
+                    tex.PixelFormat = PvrPixelFormat.Rgb565;
+                else if (tlevels == 1)
+                    tex.PixelFormat = PvrPixelFormat.Argb1555;
+                else if (tlevels == 2)
+                    tex.PixelFormat = PvrPixelFormat.Argb4444;
+                if (tex.Image.Width == tex.Image.Height)
+                    if (tex.Mipmap)
+                        tex.DataFormat = PvrDataFormat.SquareTwiddledMipmaps;
+                    else
+                        tex.DataFormat = PvrDataFormat.SquareTwiddled;
+                else
+                    tex.DataFormat = PvrDataFormat.Rectangle;
+            }
+            else // Cannot encode a paletted texture 
+                return null;
+            PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
+            encoder.GlobalIndex = tex.GlobalIndex;
+            MemoryStream pvr = new MemoryStream();
+            encoder.Save(pvr);
+            pvr.Seek(0, SeekOrigin.Begin);
+            return pvr;
+        }
+
+        private MemoryStream EncodeGVR(GvrTextureInfo tex)
+        {
+            if (tex.TextureData != null)
+                return UpdateGBIX(tex.TextureData, tex.GlobalIndex, true);
+            if (tex.DataFormat != GvrDataFormat.Index4 && tex.DataFormat != GvrDataFormat.Index8)
+            {
+                if (Settings.PCCompatGVM)
+                {
+                    int tlevels = GetAlphaLevel(tex.Image);
+                    if (tlevels == 0)
+                        tex.DataFormat = GvrDataFormat.Dxt1;
+                    else
+                        tex.DataFormat = GvrDataFormat.Rgb5a3;
+                }
+                else
+                    tex.DataFormat = GvrDataFormat.Argb8888;
+            }
+            else // Cannot encode a paletted texture
+                return null;
+            GvrTextureEncoder encoder = new GvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
+            encoder.GlobalIndex = tex.GlobalIndex;
+            MemoryStream gvr = new MemoryStream();
+            encoder.Save(gvr);
+            gvr.Seek(0, SeekOrigin.Begin);
+            return gvr;
+        }
+
+        private void SaveTextures()
+        {
+            byte[] data;
+            using (MemoryStream str = new MemoryStream())
+            {
+                ArchiveWriter writer = null;
+                bool paletteerror = false;
+                switch (format)
+                {
+                    case TextureFormat.PVM:
+                        writer = new PvmArchiveWriter(str);
+                        foreach (PvrTextureInfo tex in textures)
+                        {
+                            MemoryStream pvr = EncodePVR(tex);
+                            if (pvr == null)
+                            {
+                                if (!paletteerror)
+                                {
+                                    MessageBox.Show("Unable to encode textures with an external palette.\nUse ArchiveTool to convert archives with paletted textures.", "Texture Editor Error");
+                                    paletteerror = true;
+                                }
+                                continue;
+                            }
+                            writer.CreateEntry(pvr, tex.Name);
+                        }
+                        break;
+                    case TextureFormat.GVM:
+                        writer = new GvmArchiveWriter(str);
+                        foreach (GvrTextureInfo tex in textures)
+                        {
+                            MemoryStream gvr = EncodeGVR(tex);
+                            if (gvr == null)
+                            {
+                                if (!paletteerror)
+                                {
+                                    MessageBox.Show("Unable to encode textures with an external palette.\nUse ArchiveTool to convert archives with paletted textures.", "Texture Editor Error");
+                                    paletteerror = true;
+                                }
+                                continue;
+                            }
+                            writer.CreateEntry(gvr, tex.Name);
+                        }
+                        break;
+                    case TextureFormat.PVMX:
+                        PvmxArchive.Save(str, textures.Cast<PvmxTextureInfo>());
+                        break;
+                    case TextureFormat.PAK:
+                        PAKFile pak = new PAKFile();
+                        string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+                        string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
+                        List<byte> inf = new List<byte>(textures.Count * 0x3C);
+                        foreach (TextureInfo item in textures)
+                        {
                             using (MemoryStream tex = new MemoryStream())
                             {
                                 item.Image.Save(tex, ImageFormat.Png);
@@ -434,21 +488,21 @@ namespace TextureEditor
                                     entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
                                 inf.AddRange(entry.GetBytes());
                             }
-						}
-						pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
-						pak.Save(filename);
+                        }
+                        pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
+                        pak.Save(filename);
 
-						return;
-				}
-				writer?.Flush();
-				data = str.ToArray();
-				str.Close();
-			}
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				FraGag.Compression.Prs.Compress(data, filename);
-			else
-				File.WriteAllBytes(filename, data);
-		}
+                        return;
+                }
+                writer?.Flush();
+                data = str.ToArray();
+                str.Close();
+            }
+            if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                FraGag.Compression.Prs.Compress(data, filename);
+            else
+                File.WriteAllBytes(filename, data);
+        }
 
 		private void ConvertTextures(TextureFormat newfmt)
 		{
@@ -904,7 +958,7 @@ namespace TextureEditor
 							case ".pvm":
 							case ".gvm":
 								byte[] pvmdata = File.ReadAllBytes(file);
-								if (Path.GetExtension(file).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                                if (Path.GetExtension(file).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 									pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 								ArchiveBase pvmfile = null;
 								switch (format)
@@ -951,7 +1005,7 @@ namespace TextureEditor
 												vrfile.SetPalette(pvp);
 											}
 											string name = Path.GetFileNameWithoutExtension(entry.Name);
-											textures.Add(new PvrTextureInfo(name, vrfile));
+                                            textures.Add(new PvrTextureInfo(name, stream));
 											listBox1.Items.Add(name);
 										}
 										break;
@@ -980,7 +1034,7 @@ namespace TextureEditor
 												vrfile.SetPalette(gvp);
 											}
 											string name = Path.GetFileNameWithoutExtension(entry.Name);
-											textures.Add(new GvrTextureInfo(name, vrfile));
+											textures.Add(new GvrTextureInfo(name, stream));
 											listBox1.Items.Add(name);
 										}
 										break;
@@ -989,30 +1043,31 @@ namespace TextureEditor
 							default:
 								{
 									string name = Path.GetFileNameWithoutExtension(file);
-									if (format == TextureFormat.PVM && PvrTexture.Is(file))
-										textures.Add(new PvrTextureInfo(name, new PvrTexture(file)));
-									else if (format == TextureFormat.GVM && GvrTexture.Is(file))
-										textures.Add(new GvrTextureInfo(name, new GvrTexture(file)));
-									else
-									{
-										switch (format)
-										{
-											case TextureFormat.PVM:
-												textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(file)));
-												break;
-											case TextureFormat.GVM:
-												textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(file)));
-												break;
-											case TextureFormat.PVMX:
-												textures.Add(new PvmxTextureInfo(name, gbix, new Bitmap(file)));
-												break;
-											case TextureFormat.PAK:
-												textures.Add(new PakTextureInfo(name, gbix, new Bitmap(file)));
-												break;
-										}
-										if (gbix != uint.MaxValue)
-											gbix++;
-									}
+                                    MemoryStream str = new MemoryStream(File.ReadAllBytes(file));
+                                    if (format == TextureFormat.PVM && PvrTexture.Is(file))
+                                        textures.Add(new PvrTextureInfo(name, str));
+                                    else if (format == TextureFormat.GVM && GvrTexture.Is(file))
+                                        textures.Add(new GvrTextureInfo(name, str));
+                                    else
+                                    {
+                                        switch (format)
+                                        {
+                                            case TextureFormat.PVM:
+                                                textures.Add(new PvrTextureInfo(name, gbix, new Bitmap(file)));
+                                                break;
+                                            case TextureFormat.GVM:
+                                                textures.Add(new GvrTextureInfo(name, gbix, new Bitmap(file)));
+                                                break;
+                                            case TextureFormat.PVMX:
+                                                textures.Add(new PvmxTextureInfo(name, gbix, new Bitmap(file)));
+                                                break;
+                                            case TextureFormat.PAK:
+                                                textures.Add(new PakTextureInfo(name, gbix, new Bitmap(file)));
+                                                break;
+                                        }
+                                        if (gbix != uint.MaxValue)
+                                            gbix++;
+                                    }
 									listBox1.Items.Add(name);
 								}
 								break;
@@ -1312,18 +1367,20 @@ namespace TextureEditor
 	{
 		public PvrDataFormat DataFormat { get; set; }
 		public PvrPixelFormat PixelFormat { get; set; }
+        public MemoryStream TextureData { get; set; }
+        public PvrTextureInfo() { }
 
-		public PvrTextureInfo() { }
-
-		public PvrTextureInfo(TextureInfo tex)
-		{
-			Name = tex.Name;
-			GlobalIndex = tex.GlobalIndex;
-			Image = tex.Image;
-			Mipmap = tex.Mipmap;
-			PixelFormat = PvrPixelFormat.Unknown;
-			DataFormat = PvrDataFormat.Unknown;
-		}
+        public PvrTextureInfo(TextureInfo tex)
+        {
+            Name = tex.Name;
+            GlobalIndex = tex.GlobalIndex;
+            Image = tex.Image;
+            Mipmap = tex.Mipmap;
+            PixelFormat = PvrPixelFormat.Unknown;
+            DataFormat = PvrDataFormat.Unknown;
+            if (tex is PvrTextureInfo pv)
+                TextureData = pv.TextureData;
+        }
 
 		public PvrTextureInfo(GvrTextureInfo tex)
 			: this((TextureInfo)tex)
@@ -1344,7 +1401,8 @@ namespace TextureEditor
 		{
 			PixelFormat = tex.PixelFormat;
 			DataFormat = tex.DataFormat;
-		}
+            TextureData = tex.TextureData;
+        }
 
 		public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
 		{
@@ -1353,17 +1411,21 @@ namespace TextureEditor
 			DataFormat = PvrDataFormat.Unknown;
 			PixelFormat = PvrPixelFormat.Unknown;
 			Image = bitmap;
-		}
+        }
 
-		public PvrTextureInfo(string name, PvrTexture texture)
+		public PvrTextureInfo(string name, MemoryStream str, PvpPalette pvp = null)
 		{
+            TextureData = str;
+            PvrTexture texture = new PvrTexture(str, (int)str.Length);
+            if (pvp != null)
+                texture.SetPalette(pvp);
 			Name = name;
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DataFormat;
 			Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
 			PixelFormat = texture.PixelFormat;
 			Image = texture.ToBitmap();
-		}
+        }
 
 		public override bool CheckMipmap()
 		{
@@ -1375,8 +1437,9 @@ namespace TextureEditor
 	{
 		public GvrDataFormat DataFormat { get; set; }
 		public GvrPixelFormat PixelFormat { get; set; }
+        public MemoryStream TextureData { get; set; }
 
-		public GvrTextureInfo() { }
+        public GvrTextureInfo() { }
 
 		public GvrTextureInfo(TextureInfo tex)
 		{
@@ -1386,6 +1449,8 @@ namespace TextureEditor
 			Mipmap = tex.Mipmap;
 			PixelFormat = GvrPixelFormat.Unknown;
 			DataFormat = GvrDataFormat.Unknown;
+            if (tex is GvrTextureInfo gvrt)
+                TextureData = gvrt.TextureData;
 		}
 
 		public GvrTextureInfo(PvrTextureInfo tex)
@@ -1407,7 +1472,8 @@ namespace TextureEditor
 		{
 			PixelFormat = tex.PixelFormat;
 			DataFormat = tex.DataFormat;
-		}
+            TextureData = tex.TextureData;
+        }
 
 		public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
 		{
@@ -1418,9 +1484,13 @@ namespace TextureEditor
 			Image = bitmap;
 		}
 
-		public GvrTextureInfo(string name, GvrTexture texture)
+		public GvrTextureInfo(string name, MemoryStream str, GvpPalette gvp = null)
 		{
 			Name = name;
+            TextureData = str;
+            GvrTexture texture = new GvrTexture(str);
+            if (gvp != null)
+                texture.SetPalette(gvp);
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DataFormat;
 			Mipmap = texture.HasMipmaps;
@@ -1586,5 +1656,5 @@ namespace TextureEditor
 		}
 	}
 
-	enum TextureFormat { PVM, GVM, PVMX, PAK }
+    enum TextureFormat { PVM, GVM, PVMX, PAK }
 }
