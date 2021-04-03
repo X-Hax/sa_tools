@@ -54,11 +54,12 @@ namespace TextureEditor
 				toolStripStatusLabel1.Text = "1 texture";
 			else
 				toolStripStatusLabel1.Text = textures.Count + " textures";
-		}
+            alphaSortingToolStripMenuItem.Enabled = format == TextureFormat.PAK;
+        }
 
 		private bool GetTextures(string filename)
 		{
-			byte[] pvmdata = File.ReadAllBytes(filename);
+            byte[] pvmdata = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
 			ArchiveBase pvmfile = new PvmArchive();
@@ -94,15 +95,15 @@ namespace TextureEditor
                 newtextures = new List<TextureInfo>(inf.Length / 0x3C);
                 for (int i = 0; i < inf.Length; i += 0x3C)
                 {
-                    StringBuilder sb = new StringBuilder(0x1C);
-                    for (int j = 0; j < 0x1C; j++)
-                        if (inf[i + j] != 0)
-                            sb.Append((char)inf[i + j]);
-                        else
-                            break;
-                    byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+                    // Load a PAK INF entry
+                    byte[] pakentry = new byte[0x3C];
+                    Array.Copy(inf, i, pakentry, 0, 0x3C);
+                    PAKInfEntry entry = new PAKInfEntry(pakentry);
+                    // Load texture data
+                    byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
                     using (MemoryStream str = new MemoryStream(dds))
                     {
+                        // Check if the texture is DDS
                         uint check = BitConverter.ToUInt32(dds, 0);
                         if (check == 0x20534444) // DDS header
                         {
@@ -121,10 +122,10 @@ namespace TextureEditor
                             BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
                             Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
                             bitmap.UnlockBits(bmpData);
-                            newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), bitmap));
+                            newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, bitmap, entry.Type, entry.fSurfaceFlags));
                         }
-                        else
-                            newtextures.Add(new PakTextureInfo(sb.ToString(), BitConverter.ToUInt32(inf, i + 0x1C), new Bitmap(str)));
+                        else // Not DDS
+                            newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, new Bitmap(str), entry.Type, entry.fSurfaceFlags));
                     }
                 }
 			}
@@ -208,8 +209,8 @@ namespace TextureEditor
 			listBox1.Items.Clear();
 			listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
 			UpdateTextureCount();
-			SetFilename(Path.GetFullPath(filename));
-			return true;
+			SetFilename(Path.GetFullPath(filename)); 
+            return true;
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)
@@ -270,7 +271,7 @@ namespace TextureEditor
 			format = TextureFormat.PVMX;
 			Text = "PVMX Editor";
 			UpdateTextureCount();
-		}
+        }
 
 		private void newPAKToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -280,7 +281,7 @@ namespace TextureEditor
 			format = TextureFormat.PAK;
 			Text = "PAK Editor";
 			UpdateTextureCount();
-		}
+        }
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -416,15 +417,22 @@ namespace TextureEditor
                                 if (name.Length > 0x1C)
                                     name = name.Substring(0, 0x1C);
                                 pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
-                                inf.AddRange(Encoding.ASCII.GetBytes(name));
-                                if (name.Length != 0x1C)
-                                    inf.AddRange(new byte[0x1C - name.Length]);
-                                inf.AddRange(BitConverter.GetBytes(item.GlobalIndex));
-                                inf.AddRange(new byte[0xC]);
-                                inf.AddRange(BitConverter.GetBytes(item.Image.Width));
-                                inf.AddRange(BitConverter.GetBytes(item.Image.Height));
-                                inf.AddRange(new byte[4]);
-                                inf.AddRange(BitConverter.GetBytes(0x80000000));
+                                // Create a new PAK INF entry
+                                PAKInfEntry entry = new PAKInfEntry();
+                                byte[] namearr = Encoding.ASCII.GetBytes(name);
+                                Array.Copy(namearr, entry.filename, namearr.Length);
+                                entry.globalindex = item.GlobalIndex;
+                                entry.nWidth = (uint)item.Image.Width;
+                                entry.nHeight = (uint)item.Image.Height;
+                                // Salvage GVR data if available
+                                if (item is PakTextureInfo pk)
+                                {
+                                    entry.Type = entry.PixelFormat = pk.DataFormat;
+                                    entry.fSurfaceFlags = pk.SurfaceFlags;
+                                }
+                                if (item.Mipmap)
+                                    entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+                                inf.AddRange(entry.GetBytes());
                             }
 						}
 						pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
@@ -483,9 +491,9 @@ namespace TextureEditor
 				case TextureFormat.PAK:
 					switch (format)
 					{
-						case TextureFormat.PVM:
-						case TextureFormat.GVM:
-						case TextureFormat.PVMX:
+                        case TextureFormat.PVM:
+                        case TextureFormat.GVM:
+                        case TextureFormat.PVMX:
 							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
@@ -765,15 +773,29 @@ namespace TextureEditor
 				textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
 				switch (textures[listBox1.SelectedIndex])
 				{
-					case PvrTextureInfo pvr:
+                    case PakTextureInfo pak:
+                        dataFormatLabel.Text = $"Data Format: {pak.DataFormat}";
+                        pixelFormatLabel.Text = $"Surface Flags: {pak.GetSurfaceFlags()}";
+                        dataFormatLabel.Show();
+                        pixelFormatLabel.Show();
+                        checkBoxPAKUseAlpha.Enabled = true;
+                        checkBoxPAKUseAlpha.Show();
+                        if (pak.DataFormat == GvrDataFormat.Rgb5a3) 
+                            checkBoxPAKUseAlpha.Checked = true;
+                        else
+                            checkBoxPAKUseAlpha.Checked = false;
+                        break;
+                    case PvrTextureInfo pvr:
 						dataFormatLabel.Text = $"Data Format: {pvr.DataFormat}";
 						pixelFormatLabel.Text = $"Pixel Format: {pvr.PixelFormat}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+                        numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pvr.Image.Width;
 						numericUpDownOrigSizeY.Value = pvr.Image.Height;
-						break;
+                        checkBoxPAKUseAlpha.Enabled = false;
+                        checkBoxPAKUseAlpha.Hide();
+                        break;
 					case GvrTextureInfo gvr:
 						dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
 						pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
@@ -782,7 +804,9 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = gvr.Image.Width;
 						numericUpDownOrigSizeY.Value = gvr.Image.Height;
-						break;
+                        checkBoxPAKUseAlpha.Enabled = false;
+                        checkBoxPAKUseAlpha.Hide();
+                        break;
 					case PvmxTextureInfo pvmx:
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = true;
 						if (pvmx.Dimensions.HasValue)
@@ -797,14 +821,18 @@ namespace TextureEditor
 						}
 						dataFormatLabel.Hide();
 						pixelFormatLabel.Hide();
-						break;
+                        checkBoxPAKUseAlpha.Enabled = false;
+                        checkBoxPAKUseAlpha.Hide();
+                        break;
 					default:
 						dataFormatLabel.Hide();
 						pixelFormatLabel.Hide();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = textures[listBox1.SelectedIndex].Image.Width;
 						numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
-						break;
+                        checkBoxPAKUseAlpha.Enabled = false;
+                        checkBoxPAKUseAlpha.Hide();
+                        break;
 				}
 				suppress = false;
 			}
@@ -1059,9 +1087,19 @@ namespace TextureEditor
 			textures[listBox1.SelectedIndex].GlobalIndex = (uint)globalIndex.Value;
 		}
 
-		private void mipmapCheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
+        private void mipmapCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
+
+			// Update surface flags for PAK textures
+			if (textures[listBox1.SelectedIndex] is PakTextureInfo pk)
+			{
+				if (!mipmapCheckBox.Checked)
+					pk.SurfaceFlags &= ~NinjaSurfaceFlags.Mipmapped;
+				else
+					pk.SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+                pixelFormatLabel.Text = $"Surface Flags: {pk.GetSurfaceFlags()}";
+            }
 		}
 
 		private void textureImage_MouseMove(object sender, MouseEventArgs e)
@@ -1172,9 +1210,13 @@ namespace TextureEditor
 
 		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			foreach (TextureInfo info in textures)
-				if (info.CheckMipmap())
-					info.Mipmap = true;
+            foreach (TextureInfo info in textures)
+                if (info.CheckMipmap())
+                {
+                    info.Mipmap = true;
+                    if (info is PakTextureInfo pk)
+                        pk.SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+                }
 			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].CheckMipmap())
 				mipmapCheckBox.Checked = true;
 		}
@@ -1200,6 +1242,60 @@ namespace TextureEditor
 			if (!suppress && textures[listBox1.SelectedIndex] is PvmxTextureInfo tex)
 				tex.Dimensions = new Size((int)numericUpDownOrigSizeX.Value, (int)numericUpDownOrigSizeY.Value);
 		}
+
+		private void checkBoxPAKUseAlpha_CheckedChanged(object sender, EventArgs e)
+		{
+            if (!(textures[listBox1.SelectedIndex] is PakTextureInfo))
+            {
+                // This shouldn't trigger though
+                MessageBox.Show("This flag is only meant to be used with textures in PAK archives.");
+                return;
+            }
+            PakTextureInfo pk = (PakTextureInfo)textures[listBox1.SelectedIndex];
+            // Use alpha
+            if (checkBoxPAKUseAlpha.Checked)
+                pk.DataFormat = GvrDataFormat.Rgb5a3;
+            // Don't use alpha (palettized)
+            else if ((pk.SurfaceFlags & NinjaSurfaceFlags.Palettized) != 0)
+                pk.DataFormat = GvrDataFormat.Index4;
+            // Don't use alpha (regular)
+            else
+                pk.DataFormat = GvrDataFormat.Dxt1;
+            dataFormatLabel.Text = $"Data Format: {pk.DataFormat}";
+        }
+
+        private void PAKEnableAlphaForAll(bool enable)
+        {
+            if (textures == null || textures.Count == 0)
+                return;
+            foreach (PakTextureInfo paktxt in textures)
+            {
+                if (enable)
+                    paktxt.DataFormat = GvrDataFormat.Rgb5a3;
+                else
+                {
+                    if ((paktxt.SurfaceFlags & NinjaSurfaceFlags.Palettized) != 0)
+                        paktxt.DataFormat = GvrDataFormat.Index4;
+                    else paktxt.DataFormat = GvrDataFormat.Dxt1;
+                }
+            }
+            if (listBox1.SelectedIndex != -1)
+            {
+                PakTextureInfo pakcur = (PakTextureInfo)textures[listBox1.SelectedIndex];
+                checkBoxPAKUseAlpha.Checked = pakcur.DataFormat == GvrDataFormat.Rgb5a3;
+                dataFormatLabel.Text = $"Data Format: {pakcur.DataFormat}";
+            }
+        }
+
+		private void enablePAKAlphaForAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            PAKEnableAlphaForAll(true);
+        }
+
+		private void disablePAKAlphaForAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            PAKEnableAlphaForAll(false);
+        }
 	}
 
 	abstract class TextureInfo
@@ -1349,7 +1445,7 @@ namespace TextureEditor
 			Name = tex.Name;
 			GlobalIndex = tex.GlobalIndex;
 			Image = tex.Image;
-		}
+        }
 
 		public PvmxTextureInfo(PvmxTextureInfo tex)
 			: this((TextureInfo)tex)
@@ -1370,27 +1466,123 @@ namespace TextureEditor
 		}
 	}
 
-	class PakTextureInfo : TextureInfo
-	{
-		public PakTextureInfo() { }
+    enum NinjaSurfaceFlags : uint
+    {
+        Mipmapped = 0x80000000,
+        VQ = 0x40000000,
+        NotTwiddled = 0x04000000,
+        Twiddled = 0x00000000,
+        Stride = 0x02000000,
+        Palettized = 0x00008000
+    }
 
+    class PAKInfEntry
+    {
+        public byte[] filename; // 28
+        public uint globalindex;
+        public GvrDataFormat Type;
+        public uint BitDepth; // Unused
+        public GvrDataFormat PixelFormat; // Duplicate of Type
+        public uint nWidth;
+        public uint nHeight;
+        public uint TextureSize; // Unused
+        public NinjaSurfaceFlags fSurfaceFlags;
+        public PAKInfEntry()
+        {
+            filename = new byte[28];
+        }
+        public PAKInfEntry(byte[] data)
+        {
+            filename = new byte[28];
+            Array.Copy(data, filename, 0x1C);
+            globalindex = BitConverter.ToUInt32(data, 0x1C);
+            Type = (GvrDataFormat)BitConverter.ToUInt32(data, 0x20);
+            BitDepth = BitConverter.ToUInt32(data, 0x24);
+            PixelFormat = (GvrDataFormat)BitConverter.ToUInt32(data, 0x28);
+            nWidth = BitConverter.ToUInt32(data, 0x2C);
+            nHeight = BitConverter.ToUInt32(data, 0x30);
+            TextureSize = BitConverter.ToUInt32(data, 0x34);
+            fSurfaceFlags = (NinjaSurfaceFlags)BitConverter.ToUInt32(data, 0x38);
+        }
+        public string GetFilename()
+        {
+            StringBuilder sb = new StringBuilder(0x1C);
+            for (int j = 0; j < 0x1C; j++)
+                if (filename[j] != 0)
+                    sb.Append((char)filename[j]);
+                else
+                    break;
+            return sb.ToString();
+        }
+        public byte[] GetBytes()
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(filename);
+            result.AddRange(BitConverter.GetBytes(globalindex));
+            result.AddRange(BitConverter.GetBytes((uint)Type));
+            result.AddRange(BitConverter.GetBytes(BitDepth));
+            result.AddRange(BitConverter.GetBytes((uint)PixelFormat));
+            result.AddRange(BitConverter.GetBytes(nWidth));
+            result.AddRange(BitConverter.GetBytes(nHeight));
+            result.AddRange(BitConverter.GetBytes(TextureSize));
+            result.AddRange(BitConverter.GetBytes((uint)fSurfaceFlags));
+            return result.ToArray();
+        }
+    };
+
+    class PakTextureInfo : TextureInfo
+	{
+        public GvrDataFormat DataFormat { get; set; }
+        public NinjaSurfaceFlags SurfaceFlags { get; set; }
+        public PakTextureInfo() { }
+        public string GetSurfaceFlags()
+        {
+            List<string> flags = new List<string>();
+            if ((SurfaceFlags & NinjaSurfaceFlags.NotTwiddled) != 0)
+                flags.Add("Not Twiddled");
+            else
+                flags.Add("Twiddled");
+            if ((SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0)
+                flags.Add("Mipmapped");
+            if ((SurfaceFlags & NinjaSurfaceFlags.Palettized) != 0)
+                flags.Add("Palettized");
+            if ((SurfaceFlags & NinjaSurfaceFlags.Stride) != 0)
+                flags.Add("Stride");
+            if ((SurfaceFlags & NinjaSurfaceFlags.VQ) != 0)
+                flags.Add("VQ");
+            return string.Join(", ", flags);
+        }
 		public PakTextureInfo(TextureInfo tex)
 		{
 			Name = tex.Name;
 			GlobalIndex = tex.GlobalIndex;
-			Image = tex.Image;
-		}
+            if (tex is GvrTextureInfo gvrt)
+            {
+                DataFormat = gvrt.DataFormat;
+                if (gvrt.DataFormat == GvrDataFormat.Index4 || gvrt.DataFormat == GvrDataFormat.Index8)
+                    SurfaceFlags |= NinjaSurfaceFlags.Palettized;
+            }
+            else
+                DataFormat = GvrDataFormat.Dxt1;
+            Image = tex.Image;
+            Mipmap = tex.Mipmap;
+            if (tex.Mipmap) 
+                SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+        }
 
-		public PakTextureInfo(string name, uint gbix, Bitmap bitmap)
+        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped)
 		{
 			Name = name;
 			GlobalIndex = gbix;
-			Image = bitmap;
-		}
+            Image = bitmap;
+            DataFormat = format;
+            SurfaceFlags = flags;
+            Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
+        }
 
 		public override bool CheckMipmap()
 		{
-			return false;
+			return true;
 		}
 	}
 
