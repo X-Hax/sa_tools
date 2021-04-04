@@ -961,20 +961,35 @@ namespace TextureEditor
                                 if (Path.GetExtension(file).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                                     pvmdata = FraGag.Compression.Prs.Decompress(pvmdata);
                                 ArchiveBase pvmfile = null;
+                                MemoryStream stream = new MemoryStream(pvmdata);
                                 switch (format)
                                 {
                                     case TextureFormat.PVM:
+                                        if (GvmArchive.Identify(stream))
+                                        {
+                                            MessageBox.Show(this, "Unable to mix PVR and GVR textures in one archive: File \"" + file + "\" is a GVM archive.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                            continue;
+                                        }
+                                        else if (!PvmArchive.Identify(stream))
+                                        {
+                                            MessageBox.Show(this, "Could not open file \"" + file + "\" as a PVM archive.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                            continue;
+                                        }
                                         pvmfile = new PvmArchive();
                                         break;
                                     case TextureFormat.GVM:
+                                        if (PvmArchive.Identify(stream))
+                                        {
+                                            MessageBox.Show(this, "Unable to mix PVR and GVR textures in one archive: File \"" + file + "\" is a PVM archive.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                            continue;
+                                        }
+                                        else if (!GvmArchive.Identify(stream))
+                                        {
+                                            MessageBox.Show(this, "Could not open file \"" + file + "\" as a GVM archive.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                            continue;
+                                        }
                                         pvmfile = new GvmArchive();
                                         break;
-                                }
-                                MemoryStream stream = new MemoryStream(pvmdata);
-                                if (!PvmArchive.Identify(stream) && !GvmArchive.Identify(stream))
-                                {
-                                    MessageBox.Show(this, "Could not open file \"" + file + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    continue;
                                 }
                                 ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
                                 List<PvrTextureInfo> newtextures = new List<PvrTextureInfo>(pvmentries.Count);
