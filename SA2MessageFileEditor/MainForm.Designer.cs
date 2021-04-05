@@ -59,7 +59,6 @@
             this.messageNum = new System.Windows.Forms.ComboBox();
             this.linePanel = new System.Windows.Forms.Panel();
             this.messageCentered = new System.Windows.Forms.CheckBox();
-            this.waitTimeSelector = new SA2MessageFileEditor.TimeControl();
             this.waitTimeCheckBox = new System.Windows.Forms.CheckBox();
             this.voiceSelector = new System.Windows.Forms.NumericUpDown();
             this.playVoiceCheckBox = new System.Windows.Forms.CheckBox();
@@ -69,6 +68,7 @@
             this.lineAddButton = new System.Windows.Forms.Button();
             this.lineNum = new System.Windows.Forms.ComboBox();
             this.messagePanel = new System.Windows.Forms.Panel();
+            this.waitTimeSelector = new SA2MessageFileEditor.TimeControl();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -122,7 +122,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(12, 8);
+            label1.Location = new System.Drawing.Point(35, 8);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(30, 13);
             label1.TabIndex = 22;
@@ -135,7 +135,7 @@
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(334, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(389, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -292,17 +292,18 @@
             this.lineEdit.DetectUrls = false;
             this.lineEdit.Location = new System.Drawing.Point(12, 112);
             this.lineEdit.Name = "lineEdit";
-            this.lineEdit.Size = new System.Drawing.Size(310, 99);
+            this.lineEdit.Size = new System.Drawing.Size(362, 99);
             this.lineEdit.TabIndex = 15;
             this.lineEdit.Text = "";
             this.lineEdit.TextChanged += new System.EventHandler(this.lineEdit_TextChanged);
             // 
             // messageRemoveButton
             // 
+            this.messageRemoveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.messageRemoveButton.AutoSize = true;
             this.messageRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.messageRemoveButton.Enabled = false;
-            this.messageRemoveButton.Location = new System.Drawing.Point(265, 27);
+            this.messageRemoveButton.Location = new System.Drawing.Point(320, 28);
             this.messageRemoveButton.Name = "messageRemoveButton";
             this.messageRemoveButton.Size = new System.Drawing.Size(57, 23);
             this.messageRemoveButton.TabIndex = 17;
@@ -312,9 +313,10 @@
             // 
             // messageAddButton
             // 
+            this.messageAddButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.messageAddButton.AutoSize = true;
             this.messageAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.messageAddButton.Location = new System.Drawing.Point(223, 27);
+            this.messageAddButton.Location = new System.Drawing.Point(278, 28);
             this.messageAddButton.Name = "messageAddButton";
             this.messageAddButton.Size = new System.Drawing.Size(36, 23);
             this.messageAddButton.TabIndex = 16;
@@ -324,16 +326,21 @@
             // 
             // messageNum
             // 
+            this.messageNum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.messageNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.messageNum.FormattingEnabled = true;
             this.messageNum.Location = new System.Drawing.Point(71, 29);
             this.messageNum.Name = "messageNum";
-            this.messageNum.Size = new System.Drawing.Size(146, 21);
+            this.messageNum.Size = new System.Drawing.Size(201, 21);
             this.messageNum.TabIndex = 14;
             this.messageNum.SelectedIndexChanged += new System.EventHandler(this.messageNum_SelectedIndexChanged);
             // 
             // linePanel
             // 
+            this.linePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.linePanel.Controls.Add(this.messageCentered);
             this.linePanel.Controls.Add(this.waitTimeSelector);
             this.linePanel.Controls.Add(this.waitTimeCheckBox);
@@ -342,11 +349,10 @@
             this.linePanel.Controls.Add(this.audioSelector);
             this.linePanel.Controls.Add(this.playAudioCheckBox);
             this.linePanel.Controls.Add(this.lineEdit);
-            this.linePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.linePanel.Enabled = false;
             this.linePanel.Location = new System.Drawing.Point(0, 32);
             this.linePanel.Name = "linePanel";
-            this.linePanel.Size = new System.Drawing.Size(334, 223);
+            this.linePanel.Size = new System.Drawing.Size(386, 223);
             this.linePanel.TabIndex = 18;
             // 
             // messageCentered
@@ -359,24 +365,6 @@
             this.messageCentered.Text = "Centered";
             this.messageCentered.UseVisualStyleBackColor = true;
             this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
-            // 
-            // waitTimeSelector
-            // 
-            this.waitTimeSelector.AutoSize = true;
-            this.waitTimeSelector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.waitTimeSelector.Centiseconds = 0;
-            this.waitTimeSelector.Enabled = false;
-            this.waitTimeSelector.Frames = ((uint)(0u));
-            this.waitTimeSelector.Location = new System.Drawing.Point(95, 55);
-            this.waitTimeSelector.Minutes = 0;
-            this.waitTimeSelector.Name = "waitTimeSelector";
-            this.waitTimeSelector.Seconds = 0;
-            this.waitTimeSelector.Size = new System.Drawing.Size(143, 26);
-            this.waitTimeSelector.TabIndex = 21;
-            this.waitTimeSelector.TimeSpan = System.TimeSpan.Parse("00:00:00");
-            this.waitTimeSelector.TotalCentiseconds = ((uint)(0u));
-            this.waitTimeSelector.TotalFrames = 0;
-            this.waitTimeSelector.ValueChanged += new System.EventHandler(this.waitTimeSelector_ValueChanged);
             // 
             // waitTimeCheckBox
             // 
@@ -441,10 +429,11 @@
             // 
             // lineRemoveButton
             // 
+            this.lineRemoveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lineRemoveButton.AutoSize = true;
             this.lineRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.lineRemoveButton.Enabled = false;
-            this.lineRemoveButton.Location = new System.Drawing.Point(265, 3);
+            this.lineRemoveButton.Location = new System.Drawing.Point(320, 4);
             this.lineRemoveButton.Name = "lineRemoveButton";
             this.lineRemoveButton.Size = new System.Drawing.Size(57, 23);
             this.lineRemoveButton.TabIndex = 25;
@@ -454,9 +443,10 @@
             // 
             // lineAddButton
             // 
+            this.lineAddButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lineAddButton.AutoSize = true;
             this.lineAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.lineAddButton.Location = new System.Drawing.Point(223, 3);
+            this.lineAddButton.Location = new System.Drawing.Point(278, 4);
             this.lineAddButton.Name = "lineAddButton";
             this.lineAddButton.Size = new System.Drawing.Size(36, 23);
             this.lineAddButton.TabIndex = 24;
@@ -466,33 +456,55 @@
             // 
             // lineNum
             // 
+            this.lineNum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lineNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.lineNum.FormattingEnabled = true;
-            this.lineNum.Location = new System.Drawing.Point(48, 5);
+            this.lineNum.Location = new System.Drawing.Point(71, 5);
             this.lineNum.Name = "lineNum";
-            this.lineNum.Size = new System.Drawing.Size(169, 21);
+            this.lineNum.Size = new System.Drawing.Size(201, 21);
             this.lineNum.TabIndex = 23;
             this.lineNum.SelectedIndexChanged += new System.EventHandler(this.lineNum_SelectedIndexChanged);
             // 
             // messagePanel
             // 
+            this.messagePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.messagePanel.Controls.Add(this.lineRemoveButton);
             this.messagePanel.Controls.Add(this.linePanel);
             this.messagePanel.Controls.Add(this.lineAddButton);
             this.messagePanel.Controls.Add(label1);
             this.messagePanel.Controls.Add(this.lineNum);
-            this.messagePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.messagePanel.Enabled = false;
             this.messagePanel.Location = new System.Drawing.Point(0, 56);
             this.messagePanel.Name = "messagePanel";
-            this.messagePanel.Size = new System.Drawing.Size(334, 255);
+            this.messagePanel.Size = new System.Drawing.Size(389, 255);
             this.messagePanel.TabIndex = 19;
+            // 
+            // waitTimeSelector
+            // 
+            this.waitTimeSelector.AutoSize = true;
+            this.waitTimeSelector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.waitTimeSelector.Centiseconds = 0;
+            this.waitTimeSelector.Enabled = false;
+            this.waitTimeSelector.Frames = ((uint)(0u));
+            this.waitTimeSelector.Location = new System.Drawing.Point(95, 55);
+            this.waitTimeSelector.Minutes = 0;
+            this.waitTimeSelector.Name = "waitTimeSelector";
+            this.waitTimeSelector.Seconds = 0;
+            this.waitTimeSelector.Size = new System.Drawing.Size(143, 26);
+            this.waitTimeSelector.TabIndex = 21;
+            this.waitTimeSelector.TimeSpan = System.TimeSpan.Parse("00:00:00");
+            this.waitTimeSelector.TotalCentiseconds = ((uint)(0u));
+            this.waitTimeSelector.TotalFrames = 0;
+            this.waitTimeSelector.ValueChanged += new System.EventHandler(this.waitTimeSelector_ValueChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 311);
+            this.ClientSize = new System.Drawing.Size(389, 311);
             this.Controls.Add(this.messagePanel);
             this.Controls.Add(this.messageRemoveButton);
             this.Controls.Add(this.messageAddButton);
@@ -501,6 +513,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(405, 350);
             this.Name = "MainForm";
             this.Text = "SA2 Message File Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
