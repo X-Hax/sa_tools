@@ -86,6 +86,18 @@ namespace SA2MessageFileEditor
 					LoadFile(dlg.FileName);
 		}
 
+        private bool CheckForEscapeCharacter(string text)
+        {
+            int c = 0;
+            while (c < text.Length)
+            {
+                if (text[c] == '\f')
+                    return true;
+                c++;
+            }
+            return false;
+        }
+
 		private void LoadFile(string filename)
 		{
 			this.filename = filename;
@@ -111,12 +123,17 @@ namespace SA2MessageFileEditor
 			messages.Clear();
 			int address = 0;
 			int off = ByteConverter.ToInt32(fc, 0);
+            bool hasEscape = false;
 			while (off != -1)
 			{
-				messages.Add(Message.FromString(fc.GetCString(off, encoding)));
-				address += 4;
+                string str = fc.GetCString(off, encoding);
+                messages.Add(Message.FromString(str));
+                if (CheckForEscapeCharacter(str))
+                    hasEscape = true; 
+                address += 4;
 				off = ByteConverter.ToInt32(fc, address);
 			}
+            textOnlyToolStripMenuItem.Checked = !hasEscape;
 			UpdateMessageSelect();
 			messagePanel.Enabled = false;
 			AddRecentFile(filename);
@@ -173,7 +190,7 @@ namespace SA2MessageFileEditor
 			int addr = (messages.Count + 1) * 4;
 			List<byte> fc = new List<byte>();
 			Encoding encoding = useSJIS ? jpenc : euenc;
-			List<string> strs = new List<string>(messages.Select(a => Message.ToString(a)));
+			List<string> strs = new List<string>(messages.Select(a => Message.ToString(a,textOnlyToolStripMenuItem.Checked)));
 			foreach (string item in strs)
 			{
 				fc.AddRange(ByteConverter.GetBytes(addr));
@@ -461,7 +478,7 @@ namespace SA2MessageFileEditor
 			{
 				if (text[c] == '\f')
 				{
-					if (++c == text.Length) break;
+                    if (++c == text.Length) break;
 					char v6 = text[c];
 					while (v6 != ' ' && v6 != ':')
 					{
@@ -518,13 +535,15 @@ namespace SA2MessageFileEditor
 			return result;
 		}
 
-		public static string ToString(List<Message> messages)
-		{
-			StringBuilder sb = new StringBuilder();
-			foreach (Message msg in messages)
-				sb.Append(msg);
-			return sb.ToString();
-		}
+        public static string ToString(List<Message> messages, bool textOnly)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Message msg in messages)
+                if (textOnly)
+                    sb.Append(msg.Text);
+                else sb.Append(msg);
+            return sb.ToString();
+        }
 
 		public override string ToString()
 		{
