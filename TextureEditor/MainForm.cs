@@ -913,7 +913,13 @@ namespace TextureEditor
                     else if (GvrTexture.Is(dlg.FileName))
                         return new KeyValuePair<string, Bitmap>(name, new GvrTexture(dlg.FileName).ToBitmap());
                     else
-                        return new KeyValuePair<string, Bitmap>(name, new Bitmap(dlg.FileName));
+                    {
+                        Bitmap newbp = new Bitmap(dlg.FileName);
+                        // Create a new bitmap and dispose the old one to avoid access error
+                        Bitmap newbp2 = new Bitmap(newbp);
+                        newbp.Dispose();
+                        return new KeyValuePair<string, Bitmap>(name, newbp2);
+                    }
                 }
                 else
                 {
