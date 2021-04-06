@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.DirectX.Direct3D;
+using System.Drawing.Imaging;
 using PAKLib;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
 using SA_Tools;
@@ -44,51 +44,82 @@ namespace SA2StageSelEdit
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 		}
 
-		private void openToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog fd = new OpenFileDialog() { DefaultExt = "ini", Filter = "INI Files|*.ini" })
-				if (fd.ShowDialog(this) == DialogResult.OK)
-				{
-					IniData ini = IniSerializer.Deserialize<IniData>(fd.FileName);
-					filename = Path.Combine(Path.GetDirectoryName(fd.FileName),
-						ini.Files.First((item) => item.Value.Type == "stageselectlist").Value.Filename);
-					levels = new List<StageSelectLevel>(StageSelectLevelList.Load(filename));
-					string resdir = Path.Combine(Path.GetDirectoryName(fd.FileName), ini.SystemFolder);
-					using (Device d3ddevice = new Device(0, DeviceType.Hardware, dummyPanel.Handle, CreateFlags.SoftwareVertexProcessing, new PresentParameters[] { new PresentParameters() { Windowed = true, SwapEffect = SwapEffect.Discard, EnableAutoDepthStencil = true, AutoDepthStencilFormat = DepthFormat.D24X8 } }))
-					{
-						using (Stream str = new MemoryStream(
-							new PAKFile(Path.Combine(resdir, @"SOC\stageMapBG.pak")).Files.Find(
-							(a) => a.Name.Equals(@"stagemapbg\stagemap.dds")).Data))
-							bgtex = LoadDDS(str, d3ddevice);
-						if (File.Exists(Path.Combine(resdir, @"PRS\stageMap.pak")))
-						{
-							List<PAKFile.File> files = new PAKFile(Path.Combine(resdir, @"PRS\stageMap.pak")).Files;
-							byte[] inf = files.Find((a) => a.Name.Equals(@"stagemap\stagemap.inf")).Data;
-							uitexs = new Bitmap[inf.Length / 0x3C];
-							for (int i = 0; i < uitexs.Length; i++)
-								using (Stream str = new MemoryStream(files.Find(
-									(a) => a.Name.Equals(@"stagemap\" + Encoding.ASCII.GetString(inf, i * 0x3C, 0x1c).TrimEnd('\0') + ".dds")).Data))
-									uitexs[i] = LoadDDS(str, d3ddevice);
-						}
-						else
-							uitexs = TextureArchive.GetTextures(Path.Combine(resdir, "stageMap.prs")).Select((tex) => tex.Image).ToArray();
-					}
-					saveToolStripMenuItem.Enabled = panel1.Enabled = panel2.Enabled = true;
-					selected = 0;
-					level.SelectedIndex = (int)levels[selected].Level;
-					character.SelectedIndex = (int)levels[selected].Character;
-					column.Value = levels[selected].Column;
-					row.Value = levels[selected].Row;
-					DrawLevel();
-				}
-		}
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog fd = new OpenFileDialog() { DefaultExt = "ini", Filter = "INI Files|*.ini" })
+                if (fd.ShowDialog(this) == DialogResult.OK)
+                {
+                    IniData ini = IniSerializer.Deserialize<IniData>(fd.FileName);
+                    filename = Path.Combine(Path.GetDirectoryName(fd.FileName),
+                        ini.Files.First((item) => item.Value.Type == "stageselectlist").Value.Filename);
+                    levels = new List<StageSelectLevel>(StageSelectLevelList.Load(filename));
+                    string resdir = Path.Combine(Path.GetDirectoryName(fd.FileName), ini.SystemFolder);
+                    using (MemoryStream str = new MemoryStream(
+                        new PAKFile(Path.Combine(resdir, @"SOC\stageMapBG.pak")).Files.Find(
+                        (a) => a.Name.Equals(@"stagemapbg\stagemap.dds")).Data))
+                        bgtex = LoadDDS(str);
+                    if (File.Exists(Path.Combine(resdir, @"PRS\stageMap.pak")))
+                    {
+                        List<PAKFile.File> files = new PAKFile(Path.Combine(resdir, @"PRS\stageMap.pak")).Files;
+                        byte[] inf = files.Find((a) => a.Name.Equals(@"stagemap\stagemap.inf")).Data;
+                        uitexs = new Bitmap[inf.Length / 0x3C];
+                        for (int i = 0; i < uitexs.Length; i++)
+                            using (MemoryStream str = new MemoryStream(files.Find(
+                                (a) => a.Name.Equals(@"stagemap\" + Encoding.ASCII.GetString(inf, i * 0x3C, 0x1c).TrimEnd('\0') + ".dds")).Data))
+                                uitexs[i] = LoadDDS(str);
+                    }
+                    else
+                        uitexs = TextureArchive.GetTextures(Path.Combine(resdir, "stageMap.prs")).Select((tex) => tex.Image).ToArray();
+                    saveToolStripMenuItem.Enabled = panel1.Enabled = panel2.Enabled = true;
+                    selected = 0;
+                    level.SelectedIndex = (int)levels[selected].Level;
+                    character.SelectedIndex = (int)levels[selected].Character;
+                    column.Value = levels[selected].Column;
+                    row.Value = levels[selected].Row;
+                    DrawLevel();
+                }
+        }
 
-		private Bitmap LoadDDS(Stream str, Device dev)
-		{
-			using (Texture tex = TextureLoader.FromStream(dev, str))
-			using (Stream pngstr = TextureLoader.SaveToStream(ImageFileFormat.Png, tex))
-				return new Bitmap(pngstr);
-		}
+        private bool CheckIfDDS(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                byte[] dds = ms.ToArray();
+                uint check = BitConverter.ToUInt32(dds.ToArray(), 0);
+                if (check == 0x20534444) // DDS header
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        private Bitmap LoadDDS(MemoryStream str)
+        {
+            // Check if the texture is DDS
+            if (CheckIfDDS(str))
+            {
+                str.Seek(0, SeekOrigin.Begin);
+                PixelFormat pxformat;
+                var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+                switch (image.Format)
+                {
+                    case Pfim.ImageFormat.Rgba32:
+                        pxformat = PixelFormat.Format32bppArgb;
+                        break;
+                    default:
+                        MessageBox.Show("Unsupported image format.");
+                        throw new NotImplementedException();
+                }
+                var bitmap = new Bitmap(image.Width, image.Height, pxformat);
+                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+                System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+                bitmap.UnlockBits(bmpData);
+                return bitmap;
+            }
+            else // Not DDS
+                return new Bitmap(str);
+        }
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
