@@ -41,7 +41,7 @@
 			// 
 			this.checkBox1.AutoSize = true;
 			this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkBox1.Location = new System.Drawing.Point(12, 39);
+			this.checkBox1.Location = new System.Drawing.Point(12, 42);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(210, 20);
 			this.checkBox1.TabIndex = 20;

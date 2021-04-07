@@ -759,7 +759,10 @@ namespace SAToolsHub
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			projectConverter.ShowDialog();
+			DialogResult convWarning = MessageBox.Show(("This feature will create a project xml for your projects.\n\nSome tools may not function properly with older projects., notably SADXLVL2." +
+				"\n\nWould you like to continue with the project conversion?"), "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+			if (convWarning == DialogResult.Yes)
+				projectConverter.ShowDialog();
 		}
 
 		//Help Links
