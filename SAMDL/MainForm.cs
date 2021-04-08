@@ -483,7 +483,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
-			string extension = Path.GetExtension(filename);
+			string extension = Path.GetExtension(filename).ToLowerInvariant();
 
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
@@ -761,7 +761,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -1137,7 +1137,7 @@ namespace SonicRetro.SAModel.SAMDL
 			AddTreeNode(model, treeView1.Nodes);
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
@@ -2363,7 +2363,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			RebuildModelCache();
 			unsaved = true;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			SelectedItemChanged();
@@ -3483,6 +3483,38 @@ namespace SonicRetro.SAModel.SAMDL
                     ImportOBJLegacy(selectedObject, ofd.FileName);
                 }
             }
+        }
+
+		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            model.Name = "object_" + Extensions.GenerateIdentifier();
+            if (model.Attach != null)
+            {
+                model.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
+                if (model.Attach is BasicAttach)
+                {
+                    BasicAttach basicatt = (BasicAttach)model.Attach;
+                    basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+                    basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
+                    basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+                    basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+                    if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+                        foreach (NJS_MESHSET meshset in basicatt.Mesh)
+                        {
+                            meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+                            meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+                            meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+                            meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+                        }
+                }
+                else if (model.Attach is ChunkAttach)
+                {
+                    ChunkAttach chunkatt = (ChunkAttach)model.Attach;
+                    chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+                    chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+                }     
+            }
+            RebuildModelCache();
         }
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
