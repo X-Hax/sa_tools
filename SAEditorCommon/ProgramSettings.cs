@@ -10,7 +10,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		//public string SADXPCPath { get; set; }
 		//public string SA2PCPath { get; set; }
 
-		public Settings_SADXLVL2 SADXLVL2;
 		public Settings_SALVL SALVL;
 		public Settings_SAMDL SAMDL;
 		public Settings_SA2EventViewer SA2EventViewer;
@@ -33,7 +32,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				{
 					//SA2PCPath = "",
 					//SADXPCPath = "",
-					SADXLVL2 = new Settings_SADXLVL2(),
 					SALVL = new Settings_SALVL(),
 					SAMDL = new Settings_SAMDL(),
 					SA2EventViewer = new Settings_SA2EventViewer()
@@ -47,7 +45,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			IniSerializer.Serialize(this, GetSettingsPath());
 		}
 
-		public class Settings_SADXLVL2
+		public class Settings_SALVL
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
@@ -69,7 +67,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			public int CameraModifier { get; set; }
 			public bool AlternativeCamera { get; set; }
 			public bool MouseWrapScreen { get; set; }
-			public Settings_SADXLVL2()
+			public Settings_SALVL()
 			{
 				ShowWelcomeScreen = true;
 				DisableModelLibrary = false;
@@ -82,24 +80,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				CameraModifier = 1;
 				AlternativeCamera = false;
 				MouseWrapScreen = false;
-			}
-		}
-
-		public class Settings_SALVL
-		{
-			[DefaultValue(true)]
-			public bool ShowWelcomeScreen { get; set; }
-			[DefaultValue(10000.0f)]
-			public float DrawDistance_General { get; set; }
-			[DefaultValue(1)]
-			public int CameraModifier { get; set; }
-			public bool AlternativeCamera { get; set; }
-			public Settings_SALVL()
-			{
-				ShowWelcomeScreen = true;
-				DrawDistance_General = 10000.0f;
-				CameraModifier = 1;
-				AlternativeCamera = false;
 			}
 		}
 

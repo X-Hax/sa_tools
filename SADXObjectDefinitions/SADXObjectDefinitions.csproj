@@ -152,9 +152,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SADXLVL2\SADXLVL2.csproj">
+    <ProjectReference Include="..\SALVL\SALVL.csproj">
       <Project>{5997DC6A-DA95-487E-BB19-2D8890684A54}</Project>
-      <Name>SADXLVL2</Name>
+      <Name>SALVL</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">

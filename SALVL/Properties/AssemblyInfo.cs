@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SALVL")]
+[assembly: AssemblyTitle("SADXLVL2")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SALVL")]
+[assembly: AssemblyProduct("SADXLVL2")]
 [assembly: AssemblyCopyright("Copyright © Sonic Retro 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

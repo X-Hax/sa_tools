@@ -1,4 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using System.Text;
+using System.Threading.Tasks;
 
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
@@ -7,7 +12,7 @@ namespace SonicRetro.SAModel.SALVL
 	public static class DefaultActionList
 	{
 		private static ActionKeyMapping[] defaultActionMapping = new ActionKeyMapping[]
-		{
+{
 			new ActionKeyMapping()
 			{
 				Name = "Camera Mode",
@@ -109,28 +114,6 @@ namespace SonicRetro.SAModel.SALVL
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Next Character",
-				MainKey = Keys.Oemplus,
-				AltKey = Keys.None,
-				Description = "Change the currently selected character",
-				FireType = ActionFireType.OnPress,
-				IsSearchable = true,
-				Modifiers = Keys.None,
-				Synonyms = new string[] { }
-			},
-			new ActionKeyMapping()
-			{
-				Name = "Previous Character",
-				MainKey = Keys.OemMinus,
-				AltKey = Keys.None,
-				Description = "Change the currently selected character",
-				FireType = ActionFireType.OnPress,
-				IsSearchable = true,
-				Modifiers = Keys.None,
-				Synonyms = new string[] { }
-			},
-			new ActionKeyMapping()
-			{
 				Name = "Camera Move",
 				MainKey = Keys.ShiftKey,
 				AltKey = Keys.None,
@@ -162,7 +145,7 @@ namespace SonicRetro.SAModel.SALVL
 				Modifiers = Keys.None,
 				Synonyms = new string[] { "mouselook", "rotate" }
 			}
-		};
+};
 
 		public static ActionKeyMapping[] DefaultActionMapping { get { return defaultActionMapping; } }
 	}

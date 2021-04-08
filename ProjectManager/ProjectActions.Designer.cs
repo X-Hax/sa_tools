@@ -99,7 +99,7 @@
 			this.SADXLVL2Button.Name = "SADXLVL2Button";
 			this.SADXLVL2Button.Size = new System.Drawing.Size(324, 23);
 			this.SADXLVL2Button.TabIndex = 0;
-			this.SADXLVL2Button.Text = "SADXLVL2";
+			this.SADXLVL2Button.Text = "SALVL";
 			this.SADXLVL2Button.UseVisualStyleBackColor = true;
 			this.SADXLVL2Button.Click += new System.EventHandler(this.SADXLVL2Button_Click);
 			// 
