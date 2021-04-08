@@ -3485,15 +3485,15 @@ namespace SonicRetro.SAModel.SAMDL
             }
         }
 
-		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            model.Name = "object_" + Extensions.GenerateIdentifier();
-            if (model.Attach != null)
+        private void RandomizeLabels(NJS_OBJECT obj)
+        {
+            obj.Name = "object_" + Extensions.GenerateIdentifier();
+            if (obj.Attach != null)
             {
-                model.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
-                if (model.Attach is BasicAttach)
+                obj.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
+                if (obj.Attach is BasicAttach)
                 {
-                    BasicAttach basicatt = (BasicAttach)model.Attach;
+                    BasicAttach basicatt = (BasicAttach)obj.Attach;
                     basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
                     basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
                     basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
@@ -3507,14 +3507,25 @@ namespace SonicRetro.SAModel.SAMDL
                             meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
                         }
                 }
-                else if (model.Attach is ChunkAttach)
+                else if (obj.Attach is ChunkAttach)
                 {
-                    ChunkAttach chunkatt = (ChunkAttach)model.Attach;
+                    ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
                     chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
                     chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-                }     
+                }
             }
+            if (obj.Children != null && obj.Children.Count > 0)
+                foreach (NJS_OBJECT child in obj.Children)
+                    RandomizeLabels(child);
+            if (obj.Sibling != null)
+                    RandomizeLabels(obj.Sibling);
+        }
+
+		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            RandomizeLabels(model);
             RebuildModelCache();
+            unsaved = true;
         }
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
