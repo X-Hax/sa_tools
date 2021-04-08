@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using SonicRetro.SAModel;
-using SA_Tools;
 
 namespace CompareTool
 {
@@ -38,11 +37,104 @@ namespace CompareTool
 		static bool overwrite = true;
 		static bool savediff = false;
 		static int uvcount = 0;
-		
-		static void Main(string[] args)
+
+        static void SortModel(NJS_OBJECT mdl, bool withchildren)
+        {
+            if (mdl.Attach != null)
+            {
+                if (!(mdl.Attach is BasicAttach))
+                {
+                    //MessageBox.Show("This operation is only supported for basic models.");
+                    return;
+                }
+                BasicAttach basicatt = (BasicAttach)mdl.Attach;
+                List<NJS_MESHSET> mesh_opaque = new List<NJS_MESHSET>();
+                List<NJS_MESHSET> mesh_trans = new List<NJS_MESHSET>();
+                List<NJS_MATERIAL> mats_opaque = new List<NJS_MATERIAL>();
+                List<NJS_MATERIAL> mats_trans = new List<NJS_MATERIAL>();
+                Dictionary<ushort, ushort> matsidx_trans = new Dictionary<ushort, ushort>();
+                Dictionary<ushort, ushort> matsidx_opaque = new Dictionary<ushort, ushort>();
+                ushort matid_current = 0;
+                List<ushort> matids = new List<ushort>();
+                // Opaque meshes
+                foreach (NJS_MESHSET m in basicatt.Mesh)
+                {
+                    if (!basicatt.Material[m.MaterialID].UseAlpha)
+                    {
+                        mesh_opaque.Add(m);
+                        if (!mats_opaque.Contains(basicatt.Material[m.MaterialID]))
+                        {
+                            mats_opaque.Add(basicatt.Material[m.MaterialID]);
+                            matids.Add(matid_current);
+                            matid_current++;
+                        }
+                        else
+                            matids.Add((ushort)mats_opaque.IndexOf(basicatt.Material[m.MaterialID]));
+                    }
+                }
+                // Transparent meshes
+                foreach (NJS_MESHSET m in basicatt.Mesh)
+                {
+                    if (basicatt.Material[m.MaterialID].UseAlpha)
+                    {
+                        mesh_trans.Add(m);
+                        if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
+                        {
+                            mats_trans.Add(basicatt.Material[m.MaterialID]);
+                            matids.Add(matid_current);
+                            matid_current++;
+                        }
+                        else
+                        {
+                            matids.Add((ushort)(mats_opaque.Count + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+                        }
+                    }
+                }
+                mesh_opaque.AddRange(mesh_trans);
+                mats_opaque.AddRange(mats_trans);
+                ushort matid_new = 0;
+                foreach (NJS_MESHSET m in mesh_opaque)
+                {
+                    m.MaterialID = matids[matid_new];
+                    matid_new++;
+                }
+                BasicAttach basicatt_new = new BasicAttach(basicatt.Vertex, basicatt.Normal, mesh_opaque, mats_opaque);
+                basicatt_new.Bounds.Center = basicatt.Bounds.Center;
+                basicatt_new.Bounds.Radius = basicatt.Bounds.Radius;
+                basicatt_new.MaterialName = basicatt.MaterialName;
+                basicatt_new.MeshName = basicatt.MeshName;
+                basicatt_new.NormalName = basicatt.NormalName;
+                basicatt_new.VertexName = basicatt.VertexName;
+                basicatt_new.Name = basicatt.Name;
+                mdl.Attach = basicatt_new;
+            }
+            if (withchildren)
+            {
+                foreach (NJS_OBJECT child in mdl.Children)
+                    SortModel(child, true);
+            }
+           // RebuildModelCache();
+            //DrawEntireModel();
+            //SelectedItemChanged();
+            //unsaved = true;
+        }
+
+        static void Main(string[] args)
 		{
 			string filename_src;
 			string filename_dst;
+            if (args.Length == 1)
+            {
+                string[] filenames = File.ReadAllLines(args[0]);
+                for (int f = 0; f < filenames.Length; f++)
+                {
+                    Console.WriteLine("Sorting file {0}", filenames[f]);
+                    ModelFile model = new ModelFile(filenames[f]);
+                    SortModel(model.Model, true);
+                    model.SaveToFile(filenames[f]);
+                }
+                return;
+            }
 			string filename_out = "Result.ini";
 			if (args.Length > 1)
 			{
