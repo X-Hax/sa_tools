@@ -2497,7 +2497,6 @@ namespace SonicRetro.SAModel.SAMDL
 					case ".njm":
 						byte[] njmFile = File.ReadAllBytes(fn);
 						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
-						bool useShortRot = ByteConverter.ToInt32(njmFile, 0x8) == 0xC;
 
 						byte[] newFile = new byte[njmFile.Length - 0x8];
 						Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
@@ -2505,7 +2504,7 @@ namespace SonicRetro.SAModel.SAMDL
 						string njmName = Path.GetFileNameWithoutExtension(fn);
 						Dictionary<int, string> label = new Dictionary<int, string>();
 						label.Add(0, njmName);
-						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, useShortRot);
+						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
 						if (first)
 						{
 							first = false;
