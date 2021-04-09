@@ -11,16 +11,6 @@ using VrSharp.Pvr;
 
 namespace ArchiveTool
 {
-	public struct PBTextureData
-	{
-		public uint offset;
-		public byte pixelformat;
-		public byte dataformat;
-		public short nothing;
-		public uint gbix;
-		public ushort width;
-		public ushort height;
-	}
 	static class Program
 	{
 		static void Main(string[] args)
@@ -32,10 +22,11 @@ namespace ArchiveTool
 				Console.WriteLine("Usage:\n");
 				Console.WriteLine("Extracting a PVM/GVM/PRS/PB/DAT/REL file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
 				Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
-				Console.WriteLine("Creating a PVM/GVM/DAT from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
-				Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
-				Console.WriteLine("Converting GVM to PVM: ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
-				Console.WriteLine("Creating a PRS compressed binary: ArchiveTool <file.bin>\nA PRS archive will be created from the file.\nFile extension must be .BIN for this option to work.\n");
+                Console.WriteLine("Creating a PB archive from a folder with textures: ArchiveTool -pb <foldername>");
+                Console.WriteLine("Creating a PVM/GVM/DAT from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
+                Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
+				Console.WriteLine("Converting GVM to PVM (lossy): ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
+				Console.WriteLine("Creating a PRS compressed binary: ArchiveTool <file.bin>\nFile extension must be .BIN for this option to work.\n");
 				Console.WriteLine("Press ENTER to exit.");
 				Console.ReadLine();
 				return;
@@ -265,8 +256,45 @@ namespace ArchiveTool
 					return;
 				}
 			}
-			//PVM2TexPack mode
-			else if (args[0] == "-png")
+            //Create PB mode
+            else if (args[0] == "-pb")
+            {
+                string filePath = args[1];
+                Console.WriteLine("Building PB from folder: {0}", filePath);
+                if (Directory.Exists(filePath))
+                {
+                    string indexfilename = Path.Combine(filePath, "index.txt");
+                    if (!File.Exists(indexfilename))
+                    {
+                        Console.WriteLine("Supplied path does not have an index file.");
+                        Console.WriteLine("Press ENTER to exit.");
+                        Console.ReadLine();
+                        return;
+                    }
+                    List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
+                    PBArchive pba = new PBArchive(filenames.Count);
+                    int l = 0;
+                    foreach (string tex in filenames)
+                    {
+                        byte[] texbytes = File.ReadAllBytes(Path.Combine(filePath, tex));
+                        pba.AddPVR(texbytes, l);
+                        l++;
+                    }
+                    string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filePath)), Path.GetFileNameWithoutExtension(filePath));
+                    string filename_full = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filePath)), Path.GetFileName(filePath) + ".pb");
+                    Console.WriteLine("Output file: {0}", filename_full);
+                    File.WriteAllBytes(filename_full, pba.GetBytes());
+                }
+                else
+                {
+                    Console.WriteLine("Supplied path does not exist.");
+                    Console.WriteLine("Press ENTER to exit.");
+                    Console.ReadLine();
+                    return;
+                }
+            }
+            //PVM2TexPack mode
+            else if (args[0] == "-png")
 			{
 				Queue<string> files = new Queue<string>();
 				for (int u = 1; u < args.Length; u++)
@@ -537,67 +565,22 @@ namespace ArchiveTool
 						break;
 					case ".pb":
 						Console.WriteLine("Extracting PB file: {0}", filePath);
-						byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
-						byte[] pvrtheader = { 0x50, 0x56, 0x52, 0x54 };
-						byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
 						byte[] pbdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pb"));
-						byte numtextures = pbdata[4];
-						PBTextureData[] headers = new PBTextureData[numtextures];
 						dir = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
 						Directory.CreateDirectory(dir);
-						for (int u = 0; u < numtextures; u++)
-						{
-							int tempaddr = 8 + 16 * u;
-							headers[u].offset = ByteConverter.ToUInt32(pbdata, tempaddr);
-							headers[u].pixelformat = pbdata[tempaddr + 4];
-							headers[u].dataformat = pbdata[tempaddr + 5];
-							headers[u].gbix = ByteConverter.ToUInt32(pbdata, tempaddr + 8);
-							headers[u].width = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
-							headers[u].height = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
-						}
-						for (int u = 0; u < numtextures; u++)
-						{
-							int tempaddr = 8 + 16 * u;
-							Console.WriteLine("Texture {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, headers[u].offset, headers[u].pixelformat, headers[u].dataformat, headers[u].gbix, headers[u].width, headers[u].height);
-							string outpath = Path.Combine(dir, u.ToString("D3") + ".pvr");
-							using (Stream pvrStream = File.Open(outpath, FileMode.Create))
-							{
-								uint chunksize = 0;
-								if (u == numtextures - 1) chunksize = (uint)pbdata.Length - headers[u].offset;
-								else chunksize = headers[u + 1].offset - headers[u].offset;
-								uint chunksize_file = chunksize;
-								if (chunksize_file % 8 != 0)
-								{
-									do
-									{
-										chunksize_file++;
-									}
-									while (chunksize_file % 8 != 0);
-								}
-								pvrStream.Write(gbixheader, 0, 4);
-								pvrStream.Write(ByteConverter.GetBytes(8), 0, 4);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].gbix), 0, 4);
-								pvrStream.Write(padding, 0, 4);
-								pvrStream.Write(pvrtheader, 0, 4);
-								pvrStream.Write(ByteConverter.GetBytes(chunksize_file + 8), 0, 4);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].pixelformat), 0, 1);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].dataformat), 0, 1);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].nothing), 0, 2);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].width), 0, 2);
-								pvrStream.Write(ByteConverter.GetBytes(headers[u].height), 0, 2);
-								pvrStream.Write(pbdata, (int)headers[u].offset, (int)chunksize);
-								if (pvrStream.Position % 8 != 0)
-								{
-									do
-									{
-										pvrStream.Write(ByteConverter.GetBytes(0), 0, 1);
-									}
-									while (pvrStream.Position % 8 != 0);
-								}
-								pvrStream.Flush();
-								pvrStream.Close();
-							}
-						}
+                        PBArchive pba = new PBArchive(pbdata);
+                        using (TextWriter texList = File.CreateText(Path.Combine(dir, "index.txt")))
+                        {
+                            for (int u = 0; u < pba.Headers.Count; u++)
+                            {
+                                byte[] pvrt = pba.GetPVR(u);
+                                string outpath = Path.Combine(dir, u.ToString("D3") + ".pvr");
+                                File.WriteAllBytes(outpath, pvrt);
+                                texList.WriteLine(u.ToString("D3") + ".pvr");
+                            }
+                            texList.Flush();
+                            texList.Close();
+                        }
 						Console.WriteLine("Archive extracted!");
 						break;
 					case ".bin":
@@ -607,7 +590,6 @@ namespace ArchiveTool
 						File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), bindata);
 						Console.WriteLine("PRS archive was compiled successfully!");
 						return;
-						break;
 					case ".prs":
 					case ".pvm":
 					case ".gvm":
@@ -881,7 +863,172 @@ namespace ArchiveTool
 					return CompressedBuffer;
 				}
 			}
-
 		}
-	}
+
+        internal class PBTextureHeader
+        {
+            public int Offset { get; set; }
+            public PvrPixelFormat PixelFormat { get; set; }
+            public PvrDataFormat DataFormat { get; set; }
+            public uint GBIX { get; set; }
+            public ushort Width { get; set; }
+            public ushort Height { get; set; }
+
+            public byte[] GetBytes()
+            {
+                List<byte> result = new List<byte>();
+                result.AddRange(ByteConverter.GetBytes(Offset));
+                result.Add((byte)PixelFormat);
+                result.Add((byte)DataFormat);
+                result.Add(0);
+                result.Add(0);
+                result.AddRange(ByteConverter.GetBytes(GBIX));
+                result.AddRange(ByteConverter.GetBytes(Width));
+                result.AddRange(ByteConverter.GetBytes(Height));
+                return result.ToArray();
+            }
+
+            public PBTextureHeader(byte[] pbdata, int tempaddr)
+            {
+                Offset = ByteConverter.ToInt32(pbdata, tempaddr);
+                PixelFormat = (PvrPixelFormat)pbdata[tempaddr + 4];
+                DataFormat = (PvrDataFormat)pbdata[tempaddr + 5];
+                GBIX = ByteConverter.ToUInt32(pbdata, tempaddr + 8);
+                Width = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
+                Height = ByteConverter.ToUInt16(pbdata, tempaddr + 12);
+            }
+
+            public PBTextureHeader(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
+            {
+                Offset = offset;
+                PixelFormat = pxformat;
+                DataFormat = dataformat;
+                GBIX = gbix;
+                Width = width;
+                Height = height;
+            }
+        }
+
+        public class PBArchive
+        {
+            public List<PBTextureHeader> Headers;
+            public List<byte[]> Data;
+
+            public PBArchive(byte[] pbdata)
+            {
+                Headers = new List<PBTextureHeader>();
+                Data = new List<byte[]>();
+                int numtextures = pbdata[4];
+                for (int u = 0; u < numtextures; u++)
+                {
+                    PBTextureHeader hdr = new PBTextureHeader(pbdata, 8 + 16 * u);
+                    Headers.Add(hdr);
+                    //Console.WriteLine("Added header {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, hdr.Offset, hdr.PixelFormat, hdr.DataFormat, hdr.GBIX, hdr.Width, hdr.Height);
+                }
+                PBTextureHeader[] headers = Headers.ToArray();
+                for (int u = 0; u < numtextures; u++)
+                {
+                    int chunksize;
+                    if (u == numtextures - 1) chunksize = pbdata.Length - headers[u].Offset;
+                    else chunksize = headers[u + 1].Offset - headers[u].Offset;
+                    byte[] pbchunk = new byte[chunksize];
+                    Array.Copy(pbdata, headers[u].Offset, pbchunk, 0, chunksize);
+                    Data.Add(pbchunk);
+                    //Console.WriteLine("Added data: offset {0}, length {1}", headers[u].Offset, pbchunk.Length);
+                }
+            }
+
+            public PBArchive(int count)
+            {
+                Headers = new List<PBTextureHeader>(count);
+                Data = new List<byte[]>(count);
+            }
+
+            private int GetCurrentOffset(int index)
+            {
+                int offset_base = 8 + 16 * Headers.Capacity;
+                if (index == 0)
+                    return offset_base;
+                for (int u = 0; u < index; u++)
+                {
+                    offset_base += Data[u].Length;
+                }
+                return offset_base;
+            }
+
+            public void AddPVR(byte[] pvrdata, int index)
+            {
+                int length = ByteConverter.ToInt32(pvrdata, 20) - 8;
+                int offset = GetCurrentOffset(index);
+                PvrTexture pvr = new PvrTexture(pvrdata);
+                Headers.Add(new PBTextureHeader(offset, pvr.PixelFormat, pvr.DataFormat, pvr.GlobalIndex, pvr.TextureWidth, pvr.TextureHeight));
+                byte[] pvrdata_nohdr = new byte[length];
+                Array.Copy(pvrdata, 32, pvrdata_nohdr, 0, length);
+                //Console.WriteLine("Adding texture {0} at offset {1}, length {2} (original PVR {3})", index, offset, length, pvrdata.Length);
+                Data.Add(pvrdata_nohdr);
+            }
+
+            public byte[] GetPVR(int index)
+            {
+                List<byte> result = new List<byte>();
+                int chunksize_file = Data[index].Length;
+                // Make chunk size divisible by 16 because it crashes otherwise
+                if (chunksize_file % 16 != 0)
+                {
+                    do
+                    {
+                        chunksize_file++;
+                    }
+                    while (chunksize_file % 16 != 0);
+                }
+                byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
+                byte[] pvrtheader = { 0x50, 0x56, 0x52, 0x54 };
+                byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
+                result.AddRange(gbixheader);
+                result.AddRange(ByteConverter.GetBytes(8));
+                result.AddRange(ByteConverter.GetBytes(Headers[index].GBIX));
+                result.AddRange(padding);
+                result.AddRange(pvrtheader);
+                result.AddRange(ByteConverter.GetBytes(chunksize_file + 8));
+                result.Add((byte)Headers[index].PixelFormat);
+                result.Add((byte)Headers[index].DataFormat);
+                result.Add(0);
+                result.Add(0);
+                result.AddRange(ByteConverter.GetBytes(Headers[index].Width));
+                result.AddRange(ByteConverter.GetBytes(Headers[index].Height));
+                result.AddRange(Data[index]);
+                int pd = 0;
+                // Make file size divisible by 16 because it crashes otherwise
+                if (result.Count % 16 != 0)
+                {
+                    do
+                    {
+                        result.Add(0);
+                        pd++;
+                    }
+                    while (result.Count % 16 != 0);
+                }
+                return result.ToArray();
+            }
+
+            public byte[] GetBytes()
+            {
+                List<byte> result = new List<byte>();
+                result.Add(0x50); // P
+                result.Add(0x56); // B
+                result.Add(0x42); // V
+                result.Add(0x02); // Version ID
+                result.AddRange(ByteConverter.GetBytes((uint)Headers.Count));
+                for (int u = 0; u < Headers.Count; u++)
+                {
+                    result.AddRange(Headers[u].GetBytes());
+                }
+                for (int u = 0; u < Data.Count; u++)
+                {
+                    result.AddRange(Data[u]);
+                }
+                return result.ToArray();
+            }
+        }
+    }
 }
