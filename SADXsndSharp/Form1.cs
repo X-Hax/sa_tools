@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using ArchiveLib;
 
 namespace SADXsndSharp
 {
@@ -16,10 +17,9 @@ namespace SADXsndSharp
 
 		private ListViewColumnSorter lvwColumnSorter;
 		string filename;
-		bool is2010;
 		bool unsaved;
 		bool descending;
-		private List<FENTRY> files;
+		private DATFile archive;
 		View mainView = View.Details;
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -41,7 +41,7 @@ namespace SADXsndSharp
 			this.FormClosing += Form1_FormClosing;
 			string[] args = Environment.GetCommandLineArgs();
 			if (args.Length == 1)
-				files = new List<FENTRY>();
+				archive = new DATFile();
 			else
 				LoadFile(args[1]);
 		}
@@ -52,26 +52,7 @@ namespace SADXsndSharp
 			byte[] file = File.ReadAllBytes(filename);
 			Text = "SADXsndSharp - Loading file, please wait...";
 			this.Enabled = false;
-			switch (System.Text.Encoding.ASCII.GetString(file, 0, 0x10))
-			{
-				case "archive  V2.2\0\0\0":
-					is2010 = false;
-					break;
-				case "archive  V2.DMZ\0":
-					is2010 = true;
-					break;
-				default:
-					MessageBox.Show("Error: Unknown archive version/type");
-					this.Enabled = true;
-					return;
-			}
-			int count = BitConverter.ToInt32(file, 0x10);
-			files = new List<FENTRY>(count);
-			for (int i = 0; i < count; i++)
-			{
-				Text = $"SADXsndSharp - Loading file " + i.ToString() + " of " + count.ToString() + ", please wait...";
-				files.Add(new FENTRY(file, 0x14 + (i * 0xC)));
-			}
+            archive = new DATFile(file);
 			RefreshListView(mainView);
 			Text = "SADXsndSharp - " + Path.GetFileName(filename);
 			this.Enabled = true;
@@ -112,13 +93,12 @@ namespace SADXsndSharp
 					string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
 					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
-						List<FENTRY> list = new List<FENTRY>(files);
-						list.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
-						foreach (FENTRY item in list)
-						{
-							Text = $"SADXsndSharp - Saving item " + list.IndexOf(item) + " of " + files.Count.ToString() + ", please wait...";
-							sw.WriteLine(item.name);
-							File.WriteAllBytes(Path.Combine(dir, item.name), Compress.ProcessBuffer(item.file));
+						archive.Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
+                        for (int i = 0; i < archive.GetCount(); i++)
+                        {
+							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.GetCount().ToString() + ", please wait...";
+							sw.WriteLine(archive.Entries[i].name);
+                            File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].name), archive.GetFile(i));
 						}
 						sw.Flush();
 						sw.Close();
@@ -152,11 +132,9 @@ namespace SADXsndSharp
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					int i = files.Count;
 					foreach (string item in a.FileNames)
 					{
-						files.Add(new FENTRY(item));
-						i++;
+                        archive.AddFile(item);
 					}
 					RefreshListView(mainView);
 					unsaved = true;
@@ -173,14 +151,14 @@ namespace SADXsndSharp
 				FileName = selectedItem.Text
 			})
 				if (a.ShowDialog() == DialogResult.OK)
-					File.WriteAllBytes(a.FileName, Compress.ProcessBuffer(files[int.Parse(selectedItem.SubItems[2].Text)].file));
+					File.WriteAllBytes(a.FileName, archive.GetFile(int.Parse(selectedItem.SubItems[2].Text)));
 		}
 
 		private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (selectedItem == null) return;
 			int i = int.Parse(selectedItem.SubItems[2].Text);
-			string fn = files[i].name;
+			string fn = archive.Entries[i].name;
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "wav",
@@ -189,13 +167,16 @@ namespace SADXsndSharp
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					files[i] = new FENTRY(a.FileName);
-					if (files[i].name != fn)
+					if (archive.Entries[i].name != a.FileName)
 					{
 						DialogResult mb = MessageBox.Show("Keep original filename " + fn + "?", "Keep filename?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-						if (mb == DialogResult.Yes) files[i].name = fn;
-					}
-					selectedItem.ForeColor = Compress.isFileCompressed(files[i].file) ? Color.Blue : Color.Black;
+                        if (mb == DialogResult.Yes)
+                            archive.ReplaceData(a.FileName, i);
+                        else archive.ReplaceFile(a.FileName, i);
+                    }
+                    else
+                        archive.ReplaceFile(a.FileName, i);
+                    selectedItem.ForeColor = archive.IsFileCompressed(i) ? Color.Blue : Color.Black;
 					unsaved = true;
 					RefreshListView(mainView);
 				}
@@ -215,7 +196,7 @@ namespace SADXsndSharp
 					int i = int.Parse(selectedItem.SubItems[2].Text);
 					foreach (string item in a.FileNames)
 					{
-						files.Insert(i, new FENTRY(item));
+						archive.AddFile(item);
 						i++;
 					}
 					RefreshListView(mainView);
@@ -227,7 +208,7 @@ namespace SADXsndSharp
 		{
 			if (selectedItem == null) return;
 			int i = int.Parse(selectedItem.SubItems[2].Text);
-			files.RemoveAt(i);
+			archive.Entries.RemoveAt(i);
 			RefreshListView(mainView);
 			unsaved = true;
 		}
@@ -241,9 +222,9 @@ namespace SADXsndSharp
 		private void listView1_AfterLabelEdit(object sender, LabelEditEventArgs e)
 		{
 			if (oldName == e.Label) return;
-			foreach (FENTRY item in files)
+            for (int i = 0; i < archive.Entries.Count; i++)
 			{
-				if (item.name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
+				if (archive.Entries[i].name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
 				{
 					e.CancelEdit = true;
 					MessageBox.Show("This name is being used by another file.");
@@ -256,15 +237,15 @@ namespace SADXsndSharp
 				MessageBox.Show("This name contains invalid characters.");
 				return;
 			}
-			files[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].name = e.Label;
+            archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].name = e.Label;
 			RefreshListView(mainView);
 			unsaved = true;
 		}
 
 		private void listView1_ItemActivate(object sender, EventArgs e)
 		{
-			string fp = Path.Combine(Path.GetTempPath(), files[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
-			File.WriteAllBytes(fp, Compress.ProcessBuffer(files[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].file));
+			string fp = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
+			File.WriteAllBytes(fp, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
 			System.Diagnostics.Process.Start(fp);
 		}
 
@@ -278,7 +259,7 @@ namespace SADXsndSharp
 			}
 			filename = null;
 			Text = "SADXsndSharp";
-			files = new List<FENTRY>();
+            archive = new DATFile();
 			RefreshListView(mainView);
 			saveToolStripMenuItem.Enabled = false;
 			unsaved = false;
@@ -294,10 +275,10 @@ namespace SADXsndSharp
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string[] dropfiles = (string[])e.Data.GetData(DataFormats.FileDrop, true);
-				int i = files.Count;
+				int i = archive.Entries.Count;
 				foreach (string item in dropfiles)
 				{
-					files.Add(new FENTRY(item));
+					archive.AddFile(item);
 					i++;
 				}
 				RefreshListView(mainView);
@@ -307,8 +288,8 @@ namespace SADXsndSharp
 
 		private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
 		{
-			string fn = Path.Combine(Path.GetTempPath(), files[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
-			File.WriteAllBytes(fn, Compress.ProcessBuffer(files[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].file));
+			string fn = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
+			File.WriteAllBytes(fn, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
 			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.All);
 			unsaved = true;
 		}
@@ -333,7 +314,7 @@ namespace SADXsndSharp
 				{
 					filename = a.FileName;
 					Text = "SADXsndSharp - " + Path.GetFileName(a.FileName);
-					is2010 = saveAsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem) > 0;
+					archive.Steam = saveAsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem) > 0;
 					saveToolStripMenuItem.Enabled = true;
 					SaveFile();
 				}
@@ -342,36 +323,7 @@ namespace SADXsndSharp
 
 		private void SaveFile()
 		{
-			int fsize = 0x14;
-			int hloc = fsize;
-			fsize += files.Count * 0xC;
-			int tloc = fsize;
-			foreach (FENTRY item in files)
-			{
-				fsize += item.name.Length + 1;
-			}
-			int floc = fsize;
-			foreach (FENTRY item in files)
-			{
-				fsize += item.file.Length;
-			}
-			byte[] file = new byte[fsize];
-			System.Text.Encoding.ASCII.GetBytes(is2010 ? "archive  V2.DMZ" : "archive  V2.2").CopyTo(file, 0);
-			BitConverter.GetBytes(files.Count).CopyTo(file, 0x10);
-			foreach (FENTRY item in files)
-			{
-				BitConverter.GetBytes(tloc).CopyTo(file, hloc);
-				hloc += 4;
-				System.Text.Encoding.ASCII.GetBytes(item.name).CopyTo(file, tloc);
-				tloc += item.name.Length + 1;
-				BitConverter.GetBytes(floc).CopyTo(file, hloc);
-				hloc += 4;
-				item.file.CopyTo(file, floc);
-				floc += item.file.Length;
-				BitConverter.GetBytes(item.file.Length).CopyTo(file, hloc);
-				hloc += 4;
-			}
-			File.WriteAllBytes(filename, file);
+			File.WriteAllBytes(filename, archive.GetBytes());
 			unsaved = false;
 		}
 
@@ -403,15 +355,15 @@ namespace SADXsndSharp
 			imageList1.Images.Clear();
 			imageList2.Images.Clear();
 			listView1.BeginUpdate();
-			for (int j = 0; j < files.Count; j++)
+			for (int j = 0; j < archive.Entries.Count; j++)
 			{
-				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + files.Count.ToString() + ", please wait...";
-				if (view == View.LargeIcon || view == View.Tile) imageList1.Images.Add(GetIcon(files[j].name, false));
-				else imageList2.Images.Add(GetIcon(files[j].name, true));
-				ListViewItem it = listView1.Items.Add(files[j].name, j);
-				it.SubItems.Add(files[j].file.Length.ToString());
+				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
+				if (view == View.LargeIcon || view == View.Tile) imageList1.Images.Add(GetIcon(archive.Entries[j].name, false));
+				else imageList2.Images.Add(GetIcon(archive.Entries[j].name, true));
+				ListViewItem it = listView1.Items.Add(archive.Entries[j].name, j);
+				it.SubItems.Add(archive.Entries[j].file.Length.ToString());
 				it.SubItems.Add(j.ToString());
-				it.ForeColor = Compress.isFileCompressed(files[j].file) ? Color.Blue : Color.Black;
+				it.ForeColor = archive.IsFileCompressed(j) ? Color.Blue : Color.Black;
 			}
 			listView1.View = view;
 			listView1.EndUpdate();
@@ -469,204 +421,6 @@ namespace SADXsndSharp
 			// Perform the sort with these new sort options.
 			this.listView1.Sort();
 			this.listView1.ListViewItemSorter = null;
-		}
-
-		internal class FENTRY
-		{
-			public string name;
-			public byte[] file;
-
-			public FENTRY()
-			{
-				name = string.Empty;
-			}
-
-			public FENTRY(string fileName)
-			{
-				name = Path.GetFileName(fileName);
-				file = File.ReadAllBytes(fileName);
-			}
-
-			public FENTRY(byte[] file, int address)
-			{
-				name = GetCString(file, BitConverter.ToInt32(file, address));
-				this.file = new byte[BitConverter.ToInt32(file, address + 8)];
-				Array.Copy(file, BitConverter.ToInt32(file, address + 4), this.file, 0, this.file.Length);
-			}
-
-			private string GetCString(byte[] file, int address)
-			{
-				int textsize = 0;
-				while (file[address + textsize] > 0)
-					textsize += 1;
-				return System.Text.Encoding.ASCII.GetString(file, address, textsize);
-			}
-		}
-
-		internal static class Compress
-		{
-			const uint SLIDING_LEN = 0x1000;
-			const uint SLIDING_MASK = 0xFFF;
-
-			const byte NIBBLE_HIGH = 0xF0;
-			const byte NIBBLE_LOW = 0x0F;
-
-			//TODO: Documentation
-			struct OffsetLengthPair
-			{
-				public byte highByte, lowByte;
-
-				//TODO: Set
-				public int Offset
-				{
-					get
-					{
-						return ((lowByte & NIBBLE_HIGH) << 4) | highByte;
-					}
-				}
-
-				//TODO: Set
-				public int Length
-				{
-					get
-					{
-						return (lowByte & NIBBLE_LOW) + 3;
-					}
-				}
-			}
-
-			//TODO: Documentation
-			struct ChunkHeader
-			{
-				private byte flags;
-				private byte mask;
-
-				// TODO: Documentation
-				public bool ReadFlag(out bool flag)
-				{
-					bool endOfHeader = mask != 0x00;
-
-					flag = (flags & mask) != 0;
-
-					mask <<= 1;
-					return endOfHeader;
-				}
-
-				public ChunkHeader(byte flags)
-				{
-					this.flags = flags;
-					this.mask = 0x01;
-				}
-			}
-
-			//TODO:
-			private static void CompressBuffer(byte[] compBuf, byte[] decompBuf /*Starting at + 20*/)
-			{
-
-			}
-
-			// Decompresses a Lempel-Ziv buffer.
-			// TODO: Add documentation
-			private static void DecompressBuffer(byte[] decompBuf, byte[] compBuf /*Starting at + 20*/)
-			{
-				OffsetLengthPair olPair = new OffsetLengthPair();
-
-				int compBufPtr = 0;
-				int decompBufPtr = 0;
-
-				//Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
-				byte[] slidingDict = new byte[SLIDING_LEN];
-
-				//Set an offset to the dictionary insertion point
-				uint dictInsertionOffset = SLIDING_LEN - 18;
-
-				// Current chunk header
-				ChunkHeader chunkHeader = new ChunkHeader();
-
-				while (decompBufPtr < decompBuf.Length)
-				{
-					// At the start of each chunk...
-					if (!chunkHeader.ReadFlag(out bool flag))
-					{
-						// Load the chunk header
-						chunkHeader = new ChunkHeader(compBuf[compBufPtr++]);
-						chunkHeader.ReadFlag(out flag);
-					}
-
-					// Each chunk header is a byte and is a collection of 8 flags
-
-					// If the flag is set, load a character
-					if (flag)
-					{
-						// Copy the character
-						byte rawByte = compBuf[compBufPtr++];
-						decompBuf[decompBufPtr++] = rawByte;
-
-						// Add the character to the dictionary, and slide the dictionary
-						slidingDict[dictInsertionOffset++] = rawByte;
-						dictInsertionOffset &= SLIDING_MASK;
-
-					}
-					// If the flag is clear, load an offset/length pair
-					else
-					{
-						// Load the offset/length pair
-						olPair.highByte = compBuf[compBufPtr++];
-						olPair.lowByte = compBuf[compBufPtr++];
-
-						// Get the offset from the offset/length pair
-						int offset = olPair.Offset;
-
-						// Get the length from the offset/length pair
-						int length = olPair.Length;
-
-						for (int i = 0; i < length; i++)
-						{
-							byte rawByte = slidingDict[(offset + i) & SLIDING_MASK];
-							decompBuf[decompBufPtr++] = rawByte;
-
-							if (decompBufPtr >= decompBuf.Length) return;
-
-							// Add the character to the dictionary, and slide the dictionary
-							slidingDict[dictInsertionOffset++] = rawByte;
-							dictInsertionOffset &= SLIDING_MASK;
-						}
-					}
-				}
-			}
-
-			public static bool isFileCompressed(byte[] CompressedBuffer)
-			{
-				return System.Text.Encoding.ASCII.GetString(CompressedBuffer, 0, 13) == "compress v1.0";
-			}
-
-			public static byte[] ProcessBuffer(byte[] CompressedBuffer)
-			{
-				if (isFileCompressed(CompressedBuffer))
-				{
-					uint DecompressedSize = BitConverter.ToUInt32(CompressedBuffer, 16);
-					byte[] DecompressedBuffer = new byte[DecompressedSize];
-					//Xor Decrypt the whole buffer
-					byte XorEncryptionValue = CompressedBuffer[15];
-
-					byte[] CompBuf = new byte[CompressedBuffer.Length - 20];
-					for (int i = 20; i < CompressedBuffer.Length; i++)
-					{
-						CompBuf[i - 20] = (byte)(CompressedBuffer[i] ^ XorEncryptionValue);
-					}
-
-					//Decompress the whole buffer
-					DecompressBuffer(DecompressedBuffer, CompBuf);
-
-					//Switch the buffers around so the decompressed one gets saved instead
-					return DecompressedBuffer;
-				}
-				else
-				{
-					return CompressedBuffer;
-				}
-			}
-
 		}
 
 		private void ascendingToolStripMenuItem_Click(object sender, EventArgs e)
