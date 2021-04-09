@@ -149,6 +149,26 @@ namespace ArchiveLib
             Entries.Add(new FENTRY(filePath));
         }
 
+        public bool IsFileCompressed(int index)
+        {
+            return CompressDAT.isFileCompressed(Entries[index].file);
+        }
+
+        public void ReplaceFile(string path, int index)
+        {
+            Entries[index] = new FENTRY(path);
+        }
+
+        public void ReplaceData(string path, int index)
+        {
+            Entries[index].file = File.ReadAllBytes(path);
+        }
+
+        public void RemoveFile(int index)
+        {
+            Entries.RemoveAt(index);
+        }
+
         public byte[] GetBytes()
         {
             int fsize = 0x14;
@@ -165,7 +185,7 @@ namespace ArchiveLib
                 fsize += item.file.Length;
             }
             byte[] file = new byte[fsize];
-            System.Text.Encoding.ASCII.GetBytes("archive  V2.2").CopyTo(file, 0); // 2004 format only because nobody mods the Steam version anyway
+            System.Text.Encoding.ASCII.GetBytes(Steam ? "archive  V2.DMZ" : "archive  V2.2").CopyTo(file, 0);
             BitConverter.GetBytes(Entries.Count).CopyTo(file, 0x10);
             foreach (FENTRY item in Entries)
             {
