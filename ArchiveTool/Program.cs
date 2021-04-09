@@ -32,6 +32,7 @@ namespace ArchiveTool
                 Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM, PRS, DAT and PB archives.\nIt can also decompress SADX Gamecube 'SaCompGC' REL files.\n");
                 Console.WriteLine("Usage:\n");
                 Console.WriteLine("Extracting a PVM/GVM/PRS/PB/DAT/REL file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
+                Console.WriteLine("Extracting an NjUtil archive: ArchiveTool -nju <archivefile>\n");
                 Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
                 Console.WriteLine("Creating a PB archive from a folder with textures: ArchiveTool -pb <foldername>");
                 Console.WriteLine("Creating a PVM/GVM/DAT from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
@@ -301,7 +302,10 @@ namespace ArchiveTool
                 // Extract NjArchive mode
                 case "-nju":
                     filePath = args[1];
-                    NjArchive njarc = new NjArchive(File.ReadAllBytes(filePath));
+                    filedata = File.ReadAllBytes(filePath);
+                    if (Path.GetExtension(filePath).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                        filedata = FraGag.Compression.Prs.Decompress(filedata);
+                    NjArchive njarc = new NjArchive(filedata);
                     Console.WriteLine("Extracting Ninja archive: {0}", filePath);
                     dir = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
                     Console.WriteLine("Output folder: {0}", dir);
@@ -320,6 +324,10 @@ namespace ArchiveTool
                             case "NJCM":
                                 desc = "Ninja Chunk model";
                                 extension = ".nj";
+                                break;
+                            case "GJCM":
+                                desc = "Ninja Chunk model (GC)";
+                                extension = ".gj";
                                 break;
                             case "NJBM":
                                 desc = "Ninja Basic model";
@@ -349,9 +357,17 @@ namespace ArchiveTool
                                desc = "Ninja Texlist";
                                 extension = ".nj";
                                 break;
+                            case "GJTL":
+                                desc = "Ninja Texlist (GC)";
+                                extension = ".gj";
+                                break;
                             case "PVMH":
                                 desc = "PVM";
                                 extension = ".pvm";
+                                break;
+                            case "GVMH":
+                                desc = "GVM";
+                                extension = ".gvm";
                                 break;
                         }
                         Console.WriteLine("Entry {0} is {1}", i, desc);
