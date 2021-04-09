@@ -60,6 +60,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj">
+      <Project>{29bd5a4f-1400-471c-bcfc-f1ee2a0ec73a}</Project>
+      <Name>ArchiveLib</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SA Tools\SA Tools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
       <Name>SA Tools</Name>

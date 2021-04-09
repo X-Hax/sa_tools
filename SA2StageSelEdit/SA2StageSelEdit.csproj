@@ -85,9 +85,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PAKLib\PAKLib.csproj">
+    <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj">
       <Project>{29BD5A4F-1400-471C-BCFC-F1EE2A0EC73A}</Project>
-      <Name>PAKLib</Name>
+      <Name>ArchiveLib</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SA Tools\SA Tools.csproj">

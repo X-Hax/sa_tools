@@ -6,7 +6,7 @@ using PuyoTools.Modules.Archive;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
-using PAKLib;
+using ArchiveLib;
 using System.Linq;
 using System.Drawing.Imaging;
 
@@ -121,6 +121,15 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
                         txts.Add(new BMPInfo(entry[1], new System.Drawing.Bitmap(Path.Combine(Path.GetDirectoryName(filename), entry[1]))));
                     }
                     return txts.ToArray();
+                case ".pb":
+                    PBFile pbdata = new PBFile(File.ReadAllBytes(filename));
+                    List<BMPInfo> txtsp = new List<BMPInfo>();
+                    for (int i = 0; i < pbdata.GetCount(); i++)
+                    {
+                        PvrTexture pvr = new PvrTexture(pbdata.GetPVR(i));
+                        txtsp.Add(new BMPInfo(i.ToString("D3"), pvr.ToBitmap()));
+                    }
+                    return txtsp.ToArray();
                 case ".pvm":
                 case ".gvm":
                 default:

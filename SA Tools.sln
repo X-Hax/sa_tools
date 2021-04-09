@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelRelabeler", "ModelRela
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelConverter", "LevelConverter\LevelConverter.csproj", "{AA4076C9-C286-40EA-9388-7B86BCEEE67B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAKLib", "PAKLib\PAKLib.csproj", "{29BD5A4F-1400-471C-BCFC-F1EE2A0EC73A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveLib", "ArchiveLib\ArchiveLib.csproj", "{29BD5A4F-1400-471C-BCFC-F1EE2A0EC73A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAKtool", "PAKtool\PAKtool.csproj", "{8DA81E6E-D203-4F09-8848-4F71FE49641C}"
 EndProject
