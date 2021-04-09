@@ -574,4 +574,35 @@ namespace ArchiveLib
         }
 
     #endregion
+
+    #region NjArchive
+    public class NjArchive
+    {
+        public List<byte[]> Entries;
+
+        public NjArchive(byte[] file)
+        {
+            Entries = new List<byte[]>();
+            int count = BitConverter.ToInt32(file, 0) - 1;
+            List<int> sizehdrs = new List<int>();
+            for (int i = 0; i < count; i++)
+            {
+                int sizeaddr = 4 + i * 4;
+                int size = BitConverter.ToInt32(file, sizeaddr);
+                //Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, sizeaddr, size);
+                sizehdrs.Add(size);
+            }
+            int[] sizes = sizehdrs.ToArray();
+            int offset = 0x20;
+            for (int i = 0; i < sizes.Length; i++)
+            {
+                if (i != 0)
+                    offset += sizes[i - 1];
+                byte[] entry = new byte[sizes[i]];
+                Array.Copy(file, offset, entry, 0, sizes[i]);
+                Entries.Add(entry);
+            }
+        }
+    }
+    #endregion
 }
