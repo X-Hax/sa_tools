@@ -79,7 +79,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			foreach (string file in files)
 			{
-				string extension = Path.GetExtension(file);
+				string extension = Path.GetExtension(file).ToLowerInvariant();
 				switch (extension)
 				{
 					case ".nj":
@@ -118,7 +118,16 @@ namespace SonicRetro.SAModel.SAMDL
 					case ".njm":
 						animFiles.Add(file);
 						break;
-					default:
+                    case ".pvm":
+                    case ".gvm":
+                    case ".pb":
+                    case ".pvmx":
+                    case ".pak":
+                    case ".prs":
+                    case ".txt":
+                        LoadTextures(file);
+                        break;
+                    default:
 						break;
 				}
 			}
