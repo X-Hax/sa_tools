@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using VrSharp.Pvr;
+using SonicRetro.SAModel;
 
 // This library implements support for archive files that are used by tools other than (or in addition to) Texture Editor and SAMDL/SALVL.
 // TODO: PVMX
@@ -582,13 +583,16 @@ namespace ArchiveLib
 
         public NjArchive(byte[] file)
         {
+            bool bigendbk = ByteConverter.BigEndian;
+            if (file[0] == 0)
+                ByteConverter.BigEndian = true;
             Entries = new List<byte[]>();
-            int count = BitConverter.ToInt32(file, 0) - 1;
+            int count = ByteConverter.ToInt32(file, 0) - 1;
             List<int> sizehdrs = new List<int>();
             for (int i = 0; i < count; i++)
             {
                 int sizeaddr = 4 + i * 4;
-                int size = BitConverter.ToInt32(file, sizeaddr);
+                int size = ByteConverter.ToInt32(file, sizeaddr);
                 //Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, sizeaddr, size);
                 sizehdrs.Add(size);
             }
@@ -602,6 +606,7 @@ namespace ArchiveLib
                 Array.Copy(file, offset, entry, 0, sizes[i]);
                 Entries.Add(entry);
             }
+            ByteConverter.BigEndian = bigendbk;
         }
     }
     #endregion

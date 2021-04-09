@@ -54,6 +54,13 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SAModel\SAModel.csproj">
+      <Project>{0ee5d36f-cacf-41e9-8c9a-76ffd946b22d}</Project>
+      <Name>SAModel</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /D /Y "$(SolutionDir)tools\lib\*.*" "$(SolutionDir)bin\lib\"</PostBuildEvent>
