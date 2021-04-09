@@ -1260,7 +1260,11 @@ namespace TextureEditor
             if (tex.HasValue)
             {
                 textures[listBox1.SelectedIndex].Image = tex.Value.Value;
-                UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+				if (textures[listBox1.SelectedIndex] is PvrTextureInfo pvri)
+					pvri.TextureData = null;
+				else if (textures[listBox1.SelectedIndex] is GvrTextureInfo gvri)
+					gvri.TextureData = null;
+				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
                 textureSizeLabel.Text = $"Size: {tex.Value.Value.Width}x{tex.Value.Value.Height}";
                 if (textures[listBox1.SelectedIndex].CheckMipmap())
                 {
